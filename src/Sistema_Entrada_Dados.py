@@ -854,6 +854,19 @@ class SistemaEntradaDados:
         # Criar e preencher a interface dentro da janela_gestao
         gestor.criar_interface_contratos(janela_gestao, on_close)
 
+    def abrir_controle_pagamentos(self):
+        """Abre o módulo de controle de pagamentos"""
+        try:
+            # Importar módulo
+            from controle_pagamentos import ControlePagamentos
+            
+            # Instanciar e abrir janela de controle
+            controle = ControlePagamentos(self.root)
+            controle.abrir_janela_controle()
+        except ImportError as e:
+            messagebox.showerror("Erro", f"Não foi possível importar o módulo de Controle de Pagamentos: {str(e)}")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
 
     def selecionar_cliente(self, event):
         """Atualiza seleção de cliente e habilita botão de continuar"""

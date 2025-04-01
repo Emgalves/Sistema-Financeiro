@@ -174,28 +174,17 @@ class ControlePagamentos:
     def abrir_gestao_eventos(self):
         """Abre o módulo de gestão de eventos"""
         try:
-            # Primeiro, selecionar um cliente
-            if self.selecionar_cliente():
-                # Verificar se módulo GestaoEventos já está importado
-                if self.gestao_eventos is None:
-                    # Tentar importar
-                    try:
-                        # CORREÇÃO: Importar diretamente do arquivo atual
-                        from pagamentos_eventos import GestaoEventos
-                        self.gestao_eventos = GestaoEventos(self.parent)
-                    except ImportError as ie:
-                        messagebox.showerror("Erro", f"Não foi possível importar o módulo de Gestão de Eventos: {str(ie)}")
-                        return
-                    except Exception as e:
-                        messagebox.showerror("Erro", f"Erro ao inicializar Gestão de Eventos: {str(e)}")
-                        return
-                
-                # Abrir a janela de eventos com o cliente selecionado
-                if self.gestao_eventos:
-                    self.gestao_eventos.abrir_janela_eventos(self.cliente_atual)
-                else:
-                    messagebox.showerror("Erro", "Módulo de Gestão de Eventos não está disponível")
+            print("Iniciando gestão de eventos")
+            
+            # Importar e criar o módulo apenas quando necessário
+            from pagamentos_eventos import GestaoEventos
+            
+            # Criar instância e abrir janela
+            gestao = GestaoEventos(self.parent)
+            gestao.abrir_janela_eventos()
+            
         except Exception as e:
+            print(f"Erro ao abrir gestão de eventos: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao abrir gestão de eventos: {str(e)}")
         
     def abrir_gestao_contratos(self):
@@ -208,7 +197,7 @@ class ControlePagamentos:
                     from sistema_entrada_dados import GestaoContratos
                     gestao_contratos = GestaoContratos(self.parent)
                     
-                    # CORREÇÃO: Usar método atualizado com interface simplificada
+                    # Criar uma nova janela explícita para a gestão
                     janela_gestao = tk.Toplevel(self.parent)
                     janela_gestao.title(f"Gestão de Contratos - {self.cliente_atual}")
                     
@@ -232,97 +221,7 @@ class ControlePagamentos:
         """Abre o módulo de relatórios"""
         messagebox.showinfo("Informação", "Módulo de Relatórios em desenvolvimento")
         
-    def selecionar_cliente(self):
-        """Abre uma janela para selecionar o cliente e retorna True se selecionado"""
-        selecao_janela = tk.Toplevel(self.parent)
-        selecao_janela.title("Selecionar Cliente")
-        selecao_janela.geometry("400x300")
-        selecao_janela.transient(self.parent)
-        selecao_janela.grab_set()
-
-        frame = ttk.Frame(selecao_janela, padding=10)
-        frame.pack(fill='both', expand=True)
-
-        ttk.Label(frame, text="Selecione o Cliente:").pack(pady=10)
-
-        # Combobox para seleção do cliente
-        cliente_var = tk.StringVar()
-        cliente_combo = ttk.Combobox(
-            frame, 
-            textvariable=cliente_var,
-            width=40,
-            state='readonly'
-        )
-        cliente_combo.pack(pady=5)
-
-        # Carregar clientes
-        clientes = self.carregar_lista_clientes()
-        cliente_combo['values'] = clientes
-
-        # Variável para controlar resultado
-        self.cliente_selecionado = False
-
-        # Botões
-        frame_botoes = ttk.Frame(frame)
-        frame_botoes.pack(fill='x', pady=20)
-
-        def confirmar_selecao():
-            if cliente_var.get():
-                self.cliente_atual = cliente_var.get()
-                self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
-                self.cliente_selecionado = True
-                selecao_janela.destroy()
-            else:
-                messagebox.showwarning("Aviso", "Selecione um cliente!")
-
-        ttk.Button(
-            frame_botoes,
-            text="Confirmar",
-            command=confirmar_selecao,
-            width=15
-        ).pack(side='left', padx=5)
-
-        ttk.Button(
-            frame_botoes,
-            text="Cancelar",
-            command=selecao_janela.destroy,
-            width=15
-        ).pack(side='right', padx=5)
-
-        # Centralizar janela
-        selecao_janela.update_idletasks()
-        width = selecao_janela.winfo_width()
-        height = selecao_janela.winfo_height()
-        x = (selecao_janela.winfo_screenwidth() // 2) - (width // 2)
-        y = (selecao_janela.winfo_screenheight() // 2) - (height // 2)
-        selecao_janela.geometry(f'{width}x{height}+{x}+{y}')
-
-        # CORREÇÃO: Esperar a janela fechar e depois retornar o resultado
-        self.parent.wait_window(selecao_janela)
-        return self.cliente_selecionado
-
-    def carregar_lista_clientes(self):
-        """Carrega a lista de clientes disponíveis"""
-        try:
-            # Verificar se arquivo existe
-            if not os.path.exists(ARQUIVO_CLIENTES):
-                messagebox.showwarning("Aviso", "Arquivo de clientes não encontrado!")
-                return []
-                
-            workbook = load_workbook(ARQUIVO_CLIENTES)
-            sheet = workbook['Clientes']
-            clientes = []
-
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Nome do cliente
-                    clientes.append(row[0])
-
-            workbook.close()
-            return sorted(clientes)
-
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
-            return []
+    
 
 
 # Se executado diretamente, abre a janela de controle
