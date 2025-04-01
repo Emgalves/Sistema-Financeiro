@@ -1,0 +1,20 @@
+Configurar uma Variável de Ambiente Permanente no Windows:
+
+Abra o Painel de Controle
+Sistema e Segurança > Sistema
+Configurações avançadas do sistema
+Variáveis de Ambiente
+Em "Variáveis do usuário", clique em "Novo"
+Nome: SISTEMA_AMBIENTE
+Valor: producao ou teste
+
+Configurações em Todos os DateEntries:
+data_entry = DateEntry(parent, ...)
+configurar_navegacao_calendario(data_entry)
+
+Estas alterações farão com que:
+
+Todos os calendários permitam navegação entre meses
+O frame para taxas percentuais funcione corretamente
+As datas sejam salvas de forma consistente
+Os dados bancários sejam incluídos nos lançamentos

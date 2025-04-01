@@ -1,0 +1,30 @@
+2025-03-26 15:51:34,121 - INFO - Iniciando RelatorioUI
+2025-03-26 15:51:34,122 - INFO - Iniciando configuração da interface
+2025-03-26 15:51:34,166 - INFO - Interface configurada com sucesso
+2025-03-26 15:51:47,546 - INFO - Iniciando geração de relatório para arquivo: H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-03-26 15:51:47,734 - INFO - 
+Obtendo número do relatório para data 2025-04-05 00:00:00
+2025-03-26 15:51:47,735 - INFO - Número do relatório calculado: 2
+2025-03-26 15:51:47,735 - INFO - Calculando acumulado para data 2025-04-05 00:00:00
+2025-03-26 15:51:47,745 - INFO - Valor acumulado calculado: 442,486.00
+2025-03-26 15:51:47,745 - INFO - Número do relatório: 2
+2025-03-26 15:51:47,745 - INFO - Valor acumulado calculado: 442,486.00
+2025-03-26 15:51:47,751 - INFO - Iniciando adição de detalhes ao relatório
+2025-03-26 15:51:47,775 - INFO - Detalhes adicionados com sucesso
+2025-03-26 15:51:47,798 - INFO - Iniciando carregamento de taxas de administração: H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-03-26 15:51:47,908 - INFO - Total de parcelas encontradas: 30
+2025-03-26 15:53:03,135 - INFO - Iniciando RelatorioUI
+2025-03-26 15:53:03,137 - INFO - Iniciando configuração da interface
+2025-03-26 15:53:03,174 - INFO - Interface configurada com sucesso
+2025-03-26 15:53:14,938 - INFO - Iniciando geração de relatório para arquivo: H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-03-26 15:53:15,118 - INFO - 
+Obtendo número do relatório para data 2025-04-05 00:00:00
+2025-03-26 15:53:15,119 - INFO - Número do relatório calculado: 4
+2025-03-26 15:53:15,119 - INFO - Calculando acumulado para data 2025-04-05 00:00:00
+2025-03-26 15:53:15,128 - INFO - Valor acumulado calculado: 140,262.04
+2025-03-26 15:53:15,128 - INFO - Número do relatório: 4
+2025-03-26 15:53:15,128 - INFO - Valor acumulado calculado: 140,262.04
+2025-03-26 15:53:15,134 - INFO - Iniciando adição de detalhes ao relatório
+2025-03-26 15:53:15,145 - INFO - Detalhes adicionados com sucesso
+2025-03-26 15:53:15,145 - INFO - Iniciando carregamento de taxas de administração: H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-03-26 15:53:15,231 - INFO - Total de parcelas encontradas: 0

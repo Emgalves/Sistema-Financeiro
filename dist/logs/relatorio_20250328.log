@@ -1,0 +1,15 @@
+2025-03-28 09:44:05,037 - INFO - Iniciando RelatorioUI
+2025-03-28 09:44:05,039 - INFO - Iniciando configuração da interface
+2025-03-28 09:44:05,076 - INFO - Interface configurada com sucesso
+2025-03-28 09:44:16,051 - INFO - Iniciando geração de relatório para arquivo: H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-03-28 09:44:16,235 - INFO - 
+Obtendo número do relatório para data 2025-04-05 00:00:00
+2025-03-28 09:44:16,235 - INFO - Número do relatório calculado: 2
+2025-03-28 09:44:16,235 - INFO - Calculando acumulado para data 2025-04-05 00:00:00
+2025-03-28 09:44:16,245 - INFO - Valor acumulado calculado: 442,486.00
+2025-03-28 09:44:16,245 - INFO - Número do relatório: 2
+2025-03-28 09:44:16,245 - INFO - Valor acumulado calculado: 442,486.00
+2025-03-28 09:44:16,251 - INFO - Iniciando adição de detalhes ao relatório
+2025-03-28 09:44:16,304 - INFO - Detalhes adicionados com sucesso
+2025-03-28 09:44:16,326 - INFO - Iniciando carregamento de taxas de administração: H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-03-28 09:44:16,440 - INFO - Total de parcelas encontradas: 28

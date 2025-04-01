@@ -1,0 +1,16 @@
+[
+    {
+        "version": "1.1.0",
+        "release_date": "14/03/2025",
+        "changes": [
+            "Separação de despesas com funcionários, no Relatório, separando despesas mensais das eventuais",
+            "Correção do campo percentual e inclusão de dados bancários na Entrada em Gestão de Contrato",
+            "Melhoria do layout da tela de Seleção de Cliente",
+            "Correção da combobox Banco em Fornecedor",
+            "Reorganização da aba Fornecedor com funcionalidade de duplo clique",
+            "Ajuste do layout da aba Entrada de Dados para melhor usabilidade",
+            "Adição de preenchimento automático da referência baseado na especificação do fornecedor"
+        ],
+        "timestamp": "2025-03-26T15:48:47.122794"
+    }
+]

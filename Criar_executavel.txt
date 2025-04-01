@@ -1,0 +1,23 @@
+Gerar EXECUTÁVEL:
+
+cd\users\obras\sistema_gestao_testes
+
+Limpe as pastas build e dist:
+rmdir /s /q build
+rmdir /s /q dist
+
+Gere o executável:
+pyinstaller Sistema_Gestao_Financeira.spec
+
+
+
+Preciso criar uma pasta compartilhada para o Sistema de Gestão com a seguinte estrutura:
+
+Caminho sugerido: G:\Sistemas\Gestao
+Permissões:
+
+- Usuários do sistema: leitura e execução
+- Administrador do sistema (eu): leitura, escrita e execução
+
+
+A pasta precisa ser acessível para todos os computadores que usarão o sistema.

@@ -1,0 +1,50 @@
+{
+    "cafe": {
+        "valor_atual": 4.0,
+        "historico": [
+            {
+                "valor": 4.0,
+                "data_inicio": "01/01/2024",
+                "data_fim": "18/02/2025"
+            },
+            {
+                "valor": 6.0,
+                "data_inicio": "18/02/2025",
+                "data_fim": "20/02/2025"
+            },
+            {
+                "valor": 4.0,
+                "data_inicio": "20/02/2025",
+                "data_fim": null
+            }
+        ]
+    },
+    "bancos": {
+        "lista": [
+            "BANCO DO BRASIL",
+            "BRADESCO",
+            "BV",
+            "C6 BANK",
+            "CAIXA",
+            "INTER",
+            "ITAU",
+            "NUBANK",
+            "PICPAY",
+            "SANTANDER",
+            "STONE"
+        ],
+        "historico_alteracoes": []
+    },
+    "categorias": {
+        "lista": [
+            "ADM",
+            "DIV",
+            "LOC",
+            "MAT",
+            "MO",
+            "SERV",
+            "TP"
+        ],
+        "historico_alteracoes": []
+    }
+}

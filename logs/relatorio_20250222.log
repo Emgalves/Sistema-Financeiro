@@ -1,0 +1,21 @@
+2025-02-22 10:13:27,104 - INFO - Iniciando RelatorioUI
+2025-02-22 10:13:27,120 - INFO - Iniciando configuração da interface
+2025-02-22 10:13:27,210 - INFO - Interface configurada com sucesso
+2025-02-22 10:29:33,743 - INFO - Iniciando: Gerar relatório
+2025-02-22 10:29:33,805 - INFO - Iniciando RelatorioUI
+2025-02-22 10:29:33,878 - INFO - Iniciando configuração da interface
+2025-02-22 10:29:33,924 - INFO - Interface configurada com sucesso
+2025-02-22 10:29:57,359 - INFO - Iniciando geração de relatório para arquivo: H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios/Financeiro/Clientes/CLEVER LUIZ SALVADOR.xlsx
+2025-02-22 10:29:57,858 - INFO - 
+Obtendo número do relatório para data 2025-02-20 00:00:00
+2025-02-22 10:29:57,859 - INFO - Número do relatório calculado: 12
+2025-02-22 10:29:57,860 - INFO - Calculando acumulado para data 2025-02-20 00:00:00
+2025-02-22 10:29:57,873 - INFO - Valor acumulado calculado: 1,392,591.61
+2025-02-22 10:29:57,874 - INFO - Número do relatório: 12
+2025-02-22 10:29:57,874 - INFO - Valor acumulado calculado: 1,392,591.61
+2025-02-22 10:29:57,890 - INFO - Iniciando adição de detalhes ao relatório
+2025-02-22 10:29:58,007 - INFO - Detalhes adicionados com sucesso
+2025-02-22 10:29:58,007 - INFO - Iniciando carregamento de taxas de administração: H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios/Financeiro/Clientes/CLEVER LUIZ SALVADOR.xlsx
+2025-02-22 10:29:58,175 - INFO - Total de parcelas encontradas: 0
+2025-02-22 10:32:14,661 - INFO - Concluído: Gerar relatório
+2025-02-22 10:32:14,693 - INFO - Concluído: Gerar relatório
