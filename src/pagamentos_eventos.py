@@ -66,26 +66,34 @@ class GestaoEventos:
 
     def abrir_janela_eventos(self, cliente=None):
         """Abre a janela principal de gestão de eventos para o cliente selecionado"""
+        print("Entrando em abrir_janela_eventos")
+        
         # Se a janela já existir, apenas traz para frente
         if self.janela and self.janela.winfo_exists():
+            print("Janela já existe, trazendo para frente")
             self.janela.lift()
             self.janela.focus_force()
             return
 
+        print("Criando nova janela")
         # Cria nova janela
         self.janela = tk.Toplevel(self.parent)
         configurar_janela(self.janela, "Gestão de Pagamentos por Eventos", 900, 700)
 
         # Define o cliente atual
         if cliente:
+            print(f"Cliente fornecido: {cliente}")
             self.cliente_atual = cliente
             self.arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
         else:
+            print("Cliente não fornecido, solicitando seleção")
             # Se não tiver cliente selecionado, solicita seleção
             if not self.selecionar_cliente():
+                print("Cliente não selecionado, fechando janela")
                 self.janela.destroy()
                 return
 
+        
         # Frame principal
         frame_principal = ttk.Frame(self.janela, padding=10)
         frame_principal.pack(fill='both', expand=True)
@@ -136,74 +144,59 @@ class GestaoEventos:
         self.carregar_contratos()
 
     def selecionar_cliente(self):
-        """Abre uma janela para selecionar o cliente e retorna True se selecionado
-        CORREÇÃO: Corrigido o problema de looping infinito que ocorria anteriormente"""
-        selecao_janela = tk.Toplevel(self.parent)
-        selecao_janela.title("Selecionar Cliente")
-        selecao_janela.geometry("400x300")
-        selecao_janela.transient(self.parent)
-        selecao_janela.grab_set()
-
-        frame = ttk.Frame(selecao_janela, padding=10)
-        frame.pack(fill='both', expand=True)
-
-        ttk.Label(frame, text="Selecione o Cliente:").pack(pady=10)
-
-        # Combobox para seleção do cliente
-        cliente_var = tk.StringVar()
-        cliente_combo = ttk.Combobox(
-            frame, 
-            textvariable=cliente_var,
-            width=40,
-            state='readonly'
-        )
-        cliente_combo.pack(pady=5)
-
-        # Carregar clientes
+        """Seleciona um cliente usando uma caixa de diálogo simplificada"""
+        # Carregar a lista de clientes
         clientes = self.carregar_lista_clientes()
-        cliente_combo['values'] = clientes
-
-        # Botões
-        frame_botoes = ttk.Frame(frame)
-        frame_botoes.pack(fill='x', pady=20)
-
-        # CORREÇÃO: Método para confirmar seleção
-        def confirmar_selecao():
-            if cliente_var.get():
-                self.cliente_atual = cliente_var.get()
-                self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
-                self.cliente_selecionado = True  # Marcar como selecionado
-                selecao_janela.destroy()
-            else:
-                messagebox.showwarning("Aviso", "Selecione um cliente!")
-
-        ttk.Button(
-            frame_botoes,
-            text="Confirmar",
-            command=confirmar_selecao,
-            width=15
-        ).pack(side='left', padx=5)
-
-        ttk.Button(
-            frame_botoes,
-            text="Cancelar",
-            command=lambda: selecao_janela.destroy(),
-            width=15
-        ).pack(side='right', padx=5)
-
-        # Centralizar janela
-        selecao_janela.update_idletasks()
-        width = selecao_janela.winfo_width()
-        height = selecao_janela.winfo_height()
-        x = (selecao_janela.winfo_screenwidth() // 2) - (width // 2)
-        y = (selecao_janela.winfo_screenheight() // 2) - (height // 2)
-        selecao_janela.geometry(f'{width}x{height}+{x}+{y}')
-
-        # CORREÇÃO: Esperar a janela fechar antes de continuar
-        self.parent.wait_window(selecao_janela)
+        if not clientes:
+            messagebox.showwarning("Aviso", "Nenhum cliente encontrado!")
+            return False
         
-        # Retornar se um cliente foi selecionado
-        return self.cliente_selecionado
+        # Usar método mais simples e direto para seleção
+        escolha = tk.StringVar()
+        resultado = False
+        
+        def confirmar_selecao():
+            nonlocal resultado
+            if escolha.get():
+                self.cliente_atual = escolha.get()
+                self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
+                resultado = True
+                dialogo.destroy()
+        
+        # Criar diálogo
+        dialogo = tk.Toplevel(self.parent)
+        dialogo.title("Selecionar Cliente")
+        dialogo.geometry("350x180")
+        dialogo.resizable(False, False)
+        dialogo.transient(self.parent)
+        dialogo.grab_set()
+        
+        # Layout
+        ttk.Label(dialogo, text="Selecione um cliente:", font=("Arial", 12)).pack(pady=(15, 5))
+        combo = ttk.Combobox(dialogo, textvariable=escolha, values=clientes, width=30, state="readonly")
+        combo.pack(pady=10)
+        
+        # Botões
+        frame_botoes = ttk.Frame(dialogo)
+        frame_botoes.pack(pady=15)
+        ttk.Button(frame_botoes, text="Confirmar", command=confirmar_selecao, width=12).pack(side="left", padx=10)
+        ttk.Button(frame_botoes, text="Cancelar", command=dialogo.destroy, width=12).pack(side="left", padx=10)
+        
+        # Centralizar
+        dialogo.update_idletasks()
+        width = dialogo.winfo_width()
+        height = dialogo.winfo_height()
+        x = (dialogo.winfo_screenwidth() // 2) - (width // 2)
+        y = (dialogo.winfo_screenheight() // 2) - (height // 2)
+        dialogo.geometry(f"{width}x{height}+{x}+{y}")
+        
+        # Trazer para frente
+        dialogo.lift()
+        dialogo.focus_force()
+        
+        # Aguardar seleção
+        self.parent.wait_window(dialogo)
+        return resultado
 
     def carregar_lista_clientes(self):
         """Carrega a lista de clientes disponíveis"""
@@ -1042,64 +1035,7 @@ class GestaoEventos:
         # Carregar eventos do contrato novamente
         self.notebook.select(self.aba_eventos)
         self.contrato_selecionado.set(num_contrato)
-        self.carregar_eventos_contrato(None), '').replace('.', '').replace(',', '.').strip()
-        
-        # Converter valor
-        try:
-            valor = float(valor_str)
-        except ValueError:
-            messagebox.showerror("Erro", "Valor do pagamento inválido")
-            return
-            
-        # Converter data
-        try:
-            data_vencto = datetime.strptime(data_vencimento, '%d/%m/%Y')
-        except ValueError:
-            messagebox.showerror("Erro", "Data de vencimento inválida")
-            return
-        
-        # Buscar administrador para obter categoria
-        categoria = "ADM"
-        
-        # Verificar se o Sistema de Entrada de Dados está disponível no parent
-        if hasattr(self.parent, 'dados_para_incluir'):
-            # Preparar lançamento
-            lancamento = {
-                'data': self.calcular_data_relatorio(data_vencto),
-                'tp_desp': '3',  # Tipo 3 para administração
-                'cnpj_cpf': cnpj_cpf,
-                'nome': nome,
-                'referencia': f"ADM OBRA - EVENTO {evento_id} - CONTRATO {num_contrato}",
-                'nf': '',
-                'vr_unit': f"{valor:.2f}",
-                'dias': 1,
-                'valor': f"{valor:.2f}",
-                'dt_vencto': data_vencimento,
-                'categoria': categoria,
-                'dados_bancarios': self.buscar_dados_bancarios(cnpj_cpf),
-                'observacao': f"PAGAMENTO EVENTO {evento_id} - CONTRATO {num_contrato}",
-                'forma_pagamento': 'PIX'  # Valor padrão
-            }
-            
-            # Adicionar à lista do sistema
-            self.parent.dados_para_incluir.append(lancamento)
-            
-            messagebox.showinfo(
-                "Sucesso", 
-                "Lançamento gerado com sucesso! Acesse a aba de 'Visualização de Lançamentos' para conferir."
-            )
-            
-            # Fechar esta janela
-            self.janela.destroy()
-            
-            # Mostrar visualizador de lançamentos
-            if hasattr(self.parent, 'visualizar_lancamentos'):
-                self.parent.visualizar_lancamentos()
-        else:
-            messagebox.showwarning(
-                "Aviso", 
-                "Sistema de Entrada de Dados não está disponível. O lançamento não pôde ser gerado."
-            )
+        self.carregar_eventos_contrato(None)
 
     def salvar_evento(self):
         """Salva as alterações em um evento existente"""
