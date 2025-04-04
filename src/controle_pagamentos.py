@@ -54,6 +54,8 @@ class ControlePagamentos:
         self.cliente_atual = None
         self.arquivo_cliente = None
         self.gestao_eventos = None  # Inicializar como None
+
+    
         
     def abrir_janela_controle(self):
         """Abre a janela principal de controle de pagamentos"""
@@ -65,7 +67,10 @@ class ControlePagamentos:
 
         # Cria nova janela
         self.janela = tk.Toplevel(self.parent)
-        configurar_janela(self.janela, "Controle de Pagamentos", 900, 650)
+        configurar_janela(self.janela, "Controle de Pagamentos", 920, 650)
+
+        # Permitir que esta função detecte quando a aplicação é executada diretamente
+        is_main_window = self.parent and self.parent.winfo_toplevel() == self.parent
         
         # Frame principal
         frame_principal = ttk.Frame(self.janela, padding=10)
@@ -151,9 +156,17 @@ class ControlePagamentos:
         ttk.Button(
             frame_principal,
             text="Fechar",
-            command=self.janela.destroy,
+            command=lambda: self.fechar_janela(is_main_window),
             width=20
         ).pack(side='right', padx=5, pady=10)
+
+    def fechar_janela(self, is_main_window):
+        """Fecha a janela e encerra a aplicação se for a janela principal"""
+        self.janela.destroy()
+        # Se for a janela principal do aplicativo, encerra o programa
+        if is_main_window and self.parent:
+            self.parent.quit()  # Encerra o mainloop
+            self.parent.destroy()  # Destrói a janela principal
         
     def abrir_percentual_quinzena(self):
         """Abre o módulo de percentual da quinzena"""
@@ -172,12 +185,20 @@ class ControlePagamentos:
             messagebox.showerror("Erro", f"Erro ao abrir módulo: {str(e)}")
         
     def abrir_gestao_eventos(self):
-        """Abre o módulo de gestão de eventos"""
+        """Abre o módulo de gestão de eventos (simplificado)"""
         try:
-            print("Iniciando gestão de eventos")
+            print("Iniciando gestão de eventos (simplificado)")
             
-            # Importar e criar o módulo apenas quando necessário
-            from pagamentos_eventos import GestaoEventos
+            # Importar o módulo localmente
+            try:
+                from src.pagamentos_eventos import GestaoEventos
+            except ImportError:
+                try:
+                    from pagamentos_eventos import GestaoEventos
+                except ImportError as e:
+                    print(f"Erro ao importar GestaoEventos: {str(e)}")
+                    messagebox.showerror("Erro", f"Módulo de Gestão de Eventos não encontrado: {str(e)}")
+                    return
             
             # Criar instância e abrir janela
             gestao = GestaoEventos(self.parent)
@@ -186,6 +207,7 @@ class ControlePagamentos:
         except Exception as e:
             print(f"Erro ao abrir gestão de eventos: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao abrir gestão de eventos: {str(e)}")
+
         
     def abrir_gestao_contratos(self):
         """Abre o módulo de gestão de contratos"""
@@ -230,6 +252,16 @@ if __name__ == "__main__":
     root.withdraw()  # Esconde a janela principal
     
     app = ControlePagamentos(root)
+    
+    # Abrir a janela de controle
     app.abrir_janela_controle()
+    
+    # Definir manipulador para quando a janela de controle for fechada
+    if app.janela:
+        def on_control_close():
+            root.quit()
+            root.destroy()
+        
+        app.janela.protocol("WM_DELETE_WINDOW", on_control_close)
     
     root.mainloop()
