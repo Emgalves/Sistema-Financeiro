@@ -102,7 +102,7 @@ class GestaoEventos:
         print("Fechando janela")
         if self.janela:
             self.janela.destroy()
-        
+
     def carregar_lista_clientes(self):
         """Carrega a lista de clientes disponíveis"""
         try:
@@ -741,1257 +741,1713 @@ class GestaoEventos:
 
         # Binding para seleção de pagamento
         self.tree_pagamentos.bind('<<TreeviewSelect>>', self.mostrar_detalhes_pagamento)
-    
-    def definir_eventos(self):
-        """Abre uma janela para definir eventos para o contrato selecionado"""
-        # Verificar se há um contrato selecionado
-        selecao = self.tree_contratos.selection()
-        if not selecao:
-            messagebox.showwarning("Aviso", "Selecione um contrato primeiro!")
-            return
-            
-        # Obtém o número do contrato selecionado
-        item = self.tree_contratos.item(selecao[0])
-        num_contrato = item['values'][0]
         
-        # Muda para a aba de eventos e seleciona o contrato no combobox
-        self.notebook.select(self.aba_eventos)
-        self.contrato_selecionado.set(num_contrato)
-        
-        # Carrega os eventos do contrato
-        self.carregar_eventos_contrato()
-        
-    def carregar_eventos_contrato(self, event=None):
-        """Carrega a lista de eventos do contrato selecionado"""
-        contrato = self.contrato_selecionado.get()
-        if not contrato:
-            return
-            
-        # Limpar tabela
-        for item in self.tree_eventos.get_children():
-            self.tree_eventos.delete(item)
-        
+    def carregar_contratos(self):
+        """Carrega contratos do cliente atual"""
         try:
-            # Abrir arquivo Excel do cliente
-            workbook = load_workbook(self.arquivo_cliente)
+            if not self.arquivo_cliente or not self.cliente_atual:
+                print("Arquivo de cliente ou cliente atual não definidos")
+                return
+
+            # Verificar se o arquivo existe
+            if not os.path.exists(self.arquivo_cliente):
+                messagebox.showwarning("Aviso", f"Arquivo do cliente {self.cliente_atual} não encontrado!")
+                return
+
+            print(f"Carregando contratos do cliente: {self.cliente_atual}")
+            print(f"Arquivo: {self.arquivo_cliente}")
+                
+            wb = load_workbook(self.arquivo_cliente, data_only=True)
             
-            # Verificar se a aba de contratos existe
-            if 'Contratos_ADM' not in workbook.sheetnames:
-                messagebox.showwarning("Aviso", "Aba de contratos não encontrada!")
-                workbook.close()
+            # Verificar se a aba Contratos_ADM existe
+            if 'Contratos_ADM' not in wb.sheetnames:
+                messagebox.showinfo("Informação", "Este cliente não possui contratos de administração cadastrados.")
+                wb.close()
                 return
                 
-            # Como não temos uma aba específica para eventos, vamos criar eventos virtuais
-            # baseados nos administradores do contrato
-            sheet = workbook['Contratos_ADM']
+            ws = wb['Contratos_ADM']
             
-            # Encontrar todas as linhas do contrato selecionado
-            evento_id = 1
+            # Limpar dados anteriores
+            self.contratos = []
+            self.administradores_contratos = {}
             
-            # Determinar o valor total do contrato para calcular os eventos
-            valor_contrato = 0
-            for row in sheet.iter_rows(min_row=3, values_only=True):
-                # Verificar se é uma linha de contrato (não de administrador, aditivo ou parcela)
-                if row[0] and str(row[0]) == str(contrato) and row[1] is not None and row[6] is None:
-                    # Encontramos a linha do contrato
-                    if row[4] and isinstance(row[4], (int, float)):
-                        valor_contrato = row[4]
-                    else:
-                        try:
-                            if row[4] and isinstance(row[4], str):
-                                valor_contrato = float(row[4].replace(',', '.'))
-                        except (ValueError, TypeError):
-                            valor_contrato = 0
+            for item in self.tree_contratos.get_children():
+                self.tree_contratos.delete(item)
+
+            # Processar contratos
+            contratos_vistos = set()
+            
+            # Verificar se há dados suficientes na planilha
+            if ws.max_row < 3:
+                messagebox.showinfo("Informação", "Não há contratos cadastrados para este cliente.")
+                wb.close()
+                return
+            
+            for row in ws.iter_rows(min_row=3, values_only=True):
+                # Verificar se a linha tem conteúdo válido
+                if not row or len(row) < 4 or row[0] is None:
+                    continue
+                    
+                num_contrato = row[0]
+                if num_contrato and num_contrato not in contratos_vistos:
+                    contratos_vistos.add(num_contrato)
+                    
+                    # Formatar datas
+                    data_inicio = None
+                    data_fim = None
+                    
+                    # Verificar se as datas são válidas
+                    if len(row) > 1 and row[1]:
+                        if isinstance(row[1], datetime):
+                            data_inicio = row[1]
+                        else:
+                            try:
+                                data_inicio = datetime.strptime(str(row[1]), '%Y-%m-%d')
+                            except ValueError:
+                                data_inicio = None
+                    
+                    if len(row) > 2 and row[2]:
+                        if isinstance(row[2], datetime):
+                            data_fim = row[2]
+                        else:
+                            try:
+                                data_fim = datetime.strptime(str(row[2]), '%Y-%m-%d')
+                            except ValueError:
+                                data_fim = None
+                    
+                    status = row[3] if len(row) > 3 and row[3] else 'ATIVO'
+                    
+                    # Calcular valor total do contrato
+                    valor_total = self.calcular_valor_total_contrato(ws, num_contrato)
+                    
+                    # Armazenar informações do contrato
+                    contrato_info = {
+                        'num_contrato': num_contrato,
+                        'data_inicio': data_inicio,
+                        'data_fim': data_fim,
+                        'status': status,
+                        'valor_total': valor_total,
+                        'administradores': []
+                    }
+                    
+                    self.contratos.append(contrato_info)
+                    
+                    # Adicionar à Treeview
+                    data_inicio_str = data_inicio.strftime('%d/%m/%Y') if isinstance(data_inicio, datetime) else "-"
+                    data_fim_str = data_fim.strftime('%d/%m/%Y') if isinstance(data_fim, datetime) else "-"
+                    
+                    self.tree_contratos.insert('', 'end', values=(
+                        num_contrato,
+                        data_inicio_str,
+                        data_fim_str,
+                        status,
+                        f"R$ {valor_total:,.2f}" if valor_total else "-"
+                    ))
+
+            # Processar administradores de contratos
+            for row in ws.iter_rows(min_row=3, values_only=True):
+                # Verificar se a linha tem dados suficientes
+                if not row or len(row) < 10:
+                    continue
+                    
+                # Verificar se é um registro de administrador (coluna G em diante)
+                if len(row) > 8 and row[6] and row[7] and row[8]:  # Tem número contrato, CNPJ/CPF e nome
+                    num_contrato = row[6]
+                    
+                    # Adicionamos o administrador ao dicionário
+                    if num_contrato not in self.administradores_contratos:
+                        self.administradores_contratos[num_contrato] = []
+                    
+                    # Formatar CNPJ/CPF
+                    cnpj_cpf = formatar_cnpj_cpf(str(row[7])) if row[7] else ""
+                    
+                    # Adicionar administrador
+                    tipo = row[9] if len(row) > 9 and row[9] else 'Fixo'
+                    valor_percentual = row[10] if len(row) > 10 and row[10] else '0'
+                    valor_total = row[11] if len(row) > 11 and row[11] else '0'
+                    num_parcelas = row[12] if len(row) > 12 and row[12] else '1'
+                    
+                    self.administradores_contratos[num_contrato].append({
+                        'cnpj_cpf': cnpj_cpf,
+                        'nome': row[8],
+                        'tipo': tipo,
+                        'valor_percentual': valor_percentual,
+                        'valor_total': valor_total,
+                        'num_parcelas': num_parcelas
+                    })
+            
+            # Atualizar comboboxes
+            self.atualizar_comboboxes_contratos()
+            
+            wb.close()
+            print(f"Carregados {len(self.contratos)} contratos para o cliente {self.cliente_atual}")
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar contratos: {str(e)}")
+            print(f"Exceção ao carregar contratos: {str(e)}")
+            if 'wb' in locals():
+                wb.close()
+
+    def atualizar_comboboxes_contratos(self):
+        """Atualiza as comboboxes com os contratos disponíveis (versão melhorada)"""
+        try:
+            print("Atualizando comboboxes de contratos")
+            
+            # Garantir que temos a lista de contratos
+            if not hasattr(self, 'contratos') or not self.contratos:
+                print("Lista de contratos vazia ou não definida")
+                # Se não tiver contratos, recarregá-los
+                self.carregar_contratos()
+                
+                if not self.contratos:
+                    print("Não foi possível carregar contratos")
+                    return
+            
+            # Filtrar contratos ativos e garantir que são únicos
+            contratos_unicos = set()
+            contratos_ativos = []
+            
+            for c in self.contratos:
+                try:
+                    if isinstance(c, dict) and 'num_contrato' in c and 'status' in c:
+                        num_contrato = c['num_contrato']
+                        
+                        # Evitar duplicações
+                        if num_contrato in contratos_unicos:
+                            continue
+                            
+                        contratos_unicos.add(num_contrato)
+                        
+                        if c['status'] == 'ATIVO':
+                            contratos_ativos.append(num_contrato)
+                except Exception as e:
+                    print(f"Erro ao processar contrato: {str(e)}")
+            
+            print(f"Contratos ativos encontrados: {len(contratos_ativos)}")
+            print(f"Lista de contratos ativos: {contratos_ativos}")
+            
+            # Atualizar combobox na aba de eventos
+            if hasattr(self, 'contrato_selecionado'):
+                valor_atual = self.contrato_selecionado.get()
+                self.contrato_selecionado['values'] = contratos_ativos
+                
+                # Manter seleção atual se possível
+                if valor_atual and valor_atual in contratos_ativos:
+                    self.contrato_selecionado.set(valor_atual)
+                    print(f"Mantendo contrato atual selecionado: {valor_atual}")
+                # Caso contrário, selecionar o primeiro contrato se houver algum
+                elif contratos_ativos:
+                    self.contrato_selecionado.set(contratos_ativos[0])
+                    print(f"Primeiro contrato selecionado: {contratos_ativos[0]}")
+                else:
+                    self.contrato_selecionado.set('')
+                    print("Nenhum contrato ativo encontrado")
+            else:
+                print("Atributo 'contrato_selecionado' não encontrado")
+                
+            # Atualizar combobox na aba de pagamentos
+            if hasattr(self, 'pagto_contrato'):
+                valor_atual = self.pagto_contrato.get()
+                todos_contratos = ['Todos'] + list(contratos_unicos)
+                self.pagto_contrato['values'] = todos_contratos
+                
+                # Manter valor atual se possível
+                if valor_atual and valor_atual in todos_contratos:
+                    self.pagto_contrato.set(valor_atual)
+                else:
+                    self.pagto_contrato.set('Todos')
+                    
+                print("Combobox de pagamentos atualizada")
+                
+        except Exception as e:
+            print(f"Erro ao atualizar comboboxes: {str(e)}")
+            import traceback
+            traceback.print_exc()
+        
+    def carregar_eventos_contrato(self, event=None):
+        """Carrega os eventos do contrato selecionado (versão melhorada)"""
+        try:
+            num_contrato = self.contrato_selecionado.get()
+            if not num_contrato:
+                print("Nenhum contrato selecionado na combobox")
+                return
+                    
+            print(f"Carregando eventos do contrato: {num_contrato}")
+            
+            # Verificar se o arquivo existe
+            if not os.path.exists(self.arquivo_cliente):
+                print(f"Arquivo não encontrado: {self.arquivo_cliente}")
+                messagebox.showerror("Erro", "Arquivo do cliente não encontrado")
+                return
+                
+            wb = load_workbook(self.arquivo_cliente, data_only=True)
+            
+            # Verificar se existe a aba Contratos_ADM
+            if 'Contratos_ADM' not in wb.sheetnames:
+                print("Aba 'Contratos_ADM' não encontrada")
+                messagebox.showinfo("Informação", "Este cliente não possui contratos de administração cadastrados.")
+                wb.close()
+                return
+                    
+            ws = wb['Contratos_ADM']
+            
+            # Verificar dimensões da planilha
+            max_row = ws.max_row
+            max_col = ws.max_column
+            print(f"Dimensões da planilha: {max_row} linhas x {max_col} colunas")
+            
+            # Verificar se há colunas suficientes
+            if max_col < 31:
+                print(f"Planilha não tem colunas suficientes para eventos (tem {max_col}, precisa de pelo menos 31)")
+                messagebox.showwarning("Aviso", "A estrutura da planilha não contém a área de eventos")
+                wb.close()
+                return
+            
+            # Limpar treeview
+            for item in self.tree_eventos.get_children():
+                self.tree_eventos.delete(item)
+                    
+            # Limpar lista de eventos
+            self.eventos = []
+            
+            # Buscar valor total do contrato para cálculos percentuais
+            valor_contrato = None
+            for contrato in self.contratos:
+                if contrato['num_contrato'] == num_contrato:
+                    valor_contrato = contrato['valor_total']
                     break
             
-            # Agora procurar administradores deste contrato para criar eventos
-            for row in sheet.iter_rows(min_row=3, values_only=True):
-                # Verificar se é um administrador do contrato
-                if row[6] and str(row[6]) == str(contrato):
-                    tipo = "Percentual" if row[9] == "Percentual" else "Valor Fixo"
+            print(f"Valor total do contrato: {valor_contrato}")
+            
+            # Processar eventos com tratamento de índices
+            evento_count = 0
+            for row_idx, row in enumerate(ws.iter_rows(min_row=3, values_only=True), start=3):
+                # Verificar se a linha tem dados suficientes
+                if not row or len(row) < 31:
+                    continue
                     
-                    # Calcular valor e percentual
-                    percentual = 0
-                    valor = 0
+                # Certificar-se de que é uma linha para o contrato atual
+                contrato_na_linha = row[30] if len(row) > 30 else None
+                if contrato_na_linha != num_contrato:
+                    continue
                     
-                    if tipo == "Percentual":
-                        try:
-                            if isinstance(row[10], str):
-                                percentual = float(row[10].replace('%', '').replace(',', '.'))
-                            else:
-                                percentual = float(row[10]) if row[10] else 0
-                                
-                            # Calcular valor baseado no percentual
-                            valor = (percentual / 100) * valor_contrato
-                        except (ValueError, TypeError):
-                            percentual = 0
-                            valor = 0
-                    else:
-                        # Valor fixo
-                        try:
-                            if isinstance(row[10], str):
-                                valor = float(row[10].replace(',', '.'))
-                            else:
-                                valor = float(row[10]) if row[10] else 0
-                                
-                            # Calcular percentual baseado no valor
-                            if valor_contrato > 0:
-                                percentual = (valor / valor_contrato) * 100
-                            else:
-                                percentual = 0
-                        except (ValueError, TypeError):
-                            valor = 0
-                            percentual = 0
-                    
-                    # Formatar valor e percentual para exibição
-                    percentual_formatado = f"{percentual:.2f}%"
-                    valor_formatado = f"R$ {valor:,.2f}"
-                    
-                    # Nome do evento
-                    descricao = f"Administração: {row[8]}"
-                    if not isinstance(descricao, str):
-                        descricao = str(descricao)
-                    
-                    # Status e data (assumimos que não foram concluídos)
-                    status = "Pendente"
-                    data = ""
-                    
-                    # Adicionar à tabela
-                    self.tree_eventos.insert('', 'end', values=(
-                        evento_id,           # ID
-                        descricao,           # Descrição
-                        percentual_formatado,# Percentual
-                        valor_formatado,     # Valor
-                        status,              # Status
-                        data                 # Data Conclusão
-                    ))
-                    
-                    # Incrementar ID para o próximo evento
-                    evento_id += 1
+                # Extrair dados com segurança
+                evento_id = row[31] if len(row) > 31 else None
+                descricao = row[32] if len(row) > 32 else None
+                percentual = row[33] if len(row) > 33 else None
+                status = (row[34] or 'pendente') if len(row) > 34 else 'pendente'
                 
-            workbook.close()
+                print(f"Evento encontrado na linha {row_idx}: ID={evento_id}, Descrição={descricao}, Percentual={percentual}, Status={status}")
+                
+                # Se não tiver ID ou descrição, pular
+                if not evento_id or not descricao:
+                    print("Evento sem ID ou descrição, ignorando")
+                    continue
+                    
+                # Calcular valor baseado no percentual
+                valor = None
+                if percentual and valor_contrato:
+                    try:
+                        perc = float(str(percentual).replace('%', '').replace(',', '.'))
+                        valor = (perc / 100) * valor_contrato
+                        print(f"Valor calculado: {valor}")
+                    except (ValueError, TypeError) as e:
+                        print(f"Erro ao calcular valor: {e}")
+                        valor = 0
+                
+                # Formatar data de conclusão
+                data_conclusao = None
+                if len(row) > 35 and row[35]:  # Data conclusão
+                    if isinstance(row[35], datetime):
+                        data_conclusao = row[35].strftime('%d/%m/%Y')
+                    else:
+                        try:
+                            data_conclusao = datetime.strptime(str(row[35]), '%Y-%m-%d').strftime('%d/%m/%Y')
+                        except ValueError:
+                            try:
+                                # Tentar outros formatos comuns
+                                for fmt in ['%d/%m/%Y', '%Y/%m/%d', '%d-%m-%Y']:
+                                    try:
+                                        data_conclusao = datetime.strptime(str(row[35]), fmt).strftime('%d/%m/%Y')
+                                        break
+                                    except ValueError:
+                                        continue
+                            except:
+                                data_conclusao = str(row[35])
+                
+                # Adicionar à lista de eventos
+                evento = {
+                    'id': evento_id,
+                    'descricao': descricao,
+                    'percentual': percentual,
+                    'valor': valor,
+                    'status': status,
+                    'data_conclusao': data_conclusao
+                }
+                self.eventos.append(evento)
+                evento_count += 1
+                
+                # Adicionar ao treeview
+                valor_fmt = f"R$ {valor:,.2f}" if valor else "-"
+                percentual_fmt = f"{percentual}" if percentual else "-"
+                
+                self.tree_eventos.insert('', 'end', values=(
+                    evento_id,
+                    descricao,
+                    percentual_fmt,
+                    valor_fmt,
+                    status.capitalize(),
+                    data_conclusao or "-"
+                ))
             
-            # Se não encontramos nenhum evento, mostrar mensagem
-            if evento_id == 1:
-                messagebox.showinfo("Informação", "Não foram encontrados administradores para este contrato.")
+            print(f"Total de {evento_count} eventos carregados para o contrato {num_contrato}")
             
+            # Se não encontrou eventos, mostrar mensagem
+            if evento_count == 0:
+                print("Nenhum evento encontrado para este contrato")
+                messagebox.showinfo("Informação", f"Não há eventos cadastrados para o contrato {num_contrato}.")
+            
+            wb.close()
+                
         except Exception as e:
             print(f"Erro ao carregar eventos: {str(e)}")
             import traceback
-            traceback.print_exc()  # Imprimir stack trace para depuração
+            traceback.print_exc()
             messagebox.showerror("Erro", f"Erro ao carregar eventos: {str(e)}")
-
+            if 'wb' in locals():
+                wb.close()
+                
+        except Exception as e:
+            print(f"Erro ao carregar eventos: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Erro", f"Erro ao carregar eventos: {str(e)}")
+            if 'wb' in locals():
+                wb.close()
+                
     def adicionar_evento(self):
         """Adiciona um novo evento ao contrato selecionado"""
-        contrato = self.contrato_selecionado.get()
-        if not contrato:
-            messagebox.showwarning("Aviso", "Selecione um contrato primeiro!")
+        num_contrato = self.contrato_selecionado.get()
+        if not num_contrato:
+            messagebox.showwarning("Aviso", "Selecione um contrato primeiro")
             return
-        
+                
         # Limpar campos do formulário
-        self.evento_descricao.delete(0, 'end')
-        self.evento_percentual.delete(0, 'end')
+        self.evento_descricao.delete(0, tk.END)
+        self.evento_percentual.delete(0, tk.END)
         self.evento_status.set('pendente')
         self.evento_data.set_date(datetime.now())
         
-        # Obter próximo ID disponível
-        proximo_id = self.obter_proximo_id_evento(contrato)
-        
-        # Focar no campo de descrição
-        self.evento_descricao.focus_set()
-        
-        # Atualizar mensagem para usuário
-        messagebox.showinfo("Novo Evento", f"Adicione os detalhes do novo evento (ID: {proximo_id})")
-
-    def obter_proximo_id_evento(self, contrato):
-        """Obtém o próximo ID disponível para eventos do contrato"""
-        try:
-            # Abrir arquivo Excel do cliente
-            workbook = load_workbook(self.arquivo_cliente)
-            
-            # Tentar acessar a aba de eventos
-            if 'Eventos' in workbook.sheetnames:
-                sheet = workbook['Eventos']
-                
-                # Encontrar maior ID existente
-                maior_id = 0
-                
-                for row in sheet.iter_rows(min_row=2, values_only=True):
-                    if row[0] and str(row[0]) == str(contrato) and row[1]:
-                        try:
-                            id_evento = int(row[1])
-                            if id_evento > maior_id:
-                                maior_id = id_evento
-                        except:
-                            pass
-                
-                workbook.close()
-                return maior_id + 1
-                
-            else:
-                return 1
-                
-        except Exception as e:
-            print(f"Erro ao obter próximo ID: {str(e)}")
-            return 1
-
-    def mostrar_detalhes_evento(self, event=None):
-        """Exibe os detalhes do evento selecionado para edição"""
-        selecao = self.tree_eventos.selection()
-        if not selecao:
-            return
-            
-        item = self.tree_eventos.item(selecao[0])
-        valores = item['values']
-        
-        # Atualizar campos do formulário
-        if len(valores) >= 6:
-            # Descrição
-            self.evento_descricao.delete(0, 'end')
-            self.evento_descricao.insert(0, valores[1])
-            
-            # Percentual (remover % e espaços)
-            self.evento_percentual.delete(0, 'end')
-            percentual = valores[2].replace("%", "").strip() if valores[2] else ""
-            self.evento_percentual.insert(0, percentual)
-            
-            # Status
-            status = "concluido" if valores[4] == "Concluído" else "pendente"
-            self.evento_status.set(status)
-            
-            # Data
-            if valores[5] and valores[5].strip():
+        # Definir ID do próximo evento
+        proximo_id = 1
+        if self.eventos:
+            ids = []
+            for e in self.eventos:
                 try:
-                    data = datetime.strptime(valores[5], "%d/%m/%Y")
-                    self.evento_data.set_date(data)
-                except:
-                    self.evento_data.set_date(datetime.now())
-            else:
-                self.evento_data.set_date(datetime.now())
-
-    def salvar_evento(self):
-        """Salva um evento (novo ou atualizado)"""
-        contrato = self.contrato_selecionado.get()
-        if not contrato:
-            messagebox.showwarning("Aviso", "Selecione um contrato primeiro!")
-            return
+                    if str(e['id']).isdigit():
+                        ids.append(int(e['id']))
+                except (ValueError, TypeError):
+                    continue
+            if ids:
+                proximo_id = max(ids) + 1
         
-        # Obter valores do formulário
-        descricao = self.evento_descricao.get().strip()
-        if not descricao:
-            messagebox.showwarning("Aviso", "Informe a descrição do evento!")
-            self.evento_descricao.focus_set()
-            return
+        print(f"Próximo ID de evento: {proximo_id}")
+                    
+        # Mostrar janela para adicionar evento
+        janela = tk.Toplevel(self.janela)
+        janela.title("Adicionar Evento")
+        janela.geometry("500x300")
+        janela.transient(self.janela)
+        janela.grab_set()
         
-        try:
-            percentual = float(self.evento_percentual.get().replace(",", "."))
-            if percentual <= 0 or percentual > 100:
-                messagebox.showwarning("Aviso", "Percentual deve estar entre 0 e 100!")
-                self.evento_percentual.focus_set()
+        frame = ttk.Frame(janela, padding=10)
+        frame.pack(fill='both', expand=True)
+        
+        # Formulário
+        ttk.Label(frame, text="Contrato:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        ttk.Label(frame, text=num_contrato, font=('Arial', 10, 'bold')).grid(row=0, column=1, padx=5, pady=5, sticky='w')
+        
+        ttk.Label(frame, text="ID do Evento:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        ttk.Label(frame, text=str(proximo_id), font=('Arial', 10, 'bold')).grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        
+        ttk.Label(frame, text="Descrição:*").grid(row=2, column=0, padx=5, pady=5, sticky='w')
+        descricao_entry = ttk.Entry(frame, width=40)
+        descricao_entry.grid(row=2, column=1, padx=5, pady=5, sticky='ew')
+        
+        ttk.Label(frame, text="Percentual (%):*").grid(row=3, column=0, padx=5, pady=5, sticky='w')
+        percentual_entry = ttk.Entry(frame, width=15)
+        percentual_entry.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+        
+        # Botões
+        frame_botoes = ttk.Frame(frame)
+        frame_botoes.grid(row=4, column=0, columnspan=2, pady=20)
+        
+        def confirmar():
+            # Validar campos
+            descricao = descricao_entry.get().strip()
+            percentual_str = percentual_entry.get().strip()
+            
+            if not descricao:
+                messagebox.showerror("Erro", "Descrição é obrigatória")
                 return
-        except:
-            messagebox.showwarning("Aviso", "Percentual inválido!")
-            self.evento_percentual.focus_set()
-            return
-        
-        status = self.evento_status.get()
-        data_conclusao = self.evento_data.get_date() if status == "concluido" else None
-        
-        # Verificar se estamos editando ou criando
-        selecao = self.tree_eventos.selection()
-        if selecao:
-            # Editar evento existente
-            item = self.tree_eventos.item(selecao[0])
-            id_evento = item['values'][0]
+                    
+            if not percentual_str:
+                messagebox.showerror("Erro", "Percentual é obrigatório")
+                return
+                    
+            try:
+                percentual = float(percentual_str.replace(',', '.'))
+                if percentual <= 0 or percentual > 100:
+                    messagebox.showerror("Erro", "Percentual deve estar entre 0 e 100")
+                    return
+            except ValueError:
+                messagebox.showerror("Erro", "Percentual inválido")
+                return
+                    
+            # Calcular total de percentuais já existentes
+            percentual_atual = 0
+            for e in self.eventos:
+                try:
+                    if e['percentual']:
+                        perc_str = str(e['percentual']).replace('%', '').replace(',', '.')
+                        if perc_str.replace('.', '').isdigit():
+                            percentual_atual += float(perc_str)
+                except (ValueError, TypeError, AttributeError) as err:
+                    print(f"Erro ao processar percentual existente: {err}")
             
-            # Salvar no Excel
-            self.salvar_evento_excel(contrato, id_evento, descricao, percentual, status, data_conclusao)
-        else:
-            # Criar novo evento
-            id_evento = self.obter_proximo_id_evento(contrato)
-            
-            # Salvar no Excel
-            self.salvar_evento_excel(contrato, id_evento, descricao, percentual, status, data_conclusao)
-        
-        # Recarregar eventos
-        self.carregar_eventos_contrato()
-        
-        # Atualizar contagem de eventos na aba de contratos
-        selecao_contrato = self.tree_contratos.selection()
-        if selecao_contrato:
-            self.mostrar_detalhes_contrato()
-
-    def salvar_evento_excel(self, contrato, id_evento, descricao, percentual, status, data_conclusao):
-        """Salva um evento no arquivo Excel"""
-        try:
-            # Abrir arquivo Excel do cliente
-            workbook = load_workbook(self.arquivo_cliente)
-            
-            # Verificar se a aba Contratos_ADM existe
-            if 'Contratos_ADM' not in workbook.sheetnames:
-                messagebox.showerror("Erro", "Aba de contratos não encontrada!")
-                workbook.close()
-                return False
+            print(f"Percentual atual: {percentual_atual}%, Novo: {percentual}%")
                 
-            sheet = workbook['Contratos_ADM']
+            # Verificar se excede 100%
+            if percentual_atual + percentual > 100:
+                messagebox.showerror(
+                    "Erro", 
+                    f"Total de percentuais excede 100%! Atual: {percentual_atual:.2f}%, Novo: {percentual:.2f}%"
+                )
+                return
+                    
+            # Salvar evento
+            try:
+                self.salvar_novo_evento(num_contrato, proximo_id, descricao, percentual)
+                messagebox.showinfo("Sucesso", "Evento adicionado com sucesso!")
+                janela.destroy()
+                # Atualizar lista de eventos
+                self.carregar_eventos_contrato(None)
+            except Exception as e:
+                print(f"Erro ao salvar evento: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                messagebox.showerror("Erro", f"Erro ao salvar evento: {str(e)}")
+        
+        ttk.Button(frame_botoes, text="Confirmar", command=confirmar, width=15).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Cancelar", command=janela.destroy, width=15).pack(side='left', padx=5)
+        
+        # Centralizar janela
+        janela.update_idletasks()
+        width = janela.winfo_width()
+        height = janela.winfo_height()
+        x = (janela.winfo_screenwidth() // 2) - (width // 2)
+        y = (janela.winfo_screenheight() // 2) - (height // 2)
+        janela.geometry(f'{width}x{height}+{x}+{y}')
+
+    def salvar_novo_evento(self, num_contrato, evento_id, descricao, percentual):
+        """Salva um novo evento na planilha"""
+        try:
+            print(f"Salvando novo evento: Contrato={num_contrato}, ID={evento_id}, Descrição={descricao}, Percentual={percentual}%")
             
-            # Como não temos uma aba específica para eventos, vamos salvar a informação
-            # sobre a conclusão do evento na aba de contratos
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb['Contratos_ADM']
             
-            # Determinar qual linha de administrador corresponde ao evento
-            linhas_administradores = []
-            administradores = []
-            evento_encontrado = False
+            # Determinar se precisamos criar um novo registro ou atualizar um existente
+            linha_existente = None
             
-            # Primeiro, encontrar todos os administradores do contrato
-            evento_id = 1
-            for row_idx, row in enumerate(sheet.iter_rows(min_row=3, values_only=True), start=3):
-                # Verificar se é um administrador do contrato
-                if row[6] and str(row[6]) == str(contrato):
-                    if evento_id == int(id_evento):
-                        # Este é o administrador correspondente ao evento
-                        evento_encontrado = True
+            # Primeiro verificar se já existe uma linha para este contrato e evento
+            for row in range(3, ws.max_row + 1):
+                if (ws.cell(row=row, column=31).value == num_contrato and 
+                    str(ws.cell(row=row, column=32).value) == str(evento_id)):
+                    linha_existente = row
+                    break
+            
+            print(f"Linha existente encontrada: {linha_existente}")
+            
+            if linha_existente:
+                # Atualizar linha existente
+                ws.cell(row=linha_existente, column=33, value=descricao)     # Descrição
+                ws.cell(row=linha_existente, column=34, value=f"{percentual:.2f}%")  # Percentual
+                ws.cell(row=linha_existente, column=35, value="pendente")    # Status
+            else:
+                # Encontrar próxima linha disponível
+                proxima_linha = ws.max_row + 1
+                
+                # Verificar se é a primeira linha de eventos
+                primeira_linha_eventos = True
+                for row in range(3, ws.max_row + 1):
+                    if ws.cell(row=row, column=31).value is not None:
+                        primeira_linha_eventos = False
+                        break
+                
+                # Se for a primeira linha, adicionar cabeçalhos
+                if primeira_linha_eventos:
+                    headers = [
+                        "Contrato", "ID Evento", "Descrição", "Percentual", "Status", "Data Conclusão"
+                    ]
+                    for i, header in enumerate(headers, start=31):
+                        ws.cell(row=2, column=i, value=header)
+                
+                # Salvar evento
+                ws.cell(row=proxima_linha, column=31, value=num_contrato)  # Contrato
+                ws.cell(row=proxima_linha, column=32, value=evento_id)     # ID Evento
+                ws.cell(row=proxima_linha, column=33, value=descricao)     # Descrição
+                ws.cell(row=proxima_linha, column=34, value=f"{percentual:.2f}%")  # Percentual
+                ws.cell(row=proxima_linha, column=35, value="pendente")    # Status
+            
+            print("Salvando planilha...")
+            wb.save(self.arquivo_cliente)
+            print("Planilha salva com sucesso!")
+            
+            # Atualizar lista interna de eventos
+            valor_contrato = None
+            for contrato in self.contratos:
+                if contrato['num_contrato'] == num_contrato:
+                    valor_contrato = contrato['valor_total']
+                    break
                         
-                        # Se o status é "concluído", atualizar o administrador
-                        if status == "concluido" and data_conclusao:
-                            # Atualizar o status na planilha
-                            # Como não temos uma coluna específica para status, podemos adicionar uma observação
-                            # na coluna de observações ou criar uma nova coluna
-                            
-                            # Se já existir um valor nas observações
-                            obs_atual = sheet.cell(row=row_idx, column=5).value or ""
-                            nova_obs = f"{obs_atual}\nEvento concluído em {data_conclusao.strftime('%d/%m/%Y')}"
-                            sheet.cell(row=row_idx, column=5).value = nova_obs
-                            
-                            # Gerar pagamentos para este administrador
-                            self.gerar_pagamentos_evento_adaptado(contrato, id_evento, sheet, row_idx, data_conclusao)
-                    evento_id += 1
-            
-            # Se o evento não foi encontrado
-            if not evento_encontrado:
-                messagebox.showwarning("Aviso", f"Evento ID {id_evento} não foi encontrado!")
-                workbook.close()
-                return False
-            
-            # Salvar arquivo
-            workbook.save(self.arquivo_cliente)
-            workbook.close()
-            
-            messagebox.showinfo("Sucesso", "Evento salvo com sucesso!")
-            return True
-            
+            valor = None
+            if valor_contrato:
+                valor = (percentual / 100) * valor_contrato
+                    
+            evento = {
+                'id': evento_id,
+                'descricao': descricao,
+                'percentual': f"{percentual:.2f}%",
+                'valor': valor,
+                'status': 'pendente',
+                'data_conclusao': None
+            }
+            self.eventos.append(evento)
+            print("Evento adicionado à lista interna")
+                
         except Exception as e:
             print(f"Erro ao salvar evento: {str(e)}")
             import traceback
             traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao salvar evento: {str(e)}")
-            return False
+            raise Exception(f"Erro ao salvar evento: {str(e)}")
 
-    def calcular_valor_evento(self, contrato, percentual):
-        """Calcula o valor do evento com base no percentual e valor do contrato"""
+    def mostrar_detalhes_contrato(self, event):
+        """Mostra detalhes do contrato selecionado e seus administradores (com sincronização)"""
         try:
-            # Abrir arquivo Excel do cliente
-            workbook = load_workbook(self.arquivo_cliente)
+            print("Entrando em mostrar_detalhes_contrato")
             
-            # Buscar o valor total do contrato
-            valor_contrato = 0
-            
-            if 'Contratos_ADM' in workbook.sheetnames:
-                sheet = workbook['Contratos_ADM']
-                
-                for row in sheet.iter_rows(min_row=2, values_only=True):
-                    if row[0] and str(row[0]) == str(contrato):
-                        # Tratar o valor conforme o tipo
-                        if row[4]:
-                            try:
-                                if isinstance(row[4], str):
-                                    valor_contrato = float(row[4].replace(',', '.'))
-                                else:
-                                    valor_contrato = float(row[4])
-                            except (ValueError, TypeError):
-                                valor_contrato = 0
+            # Verificar se há seleção
+            selecionado = self.tree_contratos.selection()
+            if not selecionado:
+                print("Nenhum contrato selecionado")
+                return
+
+            # Obter valores com tratamento de erro
+            try:
+                valores = self.tree_contratos.item(selecionado)['values']
+                if not valores or len(valores) < 1:
+                    print("Valores do contrato selecionado são inválidos")
+                    return
+                    
+                num_contrato = valores[0] if len(valores) > 0 else "N/A"
+                print(f"Contrato selecionado: {num_contrato}")
+            except Exception as e:
+                print(f"Erro ao obter valores do contrato: {str(e)}")
+                return
+
+            # Buscar o contrato na lista
+            contrato = None
+            for c in self.contratos:
+                try:
+                    if isinstance(c, dict) and 'num_contrato' in c and c['num_contrato'] == num_contrato:
+                        contrato = c
                         break
+                except Exception as e:
+                    print(f"Erro ao verificar contrato na lista: {str(e)}")
+                    
+            if not contrato:
+                print(f"Contrato {num_contrato} não encontrado na lista interna")
+                return
+
+            print(f"Detalhes do contrato: {contrato}")
+                
+            # Atualizar labels com informações do contrato (com verificações)
+            if hasattr(self, 'lbl_contrato'):
+                self.lbl_contrato.config(text=str(num_contrato))
             
-            workbook.close()
+            # Formatação de datas com tratamento de erros
+            periodo = ""
+            try:
+                data_inicio = contrato.get('data_inicio')
+                data_fim = contrato.get('data_fim')
+                
+                if data_inicio and data_fim:
+                    data_inicio_str = data_inicio.strftime('%d/%m/%Y') if isinstance(data_inicio, datetime) else str(data_inicio)
+                    data_fim_str = data_fim.strftime('%d/%m/%Y') if isinstance(data_fim, datetime) else str(data_fim)
+                    periodo = f"{data_inicio_str} a {data_fim_str}"
+                elif data_inicio:
+                    data_inicio_str = data_inicio.strftime('%d/%m/%Y') if isinstance(data_inicio, datetime) else str(data_inicio)
+                    periodo = f"A partir de {data_inicio_str}"
+                else:
+                    periodo = "Sem período definido"
+            except Exception as e:
+                print(f"Erro ao formatar datas: {str(e)}")
+                periodo = "Erro ao formatar datas"
             
-            # Calcular o valor do evento
-            valor_evento = (float(percentual) / 100) * valor_contrato
-            return valor_evento
+            if hasattr(self, 'lbl_periodo'):
+                self.lbl_periodo.config(text=periodo)
+                
+            if hasattr(self, 'lbl_status'):
+                self.lbl_status.config(text=contrato.get('status', 'N/A'))
+            
+            # Formatação de valor com tratamento de erros
+            valor_str = "N/A"
+            try:
+                valor_total = contrato.get('valor_total')
+                if valor_total is not None:
+                    valor_str = f"R$ {valor_total:,.2f}"
+            except Exception as e:
+                print(f"Erro ao formatar valor: {str(e)}")
+                valor_str = "Erro ao formatar valor"
+                
+            if hasattr(self, 'lbl_valor_total'):
+                self.lbl_valor_total.config(text=valor_str)
+            
+            # Mostrar administradores com tratamento de erros
+            num_adm = 0
+            try:
+                administradores = self.administradores_contratos.get(num_contrato, [])
+                num_adm = len(administradores)
+            except Exception as e:
+                print(f"Erro ao contar administradores: {str(e)}")
+                
+            if hasattr(self, 'lbl_administradores'):
+                self.lbl_administradores.config(text=str(num_adm))
+            
+            # Mostrar número de eventos com tratamento de erros
+            eventos_count = 0
+            try:
+                eventos_count = self.contar_eventos_contrato(num_contrato)
+            except Exception as e:
+                print(f"Erro ao contar eventos: {str(e)}")
+                
+            if hasattr(self, 'lbl_eventos'):
+                self.lbl_eventos.config(text=str(eventos_count))
+            
+            # Limpar e preencher tree de administradores com tratamento de erros
+            try:
+                if hasattr(self, 'tree_adm'):
+                    for item in self.tree_adm.get_children():
+                        self.tree_adm.delete(item)
+                    
+                    administradores = self.administradores_contratos.get(num_contrato, [])
+                    for adm in administradores:
+                        if not isinstance(adm, dict):
+                            continue
+                            
+                        cnpj_cpf = adm.get('cnpj_cpf', '')
+                        nome = adm.get('nome', '')
+                        tipo = adm.get('tipo', '')
+                        
+                        # Formatações com tratamento de erros
+                        valor_percentual_fmt = "-"
+                        try:
+                            valor_percentual = adm.get('valor_percentual', '')
+                            if tipo == 'Percentual' and valor_percentual:
+                                valor_percentual_fmt = f"{valor_percentual}%"
+                        except Exception as e:
+                            print(f"Erro ao formatar percentual: {str(e)}")
+                        
+                        valor_total_adm_fmt = "-"
+                        try:
+                            valor_total_adm = adm.get('valor_total', '')
+                            if valor_total_adm:
+                                valor_total_adm = float(str(valor_total_adm).replace('.', '').replace(',', '.'))
+                                valor_total_adm_fmt = f"R$ {valor_total_adm:,.2f}"
+                        except (ValueError, TypeError, AttributeError) as e:
+                            print(f"Erro ao formatar valor total do administrador: {str(e)}")
+                        
+                        num_parcelas = adm.get('num_parcelas', '')
+                        
+                        self.tree_adm.insert('', 'end', values=(
+                            cnpj_cpf,
+                            nome,
+                            tipo,
+                            valor_percentual_fmt,
+                            valor_total_adm_fmt,
+                            num_parcelas
+                        ))
+            except Exception as e:
+                print(f"Erro ao preencher tree de administradores: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                
+            # NOVO: Pré-selecionar este contrato na aba de eventos
+            if hasattr(self, 'contrato_selecionado'):
+                valores_combo = list(self.contrato_selecionado['values'])
+                if num_contrato in valores_combo:
+                    self.contrato_selecionado.set(num_contrato)
+                    # Pré-carregar os eventos para este contrato
+                    self.carregar_eventos_contrato(None)
+                    print(f"Contrato {num_contrato} pré-selecionado na aba de eventos")
+                
+            print("Detalhes do contrato exibidos com sucesso")
+                
+        except Exception as e:
+            print(f"Erro geral em mostrar_detalhes_contrato: {str(e)}")
+            import traceback
+            traceback.print_exc()
+
+
+    def mostrar_detalhes_evento(self, event):
+        """Mostra detalhes do evento selecionado"""
+        selecionado = self.tree_eventos.selection()
+        if not selecionado:
+            return
+            
+        valores = self.tree_eventos.item(selecionado)['values']
+        evento_id = valores[0]
+        
+        # Buscar o evento na lista
+        evento = next((e for e in self.eventos if str(e['id']) == str(evento_id)), None)
+        if not evento:
+            return
+            
+        # Preencher campos
+        self.evento_descricao.delete(0, tk.END)
+        self.evento_descricao.insert(0, evento['descricao'])
+        
+        self.evento_percentual.delete(0, tk.END)
+        percentual_str = str(evento['percentual']).replace('%', '').strip()
+        self.evento_percentual.insert(0, percentual_str)
+        
+        self.evento_status.set(evento['status'])
+        
+        if evento['data_conclusao']:
+            try:
+                data = datetime.strptime(evento['data_conclusao'], '%d/%m/%Y')
+                self.evento_data.set_date(data)
+            except ValueError:
+                self.evento_data.set_date(datetime.now())
+
+    def calcular_valor_total_contrato(self, ws, num_contrato):
+        """Calcula o valor total do contrato somando os valores dos administradores"""
+        valor_total = 0
+        
+        for row in ws.iter_rows(min_row=3, values_only=True):
+            if row[6] == num_contrato and row[9] == 'Fixo' and row[11]:  # Verifica se é administrador fixo com valor total
+                try:
+                    valor_total += float(str(row[11]).replace('.', '').replace(',', '.'))
+                except (ValueError, TypeError):
+                    pass
+        
+        return valor_total if valor_total > 0 else None
+    
+    def mostrar_detalhes_pagamento(self, event):
+        """Mostra detalhes do pagamento selecionado"""
+        selecionado = self.tree_pagamentos.selection()
+        if not selecionado:
+            return
+            
+        valores = self.tree_pagamentos.item(selecionado)['values']
+        
+        # Preencher campos
+        self.pagto_cnpj.config(state='normal')
+        self.pagto_cnpj.delete(0, tk.END)
+        self.pagto_cnpj.insert(0, valores[2])
+        self.pagto_cnpj.config(state='readonly')
+        
+        self.pagto_nome.config(state='normal')
+        self.pagto_nome.delete(0, tk.END)
+        self.pagto_nome.insert(0, valores[3])
+        self.pagto_nome.config(state='readonly')
+        
+        self.pagto_valor.config(state='normal')
+        self.pagto_valor.delete(0, tk.END)
+        self.pagto_valor.insert(0, valores[5])
+        self.pagto_valor.config(state='readonly')
+        
+        self.pagto_vencimento.config(state='normal')
+        self.pagto_vencimento.delete(0, tk.END)
+        self.pagto_vencimento.insert(0, valores[4])
+        self.pagto_vencimento.config(state='readonly')
+        
+        # Status
+        self.pagto_status_atual.set(valores[6])
+        
+        # Data de pagamento
+        if valores[7] != "-":
+            try:
+                data = datetime.strptime(valores[7], '%d/%m/%Y')
+                self.pagto_data.set_date(data)
+            except ValueError:
+                self.pagto_data.set_date(datetime.now())
+
+    def contar_eventos_contrato(self, num_contrato):
+        """Conta o número de eventos cadastrados para o contrato (versão robusta)"""
+        try:
+            print(f"Contando eventos para o contrato: {num_contrato}")
+            
+            # Verificar se o arquivo existe
+            if not os.path.exists(self.arquivo_cliente):
+                print(f"Arquivo do cliente não encontrado: {self.arquivo_cliente}")
+                return 0
+                
+            wb = load_workbook(self.arquivo_cliente, data_only=True)
+            
+            # Verificar se a aba existe
+            if 'Contratos_ADM' not in wb.sheetnames:
+                print("Aba 'Contratos_ADM' não encontrada na planilha")
+                wb.close()
+                return 0
+                
+            ws = wb['Contratos_ADM']
+            
+            eventos_count = 0
+            
+            # Verificar o máximo de linhas e colunas
+            max_row = ws.max_row
+            max_col = ws.max_column
+            
+            print(f"Dimensões da planilha: {max_row} linhas x {max_col} colunas")
+            
+            # Verificar se há colunas suficientes
+            if max_col < 31:
+                print(f"Planilha não tem colunas suficientes para eventos (tem {max_col}, precisa de pelo menos 31)")
+                wb.close()
+                return 0
+            
+            # Contar eventos com verificação de comprimento das linhas
+            for row in ws.iter_rows(min_row=3, values_only=True):
+                # Verificar se a linha tem elementos suficientes
+                if not row or len(row) <= 30:
+                    continue
+                    
+                # Verificar se é um evento deste contrato
+                contrato_value = row[30]  # Coluna AE (31ª coluna)
+                if contrato_value == num_contrato:
+                    eventos_count += 1
+                    
+            wb.close()
+            print(f"Total de {eventos_count} eventos encontrados para o contrato {num_contrato}")
+            return eventos_count
             
         except Exception as e:
-            print(f"Erro ao calcular valor do evento: {str(e)}")
+            print(f"Erro ao contar eventos: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            if 'wb' in locals():
+                wb.close()
             return 0
-            
-    def concluir_evento(self):
-        """Marca um evento como concluído"""
-        selecao = self.tree_eventos.selection()
-        if not selecao:
-            messagebox.showwarning("Aviso", "Selecione um evento primeiro!")
-            return
-        
-        # Obter detalhes do evento
-        item = self.tree_eventos.item(selecao[0])
-        valores = item['values']
-        
-        if valores[4] == "Concluído":
-            messagebox.showinfo("Aviso", "Este evento já está concluído!")
-            return
-        
-        # Confirmar conclusão
-        resposta = messagebox.askyesno(
-            "Confirmar", 
-            f"Deseja marcar o evento '{valores[1]}' como concluído?\n\n"
-            f"Isso vai gerar os pagamentos correspondentes para o administrador."
-        )
-        
-        if not resposta:
-            return
-        
-        # Obter o contrato selecionado
-        contrato = self.contrato_selecionado.get()
-        if not contrato:
-            messagebox.showwarning("Aviso", "Contrato não identificado!")
-            return
-        
-        # Salvar o evento como concluído
-        resultado = self.salvar_evento_excel(
-            contrato=contrato,
-            id_evento=valores[0],
-            descricao=valores[1],
-            percentual=valores[2].replace("%", ""),
-            status="concluido",
-            data_conclusao=datetime.now()
-        )
-        
-        if resultado:
-            # Atualizar a visualização do evento na tabela
-            self.tree_eventos.item(selecao[0], values=(
-                valores[0],
-                valores[1],
-                valores[2],
-                valores[3],
-                "Concluído",
-                datetime.now().strftime("%d/%m/%Y")
-            ))
-            
-            # Recarregar pagamentos
-            self.carregar_pagamentos()
 
-    def remover_evento(self):
-        """Remove um evento do contrato"""
-        selecao = self.tree_eventos.selection()
-        if not selecao:
-            messagebox.showwarning("Aviso", "Selecione um evento primeiro!")
-            return
-        
-        # Confirmar remoção
-        resposta = messagebox.askyesno("Confirmar", "Tem certeza que deseja remover este evento? Esta ação não pode ser desfeita.")
-        if not resposta:
-            return
-        
-        # Obter detalhes do evento
-        item = self.tree_eventos.item(selecao[0])
-        valores = item['values']
-        contrato = self.contrato_selecionado.get()
-        id_evento = valores[0]
-        
+    def definir_eventos(self):
+        """Abre a tela para definir eventos do contrato selecionado (versão corrigida)"""
         try:
-            # Abrir arquivo Excel do cliente
-            workbook = load_workbook(self.arquivo_cliente)
+            print("Iniciando definição de eventos")
             
-            if 'Eventos' in workbook.sheetnames:
-                sheet = workbook['Eventos']
+            # Verificar se há seleção
+            selecionado = self.tree_contratos.selection()
+            if not selecionado:
+                print("Nenhum contrato selecionado")
+                messagebox.showwarning("Aviso", "Selecione um contrato primeiro")
+                return
                 
-                # Encontrar e remover o evento
-                linhas_para_remover = []
+            # Obter o número do contrato
+            valores = self.tree_contratos.item(selecionado)['values']
+            if not valores or len(valores) < 4:
+                print("Valores do contrato selecionado são inválidos")
+                messagebox.showwarning("Aviso", "Contrato selecionado não possui informações completas")
+                return
                 
-                for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
-                    if row[0] and str(row[0]) == str(contrato) and row[1] and str(row[1]) == str(id_evento):
-                        linhas_para_remover.append(row_idx)
-                
-                # Remover de baixo para cima para não afetar os índices
-                for idx in sorted(linhas_para_remover, reverse=True):
-                    sheet.delete_rows(idx)
+            num_contrato = valores[0]
+            status = valores[3] if len(valores) > 3 else None
             
-            # Verificar e remover pagamentos associados
-            if 'Pagamentos' in workbook.sheetnames:
-                sheet = workbook['Pagamentos']
-                
-                # Encontrar e remover pagamentos do evento
-                linhas_para_remover = []
-                
-                for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
-                    if row[0] and str(row[0]) == str(contrato) and row[1] and str(row[1]) == str(id_evento):
-                        linhas_para_remover.append(row_idx)
-                
-                # Remover de baixo para cima
-                for idx in sorted(linhas_para_remover, reverse=True):
-                    sheet.delete_rows(idx)
+            print(f"Contrato selecionado: {num_contrato}, Status: {status}")
             
-            # Salvar arquivo
-            workbook.save(self.arquivo_cliente)
-            workbook.close()
+            # Verificar status do contrato
+            if status != 'ATIVO':
+                print(f"Contrato {num_contrato} não está ativo (status: {status})")
+                messagebox.showwarning("Aviso", "Apenas contratos ativos podem ter eventos definidos")
+                return
             
-            # Recarregar eventos
-            self.carregar_eventos_contrato()
+            # Mudar para a aba de eventos
+            print("Mudando para a aba de eventos")
+            self.notebook.select(self.aba_eventos)
             
-            # Atualizar contagem de eventos na aba de contratos
-            selecao_contrato = self.tree_contratos.selection()
-            if selecao_contrato:
-                self.mostrar_detalhes_contrato()
+            # Garantir que a combobox de contrato existe
+            if not hasattr(self, 'contrato_selecionado'):
+                print("Combobox de contrato não encontrada na aba de eventos")
+                messagebox.showerror("Erro", "Erro na interface: combobox de contrato não encontrada")
+                return
+                
+            # Verificar se o contrato está na lista de valores da combobox
+            valores_combo = list(self.contrato_selecionado['values'])
+            print(f"Valores disponíveis na combobox: {valores_combo}")
+            
+            if not valores_combo:
+                print("Atualizando comboboxes de contratos")
+                self.atualizar_comboboxes_contratos()
+                valores_combo = list(self.contrato_selecionado['values'])
+                
+            if num_contrato not in valores_combo:
+                print(f"Contrato {num_contrato} não está nos valores da combobox. Atualizando valores.")
+                # Adicionar o contrato à lista se não estiver lá
+                self.contrato_selecionado['values'] = tuple(list(valores_combo) + [num_contrato])
+            
+            # Selecionar o contrato na combobox
+            self.contrato_selecionado.set(num_contrato)
+            print(f"Contrato {num_contrato} selecionado na combobox")
+            
+            # Chamar explicitamente o método para carregar eventos
+            print("Carregando eventos do contrato")
+            self.carregar_eventos_contrato(None)
+            
+            # Verificar se os eventos foram carregados
+            eventos_count = len(self.eventos)
+            print(f"Total de {eventos_count} eventos carregados")
+            
+            # Se não houver eventos, oferecer para adicionar
+            if eventos_count == 0:
+                if messagebox.askyesno("Eventos", "Este contrato não possui eventos definidos. Deseja adicionar um evento agora?"):
+                    print("Iniciando adição de evento")
+                    self.adicionar_evento()
+                    
+        except Exception as e:
+            print(f"Erro ao definir eventos: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Erro", f"Erro ao definir eventos: {str(e)}")      
+
+    def atualizar_eventos_contrato(self):
+        """Atualiza a lista de eventos do contrato selecionado (versão robusta)"""
+        try:
+            print("Entrando em atualizar_eventos_contrato")
+            
+            # Verificar se há seleção
+            selecionado = self.tree_contratos.selection()
+            if not selecionado:
+                print("Nenhum contrato selecionado")
+                messagebox.showwarning("Aviso", "Selecione um contrato primeiro")
+                return
+                
+            # Obter valores com tratamento de erro
+            try:
+                valores = self.tree_contratos.item(selecionado)['values']
+                if not valores or len(valores) < 4:
+                    print("Valores do contrato selecionado são inválidos")
+                    messagebox.showwarning("Aviso", "Contrato selecionado não possui informações completas")
+                    return
+                    
+                num_contrato = valores[0]
+                status = valores[3] if len(valores) > 3 else None
+                
+                print(f"Contrato selecionado: {num_contrato}, Status: {status}")
+            except Exception as e:
+                print(f"Erro ao obter valores do contrato: {str(e)}")
+                messagebox.showerror("Erro", "Erro ao obter informações do contrato")
+                return
+            
+            # Verificar status do contrato
+            if status != 'ATIVO':
+                print(f"Contrato {num_contrato} não está ativo (status: {status})")
+                messagebox.showwarning("Aviso", "Apenas contratos ativos podem ter eventos atualizados")
+                return
+                
+            print("Mudando para aba de eventos")
+            # Carregar eventos do contrato novamente
+            try:
+                # Mudar para a aba de eventos
+                if hasattr(self, 'notebook') and hasattr(self, 'aba_eventos'):
+                    self.notebook.select(self.aba_eventos)
+                    
+                # Selecionar o contrato na combobox
+                if hasattr(self, 'contrato_selecionado'):
+                    # Verificar se o contrato está na lista de valores
+                    valores_combo = self.contrato_selecionado['values']
+                    if num_contrato in valores_combo:
+                        self.contrato_selecionado.set(num_contrato)
+                        print(f"Contrato {num_contrato} selecionado na combobox")
+                    else:
+                        print(f"Contrato {num_contrato} não encontrado nos valores da combobox")
+                        messagebox.showwarning("Aviso", f"Contrato {num_contrato} não está disponível para seleção")
+                        return
+                    
+                    # Carregar eventos
+                    print("Chamando carregar_eventos_contrato")
+                    self.carregar_eventos_contrato(None)
+                else:
+                    print("Atributo 'contrato_selecionado' não encontrado")
+                    messagebox.showerror("Erro", "Erro ao acessar a interface de eventos")
+                    
+            except Exception as e:
+                print(f"Erro ao carregar eventos: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                messagebox.showerror("Erro", f"Erro ao carregar eventos: {str(e)}")
+                
+        except Exception as e:
+            print(f"Erro geral em atualizar_eventos_contrato: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Erro", f"Erro ao atualizar eventos: {str(e)}")
+
+    def salvar_evento(self):
+        """Salva as alterações em um evento existente"""
+        selecionado = self.tree_eventos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um evento primeiro")
+            return
+            
+        valores = self.tree_eventos.item(selecionado)['values']
+        evento_id = valores[0]
+        num_contrato = self.contrato_selecionado.get()
+        
+        # Validar campos
+        descricao = self.evento_descricao.get().strip()
+        percentual_str = self.evento_percentual.get().strip()
+        status = self.evento_status.get()
+        
+        if not descricao:
+            messagebox.showerror("Erro", "Descrição é obrigatória")
+            return
+            
+        if not percentual_str:
+            messagebox.showerror("Erro", "Percentual é obrigatório")
+            return
+            
+        try:
+            percentual = float(percentual_str.replace(',', '.'))
+            if percentual <= 0 or percentual > 100:
+                messagebox.showerror("Erro", "Percentual deve estar entre 0 e 100")
+                return
+        except ValueError:
+            messagebox.showerror("Erro", "Percentual inválido")
+            return
+            
+        # Calcular total de percentuais já existentes (excluindo o evento atual)
+        percentual_atual = sum([
+            float(str(e['percentual']).replace('%', '').replace(',', '.'))
+            for e in self.eventos
+            if e['percentual'] and str(e['id']) != str(evento_id) and 
+            str(e['percentual']).replace('%', '').replace(',', '.').replace('.', '').isdigit()
+        ])
+        
+        # Verificar se excede 100%
+        if percentual_atual + percentual > 100:
+            messagebox.showerror(
+                "Erro", 
+                f"Total de percentuais excede 100%! Outros eventos: {percentual_atual:.2f}%, Este evento: {percentual:.2f}%"
+            )
+            return
+            
+        # Atualizar evento
+        try:
+            # Formatar data
+            data_conclusao = self.evento_data.get_date().strftime('%d/%m/%Y') if status == 'concluido' else None
+            
+            self.atualizar_evento(num_contrato, evento_id, descricao, percentual, status, data_conclusao)
+            messagebox.showinfo("Sucesso", "Evento atualizado com sucesso!")
+            
+            # Atualizar lista de eventos
+            self.carregar_eventos_contrato(None)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao atualizar evento: {str(e)}")
+            
+    def atualizar_evento(self, num_contrato, evento_id, descricao, percentual, status, data_conclusao):
+        """Atualiza um evento existente na planilha"""
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb['Contratos_ADM']
+            
+            # Encontrar o evento
+            evento_encontrado = False
+            for row in range(3, ws.max_row + 1):
+                if (ws.cell(row=row, column=31).value == num_contrato and 
+                    str(ws.cell(row=row, column=32).value) == str(evento_id)):
+                    
+                    # Atualizar valores
+                    ws.cell(row=row, column=33, value=descricao)         # Descrição
+                    ws.cell(row=row, column=34, value=f"{percentual:.2f}%")  # Percentual
+                    ws.cell(row=row, column=35, value=status)            # Status
+                    
+                    # Data de conclusão apenas se status for 'concluido'
+                    if status == 'concluido' and data_conclusao:
+                        data_obj = datetime.strptime(data_conclusao, '%d/%m/%Y')
+                        ws.cell(row=row, column=36, value=data_obj)      # Data conclusão
+                    elif status != 'concluido':
+                        ws.cell(row=row, column=36, value=None)          # Limpar data
+                        
+                    evento_encontrado = True
+                    break
+                    
+            if not evento_encontrado:
+                raise Exception(f"Evento {evento_id} não encontrado para o contrato {num_contrato}")
+                
+            wb.save(self.arquivo_cliente)
+            
+            # Se o evento foi concluído, gerar pagamento
+            if status == 'concluido':
+                self.gerar_pagamento_evento(num_contrato, evento_id, descricao, percentual, data_conclusao)
+                
+        except Exception as e:
+            raise Exception(f"Erro ao atualizar evento: {str(e)}")
+
+    def concluir_evento(self):
+        """Marca um evento como concluído e gera pagamento"""
+        selecionado = self.tree_eventos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um evento primeiro")
+            return
+            
+        valores = self.tree_eventos.item(selecionado)['values']
+        evento_id = valores[0]
+        num_contrato = self.contrato_selecionado.get()
+        
+        # Verificar se o evento já está concluído
+        if valores[4] == 'Concluido':
+            messagebox.showinfo("Informação", "Este evento já está concluído")
+            return
+            
+        # Confirmar conclusão
+        if not messagebox.askyesno("Confirmar", "Confirma a conclusão deste evento? Isso gerará pagamentos para os administradores."):
+            return
+            
+        # Buscar detalhes do evento
+        evento = next((e for e in self.eventos if str(e['id']) == str(evento_id)), None)
+        if not evento:
+            messagebox.showerror("Erro", "Evento não encontrado")
+            return
+            
+        # Marcar como concluído
+        try:
+            # Obter data atual
+            data_conclusao = datetime.now().strftime('%d/%m/%Y')
+            
+            # Atualizar campos
+            self.evento_status.set('concluido')
+            self.evento_data.set_date(datetime.now())
+            
+            # Atualizar evento
+            self.atualizar_evento(
+                num_contrato, 
+                evento_id, 
+                evento['descricao'], 
+                float(str(evento['percentual']).replace('%', '').replace(',', '.')), 
+                'concluido', 
+                data_conclusao
+            )
+            
+            messagebox.showinfo("Sucesso", "Evento concluído com sucesso! Pagamentos foram gerados.")
+            
+            # Atualizar lista de eventos
+            self.carregar_eventos_contrato(None)
+            
+            # Ir para aba de pagamentos
+            self.notebook.select(self.aba_pagamentos)
+            self.pagto_contrato.set(num_contrato)
+            self.filtrar_pagamentos(None)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao concluir evento: {str(e)}")
+
+    def gerar_pagamento_evento(self, num_contrato, evento_id, descricao, percentual, data_conclusao):
+        """Gera pagamentos para os administradores baseado no evento concluído"""
+        try:
+            # Buscar valor do contrato
+            valor_contrato = None
+            for contrato in self.contratos:
+                if contrato['num_contrato'] == num_contrato:
+                    valor_contrato = contrato['valor_total']
+                    break
+                    
+            if not valor_contrato:
+                raise Exception(f"Não foi possível encontrar o valor total do contrato {num_contrato}")
+                
+            # Buscar administradores do contrato
+            administradores = self.administradores_contratos.get(num_contrato, [])
+            if not administradores:
+                raise Exception(f"Não há administradores cadastrados para o contrato {num_contrato}")
+                
+            # Valor do evento
+            valor_evento = (percentual / 100) * valor_contrato
+            
+            # Determinar data de vencimento (15 dias após conclusão)
+            data_conclusao_obj = datetime.strptime(data_conclusao, '%d/%m/%Y')
+            data_vencimento = data_conclusao_obj + relativedelta(days=15)
+            
+            # Salvar pagamentos para cada administrador
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb['Contratos_ADM']
+            
+            for admin in administradores:
+                # Calcular valor do pagamento
+                if admin['tipo'] == 'Percentual':
+                    # Administrador com percentual sobre o contrato
+                    try:
+                        admin_percentual = float(str(admin['valor_percentual']).replace('%', '').replace(',', '.'))
+                        valor_pagamento = (admin_percentual / 100) * valor_evento
+                    except (ValueError, TypeError):
+                        valor_pagamento = 0
+                else:
+                    # Administrador com valor fixo - calcula proporcional ao evento
+                    try:
+                        valor_total_admin = float(str(admin['valor_total']).replace('.', '').replace(',', '.'))
+                        valor_pagamento = (percentual / 100) * valor_total_admin
+                    except (ValueError, TypeError):
+                        valor_pagamento = 0
+                
+                # Encontrar próxima linha disponível para pagamentos
+                proxima_linha = ws.max_row + 1
+                
+                # Salvar pagamento
+                ws.cell(row=proxima_linha, column=38, value=num_contrato)          # Contrato
+                ws.cell(row=proxima_linha, column=39, value=evento_id)             # ID Evento
+                ws.cell(row=proxima_linha, column=40, value=admin['cnpj_cpf'])     # CNPJ/CPF
+                ws.cell(row=proxima_linha, column=41, value=admin['nome'])         # Nome
+                ws.cell(row=proxima_linha, column=42, value=data_vencimento)       # Data Vencimento
+                ws.cell(row=proxima_linha, column=43, value=valor_pagamento)       # Valor
+                ws.cell(row=proxima_linha, column=44, value='pendente')            # Status
+                ws.cell(row=proxima_linha, column=45, value=f"Pagamento referente ao evento: {descricao}")  # Observação
+            
+            wb.save(self.arquivo_cliente)
+            
+        except Exception as e:
+            raise Exception(f"Erro ao gerar pagamentos: {str(e)}")
+            
+    def remover_evento(self):
+        """Remove um evento não concluído"""
+        selecionado = self.tree_eventos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um evento primeiro")
+            return
+            
+        valores = self.tree_eventos.item(selecionado)['values']
+        evento_id = valores[0]
+        num_contrato = self.contrato_selecionado.get()
+        
+        # Verificar se o evento já está concluído
+        if valores[4] == 'Concluido':
+            messagebox.showerror("Erro", "Não é possível remover um evento já concluído")
+            return
+            
+        # Confirmar remoção
+        if not messagebox.askyesno("Confirmar", "Tem certeza que deseja remover este evento?"):
+            return
+            
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb['Contratos_ADM']
+            
+            # Encontrar o evento
+            linha_evento = None
+            for row in range(3, ws.max_row + 1):
+                if (ws.cell(row=row, column=31).value == num_contrato and 
+                    str(ws.cell(row=row, column=32).value) == str(evento_id)):
+                    linha_evento = row
+                    break
+                    
+            if not linha_evento:
+                raise Exception(f"Evento {evento_id} não encontrado para o contrato {num_contrato}")
+                
+            # Remover linha
+            ws.delete_rows(linha_evento)
+            
+            wb.save(self.arquivo_cliente)
             
             messagebox.showinfo("Sucesso", "Evento removido com sucesso!")
             
+            # Atualizar lista de eventos
+            self.carregar_eventos_contrato(None)
+            
         except Exception as e:
-            print(f"Erro ao remover evento: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao remover evento: {str(e)}")
 
-    def gerar_pagamentos_evento_adaptado(self, contrato, id_evento, sheet, row_idx, data_conclusao):
-        """Versão adaptada para gerar pagamentos com base na estrutura atual da planilha"""
+    def filtrar_pagamentos(self, event):
+        """Filtra pagamentos conforme seleção"""
+        contrato = self.pagto_contrato.get()
+        status = self.pagto_status.get()
+        
         try:
-            # Recuperar informações do administrador desta linha
-            row = list(sheet.iter_rows(min_row=row_idx, max_row=row_idx, values_only=True))[0]
-            
-            # Extrair dados necessários
-            cnpj_cpf = row[7]
-            nome = row[8]
-            tipo = row[9]
-            valor_percentual = row[10]
-            valor_total = row[11]
-            num_parcelas = row[12] if row[12] else 1
-            
-            # Encontrar a última linha da planilha para adicionar os pagamentos
-            ultima_linha = sheet.max_row + 1
-            
-            # Data de vencimento: 30 dias após conclusão
-            data_vencimento = data_conclusao + relativedelta(days=30)
-            
-            # Se for pagamento único
-            if num_parcelas <= 1:
-                # Adicionar linha de pagamento
-                sheet.cell(row=ultima_linha, column=25).value = "Evento"  # Referência
-                sheet.cell(row=ultima_linha, column=26).value = id_evento  # Número
-                sheet.cell(row=ultima_linha, column=27).value = cnpj_cpf  # CNPJ/CPF
-                sheet.cell(row=ultima_linha, column=28).value = nome  # Nome
-                sheet.cell(row=ultima_linha, column=29).value = data_vencimento  # Data Vencimento
-                sheet.cell(row=ultima_linha, column=30).value = valor_total  # Valor
-                sheet.cell(row=ultima_linha, column=31).value = "Pendente"  # Status
-                sheet.cell(row=ultima_linha, column=32).value = None  # Data Pagamento
-            else:
-                # Para pagamento parcelado
-                valor_parcela = float(valor_total) / int(num_parcelas)
-                
-                for i in range(int(num_parcelas)):
-                    data_vencimento_parcela = data_vencimento + relativedelta(months=i)
-                    
-                    # Adicionar linha de pagamento para cada parcela
-                    sheet.cell(row=ultima_linha+i, column=25).value = "Evento"  # Referência
-                    sheet.cell(row=ultima_linha+i, column=26).value = id_evento  # Número
-                    sheet.cell(row=ultima_linha+i, column=27).value = cnpj_cpf  # CNPJ/CPF
-                    sheet.cell(row=ultima_linha+i, column=28).value = f"{nome} - Parcela {i+1}/{num_parcelas}"  # Nome
-                    sheet.cell(row=ultima_linha+i, column=29).value = data_vencimento_parcela  # Data Vencimento
-                    sheet.cell(row=ultima_linha+i, column=30).value = valor_parcela  # Valor
-                    sheet.cell(row=ultima_linha+i, column=31).value = "Pendente"  # Status
-                    sheet.cell(row=ultima_linha+i, column=32).value = None  # Data Pagamento
-                    
-            return True
+            self.carregar_pagamentos(contrato, status)
         except Exception as e:
-            print(f"Erro ao gerar pagamentos: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            return False
+            messagebox.showerror("Erro", f"Erro ao filtrar pagamentos: {str(e)}")
 
-    def registrar_pagamento(self):
-        """Registra um pagamento como efetuado"""
-        selecao = self.tree_pagamentos.selection()
-        if not selecao:
-            messagebox.showwarning("Aviso", "Selecione um pagamento primeiro!")
-            return
-        
-        # Obter detalhes do pagamento
-        item = self.tree_pagamentos.item(selecao[0])
-        valores = item['values']
-        
-        if valores[6] == "Pago":
-            messagebox.showinfo("Aviso", "Este pagamento já está registrado como pago!")
-            return
-        
-        # Preencher campos
-        self.pagto_status_atual.set("Pago")
-        self.pagto_data.set_date(datetime.now())
-        
-        # Perguntar se deseja salvar
-        resposta = messagebox.askyesno("Confirmar", "Deseja registrar este pagamento como pago?")
-        if not resposta:
-            return
-        
-        # Salvar no Excel
+    def carregar_pagamentos(self, contrato_filtro, status_filtro):
+        """Carrega os pagamentos de eventos"""
         try:
-            # Obter valores atualizados
-            contrato = valores[0]
-            evento = valores[1]
-            status = self.pagto_status_atual.get()
-            data_pagamento = self.pagto_data.get_date()
-            cnpj_cpf = valores[2]  # CNPJ/CPF formatado
+            wb = load_workbook(self.arquivo_cliente, data_only=True)
             
-            # Abrir arquivo Excel
-            workbook = load_workbook(self.arquivo_cliente)
+            # Verificar se existe a aba
+            if 'Contratos_ADM' not in wb.sheetnames:
+                wb.close()
+                return
+                
+            ws = wb['Contratos_ADM']
             
-            if 'Contratos_ADM' in workbook.sheetnames:
-                sheet = workbook['Contratos_ADM']
+            # Limpar treeview
+            for item in self.tree_pagamentos.get_children():
+                self.tree_pagamentos.delete(item)
                 
-                # Procurar o pagamento correspondente
-                pagamento_encontrado = False
+            # Processar pagamentos
+            for row in ws.iter_rows(min_row=3, values_only=True):
+                # Verificar se é um registro de pagamento (coluna AM ou 38 em diante)
+                if len(row) >= 44 and row[37] and row[38]:
+                    num_contrato = row[37]
+                    evento_id = row[38]
+                    cnpj_cpf = row[39]
+                    nome = row[40]
+                    
+                    # Aplicar filtro de contrato
+                    if contrato_filtro != 'Todos' and num_contrato != contrato_filtro:
+                        continue
+                    
+                    # Formatar data de vencimento
+                    data_vencimento = None
+                    if row[41]:
+                        if isinstance(row[41], datetime):
+                            data_vencimento = row[41].strftime('%d/%m/%Y')
+                        else:
+                            try:
+                                data_vencimento = datetime.strptime(str(row[41]), '%Y-%m-%d').strftime('%d/%m/%Y')
+                            except ValueError:
+                                data_vencimento = str(row[41])
+                    
+                    valor = row[42]
+                    status = row[43] or 'pendente'
+                    
+                    # Aplicar filtro de status
+                    if status_filtro != 'Todos' and status.capitalize() != status_filtro:
+                        continue
+                    
+                    # Formatar data de pagamento
+                    data_pagamento = None
+                    if row[44]:
+                        if isinstance(row[44], datetime):
+                            data_pagamento = row[44].strftime('%d/%m/%Y')
+                        else:
+                            try:
+                                data_pagamento = datetime.strptime(str(row[44]), '%Y-%m-%d').strftime('%d/%m/%Y')
+                            except ValueError:
+                                data_pagamento = str(row[44])
+                    
+                    # Adicionar ao treeview
+                    valor_fmt = f"R$ {valor:,.2f}" if isinstance(valor, (int, float)) else valor
+                    
+                    self.tree_pagamentos.insert('', 'end', values=(
+                        num_contrato,
+                        evento_id,
+                        str(cnpj_cpf),  # Garantir que seja string
+                        str(nome),      # Garantir que seja string
+                        data_vencimento or "-",
+                        valor_fmt,
+                        status.capitalize(),
+                        data_pagamento or "-"
+                    ))
+            
+            wb.close()
+            
+        except Exception as e:
+            if 'wb' in locals():
+                wb.close()
+            raise Exception(f"Erro ao carregar pagamentos: {str(e)}")
+
+    
+            
+    def registrar_pagamento(self):
+        """Registra um pagamento como efetuado (versão corrigida)"""
+        try:
+            print("Iniciando registro de pagamento")
+            selecionado = self.tree_pagamentos.selection()
+            if not selecionado:
+                messagebox.showwarning("Aviso", "Selecione um pagamento primeiro")
+                return
                 
-                for row_idx, row in enumerate(sheet.iter_rows(min_row=3, values_only=True), start=3):
-                    # Verificar se é uma linha de pagamento (referência na coluna 25)
-                    if row[24] is not None:  
-                        # Verificar se corresponde ao pagamento selecionado
-                        if (str(row[25]) == str(evento) and 
-                            formatar_cnpj_cpf(row[26]) == cnpj_cpf):
-                            
-                            # Atualizar status e data de pagamento
-                            sheet.cell(row=row_idx, column=31).value = status  # Status (coluna 31)
-                            sheet.cell(row=row_idx, column=32).value = data_pagamento  # Data Pagamento (coluna 32)
-                            
-                            pagamento_encontrado = True
-                            break
+            valores = self.tree_pagamentos.item(selecionado)['values']
+            print(f"Valores do pagamento selecionado: {valores}")
+            
+            num_contrato = valores[0]
+            evento_id = valores[1]
+            cnpj_cpf = valores[2]
+            
+            # Verificar se o pagamento já está como pago
+            status = valores[6] if len(valores) > 6 else "Pendente"
+            if status == 'Pago':
+                print("Pagamento já está registrado como pago")
+                messagebox.showinfo("Informação", "Este pagamento já está registrado como pago")
+                return
                 
-                if not pagamento_encontrado:
-                    messagebox.showwarning("Aviso", "Pagamento não encontrado na planilha!")
-                    workbook.close()
-                    return
-            else:
-                messagebox.showwarning("Aviso", "Aba de contratos não encontrada!")
-                workbook.close()
+            # Confirmar registro
+            if not messagebox.askyesno("Confirmar", "Confirma o registro deste pagamento?"):
+                print("Registro cancelado pelo usuário")
+                return
+                
+            print(f"Registrando pagamento: Contrato={num_contrato}, Evento={evento_id}, CNPJ/CPF={cnpj_cpf}")
+            
+            # Verificar se arquivo existe
+            if not os.path.exists(self.arquivo_cliente):
+                print(f"Arquivo do cliente não encontrado: {self.arquivo_cliente}")
+                messagebox.showerror("Erro", "Arquivo do cliente não encontrado")
+                return
+                
+            wb = load_workbook(self.arquivo_cliente)
+            
+            # Verificar se a aba existe
+            if 'Contratos_ADM' not in wb.sheetnames:
+                print("Aba 'Contratos_ADM' não encontrada")
+                messagebox.showerror("Erro", "Estrutura da planilha inválida: aba 'Contratos_ADM' não encontrada")
+                wb.close()
+                return
+                
+            ws = wb['Contratos_ADM']
+            
+            # Encontrar o pagamento
+            pagamento_encontrado = False
+            for row in range(3, ws.max_row + 1):
+                # Verificar se a linha tem dados nas colunas de pagamento
+                if (ws.cell(row=row, column=38).value == num_contrato and 
+                    str(ws.cell(row=row, column=39).value) == str(evento_id) and
+                    str(ws.cell(row=row, column=40).value) == str(cnpj_cpf)):
+                    
+                    print(f"Pagamento encontrado na linha {row}")
+                    
+                    # Atualizar status
+                    ws.cell(row=row, column=44, value='pago')
+                    
+                    # Atualizar data de pagamento
+                    data_pagamento = self.pagto_data.get_date()
+                    ws.cell(row=row, column=45, value=data_pagamento)
+                    
+                    pagamento_encontrado = True
+                    break
+                    
+            if not pagamento_encontrado:
+                print("Pagamento não encontrado na planilha")
+                messagebox.showerror("Erro", "Pagamento não encontrado na planilha")
+                wb.close()
                 return
             
-            # Salvar arquivo
-            workbook.save(self.arquivo_cliente)
-            workbook.close()
+            # Verificar se também precisamos atualizar a planilha "Dados"
+            atualizar_dados = False
+            if 'Dados' in wb.sheetnames:
+                print("Verificando aba 'Dados' para atualização")
+                ws_dados = wb['Dados']
+                
+                # Procurar o lançamento correspondente na aba Dados
+                for row in range(2, ws_dados.max_row + 1):
+                    referencia = ws_dados.cell(row=row, column=6).value  # Coluna F - Referência
+                    if referencia and f"EVENTO {evento_id}" in str(referencia) and f"CONTRATO {num_contrato}" in str(referencia):
+                        print(f"Lançamento encontrado na aba Dados, linha {row}")
+                        
+                        # Atualizar status para pago
+                        ws_dados.cell(row=row, column=15, value="Pago")  # Coluna O - Status
+                        
+                        # Atualizar data de pagamento
+                        ws_dados.cell(row=row, column=16, value=data_pagamento)  # Coluna P - Data Pagamento
+                        
+                        atualizar_dados = True
+                        break
             
-            # Recarregar pagamentos
-            self.carregar_pagamentos()
+            # Salvar alterações
+            print("Salvando alterações na planilha")
+            wb.save(self.arquivo_cliente)
             
-            messagebox.showinfo("Sucesso", "Pagamento registrado com sucesso!")
+            mensagem = "Pagamento registrado com sucesso!"
+            if atualizar_dados:
+                mensagem += " A aba 'Dados' também foi atualizada."
+                
+            messagebox.showinfo("Sucesso", mensagem)
+            
+            # Atualizar lista de pagamentos
+            self.filtrar_pagamentos(None)
             
         except Exception as e:
             print(f"Erro ao registrar pagamento: {str(e)}")
             import traceback
             traceback.print_exc()
             messagebox.showerror("Erro", f"Erro ao registrar pagamento: {str(e)}")
+            if 'wb' in locals():
+                try:
+                    wb.close()
+                except:
+                    pass
 
     def gerar_lancamento_pagamento(self):
-        """Gera um lançamento contábil para o pagamento selecionado"""
-        selecao = self.tree_pagamentos.selection()
-        if not selecao:
-            messagebox.showwarning("Aviso", "Selecione um pagamento primeiro!")
-            return
-        
-        # Obter detalhes do pagamento
-        item = self.tree_pagamentos.item(selecao[0])
-        valores = item['values']
-        
-        # Informar que esta funcionalidade ainda não está implementada
-        messagebox.showinfo("Informação", 
-                            f"Função não implementada!\n\n"
-                            f"Esta função irá gerar um lançamento contábil para o pagamento:\n"
-                            f"Contrato: {valores[0]}\n"
-                            f"Evento: {valores[1]}\n"
-                            f"Fornecedor: {valores[3]}\n"
-                            f"Valor: {valores[5]}")
-
-    def filtrar_pagamentos(self, event=None):
-        """Filtra a lista de pagamentos pelo contrato e status selecionados"""
-        # Em vez de ocultar itens, vamos recarregar a tabela com os filtros aplicados
+        """Gera um lançamento para o sistema de entrada de dados (versão corrigida)"""
         try:
-            # Limpar tabela
-            for item in self.tree_pagamentos.get_children():
-                self.tree_pagamentos.delete(item)
-            
-            # Obter filtros
-            contrato_filtro = self.pagto_contrato.get()
-            status_filtro = self.pagto_status.get()
-            
-            # Abrir arquivo Excel do cliente
-            workbook = load_workbook(self.arquivo_cliente)
-            
-            # Verificar se a aba de contratos existe
-            if 'Contratos_ADM' not in workbook.sheetnames:
-                workbook.close()
+            print("Iniciando geração de lançamento")
+            selecionado = self.tree_pagamentos.selection()
+            if not selecionado:
+                messagebox.showwarning("Aviso", "Selecione um pagamento primeiro")
                 return
                 
-            sheet = workbook['Contratos_ADM']
+            valores = self.tree_pagamentos.item(selecionado)['values']
             
-            # Procurar por linhas de pagamento na planilha (colunas 25-32)
-            for row in sheet.iter_rows(min_row=3, values_only=True):
-                # Verificar se é uma linha de pagamento
-                if row[24] is not None:  # Coluna 25 (Referência)
-                    referencia = row[24]
-                    numero = row[25]
-                    cnpj_cpf = row[26]
-                    nome = row[27]
-                    data_vencimento = row[28]
-                    valor = row[29]
-                    status = row[30] if row[30] else "Pendente"
-                    data_pagamento = row[31]
+            print(f"Valores do pagamento selecionado: {valores}")
+            
+            num_contrato = valores[0]
+            evento_id = valores[1]
+            cnpj_cpf = valores[2]
+            nome = valores[3]
+            data_vencimento = valores[4]
+            
+            # Extrair e converter o valor com tratamento de diferentes formatos
+            valor_str = str(valores[5])
+            print(f"Valor original: {valor_str}")
+            
+            # Remover caracteres não numéricos (exceto . e ,)
+            valor_limpo = ""
+            for char in valor_str:
+                if char.isdigit() or char == '.' or char == ',':
+                    valor_limpo += char
                     
-                    # Encontrar o contrato associado
-                    contrato = "Desconhecido"
-                    if referencia == "Evento" and numero is not None:
-                        # Aqui temos que fazer uma busca para determinar qual contrato
-                        # está associado a este evento/administrador
-                        evento_id = int(numero)
-                        contrato_encontrado = False
-                        
-                        # Percorrer todas as linhas procurando administradores
-                        evento_contador = 1
-                        for adm_row in sheet.iter_rows(min_row=3, values_only=True):
-                            if adm_row[6] is not None:  # É um administrador
-                                if evento_contador == evento_id:
-                                    contrato = adm_row[6]  # Contrato deste administrador
-                                    contrato_encontrado = True
-                                    break
-                                evento_contador += 1
-                        
-                        if not contrato_encontrado:
-                            contrato = f"Evento {numero}"
-                    
-                    # Aplicar filtros
-                    if (contrato_filtro == "Todos" or str(contrato) == contrato_filtro) and \
-                    (status_filtro == "Todos" or status == status_filtro):
-                        
-                        # Formatar data de vencimento
-                        data_venc_formatada = ""
-                        if data_vencimento:
-                            try:
-                                if isinstance(data_vencimento, datetime):
-                                    data_venc_formatada = data_vencimento.strftime("%d/%m/%Y")
-                                else:
-                                    data_venc_formatada = str(data_vencimento)
-                            except:
-                                data_venc_formatada = str(data_vencimento)
-                        
-                        # Formatar data de pagamento
-                        data_pagto_formatada = ""
-                        if data_pagamento:
-                            try:
-                                if isinstance(data_pagamento, datetime):
-                                    data_pagto_formatada = data_pagamento.strftime("%d/%m/%Y")
-                                else:
-                                    data_pagto_formatada = str(data_pagamento)
-                            except:
-                                data_pagto_formatada = str(data_pagamento)
-                        
-                        # Formatar valor
-                        valor_formatado = ""
-                        if valor:
-                            try:
-                                if isinstance(valor, str):
-                                    valor_num = float(valor.replace(',', '.'))
-                                    valor_formatado = f"R$ {valor_num:,.2f}"
-                                else:
-                                    valor_formatado = f"R$ {float(valor):,.2f}"
-                            except (ValueError, TypeError):
-                                valor_formatado = f"R$ {str(valor)}"
-                        else:
-                            valor_formatado = "R$ 0,00"
-                        
-                        # Formatar CNPJ/CPF
-                        cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf) if cnpj_cpf else ""
-                        
-                        # Adicionar à tabela
-                        self.tree_pagamentos.insert('', 'end', values=(
-                            contrato,            # Contrato
-                            numero,              # Evento/Número
-                            cnpj_cpf_formatado,  # CNPJ/CPF formatado
-                            nome,                # Nome
-                            data_venc_formatada, # Data vencimento formatada
-                            valor_formatado,     # Valor formatado
-                            status,              # Status
-                            data_pagto_formatada # Data pagamento formatada
-                        ))
+            # Substituir R$ e outros caracteres
+            valor_limpo = valor_limpo.replace('R$', '').replace(' ', '').strip()
+            print(f"Valor limpo: {valor_limpo}")
             
-            workbook.close()
-            
-        except Exception as e:
-            print(f"Erro ao filtrar pagamentos: {str(e)}")
-            import traceback
-            traceback.print_exc()
-
-    def mostrar_detalhes_contrato(self, event=None):
-        """Exibe os detalhes do contrato selecionado"""
-        selecao = self.tree_contratos.selection()
-        if not selecao:
-            return
-            
-        item = self.tree_contratos.item(selecao[0])
-        valores = item['values']
-        
-        # Atualizar labels de detalhes
-        if len(valores) >= 5:
-            self.lbl_contrato.config(text=str(valores[0]))
-            self.lbl_periodo.config(text=f"{valores[1]} a {valores[2]}")
-            self.lbl_status.config(text=valores[3])
-            self.lbl_valor_total.config(text=valores[4])
-            
-            # Carregar administradores do contrato
-            self.mostrar_administradores_contrato(valores[0])
-            
-            # Contar eventos do contrato
-            num_eventos = self.contar_eventos_contrato(valores[0])
-            self.lbl_eventos.config(text=f"{num_eventos} evento(s)")
-    
-    def mostrar_administradores_contrato(self, num_contrato):
-        """Exibe os administradores do contrato na tabela de administradores"""
-        # Limpar tabela
-        for item in self.tree_adm.get_children():
-            self.tree_adm.delete(item)
-        
-        try:
-            # Abrir arquivo Excel do cliente
-            workbook = load_workbook(self.arquivo_cliente)
-            
-            # Tentar acessar a aba de administradores
-            if 'Contratos_ADM' in workbook.sheetnames:
-                sheet = workbook['Contratos_ADM']
-                
-                # Encontrar administradores deste contrato
-                num_admin = 0
-                total_adm = ""
-                
-                for row in sheet.iter_rows(min_row=2, values_only=True):
-                    if row[0] and str(row[0]) == str(num_contrato):
-                        # Formatar CNPJ/CPF
-                        cnpj_cpf = formatar_cnpj_cpf(row[1]) if row[1] else ""
-                        
-                        # Determinar tipo de valor (percentual ou fixo)
-                        # Verificar se valor[3] é string antes de procurar "%" nele
-                        tipo = "Percentual" if (row[3] and isinstance(row[3], str) and "%" in row[3]) else "Valor Fixo"
-                        
-                        # Formatar valor com tratamento de tipo
-                        valor = ""
-                        if tipo == "Percentual" and row[3] and isinstance(row[3], str):
-                            valor = row[3].replace("%", "") + "%"
-                        else:
-                            if row[3]:
-                                try:
-                                    if isinstance(row[3], str):
-                                        valor_formatado = float(row[3].replace(',', '.'))
-                                        valor = f"R$ {valor_formatado:,.2f}"
-                                    else:
-                                        valor = f"R$ {float(row[3]):,.2f}"
-                                except (ValueError, TypeError):
-                                    valor = f"R$ {str(row[3])}"
-                            else:
-                                valor = "R$ 0,00"
-                        
-                        # Valor total com tratamento de tipo
-                        valor_total = ""
-                        if row[4]:
-                            try:
-                                if isinstance(row[4], str):
-                                    valor_formatado = float(row[4].replace(',', '.'))
-                                    valor_total = f"R$ {valor_formatado:,.2f}"
-                                else:
-                                    valor_total = f"R$ {float(row[4]):,.2f}"
-                            except (ValueError, TypeError):
-                                valor_total = f"R$ {str(row[4])}"
-                        else:
-                            valor_total = "R$ 0,00"
-                        
-                        # Tratar parcelas
-                        parcelas = ""
-                        if row[5]:
-                            try:
-                                parcelas = str(int(row[5]))
-                            except (ValueError, TypeError):
-                                parcelas = str(row[5])
-                        else:
-                            parcelas = "1"
-                        
-                        # Adicionar à tabela
-                        self.tree_adm.insert('', 'end', values=(
-                            cnpj_cpf,
-                            row[2] if row[2] else "",  # Nome
-                            tipo,
-                            valor,
-                            valor_total,
-                            parcelas  # Nº Parcelas
-                        ))
-                        
-                        num_admin += 1
-                        
-                        # Adicionar ao texto dos administradores
-                        admin_nome = row[2] if row[2] else "Sem nome"
-                        total_adm += (", " if total_adm else "") + admin_nome
-                
-                # Atualizar label de administradores
-                self.lbl_administradores.config(text=f"{num_admin} ({total_adm})")
-                
-            else:
-                self.lbl_administradores.config(text="Sem administradores")
-                
-            workbook.close()
-            
-        except Exception as e:
-            print(f"Erro ao carregar administradores: {str(e)}")
-            import traceback
-            traceback.print_exc()  # Imprimir stack trace para depuração
-            self.lbl_administradores.config(text="Erro ao carregar")
-
-    def contar_eventos_contrato(self, num_contrato):
-        """Conta quantos eventos estão associados ao contrato"""
-        try:
-            # Abrir arquivo Excel do cliente
-            workbook = load_workbook(self.arquivo_cliente)
-            
-            # Tentar acessar a aba de eventos
-            if 'Eventos' in workbook.sheetnames:
-                sheet = workbook['Eventos']
-                
-                # Contar eventos deste contrato
-                contador = 0
-                
-                for row in sheet.iter_rows(min_row=2, values_only=True):
-                    if row[0] and str(row[0]) == str(num_contrato):
-                        contador += 1
-                
-                workbook.close()
-                return contador
-                
-            else:
-                return 0
-                
-        except Exception as e:
-            print(f"Erro ao contar eventos: {str(e)}")
-            return 0
-
-    def atualizar_eventos_contrato(self):
-        """Atualiza a lista de eventos do contrato selecionado"""
-        selecao = self.tree_contratos.selection()
-        if not selecao:
-            messagebox.showwarning("Aviso", "Selecione um contrato primeiro!")
-            return
-            
-        # Obtém o número do contrato selecionado
-        item = self.tree_contratos.item(selecao[0])
-        num_contrato = item['values'][0]
-        
-        # Muda para a aba de eventos e seleciona o contrato no combobox
-        self.notebook.select(self.aba_eventos)
-        self.contrato_selecionado.set(num_contrato)
-        
-        # Carrega os eventos do contrato
-        self.carregar_eventos_contrato()
-        self.tree_pagamentos.tag_configure('hidden', hide=True)
-
-    def carregar_pagamentos(self):
-        """Carrega todos os pagamentos do cliente de forma otimizada para evitar recursão"""
-        # Limpar tabela
-        for item in self.tree_pagamentos.get_children():
-            self.tree_pagamentos.delete(item)
-        
-        try:
-            # Primeiro, carregar os contratos para o combobox
-            contratos = ['Todos']
-            
+            # Converter para float
             try:
-                # Usar pandas que é mais eficiente para arquivos grandes
-                import pandas as pd
-                df_contratos = pd.read_excel(self.arquivo_cliente, sheet_name='Contratos_ADM', engine='openpyxl')
-                
-                # Filtrar apenas linhas que são contratos (não administradores)
-                for _, row in df_contratos.iterrows():
-                    if not pd.isna(row.iloc[0]) and pd.isna(row.iloc[6]):
-                        contratos.append(str(row.iloc[0]))
-            except Exception as e:
-                print(f"Erro ao carregar contratos com pandas: {str(e)}")
-                
-                # Abordagem alternativa com openpyxl
-                try:
-                    # Tentar carregar com openpyxl, mas limitando o processamento
-                    from openpyxl import load_workbook
+                # Tratar formatação brasileira (vírgula como decimal)
+                if ',' in valor_limpo and '.' in valor_limpo:
+                    # Formato brasileiro com separador de milhar
+                    valor_limpo = valor_limpo.replace('.', '')
+                    valor_limpo = valor_limpo.replace(',', '.')
+                elif ',' in valor_limpo:
+                    # Vírgula como separador decimal
+                    valor_limpo = valor_limpo.replace(',', '.')
                     
-                    # Carregar apenas a planilha Contratos_ADM
-                    workbook = load_workbook(self.arquivo_cliente, read_only=True)
-                    
-                    if 'Contratos_ADM' in workbook.sheetnames:
-                        sheet = workbook['Contratos_ADM']
-                        
-                        for row in sheet.iter_rows(min_row=3, max_row=100, values_only=True):
-                            if row[0] and row[1] is not None and row[6] is None:
-                                contratos.append(str(row[0]))
-                                
-                    workbook.close()
-                except Exception as e2:
-                    print(f"Erro ao carregar contratos com openpyxl: {str(e2)}")
-            
-            # Remover duplicatas e ordenar
-            contratos = sorted(list(set(contratos)))
-            
-            # Atualizar combobox
-            self.pagto_contrato['values'] = contratos
-            self.pagto_contrato.set('Todos')
-            
-            # Carregar pagamentos - implementação simplificada
+                valor = float(valor_limpo)
+                print(f"Valor convertido: {valor}")
+            except ValueError as e:
+                print(f"Erro ao converter valor: {e} - Valor: '{valor_limpo}'")
+                messagebox.showerror("Erro", f"Valor do pagamento inválido: {valor_str}")
+                return
+                
+            # Converter data
             try:
-                # Usar pandas para carregar pagamentos
-                import pandas as pd
-                df = pd.read_excel(self.arquivo_cliente, sheet_name='Contratos_ADM', engine='openpyxl')
-                
-                # Filtrar apenas linhas que têm dados na coluna 25 (referência de pagamento)
-                for _, row in df.iterrows():
-                    if not pd.isna(row.iloc[24]):  # Tem referência de pagamento
-                        try:
-                            # Extrair valores importantes
-                            referencia = row.iloc[24]
-                            numero = row.iloc[25]
-                            cnpj_cpf = row.iloc[26]
-                            nome = row.iloc[27]
-                            data_vencimento = row.iloc[28]
-                            valor = row.iloc[29]
-                            status = row.iloc[30] if not pd.isna(row.iloc[30]) else "Pendente"
-                            data_pagamento = row.iloc[31]
-                            
-                            # Contrato - simplificado para evitar pesquisas complexas
-                            contrato = "Evento " + str(numero) if not pd.isna(numero) else "Desconhecido"
-                            
-                            # Formatações
-                            data_venc_formatada = ""
-                            if not pd.isna(data_vencimento):
-                                try:
-                                    if isinstance(data_vencimento, pd._libs.tslibs.timestamps.Timestamp):
-                                        data_venc_formatada = data_vencimento.strftime("%d/%m/%Y")
-                                    else:
-                                        data_venc_formatada = str(data_vencimento)
-                                except:
-                                    data_venc_formatada = str(data_vencimento)
-                            
-                            data_pagto_formatada = ""
-                            if not pd.isna(data_pagamento):
-                                try:
-                                    if isinstance(data_pagamento, pd._libs.tslibs.timestamps.Timestamp):
-                                        data_pagto_formatada = data_pagamento.strftime("%d/%m/%Y")
-                                    else:
-                                        data_pagto_formatada = str(data_pagamento)
-                                except:
-                                    data_pagto_formatada = str(data_pagamento)
-                            
-                            # Formatar valor
-                            valor_formatado = "R$ 0,00"
-                            if not pd.isna(valor):
-                                try:
-                                    valor_formatado = f"R$ {float(valor):,.2f}"
-                                except:
-                                    valor_formatado = f"R$ {str(valor)}"
-                            
-                            # Formatar CNPJ/CPF
-                            cnpj_cpf_formatado = ""
-                            if not pd.isna(cnpj_cpf):
-                                cnpj_cpf_formatado = formatar_cnpj_cpf(str(cnpj_cpf))
-                            
-                            # Adicionar à tabela
-                            self.tree_pagamentos.insert('', 'end', values=(
-                                contrato,
-                                numero,
-                                cnpj_cpf_formatado,
-                                nome,
-                                data_venc_formatada,
-                                valor_formatado,
-                                status,
-                                data_pagto_formatada
-                            ))
-                        except Exception as row_e:
-                            print(f"Erro ao processar linha de pagamento: {row_e}")
-                            continue
-                            
-            except Exception as e:
-                print(f"Erro ao carregar pagamentos com pandas: {str(e)}")
-                import traceback
-                traceback.print_exc()
-                
-                # Tentativa mais simples, sem pandas
-                try:
-                    # Usar openpyxl diretamente, com limitações para evitar recursão
-                    workbook = load_workbook(self.arquivo_cliente, read_only=True)
-                    
-                    if 'Contratos_ADM' in workbook.sheetnames:
-                        sheet = workbook['Contratos_ADM']
-                        
-                        # Limitar o número de linhas processadas para evitar recursão
-                        row_count = 0
-                        max_rows = 200  # Limite para evitar problemas
-                        
-                        for row in sheet.iter_rows(min_row=3, values_only=True):
-                            row_count += 1
-                            if row_count > max_rows:
-                                print(f"Limitando a {max_rows} linhas para evitar problemas")
-                                break
-                                
-                            # Se referência não for nula, é um pagamento
-                            if row[24] is not None:
-                                try:
-                                    # Adicionar à tabela com formatação mínima
-                                    self.tree_pagamentos.insert('', 'end', values=(
-                                        str(row[0]) if row[0] else "Desconhecido",  # Contrato
-                                        str(row[25]) if row[25] else "",            # Evento
-                                        str(row[26]) if row[26] else "",            # CNPJ/CPF
-                                        str(row[27]) if row[27] else "",            # Nome
-                                        str(row[28]) if row[28] else "",            # Data vencimento
-                                        f"R$ {float(row[29]):,.2f}" if row[29] else "R$ 0,00",  # Valor
-                                        str(row[30]) if row[30] else "Pendente",    # Status
-                                        str(row[31]) if row[31] else ""             # Data pagamento
-                                    ))
-                                except Exception as row_e:
-                                    print(f"Erro ao processar linha de pagamento simples: {row_e}")
-                                    continue
-                    
-                    workbook.close()
-                    
-                except Exception as e3:
-                    print(f"Erro na abordagem simplificada: {str(e3)}")
-                    traceback.print_exc()
-            
-        except Exception as e:
-            print(f"Erro geral ao carregar pagamentos: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao carregar pagamentos: {str(e)}")
-
-    def carregar_contratos(self):
-        """Carrega a lista de contratos do cliente"""
-        # Limpar tabela
-        for item in self.tree_contratos.get_children():
-            self.tree_contratos.delete(item)
-        
-        try:
-            # Abrir arquivo Excel do cliente
-            workbook = load_workbook(self.arquivo_cliente)
-            
-            # Verificar se a aba de contratos existe
-            if 'Contratos_ADM' not in workbook.sheetnames:
-                messagebox.showwarning("Aviso", "Este cliente não possui contratos cadastrados!")
-                workbook.close()
+                data_vencto = datetime.strptime(data_vencimento, '%d/%m/%Y')
+                print(f"Data de vencimento: {data_vencto}")
+            except ValueError:
+                print(f"Data de vencimento inválida: {data_vencimento}")
+                messagebox.showerror("Erro", "Data de vencimento inválida")
                 return
             
-            sheet = workbook['Contratos_ADM']
-            contratos_ids = []  # Para preencher o combobox de eventos
+            # Buscar administrador para obter categoria
+            categoria = "ADM"
             
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular linhas vazias
-                    continue
+            # Verificar se o Sistema de Entrada de Dados está disponível no parent
+            if hasattr(self.parent, 'dados_para_incluir'):
+                # Preparar lançamento
+                lancamento = {
+                    'data': self.calcular_data_relatorio(data_vencto),
+                    'tp_desp': '3',  # Tipo 3 para administração
+                    'cnpj_cpf': cnpj_cpf,
+                    'nome': nome,
+                    'referencia': f"ADM OBRA - EVENTO {evento_id} - CONTRATO {num_contrato}",
+                    'nf': '',
+                    'vr_unit': f"{valor:.2f}",
+                    'dias': 1,
+                    'valor': f"{valor:.2f}",
+                    'dt_vencto': data_vencimento,
+                    'categoria': categoria,
+                    'dados_bancarios': self.buscar_dados_bancarios(cnpj_cpf),
+                    'observacao': f"PAGAMENTO EVENTO {evento_id} - CONTRATO {num_contrato}",
+                    'forma_pagamento': 'PIX'  # Valor padrão
+                }
+                
+                # Adicionar à lista do sistema
+                self.parent.dados_para_incluir.append(lancamento)
+                
+                print("Lançamento gerado com sucesso")
+                messagebox.showinfo(
+                    "Sucesso", 
+                    "Lançamento gerado com sucesso! Acesse a aba de 'Visualização de Lançamentos' para conferir."
+                )
+                
+                # Fechar esta janela
+                self.janela.destroy()
+                
+                # Mostrar visualizador de lançamentos
+                if hasattr(self.parent, 'visualizar_lancamentos'):
+                    self.parent.visualizar_lancamentos()
+            else:
+                print("Sistema de Entrada de Dados não disponível")
+                messagebox.showwarning(
+                    "Aviso", 
+                    "Sistema de Entrada de Dados não está disponível. O lançamento não pôde ser gerado."
+                )
+        except Exception as e:
+            print(f"Erro ao gerar lançamento: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Erro", f"Erro ao gerar lançamento: {str(e)}")
+
+    def buscar_dados_bancarios(self, cnpj_cpf):
+        """Busca dados bancários do fornecedor"""
+        try:
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+            
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if str(row[0]) == str(cnpj_cpf):
+                    # Verificar se tem chave PIX
+                    if row[10]:  # Coluna K - Chave PIX
+                        dados = f"PIX: {row[10]}"
+                    else:
+                        # Construir dados baseados nas informações bancárias
+                        partes = []
+                        if row[6]: partes.append(str(row[6]))  # Banco
+                        if row[7]: partes.append(str(row[7]))  # OP
+                        if row[8]: partes.append(str(row[8]))  # Agência
+                        if row[9]: partes.append(str(row[9]))  # Conta
+                        if row[0]: partes.append(str(row[0]))  # CNPJ/CPF
+                        
+                        dados = ' - '.join(partes)
                     
-                # Formatar datas
-                data_inicio = ""
-                if row[1]:
-                    try:
-                        if isinstance(row[1], datetime):
-                            data_inicio = row[1].strftime("%d/%m/%Y")
-                        else:
-                            data_inicio = row[1]
-                    except:
-                        data_inicio = str(row[1])
+                    wb.close()
+                    return dados or "DADOS BANCÁRIOS NÃO CADASTRADOS"
+                    
+            wb.close()
+            return "DADOS BANCÁRIOS NÃO CADASTRADOS"
+            
+        except Exception as e:
+            print(f"Erro ao buscar dados bancários: {str(e)}")
+            if 'wb' in locals():
+                wb.close()
+            return "ERRO AO BUSCAR DADOS BANCÁRIOS"
+
+    def calcular_data_relatorio(self, data_vencimento):
+        """Calcula a data do relatório com base na data de vencimento"""
+        try:
+            hoje = datetime.now()
+            
+            # Para as demais parcelas, manter a lógica existente
+            if data_vencimento.day <= 5:
+                # Se vence até dia 5, relatório é dia 20 do mês anterior
+                data_rel = (data_vencimento - relativedelta(months=1)).replace(day=20)
+            elif data_vencimento.day <= 20:
+                # Se vence até dia 20, relatório é dia 5 do mesmo mês
+                data_rel = data_vencimento.replace(day=5)
+            else:
+                # Se vence após dia 20, relatório é dia 20 do mesmo mês
+                data_rel = data_vencimento.replace(day=20)
                 
-                data_fim = ""
-                if row[2]:
-                    try:
-                        if isinstance(row[2], datetime):
-                            data_fim = row[2].strftime("%d/%m/%Y")
-                        else:
-                            data_fim = row[2]
-                    except:
-                        data_fim = str(row[2])
-                
-                # Formatar valor com tratamento de tipo
-                valor_total = ""
-                if row[4]:
-                    try:
-                        # Converter para float se for string
-                        if isinstance(row[4], str):
-                            valor_formatado = float(row[4].replace(',', '.'))
-                            valor_total = f"R$ {valor_formatado:,.2f}"
-                        else:
-                            valor_total = f"R$ {float(row[4]):,.2f}"
-                    except (ValueError, TypeError):
-                        # Se não conseguir converter, mostra como string
-                        valor_total = f"R$ {str(row[4])}"
+            # Garantir que a data do relatório não seja anterior à data atual
+            if data_rel < hoje:
+                if hoje.day <= 5:
+                    data_rel = hoje.replace(day=5)
+                elif hoje.day <= 20:
+                    data_rel = hoje.replace(day=20)
                 else:
-                    valor_total = "R$ 0,00"
-                
-                # Adicionar à tabela
-                self.tree_contratos.insert('', 'end', values=(
-                    row[0],  # Nº Contrato
-                    data_inicio,
-                    data_fim,
-                    row[3] if row[3] else "Em andamento",  # Status
-                    valor_total
-                ))
-                
-                # Adicionar ao array de contratos para combobox
-                contratos_ids.append(str(row[0]))
-            
-            # Preencher combobox de contratos
-            self.contrato_selecionado['values'] = contratos_ids
-            
-            # Preencher combobox de contratos para pagamentos
-            contratos_pagto = ['Todos'] + contratos_ids
-            self.pagto_contrato['values'] = contratos_pagto
-            self.pagto_contrato.set('Todos')
-            
-            workbook.close()
-            
-            # Carregar pagamentos iniciais
-            self.carregar_pagamentos()
+                    proximo_mes = hoje + relativedelta(months=1)
+                    data_rel = proximo_mes.replace(day=5)
+                    
+            return data_rel.strftime('%d/%m/%Y')
             
         except Exception as e:
-            print(f"Erro ao carregar contratos: {str(e)}")
-            messagebox.showerror("Erro", f"Erro ao carregar contratos: {str(e)}")
-
-    def mostrar_detalhes_pagamento(self, event=None):
-        """Exibe os detalhes do pagamento selecionado para edição"""
-        selecao = self.tree_pagamentos.selection()
-        if not selecao:
-            return
-            
-        item = self.tree_pagamentos.item(selecao[0])
-        valores = item['values']
+            print(f"Erro ao calcular data do relatório: {str(e)}")
+            return hoje.strftime('%d/%m/%Y')
         
-        # Atualizar campos do formulário
-        if len(valores) >= 8:
-            # CNPJ/CPF (modo somente leitura)
-            self.pagto_cnpj.configure(state='normal')
-            self.pagto_cnpj.delete(0, 'end')
-            self.pagto_cnpj.insert(0, valores[2])
-            self.pagto_cnpj.configure(state='readonly')
-            
-            # Nome (modo somente leitura)
-            self.pagto_nome.configure(state='normal')
-            self.pagto_nome.delete(0, 'end')
-            self.pagto_nome.insert(0, valores[3])
-            self.pagto_nome.configure(state='readonly')
-            
-            # Valor (modo somente leitura)
-            self.pagto_valor.configure(state='normal')
-            self.pagto_valor.delete(0, 'end')
-            self.pagto_valor.insert(0, valores[5])
-            self.pagto_valor.configure(state='readonly')
-            
-            # Vencimento (modo somente leitura)
-            self.pagto_vencimento.configure(state='normal')
-            self.pagto_vencimento.delete(0, 'end')
-            self.pagto_vencimento.insert(0, valores[4])
-            self.pagto_vencimento.configure(state='readonly')
-            
-            # Status
-            self.pagto_status_atual.set(valores[6])
-            
-            # Data Pagamento
-            if valores[7] and valores[7].strip():
-                try:
-                    data = datetime.strptime(valores[7], "%d/%m/%Y")
-                    self.pagto_data.set_date(data)
-                except:
-                    self.pagto_data.set_date(datetime.now())
-            else:
-                self.pagto_data.set_date(datetime.now())
+
+    
