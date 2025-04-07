@@ -1027,15 +1027,15 @@ class GestaoEventos:
                     continue
                     
                 # Certificar-se de que é uma linha para o contrato atual
-                contrato_na_linha = row[30] if len(row) > 30 else None
+                contrato_na_linha = row[25] if len(row) > 25 else None
                 if contrato_na_linha != num_contrato:
                     continue
                     
                 # Extrair dados com segurança
-                evento_id = row[31] if len(row) > 31 else None
+                evento_id = row[25] if len(row) > 25 else None
                 descricao = row[32] if len(row) > 32 else None
                 percentual = row[33] if len(row) > 33 else None
-                status = (row[34] or 'pendente') if len(row) > 34 else 'pendente'
+                status = (row[30] or 'PENDENTE') if len(row) > 30 else 'PENDENTE'
                 
                 print(f"Evento encontrado na linha {row_idx}: ID={evento_id}, Descrição={descricao}, Percentual={percentual}, Status={status}")
                 
@@ -1625,7 +1625,7 @@ class GestaoEventos:
                     continue
                     
                 # Verificar se é um evento deste contrato
-                contrato_value = row[30]  # Coluna AE (31ª coluna)
+                contrato_value = row[24]  # Coluna AE (31ª coluna)
                 if contrato_value == num_contrato:
                     eventos_count += 1
                     
