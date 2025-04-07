@@ -3372,7 +3372,7 @@ class GestaoContratos:
                         "ADMINISTRADORES_CONTRATO", "", "", "", "", "", "",
                         "ADITIVOS", "", "", "",
                         "ADMINISTRADORES_ADITIVO", "", "", "", "", "", "",
-                        "PARCELAS", "", "", "", ""]
+                        "PARCELAS", "", "", "", "", "", "", "", ""]
                 
                 for col, valor in enumerate(blocos, 1):
                     ws.cell(row=1, column=col, value=valor)
@@ -3388,7 +3388,7 @@ class GestaoContratos:
                     # ADMINISTRADORES_ADITIVO
                     "Nº Contrato", "Nº Aditivo", "CNPJ/CPF", "Nome/Razão Social", "Tipo", "Valor/Percentual", "Valor Total",
                     # PARCELAS
-                    "Referência", "Número", "CNPJ/CPF", "Nome", "Data Vencimento", "Valor", "Status", "Data Pagamento"
+                    "Referência", "Número", "CNPJ/CPF", "Nome", "Data Vencimento", "Valor", "Status", "Data Pagamento", "Eventos/Fases", "Percentual %"
                 ]
                 
                 for col, header in enumerate(headers, 1):
@@ -3857,90 +3857,10 @@ class GestaoContratos:
         ttk.Button(frame, text="Salvar", command=salvar).pack(side='left', padx=5, pady=10)
         ttk.Button(frame, text="Cancelar", command=janela.destroy).pack(side='left', padx=5, pady=10)                          
 
-
-    def salvar_contrato_com_opcoes(self, num_contrato, data_inicio, data_fim, observacoes, valor_global, metodo_pagamento, opcoes, janela):
-        """Salva os dados do contrato com diferentes opções de pagamento"""
-        num_contrato = str(num_contrato).upper()
-        
-        try:
-            wb = load_workbook(self.arquivo_cliente)
-            ws = wb['Contratos_ADM']
-            
-            # Verificar se o contrato já existe
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0] and str(row[0]).upper() == num_contrato.upper():
-                    messagebox.showerror("Erro", "Número de contrato já existe!")
-                    return
-
-            # Salvar dados do contrato
-            proxima_linha = ws.max_row + 1
-            ws.cell(row=proxima_linha, column=1, value=num_contrato.upper())
-            ws.cell(row=proxima_linha, column=2, value=data_inicio)
-            ws.cell(row=proxima_linha, column=3, value=data_fim)
-            ws.cell(row=proxima_linha, column=4, value='ATIVO')
-            ws.cell(row=proxima_linha, column=5, value=observacoes)
-            ws.cell(row=proxima_linha, column=6, value=valor_global)  # Valor global do contrato
-
-            # Processar administradores baseado no método de pagamento
-            self.processar_administradores(ws, num_contrato, valor_global, metodo_pagamento, opcoes)
-
-            # Processar eventos se método for por eventos/fases
-            if metodo_pagamento == "Eventos/Fases" and opcoes.get('eventos'):
-                self.processar_eventos(ws, num_contrato, valor_global, opcoes['eventos'])
-                
-            # Processar parcelas fixas se for o método apropriado
-            elif metodo_pagamento == "Valor Fixo em Parcelas":
-                self.processar_parcelas_fixas(ws, num_contrato, valor_global, opcoes)
-
-            wb.save(self.arquivo_cliente)
-            messagebox.showinfo("Sucesso", "Contrato cadastrado com sucesso!")
-            janela.destroy()
-
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao salvar contrato: {str(e)}")
-            if 'wb' in locals():
-                wb.close()
-
-    def processar_administradores(self, ws, num_contrato, valor_global, metodo_pagamento, opcoes):
-        """Processa os administradores do contrato"""
-        for item in self.tree_adm.get_children():
-            valores = self.tree_adm.item(item)['values']
-            tags = self.tree_adm.item(item)['tags']
-            
-            # Formatação do CNPJ/CPF
-            cnpj_cpf = str(valores[0]).strip()
-            cnpj_cpf = formatar_cnpj_cpf(cnpj_cpf)
-            nome_admin = valores[1]
-            
-            # Buscar dados bancários do fornecedor
-            forma_pagamento = next((tag for tag in tags if tag in ['PIX', 'TED']), 'PIX')
-            dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento)
-
-            # Registrar administrador no contrato com os dados apropriados
-            proxima_linha = ws.max_row + 1
-            ws.cell(row=proxima_linha, column=7, value=num_contrato.upper())  # Contrato
-            ws.cell(row=proxima_linha, column=8, value=cnpj_cpf)              # CNPJ/CPF
-            ws.cell(row=proxima_linha, column=9, value=nome_admin)            # Nome
-            ws.cell(row=proxima_linha, column=10, value=valores[2])           # Tipo (Percentual/Fixo)
-            ws.cell(row=proxima_linha, column=11, value=valores[3])           # Valor/Percentual
-            ws.cell(row=proxima_linha, column=12, value=valores[4])           # Valor Total
-            ws.cell(row=proxima_linha, column=13, value=valores[5])           # Número de parcelas
-            
-            # Data inicial para casos que têm entrada
-            if valores[6] and metodo_pagamento == "Valor Fixo em Parcelas" and opcoes.get('tem_entrada'):
-                ws.cell(row=proxima_linha, column=14, value=opcoes.get('data_entrada'))  # Data inicial
-
+    
     def processar_eventos(self, ws, num_contrato, valor_global, eventos):
         """Processa os eventos do contrato e cria parcelas vinculadas"""
         for i, (descricao, percentual, valor_evento) in enumerate(eventos, 1):
-            # Salvar evento
-            proxima_linha = ws.max_row + 1
-            ws.cell(row=proxima_linha, column=31, value=num_contrato.upper())  # Contrato
-            ws.cell(row=proxima_linha, column=32, value=i)               # ID Evento
-            ws.cell(row=proxima_linha, column=33, value=descricao)       # Descrição
-            ws.cell(row=proxima_linha, column=34, value=f"{percentual:.2f}%")  # Percentual
-            ws.cell(row=proxima_linha, column=35, value="pendente")      # Status
-            
             # Para cada administrador, criar um registro de parcela vinculada ao evento
             for item in self.tree_adm.get_children():
                 valores_adm = self.tree_adm.item(item)['values']
@@ -3957,7 +3877,7 @@ class GestaoContratos:
                     valor_total_adm = float(str(valores_adm[4]).replace('.', '').replace(',', '.'))
                     valor_admin_evento = (percentual / 100) * valor_total_adm
                 
-                # Registrar parcela vinculada ao evento, sem data de vencimento
+                # Registrar parcela vinculada ao evento, combinando as informações de evento e parcela
                 proxima_linha = ws.max_row + 1
                 ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())  # Contrato
                 ws.cell(row=proxima_linha, column=26, value=i)  # Número do evento como número da parcela
@@ -3967,89 +3887,9 @@ class GestaoContratos:
                 ws.cell(row=proxima_linha, column=30, value=valor_admin_evento)  # Valor
                 ws.cell(row=proxima_linha, column=31, value='PENDENTE')  # Status
                 ws.cell(row=proxima_linha, column=32, value=i)  # ID do evento vinculado
-                ws.cell(row=proxima_linha, column=33, value=descricao)  # Descrição do evento
-
-    def processar_parcelas_fixas(self, ws, num_contrato, valor_global, opcoes):
-        """Processa parcelas fixas para o contrato"""
-        num_parcelas = int(opcoes.get('num_parcelas', 0))
-        tem_entrada = opcoes.get('tem_entrada', False)
-        descricao_base = opcoes.get('descricao_base', 'PARCELA')
-        
-        if num_parcelas <= 0:
-            return
-            
-        # Processar cada administrador
-        for item in self.tree_adm.get_children():
-            valores_adm = self.tree_adm.item(item)['values']
-            cnpj_cpf_adm = str(valores_adm[0]).strip()
-            cnpj_cpf_adm = formatar_cnpj_cpf(cnpj_cpf_adm)
-            nome_adm = valores_adm[1]
-            
-            # Calcular valor por parcela para este administrador
-            if valores_adm[2] == 'Percentual':
-                # Administrador com percentual do valor total
-                perc_adm = float(str(valores_adm[3]).replace('%', '').replace(',', '.'))
-                valor_total_adm = (perc_adm / 100) * valor_global
-            else:  # Fixo
-                # Valor fixo total para o administrador
-                valor_total_adm = float(str(valores_adm[4]).replace('.', '').replace(',', '.'))
-            
-            # Se tem entrada, tratar separadamente
-            if tem_entrada:
-                valor_entrada = float(opcoes.get('valor_entrada', '0').replace(',', '.'))
-                data_entrada = opcoes.get('data_entrada')
+                ws.cell(row=proxima_linha, column=33, value=descricao.upper())  # Descrição do evento
+                ws.cell(row=proxima_linha, column=34, value=f"{percentual:.2f}%")  # Percentual do evento
                 
-                # Calcular proporcional da entrada para este administrador
-                proporcao_entrada = valor_entrada / valor_global
-                valor_entrada_adm = valor_total_adm * proporcao_entrada
-                
-                # Registrar entrada como primeira parcela
-                proxima_linha = ws.max_row + 1
-                ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())  # Contrato
-                ws.cell(row=proxima_linha, column=26, value=1)  # Número da parcela (entrada = 1)
-                ws.cell(row=proxima_linha, column=27, value=cnpj_cpf_adm)  # CNPJ/CPF
-                ws.cell(row=proxima_linha, column=28, value=nome_adm)  # Nome
-                ws.cell(row=proxima_linha, column=29, value=data_entrada)  # Data vencimento
-                ws.cell(row=proxima_linha, column=30, value=valor_entrada_adm)  # Valor
-                ws.cell(row=proxima_linha, column=31, value='PENDENTE')  # Status
-                ws.cell(row=proxima_linha, column=32, value="")  # Sem evento
-                ws.cell(row=proxima_linha, column=33, value=f"{descricao_base} - ENTRADA")  # Descrição
-                
-                # Ajustar valor restante para as demais parcelas
-                valor_restante = valor_total_adm - valor_entrada_adm
-                valor_parcela = valor_restante / num_parcelas
-                
-                # Registrar as demais parcelas
-                for i in range(1, num_parcelas + 1):
-                    proxima_linha = ws.max_row + 1
-                    ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())  # Contrato
-                    ws.cell(row=proxima_linha, column=26, value=i + 1)  # Número da parcela (após entrada)
-                    ws.cell(row=proxima_linha, column=27, value=cnpj_cpf_adm)  # CNPJ/CPF
-                    ws.cell(row=proxima_linha, column=28, value=nome_adm)  # Nome
-                    ws.cell(row=proxima_linha, column=29, value=None)  # Data vencimento (a definir)
-                    ws.cell(row=proxima_linha, column=30, value=valor_parcela)  # Valor
-                    ws.cell(row=proxima_linha, column=31, value='PENDENTE')  # Status
-                    ws.cell(row=proxima_linha, column=32, value="")  # Sem evento
-                    ws.cell(row=proxima_linha, column=33, value=f"{descricao_base} - PARC. {i}/{num_parcelas}")  # Descrição
-                    
-            else:
-                # Sem entrada, distribuir igualmente
-                valor_parcela = valor_total_adm / num_parcelas
-                
-                # Registrar parcelas
-                for i in range(1, num_parcelas + 1):
-                    proxima_linha = ws.max_row + 1
-                    ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())  # Contrato
-                    ws.cell(row=proxima_linha, column=26, value=i)  # Número da parcela
-                    ws.cell(row=proxima_linha, column=27, value=cnpj_cpf_adm)  # CNPJ/CPF
-                    ws.cell(row=proxima_linha, column=28, value=nome_adm)  # Nome
-                    ws.cell(row=proxima_linha, column=29, value=None)  # Data vencimento (a definir)
-                    ws.cell(row=proxima_linha, column=30, value=valor_parcela)  # Valor
-                    ws.cell(row=proxima_linha, column=31, value='PENDENTE')  # Status
-                    ws.cell(row=proxima_linha, column=32, value="")  # Sem evento
-                    ws.cell(row=proxima_linha, column=33, value=f"{descricao_base} - PARC. {i}/{num_parcelas}")  # Descrição
-
-
         
     def editar_contrato(self):
         """Edita o contrato selecionado"""
@@ -5049,44 +4889,6 @@ class GestaoContratos:
             if valores[6] and metodo_pagamento == "Valor Fixo em Parcelas" and opcoes.get('tem_entrada'):
                 ws.cell(row=proxima_linha, column=14, value=opcoes.get('data_entrada'))  # Data inicial
 
-    def processar_eventos(self, ws, num_contrato, valor_global, eventos):
-        """Processa os eventos do contrato e cria parcelas vinculadas"""
-        for i, (descricao, percentual, valor_evento) in enumerate(eventos, 1):
-            # Salvar evento
-            proxima_linha = ws.max_row + 1
-            ws.cell(row=proxima_linha, column=31, value=num_contrato.upper())  # Contrato
-            ws.cell(row=proxima_linha, column=32, value=i)               # ID Evento
-            ws.cell(row=proxima_linha, column=33, value=descricao)       # Descrição
-            ws.cell(row=proxima_linha, column=34, value=f"{percentual:.2f}%")  # Percentual
-            ws.cell(row=proxima_linha, column=35, value="pendente")      # Status
-            
-            # Para cada administrador, criar um registro de parcela vinculada ao evento
-            for item in self.tree_adm.get_children():
-                valores_adm = self.tree_adm.item(item)['values']
-                cnpj_cpf_adm = str(valores_adm[0]).strip()
-                cnpj_cpf_adm = formatar_cnpj_cpf(cnpj_cpf_adm)
-                nome_adm = valores_adm[1]
-                
-                # Calcular valor para este administrador (proporcional ao percentual definido)
-                if valores_adm[2] == 'Percentual':
-                    perc_adm = float(str(valores_adm[3]).replace('%', '').replace(',', '.'))
-                    valor_admin_evento = (perc_adm / 100) * valor_evento
-                else:  # Fixo
-                    # Distribuir o valor total entre os eventos conforme percentuais
-                    valor_total_adm = float(str(valores_adm[4]).replace(',', '.'))
-                    valor_admin_evento = (percentual / 100) * valor_total_adm
-                
-                # Registrar parcela vinculada ao evento, sem data de vencimento
-                proxima_linha = ws.max_row + 1
-                ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())  # Contrato
-                ws.cell(row=proxima_linha, column=26, value=i)  # Número do evento como número da parcela
-                ws.cell(row=proxima_linha, column=27, value=cnpj_cpf_adm)  # CNPJ/CPF
-                ws.cell(row=proxima_linha, column=28, value=nome_adm)  # Nome
-                ws.cell(row=proxima_linha, column=29, value=None)  # Data vencimento (vazio)
-                ws.cell(row=proxima_linha, column=30, value=valor_admin_evento)  # Valor
-                ws.cell(row=proxima_linha, column=31, value='PENDENTE')  # Status
-                ws.cell(row=proxima_linha, column=32, value=i)  # ID do evento vinculado
-                ws.cell(row=proxima_linha, column=33, value=descricao)  # Descrição do evento
 
     def salvar_contrato_com_opcoes(self, num_contrato, data_inicio, data_fim, observacoes, valor_global, metodo_pagamento, opcoes, janela):
         """Salva os dados do contrato com diferentes opções de pagamento"""
@@ -5241,8 +5043,6 @@ class GestaoContratos:
                     wb.close()
                 except:
                     pass
-
-                
 
     def excluir_contrato(self):
         """Exclui o contrato selecionado"""
