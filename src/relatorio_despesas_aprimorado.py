@@ -1597,337 +1597,337 @@ class RelatorioHandler:
         logger.info("Detalhes adicionados com sucesso")
 
 
-    def carregar_taxas_administracao(self, arquivo_excel):
-        """
-        Carrega e processa os dados de taxas de administração da aba Contratos_ADM,
-        considerando a estrutura específica da planilha:
-        - Linha 1: Títulos dos blocos
-        - Linha 2: Subtítulos
-        - Linha 3: Dados do contrato
-        - Linha 4: Dados dos administradores
-        - Linha 5: Início dos dados das parcelas
-        """
-        logger.info(f"Iniciando carregamento de taxas de administração: {arquivo_excel}")
+    # def carregar_taxas_administracao(self, arquivo_excel):
+    #     """
+    #     Carrega e processa os dados de taxas de administração da aba Contratos_ADM,
+    #     considerando a estrutura específica da planilha:
+    #     - Linha 1: Títulos dos blocos
+    #     - Linha 2: Subtítulos
+    #     - Linha 3: Dados do contrato
+    #     - Linha 4: Dados dos administradores
+    #     - Linha 5: Início dos dados das parcelas
+    #     """
+    #     logger.info(f"Iniciando carregamento de taxas de administração: {arquivo_excel}")
 
-        try:
-            workbook = load_workbook(arquivo_excel, data_only=True)
-            if 'Contratos_ADM' not in workbook.sheetnames:
-                logger.warning("Aba 'Contratos_ADM' não encontrada no arquivo")
-                return pd.DataFrame()
+    #     try:
+    #         workbook = load_workbook(arquivo_excel, data_only=True)
+    #         if 'Contratos_ADM' not in workbook.sheetnames:
+    #             logger.warning("Aba 'Contratos_ADM' não encontrada no arquivo")
+    #             return pd.DataFrame()
 
-            ws_contratos = workbook['Contratos_ADM']
-            logger.debug(f"Total de linhas na planilha: {ws_contratos.max_row}")
+    #         ws_contratos = workbook['Contratos_ADM']
+    #         logger.debug(f"Total de linhas na planilha: {ws_contratos.max_row}")
             
-            # Colunas para dados das parcelas com mapeamento correto
-            colunas_parcelas = {
-                'Y': 'referencia',      # Número do contrato
-                'Z': 'numero_parcela',  # Número da parcela
-                'AA': 'cpf_cnpj',       # CNPJ/CPF do Administrador
-                'AB': 'administrador',   # Nome do Administrador
-                'AC': 'data_vencimento', # Data Vencimento
-                'AD': 'valor_parcela',   # Valor da parcela
-                'AE': 'status',         # Status (PENDENTE/PAGO)
-                'AF': 'data_pagamento'  # Data Pagamento
-            }
+    #         # Colunas para dados das parcelas com mapeamento correto
+    #         colunas_parcelas = {
+    #             'Y': 'referencia',      # Número do contrato
+    #             'Z': 'numero_parcela',  # Número da parcela
+    #             'AA': 'cpf_cnpj',       # CNPJ/CPF do Administrador
+    #             'AB': 'administrador',   # Nome do Administrador
+    #             'AC': 'data_vencimento', # Data Vencimento
+    #             'AD': 'valor_parcela',   # Valor da parcela
+    #             'AE': 'status',         # Status (PENDENTE/PAGO)
+    #             'AF': 'data_pagamento'  # Data Pagamento
+    #         }
             
-            dados = []
-            linha_atual = 5  # Começar da linha 5
+    #         dados = []
+    #         linha_atual = 5  # Começar da linha 5
             
-            while linha_atual <= ws_contratos.max_row:
-                valor_coluna_y = ws_contratos[f'Y{linha_atual}'].value
-                logger.debug(f"Processando linha {linha_atual} - Valor Y: {valor_coluna_y}")
+    #         while linha_atual <= ws_contratos.max_row:
+    #             valor_coluna_y = ws_contratos[f'Y{linha_atual}'].value
+    #             logger.debug(f"Processando linha {linha_atual} - Valor Y: {valor_coluna_y}")
                 
-                if valor_coluna_y:
-                    try:
-                        linha = {}
+    #             if valor_coluna_y:
+    #                 try:
+    #                     linha = {}
                         
-                        # Processar cada coluna
-                        for col, nome in colunas_parcelas.items():
-                            valor = ws_contratos[f'{col}{linha_atual}'].value
-                            print(f"Coluna {col} ({nome}): {valor}")
+    #                     # Processar cada coluna
+    #                     for col, nome in colunas_parcelas.items():
+    #                         valor = ws_contratos[f'{col}{linha_atual}'].value
+    #                         print(f"Coluna {col} ({nome}): {valor}")
                             
-                            # Tratamento específico para cada tipo de campo
-                            if nome == 'valor_parcela':
-                                try:
-                                    if isinstance(valor, str):
-                                        valor = float(valor.replace('R$', '').replace('.', '').replace(',', '.').strip())
-                                    elif isinstance(valor, (int, float)):
-                                        valor = float(valor)
-                                    else:
-                                        valor = 0.0
-                                    print(f"Valor parcela convertido: {valor}")
-                                except (ValueError, TypeError) as e:
-                                    print(f"Erro ao converter valor_parcela: {e}")
-                                    valor = 0.0
+    #                         # Tratamento específico para cada tipo de campo
+    #                         if nome == 'valor_parcela':
+    #                             try:
+    #                                 if isinstance(valor, str):
+    #                                     valor = float(valor.replace('R$', '').replace('.', '').replace(',', '.').strip())
+    #                                 elif isinstance(valor, (int, float)):
+    #                                     valor = float(valor)
+    #                                 else:
+    #                                     valor = 0.0
+    #                                 print(f"Valor parcela convertido: {valor}")
+    #                             except (ValueError, TypeError) as e:
+    #                                 print(f"Erro ao converter valor_parcela: {e}")
+    #                                 valor = 0.0
                                     
-                            elif nome == 'data_vencimento' or nome == 'data_pagamento':
-                                if isinstance(valor, datetime):
-                                    valor = valor.date()
-                                elif valor:
-                                    try:
-                                        valor = pd.to_datetime(valor).date()
-                                    except:
-                                        valor = None
-                                print(f"Data convertida: {valor}")
+    #                         elif nome == 'data_vencimento' or nome == 'data_pagamento':
+    #                             if isinstance(valor, datetime):
+    #                                 valor = valor.date()
+    #                             elif valor:
+    #                                 try:
+    #                                     valor = pd.to_datetime(valor).date()
+    #                                 except:
+    #                                     valor = None
+    #                             print(f"Data convertida: {valor}")
                                         
-                            elif nome == 'status':
-                                valor = str(valor).upper() if valor else ''
-                                print(f"Status convertido: {valor}")
+    #                         elif nome == 'status':
+    #                             valor = str(valor).upper() if valor else ''
+    #                             print(f"Status convertido: {valor}")
                                 
-                            else:
-                                # Outros campos mantêm o valor original
-                                valor = str(valor) if valor is not None else ''
+    #                         else:
+    #                             # Outros campos mantêm o valor original
+    #                             valor = str(valor) if valor is not None else ''
                                 
-                            linha[nome] = valor
+    #                         linha[nome] = valor
                         
-                        # Verificar apenas as validações necessárias
-                        print("\nValidando dados:")
-                        print(f"Tem referência: {bool(linha['referencia'])}")
-                        print(f"Tem número da parcela: {bool(linha['numero_parcela'])}")
-                        print(f"Valor parcela > 0: {linha['valor_parcela'] > 0}")
-                        print(f"Data vencimento existe: {linha['data_vencimento'] is not None}")
-                        print(f"Status é PENDENTE: {linha['status'] == 'PENDENTE'}")
+    #                     # Verificar apenas as validações necessárias
+    #                     print("\nValidando dados:")
+    #                     print(f"Tem referência: {bool(linha['referencia'])}")
+    #                     print(f"Tem número da parcela: {bool(linha['numero_parcela'])}")
+    #                     print(f"Valor parcela > 0: {linha['valor_parcela'] > 0}")
+    #                     print(f"Data vencimento existe: {linha['data_vencimento'] is not None}")
+    #                     print(f"Status é PENDENTE: {linha['status'] == 'PENDENTE'}")
                         
-                        # Verificações simplificadas
-                        if (linha['referencia'] and 
-                            linha['numero_parcela'] and 
-                            linha['valor_parcela'] > 0 and 
-                            linha['data_vencimento'] is not None and
-                            linha['status'] == 'PENDENTE'):
-                            dados.append(linha)
-                            print("Linha adicionada aos dados!")
-                        else:
-                            print("Linha não atendeu aos critérios de validação")
+    #                     # Verificações simplificadas
+    #                     if (linha['referencia'] and 
+    #                         linha['numero_parcela'] and 
+    #                         linha['valor_parcela'] > 0 and 
+    #                         linha['data_vencimento'] is not None and
+    #                         linha['status'] == 'PENDENTE'):
+    #                         dados.append(linha)
+    #                         print("Linha adicionada aos dados!")
+    #                     else:
+    #                         print("Linha não atendeu aos critérios de validação")
                             
-                        linha_atual += 1
+    #                     linha_atual += 1
                             
-                    except Exception as e:
-                        print(f"Erro ao processar linha {linha_atual}: {str(e)}")
-                        linha_atual += 1
+    #                 except Exception as e:
+    #                     print(f"Erro ao processar linha {linha_atual}: {str(e)}")
+    #                     linha_atual += 1
                         
-                else:
-                    linha_atual += 1
+    #             else:
+    #                 linha_atual += 1
             
-            # Criar DataFrame apenas com dados válidos
-            df = pd.DataFrame(dados) if dados else pd.DataFrame()
+    #         # Criar DataFrame apenas com dados válidos
+    #         df = pd.DataFrame(dados) if dados else pd.DataFrame()
             
-            logger.info(f"Total de parcelas encontradas: {len(dados)}")
+    #         logger.info(f"Total de parcelas encontradas: {len(dados)}")
 
-            if dados:
-                print("\nPrimeira parcela:")
-                for k, v in dados[0].items():
-                    print(f"{k}: {v}")
+    #         if dados:
+    #             print("\nPrimeira parcela:")
+    #             for k, v in dados[0].items():
+    #                 print(f"{k}: {v}")
             
-            return df
+    #         return df
             
-        except Exception as e:
-            logger.error(f"Erro ao carregar taxas de administração: {str(e)}", exc_info=True)
-            return pd.DataFrame()
+    #     except Exception as e:
+    #         logger.error(f"Erro ao carregar taxas de administração: {str(e)}", exc_info=True)
+    #         return pd.DataFrame()
 
-    def processar_taxas_pendentes(self, df_contratos, data_relatorio):
-        """
-        Processa as taxas pendentes, agrupando por administrador e selecionando as próximas parcelas
-        """
-        if df_contratos.empty:
-            return pd.DataFrame()
+    # def processar_taxas_pendentes(self, df_contratos, data_relatorio):
+    #     """
+    #     Processa as taxas pendentes, agrupando por administrador e selecionando as próximas parcelas
+    #     """
+    #     if df_contratos.empty:
+    #         return pd.DataFrame()
             
-        try:
-            # Converter data_relatorio para datetime
-            data_ref = pd.to_datetime(data_relatorio).date()
+    #     try:
+    #         # Converter data_relatorio para datetime
+    #         data_ref = pd.to_datetime(data_relatorio).date()
             
-            # Filtrar apenas parcelas futuras em relação à data do relatório
-            df_futuro = df_contratos[
-                pd.to_datetime(df_contratos['data_vencimento']).dt.date > data_ref
-            ].copy()
+    #         # Filtrar apenas parcelas futuras em relação à data do relatório
+    #         df_futuro = df_contratos[
+    #             pd.to_datetime(df_contratos['data_vencimento']).dt.date > data_ref
+    #         ].copy()
             
-            # Ordenar por data de vencimento e limitar a 3 parcelas por contrato/administrador
-            df_futuro = df_futuro.sort_values(['referencia', 'administrador', 'data_vencimento'])
+    #         # Ordenar por data de vencimento e limitar a 3 parcelas por contrato/administrador
+    #         df_futuro = df_futuro.sort_values(['referencia', 'administrador', 'data_vencimento'])
             
-            # Agrupar por contrato e administrador e pegar as 3 primeiras parcelas de cada grupo
-            df_final = df_futuro.groupby(['referencia', 'administrador']).head(3)
+    #         # Agrupar por contrato e administrador e pegar as 3 primeiras parcelas de cada grupo
+    #         df_final = df_futuro.groupby(['referencia', 'administrador']).head(3)
             
-            # Ordenar resultado final
-            df_final = df_final.sort_values(['administrador', 'data_vencimento'])
+    #         # Ordenar resultado final
+    #         df_final = df_final.sort_values(['administrador', 'data_vencimento'])
             
-            print("\nParcelas processadas:")
-            for _, row in df_final.iterrows():
-                print(f"Administrador: {row['administrador']}")
-                print(f"Contrato: {row['referencia']}")
-                print(f"Parcela: {row['numero_parcela']}")
-                print(f"Vencimento: {row['data_vencimento']}")
-                print(f"Valor: {row['valor_parcela']}\n")
+    #         print("\nParcelas processadas:")
+    #         for _, row in df_final.iterrows():
+    #             print(f"Administrador: {row['administrador']}")
+    #             print(f"Contrato: {row['referencia']}")
+    #             print(f"Parcela: {row['numero_parcela']}")
+    #             print(f"Vencimento: {row['data_vencimento']}")
+    #             print(f"Valor: {row['valor_parcela']}\n")
             
-            return df_final
+    #         return df_final
             
-        except Exception as e:
-            print(f"Erro ao processar taxas pendentes: {str(e)}")
-            return pd.DataFrame()
+    #     except Exception as e:
+    #         print(f"Erro ao processar taxas pendentes: {str(e)}")
+    #         return pd.DataFrame()
 
         
 
-    def adicionar_taxas_administracao(self, elementos, dados_taxas, config):
-        """
-        Adiciona a seção de taxas de administração pendentes ao relatório
-        """
-        if dados_taxas.empty:
-            return
+    # def adicionar_taxas_administracao(self, elementos, dados_taxas, config):
+    #     """
+    #     Adiciona a seção de taxas de administração pendentes ao relatório
+    #     """
+    #     if dados_taxas.empty:
+    #         return
             
-        try:
-            # Adicionar quebra de página antes da seção de taxas
-            elementos.append(PageBreak())
+    #     try:
+    #         # Adicionar quebra de página antes da seção de taxas
+    #         elementos.append(PageBreak())
             
-            # Adicionar título e descrição
-            elementos.append(Paragraph(
-                "TAXAS DE ADMINISTRAÇÃO VINCENDAS",
-                config.style_heading
-            ))
-            elementos.append(Paragraph(
-                "(Próximas 3 parcelas a vencer por contrato)",
-                ParagraphStyle(
-                    'SubtitleStyle',
-                    parent=config.style_normal,
-                    fontSize=9,
-                    leading=12,
-                    textColor=colors.HexColor('#4A4A4A'),
-                    spaceBefore=2,
-                    spaceAfter=12
-                )
-            ))
+    #         # Adicionar título e descrição
+    #         elementos.append(Paragraph(
+    #             "TAXAS DE ADMINISTRAÇÃO VINCENDAS",
+    #             config.style_heading
+    #         ))
+    #         elementos.append(Paragraph(
+    #             "(Próximas 3 parcelas a vencer por contrato)",
+    #             ParagraphStyle(
+    #                 'SubtitleStyle',
+    #                 parent=config.style_normal,
+    #                 fontSize=9,
+    #                 leading=12,
+    #                 textColor=colors.HexColor('#4A4A4A'),
+    #                 spaceBefore=2,
+    #                 spaceAfter=12
+    #             )
+    #         ))
             
-            total_geral = 0.0
+    #         total_geral = 0.0
             
-            # Agrupar por administrador
-            for administrador, grupo in dados_taxas.groupby('administrador'):
-                # Adicionar nome do administrador e CNPJ/CPF com estilo melhorado
-                cpf_cnpj = grupo['cpf_cnpj'].iloc[0]
-                elementos.append(Paragraph(
-                    f"{administrador}",
-                    ParagraphStyle(
-                        'AdminStyle',
-                        parent=config.style_despesa,
-                        fontSize=11,
-                        leading=13,
-                        textColor=colors.HexColor('#2F4F4F'),
-                        spaceBefore=12,
-                        spaceAfter=2
-                    )
-                ))
-                elementos.append(Paragraph(
-                    f"CNPJ/CPF: {cpf_cnpj}",
-                    ParagraphStyle(
-                        'CpfCnpjStyle',
-                        parent=config.style_normal,
-                        fontSize=8,
-                        leading=10,
-                        leftIndent=10,
-                        textColor=colors.HexColor('#666666'),
-                        spaceBefore=0,
-                        spaceAfter=6
-                    )
-                ))
+    #         # Agrupar por administrador
+    #         for administrador, grupo in dados_taxas.groupby('administrador'):
+    #             # Adicionar nome do administrador e CNPJ/CPF com estilo melhorado
+    #             cpf_cnpj = grupo['cpf_cnpj'].iloc[0]
+    #             elementos.append(Paragraph(
+    #                 f"{administrador}",
+    #                 ParagraphStyle(
+    #                     'AdminStyle',
+    #                     parent=config.style_despesa,
+    #                     fontSize=11,
+    #                     leading=13,
+    #                     textColor=colors.HexColor('#2F4F4F'),
+    #                     spaceBefore=12,
+    #                     spaceAfter=2
+    #                 )
+    #             ))
+    #             elementos.append(Paragraph(
+    #                 f"CNPJ/CPF: {cpf_cnpj}",
+    #                 ParagraphStyle(
+    #                     'CpfCnpjStyle',
+    #                     parent=config.style_normal,
+    #                     fontSize=8,
+    #                     leading=10,
+    #                     leftIndent=10,
+    #                     textColor=colors.HexColor('#666666'),
+    #                     spaceBefore=0,
+    #                     spaceAfter=6
+    #                 )
+    #             ))
                 
-                subtotal_admin = 0.0
+    #             subtotal_admin = 0.0
                 
-                # Criar lista de parcelas por contrato para este administrador
-                for contrato, parcelas in grupo.groupby('referencia'):
-                    # Cabeçalho da tabela
-                    cabecalhos = ['Nº Parcela', 'Data Vencimento', 'Valor']
-                    dados_tabela = [cabecalhos]
+    #             # Criar lista de parcelas por contrato para este administrador
+    #             for contrato, parcelas in grupo.groupby('referencia'):
+    #                 # Cabeçalho da tabela
+    #                 cabecalhos = ['Nº Parcela', 'Data Vencimento', 'Valor']
+    #                 dados_tabela = [cabecalhos]
                     
-                    # Adicionar linhas de dados
-                    for _, parcela in parcelas.iterrows():
-                        data = pd.to_datetime(parcela['data_vencimento']).strftime('%d/%m/%Y')
-                        valor = self.formatar_numero(parcela['valor_parcela'])
-                        dados_tabela.append([
-                            f"Parcela {parcela['numero_parcela']}",
-                            data,
-                            f"R$ {valor}"
-                        ])
-                        subtotal_admin += float(parcela['valor_parcela'])
-                        total_geral += float(parcela['valor_parcela'])
+    #                 # Adicionar linhas de dados
+    #                 for _, parcela in parcelas.iterrows():
+    #                     data = pd.to_datetime(parcela['data_vencimento']).strftime('%d/%m/%Y')
+    #                     valor = self.formatar_numero(parcela['valor_parcela'])
+    #                     dados_tabela.append([
+    #                         f"Parcela {parcela['numero_parcela']}",
+    #                         data,
+    #                         f"R$ {valor}"
+    #                     ])
+    #                     subtotal_admin += float(parcela['valor_parcela'])
+    #                     total_geral += float(parcela['valor_parcela'])
                     
-                    # Criar e adicionar título do contrato
-                    elementos.append(Paragraph(
-                        f"Contrato {contrato}:",
-                        ParagraphStyle(
-                            'ContratoStyle',
-                            parent=config.style_normal,
-                            fontSize=9,
-                            leading=11,
-                            leftIndent=20,
-                            textColor=colors.HexColor('#2F4F4F'),
-                            spaceBefore=6,
-                            spaceAfter=3
-                        )
-                    ))
+    #                 # Criar e adicionar título do contrato
+    #                 elementos.append(Paragraph(
+    #                     f"Contrato {contrato}:",
+    #                     ParagraphStyle(
+    #                         'ContratoStyle',
+    #                         parent=config.style_normal,
+    #                         fontSize=9,
+    #                         leading=11,
+    #                         leftIndent=20,
+    #                         textColor=colors.HexColor('#2F4F4F'),
+    #                         spaceBefore=6,
+    #                         spaceAfter=3
+    #                     )
+    #                 ))
                     
-                    # Criar tabela com estilo melhorado
-                    tabela = Table(
-                        dados_tabela,
-                        colWidths=[100, 100, 100],
-                        style=TableStyle([
-                            # Estilo do cabeçalho
-                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#E6E6E6')),
-                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#2F4F4F')),
-                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                            ('FONTSIZE', (0, 0), (-1, 0), 8),
-                            ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-                            ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
-                            ('TOPPADDING', (0, 0), (-1, 0), 6),
+    #                 # Criar tabela com estilo melhorado
+    #                 tabela = Table(
+    #                     dados_tabela,
+    #                     colWidths=[100, 100, 100],
+    #                     style=TableStyle([
+    #                         # Estilo do cabeçalho
+    #                         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#E6E6E6')),
+    #                         ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#2F4F4F')),
+    #                         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+    #                         ('FONTSIZE', (0, 0), (-1, 0), 8),
+    #                         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+    #                         ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+    #                         ('TOPPADDING', (0, 0), (-1, 0), 6),
                             
-                            # Estilo das células de dados
-                            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-                            ('FONTSIZE', (0, 1), (-1, -1), 8),
-                            ('ALIGN', (0, 1), (1, -1), 'LEFT'),
-                            ('ALIGN', (-1, 1), (-1, -1), 'RIGHT'),
-                            ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
-                            ('TOPPADDING', (0, 1), (-1, -1), 4),
-                            ('LEFTPADDING', (0, 0), (-1, -1), 10),
-                            ('RIGHTPADDING', (0, 0), (-1, -1), 10),
+    #                         # Estilo das células de dados
+    #                         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+    #                         ('FONTSIZE', (0, 1), (-1, -1), 8),
+    #                         ('ALIGN', (0, 1), (1, -1), 'LEFT'),
+    #                         ('ALIGN', (-1, 1), (-1, -1), 'RIGHT'),
+    #                         ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
+    #                         ('TOPPADDING', (0, 1), (-1, -1), 4),
+    #                         ('LEFTPADDING', (0, 0), (-1, -1), 10),
+    #                         ('RIGHTPADDING', (0, 0), (-1, -1), 10),
                             
-                            # Grades e bordas
-                            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#CCCCCC')),
-                            ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#999999')),
-                        ])
-                    )
+    #                         # Grades e bordas
+    #                         ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#CCCCCC')),
+    #                         ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#999999')),
+    #                     ])
+    #                 )
                     
-                    # Adicionar indentação na tabela
-                    elementos.append(IndentedFlowable(tabela, leftIndent=30))
-                    elementos.append(Spacer(1, 6))
+    #                 # Adicionar indentação na tabela
+    #                 elementos.append(IndentedFlowable(tabela, leftIndent=30))
+    #                 elementos.append(Spacer(1, 6))
                 
-                # Adicionar subtotal do administrador
-                elementos.append(Paragraph(
-                    f"Subtotal {administrador}: R$ {self.formatar_numero(subtotal_admin)}",
-                    ParagraphStyle(
-                        'SubtotalStyle',
-                        parent=config.style_normal,
-                        fontSize=9,
-                        leading=11,
-                        leftIndent=30,
-                        textColor=colors.HexColor('#2F4F4F'),
-                        spaceBefore=3,
-                        spaceAfter=12,
-                        alignment=TA_CENTER  # Centraliza o texto
-                    )
-                ))
+    #             # Adicionar subtotal do administrador
+    #             elementos.append(Paragraph(
+    #                 f"Subtotal {administrador}: R$ {self.formatar_numero(subtotal_admin)}",
+    #                 ParagraphStyle(
+    #                     'SubtotalStyle',
+    #                     parent=config.style_normal,
+    #                     fontSize=9,
+    #                     leading=11,
+    #                     leftIndent=30,
+    #                     textColor=colors.HexColor('#2F4F4F'),
+    #                     spaceBefore=3,
+    #                     spaceAfter=12,
+    #                     alignment=TA_CENTER  # Centraliza o texto
+    #                 )
+    #             ))
             
-            # Adicionar total geral
-            elementos.append(Paragraph(
-                f"Total de Taxas Vincendas: R$ {self.formatar_numero(total_geral)}",
-                ParagraphStyle(
-                    'TotalStyle',
-                    parent=config.style_heading,
-                    fontSize=10,
-                    leading=12,
-                    textColor=colors.HexColor('#2F4F4F'),
-                    spaceBefore=12,
-                    spaceAfter=6
-                )
-            ))
+    #         # Adicionar total geral
+    #         elementos.append(Paragraph(
+    #             f"Total de Taxas Vincendas: R$ {self.formatar_numero(total_geral)}",
+    #             ParagraphStyle(
+    #                 'TotalStyle',
+    #                 parent=config.style_heading,
+    #                 fontSize=10,
+    #                 leading=12,
+    #                 textColor=colors.HexColor('#2F4F4F'),
+    #                 spaceBefore=12,
+    #                 spaceAfter=6
+    #             )
+    #         ))
             
-        except Exception as e:
-            print(f"Erro ao adicionar taxas de administração: {str(e)}")
-            raise # Para ajudar no debug
+    #     except Exception as e:
+    #         print(f"Erro ao adicionar taxas de administração: {str(e)}")
+    #         raise # Para ajudar no debug
     
 
     def gerar_relatorio_pdf(self, dados, caminho_output, arquivo_excel):
@@ -2009,11 +2009,11 @@ class RelatorioHandler:
                 self.adicionar_lancamentos_futuros(elementos, dados)
 
             # Carregar e processar taxas de administração
-            df_taxas = self.carregar_taxas_administracao(arquivo_excel)
-            if not df_taxas.empty:
-                df_taxas_processadas = self.processar_taxas_pendentes(df_taxas, dados['data_relatorio'])
-                if not df_taxas_processadas.empty:
-                    self.adicionar_taxas_administracao(elementos, df_taxas_processadas, self.config)
+            # df_taxas = self.carregar_taxas_administracao(arquivo_excel)
+            # if not df_taxas.empty:
+            #     df_taxas_processadas = self.processar_taxas_pendentes(df_taxas, dados['data_relatorio'])
+            #     if not df_taxas_processadas.empty:
+            #         self.adicionar_taxas_administracao(elementos, df_taxas_processadas, self.config)
 
             # Gerar PDF
             doc.build(elementos)
