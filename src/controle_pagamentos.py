@@ -85,9 +85,20 @@ class ControlePagamentos:
         self.tree_parcelas = ttk.Treeview(self.tree_container, columns=colunas, show='headings')
         
         # Configurar colunas
+        larguras_iniciais = {
+            'Nº Contrato': 80,
+            'Nº Parcela': 70,
+            'CNPJ': 120,
+            'Adm': 180,
+            'Eventos/Fases': 330,
+            'Valor': 100,
+            'Status': 100,
+            'Data Pagamento': 100
+        }
+
         for col in colunas:
             self.tree_parcelas.heading(col, text=col)
-            self.tree_parcelas.column(col, width=100)
+            self.tree_parcelas.column(col, width=larguras_iniciais.get(col, 100), minwidth=50)
         
         # Scrollbars
         self.scrollbar_y = ttk.Scrollbar(self.tree_container, orient='vertical',
@@ -222,6 +233,35 @@ class ControlePagamentos:
                 return row[3] == 'ATIVO'  # Coluna D - Status
         return False
 
+    def ajustar_colunas_treeview(self):
+        """Ajusta as colunas da treeview de acordo com o conteúdo"""
+        
+        # Dicionário para armazenar a largura máxima de cada coluna
+        larguras = {}
+        
+        # Inicializar larguras com base nos cabeçalhos
+        for coluna in self.tree_parcelas['columns']:
+            larguras[coluna] = len(coluna) * 10  # Multiplicador para fonte padrão
+        
+        # Verificar largura necessária para cada valor
+        for item in self.tree_parcelas.get_children():
+            valores = self.tree_parcelas.item(item)['values']
+            for i, valor in enumerate(valores):
+                coluna = self.tree_parcelas['columns'][i]
+                # Converter para string e obter comprimento
+                valor_str = str(valor)
+                largura_necessaria = len(valor_str) * 10  # Multiplicador para fonte padrão
+                
+                # Atualizar se for maior que a largura atual
+                if largura_necessaria > larguras.get(coluna, 0):
+                    larguras[coluna] = largura_necessaria
+        
+        # Aplicar larguras calculadas (com limite mínimo e máximo)
+        for coluna, largura in larguras.items():
+            # Limites de tamanho (mínimo e máximo)
+            largura_final = max(50, min(300, largura))
+            self.tree_parcelas.column(coluna, width=largura_final)
+
     def carregar_parcelas(self, event=None):
         """Carrega as parcelas do cliente selecionado"""
         cliente = self.cliente_combo.get()
@@ -261,22 +301,10 @@ class ControlePagamentos:
                 num_parcela = row[25]   # Coluna Z - Número da parcela
                 cnpj_cpf = row[26]      # Coluna AA - CNPJ/CPF
                 nome = row[27]          # Coluna AB - Nome
-                descricao = row[32]         # Coluna Ag - Eventos/Fases
+                descricao = row[32]     # Coluna AG - Eventos/Fases
                 valor = row[29]         # Coluna AD - Valor
                 status = row[30] if len(row) > 30 else "PENDENTE"  # Coluna AE - Status
                 dt_pagto = row[31] if len(row) > 31 else None      # Coluna AF - Data pagamento
-                
-
-                print("\nParcela encontrada de contrato ATIVO!")
-                print(f"Contrato: {num_contrato}")
-                print(f"Parcela: {num_parcela}")
-                print(f"CNPJ/CPF: {cnpj_cpf}")
-                print(f"Nome: {nome}")
-                print(f"Eventos/Fases: {descricao}")
-                print(f"Valor: {valor}")
-                print(f"Status: {status}")
-                print(f"Data Pagamento: {dt_pagto}")
-                
                 
                 # Formatar datas
                 dt_pagto_str = dt_pagto.strftime('%d/%m/%Y') if isinstance(dt_pagto, datetime) else ""
@@ -300,6 +328,9 @@ class ControlePagamentos:
             
             print(f"\nTotal de parcelas encontradas (apenas contratos ativos): {parcelas_encontradas}")
             wb.close()
+            
+            # Ajustar largura das colunas com base no conteúdo
+            self.ajustar_colunas_treeview()
             
         except Exception as e:
             print(f"\nERRO ao carregar parcelas: {str(e)}")
