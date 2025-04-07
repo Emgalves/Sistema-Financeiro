@@ -1,267 +1,465 @@
-# Arquivo: controle_pagamentos.py
-# Este arquivo integrará a gestão de eventos aos módulos existentes
-
-from pathlib import Path
-import os
-import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
-from datetime import datetime
+from tkcalendar import DateEntry
 from openpyxl import load_workbook
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import os
+import sys
+from pathlib import Path
 
-# Adicionar diretório raiz ao path
-def add_project_root():
-    import sys
-    from pathlib import Path
-    current_dir = Path(__file__).resolve().parent
-    project_root = current_dir.parent
-    if str(project_root) not in sys.path:
-        sys.path.append(str(project_root))
-
-add_project_root()
-
-# Importar configurações do sistema
+# No início de controle_pagamentos.py
 try:
-    from src.config.config import (
-        ARQUIVO_CLIENTES,
-        ARQUIVO_MODELO,
+    # Primeira tentativa: importar como está no desenvolvimento
+    from config.utils import (
         PASTA_CLIENTES,
-        BASE_PATH
+        formatar_moeda,
+        validar_data,
+        formatar_valor_excel,
+        aplicar_formatacao_celula,
+        buscar_dados_bancarios_fornecedor
     )
-    from src.config.utils import formatar_cnpj_cpf, aplicar_formatacao_celula
-    from src.config.window_config import configurar_janela
-except ImportError as e:
-    print(f"Erro ao importar módulos: {str(e)}")
-    # Tentar importar com caminho alternativo
+except ImportError:
     try:
-        from config.config import (
-            ARQUIVO_CLIENTES,
-            ARQUIVO_MODELO,
+        # Segunda tentativa: importar do src
+        from src.config.utils import (
             PASTA_CLIENTES,
-            BASE_PATH
+            formatar_moeda,
+            validar_data,
+            formatar_valor_excel,
+            aplicar_formatacao_celula,
+            buscar_dados_bancarios_fornecedor
         )
-        from config.utils import formatar_cnpj_cpf, aplicar_formatacao_celula
-        from config.window_config import configurar_janela
-    except ImportError as e2:
-        print(f"Erro ao importar módulos (caminho alternativo): {str(e2)}")
-        raise
-
+    except ImportError:
+        # Terceira tentativa: ajustar path e importar
+        current_dir = Path(__file__).resolve().parent
+        root_dir = current_dir.parent
+        sys.path.insert(0, str(root_dir))
+        from config.utils import (
+            PASTA_CLIENTES,
+            formatar_moeda,
+            validar_data,
+            formatar_valor_excel,
+            aplicar_formatacao_celula,
+            buscar_dados_bancarios_fornecedor
+        )
 class ControlePagamentos:
     def __init__(self, parent=None):
         self.parent = parent
-        self.janela = None
-        self.cliente_atual = None
-        self.arquivo_cliente = None
-        self.gestao_eventos = None  # Inicializar como None
-
+        self.root = tk.Toplevel(parent) if parent else tk.Tk()
+        self.root.title("Controle de Pagamentos de Taxas")
+        self.root.geometry("1200x700")
+        
+        # Variáveis de controle
+        self.cliente_selecionado = None
+        self.parcelas_selecionadas = []
+        self.scrollbar_y = None
+        self.scrollbar_x = None
+        
+        self.setup_gui()
     
-        
-    def abrir_janela_controle(self):
-        """Abre a janela principal de controle de pagamentos"""
-        # Se a janela já existir, apenas traz para frente
-        if self.janela and self.janela.winfo_exists():
-            self.janela.lift()
-            self.janela.focus_force()
-            return
-
-        # Cria nova janela
-        self.janela = tk.Toplevel(self.parent)
-        configurar_janela(self.janela, "Controle de Pagamentos", 920, 650)
-
-        # Permitir que esta função detecte quando a aplicação é executada diretamente
-        is_main_window = self.parent and self.parent.winfo_toplevel() == self.parent
-        
+    def setup_gui(self):
         # Frame principal
-        frame_principal = ttk.Frame(self.janela, padding=10)
-        frame_principal.pack(fill='both', expand=True)
+        main_frame = ttk.Frame(self.root, padding="10")
+        main_frame.pack(fill='both', expand=True)
         
-        # Título
-        ttk.Label(
-            frame_principal, 
-            text="Sistema de Controle de Pagamentos", 
-            font=('Arial', 14, 'bold')
-        ).pack(pady=10)
+        # Frame seleção de cliente
+        frame_cliente = ttk.LabelFrame(main_frame, text="Selecione o Cliente")
+        frame_cliente.pack(fill='x', pady=5)
         
-        # Frame para opções
-        frame_opcoes = ttk.Frame(frame_principal)
-        frame_opcoes.pack(fill='x', pady=20)
+        self.cliente_combo = ttk.Combobox(frame_cliente, state='readonly')
+        self.cliente_combo.pack(side='left', padx=5)
+        self.cliente_combo.bind('<<ComboboxSelected>>', self.carregar_parcelas)
         
-        # Estilo para botões grandes
-        style = ttk.Style()
-        style.configure('Big.TButton', font=('Arial', 12), padding=(20, 10))
+        # Frame lista de parcelas com scrollbars
+        self.frame_parcelas = ttk.LabelFrame(main_frame, text="Parcelas Pendentes")
+        self.frame_parcelas.pack(fill='both', expand=True, pady=5)
         
-        # Botões em grade (2x2)
-        frame_botoes = ttk.Frame(frame_opcoes)
-        frame_botoes.pack(padx=50, pady=20)
+        # Container para treeview e scrollbars
+        self.tree_container = ttk.Frame(self.frame_parcelas)
+        self.tree_container.pack(fill='both', expand=True, padx=5, pady=5)
         
-        # Linha 1
-        ttk.Button(
-            frame_botoes,
-            text="Pagamentos por Percentual da Quinzena",
-            command=self.abrir_percentual_quinzena,
-            style='Big.TButton',
-            width=35
-        ).grid(row=0, column=0, padx=10, pady=10)
+        # Treeview
+        colunas = ('Nº Contrato', 'Nº Parcela', 'CNPJ', 'Adm', 'Eventos/Fases', 
+                   'Valor', 'Status', 'Data Pagamento')
+        self.tree_parcelas = ttk.Treeview(self.tree_container, columns=colunas, show='headings')
         
-        ttk.Button(
-            frame_botoes,
-            text="Pagamentos por Eventos",
-            command=self.abrir_gestao_eventos,
-            style='Big.TButton',
-            width=35
-        ).grid(row=0, column=1, padx=10, pady=10)
+        # Configurar colunas
+        for col in colunas:
+            self.tree_parcelas.heading(col, text=col)
+            self.tree_parcelas.column(col, width=100)
         
-        # Linha 2
-        ttk.Button(
-            frame_botoes,
-            text="Contratos de Administração",
-            command=self.abrir_gestao_contratos,
-            style='Big.TButton',
-            width=35
-        ).grid(row=1, column=0, padx=10, pady=10)
+        # Scrollbars
+        self.scrollbar_y = ttk.Scrollbar(self.tree_container, orient='vertical',
+                                       command=self.tree_parcelas.yview)
+        self.scrollbar_x = ttk.Scrollbar(self.tree_container, orient='horizontal',
+                                       command=self.tree_parcelas.xview)
         
-        ttk.Button(
-            frame_botoes,
-            text="Relatórios e Consultas",
-            command=self.abrir_relatorios,
-            style='Big.TButton',
-            width=35
-        ).grid(row=1, column=1, padx=10, pady=10)
+        # Configurar treeview
+        self.tree_parcelas.configure(yscrollcommand=self.scrollbar_y.set,
+                                   xscrollcommand=self.scrollbar_x.set)
         
-        # Texto explicativo
-        frame_info = ttk.LabelFrame(frame_principal, text="Informações")
-        frame_info.pack(fill='x', pady=20, padx=50)
+        # Grid layout para treeview e scrollbars
+        self.tree_parcelas.grid(row=0, column=0, sticky='nsew')
+        self.scrollbar_y.grid(row=0, column=1, sticky='ns')
+        self.scrollbar_x.grid(row=1, column=0, sticky='ew')
         
-        texto_info = """
-        • Pagamentos por Percentual da Quinzena: 
-          Gerencia pagamentos calculados como percentual das despesas da quinzena.
-          
-        • Pagamentos por Eventos: 
-          Controla pagamentos vinculados à conclusão de eventos específicos definidos no contrato.
-          
-        • Contratos de Administração: 
-          Gerencia contratos, seus administradores, eventos e parcelas.
-          
-        • Relatórios e Consultas: 
-          Relatórios gerenciais e consultas de pagamentos por período.
+        # Configurar grid weights
+        self.tree_container.grid_rowconfigure(0, weight=1)
+        self.tree_container.grid_columnconfigure(0, weight=1)
+        
+        # Frame para registrar pagamento
+        frame_pagamento = ttk.LabelFrame(main_frame, text="Registrar Pagamento")
+        frame_pagamento.pack(fill='x', pady=5)
+        
+        ttk.Label(frame_pagamento, text="Data do Pagamento:").pack(side='left', padx=5)
+        self.data_pagamento = DateEntry(frame_pagamento, width=12, locale='pt_BR',
+                                      background='darkblue', foreground='white',
+                                      borderwidth=2, date_pattern='dd/mm/yyyy')
+        self.data_pagamento.pack(side='left', padx=5)
+        
+        ttk.Button(frame_pagamento, text="Registrar Pagamento",
+                  command=self.registrar_pagamento).pack(side='left', padx=5)
+        
+        # Frame de botões
+        frame_botoes = ttk.Frame(main_frame)
+        frame_botoes.pack(fill='x', pady=5)
+        
+        ttk.Button(frame_botoes, text="Voltar ao Menu",
+                  command=self.voltar_menu).pack(side='right', padx=5)
+        
+        # Carregar lista de clientes
+        self.carregar_clientes()
+        
+    def tem_taxa_fixa(self, arquivo_cliente):
         """
+        Verifica se o cliente possui contratos com taxa fixa.
+        Considera a estrutura:
+        - Linha N: Contrato ATIVO
+        - Linha N+1: Informações do administrador e tipo da taxa
+        - Linha N+2: Parcelas
         
-        texto = tk.Text(frame_info, wrap='word', height=10, width=80)
-        texto.pack(padx=10, pady=10, fill='both', expand=True)
-        texto.insert('1.0', texto_info)
-        texto.config(state='disabled')
-        
-        # Botão para fechar
-        ttk.Button(
-            frame_principal,
-            text="Fechar",
-            command=lambda: self.fechar_janela(is_main_window),
-            width=20
-        ).pack(side='right', padx=5, pady=10)
-
-    def fechar_janela(self, is_main_window):
-        """Fecha a janela e encerra a aplicação se for a janela principal"""
-        self.janela.destroy()
-        # Se for a janela principal do aplicativo, encerra o programa
-        if is_main_window and self.parent:
-            self.parent.quit()  # Encerra o mainloop
-            self.parent.destroy()  # Destrói a janela principal
-        
-    def abrir_percentual_quinzena(self):
-        """Abre o módulo de percentual da quinzena"""
-        try:
-            # Verifica se já existe o módulo importado
-            if hasattr(self.parent, 'abrir_finalizacao_quinzena'):
-                self.parent.abrir_finalizacao_quinzena()
-            else:
-                # Tentar importar e executar
-                from gestao_taxas import GestaoTaxasAdministracao
-                gestao = GestaoTaxasAdministracao(self.parent)
-                gestao.abrir_finalizacao_quinzena()
-        except ImportError:
-            messagebox.showerror("Erro", "Módulo de Finalização de Quinzena não encontrado")
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir módulo: {str(e)}")
-        
-    def abrir_gestao_eventos(self):
-        """Abre o módulo de gestão de eventos (simplificado)"""
-        try:
-            print("Iniciando gestão de eventos (simplificado)")
+        Args:
+            arquivo_cliente: Path do arquivo do cliente
             
-            # Importar o módulo localmente
-            try:
-                from src.pagamentos_eventos import GestaoEventos
-            except ImportError:
-                try:
-                    from pagamentos_eventos import GestaoEventos
-                except ImportError as e:
-                    print(f"Erro ao importar GestaoEventos: {str(e)}")
-                    messagebox.showerror("Erro", f"Módulo de Gestão de Eventos não encontrado: {str(e)}")
-                    return
+        Returns:
+            bool: True se o cliente tem pelo menos um contrato com taxa fixa ativo
+        """
+        try:
+            print(f"\nVerificando taxa fixa para: {arquivo_cliente}")
+            wb = load_workbook(arquivo_cliente)
+            if 'Contratos_ADM' not in wb.sheetnames:
+                print("Aba Contratos_ADM não encontrada")
+                wb.close()
+                return False
+                
+            ws = wb['Contratos_ADM']
             
-            # Criar instância e abrir janela
-            gestao = GestaoEventos(self.parent)
-            gestao.abrir_janela_eventos()
+            # Converter todas as linhas em lista para facilitar a navegação
+            rows = list(ws.iter_rows(min_row=3, values_only=True))
+            
+            for i in range(len(rows) - 1):  # -1 para evitar IndexError na última linha
+                row = rows[i]
+                
+                # Se encontrou um contrato com status ATIVO
+                if row[0] and row[3] == 'ATIVO':
+                    num_contrato = row[0]
+                    print(f"Contrato ativo encontrado: {num_contrato}")
+                    
+                    # Verificar a próxima linha para o tipo de taxa
+                    if i + 1 < len(rows):
+                        next_row = rows[i + 1]
+                        # Verifica se é a linha de administrador (tem o mesmo número de contrato na coluna G)
+                        if next_row[6] == num_contrato and next_row[9] == 'Fixo':
+                            print(f"Taxa fixa encontrada para contrato {num_contrato}")
+                            wb.close()
+                            return True
+            
+            print("Nenhuma taxa fixa encontrada")
+            wb.close()
+            return False
             
         except Exception as e:
-            print(f"Erro ao abrir gestão de eventos: {str(e)}")
-            messagebox.showerror("Erro", f"Erro ao abrir gestão de eventos: {str(e)}")
+            print(f"Erro ao verificar taxa fixa: {str(e)}")
+            if 'wb' in locals():
+                wb.close()
+            return False
 
+    def carregar_clientes(self):
+        """Carrega a lista de clientes que possuem contratos com taxa fixa ativa"""
+        clientes = []
+        print("\nCarregando clientes com taxa fixa...")
         
-    def abrir_gestao_contratos(self):
-        """Abre o módulo de gestão de contratos"""
-        try:
-            # Primeiro, selecionar um cliente
-            if self.selecionar_cliente():
-                # Importar e instanciar o módulo
+        for arquivo in os.listdir(PASTA_CLIENTES):
+            if arquivo.endswith('.xlsx'):
                 try:
-                    from sistema_entrada_dados import GestaoContratos
-                    gestao_contratos = GestaoContratos(self.parent)
-                    
-                    # Criar uma nova janela explícita para a gestão
-                    janela_gestao = tk.Toplevel(self.parent)
-                    janela_gestao.title(f"Gestão de Contratos - {self.cliente_atual}")
-                    
-                    def on_close():
-                        janela_gestao.destroy()
-                        self.parent.lift()
-                        self.parent.focus_force()
-                    
-                    gestao_contratos.cliente_atual = self.cliente_atual
-                    gestao_contratos.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
-                    gestao_contratos.criar_interface_contratos(janela_gestao, on_close)
-                    
-                except ImportError as ie:
-                    messagebox.showerror("Erro", f"Módulo de Gestão de Contratos não encontrado: {str(ie)}")
+                    arquivo_path = PASTA_CLIENTES / arquivo
+                    if self.tem_taxa_fixa(arquivo_path):
+                        nome_cliente = arquivo.replace('.xlsx', '')
+                        clientes.append(nome_cliente)
+                        print(f"Cliente com taxa fixa encontrado: {nome_cliente}")
+                        
                 except Exception as e:
-                    messagebox.showerror("Erro", f"Erro ao abrir gestão de contratos: {str(e)}")
+                    print(f"Erro ao verificar arquivo {arquivo}: {str(e)}")
+        
+        print(f"\nTotal de clientes com taxa fixa: {len(clientes)}")
+        self.cliente_combo['values'] = sorted(clientes)
+
+
+    def verificar_status_contrato(worksheet, num_contrato):
+        """
+        Verifica se um contrato está ativo
+        
+        Args:
+            worksheet: Planilha Contratos_ADM
+            num_contrato: Número do contrato a verificar
+            
+        Returns:
+            bool: True se o contrato estiver ativo, False caso contrário
+        """
+        for row in worksheet.iter_rows(min_row=3, values_only=True):
+            if row[0] == num_contrato:  # Coluna A - Número do Contrato
+                return row[3] == 'ATIVO'  # Coluna D - Status
+        return False
+
+    def carregar_parcelas(self, event=None):
+        """Carrega as parcelas do cliente selecionado"""
+        cliente = self.cliente_combo.get()
+        if not cliente:
+            return
+            
+        try:
+            print(f"\nCarregando parcelas para {cliente}")
+            
+            # Limpar lista atual
+            for item in self.tree_parcelas.get_children():
+                self.tree_parcelas.delete(item)
+                
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            print(f"Arquivo: {arquivo_cliente}")
+            
+            wb = load_workbook(arquivo_cliente)
+            ws = wb['Contratos_ADM']
+            
+            print("\nBuscando parcelas...")
+            parcelas_encontradas = 0
+            
+            # Primeiro criar um dicionário de status dos contratos
+            contratos_ativos = {}
+            for row in ws.iter_rows(min_row=3, values_only=True):
+                if row[0]:  # Se tem número de contrato
+                    contratos_ativos[str(row[0])] = row[3] == 'ATIVO'
+            
+            # Buscar parcelas apenas de contratos ativos
+            for row in ws.iter_rows(min_row=3, values_only=True):
+                num_contrato = row[24]  # Coluna Y - Número do contrato
+                
+                # Pular se não tem contrato ou se o contrato está inativo
+                if not num_contrato or not contratos_ativos.get(str(num_contrato)):
+                    continue
+                    
+                num_parcela = row[25]   # Coluna Z - Número da parcela
+                cnpj_cpf = row[26]      # Coluna AA - CNPJ/CPF
+                nome = row[27]          # Coluna AB - Nome
+                descricao = row[32]         # Coluna Ag - Eventos/Fases
+                valor = row[29]         # Coluna AD - Valor
+                status = row[30] if len(row) > 30 else "PENDENTE"  # Coluna AE - Status
+                dt_pagto = row[31] if len(row) > 31 else None      # Coluna AF - Data pagamento
+                
+
+                print("\nParcela encontrada de contrato ATIVO!")
+                print(f"Contrato: {num_contrato}")
+                print(f"Parcela: {num_parcela}")
+                print(f"CNPJ/CPF: {cnpj_cpf}")
+                print(f"Nome: {nome}")
+                print(f"Eventos/Fases: {descricao}")
+                print(f"Valor: {valor}")
+                print(f"Status: {status}")
+                print(f"Data Pagamento: {dt_pagto}")
+                
+                
+                # Formatar datas
+                dt_pagto_str = dt_pagto.strftime('%d/%m/%Y') if isinstance(dt_pagto, datetime) else ""
+                
+                # Formatar valor usando formato brasileiro
+                valor_str = f"{float(valor):,.2f}".replace(',', '_').replace('.', ',').replace('_', '.') if valor else ""
+                
+                # Inserir na treeview
+                self.tree_parcelas.insert('', 'end', values=(
+                    num_contrato,
+                    num_parcela,
+                    cnpj_cpf,
+                    nome,           
+                    descricao,
+                    valor_str,
+                    status or "PENDENTE",
+                    dt_pagto_str                    
+                ))
+                
+                parcelas_encontradas += 1
+            
+            print(f"\nTotal de parcelas encontradas (apenas contratos ativos): {parcelas_encontradas}")
+            wb.close()
+            
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir gestão de contratos: {str(e)}")
+            print(f"\nERRO ao carregar parcelas: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao carregar parcelas: {str(e)}")
+            if 'wb' in locals():
+                wb.close()
+
+    def registrar_pagamento(self):
+        """Registra o pagamento das parcelas selecionadas"""
+        print("\nIniciando registro de pagamento...")
         
-    def abrir_relatorios(self):
-        """Abre o módulo de relatórios"""
-        messagebox.showinfo("Informação", "Módulo de Relatórios em desenvolvimento")
+        selecionados = self.tree_parcelas.selection()
+        if not selecionados:
+            print("Nenhuma parcela selecionada")
+            messagebox.showwarning("Aviso", "Selecione as parcelas para pagamento!")
+            return
+            
+        print(f"Parcelas selecionadas: {len(selecionados)}")
         
-    
+        data_pagto = self.data_pagamento.get_date()
+        print(f"Data de pagamento: {data_pagto}")
+        
+        if not validar_data(data_pagto.strftime('%d/%m/%Y')):
+            print("Data inválida")
+            messagebox.showerror("Erro", "Data de pagamento inválida!")
+            return
+            
+        cliente = self.cliente_combo.get()
+        if not cliente:
+            print("Cliente não selecionado")
+            return
+            
+        print(f"Cliente: {cliente}")
+        
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            print(f"Arquivo: {arquivo_cliente}")
+            
+            wb = load_workbook(arquivo_cliente)
+            ws_contratos = wb['Contratos_ADM']
+            ws_dados = wb['Dados']
+            
+            parcelas_processadas = []
+            
+            print("\nProcessando pagamentos...")
+            
+            # Para cada parcela selecionada
+            for item in selecionados:
+                valores = self.tree_parcelas.item(item)['values']
+                num_contrato = str(valores[0])
+                num_parcela = int(valores[1])
+                cnpj_cpf = str(valores[2])
+                nome = str(valores[3])
+                
+                # Buscar total de parcelas para este contrato
+                total_parcelas = 0
+                for row in ws_contratos.iter_rows(min_row=3, values_only=True):
+                    if str(row[24]) == num_contrato:  # Mesmo número de contrato
+                        total_parcelas += 1
+                
+                print(f"\nProcessando parcela {num_parcela}/{total_parcelas} do contrato {num_contrato}")
+                
+                # Atualizar na aba Contratos_ADM
+                for row_idx, row in enumerate(ws_contratos.iter_rows(min_row=3), start=3):
+                    if (str(row[24].value) == num_contrato and
+                        int(row[25].value) == num_parcela and
+                        str(row[26].value) == cnpj_cpf):
+                        
+                        # Pegar o valor original da planilha
+                        valor = float(row[29].value) if row[29].value else 0
+                        
+                        # Atualizar status e data de pagamento
+                        ws_contratos.cell(row=row_idx, column=31, value='PAGO')
+                        ws_contratos.cell(row=row_idx, column=32, value=data_pagto)
+                        
+                        # Registrar na aba Dados
+                        proxima_linha = ws_dados.max_row + 1
+                        
+                        # Calcular data de referência baseada na data de pagamento
+                        data_pagto_informada = data_pagto  # data que foi informada para pagamento
+                        if data_pagto_informada.day <= 5:
+                            data_ref = data_pagto_informada.replace(day=5)
+                        elif data_pagto_informada.day <= 20:
+                            data_ref = data_pagto_informada.replace(day=20)
+                        else:
+                            # Se pagamento após dia 20, a referência será dia 5 do próximo mês
+                            if data_pagto_informada.month == 12:
+                                data_ref = data_pagto_informada.replace(year=data_pagto_informada.year + 1, month=1, day=5)
+                            else:
+                                data_ref = data_pagto_informada.replace(month=data_pagto_informada.month + 1, day=5)
+
+                        ws_dados.cell(row=proxima_linha, column=1, value=data_ref)
+                        ws_dados.cell(row=proxima_linha, column=1).number_format = 'DD/MM/YYYY'
+                        
+                        # Tipo e dados
+                        ws_dados.cell(row=proxima_linha, column=2, value=2)
+                        ws_dados.cell(row=proxima_linha, column=3, value=cnpj_cpf)
+                        ws_dados.cell(row=proxima_linha, column=4, value=nome)
+                        ws_dados.cell(row=proxima_linha, column=5, value=f"ADM OBRA - PARC. {num_parcela}/{total_parcelas}")
+                        
+                        # Primeiro, formatar o valor usando a nova função
+                        valor_formatado = formatar_valor_excel(valor)
+
+                        # Valores com formato brasileiro
+                        cell_vr_unit = ws_dados.cell(row=proxima_linha, column=7, value=valor_formatado)
+                        cell_vr_unit.number_format = '#,##0.00'  # Mudamos a formatação aqui
+                        cell_vr_unit = aplicar_formatacao_celula(cell_vr_unit)
+
+                        ws_dados.cell(row=proxima_linha, column=8, value=1)
+
+                        cell_valor = ws_dados.cell(row=proxima_linha, column=9, value=valor_formatado)
+                        cell_valor.number_format = '#,##0.00'  # Mudamos a formatação aqui também
+                        cell_valor = aplicar_formatacao_celula(cell_valor)
+                        
+                        # Data de pagamento
+                        ws_dados.cell(row=proxima_linha, column=10, value=data_pagto)
+                        ws_dados.cell(row=proxima_linha, column=10).number_format = 'DD/MM/YYYY'
+                        
+                        ws_dados.cell(row=proxima_linha, column=11, value='ADM')
+
+                        # Buscar dados bancários do fornecedor
+                        dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_cpf)
+                        ws_dados.cell(row=proxima_linha, column=12, value=dados_bancarios) # Dados bancários
+                        
+                        ws_dados.cell(row=proxima_linha, column=13, value='LANÇAMENTO AUTOMÁTICO')
+                        
+                        parcelas_processadas.append(f"Contrato {num_contrato} - Parcela {num_parcela}/{total_parcelas}")
+                        break
+            
+            print("\nSalvando alterações...")
+            wb.save(arquivo_cliente)
+            
+            print("\nAtualizando visualização...")
+            self.carregar_parcelas()
+            
+            if parcelas_processadas:
+                mensagem = "Pagamentos registrados:\n\n" + "\n".join(parcelas_processadas)
+                print(f"\nMensagem de sucesso: {mensagem}")
+                messagebox.showinfo("Sucesso", mensagem)
+            else:
+                print("\nNenhuma parcela foi processada!")
+                messagebox.showwarning("Aviso", "Nenhuma parcela foi processada!")
+            
+        except Exception as e:
+            print(f"\nERRO: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao registrar pagamento: {str(e)}")
+            if 'wb' in locals():
+                wb.close()
+
+    def voltar_menu(self):
+        """Fecha a janela e retorna ao menu principal"""
+        self.root.destroy()
+        if self.parent:
+            self.parent.deiconify()
+
+    def run(self):
+        """Inicia a execução do sistema"""
+        self.root.mainloop()
 
 
-# Se executado diretamente, abre a janela de controle
 if __name__ == "__main__":
-    root = tk.Tk()
-    root.withdraw()  # Esconde a janela principal
-    
-    app = ControlePagamentos(root)
-    
-    # Abrir a janela de controle
-    app.abrir_janela_controle()
-    
-    # Definir manipulador para quando a janela de controle for fechada
-    if app.janela:
-        def on_control_close():
-            root.quit()
-            root.destroy()
-        
-        app.janela.protocol("WM_DELETE_WINDOW", on_control_close)
-    
-    root.mainloop()
+    app = ControlePagamentos()
+    app.run()
