@@ -71,7 +71,24 @@ except ImportError:
         BASE_PATH
     )
 
-from src.gestao_taxas import GestaoTaxasAdministracao
+
+try:
+    from src.controle_pagamentos_taxas import ControlePagamentos as ControladorTaxas
+except ImportError:
+    try:
+        from controle_pagamentos_taxas import ControlePagamentos as ControladorTaxas
+    except ImportError as e:
+        print(f"Erro ao importar ControlePagamentos: {str(e)}")
+        # Criar stub básico se o módulo não existir
+        class ControladorTaxasStub:
+            def __init__(self, parent=None):
+                self.parent = parent
+                
+            def abrir_janela_controle(self):
+                import tkinter.messagebox as messagebox
+                messagebox.showerror("Erro", "Módulo de Controle de Pagamentos não encontrado")
+                
+        ControladorTaxas = ControladorTaxasStub
 
 # Importar o módulo de controle de versões
 try:
@@ -117,7 +134,7 @@ class SistemaPrincipal:
         version_control.save_version_history()
         
         # Inicializar gerenciador de taxas
-        self.gestao_taxas = GestaoTaxasAdministracao(self.root)
+        self.controlador_taxas = ControladorTaxas(self.root)
         
         # Configurar estilos e conteúdo
         self.setup_style()
@@ -285,7 +302,8 @@ class SistemaPrincipal:
     def abrir_gestao_taxas(self):
         """Abre o menu de gestão de taxas"""
         try:
-            self.gestao_taxas.abrir_menu_taxas()
+            # Agora chama diretamente o método abrir_janela_controle do ControladorTaxas
+            self.controlador_taxas.abrir_janela_controle()
         except Exception as e:
             messagebox.showerror("Erro",
                 f"Erro ao abrir gestão de taxas: {str(e)}")

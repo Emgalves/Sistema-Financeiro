@@ -46,7 +46,14 @@ except ImportError:
 class ControlePagamentos:
     def __init__(self, parent=None):
         self.parent = parent
-        self.root = tk.Toplevel(parent) if parent else tk.Tk()
+        # Se parent não for especificado, criar uma janela Tk, caso contrário criar uma Toplevel
+        if parent is None:
+            self.root = tk.Tk()
+            self.is_independent = True  # Marcar como janela independente
+        else:
+            self.root = tk.Toplevel(parent)
+            self.is_independent = False  # Marcar como janela secundária
+        
         self.root.title("Controle de Pagamentos de Taxas")
         self.root.geometry("1200x700")
         
@@ -482,9 +489,31 @@ class ControlePagamentos:
 
     def voltar_menu(self):
         """Fecha a janela e retorna ao menu principal"""
+        print("Executando voltar_menu original...")
+        
+        # Verificar se temos uma referência para o controlador principal
+        if hasattr(self, 'controlador_principal') and self.controlador_principal:
+            print("Usando controlador_principal para voltar")
+            self.root.destroy()
+            
+            if hasattr(self.controlador_principal, 'janela') and self.controlador_principal.janela:
+                print("Reexibindo janela do controlador principal")
+                self.controlador_principal.janela.deiconify()
+                return
+        
+        # Se não temos controlador_principal, usar o comportamento padrão
+        print("Usando comportamento padrão para voltar")
         self.root.destroy()
+        
         if self.parent:
-            self.parent.deiconify()
+            if hasattr(self.parent, 'janela') and self.parent.janela:
+                print("Reexibindo janela do parent.janela")
+                self.parent.janela.deiconify()
+            else:
+                print("Reexibindo parent diretamente")
+                self.parent.deiconify()
+        else:
+            print("Não há parent para voltar")
 
     def run(self):
         """Inicia a execução do sistema"""

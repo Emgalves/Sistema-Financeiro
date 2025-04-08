@@ -57,6 +57,7 @@ class ControlePagamentos:
 
     
         
+    # Modificar o método abrir_janela_controle na classe ControlePagamentos
     def abrir_janela_controle(self):
         """Abre a janela principal de controle de pagamentos"""
         # Se a janela já existir, apenas traz para frente
@@ -135,16 +136,16 @@ class ControlePagamentos:
         
         texto_info = """
         • Pagamentos por Percentual da Quinzena: 
-          Gerencia pagamentos calculados como percentual das despesas da quinzena.
-          
+        Gerencia pagamentos calculados como percentual das despesas da quinzena.
+        
         • Pagamentos por Eventos: 
-          Controla pagamentos vinculados à conclusão de eventos específicos definidos no contrato.
-          
+        Controla pagamentos vinculados à conclusão de eventos específicos definidos no contrato.
+        
         • Contratos de Administração: 
-          Gerencia contratos, seus administradores, eventos e parcelas.
-          
+        Gerencia contratos, seus administradores, eventos e parcelas.
+        
         • Relatórios e Consultas: 
-          Relatórios gerenciais e consultas de pagamentos por período.
+        Relatórios gerenciais e consultas de pagamentos por período.
         """
         
         texto = tk.Text(frame_info, wrap='word', height=10, width=80)
@@ -152,21 +153,55 @@ class ControlePagamentos:
         texto.insert('1.0', texto_info)
         texto.config(state='disabled')
         
-        # Botão para fechar
+        # Frame para botões de ação
+        frame_acoes = ttk.Frame(frame_principal)
+        frame_acoes.pack(side='right', pady=10)
+        
+        # NOVO BOTÃO: Voltar ao Menu Principal
         ttk.Button(
-            frame_principal,
+            frame_acoes,
+            text="Voltar ao Menu Principal",
+            command=self.voltar_menu_principal,
+            width=20
+        ).pack(side='right', padx=5)
+        
+        # Botão para fechar (agora apenas fecha esta janela)
+        ttk.Button(
+            frame_acoes,
             text="Fechar",
             command=lambda: self.fechar_janela(is_main_window),
             width=20
-        ).pack(side='right', padx=5, pady=10)
+        ).pack(side='right', padx=5)
+
+    # Adicionar um novo método voltar_menu_principal na classe ControlePagamentos
+    def voltar_menu_principal(self):
+        """Fecha a janela atual e volta para o menu principal"""
+        print("Voltando ao menu principal...")
+        if self.janela:
+            self.janela.destroy()
+        
+        # Exibir novamente a janela principal se existir
+        if self.parent:
+            try:
+                print("Mostrando janela principal")
+                self.parent.deiconify()
+                self.parent.lift()
+                self.parent.focus_force()
+            except Exception as e:
+                print(f"Erro ao mostrar janela principal: {str(e)}")
+                messagebox.showerror("Erro", f"Erro ao voltar ao menu principal: {str(e)}")
 
     def fechar_janela(self, is_main_window):
-        """Fecha a janela e encerra a aplicação se for a janela principal"""
-        self.janela.destroy()
-        # Se for a janela principal do aplicativo, encerra o programa
+        """Fecha a janela e encerra a aplicação apenas se for a janela principal"""
         if is_main_window and self.parent:
-            self.parent.quit()  # Encerra o mainloop
-            self.parent.destroy()  # Destrói a janela principal
+            # Se for executado como janela principal, encerra o aplicativo
+            if messagebox.askyesno("Confirmar", "Deseja realmente sair do sistema?"):
+                self.janela.destroy()
+                self.parent.quit()  # Encerra o mainloop
+                self.parent.destroy()  # Destrói a janela principal
+        else:
+            # Se não for a janela principal, apenas fecha esta janela
+            self.janela.destroy()
         
     def abrir_percentual_quinzena(self):
         """Abre o módulo de percentual da quinzena"""
@@ -200,13 +235,48 @@ class ControlePagamentos:
                     messagebox.showerror("Erro", f"Módulo de Controle de Pagamentos não encontrado: {str(e)}")
                     return
             
-            # Criar instância e abrir janela
-            gestao = ControlePagamentos(self.parent)
-            #gestao.abrir_janela_eventos()
+            # Salvar a referência para esta instância como "controlador_principal"
+            # Isso será usado para voltar à janela correta
+            self.janela.withdraw()  # Ocultar a janela de controle antes de abrir a nova
+
+            # Criar instância do ControlePagamentos com referência a esta classe
+            gestao = ControlePagamentos(None)  # Começar sem parent
+            
+            # Armazenar a referência para o controlador principal
+            gestao.controlador_principal = self
+            
+            # Configurar um callback personalizado para quando a janela for fechada
+            def on_close():
+                print("Callback on_close executado")
+                gestao.root.destroy()
+                # Mostrar a janela do menu novamente
+                if hasattr(self, 'janela') and self.janela:
+                    print("Reexibindo janela do menu")
+                    self.janela.deiconify()
+            
+            # Substituir o método voltar_menu original
+            original_voltar_menu = gestao.voltar_menu
+            
+            def custom_voltar_menu():
+                print("Custom voltar_menu executado")
+                gestao.root.destroy()
+                # Mostrar a janela do menu novamente
+                if hasattr(self, 'janela') and self.janela:
+                    print("Reexibindo janela do menu pelo custom_voltar_menu")
+                    self.janela.deiconify()
+            
+            # Substituir o método por nossa versão personalizada
+            gestao.voltar_menu = custom_voltar_menu
+            
+            # Configurar o protocolo para o botão de fechar (X)
+            gestao.root.protocol("WM_DELETE_WINDOW", on_close)
             
         except Exception as e:
             print(f"Erro ao abrir controle de pagamentos: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
+            # Garantir que a janela anterior seja restaurada em caso de erro
+            if hasattr(self, 'janela') and self.janela:
+                self.janela.deiconify()
 
         
     def abrir_gestao_contratos(self):
@@ -259,6 +329,7 @@ if __name__ == "__main__":
     # Definir manipulador para quando a janela de controle for fechada
     if app.janela:
         def on_control_close():
+            print("Fechando aplicação")
             root.quit()
             root.destroy()
         
