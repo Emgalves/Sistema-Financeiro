@@ -191,22 +191,22 @@ class ControlePagamentos:
             
             # Importar o módulo localmente
             try:
-                from src.pagamentos_eventos import GestaoEventos
+                from src.controle_pagamentos import ControlePagamentos
             except ImportError:
                 try:
-                    from pagamentos_eventos import GestaoEventos
+                    from controle_pagamentos import ControlePagamentos
                 except ImportError as e:
-                    print(f"Erro ao importar GestaoEventos: {str(e)}")
-                    messagebox.showerror("Erro", f"Módulo de Gestão de Eventos não encontrado: {str(e)}")
+                    print(f"Erro ao importar ControlePagamentos: {str(e)}")
+                    messagebox.showerror("Erro", f"Módulo de Controle de Pagamentos não encontrado: {str(e)}")
                     return
             
             # Criar instância e abrir janela
-            gestao = GestaoEventos(self.parent)
-            gestao.abrir_janela_eventos()
+            gestao = ControlePagamentos(self.parent)
+            #gestao.abrir_janela_eventos()
             
         except Exception as e:
-            print(f"Erro ao abrir gestão de eventos: {str(e)}")
-            messagebox.showerror("Erro", f"Erro ao abrir gestão de eventos: {str(e)}")
+            print(f"Erro ao abrir controle de pagamentos: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
 
         
     def abrir_gestao_contratos(self):
