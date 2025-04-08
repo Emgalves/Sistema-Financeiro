@@ -196,13 +196,22 @@ class SistemaPrincipal:
                         "Gestão completa de taxas administrativas",
                         self.abrir_gestao_taxas, 0, 1)
         
+        self.create_card(grid, "Despesas Rateadas", 
+                "Gerenciamento de despesas compartilhadas entre clientes", 
+                self.abrir_despesas_rateadas, 1, 0)
+        
         self.create_card(grid, "Geração de Relatórios",
                         "Visualização de relatórios",
-                        self.abrir_relatorios, 0, 2)
+                        self.abrir_relatorios, 1, 1)
+                        
+        self.create_card(grid, "Gestão de Medições",
+                        "Gerenciar contratos com mpreiteros e por entregas",
+                        self.abrir_configuracoes, 2, 0)
                         
         self.create_card(grid, "Configurações do Sistema",
                         "Gerenciar parâmetros básicos",
-                        self.abrir_configuracoes, 1, 0)
+                        self.abrir_configuracoes, 2, 1)
+        
         
         # Frame para botões inferiores (Sobre, Versão e Sair)
         bottom_frame = ttk.Frame(main_frame)
@@ -332,6 +341,31 @@ class SistemaPrincipal:
         except Exception as e:
             messagebox.showerror("Erro",
                 f"Erro ao abrir sistema de relatórios: {str(e)}")
+            self.root.deiconify()
+
+    def abrir_despesas_rateadas(self):
+        """Abre o sistema de despesas rateadas"""
+        try:
+            modulo = self.reload_module('despesas_rateadas')
+            if not modulo:
+                return
+
+            self.root.withdraw()
+            rateio_window = tk.Toplevel(self.root)
+            
+            app = modulo.InterfaceDespesasRateadas(rateio_window)
+            app.menu_principal = self.root
+            
+            rateio_window.protocol("WM_DELETE_WINDOW", 
+                lambda: self.finalizar_sistema(rateio_window))
+            
+            rateio_window.lift()
+            rateio_window.focus_force()
+            rateio_window.mainloop()
+            
+        except Exception as e:
+            messagebox.showerror("Erro",
+                f"Erro ao abrir sistema de despesas rateadas: {str(e)}")
             self.root.deiconify()
 
     def reload_module(self, module_name):
