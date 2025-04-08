@@ -41,6 +41,1330 @@ try:
 except Exception as e:
     print(f"Erro ao importar logger: {str(e)}")
 
+try:
+    from config.config import (
+        ARQUIVO_CLIENTES,
+        ARQUIVO_MODELO,
+        PASTA_CLIENTES,
+        BASE_PATH,
+        ARQUIVO_FORNECEDORES
+    )
+    logger.info("Configurações do sistema importadas com sucesso")
+except Exception as e:
+    logger.error(f"Erro ao importar configurações do sistema: {str(e)}")
+    raise
+
+try:
+    # Primeira tentativa: importar como está no desenvolvimento
+    from config.utils import (
+        PASTA_CLIENTES,
+        formatar_moeda,
+        validar_data,
+        formatar_valor_excel,
+        aplicar_formatacao_celula,
+        buscar_dados_bancarios_fornecedor
+    )
+except ImportError:
+    try:
+        # Segunda tentativa: importar do src
+        from src.config.utils import (
+            PASTA_CLIENTES,
+            formatar_moeda,
+            validar_data,
+            formatar_valor_excel,
+            aplicar_formatacao_celula,
+            buscar_dados_bancarios_fornecedor
+        )
+    except ImportError:
+        # Terceira tentativa: ajustar path e importar
+        current_dir = Path(__file__).resolve().parent
+        root_dir = current_dir.parent
+        sys.path.insert(0, str(root_dir))
+        from config.utils import (
+            PASTA_CLIENTES,
+            formatar_moeda,
+            validar_data,
+            formatar_valor_excel,
+            aplicar_formatacao_celula,
+            buscar_dados_bancarios_fornecedor
+        )
+
+try:
+    from config.window_config import configurar_janela
+    print("window_config importado com sucesso")
+except ImportError as e:
+    print(f"Erro ao importar window_config: {str(e)}")
+    from src.config.window_config import configurar_janela
+    print("window_config importado pelo caminho alternativo")
+
+# Para criação de planilhas
+from openpyxl import Workbook
+
+class InterfaceDespesasRateadas:
+    def __init__(self, parent):
+        self.parent = parent
+        self.root = parent
+        self.menu_principal = None  # Será definido pelo sistema principal
+        
+        configurar_janela(self.root, "Gestão de Despesas Rateadas", 900, 1000)
+        
+        # Variáveis
+        self.clientes = []
+        self.modo_rateio = StringVar(value="percentual") # percentual ou valor
+        self.tipo_despesa = StringVar(value="3")  # Padrão: tipo 3
+        
+        # Configurar interface
+        self.setup_gui()
+        self.carregar_clientes()
+        self.mostrar_historico_rateios()
+
+        self.fornecedor_selecionado = None
+    
+    def setup_gui(self):
+        """Configura a interface gráfica principal"""
+        # Frame principal com notebook para abas
+        self.notebook = ttk.Notebook(self.root)
+        self.notebook.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Aba de Rateio
+        self.aba_rateio = ttk.Frame(self.notebook)
+        self.notebook.add(self.aba_rateio, text="Novo Rateio")
+        
+        # Aba de Histórico
+        self.aba_historico = ttk.Frame(self.notebook)
+        self.notebook.add(self.aba_historico, text="Histórico de Rateios")
+        
+        # Configurar aba de rateio
+        self.setup_aba_rateio()
+        
+        # Configurar aba de histórico
+        self.setup_aba_historico()
+    
+    def setup_aba_rateio(self):
+        """Configura a interface da aba de novo rateio"""
+        # Frame para seleção de fornecedor (NOVO)
+        frame_fornecedor = ttk.LabelFrame(self.aba_rateio, text="Seleção de Fornecedor")
+        frame_fornecedor.pack(fill='x', padx=10, pady=5)
+        
+        # Frame de busca com tamanho reduzido
+        frame_busca = ttk.Frame(frame_fornecedor)
+        frame_busca.pack(fill='x', padx=5, pady=5)
+
+        # Campo de busca
+        ttk.Label(frame_busca, text="Nome:", font=('Arial', 10)).pack(side='left', padx=5)
+        self.busca_entry = ttk.Entry(frame_busca, font=('Arial', 10), width=40)
+        self.busca_entry.pack(side='left', padx=5)
+        self.busca_entry.bind('<Return>', lambda e: self.buscar_fornecedor())
+
+        # Botão de busca
+        ttk.Button(frame_busca, 
+                text="Buscar", 
+                command=self.buscar_fornecedor).pack(side='left', padx=10)
+
+        # Frame para resultados
+        frame_resultados = ttk.Frame(frame_fornecedor)
+        frame_resultados.pack(fill='x', expand=False, padx=5, pady=5)
+
+        # Lista de resultados com scrollbar
+        frame_tree = ttk.Frame(frame_resultados)
+        frame_tree.pack(fill='x', expand=False, padx=5, pady=5)
+        
+        # Scrollbar vertical
+        scroll_y = ttk.Scrollbar(frame_tree, orient='vertical')
+        scroll_y.pack(side='right', fill='y')
+        
+        # Treeview para resultados
+        self.tree_fornecedores = ttk.Treeview(frame_tree, 
+                                            columns=('CNPJ/CPF', 'Nome', 'Categoria'),
+                                            show='headings',
+                                            yscrollcommand=scroll_y.set,
+                                            height=4)  # Altura fixa para não ocupar muito espaço
+        
+        self.tree_fornecedores.heading('CNPJ/CPF', text='CNPJ/CPF')
+        self.tree_fornecedores.heading('Nome', text='Nome')
+        self.tree_fornecedores.heading('Categoria', text='Categoria')
+        
+        # Configurar larguras das colunas
+        self.tree_fornecedores.column('CNPJ/CPF', width=150)
+        self.tree_fornecedores.column('Nome', width=300)
+        self.tree_fornecedores.column('Categoria', width=100)
+        
+        self.tree_fornecedores.pack(side='left', fill='x', expand=True)
+        scroll_y.config(command=self.tree_fornecedores.yview)
+        
+        # Adicionar evento de duplo clique para selecionar fornecedor
+        self.tree_fornecedores.bind('<Double-1>', lambda e: self.selecionar_fornecedor())
+
+        # Frame para dados do fornecedor selecionado
+        self.frame_fornecedor_dados = ttk.Frame(frame_fornecedor)
+        self.frame_fornecedor_dados.pack(fill='x', pady=5)
+
+        # CNPJ/CPF e Nome
+        ttk.Label(self.frame_fornecedor_dados, text="CNPJ/CPF:").grid(row=0, column=0, padx=5, pady=2, sticky='e')
+        self.cnpj_cpf_fornecedor = ttk.Entry(self.frame_fornecedor_dados, width=20, state='readonly')
+        self.cnpj_cpf_fornecedor.grid(row=0, column=1, padx=5, pady=2, sticky='w')
+        
+        ttk.Label(self.frame_fornecedor_dados, text="Nome:").grid(row=0, column=2, padx=5, pady=2, sticky='e')
+        self.nome_fornecedor = ttk.Entry(self.frame_fornecedor_dados, width=40, state='readonly')
+        self.nome_fornecedor.grid(row=0, column=3, padx=5, pady=2, sticky='w')
+
+        # Botão para selecionar fornecedor
+        ttk.Button(self.frame_fornecedor_dados, 
+                text="Selecionar", 
+                command=self.selecionar_fornecedor).grid(row=0, column=4, padx=10, pady=2)
+    
+        # Frame para dados da despesa
+        frame_despesa = ttk.LabelFrame(self.aba_rateio, text="Dados da Despesa")
+        frame_despesa.pack(fill='x', padx=10, pady=5)
+        
+        # Grid para organizar os campos de forma mais equilibrada
+        # Linha 0: Descrição (ocupa 2 colunas)
+        ttk.Label(frame_despesa, text="Descrição:").grid(row=0, column=0, padx=5, pady=5, sticky='e')
+        self.descricao = ttk.Entry(frame_despesa, width=80)
+        self.descricao.grid(row=0, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        
+        # Linha 1: Valor Total e Data de Referência
+        ttk.Label(frame_despesa, text="Valor Total (R$):").grid(row=1, column=0, padx=5, pady=5, sticky='e')
+        self.valor_total = ttk.Entry(frame_despesa, width=15)
+        self.valor_total.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        
+        ttk.Label(frame_despesa, text="Data de Referência:").grid(row=1, column=2, padx=5, pady=5, sticky='e')
+        self.data_ref = DateEntry(frame_despesa, width=15, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_ref.grid(row=1, column=3, padx=5, pady=5, sticky='w')
+        
+        # Linha 2: Tipo de Despesa e Observações
+        ttk.Label(frame_despesa, text="Tipo de Despesa:").grid(row=2, column=0, padx=5, pady=5, sticky='e')
+        tipo_combo = ttk.Combobox(frame_despesa, textvariable=self.tipo_despesa, values=['2', '3'], state='readonly', width=5)
+        tipo_combo.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        
+        ttk.Label(frame_despesa, text="Observações:").grid(row=2, column=2, padx=5, pady=5, sticky='e')
+        self.observacao = ttk.Entry(frame_despesa, width=40)
+        self.observacao.grid(row=2, column=3, padx=5, pady=5, sticky='ew')
+        
+        # Frame para modo de rateio
+        frame_modo = ttk.LabelFrame(self.aba_rateio, text="Modo de Rateio")
+        frame_modo.pack(fill='x', padx=10, pady=5)
+        
+        # Radiobuttons para selecionar o modo
+        ttk.Radiobutton(frame_modo, text="Por Percentual (%)", variable=self.modo_rateio, value="percentual",
+                      command=self.atualizar_modo_rateio).pack(side='left', padx=20, pady=5)
+        ttk.Radiobutton(frame_modo, text="Por Valor (R$)", variable=self.modo_rateio, value="valor",
+                      command=self.atualizar_modo_rateio).pack(side='left', padx=20, pady=5)
+        
+        # Frame para resumo
+        self.frame_resumo = ttk.LabelFrame(self.aba_rateio, text="Resumo do Rateio")
+        self.frame_resumo.pack(fill='x', padx=10, pady=5)
+        
+        # Grid para resumo
+        self.lbl_total_clientes = ttk.Label(self.frame_resumo, text="Total de Clientes: 0")
+        self.lbl_total_clientes.pack(side='left', padx=10, pady=5)
+        
+        self.lbl_total_valor = ttk.Label(self.frame_resumo, text="Valor Total: R$ 0,00")
+        self.lbl_total_valor.pack(side='left', padx=10, pady=5)
+        
+        self.lbl_total_rateio = ttk.Label(self.frame_resumo, text="Total Rateado: 0%")
+        self.lbl_total_rateio.pack(side='left', padx=10, pady=5)
+        
+        # Frame para lista de clientes
+        frame_clientes = ttk.LabelFrame(self.aba_rateio, text="Clientes")
+        frame_clientes.pack(fill='both', expand=True, padx=10, pady=5)
+        
+        # Criar Treeview para clientes
+        colunas = ('Cliente', 'Percentual', 'Valor')
+        self.tree_clientes = ttk.Treeview(frame_clientes, columns=colunas, show='headings', height=15)
+        for col in colunas:
+            self.tree_clientes.heading(col, text=col)
+        
+        self.tree_clientes.column('Cliente', width=300)
+        self.tree_clientes.column('Percentual', width=100, anchor='e')
+        self.tree_clientes.column('Valor', width=100, anchor='e')
+        
+        # Adicionar scrollbars
+        scrolly = ttk.Scrollbar(frame_clientes, orient='vertical', command=self.tree_clientes.yview)
+        scrollx = ttk.Scrollbar(frame_clientes, orient='horizontal', command=self.tree_clientes.xview)
+        self.tree_clientes.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
+        
+        self.tree_clientes.pack(fill='both', expand=True, side='left')
+        scrolly.pack(side='right', fill='y')
+        scrollx.pack(side='bottom', fill='x')
+        
+        # Frame para ajuste rápido
+        frame_ajuste = ttk.LabelFrame(self.aba_rateio, text="Ajuste Rápido")
+        frame_ajuste.pack(fill='x', padx=10, pady=5)
+        
+        ttk.Label(frame_ajuste, text="Distribuir Igualmente:").pack(side='left', padx=5, pady=5)
+        ttk.Button(frame_ajuste, text="Aplicar", command=self.distribuir_igualmente).pack(side='left', padx=5, pady=5)
+        
+        ttk.Separator(frame_ajuste, orient='vertical').pack(side='left', padx=10, fill='y', pady=5)
+        
+        ttk.Label(frame_ajuste, text="Definir Percentual:").pack(side='left', padx=5, pady=5)
+        self.percentual_selecionado = ttk.Entry(frame_ajuste, width=8)
+        self.percentual_selecionado.pack(side='left', padx=5, pady=5)
+        ttk.Button(frame_ajuste, text="Aplicar ao Selecionado", 
+                 command=self.aplicar_percentual_selecionado).pack(side='left', padx=5, pady=5)
+        
+        # Frame para botões de ação
+        frame_botoes = ttk.Frame(self.aba_rateio)
+        frame_botoes.pack(fill='x', padx=10, pady=10)
+        
+        ttk.Button(frame_botoes, text="Calcular Rateio", 
+                 command=self.calcular_rateio_modo_atual).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Aplicar Rateio", 
+                 command=self.aplicar_rateio_clientes).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Voltar ao Menu", 
+                 command=self.voltar_menu).pack(side='right', padx=5)
+    
+    def setup_aba_historico(self):
+        """Configura a interface da aba de histórico"""
+        # Frame para filtros
+        frame_filtros = ttk.LabelFrame(self.aba_historico, text="Filtros")
+        frame_filtros.pack(fill='x', padx=10, pady=5)
+        
+        ttk.Label(frame_filtros, text="Data Inicial:").grid(row=0, column=0, padx=5, pady=5)
+        self.data_inicial = DateEntry(frame_filtros, width=15, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_inicial.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Label(frame_filtros, text="Data Final:").grid(row=0, column=2, padx=5, pady=5)
+        self.data_final = DateEntry(frame_filtros, width=15, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_final.grid(row=0, column=3, padx=5, pady=5)
+        
+        ttk.Label(frame_filtros, text="Descrição:").grid(row=1, column=0, padx=5, pady=5)
+        self.filtro_descricao = ttk.Entry(frame_filtros, width=40)
+        self.filtro_descricao.grid(row=1, column=1, columnspan=2, padx=5, pady=5)
+        
+        ttk.Button(frame_filtros, text="Filtrar", 
+                 command=self.filtrar_historico).grid(row=1, column=3, padx=5, pady=5)
+        
+        # Frame para histórico
+        frame_historico = ttk.LabelFrame(self.aba_historico, text="Registros de Rateios")
+        frame_historico.pack(fill='both', expand=True, padx=10, pady=5)
+        
+        # Criar Treeview para histórico
+        colunas = ('Data Registro', 'Data Referência', 'Descrição', 'Valor Total', 
+                  'Tipo Despesa', 'Qtd Clientes', 'Status')
+        self.tree_historico = ttk.Treeview(frame_historico, columns=colunas, show='headings', height=15)
+        
+        for col in colunas:
+            self.tree_historico.heading(col, text=col)
+            if col in ['Data Registro', 'Data Referência']:
+                self.tree_historico.column(col, width=150)
+            elif col == 'Descrição':
+                self.tree_historico.column(col, width=300)
+            else:
+                self.tree_historico.column(col, width=100)
+        
+        # Adicionar scrollbars
+        scrolly = ttk.Scrollbar(frame_historico, orient='vertical', command=self.tree_historico.yview)
+        scrollx = ttk.Scrollbar(frame_historico, orient='horizontal', command=self.tree_historico.xview)
+        self.tree_historico.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
+        
+        self.tree_historico.pack(fill='both', expand=True, side='left')
+        scrolly.pack(side='right', fill='y')
+        scrollx.pack(side='bottom', fill='x')
+        
+        # Frame para detalhes do rateio selecionado
+        frame_detalhes = ttk.LabelFrame(self.aba_historico, text="Detalhes do Rateio Selecionado")
+        frame_detalhes.pack(fill='x', padx=10, pady=5)
+        
+        # Criar Treeview para detalhes
+        colunas_det = ('Cliente', 'Valor', 'Status')
+        self.tree_detalhes = ttk.Treeview(frame_detalhes, columns=colunas_det, show='headings', height=5)
+        
+        for col in colunas_det:
+            self.tree_detalhes.heading(col, text=col)
+            if col == 'Cliente':
+                self.tree_detalhes.column(col, width=300)
+            elif col == 'Valor':
+                self.tree_detalhes.column(col, width=100, anchor='e')
+            else:
+                self.tree_detalhes.column(col, width=200)
+        
+        # Adicionar scrollbars
+        scrolly_det = ttk.Scrollbar(frame_detalhes, orient='vertical', command=self.tree_detalhes.yview)
+        scrollx_det = ttk.Scrollbar(frame_detalhes, orient='horizontal', command=self.tree_detalhes.xview)
+        self.tree_detalhes.configure(yscrollcommand=scrolly_det.set, xscrollcommand=scrollx_det.set)
+        
+        self.tree_detalhes.pack(fill='both', expand=True, side='left')
+        scrolly_det.pack(side='right', fill='y')
+        scrollx_det.pack(side='bottom', fill='x')
+        
+        # Binding para mostrar detalhes
+        self.tree_historico.bind('<<TreeviewSelect>>', self.mostrar_detalhes_rateio)
+        
+        # Botões
+        frame_botoes = ttk.Frame(self.aba_historico)
+        frame_botoes.pack(fill='x', padx=10, pady=10)
+        
+        ttk.Button(frame_botoes, text="Atualizar", 
+                 command=self.mostrar_historico_rateios).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Voltar ao Menu", 
+                 command=self.voltar_menu).pack(side='right', padx=5)
+    
+    def buscar_fornecedor(self):
+        """Busca fornecedores baseado no termo informado"""
+        from openpyxl import load_workbook
+        
+        termo = self.busca_entry.get().strip().upper()
+        if not termo:
+            messagebox.showwarning("Aviso", "Informe um termo para a busca")
+            return
+        
+        try:
+            # Limpar resultados anteriores
+            for item in self.tree_fornecedores.get_children():
+                self.tree_fornecedores.delete(item)
+            
+            # Carregar arquivo de fornecedores
+            from config.config import ARQUIVO_FORNECEDORES
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+            
+            # Realizar a busca
+            encontrados = 0
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Skip empty rows
+                    continue
+                    
+                # Verificar se o termo está em qualquer campo relevante
+                if (termo in str(row[0]).upper() or  # CNPJ/CPF
+                    termo in str(row[3]).upper() or  # Nome
+                    termo in str(row[2]).upper()):   # Razão Social
+                    
+                    # Adicionar à treeview
+                    self.tree_fornecedores.insert('', 'end', values=(row[0], row[3], row[11]))
+                    encontrados += 1
+                    
+                    # Limitar a 50 resultados
+                    if encontrados >= 50:
+                        break
+            
+            if encontrados == 0:
+                messagebox.showinfo("Informação", "Nenhum fornecedor encontrado com este termo")
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao buscar fornecedores: {str(e)}")
+
+    def selecionar_fornecedor(self):
+        """Seleciona o fornecedor para o rateio"""
+        # Obter item selecionado
+        selecionado = self.tree_fornecedores.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um fornecedor da lista")
+            return
+        
+        # Obter dados do fornecedor
+        valores = self.tree_fornecedores.item(selecionado)['values']
+        
+        # Atualizar campos
+        self.cnpj_cpf_fornecedor.config(state='normal')
+        self.cnpj_cpf_fornecedor.delete(0, tk.END)
+        self.cnpj_cpf_fornecedor.insert(0, valores[0])
+        self.cnpj_cpf_fornecedor.config(state='readonly')
+        
+        self.nome_fornecedor.config(state='normal')
+        self.nome_fornecedor.delete(0, tk.END)
+        self.nome_fornecedor.insert(0, valores[1])
+        self.nome_fornecedor.config(state='readonly')
+        
+        # Armazenar dados do fornecedor para uso posterior
+        self.fornecedor_selecionado = {
+            'cnpj_cpf': valores[0],
+            'nome': valores[1],
+            'categoria': valores[2]
+        }
+        
+        messagebox.showinfo("Sucesso", f"Fornecedor {valores[1]} selecionado")
+
+    def calcular_data_rel(self, data_vencto, tipo_despesa):
+        """
+        Calcula a data de relatório com base na data de vencimento
+        seguindo as regras existentes
+        """
+        hoje = datetime.now().date()  # Convertendo para date para comparação consistente
+        
+        # Garantir que data_vencto seja um objeto date
+        if isinstance(data_vencto, datetime):
+            data_vencto = data_vencto.date()
+        
+        # Verificar a regra baseada no tipo de despesa
+        if tipo_despesa == '5':
+            if data_vencto.day <= 5:
+                data_rel = data_vencto.replace(day=5)
+            elif data_vencto.day <= 20:
+                data_rel = data_vencto.replace(day=20)
+            else:
+                proximo_mes = data_vencto + relativedelta(months=1)
+                data_rel = proximo_mes.replace(day=5)
+        else:
+            # Para outros tipos de despesa
+            if data_vencto.day <= 5:
+                data_rel = (data_vencto - relativedelta(months=1)).replace(day=20)
+            elif data_vencto.day <= 20:
+                data_rel = data_vencto.replace(day=5)
+            else:
+                data_rel = data_vencto.replace(day=20)
+        
+        # Garantir que a data do relatório não seja anterior à data atual
+        if data_rel < hoje:
+            if hoje.day <= 5:
+                data_rel = hoje.replace(day=5)
+            elif hoje.day <= 20:
+                data_rel = hoje.replace(day=20)
+            else:
+                proximo_mes = hoje + relativedelta(months=1)
+                data_rel = proximo_mes.replace(day=5)
+        
+        return data_rel
+
+    def carregar_clientes(self):
+        """Carrega a lista de clientes disponíveis com opção de seleção"""
+        try:
+            self.clientes = []
+            wb = load_workbook(ARQUIVO_CLIENTES)
+            ws = wb['Clientes']
+            
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0]:  # Nome não vazio
+                    self.clientes.append({
+                        'nome': row[0],
+                        'percentual': 0,
+                        'valor': 0,
+                        'arquivo': PASTA_CLIENTES / f"{row[0]}.xlsx",
+                        'ativo': True  # Começa como ativo para seleção
+                    })
+            
+            # Limpar a treeview
+            for item in self.tree_clientes.get_children():
+                self.tree_clientes.delete(item)
+            
+            # Preencher a treeview com os clientes e opção de seleção
+            # Vamos adicionar uma coluna para selecionar o cliente
+            self.tree_clientes.configure(columns=('Ativo', 'Cliente', 'Percentual', 'Valor'))
+            self.tree_clientes.heading('Ativo', text='Ativo')
+            self.tree_clientes.heading('Cliente', text='Cliente')
+            self.tree_clientes.heading('Percentual', text='Percentual (%)' if self.modo_rateio.get() == "percentual" else 'Valor (R$)')
+            self.tree_clientes.heading('Valor', text='Valor (R$)')
+            
+            # Ajustar larguras
+            self.tree_clientes.column('Ativo', width=50, anchor='center')
+            self.tree_clientes.column('Cliente', width=300)
+            self.tree_clientes.column('Percentual', width=100, anchor='e')
+            self.tree_clientes.column('Valor', width=100, anchor='e')
+            
+            # Preencher dados
+            for cliente in self.clientes:
+                vals = (
+                    "✓",  # Marca de ativo
+                    cliente['nome'], 
+                    f"{cliente['percentual']:.2f}%" if self.modo_rateio.get() == "percentual" else f"R$ {cliente['valor']:.2f}", 
+                    f"R$ {cliente['valor']:.2f}"
+                )
+                item = self.tree_clientes.insert('', 'end', values=vals)
+                # Armazenar referência para o cliente no item
+                self.tree_clientes.item(item, tags=(cliente['nome'],))
+            
+            # Adicionar binding para alternar ativo/inativo
+            self.tree_clientes.bind('<Button-1>', self.toggle_cliente_ativo)
+            
+            # Atualizar resumo
+            self.atualizar_resumo()
+                
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
+
+    def toggle_cliente_ativo(self, event):
+        """Alterna o status ativo/inativo do cliente na coluna de checkbox"""
+        # Verificar se clicou na coluna "Ativo"
+        region = self.tree_clientes.identify_region(event.x, event.y)
+        if region != "cell":
+            return
+            
+        coluna = self.tree_clientes.identify_column(event.x)
+        coluna_idx = int(coluna[1:]) - 1  # Converter #1, #2, etc. para 0, 1, etc.
+        
+        # Só processa se clicou na coluna Ativo (índice 0)
+        if coluna_idx != 0:
+            return
+            
+        # Obter o item clicado
+        item = self.tree_clientes.identify_row(event.y)
+        if not item:
+            return
+            
+        # Obter o cliente desta linha
+        tags = self.tree_clientes.item(item)['tags']
+        if not tags:
+            return
+            
+        nome_cliente = tags[0]
+        
+        # Encontrar o cliente nos dados
+        for cliente in self.clientes:
+            if cliente['nome'] == nome_cliente:
+                # Alternar status ativo
+                cliente['ativo'] = not cliente['ativo']
+                
+                # Atualizar visualização
+                valores = self.tree_clientes.item(item)['values']
+                novo_status = "✓" if cliente['ativo'] else " "
+                
+                self.tree_clientes.item(item, values=(
+                    novo_status,
+                    valores[1],
+                    valores[2],
+                    valores[3]
+                ))
+                
+                break
+        
+        # Atualizar resumo considerando apenas clientes ativos
+        self.atualizar_resumo()
+    
+    def atualizar_modo_rateio(self):
+        """Atualiza a interface baseado no modo de rateio selecionado"""
+        modo = self.modo_rateio.get()
+        
+        # Atualizar cabeçalho da coluna editável
+        if modo == "percentual":
+            self.tree_clientes.heading('Percentual', text='Percentual (%)')
+            self.lbl_total_rateio.config(text=f"Total Rateado: {self.calcular_total_percentual():.2f}%")
+        else:  # modo == "valor"
+            self.tree_clientes.heading('Percentual', text='Valor (R$)')
+            self.lbl_total_rateio.config(text=f"Total Rateado: R$ {self.calcular_total_valor():.2f}")
+        
+        # Limpar os valores atuais
+        for item in self.tree_clientes.get_children():
+            valores = self.tree_clientes.item(item)['values']
+            if modo == "percentual":
+                self.tree_clientes.item(item, values=(valores[0], "0.00%", "R$ 0.00"))
+            else:
+                self.tree_clientes.item(item, values=(valores[0], "R$ 0.00", "R$ 0.00"))
+        
+        # Resetar valores nos dados
+        for cliente in self.clientes:
+            cliente['percentual'] = 0
+            cliente['valor'] = 0
+        
+        # Permitir edição direta na célula
+        self.tree_clientes.bind('<Double-1>', self.editar_celula)
+    
+    def editar_celula(self, event):
+        """Permite edição direta na célula após duplo clique"""
+        # Identificar a coluna clicada
+        region = self.tree_clientes.identify_region(event.x, event.y)
+        if region != "cell":
+            return
+            
+        # Obter informações da célula
+        coluna = self.tree_clientes.identify_column(event.x)
+        coluna_idx = int(coluna[1:]) - 1  # Converter #1, #2, etc. para 0, 1, etc.
+        
+        # Só permitir edição na coluna Percentual ou Valor (índice 1)
+        if coluna_idx != 1:
+            return
+            
+        # Obter o item selecionado
+        item = self.tree_clientes.identify_row(event.y)
+        if not item:
+            return
+            
+        # Obter o valor atual
+        valores = self.tree_clientes.item(item)['values']
+        cliente_nome = valores[0]
+        valor_texto = valores[1]
+        
+        # Limpar símbolos e formatos
+        if self.modo_rateio.get() == "percentual":
+            valor_atual = valor_texto.replace('%', '').strip()
+        else:
+            valor_atual = valor_texto.replace('R$', '').strip()
+        
+        # Criar uma entrada temporária para edição
+        x, y, width, height = self.tree_clientes.bbox(item, coluna)
+        
+        # Criar um frame para a entrada
+        entry_frame = ttk.Frame(self.tree_clientes)
+        entry_frame.place(x=x, y=y, width=width, height=height)
+        
+        # Criar a entrada
+        entry = ttk.Entry(entry_frame)
+        entry.pack(fill='both', expand=True)
+        entry.insert(0, valor_atual)
+        entry.select_range(0, tk.END)
+        entry.focus_set()
+        
+        # Função para finalizar a edição
+        def finalizar_edicao(event=None):
+            try:
+                # Obter o novo valor
+                novo_valor = entry.get().strip().replace(',', '.')
+                if not novo_valor:
+                    novo_valor = "0"
+                    
+                novo_valor_float = float(novo_valor)
+                
+                # Atualizar o valor no cliente correspondente
+                for i, cliente in enumerate(self.clientes):
+                    if cliente['nome'] == cliente_nome:
+                        if self.modo_rateio.get() == "percentual":
+                            cliente['percentual'] = novo_valor_float
+                            self.tree_clientes.item(item, values=(
+                                cliente_nome, 
+                                f"{novo_valor_float:.2f}%", 
+                                f"R$ {cliente['valor']:.2f}"
+                            ))
+                        else:  # modo == "valor"
+                            cliente['valor'] = novo_valor_float
+                            self.tree_clientes.item(item, values=(
+                                cliente_nome, 
+                                f"R$ {novo_valor_float:.2f}", 
+                                f"R$ {cliente['valor']:.2f}"
+                            ))
+                        break
+                
+                # Atualizar resumo
+                self.atualizar_resumo()
+                
+            except ValueError:
+                messagebox.showerror("Erro", "Valor inválido!")
+            finally:
+                # Destruir o frame de edição
+                entry_frame.destroy()
+        
+        # Eventos para finalizar a edição
+        entry.bind("<Return>", finalizar_edicao)
+        entry.bind("<FocusOut>", finalizar_edicao)
+    
+    def atualizar_resumo(self):
+        """Atualiza as informações de resumo"""
+        # Atualizar o número de clientes
+        self.lbl_total_clientes.config(text=f"Total de Clientes: {len(self.clientes)}")
+        
+        # Atualizar o valor total
+        try:
+            valor_total = float(self.valor_total.get().replace(',', '.'))
+            self.lbl_total_valor.config(text=f"Valor Total: R$ {valor_total:,.2f}")
+        except (ValueError, AttributeError):
+            self.lbl_total_valor.config(text="Valor Total: R$ 0,00")
+        
+        # Atualizar o total rateado
+        if self.modo_rateio.get() == "percentual":
+            total_percentual = self.calcular_total_percentual()
+            self.lbl_total_rateio.config(text=f"Total Rateado: {total_percentual:.2f}%")
+        else:  # modo == "valor"
+            total_valor = self.calcular_total_valor()
+            self.lbl_total_rateio.config(text=f"Total Rateado: R$ {total_valor:.2f}")
+    
+    def calcular_total_percentual(self):
+        """Calcula o total de percentual atribuído apenas para clientes ativos"""
+        return sum(cliente['percentual'] for cliente in self.clientes if cliente['ativo'])
+
+    def calcular_total_valor(self):
+        """Calcula o total de valor atribuído apenas para clientes ativos"""
+        return sum(cliente['valor'] for cliente in self.clientes if cliente['ativo'])
+
+    def distribuir_igualmente(self):
+        """Distribui os valores igualmente entre os clientes ativos"""
+        # Filtrar apenas clientes ativos
+        clientes_ativos = [cliente for cliente in self.clientes if cliente['ativo']]
+        num_clientes = len(clientes_ativos)
+        
+        if num_clientes == 0:
+            messagebox.showwarning("Aviso", "Selecione pelo menos um cliente ativo!")
+            return
+                
+        if self.modo_rateio.get() == "percentual":
+            # Calcular o percentual igual para cada cliente
+            percentual_igual = 100 / num_clientes
+            
+            # Atualizar os clientes
+            for cliente in self.clientes:
+                # Definir percentual apenas para clientes ativos
+                if cliente['ativo']:
+                    cliente['percentual'] = percentual_igual
+                else:
+                    cliente['percentual'] = 0
+                    
+                # Atualizar a treeview
+                for item in self.tree_clientes.get_children():
+                    if self.tree_clientes.item(item)['tags'][0] == cliente['nome']:
+                        status = "✓" if cliente['ativo'] else " "
+                        self.tree_clientes.item(item, values=(
+                            status,
+                            cliente['nome'], 
+                            f"{cliente['percentual']:.2f}%", 
+                            f"R$ {cliente['valor']:.2f}"
+                        ))
+                        break
+        else:  # modo == "valor"
+            try:
+                valor_total = float(self.valor_total.get().replace(',', '.'))
+                valor_igual = valor_total / num_clientes
+                
+                # Atualizar os clientes
+                for cliente in self.clientes:
+                    # Definir valor apenas para clientes ativos
+                    if cliente['ativo']:
+                        cliente['valor'] = valor_igual
+                    else:
+                        cliente['valor'] = 0
+                    
+                    # Atualizar a treeview
+                    for item in self.tree_clientes.get_children():
+                        if self.tree_clientes.item(item)['tags'][0] == cliente['nome']:
+                            status = "✓" if cliente['ativo'] else " "
+                            self.tree_clientes.item(item, values=(
+                                status,
+                                cliente['nome'], 
+                                f"R$ {cliente['valor']:.2f}", 
+                                f"R$ {cliente['valor']:.2f}"
+                            ))
+                            break
+            except (ValueError, AttributeError):
+                messagebox.showerror("Erro", "Informe um valor total válido!")
+                return
+        
+        # Atualizar resumo
+        self.atualizar_resumo()
+    
+    def aplicar_percentual_selecionado(self):
+        """Aplica o percentual informado ao cliente selecionado"""
+        selecionado = self.tree_clientes.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um cliente!")
+            return
+        
+        try:
+            if self.modo_rateio.get() == "percentual":
+                novo_percentual = float(self.percentual_selecionado.get().replace(',', '.'))
+                
+                # Identificar o cliente selecionado
+                item = selecionado[0]
+                valores = self.tree_clientes.item(item)['values']
+                cliente_nome = valores[0]
+                
+                # Atualizar o cliente correspondente
+                for i, cliente in enumerate(self.clientes):
+                    if cliente['nome'] == cliente_nome:
+                        cliente['percentual'] = novo_percentual
+                        
+                        # Atualizar a treeview
+                        self.tree_clientes.item(item, values=(
+                            cliente_nome, 
+                            f"{novo_percentual:.2f}%", 
+                            f"R$ {cliente['valor']:.2f}"
+                        ))
+                        break
+            else:  # modo == "valor"
+                novo_valor = float(self.percentual_selecionado.get().replace(',', '.'))
+                
+                # Identificar o cliente selecionado
+                item = selecionado[0]
+                valores = self.tree_clientes.item(item)['values']
+                cliente_nome = valores[0]
+                
+                # Atualizar o cliente correspondente
+                for i, cliente in enumerate(self.clientes):
+                    if cliente['nome'] == cliente_nome:
+                        cliente['valor'] = novo_valor
+                        
+                        # Atualizar a treeview
+                        self.tree_clientes.item(item, values=(
+                            cliente_nome, 
+                            f"R$ {novo_valor:.2f}", 
+                            f"R$ {cliente['valor']:.2f}"
+                        ))
+                        break
+            
+            # Atualizar resumo
+            self.atualizar_resumo()
+            
+        except ValueError:
+            messagebox.showerror("Erro", "Valor inválido!")
+    
+    def calcular_rateio_modo_atual(self):
+        """Calcula o rateio baseado no modo atual"""
+        try:
+            # Validar valor total
+            if not self.valor_total.get():
+                messagebox.showerror("Erro", "Informe o valor total!")
+                return
+                
+            valor_total = float(self.valor_total.get().replace(',', '.'))
+            if valor_total <= 0:
+                messagebox.showerror("Erro", "Valor total deve ser maior que zero!")
+                return
+                
+            if self.modo_rateio.get() == "percentual":
+                # Verificar se o total é 100%
+                total_percentual = self.calcular_total_percentual()
+                if not (99.9 <= total_percentual <= 100.1):  # Tolerância para arredondamentos
+                    messagebox.showerror("Erro", f"O total de percentuais deve ser 100%. Atual: {total_percentual:.2f}%")
+                    return
+                    
+                # Calcular valores baseados nos percentuais
+                for i, cliente in enumerate(self.clientes):
+                    cliente['valor'] = (cliente['percentual'] / 100) * valor_total
+                    
+                    # Atualizar a treeview
+                    item = self.tree_clientes.get_children()[i]
+                    self.tree_clientes.item(item, values=(
+                        cliente['nome'], 
+                        f"{cliente['percentual']:.2f}%", 
+                        f"R$ {cliente['valor']:.2f}"
+                    ))
+            else:  # modo == "valor"
+                # Verificar se o total corresponde ao valor da despesa
+                total_valores = self.calcular_total_valor()
+                
+                if abs(total_valores - valor_total) > 0.01:  # Tolerância de 1 centavo
+                    messagebox.showerror("Erro", 
+                                        f"O total dos valores ({total_valores:.2f}) não corresponde ao valor da despesa ({valor_total:.2f})")
+                    return
+                
+                # Os valores já estão definidos, apenas atualizar a treeview
+                for i, cliente in enumerate(self.clientes):
+                    # Atualizar a treeview
+                    item = self.tree_clientes.get_children()[i]
+                    self.tree_clientes.item(item, values=(
+                        cliente['nome'], 
+                        f"R$ {cliente['valor']:.2f}", 
+                        f"R$ {cliente['valor']:.2f}"
+                    ))
+            
+            messagebox.showinfo("Sucesso", "Rateio calculado com sucesso!")
+            
+        except ValueError as e:
+            messagebox.showerror("Erro", f"Erro ao calcular rateio: {str(e)}")
+    
+    def aplicar_rateio_clientes(self):
+        # Depuração dos tipos de data
+        print(f"Tipo de data_vencto: {type(self.data_ref.get_date())}")
+        data_vencto = self.data_ref.get_date()
+        if isinstance(data_vencto, datetime):
+            print("É um objeto datetime, convertendo para date")
+            data_vencto = data_vencto.date()
+        print(f"Tipo após conversão: {type(data_vencto)}")
+
+        """Aplica o rateio aos arquivos dos clientes"""
+        # Validar se temos dados básicos preenchidos
+        if not self.descricao.get():
+            messagebox.showerror("Erro", "Informe a descrição da despesa!")
+            return
+                
+        if not self.valor_total.get():
+            messagebox.showerror("Erro", "Informe o valor total da despesa!")
+            return
+        
+        # Validar fornecedor
+        if not hasattr(self, 'fornecedor_selecionado') or not self.fornecedor_selecionado:
+            messagebox.showerror("Erro", "Selecione um fornecedor!")
+            return
+        
+        # Verificar se o rateio foi calculado
+        tem_valores = any(cliente['valor'] > 0 and cliente['ativo'] for cliente in self.clientes)
+        if not tem_valores:
+            messagebox.showerror("Erro", "Calcule o rateio antes de aplicar!")
+            return
+                
+        # Pedir confirmação
+        if not messagebox.askyesno("Confirmação", 
+                                "Deseja realmente aplicar este rateio aos clientes?"):
+            return
+                
+        try:
+            # Obtenha a data como objeto date
+            data_vencto = self.data_ref.get_date()
+            # Se for um objeto datetime, converta para date
+            if isinstance(data_vencto, datetime):
+                data_vencto = data_vencto.date()
+                
+            tipo_despesa = self.tipo_despesa.get()
+            
+            # Calcular data do relatório usando o método correto
+            data_rel = self.calcular_data_rel(data_vencto, tipo_despesa)
+            
+            descricao = self.descricao.get()
+            observacao = self.observacao.get()
+            
+            # Lista para registrar resultados
+            registros = []
+            
+            # Filtrar apenas clientes ativos
+            clientes_ativos = [cliente for cliente in self.clientes if cliente['ativo'] and cliente['valor'] > 0]
+            
+            for cliente in clientes_ativos:
+                try:
+                    wb = load_workbook(cliente['arquivo'])
+                    ws = wb["Dados"]
+                    
+                    # Preparar dados do lançamento
+                    proxima_linha = ws.max_row + 1
+                    
+                    # Data do Relatório (formatada)
+                    ws.cell(row=proxima_linha, column=1, value=data_rel)
+                    ws.cell(row=proxima_linha, column=1).number_format = 'DD/MM/YYYY'
+                    
+                    # Tipo de Despesa
+                    ws.cell(row=proxima_linha, column=2, value=int(tipo_despesa))
+                    
+                    # CNPJ/CPF do fornecedor
+                    ws.cell(row=proxima_linha, column=3, value=self.fornecedor_selecionado['cnpj_cpf'])
+                    
+                    # Nome do fornecedor
+                    ws.cell(row=proxima_linha, column=4, value=self.fornecedor_selecionado['nome'])
+                    
+                    # Referência
+                    ws.cell(row=proxima_linha, column=5, value=f"RATEIO: {descricao}")
+                    
+                    # NF (vazio para rateios)
+                    ws.cell(row=proxima_linha, column=6, value="")
+                    
+                    # Valor Unitário
+                    ws.cell(row=proxima_linha, column=7, value=cliente['valor'])
+                    ws.cell(row=proxima_linha, column=7).number_format = '#,##0.00'
+                    
+                    # Dias (1 para despesas rateadas)
+                    ws.cell(row=proxima_linha, column=8, value=1)
+                    
+                    # Valor Total
+                    ws.cell(row=proxima_linha, column=9, value=cliente['valor'])
+                    ws.cell(row=proxima_linha, column=9).number_format = '#,##0.00'
+                    
+                    # Data de Vencimento
+                    ws.cell(row=proxima_linha, column=10, value=data_vencto)
+                    ws.cell(row=proxima_linha, column=10).number_format = 'DD/MM/YYYY'
+                    
+                    # Categoria
+                    ws.cell(row=proxima_linha, column=11, value=self.fornecedor_selecionado['categoria'])
+                    
+                    # Dados Bancários (vazio para rateios)
+                    dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_cpf)
+                    ws.cell(row=proxima_linha, column=12, value=dados_bancarios)
+                    
+                    # Observação
+                    ws.cell(row=proxima_linha, column=13, value=observacao)
+                    
+                    # Salvar planilha
+                    wb.save(cliente['arquivo'])
+                    
+                    # Registrar sucesso
+                    registros.append({
+                        'cliente': cliente['nome'],
+                        'valor': cliente['valor'],
+                        'status': 'SUCESSO'
+                    })
+                    
+                except Exception as e:
+                    # Registrar falha
+                    registros.append({
+                        'cliente': cliente['nome'],
+                        'valor': cliente['valor'],
+                        'status': f'FALHA: {str(e)}'
+                    })
+            
+            # Registrar o rateio no histórico
+            self.registrar_historico(registros)
+            
+            # Exibir resultados
+            self.mostrar_resultado_rateio(registros)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao aplicar rateio: {str(e)}")
+    
+    def registrar_historico(self, registros):
+        """Registra o rateio no histórico"""
+        try:
+            data_atual = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            data_ref = self.data_ref.get()
+            descricao = self.descricao.get()
+            valor_total = float(self.valor_total.get().replace(',', '.'))
+            tipo_despesa = self.tipo_despesa.get()
+            
+            # Criar arquivo de histórico se não existir
+            historico_path = Path('historico_rateios.xlsx')
+            if not historico_path.exists():
+                wb = Workbook()
+                ws = wb.active
+                ws.title = "Histórico"
+                
+                # Cabeçalhos
+                headers = ['Data Registro', 'Data Referência', 'Descrição', 'Valor Total', 
+                          'Tipo Despesa', 'Qtd Clientes', 'Status']
+                for col, header in enumerate(headers, 1):
+                    ws.cell(row=1, column=col, value=header)
+                    
+                wb.save(historico_path)
+            
+            # Abrir arquivo de histórico
+            wb = load_workbook(historico_path)
+            ws = wb["Histórico"]
+            
+            # Adicionar registro principal
+            proxima_linha = ws.max_row + 1
+            ws.cell(row=proxima_linha, column=1, value=data_atual)
+            ws.cell(row=proxima_linha, column=2, value=data_ref)
+            ws.cell(row=proxima_linha, column=3, value=descricao)
+            ws.cell(row=proxima_linha, column=4, value=valor_total)
+            ws.cell(row=proxima_linha, column=5, value=tipo_despesa)
+            ws.cell(row=proxima_linha, column=6, value=len(registros))
+            
+            # Verificar status geral
+            falhas = [r for r in registros if r['status'].startswith('FALHA')]
+            status = "SUCESSO" if not falhas else f"PARCIAL ({len(falhas)} falhas)"
+            ws.cell(row=proxima_linha, column=7, value=status)
+            
+            # Adicionar detalhes em outra aba se não existir
+            if "Detalhes" not in wb.sheetnames:
+                ws_details = wb.create_sheet("Detalhes")
+                # Cabeçalhos
+                headers = ['ID Rateio', 'Cliente', 'Valor', 'Status']
+                for col, header in enumerate(headers, 1):
+                    ws_details.cell(row=1, column=col, value=header)
+            else:
+                ws_details = wb["Detalhes"]
+            
+            # Adicionar detalhes de cada cliente
+            id_rateio = proxima_linha - 1  # Usar a linha como ID do rateio
+            for registro in registros:
+                proxima_linha_det = ws_details.max_row + 1
+                ws_details.cell(row=proxima_linha_det, column=1, value=id_rateio)
+                ws_details.cell(row=proxima_linha_det, column=2, value=registro['cliente'])
+                ws_details.cell(row=proxima_linha_det, column=3, value=registro['valor'])
+                ws_details.cell(row=proxima_linha_det, column=4, value=registro['status'])
+            
+            # Salvar histórico
+            wb.save(historico_path)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao registrar histórico: {str(e)}")
+    
+    def mostrar_resultado_rateio(self, registros):
+        """Mostra o resultado do rateio aplicado"""
+        # Contar sucessos e falhas
+        sucessos = [r for r in registros if r['status'] == 'SUCESSO']
+        falhas = [r for r in registros if r['status'].startswith('FALHA')]
+        
+        # Criar janela de resultados
+        janela_resultado = tk.Toplevel(self.root)
+        janela_resultado.title("Resultado do Rateio")
+        janela_resultado.geometry("600x400")
+        janela_resultado.transient(self.root)
+        janela_resultado.grab_set()
+        
+        # Frame principal
+        frame = ttk.Frame(janela_resultado, padding="10")
+        frame.pack(fill='both', expand=True)
+        
+        # Resumo
+        ttk.Label(frame, text="Resumo do Rateio", font=('Helvetica', 12, 'bold')).pack(pady=10)
+        ttk.Label(frame, text=f"Total de Clientes: {len(registros)}").pack(pady=2)
+        ttk.Label(frame, text=f"Sucessos: {len(sucessos)}").pack(pady=2)
+        ttk.Label(frame, text=f"Falhas: {len(falhas)}").pack(pady=2)
+        
+        # Frame para lista de resultados
+        frame_lista = ttk.Frame(frame)
+        frame_lista.pack(fill='both', expand=True, pady=10)
+        
+        # Criar Treeview para resultados
+        colunas = ('Cliente', 'Valor', 'Status')
+        tree_resultados = ttk.Treeview(frame_lista, columns=colunas, show='headings', height=10)
+        
+        for col in colunas:
+            tree_resultados.heading(col, text=col)
+            if col == 'Cliente':
+                tree_resultados.column(col, width=250)
+            elif col == 'Valor':
+                tree_resultados.column(col, width=100, anchor='e')
+            else:
+                tree_resultados.column(col, width=150)
+        
+        # Adicionar scrollbars
+        scrolly = ttk.Scrollbar(frame_lista, orient='vertical', command=tree_resultados.yview)
+        scrollx = ttk.Scrollbar(frame_lista, orient='horizontal', command=tree_resultados.xview)
+        tree_resultados.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
+        
+        tree_resultados.pack(fill='both', expand=True, side='left')
+        scrolly.pack(side='right', fill='y')
+        scrollx.pack(side='bottom', fill='x')
+        
+        # Preencher a treeview com os resultados
+        for registro in registros:
+            tree_resultados.insert('', 'end', values=(
+                registro['cliente'], 
+                f"R$ {registro['valor']:.2f}", 
+                registro['status']
+            ))
+        
+        # Botão fechar
+        ttk.Button(frame, text="Fechar", command=janela_resultado.destroy).pack(pady=10)
+        
+        # Centralizar a janela
+        janela_resultado.update_idletasks()
+        width = janela_resultado.winfo_width()
+        height = janela_resultado.winfo_height()
+        x = (janela_resultado.winfo_screenwidth() // 2) - (width // 2)
+        y = (janela_resultado.winfo_screenheight() // 2) - (height // 2)
+        janela_resultado.geometry(f'{width}x{height}+{x}+{y}')
+        
+        # Atualizar lista de histórico
+        self.mostrar_historico_rateios()
+        
+        # Limpar os campos após aplicação bem-sucedida
+        if not falhas:
+            self.limpar_campos()
+    
+    def limpar_campos(self):
+        """Limpa os campos de entrada após operação bem-sucedida"""
+        self.descricao.delete(0, tk.END)
+        self.valor_total.delete(0, tk.END)
+        self.observacao.delete(0, tk.END)
+        
+        # Resetar valores nos clientes
+        for cliente in self.clientes:
+            cliente['percentual'] = 0
+            cliente['valor'] = 0
+            
+        # Limpar a treeview
+        for i, cliente in enumerate(self.clientes):
+            item = self.tree_clientes.get_children()[i]
+            if self.modo_rateio.get() == "percentual":
+                self.tree_clientes.item(item, values=(
+                    cliente['nome'], 
+                    "0.00%", 
+                    "R$ 0.00"
+                ))
+            else:
+                self.tree_clientes.item(item, values=(
+                    cliente['nome'], 
+                    "R$ 0.00", 
+                    "R$ 0.00"
+                ))
+        
+        # Atualizar resumo
+        self.atualizar_resumo()
+    
+    def mostrar_historico_rateios(self):
+        """Carrega e mostra o histórico de rateios"""
+        try:
+            # Limpar a treeview
+            for item in self.tree_historico.get_children():
+                self.tree_historico.delete(item)
+                
+            # Verificar se o arquivo de histórico existe
+            historico_path = Path('historico_rateios.xlsx')
+            if not historico_path.exists():
+                return
+                
+            # Abrir arquivo de histórico
+            wb = load_workbook(historico_path)
+            ws = wb["Histórico"]
+            
+            # Preencher a treeview com os registros
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0]:  # Se tiver data de registro
+                    self.tree_historico.insert('', 'end', values=row)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao mostrar histórico: {str(e)}")
+    
+    def filtrar_historico(self):
+        """Filtra o histórico de rateios"""
+        try:
+            # Obter dados do filtro
+            data_inicial = self.data_inicial.get_date()
+            data_final = self.data_final.get_date()
+            descricao = self.filtro_descricao.get().strip().upper()
+            
+            # Limpar a treeview
+            for item in self.tree_historico.get_children():
+                self.tree_historico.delete(item)
+                
+            # Verificar se o arquivo de histórico existe
+            historico_path = Path('historico_rateios.xlsx')
+            if not historico_path.exists():
+                return
+                
+            # Abrir arquivo de histórico
+            wb = load_workbook(historico_path)
+            ws = wb["Histórico"]
+            
+            # Preencher a treeview com os registros filtrados
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Se não tiver data de registro
+                    continue
+                    
+                # Processar data (formato: dd/mm/yyyy hh:mm:ss)
+                try:
+                    data_registro = datetime.strptime(row[0], '%d/%m/%Y %H:%M:%S').date()
+                except ValueError:
+                    # Tentar outro formato
+                    try:
+                        data_registro = datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S').date()
+                    except ValueError:
+                        # Se não conseguir interpretar, pular
+                        continue
+                
+                # Verificar filtro de data
+                if data_registro < data_inicial.date() or data_registro > data_final.date():
+                    continue
+                    
+                # Verificar filtro de descrição
+                if descricao and descricao not in str(row[2]).upper():
+                    continue
+                    
+                # Adicionar à treeview
+                self.tree_historico.insert('', 'end', values=row)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao filtrar histórico: {str(e)}")
+    
+    def mostrar_detalhes_rateio(self, event):
+        """Mostra os detalhes do rateio selecionado"""
+        try:
+            # Obter item selecionado
+            selecionado = self.tree_historico.selection()
+            if not selecionado:
+                return
+                
+            # Obter ID do rateio (linha)
+            linha = self.tree_historico.index(selecionado[0]) + 2  # +2 pois o índice começa em 0 e temos o cabeçalho
+            
+            # Limpar a treeview de detalhes
+            for item in self.tree_detalhes.get_children():
+                self.tree_detalhes.delete(item)
+                
+            # Verificar se o arquivo de histórico existe
+            historico_path = Path('historico_rateios.xlsx')
+            if not historico_path.exists():
+                return
+                
+            # Abrir arquivo de histórico
+            wb = load_workbook(historico_path)
+            if "Detalhes" not in wb.sheetnames:
+                return
+                
+            ws = wb["Detalhes"]
+            
+            # Preencher a treeview com os detalhes do rateio
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0] == linha - 1:  # ID do rateio
+                    self.tree_detalhes.insert('', 'end', values=(
+                        row[1],  # Cliente
+                        f"R$ {float(row[2]):.2f}" if row[2] else "R$ 0.00",  # Valor
+                        row[3]   # Status
+                    ))
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao mostrar detalhes do rateio: {str(e)}")
+    
+    def voltar_menu(self):
+        """Volta ao menu principal"""
+        if self.menu_principal:
+            self.root.destroy()
+            self.menu_principal.deiconify()
+            self.menu_principal.lift()
+
 class GerenciadorDespesasRateadas:
 
     def carregar_clientes_ativos(self):
@@ -118,13 +1442,13 @@ class GerenciadorDespesasRateadas:
                 ws.cell(row=proxima_linha, column=2, value=int(tipo_despesa))
                 
                 # CNPJ/CPF do sistema (se aplicável)
-                ws.cell(row=proxima_linha, column=3, value="")
+                ws.cell(row=proxima_linha, column=3, value=cnpj_cpf)
                 
                 # Nome do sistema
-                ws.cell(row=proxima_linha, column=4, value="SISTEMA")
+                ws.cell(row=proxima_linha, column=4, value=nome)
                 
                 # Referência
-                ws.cell(row=proxima_linha, column=5, value=f"RATEIO: {descricao}")
+                ws.cell(row=proxima_linha, column=5, value=f"{descricao}")
                 
                 # NF (vazio para rateios)
                 ws.cell(row=proxima_linha, column=6, value="")
@@ -145,13 +1469,14 @@ class GerenciadorDespesasRateadas:
                 ws.cell(row=proxima_linha, column=10).number_format = 'DD/MM/YYYY'
                 
                 # Categoria
-                ws.cell(row=proxima_linha, column=11, value="RATEIO")
+                ws.cell(row=proxima_linha, column=11, value="MO")
                 
                 # Dados Bancários (vazio para rateios)
-                ws.cell(row=proxima_linha, column=12, value="")
+                dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_cpf)
+                ws.cell(row=proxima_linha, column=12, value=dados_bancarios)
                 
                 # Observação
-                ws.cell(row=proxima_linha, column=13, value=observacao)
+                ws.cell(row=proxima_linha, column=13, value='LANÇAMENTO AUTOMÁTICO')
                 
                 # Salvar planilha
                 wb.save(cliente['arquivo'])
