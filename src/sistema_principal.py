@@ -205,7 +205,7 @@ class SistemaPrincipal:
                         self.abrir_relatorios, 1, 1)
                         
         self.create_card(grid, "Gestão de Medições",
-                        "Gerenciar contratos com mpreiteros e por entregas",
+                        "Gerenciar contratos com empreiteros e por entregas",
                         self.abrir_configuracoes, 2, 0)
                         
         self.create_card(grid, "Configurações do Sistema",

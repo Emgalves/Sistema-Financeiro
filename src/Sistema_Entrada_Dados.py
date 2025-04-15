@@ -744,12 +744,16 @@ class SistemaEntradaDados:
         frame_cliente = ttk.Frame(frame_selecao)
         frame_cliente.pack(fill='x', padx=10, pady=10)
 
-         # Label alinhado à esquerda
+        # Label alinhado à esquerda
         ttk.Label(frame_cliente, text="Selecione o Cliente:", font=('Arial', 11)).pack(side='left', pady=5)
         
         # Combobox com largura aumentada
         self.cliente_combobox = ttk.Combobox(frame_cliente, width=60, font=('Arial', 11))  # Aumentado a fonte
         self.cliente_combobox.pack(side='left', padx=5, fill='x', expand=True)
+        
+        # Botão para mostrar todos os clientes (incluindo finalizados)
+        ttk.Button(frame_cliente, text="Ver Todos", 
+                command=self.mostrar_todos_clientes).pack(side='right', padx=5)
         
         # Frame para botões de gerenciamento de clientes
         frame_gerenciar = ttk.Frame(frame_principal)
@@ -917,15 +921,15 @@ class SistemaEntradaDados:
         """Abre janela para cadastro de novo cliente"""
         janela_cliente = tk.Toplevel(self.root)
         janela_cliente.title("Novo Cliente")
-        janela_cliente.geometry("500x400")  # Reduzido pois terá menos campos
+        janela_cliente.geometry("700x400")  # Reduzido pois terá menos campos
 
         # Campos do formulário
         tk.Label(janela_cliente, text="Nome do Cliente:*").pack(pady=5)
-        nome_entry = tk.Entry(janela_cliente, width=50)
+        nome_entry = tk.Entry(janela_cliente, width=80)
         nome_entry.pack(pady=5)
 
         tk.Label(janela_cliente, text="Endereço:*").pack(pady=5)
-        endereco_entry = tk.Entry(janela_cliente, width=50)
+        endereco_entry = tk.Entry(janela_cliente, width=80)
         endereco_entry.pack(pady=5)
 
         tk.Label(janela_cliente, text="Data Inicial:* (Dia 5 ou 20)").pack(pady=5)
@@ -962,7 +966,7 @@ class SistemaEntradaDados:
         data_entry.bind("<<DateEntrySelected>>", validar_data)
 
         tk.Label(janela_cliente, text="Observações:").pack(pady=5)
-        obs_entry = tk.Entry(janela_cliente, width=50)
+        obs_entry = tk.Entry(janela_cliente, width=80)
         obs_entry.pack(pady=5)
         
 
@@ -1020,9 +1024,6 @@ class SistemaEntradaDados:
         tk.Button(janela_cliente, text="Cancelar", 
                  command=janela_cliente.destroy).pack(pady=5)
 
-
-
-
     def criar_arquivo_clientes(self):
         """Cria arquivo base de clientes se não existir"""
         try:
@@ -1036,8 +1037,8 @@ class SistemaEntradaDados:
             sheet = workbook.active
             sheet.title = 'Clientes'
             
-            # Adicionar cabeçalhos - somente campos básicos agora
-            headers = ['Nome', 'Endereco', 'Data_Inicial', 'Observacoes']
+            # Adicionar cabeçalhos - agora incluindo Data_Final
+            headers = ['Nome', 'Endereco', 'Data_Inicial', 'Observacoes', 'Data_Final']
             for col, header in enumerate(headers, 1):
                 sheet.cell(row=1, column=col, value=header)
             
@@ -1049,6 +1050,79 @@ class SistemaEntradaDados:
             print(f"Erro detalhado ao criar arquivo de clientes: {str(e)}")
             print(f"Tipo do erro: {type(e)}")
             messagebox.showerror("Erro", f"Erro ao criar arquivo de clientes: {str(e)}")
+
+    def mostrar_todos_clientes(self):
+        """Mostra todos os clientes, incluindo os que têm data final"""
+        try:
+            # Carregar arquivo de clientes
+            caminho_base = ARQUIVO_CLIENTES
+            workbook = load_workbook(caminho_base)
+            sheet = workbook['Clientes']
+            
+            # Pegar todos os clientes
+            clientes = []
+            clientes_finalizados = []
+            
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                if row[0]:  # Nome do cliente está na primeira coluna
+                    # Verificar se tem data final
+                    data_final = row[4] if len(row) > 4 else None
+                    
+                    if data_final:
+                        clientes_finalizados.append(row[0])
+                    else:
+                        clientes.append(row[0])
+            
+            workbook.close()
+            
+            # Mostrar janela com todos os clientes
+            janela_todos = tk.Toplevel(self.root)
+            janela_todos.title("Todos os Clientes")
+            janela_todos.geometry("600x500")
+            
+            frame = ttk.Frame(janela_todos, padding="10")
+            frame.pack(fill='both', expand=True)
+            
+            # Lista de clientes ativos
+            frame_ativos = ttk.LabelFrame(frame, text="Clientes Ativos")
+            frame_ativos.pack(fill='both', expand=True, pady=5)
+            
+            lista_ativos = tk.Listbox(frame_ativos, width=50, height=13)
+            lista_ativos.pack(fill='both', expand=True, padx=5, pady=5)
+            
+            for cliente in sorted(clientes):
+                lista_ativos.insert(tk.END, cliente)
+            
+            # Lista de clientes finalizados
+            frame_finalizados = ttk.LabelFrame(frame, text="Clientes Finalizados")
+            frame_finalizados.pack(fill='both', expand=True, pady=5)
+            
+            lista_finalizados = tk.Listbox(frame_finalizados, width=50, height=7)
+            lista_finalizados.pack(fill='both', expand=True, padx=5, pady=5)
+            
+            for cliente in sorted(clientes_finalizados):
+                lista_finalizados.insert(tk.END, cliente)
+            
+            # Botão para selecionar cliente finalizado
+            def selecionar_finalizado():
+                selected = lista_finalizados.curselection()
+                if not selected:
+                    messagebox.showwarning("Aviso", "Selecione um cliente finalizado")
+                    return
+                    
+                cliente = lista_finalizados.get(selected[0])
+                self.cliente_combobox.set(cliente)
+                self.selecionar_cliente(None)
+                janela_todos.destroy()
+            
+            ttk.Button(frame, text="Selecionar Cliente Finalizado", 
+                    command=selecionar_finalizado).pack(side='left', pady=10)
+            
+            ttk.Button(frame, text="Fechar", 
+                    command=janela_todos.destroy).pack(side='right', pady=10)
+                    
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar todos os clientes: {str(e)}")
 
     def criar_arquivo_cliente(self, nome_cliente, endereco):
         """Cria um novo arquivo Excel para o cliente baseado no MODELO.xlsx"""
@@ -1175,7 +1249,7 @@ class SistemaEntradaDados:
                 # ADMINISTRADORES_ADITIVO
                 "Nº Contrato", "Nº Aditivo", "CNPJ/CPF", "Nome/Razão Social", "Tipo", "Valor/Percentual", "Valor Total",
                 # PARCELAS
-                "Referência", "Número", "CNPJ/CPF", "Nome", "Data Vencimento", "Valor", "Status", "Data Pagamento"
+                "Referência", "Número", "CNPJ/CPF", "Nome", "Data Vencimento", "Valor", "Status", "Data Pagamento", "Eventos/Fases", "Percentual"
             ]
             
             for col, header in enumerate(headers, 1):
@@ -1222,7 +1296,8 @@ class SistemaEntradaDados:
                         'nome': row[0],
                         'endereco': row[1],
                         'data_inicial': row[2],
-                        'observacoes': row[3]
+                        'observacoes': row[3],
+                        'data_final': row[4] if len(row) > 4 else None  # Campo para Data Final
                     }
                     break
             
@@ -1235,7 +1310,7 @@ class SistemaEntradaDados:
             # Criar janela de edição
             janela_edicao = tk.Toplevel(self.root)
             janela_edicao.title(f"Editar Cliente - {cliente_selecionado}")
-            janela_edicao.geometry("500x300")
+            janela_edicao.geometry("760x250")  # Aumentado para acomodar o novo campo
 
             # Frame principal
             frame = ttk.Frame(janela_edicao, padding="10")
@@ -1247,33 +1322,72 @@ class SistemaEntradaDados:
 
             # Nome
             ttk.Label(frame_dados, text="Nome do Cliente:*").grid(row=0, column=0, padx=5, pady=2)
-            nome_entry = ttk.Entry(frame_dados, width=50)
+            nome_entry = ttk.Entry(frame_dados, width=100)
             nome_entry.insert(0, dados_cliente['nome'])
             nome_entry.grid(row=0, column=1, padx=5, pady=2)
 
             # Endereço
             ttk.Label(frame_dados, text="Endereço:*").grid(row=1, column=0, padx=5, pady=2)
-            endereco_entry = ttk.Entry(frame_dados, width=50)
+            endereco_entry = ttk.Entry(frame_dados, width=100)
             endereco_entry.insert(0, dados_cliente['endereco'])
             endereco_entry.grid(row=1, column=1, padx=5, pady=2)
 
             # Data Inicial
-            ttk.Label(frame_dados, text="Data Inicial:").grid(row=2, column=0, padx=5, pady=2)
-            data_entry = DateEntry(
+            ttk.Label(frame_dados, text="Data Inicial:*").grid(row=2, column=0, padx=5, pady=2)
+            data_inicial_entry = DateEntry(
                 frame_dados,
                 width=20,
                 date_pattern='yyyy-mm-dd',
                 locale='pt_BR'
             )
             if dados_cliente['data_inicial']:
-                data_entry.set_date(dados_cliente['data_inicial'])
-            data_entry.grid(row=2, column=1, padx=5, pady=2)
+                data_inicial_entry.set_date(dados_cliente['data_inicial'])
+            data_inicial_entry.grid(row=2, column=1, padx=5, pady=2)
+
+            # Data Final (NOVO CAMPO)
+            ttk.Label(frame_dados, text="Data Final:").grid(row=3, column=0, padx=5, pady=2)
+            data_final_entry = DateEntry(
+                frame_dados,
+                width=20,
+                date_pattern='yyyy-mm-dd',
+                locale='pt_BR'
+            )
+            data_final_entry.delete(0, tk.END)  # Limpa a data padrão
+            
+            # Checkbox para ativar/desativar a data final
+            tem_data_final = tk.BooleanVar(value=False)
+            if dados_cliente['data_final']:
+                tem_data_final.set(True)
+                data_final_entry.set_date(dados_cliente['data_final'])
+            
+            def toggle_data_final():
+                if tem_data_final.get():
+                    data_final_entry.config(state='normal')
+                    if not data_final_entry.get():
+                        data_final_entry.set_date(datetime.now().date())
+                else:
+                    data_final_entry.delete(0, tk.END)
+                    data_final_entry.config(state='disabled')
+            
+            check_data_final = ttk.Checkbutton(
+                frame_dados, 
+                text="Obra finalizada",
+                variable=tem_data_final,
+                command=toggle_data_final
+            )
+            check_data_final.grid(row=3, column=1, padx=5, pady=2)
+            
+            # Configurar estado inicial do campo data final
+            if not dados_cliente['data_final']:
+                data_final_entry.config(state='disabled')
+            
+            data_final_entry.grid(row=4, column=1, padx=5, pady=2)
 
             # Observações
-            ttk.Label(frame_dados, text="Observações:").grid(row=3, column=0, padx=5, pady=2)
-            obs_entry = ttk.Entry(frame_dados, width=50)
+            ttk.Label(frame_dados, text="Observações:").grid(row=5, column=0, padx=5, pady=2)
+            obs_entry = ttk.Entry(frame_dados, width=100)
             obs_entry.insert(0, dados_cliente['observacoes'] or '')
-            obs_entry.grid(row=3, column=1, padx=5, pady=2)
+            obs_entry.grid(row=5, column=1, padx=5, pady=2)
 
             def salvar_alteracoes():
                 try:
@@ -1300,8 +1414,14 @@ class SistemaEntradaDados:
                     proxima_linha = ws.max_row + 1
                     ws.cell(row=proxima_linha, column=1, value=nome.upper())
                     ws.cell(row=proxima_linha, column=2, value=endereco.upper())
-                    ws.cell(row=proxima_linha, column=3, value=data_entry.get_date())
+                    ws.cell(row=proxima_linha, column=3, value=data_inicial_entry.get_date())
                     ws.cell(row=proxima_linha, column=4, value=obs_entry.get().upper())
+                    
+                    # Salvar Data Final se checkbox estiver marcado
+                    if tem_data_final.get():
+                        ws.cell(row=proxima_linha, column=5, value=data_final_entry.get_date())
+                    else:
+                        ws.cell(row=proxima_linha, column=5, value=None)
 
                     wb.save(ARQUIVO_CLIENTES)
                     
@@ -1324,18 +1444,18 @@ class SistemaEntradaDados:
             frame_botoes.pack(fill='x', pady=10)
 
             ttk.Button(frame_botoes, 
-                      text="Salvar", 
-                      command=salvar_alteracoes).pack(side='left', padx=5)
+                    text="Salvar", 
+                    command=salvar_alteracoes).pack(side='left', padx=5)
             ttk.Button(frame_botoes, 
-                      text="Cancelar", 
-                      command=janela_edicao.destroy).pack(side='left', padx=5)
+                    text="Cancelar", 
+                    command=janela_edicao.destroy).pack(side='left', padx=5)
 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir editor: {str(e)}")   
     
 
     def atualizar_lista_clientes(self):
-        """Atualiza a lista de clientes baseado nos arquivos Excel disponíveis"""
+        """Atualiza a lista de clientes baseado nos arquivos Excel disponíveis, filtrando apenas os ativos"""
         try:
             # Carregar arquivo de clientes
             caminho_base = ARQUIVO_CLIENTES
@@ -1345,13 +1465,17 @@ class SistemaEntradaDados:
             # Limpar lista atual
             self.cliente_combobox['values'] = []
             
-            # Pegar todos os clientes (pulando o cabeçalho)
+            # Pegar clientes ativos (sem data final ou com data final vazia)
             clientes = []
             for row in sheet.iter_rows(min_row=2, values_only=True):
                 if row[0]:  # Nome do cliente está na primeira coluna
-                    clientes.append(row[0])
+                    # Verificar se a data final está vazia (cliente ativo)
+                    data_final = row[4] if len(row) > 4 else None
+                    
+                    if not data_final:  # Se não tiver data final, é um cliente ativo
+                        clientes.append(row[0])
             
-            # Atualizar combobox
+            # Atualizar combobox com lista ordenada
             self.cliente_combobox['values'] = sorted(clientes)
             workbook.close()
             
