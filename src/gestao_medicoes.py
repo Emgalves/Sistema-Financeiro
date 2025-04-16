@@ -503,14 +503,14 @@ class GestaoMedicoes:
                     # Formatação de dados
                     try:
                         data_inicio = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else row[4]
-                        valor_global = f"R$ {float(row[5]):.2f}" if row[5] else "R$ 0,00"
-                        valor_pago = f"R$ {float(row[6]):.2f}" if row[6] else "R$ 0,00"
-                        saldo = f"R$ {float(row[7]):.2f}" if row[7] else "R$ 0,00"
+                        valor_global = f"R$ {float(row[5]):.2f}" if row[5] else "R$ #.##0,00"
+                        valor_pago = f"R$ {float(row[6]):.2f}" if row[6] else "R$ #.##0,00"
+                        saldo = f"R$ {float(row[7]):.2f}" if row[7] else "R$ #.##0,00"
                     except (ValueError, TypeError, AttributeError) as e:
                         data_inicio = str(row[4]) if row[4] else ""
-                        valor_global = str(row[5]) if row[5] else "R$ 0,00"
-                        valor_pago = str(row[6]) if row[6] else "R$ 0,00"
-                        saldo = str(row[7]) if row[7] else "R$ 0,00"
+                        valor_global = str(row[5]) if row[5] else "R$ #.##0,00"
+                        valor_pago = str(row[6]) if row[6] else "R$ #.##0,00"
+                        saldo = str(row[7]) if row[7] else "R$ #.##0,00"
                     
                     # Adicionar à treeview
                     self.tree_contratos.insert('', 'end', values=(
@@ -1085,11 +1085,11 @@ class GestaoMedicoes:
                     try:
                         data_medicao = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else row[4]
                         data_pagamento = row[5].strftime('%d/%m/%Y') if isinstance(row[5], datetime) else row[5]
-                        valor = f"R$ {float(row[7]):.2f}" if row[7] else "R$ 0,00"
+                        valor = f"R$ {float(row[7]):.2f}" if row[7] else "R$ #.##0,00"
                     except (ValueError, TypeError, AttributeError):
                         data_medicao = str(row[4] or "")
                         data_pagamento = str(row[5] or "")
-                        valor = str(row[7] or "R$ 0,00")
+                        valor = str(row[7] or "R$ #.##0,00")
                     
                     # Adicionar à treeview
                     self.tree_medicoes.insert('', 'end', values=(
