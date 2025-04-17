@@ -366,6 +366,26 @@ class GestaoMedicoes:
             messagebox.showerror("Erro", f"Erro ao verificar saldo: {str(e)}")
             return 0
 
+    def formatar_documento(self, valor):
+        """Formata um documento (CNPJ/CPF) preservando zeros à esquerda e adicionando pontuação"""
+        # Garantir que estamos trabalhando com string
+        valor_str = str(valor)
+        
+        # Limpar a string, removendo caracteres não numéricos
+        valor_limpo = ''.join(filter(str.isdigit, valor_str))
+        
+        # Determinar se é CPF (11 dígitos) ou CNPJ (14 dígitos)
+        if len(valor_limpo) <= 11:
+            # É um CPF, garantir 11 dígitos
+            documento = valor_limpo.zfill(11)
+            # Formatar como XXX.XXX.XXX-XX
+            return f"{documento[:3]}.{documento[3:6]}.{documento[6:9]}-{documento[9:]}"
+        else:
+            # É um CNPJ, garantir 14 dígitos
+            documento = valor_limpo.zfill(14)
+            # Formatar como XX.XXX.XXX/XXXX-XX
+            return f"{documento[:2]}.{documento[2:5]}.{documento[5:8]}/{documento[8:12]}-{documento[12:]}"
+
     # Funções da aba Cliente
     def atualizar_lista_clientes(self):
         """Atualiza a lista de clientes no combobox"""
@@ -685,33 +705,45 @@ class GestaoMedicoes:
         nome_entry.config(state='readonly')
     
     def buscar_fornecedor(self, tree, termo):
-        """Busca fornecedores na base"""
+        """Busca fornecedores na base com tratamento melhorado para CNPJ/CPF"""
         try:
             # Limpar treeview
             for item in tree.get_children():
                 tree.delete(item)
-                
+                    
             if not termo:
                 return
-                
+                    
             # Carregar planilha de fornecedores
             wb = load_workbook(ARQUIVO_FORNECEDORES)
             ws = wb['Fornecedores']
             
             # Buscar fornecedores que contenham o termo
             termo = termo.upper()
+            # Verificar se o termo pode ser um CNPJ/CPF (apenas dígitos)
+            termo_numerico = ''.join(filter(str.isdigit, termo))
+            
             encontrados = []
             
             for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0] and (termo in str(row[0]).upper() or 
-                               termo in str(row[3]).upper() or 
-                               termo in str(row[2]).upper()):
-                    encontrados.append((row[0], row[3], row[11]))
+                if not row[0]:  # Pular linhas sem CNPJ/CPF
+                    continue
                     
+                # Converter CNPJ/CPF da linha para comparação
+                row_cnpj = ''.join(filter(str.isdigit, str(row[0])))
+                
+                # Verificar se termo está no CNPJ/CPF, nome ou razão social
+                if (termo_numerico and termo_numerico in row_cnpj) or \
+                (termo in str(row[3]).upper()) or \
+                (termo in str(row[2]).upper()):
+                    # Formatar o CNPJ/CPF corretamente
+                    cnpj_formatado = self.formatar_documento(row[0])
+                    encontrados.append((cnpj_formatado, row[3], row[11]))
+                        
             # Adicionar à treeview
             for fornecedor in encontrados:
                 tree.insert('', 'end', values=fornecedor)
-                
+                    
             wb.close()
             
         except Exception as e:
@@ -1304,11 +1336,20 @@ class GestaoMedicoes:
             ws_medicoes.cell(row=proxima_linha, column=2, value=next_id)      # ID_Medicao
 
             # Salvar CNPJ como texto para preservar zeros à esquerda
-            cnpj = contrato['cnpj']
-            cnpj_formatado = formatar_cnpj_cpf(cnpj)
+            cnpj_limpo = ''.join(filter(str.isdigit, str(contrato['cnpj'])))
 
-            cnpj_cell = ws_medicoes.cell(row=proxima_linha, column=3, value=f"'{contrato['cnpj']}")
-            #cnpj_cell.number_format = '@'  # Define formato como texto
+            # Determinar se é CPF ou CNPJ e garantir formatação adequada
+            if len(cnpj_limpo) <= 11:
+                # É um CPF
+                cnpj_formatado = cnpj_limpo.zfill(11)
+                cnpj_formatado = f"{cnpj_formatado[:3]}.{cnpj_formatado[3:6]}.{cnpj_formatado[6:9]}-{cnpj_formatado[9:]}"
+            else:
+                # É um CNPJ
+                cnpj_formatado = cnpj_limpo.zfill(14)
+                cnpj_formatado = f"{cnpj_formatado[:2]}.{cnpj_formatado[2:5]}.{cnpj_formatado[5:8]}/{cnpj_formatado[8:12]}-{cnpj_formatado[12:]}"
+
+            # Garantir que o CNPJ seja armazenado como texto na planilha
+            cnpj_cell = ws_medicoes.cell(row=proxima_linha, column=3, value=cnpj_formatado)
 
             ws_medicoes.cell(row=proxima_linha, column=4, value=contrato['nome'])  # Nome_Fornecedor
             ws_medicoes.cell(row=proxima_linha, column=5, value=data_med)     # Data_Medicao
@@ -1735,17 +1776,38 @@ class GestaoMedicoes:
                 pass
     
     def obter_dados_bancarios(self, cnpj):
-        """Obtém os dados bancários do fornecedor"""
+        """Obtém os dados bancários do fornecedor com tratamento robusto para CNPJ/CPF"""
         try:
-            # Formatar CNPJ/CPF para garantir consistência na busca
-            from config.utils import formatar_cnpj_cpf
-            cnpj_formatado = formatar_cnpj_cpf(cnpj)
+            # Garantir que estamos trabalhando com string
+            cnpj_str = str(cnpj)
+            
+            # Limpar a string, removendo caracteres não numéricos
+            cnpj_limpo = ''.join(filter(str.isdigit, cnpj_str))
+            
+            # Determinar se é CPF (11 dígitos) ou CNPJ (14 dígitos) e garantir o preenchimento com zeros
+            if len(cnpj_limpo) <= 11:
+                # É um CPF, garantir 11 dígitos
+                cnpj_formatado = cnpj_limpo.zfill(11)
+                # Formatar como XXX.XXX.XXX-XX
+                cnpj_formatado = f"{cnpj_formatado[:3]}.{cnpj_formatado[3:6]}.{cnpj_formatado[6:9]}-{cnpj_formatado[9:]}"
+            else:
+                # É um CNPJ, garantir 14 dígitos
+                cnpj_formatado = cnpj_limpo.zfill(14)
+                # Formatar como XX.XXX.XXX/XXXX-XX
+                cnpj_formatado = f"{cnpj_formatado[:2]}.{cnpj_formatado[2:5]}.{cnpj_formatado[5:8]}/{cnpj_formatado[8:12]}-{cnpj_formatado[12:]}"
             
             # Usar a função auxiliar importada
-            return buscar_dados_bancarios_fornecedor(cnpj_formatado, "PIX")
+            dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_formatado, "PIX")
+            
+            # Verificar se obteve dados bancários
+            if not dados_bancarios or dados_bancarios == "DADOS BANCÁRIOS NÃO CADASTRADOS":
+                # Tentar sem formatação
+                dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_limpo, "PIX")
+                
+            return dados_bancarios if dados_bancarios else "DADOS BANCÁRIOS NÃO CADASTRADOS"
         except Exception as e:
             logger.error(f"Erro ao obter dados bancários: {str(e)}")
-            return "DADOS BANCÁRIOS NÃO ENCONTRADOS"
+            return "DADOS BANCÁRIOS NÃO CADASTRADOS"
     
     def enviar_dados(self):
         """Envia os dados para a planilha do cliente"""
