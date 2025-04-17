@@ -206,7 +206,7 @@ class SistemaPrincipal:
                         
         self.create_card(grid, "Gestão de Medições",
                         "Gerenciar contratos com empreiteros e por entregas",
-                        self.abrir_configuracoes, 2, 0)
+                        self.abrir_gestao_medicoes, 2, 0)
                         
         self.create_card(grid, "Configurações do Sistema",
                         "Gerenciar parâmetros básicos",
@@ -367,6 +367,33 @@ class SistemaPrincipal:
             messagebox.showerror("Erro",
                 f"Erro ao abrir sistema de despesas rateadas: {str(e)}")
             self.root.deiconify()
+
+    def abrir_gestao_medicoes(self):
+        """Abre o sistema de gestão de medições"""
+        try:
+            # Recarregar o módulo para garantir que as alterações sejam aplicadas
+            modulo = self.reload_module('gestao_medicoes')
+            if not modulo:
+                return
+
+            # Inicializar a classe GestaoMedicoes
+            self.root.withdraw()  # Ocultar a janela principal
+            app = modulo.GestaoMedicoes(parent=self.root)  # Passar self.root como parent
+            
+            # Configurar o comportamento ao fechar a janela
+            app.root.protocol("WM_DELETE_WINDOW", 
+                lambda: self.finalizar_sistema(app.root))
+            
+            # Exibir a janela
+            app.root.lift()
+            app.root.focus_force()
+            app.root.mainloop()
+            
+        except Exception as e:
+            # Exibir mensagem de erro e reexibir a janela principal
+            messagebox.showerror("Erro", f"Erro ao abrir sistema de gestão de medições: {str(e)}")
+            self.root.deiconify()
+
 
     def reload_module(self, module_name):
         """
