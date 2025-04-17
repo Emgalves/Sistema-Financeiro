@@ -75,6 +75,7 @@ ARQUIVO_CLIENTES = BASE_PATH / "clientes.xlsx"
 ARQUIVO_FORNECEDORES = BASE_PATH / "base_fornecedores.xlsx"
 ARQUIVO_MODELO = BASE_PATH / "MODELO.xlsx"
 ARQUIVO_CONTROLE = BASE_PATH / "controle_taxa_adm.xlsx"
+PASTA_RH = BASE_PATH / "Planilhas_RH"
 
 # Verificar se os diretórios existem
 print(f"Verificando se o diretório existe:")
