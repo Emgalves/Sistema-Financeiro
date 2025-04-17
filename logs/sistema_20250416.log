@@ -1,2 +1,101 @@
 2025-04-16 10:25:09,900 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
 2025-04-16 10:45:36,622 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 11:39:01,242 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:15:42,266 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:22:52,750 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:25:09,926 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:26:08,054 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:39:42,521 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:41:55,288 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:47:08,630 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:54:11,471 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:55:13,039 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 12:57:48,825 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 14:36:09,423 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 14:42:52,520 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 14:43:30,204 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 14:44:49,075 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 14:45:35,952 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 14:53:12,207 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 15:19:13,074 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 15:22:16,959 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 15:29:00,365 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 15:30:29,397 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 15:56:10,440 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 17:09:19,969 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 18:31:46,567 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 18:43:50,896 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-16 18:58:35,896 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 18:58:36,130 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 18:58:36,147 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 20:39:14,893 - sistema - sistema_principal - ERROR - Erro ao abrir sistema de entrada de dados: cannot access local variable 'frame_botoes_fornecedor' where it is not associated with a value
+Traceback (most recent call last):
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\sistema_principal.py", line 298, in abrir_entrada_dados
+    app = SistemaEntradaDados(parent=self.root)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\Sistema_Entrada_Dados.py", line 643, in __init__
+    self.setup_aba_fornecedor()
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\Sistema_Entrada_Dados.py", line 1605, in setup_aba_fornecedor
+    frame_botoes_fornecedor,
+    ^^^^^^^^^^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'frame_botoes_fornecedor' where it is not associated with a value
+2025-04-16 20:39:39,202 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 20:39:39,276 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 20:39:39,295 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 20:51:39,599 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 20:51:39,805 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 20:51:39,824 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 20:53:57,061 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 20:53:57,213 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 20:53:57,230 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 20:59:41,114 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 20:59:41,196 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 20:59:41,213 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 21:02:25,656 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 21:02:25,893 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 21:02:25,912 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 21:03:14,905 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 21:03:14,960 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 21:03:14,976 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 21:15:55,854 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 21:15:55,977 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 21:15:56,005 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 21:25:53,633 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 21:25:53,955 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 21:25:53,974 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 21:29:44,844 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 21:29:44,934 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 21:29:44,961 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 21:36:08,454 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 21:36:08,608 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 21:36:08,621 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 21:51:42,694 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 21:51:42,857 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 21:51:42,875 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 21:55:51,897 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 21:55:51,991 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 21:55:52,008 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 21:56:55,637 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 21:56:55,722 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 21:56:55,741 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 22:01:01,414 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 22:01:01,741 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 22:01:01,762 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 22:04:28,668 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 22:04:28,835 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 22:04:28,852 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 22:09:45,346 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 22:09:45,426 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 22:09:45,439 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 22:19:29,239 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 22:19:29,402 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 22:19:29,420 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 22:25:03,137 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 22:25:03,348 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 22:25:03,362 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 22:27:42,122 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 22:27:42,359 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 22:27:42,387 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
+2025-04-16 22:29:59,515 - sistema - Sistema_Entrada_Dados - INFO - Logger importado com sucesso
+2025-04-16 22:29:59,597 - sistema - Sistema_Entrada_Dados - INFO - Configurações importadas com sucesso
+2025-04-16 22:29:59,609 - sistema - Sistema_Entrada_Dados - INFO - Configurações do sistema importadas com sucesso
