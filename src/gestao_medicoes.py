@@ -56,8 +56,10 @@ from config.utils import (
     formatar_cnpj_cpf,
     buscar_dados_bancarios_fornecedor,
     validar_cnpj_cpf,
+    formatar_cnpj_cpf,
     validar_data,
-    aplicar_formatacao_celula
+    aplicar_formatacao_celula,
+    formatar_moeda_br
 )
 
 class GestaoMedicoes:
@@ -503,14 +505,14 @@ class GestaoMedicoes:
                     # Formatação de dados
                     try:
                         data_inicio = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else row[4]
-                        valor_global = f"R$ {float(row[5]):.2f}" if row[5] else "R$ #.##0,00"
-                        valor_pago = f"R$ {float(row[6]):.2f}" if row[6] else "R$ #.##0,00"
-                        saldo = f"R$ {float(row[7]):.2f}" if row[7] else "R$ #.##0,00"
+                        valor_global = formatar_moeda_br(row[5]) if row[5] else "R$ 0,00"
+                        valor_pago = formatar_moeda_br(row[6]) if row[6] else "R$ 0,00"
+                        saldo = formatar_moeda_br(row[7]) if row[7] else "R$ 0,00"
                     except (ValueError, TypeError, AttributeError) as e:
                         data_inicio = str(row[4]) if row[4] else ""
-                        valor_global = str(row[5]) if row[5] else "R$ #.##0,00"
-                        valor_pago = str(row[6]) if row[6] else "R$ #.##0,00"
-                        saldo = str(row[7]) if row[7] else "R$ #.##0,00"
+                        valor_global = str(row[5]) if row[5] else "R$ 0,00"
+                        valor_pago = str(row[6]) if row[6] else "R$ 0,00"
+                        saldo = str(row[7]) if row[7] else "R$ 0,00"
                     
                     # Adicionar à treeview
                     self.tree_contratos.insert('', 'end', values=(
@@ -1085,7 +1087,7 @@ class GestaoMedicoes:
                     try:
                         data_medicao = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else row[4]
                         data_pagamento = row[5].strftime('%d/%m/%Y') if isinstance(row[5], datetime) else row[5]
-                        valor = f"R$ {float(row[7]):.2f}" if row[7] else "R$ #.##0,00"
+                        valor = f"R$ {float(row[7]):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.') if row[5] else "R$ 0,00"
                     except (ValueError, TypeError, AttributeError):
                         data_medicao = str(row[4] or "")
                         data_pagamento = str(row[5] or "")
@@ -1111,7 +1113,7 @@ class GestaoMedicoes:
         if not self.contrato_atual:
             messagebox.showwarning("Aviso", "Selecione um contrato primeiro!")
             return
-            
+        
         # Verificar se o contrato tem saldo disponível
         saldo = self.verificar_saldo_contrato()
         if saldo <= 0:
@@ -1140,8 +1142,8 @@ class GestaoMedicoes:
             if contrato:
                 ttk.Label(frame_info, text=f"ID: {contrato['id']}").grid(row=0, column=0, padx=5, pady=2, sticky='w')
                 ttk.Label(frame_info, text=f"Fornecedor: {contrato['nome']}").grid(row=0, column=1, padx=5, pady=2, sticky='w')
-                ttk.Label(frame_info, text=f"Valor Global: R$ {float(contrato['valor_global']):.2f}").grid(row=1, column=0, padx=5, pady=2, sticky='w')
-                ttk.Label(frame_info, text=f"Saldo: R$ {float(contrato['saldo']):.2f}").grid(row=1, column=1, padx=5, pady=2, sticky='w')
+                ttk.Label(frame_info, text=f"Valor Global: {formatar_moeda_br(contrato['valor_global'])}").grid(row=1, column=0, padx=5, pady=2, sticky='w')
+                ttk.Label(frame_info, text=f"Saldo: {formatar_moeda_br(contrato['saldo'])}").grid(row=1, column=1, padx=5, pady=2, sticky='w')
         except Exception as e:
             ttk.Label(frame_info, text=f"Erro ao carregar dados: {str(e)}").grid(row=0, column=0, padx=5, pady=2, sticky='w')
         
@@ -1177,8 +1179,8 @@ class GestaoMedicoes:
         valor.grid(row=3, column=1, padx=5, pady=5, sticky='w')
         
         # Saldo Máximo (como referência)
-        ttk.Label(frame_medicao, text=f"(Saldo disponível: R$ {saldo:.2f})").grid(row=3, column=2, padx=5, pady=5, sticky='w')
-        
+        ttk.Label(frame_medicao, text=f"Saldo disponível: {formatar_moeda_br(contrato['saldo'])}").grid(row=3, column=2, padx=5, sticky='w')
+
         # Observações
         ttk.Label(frame_medicao, text="Observações:").grid(row=4, column=0, padx=5, pady=5, sticky='ne')
         observacoes = tk.Text(frame_medicao, width=40, height=4)
@@ -1300,7 +1302,14 @@ class GestaoMedicoes:
             proxima_linha = ws_medicoes.max_row + 1
             ws_medicoes.cell(row=proxima_linha, column=1, value=id_contrato)  # ID_Contrato
             ws_medicoes.cell(row=proxima_linha, column=2, value=next_id)      # ID_Medicao
-            ws_medicoes.cell(row=proxima_linha, column=3, value=contrato['cnpj'])  # CNPJ_Fornecedor
+
+            # Salvar CNPJ como texto para preservar zeros à esquerda
+            cnpj = contrato['cnpj']
+            cnpj_formatado = formatar_cnpj_cpf(cnpj)
+
+            cnpj_cell = ws_medicoes.cell(row=proxima_linha, column=3, value=f"'{contrato['cnpj']}")
+            #cnpj_cell.number_format = '@'  # Define formato como texto
+
             ws_medicoes.cell(row=proxima_linha, column=4, value=contrato['nome'])  # Nome_Fornecedor
             ws_medicoes.cell(row=proxima_linha, column=5, value=data_med)     # Data_Medicao
             ws_medicoes.cell(row=proxima_linha, column=6, value=data_pag)     # Data_Pagamento
@@ -1449,7 +1458,10 @@ class GestaoMedicoes:
             ttk.Label(frame_medicao, text="Valor Original (R$):").grid(row=3, column=0, padx=5, pady=5, sticky='e')
             valor_original = ttk.Entry(frame_medicao, width=15)
             valor_original.grid(row=3, column=1, padx=5, pady=5, sticky='w')
-            valor_original.insert(0, str(dados_medicao['valor']))
+
+            # Formatar o valor usando a função antes de inserir no campo
+            valor_formatado = formatar_moeda_br(dados_medicao['valor']).replace('R$ ', '')  # Remove o "R$ " para ficar só o número
+            valor_original.insert(0, valor_formatado)
             valor_original.config(state='readonly')
             
             # Valor novo
@@ -1674,7 +1686,7 @@ class GestaoMedicoes:
                 'tp_desp': '2',  # Tipo de despesa (serviço/material)
                 'cnpj_cpf': dados_medicao['cnpj'],
                 'nome': dados_medicao['nome'],
-                'categoria': 'MAT',  # Categoria padrão (ajustar conforme necessário)
+                'categoria': 'SERV',  # Categoria padrão (ajustar conforme necessário)
                 'referencia': dados_medicao['referencia'],
                 'nf': '',  # NF em branco (pode ser ajustado)
                 'vr_unit': str(dados_medicao['valor']),
