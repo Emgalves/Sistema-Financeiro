@@ -226,6 +226,26 @@ def aplicar_formatacao_celula(cell):
     cell.number_format = '#,##0.00'
     return cell
 
+def formatar_moeda_br(valor):
+    """Formata um valor para o padrão monetário brasileiro (R$ 1.234,56)"""
+    try:
+        # Converte para float e formata
+        valor_float = float(str(valor).replace(',', '.'))
+        # Usa locale para formatação brasileira
+        import locale
+        locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+        return locale.currency(valor_float, symbol=True, grouping=True)
+    except (ValueError, TypeError, locale.Error):
+        # Método alternativo se locale falhar
+        try:
+            valor_float = float(str(valor).replace(',', '.'))
+            # Formata manualmente
+            texto = f"R$ {valor_float:,.2f}"
+            # Substitui ponto por X temporário, depois vírgula por ponto, depois X por vírgula
+            return texto.replace(',', 'X').replace('.', ',').replace('X', '.')
+        except:
+            return f"R$ 0,00"
+
 
 # === DADOS BANCARIOS ===
 
