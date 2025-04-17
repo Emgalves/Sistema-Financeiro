@@ -12,6 +12,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, StringVar
 from tkinter import *
 from tkcalendar import DateEntry, Calendar
+from tkinter import filedialog, messagebox
 
 # Imports para manipulação de dados e Excel
 import pandas as pd
@@ -1601,6 +1602,7 @@ class SistemaEntradaDados:
             style='Medium.TButton'
         ).pack(side='left', padx=5)
 
+        
         # Separador para dividir visualmente as seções
         ttk.Separator(self.aba_fornecedor, orient='horizontal').pack(fill='x', padx=10, pady=5)
 
@@ -1616,6 +1618,13 @@ class SistemaEntradaDados:
                 text="Enviar Registros", 
                 command=self.enviar_dados,
                 style='Medium.TButton').pack(side='left', padx=5)
+        ttk.Button(
+            frame_botoes_fornecedor, 
+            text="Importar Folha RH", 
+            command=self.importar_folha_rh,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
         ttk.Button(frame_botoes_fornecedor, 
                 text="Voltar ao Menu", 
                 command=self.voltar_menu,
@@ -2231,9 +2240,6 @@ class SistemaEntradaDados:
             self.notebook.select(1)  # Volta para aba fornecedor
 
 
-
-
-
     def buscar_fornecedor(self):
         termo = self.busca_entry.get()
         buscar_fornecedor(self.tree_fornecedores, termo)
@@ -2635,7 +2641,6 @@ class SistemaEntradaDados:
         
         if razao_social and not nome_atual:
             self.campos_form['nome'].insert(0, razao_social)
-
 
 
     def salvar_fornecedor(self):
@@ -3109,7 +3114,20 @@ class SistemaEntradaDados:
         return True
 
     
-
+    def importar_folha_rh(self):
+        """Inicia o processo de importação de dados da folha de RH"""
+        # Verificar se um cliente está selecionado
+        if not self.cliente_atual:
+            if messagebox.askyesno(
+                "Importação RH",
+                "Nenhum cliente está selecionado. A importação será feita baseada nos dados da planilha RH.\n\n"
+                "Deseja continuar?"
+            ):
+                importador = ImportadorRH(self)
+                importador.importar_dados()
+        else:
+            importador = ImportadorRH(self)
+            importador.importar_dados()
 
     def limpar_campos_despesa(self):
         """Limpa os campos de despesa mantendo alguns valores padrão"""
@@ -6232,6 +6250,276 @@ class GestorParcelas:
             self.root.destroy()
 
 
+class ImportadorRH:
+    def __init__(self, sistema_principal):
+        self.sistema = sistema_principal
+        self.pasta_rh = Path(BASE_PATH) / "Planilhas_RH"
+        
+        # Criar pasta se não existir
+        os.makedirs(self.pasta_rh, exist_ok=True)
+        
+    def selecionar_arquivo(self):
+        """Permite ao usuário selecionar um arquivo Excel de RH para importar"""
+        arquivo = filedialog.askopenfilename(
+            title="Selecione a planilha de RH",
+            filetypes=[("Arquivos Excel", "*.xlsx *.xls")],
+            initialdir=str(self.pasta_rh)
+        )
+        
+        if not arquivo:
+            return None
+        
+        # Copiar arquivo para a pasta_rh se estiver em outro local
+        nome_arquivo = os.path.basename(arquivo)
+        destino = self.pasta_rh / nome_arquivo
+        
+        if Path(arquivo) != destino:
+            import shutil
+            shutil.copy2(arquivo, destino)
+            
+        return destino
+    
+    def importar_dados(self):
+        """Importa dados da planilha de RH apenas para o cliente atualmente selecionado"""
+        # Verificar se há um cliente selecionado
+        if not self.sistema.cliente_atual:
+            messagebox.showerror(
+                "Erro", 
+                "Nenhum cliente selecionado. Por favor, selecione um cliente antes de importar dados."
+            )
+            return
+            
+        cliente_alvo = self.sistema.cliente_atual.upper()
+        
+        arquivo = self.selecionar_arquivo()
+        if not arquivo:
+            return
+            
+        try:
+            # Carregar planilha
+            df = pd.read_excel(arquivo)
+            
+            # Obter os nomes das colunas reais
+            colunas = df.columns.tolist()
+            
+            # Verificar se temos colunas suficientes
+            if len(colunas) < 24:  # Assumindo que a coluna 'X' é a 24ª coluna (índice 23)
+                messagebox.showerror(
+                    "Erro", 
+                    f"A planilha parece não ter colunas suficientes. Esperado pelo menos 24, encontrado {len(colunas)}."
+                )
+                return
+            
+            # Usar colunas por índice em vez de nome
+            coluna_empresa = 0   # Coluna A (empresa/cliente)
+            coluna_nome = 4      # Coluna E (nome do funcionário)
+            coluna_cpf = 15      # Coluna P (CPF)
+            coluna_valor = 23    # Coluna X (valor)
+            
+            registros_processados = 0
+            erros = []
+            
+            # Processar linha por linha, mantendo o cliente atual
+            cliente_atual = None
+            cliente_encontrado = False
+            
+            for idx, row in df.iterrows():
+                # Verificar se esta linha tem um valor na coluna empresa (possível nome de cliente)
+                if not pd.isna(row.iloc[coluna_empresa]):
+                    cliente_atual = str(row.iloc[coluna_empresa]).strip().upper()
+                    
+                    # Verificar se é o cliente que estamos procurando
+                    if cliente_atual == cliente_alvo:
+                        cliente_encontrado = True
+                        print(f"Cliente alvo encontrado: {cliente_atual}")
+                    else:
+                        cliente_encontrado = False
+                        print(f"Cliente diferente encontrado: {cliente_atual}, ignorando")
+                
+                # Se não for o cliente alvo, pular esta linha
+                if not cliente_encontrado:
+                    continue
+                    
+                # Verificar se esta linha representa um funcionário (tem nome, CPF e valor)
+                if (pd.isna(row.iloc[coluna_nome]) or 
+                    pd.isna(row.iloc[coluna_cpf]) or 
+                    pd.isna(row.iloc[coluna_valor])):
+                    continue
+                    
+                # Processar dados do funcionário
+                cpf = str(row.iloc[coluna_cpf]).strip()
+                nome = str(row.iloc[coluna_nome]).strip().upper()
+                
+                # Verificar se o valor é numérico
+                try:
+                    valor = float(row.iloc[coluna_valor])
+                except (ValueError, TypeError):
+                    erros.append(f"Valor inválido para {nome}: {row.iloc[coluna_valor]}")
+                    continue
+                
+                # Definir data do relatório atual
+                data_rel = self.sistema.data_rel_entry.get()
+                if not data_rel:
+                    hoje = datetime.now()
+                    if 6 <= hoje.day <= 20:
+                        data_rel = hoje.replace(day=20).strftime('%d/%m/%Y')
+                    else:
+                        if hoje.day > 20:
+                            proximo_mes = (hoje.replace(day=1) + relativedelta(months=1))
+                            data_rel = proximo_mes.replace(day=5).strftime('%d/%m/%Y')
+                        else:
+                            data_rel = hoje.replace(day=5).strftime('%d/%m/%Y')
+                
+                # Calcular data de vencimento
+                data_base = datetime.strptime(data_rel, '%d/%m/%Y')
+                if data_base.day == 5:
+                    dt_vencto = data_base.replace(day=20).strftime('%d/%m/%Y')
+                else:  # dia 20
+                    if data_base.month == 12:
+                        dt_vencto = data_base.replace(year=data_base.year + 1, month=1, day=5).strftime('%d/%m/%Y')
+                    else:
+                        dt_vencto = data_base.replace(month=data_base.month + 1, day=5).strftime('%d/%m/%Y')
+                
+                # Buscar dados bancários
+                dados_bancarios = self.buscar_dados_bancarios(cpf)
+                
+                # Criar registro
+                registro = {
+                    'data': data_rel,
+                    'cnpj_cpf': self.formatar_cpf(cpf),
+                    'nome': nome,
+                    'categoria': 'MO',
+                    'tp_desp': '1',
+                    'referencia': 'SALÁRIO',
+                    'nf': '',
+                    'vr_unit': f"{valor:.2f}",
+                    'dias': 1,
+                    'valor': f"{valor:.2f}",
+                    'dt_vencto': dt_vencto,
+                    'dados_bancarios': dados_bancarios or 'DADOS BANCÁRIOS NÃO CADASTRADOS',
+                    'observacao': f"IMPORTADO RH - SALÁRIO",
+                    'forma_pagamento': 'PIX'
+                }
+                
+                # Adicionar à lista para incluir
+                self.sistema.dados_para_incluir.append(registro)
+                registros_processados += 1
+            
+            # Relatório final
+            if registros_processados > 0:
+                mensagem = (
+                    f"Importação concluída!\n\n"
+                    f"Registros processados: {registros_processados} para {cliente_alvo}\n"
+                )
+                
+                if erros:
+                    mensagem += f"\nAdvertências ({len(erros)}):\n"
+                    for erro in erros[:5]:  # Limitar a 5 para não sobrecarregar
+                        mensagem += f"- {erro}\n"
+                    if len(erros) > 5:
+                        mensagem += f"- ...e mais {len(erros) - 5} advertências\n"
+                
+                messagebox.showinfo("Resultado da Importação", mensagem)
+                
+                # Perguntar se deseja visualizar
+                if messagebox.askyesno(
+                    "Importação RH", 
+                    "Deseja visualizar os lançamentos antes de salvar?"
+                ):
+                    self.sistema.visualizar_lancamentos()
+            else:
+                messagebox.showwarning(
+                    "Aviso",
+                    f"Nenhum registro foi processado para o cliente {cliente_alvo}. Verifique se este cliente está presente na planilha."
+                )
+                
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao importar dados: {str(e)}")
+            import traceback
+            traceback.print_exc()
+
+    # Adicione também esta função para formatação de CPF
+    def formatar_cpf(self, cpf):
+        """Formata um CPF preservando zeros à esquerda"""
+        # Converter para string e remover caracteres não numéricos
+        cpf_str = str(cpf)
+        
+        # Tratar caso de número decimal (remover parte decimal)
+        if '.' in cpf_str:
+            cpf_str = cpf_str.split('.')[0]
+        
+        # Remover caracteres não numéricos
+        cpf_limpo = ''.join(filter(str.isdigit, cpf_str))
+        
+        # Garantir 11 dígitos com zeros à esquerda
+        cpf_formatado = cpf_limpo.zfill(11)
+        
+        # Formatar como XXX.XXX.XXX-XX
+        return f"{cpf_formatado[:3]}.{cpf_formatado[3:6]}.{cpf_formatado[6:9]}-{cpf_formatado[9:]}"
+    
+    def buscar_dados_bancarios(self, cpf):
+        """Busca dados bancários do fornecedor pelo CPF"""
+        try:
+            # Converter para string, garantindo que o valor original seja preservado
+            cpf_str = str(cpf)
+            
+            # Tratar caso específico de notação científica ou formato float
+            if 'e' in cpf_str.lower() or '.' in cpf_str:
+                # Tentar extrair o valor original sem notação científica
+                try:
+                    # Converter para float primeiro para lidar com notação científica
+                    cpf_float = float(cpf_str)
+                    # Converter para int para remover decimais
+                    cpf_int = int(cpf_float)
+                    # Converter para string novamente
+                    cpf_str = str(cpf_int)
+                except:
+                    # Se falhar, usar a string original
+                    pass
+            
+            # Remover caracteres não numéricos
+            cpf_limpo = ''.join(filter(str.isdigit, cpf_str))
+            
+            # Garantir exatamente 11 dígitos com zeros à esquerda
+            cpf_limpo = cpf_limpo.zfill(11)
+            
+            print(f"Buscando dados bancários para CPF: {cpf_limpo}")
+            
+            # Tentar buscar com diferentes formatos
+            formatos_cpf = [
+                cpf_limpo,  # Apenas dígitos com zeros à esquerda: 03473509680
+                f"{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}"  # 034.735.096-80
+            ]
+            
+            for cpf_formato in formatos_cpf:
+                fornecedor = self.sistema.buscar_fornecedor_completo(cpf_formato)
+                if fornecedor:
+                    print(f"Fornecedor encontrado: {fornecedor['nome']} com CPF: {cpf_formato}")
+                    
+                    # Priorizar PIX
+                    if fornecedor['chave_pix']:
+                        return f"PIX: {fornecedor['chave_pix']}"
+                    
+                    # Montar dados para TED
+                    dados_ted = []
+                    if fornecedor['banco']: dados_ted.append(str(fornecedor['banco']))
+                    if fornecedor['op']: dados_ted.append(str(fornecedor['op']))
+                    if fornecedor['agencia']: dados_ted.append(str(fornecedor['agencia']))
+                    if fornecedor['conta']: dados_ted.append(str(fornecedor['conta']))
+                    dados_ted.append(str(fornecedor['cnpj_cpf']))
+                    
+                    dados = ' - '.join(filter(None, dados_ted))
+                    if dados.strip() != '':
+                        return dados
+            
+            # Se chegou aqui, não encontrou o fornecedor
+            print(f"Nenhum fornecedor encontrado para CPF: {cpf_limpo} em nenhum formato tentado")
+            return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+                
+        except Exception as e:
+            print(f"Erro ao buscar dados bancários: {str(e)}")
+            return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+                
 # Aqui termina a última classe
 # Agora pode vir o if __name__ == "__main__"
 if __name__ == "__main__":
