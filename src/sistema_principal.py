@@ -319,24 +319,46 @@ class SistemaPrincipal:
 
     @log_action("Gerar relatório")
     def abrir_relatorios(self):
-        """Abre o sistema de relatórios"""
+        """Abre o sistema integrado de relatórios"""
         try:
-            modulo = self.reload_module('relatorio_despesas_aprimorado')
+            # Importar o novo módulo de sistema de relatórios
+            modulo = self.reload_module('relatorios_interface')
             if not modulo:
+                # Fallback para o sistema de relatórios antigo
+                modulo = self.reload_module('relatorio_despesas_aprimorado')
+                if not modulo:
+                    messagebox.showerror("Erro", "Não foi possível carregar o módulo de relatórios.")
+                    return
+                
+                # Se o sistema integrado falhou, mas o módulo de relatório de despesas funcionou
+                self.root.withdraw()
+                relatorio_window = tk.Toplevel(self.root)
+                
+                app = modulo.RelatorioUI(relatorio_window)
+                app.menu_principal = self.root
+                
+                relatorio_window.protocol("WM_DELETE_WINDOW", 
+                    lambda: self.finalizar_sistema(relatorio_window))
+                
+                relatorio_window.lift()
+                relatorio_window.focus_force()
+                relatorio_window.mainloop()
                 return
-
+                
+            # Se o sistema integrado foi carregado com sucesso
             self.root.withdraw()
-            relatorio_window = tk.Toplevel(self.root)
             
-            app = modulo.RelatorioUI(relatorio_window)
-            app.menu_principal = self.root
+            # Iniciar o sistema de relatórios integrado
+            app = modulo.SistemaRelatorios(parent=self.root)
             
-            relatorio_window.protocol("WM_DELETE_WINDOW", 
-                lambda: self.finalizar_sistema(relatorio_window))
+            # Definir comportamento ao fechar
+            app.root.protocol("WM_DELETE_WINDOW", 
+                lambda: self.finalizar_sistema(app.root))
             
-            relatorio_window.lift()
-            relatorio_window.focus_force()
-            relatorio_window.mainloop()
+            # Exibir janela
+            app.root.lift()
+            app.root.focus_force()
+            app.run()
             
         except Exception as e:
             messagebox.showerror("Erro",
