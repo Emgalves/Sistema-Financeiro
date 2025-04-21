@@ -116,63 +116,6 @@ except ImportError:
         
         version_control = VersionControlStub()
 
-# Adicione no início do arquivo, logo após os imports
-
-class AppManager:
-    """Classe para gerenciar as janelas do aplicativo e garantir finalização adequada"""
-    
-    def __init__(self):
-        self.windows = []
-        self.active_threads = []
-        self._instance = None
-        
-    def register_window(self, window):
-        """Registra uma janela para ser gerenciada"""
-        if window not in self.windows:
-            self.windows.append(window)
-            print(f"Janela registrada. Total: {len(self.windows)}")
-        
-    def register_thread(self, thread):
-        """Registra uma thread para ser gerenciada"""
-        if thread not in self.active_threads:
-            self.active_threads.append(thread)
-            print(f"Thread registrada. Total: {len(self.active_threads)}")
-        
-    def unregister_window(self, window):
-        """Remove uma janela do gerenciamento"""
-        if window in self.windows:
-            self.windows.remove(window)
-            print(f"Janela desregistrada. Restantes: {len(self.windows)}")
-            
-    def cleanup(self):
-        """Limpa todos os recursos"""
-        print(f"Iniciando limpeza de recursos. Janelas: {len(self.windows)}, Threads: {len(self.active_threads)}")
-        
-        # Fechar todas as janelas registradas
-        for window in self.windows:
-            try:
-                print(f"Finalizando janela: {window}")
-                window.quit()
-                window.destroy()
-            except Exception as e:
-                print(f"Erro ao finalizar janela: {str(e)}")
-                
-        # Finalizar threads ativas
-        for thread in self.active_threads:
-            try:
-                if thread.is_alive():
-                    print(f"Finalizando thread: {thread}")
-                    thread.join(0.1)  # Dar um tempo curto para finalizar
-            except Exception as e:
-                print(f"Erro ao finalizar thread: {str(e)}")
-                
-        # Limpar listas
-        self.windows.clear()
-        self.active_threads.clear()
-        print("Limpeza concluída")
-
-# Cria uma instância global
-app_manager = AppManager()
 
 def resource_path(relative_path):
     try:
@@ -182,14 +125,11 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-
 class SistemaPrincipal:
     def __init__(self):
         self.usuario_atual = None
         self.root = tk.Tk()
 
-        # Registrar a janela principal
-        app_manager.register_window(self.root)
         
         # Configurar a janela principal
         titulo_com_versao = f"Sistema de Gestão Financeira v{version_control.get_version_string()}"
@@ -399,9 +339,6 @@ class SistemaPrincipal:
                 self.root.withdraw()
                 relatorio_window = tk.Toplevel(self.root)
                 
-                # Registrar a nova janela
-                app_manager.register_window(relatorio_window)
-                
                 app = modulo.RelatorioUI(relatorio_window)
                 app.menu_principal = self.root
                 
@@ -418,9 +355,6 @@ class SistemaPrincipal:
             
             # Iniciar o sistema de relatórios integrado
             app = modulo.SistemaRelatorios(parent=self.root)
-            
-            # Registrar a nova janela
-            app_manager.register_window(app.root)
             
             # Definir comportamento ao fechar
             app.root.protocol("WM_DELETE_WINDOW", 
@@ -619,6 +553,10 @@ def main():
         traceback.print_exc()
     finally:
         output_manager.stop()
-        # Se após um tempo o programa não encerrar, força a saída
+        # Forçar a saída após um breve período
         import threading
-        threading.Timer(5.0, force_exit).start()
+        threading.Timer(1.0, force_exit).start()
+
+# Executar o aplicativo
+if __name__ == "__main__":
+    main()

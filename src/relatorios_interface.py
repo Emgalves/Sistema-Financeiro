@@ -738,9 +738,6 @@ class SistemaRelatorios:
         """Volta ao menu principal"""
         print("Finalizando interface de relatórios...")
         
-        # Parar o loop de eventos
-        self.root.quit()
-        
         # Destruir a janela
         self.root.destroy()
         

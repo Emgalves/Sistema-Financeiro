@@ -1938,12 +1938,6 @@ class RelatorioFornecedores:
         """Volta ao menu principal"""
         print("Finalizando relatório de fornecedores...")
         
-        # Parar qualquer thread ativa ou operação pendente
-        # (Adicione aqui qualquer limpeza específica do seu aplicativo)
-        
-        # Parar o loop de eventos
-        self.root.quit()
-        
         # Destruir a janela
         self.root.destroy()
         
