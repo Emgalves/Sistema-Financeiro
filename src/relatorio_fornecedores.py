@@ -972,7 +972,7 @@ class RelatorioFornecedores:
         fig.suptitle(
             f"Análise de Fornecedores - {self.periodo_inicio.strftime('%d/%m/%Y')} a {self.periodo_fim.strftime('%d/%m/%Y')}",
             fontsize=14,
-            fontweight='bold',
+            # fontweight='bold',
             y=0.98  # Posicionamento mais alto
         )
         
@@ -1936,6 +1936,15 @@ class RelatorioFornecedores:
     
     def voltar_menu(self):
         """Volta ao menu principal"""
+        print("Finalizando relatório de fornecedores...")
+        
+        # Parar qualquer thread ativa ou operação pendente
+        # (Adicione aqui qualquer limpeza específica do seu aplicativo)
+        
+        # Parar o loop de eventos
+        self.root.quit()
+        
+        # Destruir a janela
         self.root.destroy()
         
         # Mostrar janela principal
