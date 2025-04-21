@@ -951,9 +951,13 @@ class RelatorioFornecedores:
         for widget in self.frame_grafico.winfo_children():
             widget.destroy()
             
-        # Criar figura
-        fig, ax = plt.subplots(figsize=(10, 6))
+        # Criar figura com tamanho adequado e mais espaço para títulos
+        fig = plt.figure(figsize=(10, 6), constrained_layout=True)
         
+        # Adicionar mais espaço na parte superior para títulos
+        ax = fig.add_subplot(111)
+        
+        # Verificar qual gráfico criar
         if tipo_grafico == "Pizza - Total por Fornecedor":
             self.criar_grafico_pizza(fig, ax)
         elif tipo_grafico == "Barras - Top Fornecedores":
@@ -963,19 +967,39 @@ class RelatorioFornecedores:
         elif tipo_grafico == "Barras Empilhadas - Por Tipo de Despesa":
             self.criar_grafico_barras_empilhadas(fig, ax)
         
-        # Adicionar título
+        # Adicionar título principal com espaçamento adequado
+        # Usar suptitle com y=0.98 para posicionar acima do título do gráfico
         fig.suptitle(
             f"Análise de Fornecedores - {self.periodo_inicio.strftime('%d/%m/%Y')} a {self.periodo_fim.strftime('%d/%m/%Y')}",
-            fontsize=14
+            fontsize=14,
+            fontweight='bold',
+            y=0.98  # Posicionamento mais alto
         )
+        
+        # Ajuste de layout automático para evitar sobreposições
+        fig.tight_layout(rect=[0, 0, 1, 0.95])  # Reservar espaço para o título principal
             
         # Exibir o gráfico
         canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        
+        # Adicionar barra de ferramentas de navegação (opcional)
+        try:
+            from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
+            toolbar = NavigationToolbar2Tk(canvas, self.frame_grafico)
+            toolbar.update()
+        except ImportError:
+            pass  # Se não conseguir importar, prossegue sem a barra de ferramentas
     
     def criar_grafico_pizza(self, fig, ax):
-        """Cria um gráfico de pizza mostrando a distribuição dos valores dos fornecedores"""
+        """Cria um gráfico de pizza com legenda reposicionada e melhor formatação de título"""
+        # Limpar o eixo antes de desenhar
+        ax.clear()
+        
+        # Ajustar o tamanho da figura e layout
+        fig.subplots_adjust(left=0.05, right=0.65, top=0.9, bottom=0.1)
+        
         # Preparar dados
         # Mostrar apenas os top 7 e agrupar o resto como "Outros"
         top_n = min(7, len(self.top_fornecedores))
@@ -987,7 +1011,7 @@ class RelatorioFornecedores:
         for i in range(top_n):
             fornecedor, dados = self.top_fornecedores[i]
             # Limitar tamanho do nome para o gráfico
-            nome_curto = fornecedor[:20] + '...' if len(fornecedor) > 20 else fornecedor
+            nome_curto = fornecedor[:15] + '...' if len(fornecedor) > 15 else fornecedor
             labels.append(f"{i+1}. {nome_curto}")
             valores.append(dados['total'])
         
@@ -997,34 +1021,63 @@ class RelatorioFornecedores:
             labels.append("Outros")
             valores.append(valor_outros)
         
-        # Criar gráfico
-        patches, texts, autotexts = ax.pie(
+        # Criar gráfico com tamanho reduzido para acomodar legenda
+        wedges, texts, autotexts = ax.pie(
             valores, 
             labels=None,
             autopct='%1.1f%%',
             startangle=90,
             shadow=False,
-            colors=plt.cm.tab20.colors[:len(valores)]
+            colors=plt.cm.tab20.colors[:len(valores)],
+            wedgeprops={'linewidth': 1, 'edgecolor': 'white'}
         )
         
-        # Ajustar tamanho do texto
+        # Ajustar tamanho do texto das porcentagens
         for autotext in autotexts:
-            autotext.set_fontsize(9)
+            autotext.set_fontsize(8)
+            autotext.set_weight('bold')
+            autotext.set_color('white')
         
-        # Adicionar legenda
-        ax.legend(
-            patches, 
+        # Adicionar legenda com melhor posicionamento e tamanho
+        legend = ax.legend(
+            wedges, 
             labels, 
-            loc="center left", 
-            bbox_to_anchor=(1, 0.5),
-            fontsize=10
+            loc="center left",
+            bbox_to_anchor=(1.05, 0.5),  # Mover mais para a direita
+            fontsize=8,                  # Fonte menor
+            frameon=True,                # Adicionar borda
+            framealpha=0.8,              # Tornar fundo semi-transparente
+            title="Fornecedores",
+            title_fontsize=9
         )
         
-        ax.set_title('Distribuição do Valor Total por Fornecedor')
-        fig.tight_layout()
+        # Adicionar título e subtítulo separados com espaço adequado
+        ax.set_title('Distribuição do Valor Total por Fornecedor', 
+                    fontsize=12, 
+                    pad=20,            # Adicionar espaço entre título e gráfico
+                    fontweight='bold')
+        
+        # Adicionar um círculo central (opcional, para criar efeito de "donut")
+        # Isso pode ajudar a tornar o gráfico de pizza mais atraente
+        centre_circle = plt.Circle((0, 0), 0.3, fc='white', ec='lightgray')
+        ax.add_patch(centre_circle)
+        
+        # Garantir que o aspecto do gráfico seja igual (círculo perfeito)
+        ax.set_aspect('equal')
+        
+        # Adicionarr totais no círculo central
+        total_fmt = formatar_moeda_br(sum(valores))
+        ax.text(0, 0, f"Total\n{total_fmt}", 
+                ha='center', va='center', fontsize=9, fontweight='bold')
     
     def criar_grafico_barras(self, fig, ax):
-        """Cria um gráfico de barras horizontais mostrando os principais fornecedores"""
+        """Cria um gráfico de barras horizontais com melhor formatação"""
+        # Limpar o eixo antes de desenhar
+        ax.clear()
+        
+        # Ajustar margens
+        fig.subplots_adjust(left=0.3, right=0.95, top=0.85, bottom=0.1)
+        
         # Mostrar apenas os top 15 fornecedores
         top_n = min(15, len(self.top_fornecedores))
         
@@ -1036,34 +1089,81 @@ class RelatorioFornecedores:
         for i in range(top_n - 1, -1, -1):
             fornecedor, dados = self.top_fornecedores[i]
             # Limitar tamanho do nome para o gráfico
-            nome_curto = fornecedor[:25] + '...' if len(fornecedor) > 25 else fornecedor
+            nome_curto = fornecedor[:20] + '...' if len(fornecedor) > 20 else fornecedor
             labels.append(f"{i+1}. {nome_curto}")
             valores.append(dados['total'])
+        
+        # Definir cores com gradiente baseado nos valores
+        cores = plt.cm.Blues(np.linspace(0.4, 0.9, len(valores)))
         
         # Criar barras horizontais
         bars = ax.barh(
             labels, 
             valores,
-            color=plt.cm.tab20.colors[:top_n]
+            color=cores,
+            height=0.7,  # Barras mais finas para melhor visualização
+            edgecolor='grey',
+            linewidth=0.5
         )
         
         # Adicionar rótulos de valor nas barras
         for i, bar in enumerate(bars):
             width = bar.get_width()
+            label_x_pos = width * 1.01
+            # Verificar se o valor é muito grande para caber na figura
+            if label_x_pos > max(valores) * 0.95:
+                label_x_pos = width * 0.95
+                ha = 'right'
+                color = 'white'
+            else:
+                ha = 'left'
+                color = 'black'
+                
             ax.text(
-                width * 1.01,
+                label_x_pos,
                 bar.get_y() + bar.get_height()/2,
                 formatar_moeda_br(width),
                 va='center',
-                fontsize=8
+                ha=ha,
+                fontsize=8,
+                color=color,
+                fontweight='bold'
             )
         
-        ax.set_title('Top Fornecedores por Valor Total')
-        ax.set_xlabel('Valor Total')
-        fig.tight_layout()
+        # Formatar eixo Y (nomes) para melhor legibilidade
+        ax.tick_params(axis='y', labelsize=9)
+        
+        # Remover linhas de grade no eixo X (valores)
+        ax.xaxis.grid(True, linestyle='--', alpha=0.7)
+        ax.yaxis.grid(False)
+        
+        # Remover bordas desnecessárias
+        for spine in ['top', 'right']:
+            ax.spines[spine].set_visible(False)
+        
+        ax.set_title('Top Fornecedores por Valor Total', fontsize=12, pad=20, fontweight='bold')
+        ax.set_xlabel('Valor Total', fontsize=10)
+        
+        # Formatação de números no eixo X
+        from matplotlib.ticker import FuncFormatter
+        def formato_eixo(x, pos):
+            if x >= 1000000:
+                return f'R$ {x/1000000:.1f}M'
+            elif x >= 1000:
+                return f'R$ {x/1000:.0f}K'
+            else:
+                return f'R$ {x:.0f}'
+        
+        ax.xaxis.set_major_formatter(FuncFormatter(formato_eixo))
     
     def criar_grafico_linha(self, fig, ax):
-        """Cria um gráfico de linha mostrando a evolução mensal dos principais fornecedores"""
+        """Cria um gráfico de linha com melhor formatação"""
+        # Limpar o eixo antes de desenhar
+        ax.clear()
+        
+        # Ajustar layout
+        fig.subplots_adjust(left=0.1, right=0.75, top=0.85, bottom=0.15)
+        
         # Mostrar apenas os top 5 fornecedores
         top_n = min(5, len(self.top_fornecedores))
         
@@ -1075,44 +1175,110 @@ class RelatorioFornecedores:
         # Ordenar meses
         meses_ordenados = sorted(todos_meses)
         
+        # Verificar se há meses para plotar
+        if not meses_ordenados:
+            ax.text(0.5, 0.5, "Sem dados mensais para exibir", 
+                    ha='center', va='center', fontsize=12)
+            ax.set_title('Evolução Mensal dos Top Fornecedores', fontsize=12, pad=20)
+            return
+        
+        # Formatação de meses para exibição
+        meses_formatados = []
+        for mes in meses_ordenados:
+            ano, mes_num = mes.split('-')
+            # Converter para nomes abreviados de meses
+            nomes_meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 
+                        'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+            mes_fmt = f"{nomes_meses[int(mes_num)-1]}/{ano[2:]}"
+            meses_formatados.append(mes_fmt)
+        
+        # Cores para cada fornecedor
+        cores = plt.cm.tab10.colors[:top_n]
+        
         # Preparar dados por fornecedor
         for i in range(top_n):
             fornecedor, dados = self.top_fornecedores[i]
             
             # Limitar tamanho do nome para o gráfico
-            nome_curto = fornecedor[:25] + '...' if len(fornecedor) > 25 else fornecedor
+            nome_curto = fornecedor[:20] + '...' if len(fornecedor) > 20 else fornecedor
             label = f"{i+1}. {nome_curto}"
             
             # Preparar valores mensais
             valores = [dados['por_mes'].get(mes, 0) for mes in meses_ordenados]
             
             # Plotar linha
-            ax.plot(
-                meses_ordenados, 
+            linha = ax.plot(
+                meses_formatados, 
                 valores,
                 marker='o',
                 linewidth=2,
-                label=label
+                label=label,
+                color=cores[i],
+                markersize=6,
+                markeredgecolor='white',
+                markeredgewidth=1
             )
+            
+            # Adicionar rótulos de valor no último ponto (opcional)
+            if valores[-1] > 0:
+                ax.annotate(
+                    formatar_moeda_br(valores[-1]),
+                    xy=(len(valores)-1, valores[-1]),
+                    xytext=(10, 0),
+                    textcoords="offset points",
+                    fontsize=8,
+                    color=cores[i],
+                    fontweight='bold'
+                )
         
         # Configurar eixo X
-        ax.set_xticks(meses_ordenados)
-        ax.set_xticklabels([mes.replace('-', '/') for mes in meses_ordenados], rotation=45)
+        ax.set_xticks(range(len(meses_formatados)))
+        ax.set_xticklabels(meses_formatados, rotation=45, ha='right')
         
-        ax.set_title('Evolução Mensal dos Top Fornecedores')
-        ax.set_xlabel('Mês/Ano')
-        ax.set_ylabel('Valor Total')
-        ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+        # Melhorar formatação do eixo Y
+        from matplotlib.ticker import FuncFormatter
+        def formato_eixo(y, pos):
+            if y >= 1000000:
+                return f'R${y/1000000:.1f}M'
+            elif y >= 1000:
+                return f'R${y/1000:.0f}K'
+            else:
+                return f'R${y:.0f}'
+        
+        ax.yaxis.set_major_formatter(FuncFormatter(formato_eixo))
+        
+        ax.set_title('Evolução Mensal dos Top Fornecedores', fontsize=12, pad=20, fontweight='bold')
+        ax.set_xlabel('Mês/Ano', fontsize=10)
+        ax.set_ylabel('Valor Total', fontsize=10)
+        
+        # Melhorar posicionamento da legenda
+        ax.legend(
+            loc='center left', 
+            bbox_to_anchor=(1.02, 0.5),
+            fontsize=9,
+            frameon=True,
+            framealpha=0.8,
+            title="Fornecedores",
+            title_fontsize=10
+        )
         
         # Adicionar grid
-        ax.grid(True, linestyle='--', alpha=0.7)
+        ax.grid(True, linestyle='--', alpha=0.7, axis='both')
         
-        fig.tight_layout()
+        # Remover bordas desnecessárias
+        for spine in ['top', 'right']:
+            ax.spines[spine].set_visible(False)
     
     def criar_grafico_barras_empilhadas(self, fig, ax):
-        """Cria um gráfico de barras empilhadas mostrando valores por tipo de despesa"""
-        # Mostrar apenas os top 10 fornecedores
-        top_n = min(10, len(self.top_fornecedores))
+        """Cria um gráfico de barras empilhadas com melhor formatação"""
+        # Limpar o eixo antes de desenhar
+        ax.clear()
+        
+        # Ajustar layout
+        fig.subplots_adjust(left=0.1, right=0.75, top=0.85, bottom=0.2)
+        
+        # Mostrar apenas os top 8 fornecedores (para não ficar muito apertado)
+        top_n = min(8, len(self.top_fornecedores))
         
         # Obter todos os tipos de despesa
         todos_tipos = set()
@@ -1121,6 +1287,13 @@ class RelatorioFornecedores:
         
         # Ordenar tipos
         tipos_ordenados = sorted(todos_tipos)
+        
+        # Verificar se há tipos para mostrar
+        if not tipos_ordenados:
+            ax.text(0.5, 0.5, "Sem dados de tipos de despesa para exibir", 
+                    ha='center', va='center', fontsize=12)
+            ax.set_title('Fornecedores por Tipo de Despesa', fontsize=12, pad=20)
+            return
         
         # Preparar dados
         fornecedores = []
@@ -1131,7 +1304,7 @@ class RelatorioFornecedores:
             fornecedor, dados = self.top_fornecedores[i]
             
             # Adicionar nome do fornecedor
-            nome_curto = fornecedor[:15] + '...' if len(fornecedor) > 15 else fornecedor
+            nome_curto = fornecedor[:12] + '...' if len(fornecedor) > 12 else fornecedor
             fornecedores.append(f"{i+1}. {nome_curto}")
             
             # Adicionar valores por tipo
@@ -1141,8 +1314,8 @@ class RelatorioFornecedores:
         # Criar barras empilhadas
         bottom = np.zeros(len(fornecedores))
         
-        # Definir cores para os tipos de despesa
-        cores = plt.cm.tab10.colors[:len(tipos_ordenados)]
+        # Definir cores para os tipos de despesa (com paleta mais diferenciada)
+        cores = plt.cm.tab20.colors[:len(tipos_ordenados)]
         
         # Criar barras para cada tipo
         barras = []
@@ -1152,20 +1325,72 @@ class RelatorioFornecedores:
                 valores_por_tipo[tipo],
                 bottom=bottom,
                 label=f"Tipo {tipo}",
-                color=cores[i % len(cores)]
+                color=cores[i % len(cores)],
+                width=0.7,  # Barras mais finas
+                edgecolor='white',
+                linewidth=0.5
             )
             barras.append(barra)
             bottom += np.array(valores_por_tipo[tipo])
         
-        ax.set_title('Fornecedores por Tipo de Despesa')
-        ax.set_xlabel('Fornecedor')
-        ax.set_ylabel('Valor Total')
-        ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+        # Adicionar rótulos de valor total no topo de cada barra
+        for i in range(len(fornecedores)):
+            total = sum(valores_por_tipo[tipo][i] for tipo in tipos_ordenados)
+            if total > 0:
+                ax.text(
+                    i, 
+                    total * 1.01, 
+                    formatar_moeda_br(total),
+                    ha='center',
+                    va='bottom',
+                    fontsize=8,
+                    fontweight='bold',
+                    rotation=0
+                )
+        
+        ax.set_title('Fornecedores por Tipo de Despesa', 
+                    fontsize=12, 
+                    pad=20,
+                    fontweight='bold')
+        ax.set_xlabel('Fornecedor', fontsize=10)
+        ax.set_ylabel('Valor Total', fontsize=10)
+        
+        # Melhorar formatação do eixo Y
+        from matplotlib.ticker import FuncFormatter
+        def formato_eixo(y, pos):
+            if y >= 1000000:
+                return f'R${y/1000000:.1f}M'
+            elif y >= 1000:
+                return f'R${y/1000:.0f}K'
+            else:
+                return f'R${y:.0f}'
+        
+        ax.yaxis.set_major_formatter(FuncFormatter(formato_eixo))
+        
+        # Melhorar posicionamento da legenda
+        ax.legend(
+            loc='center left', 
+            bbox_to_anchor=(1.02, 0.5),
+            fontsize=9,
+            frameon=True,
+            framealpha=0.8,
+            title="Tipos de Despesa",
+            title_fontsize=10
+        )
+        
+        # Adicionar grid apenas no eixo Y
+        ax.yaxis.grid(True, linestyle='--', alpha=0.5)
+        ax.xaxis.grid(False)
+        
+        # Remover bordas desnecessárias
+        for spine in ['top', 'right']:
+            ax.spines[spine].set_visible(False)
         
         # Rotacionar labels do eixo X para melhor visualização
-        plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+        plt.setp(ax.get_xticklabels(), rotation=45, ha='right', fontsize=9)
         
-        fig.tight_layout()
+        # Garantir que há espaço suficiente para os rótulos
+        plt.tight_layout(rect=[0, 0, 0.75, 0.9])
     
     def exportar_excel(self):
         """Exporta o relatório para um arquivo Excel"""
@@ -1335,7 +1560,7 @@ class RelatorioFornecedores:
             messagebox.showerror("Erro", f"Erro ao exportar para Excel: {str(e)}")
     
     def exportar_pdf(self):
-        """Exporta o relatório para um arquivo PDF"""
+        """Exporta o relatório para um arquivo PDF com layout aprimorado"""
         if not self.dados_carregados:
             messagebox.showwarning("Aviso", "Não há dados para exportar!")
             return
@@ -1346,11 +1571,21 @@ class RelatorioFornecedores:
             from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
             from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
             from reportlab.lib import colors
-            from reportlab.lib.enums import TA_LEFT, TA_CENTER
+            from reportlab.lib.units import mm
+            from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
+            from reportlab.platypus.flowables import KeepTogether
             
-            # Solicitar nome do arquivo ao usuário
+            # Definir nome do cliente para o nome do arquivo
+            if self.todos_clientes:
+                cliente_str = "Todos_Clientes"
+            else:
+                # Substituir espaços por underscores e remover caracteres inválidos
+                cliente_str = self.cliente_atual.replace(' ', '_').replace('/', '-').replace('\\', '-')
+            
+            # Gerar nome do arquivo mais específico 
+            data_geracao = datetime.now().strftime('%Y%m%d-%H%M')
             periodo_str = f"{self.periodo_inicio.strftime('%d-%m-%Y')}_{self.periodo_fim.strftime('%d-%m-%Y')}"
-            nome_padrao = f"Relatorio_Fornecedores_{periodo_str}.pdf"
+            nome_padrao = f"Relatorio_Fornecedores_{cliente_str}_{periodo_str}.pdf"
             
             arquivo = filedialog.asksaveasfilename(
                 defaultextension=".pdf",
@@ -1361,17 +1596,20 @@ class RelatorioFornecedores:
             if not arquivo:
                 return
                 
-            # Criar documento
+            # Dimensões de página do documento
+            largura, altura = landscape(A4)
+            
+            # Criar documento com margens adequadas
             doc = SimpleDocTemplate(
                 arquivo,
                 pagesize=landscape(A4),
-                rightMargin=30,
-                leftMargin=30,
-                topMargin=30,
-                bottomMargin=30
+                rightMargin=15*mm,
+                leftMargin=15*mm,
+                topMargin=15*mm,
+                bottomMargin=20*mm
             )
             
-            # Estilos
+            # Estilos aprimorados
             styles = getSampleStyleSheet()
             
             titulo_style = ParagraphStyle(
@@ -1390,7 +1628,8 @@ class RelatorioFornecedores:
                 fontSize=14,
                 leading=18,
                 spaceBefore=10,
-                spaceAfter=10
+                spaceAfter=10,
+                textColor=colors.navy
             )
             
             texto_style = ParagraphStyle(
@@ -1402,29 +1641,78 @@ class RelatorioFornecedores:
                 spaceAfter=5
             )
             
+            info_style = ParagraphStyle(
+                'InfoStyle',
+                parent=styles['Normal'],
+                fontSize=10,
+                leading=14,
+                leftIndent=5*mm,
+                spaceBefore=2,
+                spaceAfter=2
+            )
+            
+            # Função para quebrar textos longos
+            def quebrar_texto(texto, tamanho_max=70):
+                """Quebra textos longos para evitar sobreposição nas células da tabela"""
+                if not texto or len(texto) <= tamanho_max:
+                    return texto
+                    
+                palavras = texto.split()
+                linhas = []
+                linha_atual = []
+                
+                for palavra in palavras:
+                    if len(' '.join(linha_atual + [palavra])) <= tamanho_max:
+                        linha_atual.append(palavra)
+                    else:
+                        if linha_atual:
+                            linhas.append(' '.join(linha_atual))
+                            linha_atual = [palavra]
+                        else:
+                            # Caso a palavra seja maior que o tamanho máximo
+                            linhas.append(palavra)
+                            linha_atual = []
+                
+                if linha_atual:
+                    linhas.append(' '.join(linha_atual))
+                    
+                return '\n'.join(linhas)
+            
             # Lista de elementos para o PDF
             elementos = []
             
-            # Título
-            if self.todos_clientes:
-                cliente_str = "Todos os Clientes"
-            else:
-                cliente_str = self.cliente_atual
-                
-            elementos.append(Paragraph(f"Relatório de Principais Fornecedores - {cliente_str}", titulo_style))
-            elementos.append(Paragraph(f"Período: {self.periodo_inicio.strftime('%d/%m/%Y')} a {self.periodo_fim.strftime('%d/%m/%Y')}", texto_style))
+            # Título e informações de cabeçalho
+            titulo = f"Relatório de Principais Fornecedores - {self.cliente_atual if not self.todos_clientes else 'Todos os Clientes'}"
+            elementos.append(Paragraph(titulo, titulo_style))
+            
+            # Informações do período e outras informações em negrito
+            periodo_info = f"<b>Período:</b> {self.periodo_inicio.strftime('%d/%m/%Y')} a {self.periodo_fim.strftime('%d/%m/%Y')}"
+            elementos.append(Paragraph(periodo_info, texto_style))
+            
+            # Data de geração
+            data_atual = datetime.now().strftime('%d/%m/%Y %H:%M')
+            # elementos.append(Paragraph(f"<b>Data de geração:</b> {data_atual}", texto_style))
             
             # Totais
-            elementos.append(Spacer(1, 20))
-            elementos.append(Paragraph(f"Total Geral: {formatar_moeda_br(self.total_geral)}", texto_style))
+            # elementos.append(Spacer(1, 10*mm))
+            elementos.append(Paragraph(f"<b>Total Geral:</b> {formatar_moeda_br(self.total_geral)}", texto_style))
+            
+            # Calcular total dos top fornecedores
+            total_top = sum(dados['total'] for _, dados in self.top_fornecedores)
+            percentual_top = (total_top / self.total_geral) * 100
+            elementos.append(Paragraph(
+                f"<b>Total Top Fornecedores:</b> {formatar_moeda_br(total_top)} ({percentual_top:.1f}%)",
+                texto_style
+            ))
             
             # Tabela de resumo
-            elementos.append(Spacer(1, 20))
+            elementos.append(Spacer(1, 10*mm))
             elementos.append(Paragraph("RESUMO DOS PRINCIPAIS FORNECEDORES", subtitulo_style))
+            elementos.append(Spacer(1, 3*mm))
             
-            # Cabeçalho da tabela
+            # Cabeçalho da tabela com larguras ajustadas
             dados_tabela = [
-                ['#', 'Fornecedor', 'Total Gasto', '% do Total', 'Qtd. Lançamentos', 'Tipos de Despesa']
+                ['#', 'Fornecedor', 'Total Gasto', '% do Total', 'Qtd.', 'Tipos']
             ]
             
             # Adicionar dados da tabela
@@ -1432,70 +1720,106 @@ class RelatorioFornecedores:
                 # Calcular percentual
                 percentual = dados['total'] / self.total_geral * 100
                 
-                # Formatar tipos de despesa
+                # Formatar tipos de despesa (limitar tamanho)
                 tipos_str = ", ".join([str(tipo) for tipo in sorted(dados['tipos_despesa'])])
+                if len(tipos_str) > 20:  # Limitar para evitar tabelas muito largas
+                    tipos_str = tipos_str[:17] + "..."
                 
-                # Adicionar linha
+                # Adicionar linha com textos quebrados conforme necessário
                 dados_tabela.append([
                     str(i),
-                    fornecedor,
+                    quebrar_texto(fornecedor, 40),  # Quebrar nomes muito longos
                     formatar_moeda_br(dados['total']),
                     f"{percentual:.1f}%",
                     str(dados['qtd_lancamentos']),
                     tipos_str
                 ])
             
-            # Criar tabela
-            tabela = Table(dados_tabela, colWidths=[30, 200, 80, 60, 80, 120])
+            # Larguras de coluna ajustadas para caber na página landscape
+            larguras_colunas = [20*mm, 110*mm, 40*mm, 30*mm, 25*mm, 20*mm]
             
-            # Estilo da tabela
+            # Criar tabela com larguras específicas
+            tabela = Table(dados_tabela, colWidths=larguras_colunas, repeatRows=1)
+            
+            # Estilo da tabela aprimorado
             estilo_tabela = TableStyle([
-                ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+                # Cabeçalho
+                ('BACKGROUND', (0, 0), (-1, 0), colors.navy),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                 ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                 ('FONTSIZE', (0, 0), (-1, 0), 10),
-                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+                ('TOPPADDING', (0, 0), (-1, 0), 6),
+                
+                # Células de dados
                 ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                ('BOX', (0, 0), (-1, -1), 1, colors.black),
                 ('ALIGN', (0, 0), (0, -1), 'CENTER'),  # Coluna de posição
-                ('ALIGN', (2, 0), (2, -1), 'RIGHT'),   # Coluna de valor
-                ('ALIGN', (3, 0), (3, -1), 'CENTER'),  # Coluna de percentual
-                ('ALIGN', (4, 0), (4, -1), 'CENTER'),  # Coluna de quantidade
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # Centralização vertical
+                ('ALIGN', (2, 1), (2, -1), 'RIGHT'),   # Coluna de valor
+                ('ALIGN', (3, 1), (3, -1), 'CENTER'),  # Coluna de percentual
+                ('ALIGN', (4, 1), (4, -1), 'CENTER'),  # Coluna de quantidade
+                
+                # Espaçamento interno das células
+                ('LEFTPADDING', (0, 0), (-1, -1), 4),
+                ('RIGHTPADDING', (0, 0), (-1, -1), 4),
+                ('TOPPADDING', (0, 1), (-1, -1), 4),
+                ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
+                
+                # Linhas verticais internas - mais finas
+                ('LINEABOVE', (0, 1), (-1, -1), 0.25, colors.grey),
             ])
             
-            # Zebrar linhas
+            # Zebrar linhas para melhor leitura
             for i in range(1, len(dados_tabela)):
                 if i % 2 == 0:
                     estilo_tabela.add('BACKGROUND', (0, i), (-1, i), colors.lightgrey)
             
             tabela.setStyle(estilo_tabela)
-            elementos.append(tabela)
             
-            # Adicionar detalhes dos top 3 fornecedores
-            for i, (fornecedor, dados) in enumerate(self.top_fornecedores[:3], 1):
+            # Manter tabela junta se possível
+            elementos.append(KeepTogether([tabela, Spacer(1, 5*mm)]))
+            
+            # Adicionar detalhes dos top fornecedores em páginas separadas
+            for i, (fornecedor, dados) in enumerate(self.top_fornecedores[:min(5, len(self.top_fornecedores))], 1):
                 elementos.append(PageBreak())
-                elementos.append(Paragraph(f"Detalhamento do Fornecedor: {fornecedor}", subtitulo_style))
                 
-                # Informações do fornecedor
-                elementos.append(Paragraph(f"Total Gasto: {formatar_moeda_br(dados['total'])}", texto_style))
-                elementos.append(Paragraph(f"Quantidade de Lançamentos: {dados['qtd_lancamentos']}", texto_style))
+                # Título da página do fornecedor
+                elementos.append(Paragraph(f"Detalhamento do Fornecedor", subtitulo_style))
+                elementos.append(Paragraph(f"<b>{fornecedor}</b>", texto_style))
+                elementos.append(Spacer(1, 5*mm))
                 
-                # Média por lançamento
+                # Criar blocos de informações do fornecedor em layout mais organizado
+                info_elementos = []
+                
+                # Primeira linha: Total e Quantidade
+                info_elementos.append(Paragraph(f"<b>Total Gasto:</b> {formatar_moeda_br(dados['total'])}", info_style))
+                info_elementos.append(Paragraph(f"<b>Quantidade de Lançamentos:</b> {dados['qtd_lancamentos']}", info_style))
+                
+                # Segunda linha: Média e Percentual
                 if dados['qtd_lancamentos'] > 0:
                     media = dados['total'] / dados['qtd_lancamentos']
-                    elementos.append(Paragraph(f"Média por Lançamento: {formatar_moeda_br(media)}", texto_style))
+                    percentual = (dados['total'] / self.total_geral) * 100
+                    info_elementos.append(Paragraph(f"<b>Média por Lançamento:</b> {formatar_moeda_br(media)}", info_style))
+                    info_elementos.append(Paragraph(f"<b>Percentual do Total:</b> {percentual:.2f}%", info_style))
                 
-                # Tipos de despesa
+                # Tipos de despesa com formatação mais clara
                 tipos_str = ", ".join([str(tipo) for tipo in sorted(dados['tipos_despesa'])])
-                elementos.append(Paragraph(f"Tipos de Despesa: {tipos_str}", texto_style))
+                info_elementos.append(Paragraph(f"<b>Tipos de Despesa:</b> {tipos_str}", info_style))
                 
-                # Clientes
-                clientes_str = ", ".join(sorted(dados['clientes']))
-                elementos.append(Paragraph(f"Clientes: {clientes_str}", texto_style))
+                # Clientes (se aplicável)
+                if len(dados['clientes']) > 0:
+                    clientes_str = ", ".join(sorted(dados['clientes']))
+                    info_elementos.append(Paragraph(f"<b>Clientes:</b> {clientes_str}", info_style))
                 
-                elementos.append(Spacer(1, 20))
-                elementos.append(Paragraph("Lançamentos", subtitulo_style))
+                # Adicionar espaço após informações
+                info_elementos.append(Spacer(1, 10*mm))
+                
+                # Título da tabela de lançamentos
+                info_elementos.append(Paragraph("Lançamentos", subtitulo_style))
+                info_elementos.append(Spacer(1, 3*mm))
                 
                 # Cabeçalho da tabela de lançamentos
                 dados_lancamentos = [
@@ -1503,50 +1827,103 @@ class RelatorioFornecedores:
                 ]
                 
                 # Ordenar lançamentos por data
-                lancamentos_ordenados = sorted(dados['lancamentos'], key=lambda x: x['data'])
+                lancamentos_ordenados = sorted(dados['lancamentos'], key=lambda x: x['data'], reverse=True)
                 
-                # Adicionar no máximo 20 lançamentos (para não ficar muito grande)
-                for lancamento in lancamentos_ordenados[:20]:
+                # Determinar número máximo de lançamentos com base no espaço disponível
+                max_lancamentos = min(30, len(lancamentos_ordenados))
+                
+                # Adicionar lançamentos à tabela
+                for j, lancamento in enumerate(lancamentos_ordenados[:max_lancamentos]):
+                    # Formatar valores e quebrar textos longos
+                    referencia = quebrar_texto(lancamento['referencia'], 40)
+                    
                     dados_lancamentos.append([
                         lancamento['data'].strftime('%d/%m/%Y'),
-                        lancamento['cliente'],
+                        quebrar_texto(lancamento['cliente'], 40),
                         str(lancamento['tipo_despesa']),
-                        lancamento['referencia'],
+                        referencia,
                         formatar_moeda_br(lancamento['valor'])
                     ])
                 
                 # Adicionar indicação se há mais lançamentos
-                if len(lancamentos_ordenados) > 20:
-                    elementos.append(Paragraph(f"(Mostrando 20 de {len(lancamentos_ordenados)} lançamentos)", texto_style))
+                if len(lancamentos_ordenados) > max_lancamentos:
+                    info_elementos.append(Paragraph(
+                        f"(Mostrando {max_lancamentos} de {len(lancamentos_ordenados)} lançamentos - mais recentes)", 
+                        texto_style
+                    ))
+                
+                # Larguras ajustadas para a tabela de lançamentos
+                larguras_lancamentos = [20*mm, 95*mm, 10*mm, 100*mm, 30*mm]
                 
                 # Criar tabela de lançamentos
-                tabela_lancamentos = Table(dados_lancamentos, colWidths=[70, 100, 40, 200, 80])
+                tabela_lancamentos = Table(
+                    dados_lancamentos, 
+                    colWidths=larguras_lancamentos,
+                    repeatRows=1
+                )
                 
-                # Estilo da tabela
+                # Estilo da tabela de lançamentos
                 estilo_lancamentos = TableStyle([
-                    ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+                    # Cabeçalho
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.navy),
                     ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
                     ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
                     ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                     ('FONTSIZE', (0, 0), (-1, 0), 10),
-                    ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                    ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
+                    ('TOPPADDING', (0, 0), (-1, 0), 6),
+                    
+                    # Conteúdo
                     ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                    ('ALIGN', (0, 0), (0, -1), 'CENTER'),  # Coluna de data
-                    ('ALIGN', (2, 0), (2, -1), 'CENTER'),  # Coluna de tipo
-                    ('ALIGN', (4, 0), (4, -1), 'RIGHT'),   # Coluna de valor
+                    ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                    ('BOX', (0, 0), (-1, -1), 1, colors.black),
+                    
+                    # Alinhamentos
+                    ('ALIGN', (0, 1), (0, -1), 'CENTER'),  # Data centralizada
+                    ('ALIGN', (2, 1), (2, -1), 'CENTER'),  # Tipo centralizado
+                    ('ALIGN', (4, 1), (4, -1), 'RIGHT'),   # Valor à direita
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),   # Alinhar ao topo para textos com quebra
+                    
+                    # Espaçamento interno
+                    ('LEFTPADDING', (0, 0), (-1, -1), 4),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 4),
+                    ('TOPPADDING', (0, 1), (-1, -1), 4),
+                    ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
                 ])
                 
-                # Zebrar linhas
-                for i in range(1, len(dados_lancamentos)):
-                    if i % 2 == 0:
-                        estilo_lancamentos.add('BACKGROUND', (0, i), (-1, i), colors.lightgrey)
+                # Zebrar linhas para melhor leitura
+                for j in range(1, len(dados_lancamentos)):
+                    if j % 2 == 0:
+                        estilo_lancamentos.add('BACKGROUND', (0, j), (-1, j), colors.lightgrey)
                 
                 tabela_lancamentos.setStyle(estilo_lancamentos)
-                elementos.append(tabela_lancamentos)
+                info_elementos.append(tabela_lancamentos)
+                
+                # Adicionar todos os elementos de informação
+                for elem in info_elementos:
+                    elementos.append(elem)
             
-            # Criar o PDF
-            doc.build(elementos)
+            # Adicionar rodapé ao documento
+            def adicionar_rodape(canvas, doc):
+                canvas.saveState()
+                # Desenhar linha do rodapé
+                footer_y = 15*mm
+                canvas.setStrokeColor(colors.grey)
+                canvas.line(15*mm, footer_y, largura-15*mm, footer_y)
+                
+                # Adicionar texto do rodapé
+                canvas.setFont('Helvetica', 8)
+                canvas.drawString(15*mm, footer_y-10, f"Relatório gerado em: {data_atual}")
+                
+                # Adicionar numeração de página
+                page_num = canvas.getPageNumber()
+                texto_pagina = f"Página {page_num}"
+                canvas.drawRightString(largura-15*mm, footer_y-10, texto_pagina)
+                
+                canvas.restoreState()
+            
+            # Criar o PDF com rodapé
+            doc.build(elementos, onFirstPage=adicionar_rodape, onLaterPages=adicionar_rodape)
             
             messagebox.showinfo("Sucesso", f"Relatório exportado com sucesso para:\n{arquivo}")
             
@@ -1554,6 +1931,8 @@ class RelatorioFornecedores:
             messagebox.showerror("Erro", "Biblioteca ReportLab não encontrada. Instale-a com 'pip install reportlab'.")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao exportar para PDF: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     def voltar_menu(self):
         """Volta ao menu principal"""
