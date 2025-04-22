@@ -514,6 +514,76 @@ class SistemaRelatorios:
             value="pdf"
         ).pack(side='left', padx=20, pady=5)
 
+    def setup_opcoes_tipo_despesa(self, parent_frame):
+        """Configura as opções específicas para relatório por tipo de despesa"""
+        # Frame para seleção de cliente
+        frame_cliente = ttk.Frame(parent_frame)
+        frame_cliente.pack(fill='x', padx=10, pady=10)
+        
+        ttk.Label(frame_cliente, text="Cliente:").pack(side='left', padx=5)
+        
+        # Combobox para seleção de cliente
+        self.cliente_tipo_despesa = ttk.Combobox(frame_cliente, width=40)
+        self.cliente_tipo_despesa.pack(side='left', padx=5)
+        
+        # Preencher com clientes reais
+        self.preencher_combobox_clientes(self.cliente_tipo_despesa)
+        
+        # Descrição do relatório
+        ttk.Label(
+            parent_frame,
+            text="Este relatório mostra os dados agrupados por data, com colunas para\n" +
+                "cada tipo de despesa e seus totais.",
+            justify='center',
+            font=('Arial', 10),
+            foreground='gray'
+        ).pack(pady=10)
+        
+        # Opções de visualização (opcional)
+        frame_visualizacao = ttk.LabelFrame(parent_frame, text="Opções de Visualização")
+        frame_visualizacao.pack(fill='x', padx=10, pady=10)
+        
+        # Checkboxes para diferentes visualizações
+        self.mostrar_resumo_td = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            frame_visualizacao,
+            text="Mostrar Resumo",
+            variable=self.mostrar_resumo_td
+        ).pack(anchor='w', padx=15, pady=5)
+        
+        self.mostrar_detalhes_td = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            frame_visualizacao,
+            text="Mostrar Detalhes",
+            variable=self.mostrar_detalhes_td
+        ).pack(anchor='w', padx=15, pady=5)
+        
+        self.mostrar_grafico_td = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            frame_visualizacao,
+            text="Incluir Gráficos",
+            variable=self.mostrar_grafico_td
+        ).pack(anchor='w', padx=15, pady=5)
+        
+        # Frame para formato de saída
+        frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
+        frame_formato.pack(fill='x', padx=10, pady=10)
+        
+        self.formato_tipo_despesa = tk.StringVar(value="excel")
+        ttk.Radiobutton(
+            frame_formato,
+            text="Excel",
+            variable=self.formato_tipo_despesa,
+            value="excel"
+        ).pack(side='left', padx=20, pady=5)
+        
+        ttk.Radiobutton(
+            frame_formato,
+            text="PDF",
+            variable=self.formato_tipo_despesa,
+            value="pdf"
+        ).pack(side='left', padx=20, pady=5)
+
     def setup_opcoes_fornecedores(self, parent_frame):
         """Configura as opções específicas para relatório de fornecedores"""
         # Frame para data
@@ -1005,6 +1075,51 @@ class SistemaRelatorios:
                 app_relatorio.data_entry.set_date(self.data_referencia.get_date())
             except Exception as e:
                 logger.warning(f"Não foi possível configurar a data: {str(e)}")
+        
+        # Configurar comportamento ao fechar
+        app_relatorio.root.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(app_relatorio.root))
+        
+        # Exibir janela
+        app_relatorio.root.lift()
+        app_relatorio.root.focus_force()
+        app_relatorio.root.mainloop()
+
+    def iniciar_relatorio_tipo_despesa(self, classe_relatorio):
+        """Inicia a geração do relatório por tipo de despesa"""
+        # Esconder a janela atual
+        self.root.withdraw()
+        
+        # Inicializar o relatório passando a janela atual como parent
+        app_relatorio = classe_relatorio(self.root)
+        
+        # Verificar se app_relatorio tem os atributos esperados
+        if not hasattr(app_relatorio, 'root'):
+            messagebox.showerror(
+                "Erro", 
+                "Erro ao inicializar relatório. A classe do relatório não retornou o objeto esperado."
+            )
+            self.root.deiconify()
+            return
+        
+        # Configurar menu principal para retornar
+        app_relatorio.menu_principal = self.root
+        
+        # Se houver cliente selecionado, configurá-lo
+        if hasattr(app_relatorio, 'cliente_combobox') and hasattr(self, 'cliente_tipo_despesa'):
+            cliente_selecionado = self.cliente_tipo_despesa.get()
+            if cliente_selecionado and cliente_selecionado != 'Todos os Clientes':
+                try:
+                    # Atualizar lista de clientes primeiro
+                    app_relatorio.atualizar_lista_clientes()
+                    
+                    # Configurar o cliente no combobox
+                    app_relatorio.cliente_combobox.set(cliente_selecionado)
+                    
+                    # Chamar o método para selecionar cliente
+                    if hasattr(app_relatorio, 'selecionar_cliente'):
+                        app_relatorio.selecionar_cliente()
+                except Exception as e:
+                    logger.warning(f"Não foi possível selecionar o cliente: {str(e)}")
         
         # Configurar comportamento ao fechar
         app_relatorio.root.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(app_relatorio.root))
