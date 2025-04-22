@@ -81,16 +81,26 @@ class RelatorioTipoDespesa:
             self.root = tk.Tk()
             self.menu_principal = None
             
-        configurar_janela(self.root, "Relatório por Tipo de Despesa", 900, 1000)
+        configurar_janela(self.root, "Relatório por Tipo de Despesa", 1200, 1000)
+        
+        # Definição dos tipos de despesa
+        self.tipos_despesas = {
+            1: "1) DESP. C/COLABORADORES",
+            2: "2) TRANSF. PROGRAMADAS",
+            3: "3) BOLETOS",
+            4: "4) REEMBOLSOS",
+            5: "5) DESP. PAGAS P/CLIENTE",
+            6: "6) PAGTOS CAIXA DE OBRA",
+            7: "7) ADMINISTRAÇÃO DA OBRA"
+        }
         
         # Configuração de variáveis
         self.cliente_atual = None
         self.arquivo_cliente = None
         self.data_referencia = datetime.now()
         self.df_despesas = None
-        self.df_tipos_despesa = None
-        self.tipos_despesa = []
-        self.tipo_despesa_selecionado = None
+        self.df_por_data = None
+        self.data_selecionada = None
         self.dados_grafico = {}
         
         # Configurar interface
@@ -115,35 +125,9 @@ class RelatorioTipoDespesa:
         self.cliente_combobox.pack(side='left', padx=5)
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.selecionar_cliente)
         
-        # Container para data
+        # Eliminamos o container para data de referência já que não é necessário neste relatório
         frame_data = ttk.Frame(self.frame_selecao)
         frame_data.pack(fill='x', padx=10, pady=10)
-        
-        ttk.Label(frame_data, text="Data de Referência:", font=('Arial', 11)).pack(side='left', pady=5)
-        
-        # Usar DateEntry se disponível, caso contrário usar Entry simples
-        try:
-            from tkcalendar import DateEntry
-            self.data_entry = DateEntry(
-                frame_data, 
-                width=12,
-                background='darkblue',
-                foreground='white',
-                borderwidth=2,
-                date_pattern='dd/mm/yyyy',
-                locale='pt_BR',
-                font=('Arial', 11)
-            )
-            self.data_entry.pack(side='left', padx=5)
-            self.data_entry.set_date(datetime.now())
-        except ImportError:
-            self.data_var = tk.StringVar(value=datetime.now().strftime('%d/%m/%Y'))
-            ttk.Entry(
-                frame_data,
-                textvariable=self.data_var,
-                width=12,
-                font=('Arial', 11)
-            ).pack(side='left', padx=5)
         
         # Botão de gerar relatório
         ttk.Button(
@@ -205,7 +189,7 @@ class RelatorioTipoDespesa:
         self.atualizar_lista_clientes()
     
     def setup_aba_resumo(self):
-        """Configura a aba de resumo do relatório de tipos de despesa"""
+        """Configura a aba de resumo do relatório por data e tipo de despesa"""
         # Frame para informações do cliente
         frame_info = ttk.Frame(self.aba_resumo, padding=5)
         frame_info.pack(fill='x', pady=5)
@@ -226,34 +210,47 @@ class RelatorioTipoDespesa:
         )
         self.lbl_data_resumo.pack(side='left', padx=10)
         
-        # Frame para o TreeView com os tipos de despesa
+        # Frame para o TreeView com os dados por data
         frame_resumo = ttk.Frame(self.aba_resumo, padding=5)
         frame_resumo.pack(fill='both', expand=True, pady=5)
         
-        # Criar TreeView para os tipos de despesa
-        colunas = ('tipo_despesa', 'total', 'percentual')
-        self.tv_tipos_despesa = ttk.Treeview(frame_resumo, columns=colunas, show='headings', height=15)
+        # Criar TreeView para os dados por data
+        # Colunas: 'data', tipo1, tipo2, ..., tipo7, 'total'
+        colunas = ['data']
+        for i in range(1, 8):
+            colunas.append(f'tipo_{i}')
+        colunas.append('total')
+        
+        self.tv_resumo = ttk.Treeview(frame_resumo, columns=colunas, show='headings', height=15)
         
         # Configurar cabeçalhos
-        self.tv_tipos_despesa.heading('tipo_despesa', text='Tipo de Despesa')
-        self.tv_tipos_despesa.heading('total', text='Total (R$)')
-        self.tv_tipos_despesa.heading('percentual', text='% do Total')
+        self.tv_resumo.heading('data', text='Data')
+        for i in range(1, 8):
+            # Usar uma versão abreviada do nome do tipo para o cabeçalho
+            nome_tipo = self.tipos_despesas[i].split(')')[0] + ')'
+            self.tv_resumo.heading(f'tipo_{i}', text=nome_tipo)
+            
+        self.tv_resumo.heading('total', text='Total (R$)')
         
         # Configurar colunas
-        self.tv_tipos_despesa.column('tipo_despesa', width=300, anchor='w')
-        self.tv_tipos_despesa.column('total', width=150, anchor='e')
-        self.tv_tipos_despesa.column('percentual', width=100, anchor='e')
+        self.tv_resumo.column('data', width=100, anchor='center')
+        for i in range(1, 8):
+            # Permitir quebra de texto nos tipos de despesa
+            self.tv_resumo.column(f'tipo_{i}', width=120, anchor='e', stretch=True)
+        self.tv_resumo.column('total', width=120, anchor='e')
         
-        # Configurar scrollbar para o TreeView
-        scrollbar_y = ttk.Scrollbar(frame_resumo, orient='vertical', command=self.tv_tipos_despesa.yview)
-        self.tv_tipos_despesa.configure(yscrollcommand=scrollbar_y.set)
+        # Configurar scrollbars
+        scrollbar_y = ttk.Scrollbar(frame_resumo, orient='vertical', command=self.tv_resumo.yview)
+        scrollbar_x = ttk.Scrollbar(frame_resumo, orient='horizontal', command=self.tv_resumo.xview)
+        self.tv_resumo.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
         
         # Adicionar à tela
-        self.tv_tipos_despesa.pack(side='left', fill='both', expand=True)
+        self.tv_resumo.pack(side='top', fill='both', expand=True)
         scrollbar_y.pack(side='right', fill='y')
+        scrollbar_x.pack(side='bottom', fill='x')
         
         # Adicionar evento de seleção
-        self.tv_tipos_despesa.bind('<<TreeviewSelect>>', self.selecionar_tipo_despesa)
+        self.tv_resumo.bind('<<TreeviewSelect>>', self.selecionar_data)
         
         # Frame para resumo de totais
         frame_totais = ttk.LabelFrame(self.aba_resumo, text="Resumo Financeiro", padding=10)
@@ -264,59 +261,63 @@ class RelatorioTipoDespesa:
         self.lbl_total_geral = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 11))
         self.lbl_total_geral.grid(row=0, column=1, sticky='w', padx=5, pady=5)
         
-        ttk.Label(frame_totais, text="Número de Tipos de Despesa:", font=('Arial', 11, 'bold')).grid(row=1, column=0, sticky='e', padx=5, pady=5)
-        self.lbl_num_tipos = ttk.Label(frame_totais, text="0", font=('Arial', 11))
-        self.lbl_num_tipos.grid(row=1, column=1, sticky='w', padx=5, pady=5)
+        ttk.Label(frame_totais, text="Número de Datas:", font=('Arial', 11, 'bold')).grid(row=1, column=0, sticky='e', padx=5, pady=5)
+        self.lbl_num_datas = ttk.Label(frame_totais, text="0", font=('Arial', 11))
+        self.lbl_num_datas.grid(row=1, column=1, sticky='w', padx=5, pady=5)
         
-        ttk.Label(frame_totais, text="Média por Tipo de Despesa:", font=('Arial', 11, 'bold')).grid(row=0, column=2, sticky='e', padx=5, pady=5)
-        self.lbl_media_tipo = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 11))
-        self.lbl_media_tipo.grid(row=0, column=3, sticky='w', padx=5, pady=5)
+        ttk.Label(frame_totais, text="Média por Data:", font=('Arial', 11, 'bold')).grid(row=0, column=2, sticky='e', padx=5, pady=5)
+        self.lbl_media_data = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 11))
+        self.lbl_media_data.grid(row=0, column=3, sticky='w', padx=5, pady=5)
         
-        ttk.Label(frame_totais, text="Tipo de Maior Valor:", font=('Arial', 11, 'bold')).grid(row=1, column=2, sticky='e', padx=5, pady=5)
-        self.lbl_maior_tipo = ttk.Label(frame_totais, text="Nenhum", font=('Arial', 11))
-        self.lbl_maior_tipo.grid(row=1, column=3, sticky='w', padx=5, pady=5)
+        ttk.Label(frame_totais, text="Data de Maior Valor:", font=('Arial', 11, 'bold')).grid(row=1, column=2, sticky='e', padx=5, pady=5)
+        self.lbl_maior_data = ttk.Label(frame_totais, text="Nenhuma", font=('Arial', 11))
+        self.lbl_maior_data.grid(row=1, column=3, sticky='w', padx=5, pady=5)
     
     def setup_aba_detalhes(self):
-        """Configura a aba de detalhes do relatório"""
-        # Frame para informações do tipo de despesa selecionado
-        frame_info_tipo = ttk.Frame(self.aba_detalhes, padding=5)
-        frame_info_tipo.pack(fill='x', pady=5)
+        """Configura a aba de detalhes do relatório para a data selecionada"""
+        # Frame para informações da data selecionada
+        frame_info_data = ttk.Frame(self.aba_detalhes, padding=5)
+        frame_info_data.pack(fill='x', pady=5)
         
-        self.lbl_tipo_detalhe = ttk.Label(
-            frame_info_tipo, 
-            text="Tipo de Despesa: Nenhum selecionado", 
+        self.lbl_data_detalhe = ttk.Label(
+            frame_info_data, 
+            text="Data Selecionada: Nenhuma", 
             font=('Arial', 12, 'bold'),
             foreground='#0056b3'
         )
-        self.lbl_tipo_detalhe.pack(side='left', padx=10)
+        self.lbl_data_detalhe.pack(side='left', padx=10)
         
-        self.lbl_total_tipo_detalhe = ttk.Label(
-            frame_info_tipo, 
+        self.lbl_total_data_detalhe = ttk.Label(
+            frame_info_data, 
             text="Total: R$ 0,00", 
             font=('Arial', 12, 'bold'),
             foreground='#0056b3'
         )
-        self.lbl_total_tipo_detalhe.pack(side='left', padx=10)
+        self.lbl_total_data_detalhe.pack(side='left', padx=10)
         
         # Frame para a tabela de detalhes
         frame_tabela = ttk.Frame(self.aba_detalhes, padding=5)
         frame_tabela.pack(fill='both', expand=True, pady=5)
         
-        # Criar TreeView para os lançamentos do tipo de despesa selecionado
-        colunas = ('data', 'descricao', 'valor', 'observacao')
+        # Criar TreeView para os lançamentos da data selecionada
+        colunas = ('data', 'tipo', 'nome', 'referencia', 'valor', 'observacao')
         self.tv_detalhes = ttk.Treeview(frame_tabela, columns=colunas, show='headings', height=15)
         
         # Configurar cabeçalhos
         self.tv_detalhes.heading('data', text='Data')
-        self.tv_detalhes.heading('descricao', text='Descrição')
+        self.tv_detalhes.heading('tipo', text='Tipo de Despesa')
+        self.tv_detalhes.heading('nome', text='Nome')
+        self.tv_detalhes.heading('referencia', text='Referência')
         self.tv_detalhes.heading('valor', text='Valor (R$)')
         self.tv_detalhes.heading('observacao', text='Observação')
         
         # Configurar colunas
         self.tv_detalhes.column('data', width=100, anchor='center')
-        self.tv_detalhes.column('descricao', width=300, anchor='w')
+        self.tv_detalhes.column('tipo', width=150, anchor='w')
+        self.tv_detalhes.column('nome', width=200, anchor='w')
+        self.tv_detalhes.column('referencia', width=250, anchor='w')
         self.tv_detalhes.column('valor', width=120, anchor='e')
-        self.tv_detalhes.column('observacao', width=300, anchor='w')
+        self.tv_detalhes.column('observacao', width=200, anchor='w')
         
         # Configurar scrollbars
         scrollbar_y = ttk.Scrollbar(frame_tabela, orient='vertical', command=self.tv_detalhes.yview)
@@ -328,7 +329,7 @@ class RelatorioTipoDespesa:
         scrollbar_y.pack(side='right', fill='y')
         scrollbar_x.pack(side='bottom', fill='x')
         
-        # Frame para estatísticas do tipo de despesa
+        # Frame para estatísticas da data
         frame_stats = ttk.LabelFrame(self.aba_detalhes, text="Estatísticas", padding=10)
         frame_stats.pack(fill='x', pady=10, padx=10)
         
@@ -350,7 +351,7 @@ class RelatorioTipoDespesa:
         self.lbl_menor_lancamento.grid(row=1, column=3, sticky='w', padx=5, pady=5)
     
     def setup_aba_grafico(self):
-        """Configura a aba de gráficos"""
+        """Configura a aba de gráficos para a data selecionada"""
         # Frame para controles do gráfico
         frame_controles = ttk.Frame(self.aba_grafico, padding=5)
         frame_controles.pack(fill='x', pady=5)
@@ -358,22 +359,24 @@ class RelatorioTipoDespesa:
         ttk.Label(frame_controles, text="Tipo de Gráfico:").pack(side='left', padx=5)
         self.combo_tipo_grafico = ttk.Combobox(frame_controles, values=[
             "Gráfico de Pizza",
-            "Gráfico de Barras",
-            "Gráfico de Linha (Evolução Mensal)"
+            "Gráfico de Barras"
         ], state='readonly', width=30)
         self.combo_tipo_grafico.pack(side='left', padx=5)
         self.combo_tipo_grafico.current(0)
         
-        # Opções adicionais para gráfico
-        self.var_mostrar_top = tk.BooleanVar(value=True)
-        ttk.Checkbutton(
-            frame_controles, 
-            text="Mostrar apenas Top 10 tipos",
-            variable=self.var_mostrar_top,
-            command=self.atualizar_grafico
-        ).pack(side='left', padx=20)
-        
         ttk.Button(frame_controles, text="Atualizar Gráfico", command=self.atualizar_grafico).pack(side='left', padx=20)
+        
+        # Frame para informações da data no gráfico
+        frame_info_grafico = ttk.Frame(self.aba_grafico, padding=5)
+        frame_info_grafico.pack(fill='x', pady=5)
+        
+        self.lbl_data_grafico = ttk.Label(
+            frame_info_grafico, 
+            text="Data Selecionada: Nenhuma", 
+            font=('Arial', 12, 'bold'),
+            foreground='#0056b3'
+        )
+        self.lbl_data_grafico.pack(side='left', padx=10)
         
         # Frame para o gráfico
         self.frame_grafico = ttk.Frame(self.aba_grafico)
@@ -422,19 +425,8 @@ class RelatorioTipoDespesa:
             messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
             return
             
-        # Obter data de referência
-        try:
-            # Verificar se estamos usando DateEntry ou Entry
-            if hasattr(self, 'data_entry'):
-                self.data_referencia = self.data_entry.get_date()
-            else:
-                self.data_referencia = datetime.strptime(self.data_var.get(), '%d/%m/%Y')
-                
-            if hasattr(self, 'lbl_data_resumo'):
-                self.lbl_data_resumo.config(text=f"Data: {self.data_referencia.strftime('%d/%m/%Y')}")
-        except ValueError:
-            messagebox.showerror("Erro", "Data inválida!")
-            return
+        # Definir data de referência como data atual (apenas para o relatório exportado)
+        self.data_referencia = datetime.now()
             
         # Carregar dados
         if not self.carregar_dados():
@@ -443,13 +435,13 @@ class RelatorioTipoDespesa:
         # Preencher resumo
         self.preencher_resumo()
         
-        # Limpar detalhes (pois ainda não há tipo selecionado)
+        # Limpar detalhes (pois ainda não há data selecionada)
         if hasattr(self, 'tv_detalhes'):
             for item in self.tv_detalhes.get_children():
                 self.tv_detalhes.delete(item)
         
-        # Gerar gráfico inicial
-        self.atualizar_grafico()
+        # Resetar gráfico
+        self.limpar_grafico()
         
         # Selecionar aba de resumo
         self.notebook.select(0)  # Índice 0 corresponde à primeira aba (resumo)
@@ -467,62 +459,41 @@ class RelatorioTipoDespesa:
                 self.df_despesas = pd.read_excel(self.arquivo_cliente, sheet_name='Dados')
                 print(f"Colunas do DataFrame: {self.df_despesas.columns.tolist()}")
                 
-                # Verificar se as colunas necessárias existem (em maiúsculas)
-                colunas_necessarias = ['TP_DESP', 'VALOR']
+                # Verificar se as colunas necessárias existem
+                colunas_necessarias = ['TP_DESP', 'VALOR', 'DATA_REL']
                 for coluna in colunas_necessarias:
                     if coluna not in self.df_despesas.columns:
                         messagebox.showerror("Erro", f"A coluna '{coluna}' não foi encontrada na aba Dados!")
                         return False
                 
-                # Filtrar por data se necessário (verificar se há coluna de data)
-                if 'DATA_REL' in self.df_despesas.columns:
-                    # Converter para datetime (ignorando erros)
-                    self.df_despesas['DATA_REL'] = pd.to_datetime(self.df_despesas['DATA_REL'], errors='coerce')
-                    
-                    # Ordenar os dados por data
-                    self.df_despesas = self.df_despesas.sort_values(by='DATA_REL')
+                # Converter DATA_REL para datetime
+                self.df_despesas['DATA_REL'] = pd.to_datetime(self.df_despesas['DATA_REL'], errors='coerce')
                 
                 # Garantir valores numéricos para a coluna valor
                 self.df_despesas['VALOR'] = pd.to_numeric(self.df_despesas['VALOR'], errors='coerce').fillna(0)
                 
-                # Agrupar por tipo de despesa
-                self.df_tipos_despesa = self.df_despesas.groupby('TP_DESP')['VALOR'].sum().reset_index()
-                self.df_tipos_despesa = self.df_tipos_despesa.sort_values(by='VALOR', ascending=False)
-                
-                # Calcular percentual sobre o total
-                total_geral = self.df_tipos_despesa['VALOR'].sum()
-                if total_geral > 0:
-                    self.df_tipos_despesa['percentual'] = (self.df_tipos_despesa['VALOR'] / total_geral) * 100
-                else:
-                    self.df_tipos_despesa['percentual'] = 0
-                
-                # Salvar lista de tipos de despesa para uso posterior
-                self.tipos_despesa = self.df_tipos_despesa['TP_DESP'].tolist()
-                
-                # Se houver coluna de data, prepará-la para análise por período
-                if 'DATA_REL' in self.df_despesas.columns:
-                    # Criar coluna de mês/ano para análise temporal
-                    self.df_despesas['periodo'] = self.df_despesas['DATA_REL'].dt.strftime('%m/%Y')
-                    
-                    # Criar DataFrame com evolução mensal por tipo de despesa
-                    self.df_evolucao = self.df_despesas.pivot_table(
-                        index='periodo',
-                        columns='TP_DESP',
-                        values='VALOR',
-                        aggfunc='sum'
-                    ).fillna(0)
-                    
-                    # Garantir que os períodos estão em ordem cronológica
+                # Garantir que TP_DESP seja numérico (usar o primeiro número encontrado)
+                def extrair_numero(valor):
+                    if pd.isna(valor):
+                        return 0
                     try:
-                        periodos = pd.to_datetime(self.df_evolucao.index, format='%m/%Y')
-                        self.df_evolucao['__date'] = periodos
-                        self.df_evolucao = self.df_evolucao.sort_values('__date')
-                        self.df_evolucao = self.df_evolucao.drop('__date', axis=1)
-                    except Exception as e:
-                        print(f"Erro ao ordenar períodos: {e}")
+                        # Tentar converter diretamente para inteiro
+                        return int(valor)
+                    except (ValueError, TypeError):
+                        # Se falhar, tentar extrair o primeiro número
+                        import re
+                        match = re.search(r'(\d+)', str(valor))
+                        if match:
+                            return int(match.group(1))
+                        return 0
                 
-                # Preparar dados para gráficos - incluindo evolução por período
-                self.preparar_dados_grafico()
+                self.df_despesas['TP_DESP_NUM'] = self.df_despesas['TP_DESP'].apply(extrair_numero)
+                
+                # Ordenar dados por data
+                self.df_despesas = self.df_despesas.sort_values(by='DATA_REL')
+                
+                # Agrupar dados por data e tipo de despesa
+                self.preparar_dados_por_data()
                 
                 return True
                 
@@ -536,21 +507,58 @@ class RelatorioTipoDespesa:
             messagebox.showerror("Erro", f"Erro ao carregar dados: {str(e)}")
             return False
     
+    def preparar_dados_por_data(self):
+        """Prepara os dados agrupados por data"""
+        try:
+            # Criar um DataFrame para armazenar os dados agrupados por data e tipo
+            # Agrupar por data e tipo de despesa
+            df_pivot = self.df_despesas.pivot_table(
+                index='DATA_REL', 
+                columns='TP_DESP_NUM', 
+                values='VALOR', 
+                aggfunc='sum'
+            ).fillna(0)
+            
+            # Resetar o índice para tornar a data uma coluna
+            df_pivot = df_pivot.reset_index()
+            
+            # Criar colunas para cada tipo de despesa se não existirem
+            for i in range(1, 8):
+                if i not in df_pivot.columns:
+                    df_pivot[i] = 0.0
+            
+            # Calcular total por data
+            df_pivot['total'] = df_pivot[[i for i in range(1, 8) if i in df_pivot.columns]].sum(axis=1)
+            
+            # Ordenar por data (ascendente)
+            df_pivot = df_pivot.sort_values(by='DATA_REL')
+            
+            # Armazenar o DataFrame para uso posterior
+            self.df_por_data = df_pivot
+            
+            # Preparar dados para gráficos
+            self.preparar_dados_grafico()
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao preparar dados por data: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
     def preparar_dados_grafico(self):
         """Prepara os dados para os gráficos"""
         try:
-            # Dados para gráfico de pizza e barras
-            self.dados_grafico['pizza'] = self.df_tipos_despesa.copy()
-            self.dados_grafico['barras'] = self.df_tipos_despesa.copy()
+            # Inicializar dicionário de dados para gráficos
+            self.dados_grafico = {}
             
-            # Para gráfico de linha (evolução mensal por tipo)
-            # Verificar se temos coluna de data e df_evolucao
-            if hasattr(self, 'df_evolucao') and not self.df_evolucao.empty:
-                self.dados_grafico['linha'] = self.df_evolucao.copy()
-            else:
-                # Se não tivermos data, criar um dataframe vazio
-                self.dados_grafico['linha'] = pd.DataFrame()
-        
+            # Se não temos dados ou data selecionada, não há o que fazer
+            if not hasattr(self, 'df_por_data') or self.df_por_data.empty:
+                return
+                
+            # Dados para gráfico de pizza e barras por data selecionada
+            # Serão preenchidos quando uma data for selecionada
+            self.dados_grafico['pizza'] = None
+            self.dados_grafico['barras'] = None
+            
         except Exception as e:
             print(f"Erro ao preparar dados para gráfico: {str(e)}")
             import traceback
@@ -560,83 +568,137 @@ class RelatorioTipoDespesa:
         """Preenche os dados da aba de resumo"""
         try:
             # Limpar TreeView
-            for item in self.tv_tipos_despesa.get_children():
-                self.tv_tipos_despesa.delete(item)
+            for item in self.tv_resumo.get_children():
+                self.tv_resumo.delete(item)
             
             # Adicionar dados à TreeView
-            for _, row in self.df_tipos_despesa.iterrows():
-                self.tv_tipos_despesa.insert(
+            for _, row in self.df_por_data.iterrows():
+                # Formatar data
+                data_str = row['DATA_REL'].strftime('%d/%m/%Y')
+                
+                # Preparar valores para cada tipo de despesa
+                valores = []
+                for i in range(1, 8):
+                    valor_formatado = formatar_moeda_br(row[i]) if i in row else "R$ 0,00"
+                    valores.append(valor_formatado)
+                
+                # Adicionar total
+                total_formatado = formatar_moeda_br(row['total'])
+                
+                # Inserir na treeview
+                self.tv_resumo.insert(
                     '', 'end', 
-                    values=(
-                        row['TP_DESP'],#######
-                        formatar_moeda_br(row['VALOR']),
-                        f"{row['percentual']:.2f}%"
-                    )
+                    values=[data_str] + valores + [total_formatado]
                 )
             
             # Atualizar labels de totais
-            total_geral = self.df_tipos_despesa['VALOR'].sum()
-            num_tipos = len(self.df_tipos_despesa)
+            total_geral = self.df_por_data['total'].sum()
+            num_datas = len(self.df_por_data)
             
             self.lbl_total_geral.config(text=formatar_moeda_br(total_geral))
-            self.lbl_num_tipos.config(text=str(num_tipos))
+            self.lbl_num_datas.config(text=str(num_datas))
             
-            # Calcular média por tipo
-            if num_tipos > 0:
-                media_tipo = total_geral / num_tipos
-                self.lbl_media_tipo.config(text=formatar_moeda_br(media_tipo))
+            # Calcular média por data
+            if num_datas > 0:
+                media_data = total_geral / num_datas
+                self.lbl_media_data.config(text=formatar_moeda_br(media_data))
             else:
-                self.lbl_media_tipo.config(text="R$ 0,00")
+                self.lbl_media_data.config(text="R$ 0,00")
             
-            # Identificar tipo de maior valor
-            if not self.df_tipos_despesa.empty:
-                maior_tipo = self.df_tipos_despesa.iloc[0]['TP_DESP']
-                self.lbl_maior_tipo.config(text=maior_tipo)
+            # Identificar data de maior valor
+            if not self.df_por_data.empty:
+                idx_maior = self.df_por_data['total'].idxmax()
+                data_maior = self.df_por_data.loc[idx_maior, 'DATA_REL'].strftime('%d/%m/%Y')
+                self.lbl_maior_data.config(text=data_maior)
             else:
-                self.lbl_maior_tipo.config(text="Nenhum")
+                self.lbl_maior_data.config(text="Nenhuma")
                 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao preencher resumo: {str(e)}")
             import traceback
             traceback.print_exc()
     
-    def selecionar_tipo_despesa(self, event=None):
-        """Atualiza o tipo de despesa selecionado e os detalhes"""
+    def selecionar_data(self, event=None):
+        """Atualiza a data selecionada e preenche as abas de detalhes e gráfico"""
         try:
             # Obter seleção atual
-            selecao = self.tv_tipos_despesa.selection()
+            selecao = self.tv_resumo.selection()
             if not selecao:
                 return
                 
-            # Obter tipo de despesa selecionado
-            item = self.tv_tipos_despesa.item(selecao[0])
-            self.tipo_despesa_selecionado = item['values'][0]  # Primeira coluna é o tipo
+            # Obter data selecionada
+            item = self.tv_resumo.item(selecao[0])
+            data_str = item['values'][0]  # Primeira coluna é a data
+            
+            # Converter string de data para datetime
+            try:
+                self.data_selecionada = datetime.strptime(data_str, '%d/%m/%Y')
+            except ValueError:
+                messagebox.showerror("Erro", f"Formato de data inválido: {data_str}")
+                return
             
             # Atualizar label na aba de detalhes
-            self.lbl_tipo_detalhe.config(text=f"Tipo de Despesa: {self.tipo_despesa_selecionado}")
+            self.lbl_data_detalhe.config(text=f"Data Selecionada: {data_str}")
             
-            # Filtrar dados para o tipo selecionado
-            df_tipo = self.df_despesas[self.df_despesas['TP_DESP'] == self.tipo_despesa_selecionado].copy()
+            # Atualizar label na aba de gráfico
+            self.lbl_data_grafico.config(text=f"Data Selecionada: {data_str}")
             
-            # Ordenar por data se disponível
-            if 'data' in df_tipo.columns:
-                df_tipo = df_tipo.sort_values(by='data', ascending=False)
+            # Encontrar o total da data no DataFrame
+            df_data = self.df_por_data[self.df_por_data['DATA_REL'] == self.data_selecionada]
+            if not df_data.empty:
+                total_data = df_data.iloc[0]['total']
+                self.lbl_total_data_detalhe.config(text=f"Total: {formatar_moeda_br(total_data)}")
             
-            # Calcular total
-            total_tipo = df_tipo['VALOR'].sum()
-            self.lbl_total_tipo_detalhe.config(text=f"Total: {formatar_moeda_br(total_tipo)}")
+            # Filtrar dados para a data selecionada
+            df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
             
-            # Preencher tabela de detalhes
-            self.preencher_detalhes(df_tipo)
+            # Preencher detalhes
+            self.preencher_detalhes(df_filtrado)
             
-            # Mudar para aba de detalhes
+            # Preparar dados para gráfico
+            self.preparar_grafico_data_selecionada(df_filtrado)
+            
+            # Atualizar gráfico
+            self.atualizar_grafico()
+            
+            # Alternar para a aba de detalhes
             self.notebook.select(1)  # Índice 1 corresponde à aba de detalhes
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao selecionar tipo de despesa: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao selecionar data: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    def preparar_grafico_data_selecionada(self, df_filtrado):
+        """Prepara dados para os gráficos da data selecionada"""
+        try:
+            if df_filtrado.empty:
+                self.dados_grafico['pizza'] = None
+                self.dados_grafico['barras'] = None
+                return
+                
+            # Agrupar por tipo de despesa
+            df_agrupado = df_filtrado.groupby('TP_DESP_NUM')['VALOR'].sum().reset_index()
+            
+            # Adicionar nome completo do tipo de despesa
+            df_agrupado['tipo_nome'] = df_agrupado['TP_DESP_NUM'].apply(
+                lambda x: self.tipos_despesas.get(x, f"Tipo {x}") if pd.notna(x) else "Não classificado"
+            )
+            
+            # Ordenar por tipo
+            df_agrupado = df_agrupado.sort_values(by='TP_DESP_NUM')
+            
+            # Armazenar para gráficos
+            self.dados_grafico['pizza'] = df_agrupado.copy()
+            self.dados_grafico['barras'] = df_agrupado.copy()
+            
+        except Exception as e:
+            print(f"Erro ao preparar gráfico para data selecionada: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     def preencher_detalhes(self, df_filtrado):
-        """Preenche os detalhes para o tipo de despesa selecionado"""
+        """Preenche os detalhes para a data selecionada"""
         try:
             # Limpar tabela
             for item in self.tv_detalhes.get_children():
@@ -646,27 +708,53 @@ class RelatorioTipoDespesa:
             if df_filtrado.empty:
                 return
             
-            # Adicionar dados à tabela
-            for _, row in df_filtrado.iterrows():
-                # Formatar data se disponível
-                if 'data' in row and pd.notna(row['data']):
-                    data_str = row['data'].strftime('%d/%m/%Y')
-                else:
-                    data_str = ''
+            # Ordenar o DataFrame por Tipo de Despesa (ascendente), Nome (ascendente) e Valor (descendente)
+            df_ordenado = df_filtrado.copy()
+            
+            # Garantir que todos os campos necessários existam
+            if 'TP_DESP_NUM' not in df_ordenado.columns:
+                df_ordenado['TP_DESP_NUM'] = df_ordenado['TP_DESP'].apply(lambda x: 
+                    int(x) if isinstance(x, (int, float)) else (
+                        int(x.split(')')[0]) if isinstance(x, str) and ')' in x else 0
+                    )
+                )
+            
+            if 'NOME' not in df_ordenado.columns:
+                df_ordenado['NOME'] = ''
                 
-                # Obter descrição e valor
-                descricao = row.get('descricao', '') if pd.notna(row.get('descricao', '')) else ''
+            # Ordenar primeiro por tipo, depois por nome (asc) e finalmente por valor (desc)
+            df_ordenado = df_ordenado.sort_values(
+                by=['TP_DESP_NUM', 'NOME', 'VALOR'], 
+                ascending=[True, True, False]
+            )
+            
+            # Adicionar dados à tabela
+            for _, row in df_ordenado.iterrows():
+                # Formatar data
+                data_str = row['DATA_REL'].strftime('%d/%m/%Y') if pd.notna(row['DATA_REL']) else ''
+                
+                # Obter tipo de despesa
+                tipo_num = row['TP_DESP_NUM'] if 'TP_DESP_NUM' in row else None
+                tipo_nome = self.tipos_despesas.get(tipo_num, row.get('TP_DESP', 'Não classificado'))
+                
+                # Obter nome e referência
+                nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
+                referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
+                
+                # Obter valor
                 valor = formatar_moeda_br(row['VALOR'])
                 
-                # Obter observação se disponível
-                observacao = row.get('observacao', '') if pd.notna(row.get('observacao', '')) else ''
+                # Obter observação
+                observacao = row.get('OBSERVAÇÃO', '') if pd.notna(row.get('OBSERVAÇÃO', '')) else ''
                 
                 # Inserir na tabela
                 self.tv_detalhes.insert(
                     '', 'end', 
                     values=(
                         data_str,
-                        descricao,
+                        tipo_nome,
+                        nome,
+                        referencia,
                         valor,
                         observacao
                     )
@@ -674,13 +762,13 @@ class RelatorioTipoDespesa:
             
             # Atualizar estatísticas
             num_lancamentos = len(df_filtrado)
-            total_tipo = df_filtrado['VALOR'].sum()
+            total_data = df_filtrado['VALOR'].sum()
             
             self.lbl_num_lancamentos.config(text=str(num_lancamentos))
             
             # Média por lançamento
             if num_lancamentos > 0:
-                media_lancamento = total_tipo / num_lancamentos
+                media_lancamento = total_data / num_lancamentos
                 self.lbl_media_lancamento.config(text=formatar_moeda_br(media_lancamento))
             else:
                 self.lbl_media_lancamento.config(text="R$ 0,00")
@@ -701,17 +789,25 @@ class RelatorioTipoDespesa:
             import traceback
             traceback.print_exc()
     
+    def limpar_grafico(self):
+        """Limpa o gráfico atual"""
+        for widget in self.frame_grafico.winfo_children():
+            widget.destroy()
+    
     def atualizar_grafico(self, event=None):
-        """Atualiza o gráfico com base no tipo selecionado"""
+        """Atualiza o gráfico com base na data selecionada"""
         try:
             tipo_grafico = self.combo_tipo_grafico.get()
             
             # Limpar frame do gráfico
-            for widget in self.frame_grafico.winfo_children():
-                widget.destroy()
+            self.limpar_grafico()
                 
             # Verificar se há dados para gerar o gráfico
             if not hasattr(self, 'dados_grafico') or not self.dados_grafico:
+                return
+                
+            # Verificar se temos uma data selecionada
+            if not self.data_selecionada:
                 return
                 
             # Criar figura
@@ -721,8 +817,6 @@ class RelatorioTipoDespesa:
                 self.criar_grafico_pizza(fig, ax)
             elif tipo_grafico == "Gráfico de Barras":
                 self.criar_grafico_barras(fig, ax)
-            elif tipo_grafico == "Gráfico de Linha (Evolução Mensal)":
-                self.criar_grafico_linha(fig, ax)
                 
             # Exibir o gráfico
             canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
@@ -734,68 +828,25 @@ class RelatorioTipoDespesa:
             import traceback
             traceback.print_exc()
     
-    def atualizar_grafico(self):
-        """Atualiza o gráfico com base no tipo selecionado"""
-        tipo_grafico = self.combo_tipo_grafico.get()
-        
-        # Limpar frame do gráfico
-        for widget in self.frame_grafico.winfo_children():
-            widget.destroy()
-            
-        # Verificar se há dados para gerar o gráfico
-        if not hasattr(self, 'dados_grafico') or not self.dados_grafico:
-            return
-            
-        # Criar figura
-        fig, ax = plt.subplots(figsize=(8, 6))
-        
-        if tipo_grafico == "Gráfico de Pizza":
-            self.criar_grafico_pizza(fig, ax)
-        elif tipo_grafico == "Gráfico de Barras":
-            self.criar_grafico_barras(fig, ax)
-        elif tipo_grafico == "Gráfico de Linha":
-            self.criar_grafico_linha(fig, ax)
-            
-        # Exibir o gráfico
-        canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-    
     def criar_grafico_pizza(self, fig, ax):
-        """Cria um gráfico de pizza com os tipos de despesa"""
+        """Cria um gráfico de pizza com os tipos de despesa da data selecionada"""
         try:
             # Usar os dados para gráfico de pizza
-            df = self.dados_grafico.get('pizza', pd.DataFrame())
+            df = self.dados_grafico.get('pizza')
             
-            if df.empty:
+            if df is None or df.empty:
                 ax.text(0.5, 0.5, "Não há dados para exibir", 
                     horizontalalignment='center', verticalalignment='center',
                     transform=ax.transAxes, fontsize=14)
                 return
             
-            # Verificar se deve mostrar apenas o top 10
-            if self.var_mostrar_top.get() and len(df) > 10:
-                # Usar os 10 maiores tipos e agrupar o resto como "Outros"
-                top_df = df.head(10).copy()
-                outros_valor = df.iloc[10:]['VALOR'].sum()
-                outros_percentual = df.iloc[10:]['percentual'].sum()
-                
-                # Adicionar linha para "Outros"
-                outros_row = pd.DataFrame({
-                    'TP_DESP': ['Outros'],
-                    'VALOR': [outros_valor],
-                    'percentual': [outros_percentual]
-                })
-                
-                df = pd.concat([top_df, outros_row], ignore_index=True)
-            
             # Cores para o gráfico
-            colors = plt.cm.tab20.colors
+            colors = plt.cm.tab10.colors
             
             # Criar o gráfico de pizza
             wedges, texts, autotexts = ax.pie(
                 df['VALOR'], 
-                labels=df['TP_DESP'], 
+                labels=df['tipo_nome'], 
                 autopct='%1.1f%%',
                 startangle=90,
                 colors=colors,
@@ -811,7 +862,8 @@ class RelatorioTipoDespesa:
                 autotext.set_fontweight('bold')
             
             # Adicionar título
-            ax.set_title(f'Distribuição por Tipo de Despesa ({self.cliente_atual})', fontsize=14, pad=20)
+            data_str = self.data_selecionada.strftime('%d/%m/%Y')
+            ax.set_title(f'Distribuição por Tipo de Despesa - {data_str}', fontsize=14, pad=20)
             
             # Ajustar layout
             fig.tight_layout()
@@ -827,29 +879,25 @@ class RelatorioTipoDespesa:
                 transform=ax.transAxes, fontsize=12, color='red')
     
     def criar_grafico_barras(self, fig, ax):
-        """Cria um gráfico de barras com os tipos de despesa"""
+        """Cria um gráfico de barras com os tipos de despesa da data selecionada"""
         try:
             # Usar os dados para gráfico de barras
-            df = self.dados_grafico.get('barras', pd.DataFrame())
+            df = self.dados_grafico.get('barras')
             
-            if df.empty:
+            if df is None or df.empty:
                 ax.text(0.5, 0.5, "Não há dados para exibir", 
                     horizontalalignment='center', verticalalignment='center',
                     transform=ax.transAxes, fontsize=14)
                 return
             
-            # Verificar se deve mostrar apenas o top 10
-            if self.var_mostrar_top.get() and len(df) > 10:
-                df = df.head(10)
-            
-            # Inverter a ordem para o gráfico de barras (do menor para o maior)
+            # Ordenar por valor para melhor visualização
             df = df.sort_values(by='VALOR', ascending=True)
             
             # Cores para o gráfico
-            colors = plt.cm.tab20.colors[:len(df)]
+            colors = plt.cm.tab10.colors[:len(df)]
             
             # Criar o gráfico de barras
-            bars = ax.barh(df['TP_DESP'], df['VALOR'], color=colors)
+            bars = ax.barh(df['tipo_nome'], df['VALOR'], color=colors)
             
             # Adicionar valores nas barras
             for bar in bars:
@@ -865,7 +913,8 @@ class RelatorioTipoDespesa:
             ax.xaxis.set_major_formatter(mticker.FuncFormatter(format_real))
             
             # Adicionar títulos e labels
-            ax.set_title(f'Tipos de Despesa por Valor Total ({self.cliente_atual})', fontsize=14)
+            data_str = self.data_selecionada.strftime('%d/%m/%Y')
+            ax.set_title(f'Valores por Tipo de Despesa - {data_str}', fontsize=14)
             ax.set_xlabel('Valor (R$)', fontsize=11)
             ax.set_ylabel('Tipo de Despesa', fontsize=11)
             
@@ -877,72 +926,6 @@ class RelatorioTipoDespesa:
             
         except Exception as e:
             print(f"Erro ao criar gráfico de barras: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            
-            # Mostrar erro no gráfico
-            ax.text(0.5, 0.5, f"Erro ao gerar gráfico: {str(e)}", 
-                horizontalalignment='center', verticalalignment='center',
-                transform=ax.transAxes, fontsize=12, color='red')
-    
-    def criar_grafico_linha(self, fig, ax):
-        """Cria um gráfico de linha com a evolução mensal por tipo de despesa"""
-        try:
-            # Usar os dados para gráfico de linha
-            df = self.dados_grafico.get('linha', pd.DataFrame())
-            
-            if df.empty:
-                ax.text(0.5, 0.5, "Não há dados suficientes para exibir evolução mensal", 
-                    horizontalalignment='center', verticalalignment='center',
-                    transform=ax.transAxes, fontsize=14)
-                return
-            
-            # Verificar se temos o tipo selecionado
-            if self.tipo_despesa_selecionado and self.tipo_despesa_selecionado in df.columns:
-                # Plotar apenas o tipo selecionado
-                df = df[[self.tipo_despesa_selecionado]]
-                titulo = f'Evolução Mensal: {self.tipo_despesa_selecionado}'
-            else:
-                # Selecionar os 5 maiores tipos para plotar
-                top_tipos = self.df_tipos_despesa.head(5)['TP_DESP'].tolist()
-                tipos_presentes = [t for t in top_tipos if t in df.columns]
-                
-                if not tipos_presentes:
-                    ax.text(0.5, 0.5, "Não há dados suficientes para tipos selecionados", 
-                        horizontalalignment='center', verticalalignment='center',
-                        transform=ax.transAxes, fontsize=14)
-                    return
-                
-                df = df[tipos_presentes]
-                titulo = 'Evolução Mensal dos 5 Principais Tipos de Despesa'
-            
-            # Plotar cada tipo como uma linha
-            for coluna in df.columns:
-                ax.plot(df.index, df[coluna], marker='o', linewidth=2, label=coluna)
-            
-            # Formatação
-            ax.set_title(titulo, fontsize=14)
-            ax.set_xlabel('Mês/Ano', fontsize=11)
-            ax.set_ylabel('Valor (R$)', fontsize=11)
-            
-            # Formatação do eixo y (valores)
-            def format_real(x, pos):
-                return f'R$ {x:,.0f}'.replace(',', '.')
-            
-            ax.yaxis.set_major_formatter(mticker.FuncFormatter(format_real))
-            
-            # Rotacionar labels do eixo x para melhor visualização
-            plt.xticks(rotation=45)
-            
-            # Adicionar grid e legenda
-            ax.grid(linestyle='--', alpha=0.7)
-            ax.legend(fontsize=9, loc='best')
-            
-            # Ajustar layout
-            fig.tight_layout()
-            
-        except Exception as e:
-            print(f"Erro ao criar gráfico de linha: {str(e)}")
             import traceback
             traceback.print_exc()
             
@@ -984,19 +967,19 @@ class RelatorioTipoDespesa:
             # Adicionar cabeçalho
             ws_resumo['A1'] = "Relatório por Tipo de Despesa"
             ws_resumo['A1'].font = Font(size=14, bold=True)
-            ws_resumo.merge_cells('A1:D1')
+            ws_resumo.merge_cells('A1:J1')
             ws_resumo['A1'].alignment = Alignment(horizontal='center')
             
             ws_resumo['A2'] = f"Cliente: {self.cliente_atual}"
             ws_resumo['A2'].font = Font(size=12, bold=True)
-            ws_resumo.merge_cells('A2:D2')
+            ws_resumo.merge_cells('A2:J2')
             
             ws_resumo['A3'] = f"Data do relatório: {data_str}"
             ws_resumo['A3'].font = Font(size=12)
-            ws_resumo.merge_cells('A3:D3')
+            ws_resumo.merge_cells('A3:J3')
             
             # Adicionar cabeçalhos da tabela
-            headers = ["Tipo de Despesa", "Valor (R$)", "% do Total", "Posição"]
+            headers = ["Data"] + [f"{i}) " for i in range(1, 8)] + ["Total (R$)"]
             for col, header in enumerate(headers, start=1):
                 cell = ws_resumo.cell(row=5, column=col, value=header)
                 cell.font = Font(bold=True)
@@ -1004,57 +987,60 @@ class RelatorioTipoDespesa:
                 cell.fill = PatternFill(fgColor="DDDDDD", fill_type="solid")
             
             # Adicionar dados
-            for i, (_, row) in enumerate(self.df_tipos_despesa.iterrows(), start=6):
-                ws_resumo.cell(row=i, column=1, value=row['TP_DESP'])
+            for i, (_, row) in enumerate(self.df_por_data.iterrows(), start=6):
+                # Data formatada
+                ws_resumo.cell(row=i, column=1, value=row['DATA_REL'])
+                ws_resumo.cell(row=i, column=1).number_format = "dd/mm/yyyy"
                 
-                # Formatar valor como moeda
-                ws_resumo.cell(row=i, column=2, value=row['VALOR'])
-                ws_resumo.cell(row=i, column=2).number_format = "R$ #,##0.00"
+                # Valores por tipo de despesa
+                for j in range(1, 8):
+                    ws_resumo.cell(row=i, column=j+1, value=row[j] if j in row else 0)
+                    ws_resumo.cell(row=i, column=j+1).number_format = "R$ #,##0.00"
                 
-                # Percentual
-                ws_resumo.cell(row=i, column=3, value=row['percentual'] / 100)  # Dividir por 100 para formato percentual
-                ws_resumo.cell(row=i, column=3).number_format = "0.00%"
-                
-                # Posição
-                ws_resumo.cell(row=i, column=4, value=i-5)
+                # Total
+                ws_resumo.cell(row=i, column=9, value=row['total'])
+                ws_resumo.cell(row=i, column=9).number_format = "R$ #,##0.00"
             
             # Ajustar largura das colunas
-            ws_resumo.column_dimensions['A'].width = 40
-            ws_resumo.column_dimensions['B'].width = 15
-            ws_resumo.column_dimensions['C'].width = 15
-            ws_resumo.column_dimensions['D'].width = 10
+            ws_resumo.column_dimensions['A'].width = 15
+            for col in range(1, 9):
+                ws_resumo.column_dimensions[get_column_letter(col+1)].width = 15
             
             # Adicionar totais
-            total_row = 6 + len(self.df_tipos_despesa)
+            total_row = 6 + len(self.df_por_data)
             
             ws_resumo.cell(row=total_row, column=1, value="TOTAL")
             ws_resumo.cell(row=total_row, column=1).font = Font(bold=True)
             
-            # Total em R$
-            total_formula = f"=SUM(B6:B{total_row-1})"
-            ws_resumo.cell(row=total_row, column=2, value=total_formula)
-            ws_resumo.cell(row=total_row, column=2).font = Font(bold=True)
-            ws_resumo.cell(row=total_row, column=2).number_format = "R$ #,##0.00"
+            # Totais por tipo de despesa
+            for j in range(1, 8):
+                formula = f"=SUM({get_column_letter(j+1)}6:{get_column_letter(j+1)}{total_row-1})"
+                ws_resumo.cell(row=total_row, column=j+1, value=formula)
+                ws_resumo.cell(row=total_row, column=j+1).font = Font(bold=True)
+                ws_resumo.cell(row=total_row, column=j+1).number_format = "R$ #,##0.00"
             
-            # Criar aba de detalhes se tivermos um tipo selecionado
-            if hasattr(self, 'tipo_despesa_selecionado') and self.tipo_despesa_selecionado:
+            # Total geral
+            total_formula = f"=SUM(I6:I{total_row-1})"
+            ws_resumo.cell(row=total_row, column=9, value=total_formula)
+            ws_resumo.cell(row=total_row, column=9).font = Font(bold=True)
+            ws_resumo.cell(row=total_row, column=9).number_format = "R$ #,##0.00"
+            
+            # Criar aba de detalhes se tivermos uma data selecionada
+            if hasattr(self, 'data_selecionada') and self.data_selecionada:
                 ws_detalhes = wb.create_sheet("Detalhes")
                 
                 # Adicionar cabeçalho
-                ws_detalhes['A1'] = f"Detalhes do Tipo de Despesa: {self.tipo_despesa_selecionado}"
+                data_str_detalhe = self.data_selecionada.strftime('%d/%m/%Y')
+                ws_detalhes['A1'] = f"Detalhes da Data: {data_str_detalhe}"
                 ws_detalhes['A1'].font = Font(size=14, bold=True)
-                ws_detalhes.merge_cells('A1:D1')
+                ws_detalhes.merge_cells('A1:F1')
                 ws_detalhes['A1'].alignment = Alignment(horizontal='center')
                 
-                # Filtrando dados para o tipo selecionado
-                df_filtrado = self.df_despesas[self.df_despesas['TP_DESP'] == self.tipo_despesa_selecionado].copy()
-                
-                # Ordenar por data se disponível
-                if 'data' in df_filtrado.columns:
-                    df_filtrado = df_filtrado.sort_values(by='data', ascending=False)
+                # Filtrando dados para a data selecionada
+                df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
                 
                 # Adicionar cabeçalhos da tabela
-                headers = ["Data", "Descrição", "Valor (R$)", "Observação"]
+                headers = ["Data", "Tipo", "Nome", "Referência", "Valor (R$)", "Observação"]
                 for col, header in enumerate(headers, start=1):
                     cell = ws_detalhes.cell(row=3, column=col, value=header)
                     cell.font = Font(bold=True)
@@ -1064,106 +1050,119 @@ class RelatorioTipoDespesa:
                 # Adicionar dados
                 for i, (_, row) in enumerate(df_filtrado.iterrows(), start=4):
                     # Data formatada
-                    if 'data' in row and pd.notna(row['data']):
-                        ws_detalhes.cell(row=i, column=1, value=row['data'])
+                    if pd.notna(row['DATA_REL']):
+                        ws_detalhes.cell(row=i, column=1, value=row['DATA_REL'])
                         ws_detalhes.cell(row=i, column=1).number_format = "dd/mm/yyyy"
                     
-                    # Descrição
-                    if 'descricao' in row and pd.notna(row['descricao']):
-                        ws_detalhes.cell(row=i, column=2, value=row['descricao'])
+                    # Tipo de despesa
+                    tipo_num = row['TP_DESP_NUM'] if 'TP_DESP_NUM' in row else None
+                    tipo_nome = self.tipos_despesas.get(tipo_num, row.get('TP_DESP', 'Não classificado'))
+                    ws_detalhes.cell(row=i, column=2, value=tipo_nome)
+                    
+                    # Nome
+                    if 'NOME' in row and pd.notna(row['NOME']):
+                        ws_detalhes.cell(row=i, column=3, value=row['NOME'])
+                    
+                    # Referência
+                    if 'REFERÊNCIA' in row and pd.notna(row['REFERÊNCIA']):
+                        ws_detalhes.cell(row=i, column=4, value=row['REFERÊNCIA'])
                     
                     # Valor
-                    if 'VALOR' in row:
-                        ws_detalhes.cell(row=i, column=3, value=row['VALOR'])
-                        ws_detalhes.cell(row=i, column=3).number_format = "R$ #,##0.00"
+                    ws_detalhes.cell(row=i, column=5, value=row['VALOR'])
+                    ws_detalhes.cell(row=i, column=5).number_format = "R$ #,##0.00"
                     
                     # Observação
-                    if 'observacao' in row and pd.notna(row['observacao']):
-                        ws_detalhes.cell(row=i, column=4, value=row['observacao'])
+                    if 'OBSERVAÇÃO' in row and pd.notna(row['OBSERVAÇÃO']):
+                        ws_detalhes.cell(row=i, column=6, value=row['OBSERVAÇÃO'])
                 
                 # Ajustar largura das colunas
                 ws_detalhes.column_dimensions['A'].width = 15
-                ws_detalhes.column_dimensions['B'].width = 40
-                ws_detalhes.column_dimensions['C'].width = 15
-                ws_detalhes.column_dimensions['D'].width = 40
+                ws_detalhes.column_dimensions['B'].width = 30
+                ws_detalhes.column_dimensions['C'].width = 30
+                ws_detalhes.column_dimensions['D'].width = 30
+                ws_detalhes.column_dimensions['E'].width = 15
+                ws_detalhes.column_dimensions['F'].width = 40
                 
                 # Adicionar total
                 total_row = 4 + len(df_filtrado)
                 
-                ws_detalhes.cell(row=total_row, column=2, value="TOTAL")
-                ws_detalhes.cell(row=total_row, column=2).font = Font(bold=True)
+                ws_detalhes.cell(row=total_row, column=4, value="TOTAL")
+                ws_detalhes.cell(row=total_row, column=4).font = Font(bold=True)
                 
                 # Total em R$
-                total_formula = f"=SUM(C4:C{total_row-1})"
-                ws_detalhes.cell(row=total_row, column=3, value=total_formula)
-                ws_detalhes.cell(row=total_row, column=3).font = Font(bold=True)
-                ws_detalhes.cell(row=total_row, column=3).number_format = "R$ #,##0.00"
+                total_formula = f"=SUM(E4:E{total_row-1})"
+                ws_detalhes.cell(row=total_row, column=5, value=total_formula)
+                ws_detalhes.cell(row=total_row, column=5).font = Font(bold=True)
+                ws_detalhes.cell(row=total_row, column=5).number_format = "R$ #,##0.00"
             
             # Criar aba para todos os dados
             ws_dados = wb.create_sheet("Todos os Dados")
             
             # Adicionar cabeçalho
-            ws_dados['A1'] = "Todos os Lançamentos por Tipo de Despesa"
+            ws_dados['A1'] = "Todos os Lançamentos"
             ws_dados['A1'].font = Font(size=14, bold=True)
-            ws_dados.merge_cells('A1:E1')
+            ws_dados.merge_cells('A1:F1')
             ws_dados['A1'].alignment = Alignment(horizontal='center')
             
             # Adicionar cabeçalhos da tabela
-            headers = ["Data", "Tipo de Despesa", "Descrição", "Valor (R$)", "Observação"]
+            headers = ["Data", "Tipo", "Nome", "Referência", "Valor (R$)", "Observação"]
             for col, header in enumerate(headers, start=1):
                 cell = ws_dados.cell(row=3, column=col, value=header)
                 cell.font = Font(bold=True)
                 cell.alignment = Alignment(horizontal='center')
                 cell.fill = PatternFill(fgColor="DDDDDD", fill_type="solid")
             
-            # Ordenar todos os dados por data e tipo
+            # Ordenar todos os dados por data
             df_todos = self.df_despesas.copy()
-            
-            if 'data' in df_todos.columns:
-                df_todos = df_todos.sort_values(by=['data', 'TP_DESP'], ascending=[False, True])
-            else:
-                df_todos = df_todos.sort_values(by='TP_DESP')
+            df_todos = df_todos.sort_values(by='DATA_REL')
             
             # Adicionar todos os dados
             for i, (_, row) in enumerate(df_todos.iterrows(), start=4):
                 # Data formatada
-                if 'data' in row and pd.notna(row['data']):
-                    ws_dados.cell(row=i, column=1, value=row['data'])
+                if pd.notna(row['DATA_REL']):
+                    ws_dados.cell(row=i, column=1, value=row['DATA_REL'])
                     ws_dados.cell(row=i, column=1).number_format = "dd/mm/yyyy"
                 
-                # Tipo de Despesa
-                ws_dados.cell(row=i, column=2, value=row['TP_DESP'])
+                # Tipo de despesa
+                tipo_num = row['TP_DESP_NUM'] if 'TP_DESP_NUM' in row else None
+                tipo_nome = self.tipos_despesas.get(tipo_num, row.get('TP_DESP', 'Não classificado'))
+                ws_dados.cell(row=i, column=2, value=tipo_nome)
                 
-                # Descrição
-                if 'descricao' in row and pd.notna(row['descricao']):
-                    ws_dados.cell(row=i, column=3, value=row['descricao'])
+                # Nome
+                if 'NOME' in row and pd.notna(row['NOME']):
+                    ws_dados.cell(row=i, column=3, value=row['NOME'])
+                
+                # Referência
+                if 'REFERÊNCIA' in row and pd.notna(row['REFERÊNCIA']):
+                    ws_dados.cell(row=i, column=4, value=row['REFERÊNCIA'])
                 
                 # Valor
-                ws_dados.cell(row=i, column=4, value=row['VALOR'])
-                ws_dados.cell(row=i, column=4).number_format = "R$ #,##0.00"
+                ws_dados.cell(row=i, column=5, value=row['VALOR'])
+                ws_dados.cell(row=i, column=5).number_format = "R$ #,##0.00"
                 
                 # Observação
-                if 'observacao' in row and pd.notna(row['observacao']):
-                    ws_dados.cell(row=i, column=5, value=row['observacao'])
+                if 'OBSERVAÇÃO' in row and pd.notna(row['OBSERVAÇÃO']):
+                    ws_dados.cell(row=i, column=6, value=row['OBSERVAÇÃO'])
             
             # Ajustar largura das colunas
             ws_dados.column_dimensions['A'].width = 15
             ws_dados.column_dimensions['B'].width = 30
-            ws_dados.column_dimensions['C'].width = 40
-            ws_dados.column_dimensions['D'].width = 15
-            ws_dados.column_dimensions['E'].width = 40
+            ws_dados.column_dimensions['C'].width = 30
+            ws_dados.column_dimensions['D'].width = 30
+            ws_dados.column_dimensions['E'].width = 15
+            ws_dados.column_dimensions['F'].width = 40
             
             # Adicionar total
             total_row = 4 + len(df_todos)
             
-            ws_dados.cell(row=total_row, column=3, value="TOTAL")
-            ws_dados.cell(row=total_row, column=3).font = Font(bold=True)
+            ws_dados.cell(row=total_row, column=4, value="TOTAL")
+            ws_dados.cell(row=total_row, column=4).font = Font(bold=True)
             
             # Total em R$
-            total_formula = f"=SUM(D4:D{total_row-1})"
-            ws_dados.cell(row=total_row, column=4, value=total_formula)
-            ws_dados.cell(row=total_row, column=4).font = Font(bold=True)
-            ws_dados.cell(row=total_row, column=4).number_format = "R$ #,##0.00"
+            total_formula = f"=SUM(E4:E{total_row-1})"
+            ws_dados.cell(row=total_row, column=5, value=total_formula)
+            ws_dados.cell(row=total_row, column=5).font = Font(bold=True)
+            ws_dados.cell(row=total_row, column=5).number_format = "R$ #,##0.00"
             
             # Salvar o arquivo
             wb.save(arquivo)
@@ -1208,7 +1207,7 @@ class RelatorioTipoDespesa:
                 return
             
             # Criar documento PDF
-            doc = SimpleDocTemplate(arquivo, pagesize=A4)
+            doc = SimpleDocTemplate(arquivo, pagesize=A4, leftMargin=0.5*inch, rightMargin=0.5*inch)
             story = []
             
             # Estilos
@@ -1227,181 +1226,131 @@ class RelatorioTipoDespesa:
             story.append(Paragraph(f"Data do relatório: {data_str}", normal_style))
             story.append(Spacer(1, 0.2*inch))
             
-            # Resumo de valores
-            total_geral = self.df_tipos_despesa['VALOR'].sum()
-            num_tipos = len(self.df_tipos_despesa)
-            
-            story.append(Paragraph("Resumo Financeiro", heading2_style))
-            story.append(Spacer(1, 0.1*inch))
-            
-            resumo_data = [
-                ["Total de Despesas:", f"R$ {total_geral:,.2f}".replace(',', '.').replace('.', ',')],
-                ["Número de Tipos de Despesa:", f"{num_tipos}"],
-            ]
-            
-            if num_tipos > 0:
-                media_tipo = total_geral / num_tipos
-                maior_tipo = self.df_tipos_despesa.iloc[0]['TP_DESP'] if not self.df_tipos_despesa.empty else "Nenhum"
-                
-                resumo_data.append(["Média por Tipo de Despesa:", f"R$ {media_tipo:,.2f}".replace(',', '.').replace('.', ',')])
-                resumo_data.append(["Tipo de Maior Valor:", maior_tipo])
-            
-            # Criar tabela de resumo
-            resumo_table = Table(resumo_data, colWidths=[3*inch, 3*inch])
-            resumo_table.setStyle(TableStyle([
-                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-                ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
-                ('ALIGN', (0, 0), (0, -1), 'RIGHT'),
-                ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-                ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ]))
-            
-            story.append(resumo_table)
-            story.append(Spacer(1, 0.2*inch))
-            
-            # Tabela com os tipos de despesa
-            story.append(Paragraph("Tipos de Despesa", heading2_style))
+            # Resumo por data
+            story.append(Paragraph("Resumo por Data", heading2_style))
             story.append(Spacer(1, 0.1*inch))
             
             # Cabeçalhos
-            headers = ["Tipo de Despesa", "Valor (R$)", "% do Total"]
+            headers = ["Data"]
+            for i in range(1, 8):
+                headers.append(f"{i})")
+            headers.append("Total (R$)")
             
-            # Dados da tabela
+            # Dados da tabela de resumo
             table_data = [headers]
             
-            for _, row in self.df_tipos_despesa.iterrows():
-                tipo = row['TP_DESP']
-                valor = f"R$ {row['VALOR']:,.2f}".replace(',', '.').replace('.', ',')
-                percentual = f"{row['percentual']:.2f}%"
+            for _, row in self.df_por_data.iterrows():
+                # Formatar data
+                data_str = row['DATA_REL'].strftime('%d/%m/%Y')
                 
-                table_data.append([tipo, valor, percentual])
+                # Preparar valores para cada tipo de despesa
+                valores = [data_str]
+                for i in range(1, 8):
+                    valor_formatado = f"R$ {row[i]:,.2f}".replace(',', '.').replace('.', ',') if i in row else "R$ 0,00"
+                    valores.append(valor_formatado)
+                
+                # Adicionar total
+                total_formatado = f"R$ {row['total']:,.2f}".replace(',', '.').replace('.', ',')
+                valores.append(total_formatado)
+                
+                table_data.append(valores)
             
             # Adicionar linha de total
-            total_valor = f"R$ {total_geral:,.2f}".replace(',', '.').replace('.', ',')
-            table_data.append(["TOTAL", total_valor, "100.00%"])
+            if not self.df_por_data.empty:
+                total_row = ["TOTAL"]
+                for i in range(1, 8):
+                    total_tipo = self.df_por_data[i].sum() if i in self.df_por_data.columns else 0
+                    total_formatado = f"R$ {total_tipo:,.2f}".replace(',', '.').replace('.', ',')
+                    total_row.append(total_formatado)
+                
+                # Total geral
+                total_geral = self.df_por_data['total'].sum()
+                total_geral_formatado = f"R$ {total_geral:,.2f}".replace(',', '.').replace('.', ',')
+                total_row.append(total_geral_formatado)
+                
+                table_data.append(total_row)
             
-            # Criar tabela
-            col_widths = [4*inch, 2*inch, 1.5*inch]
-            tipos_table = Table(table_data, colWidths=col_widths)
+            # Criar tabela de resumo
+            # Calcular larguras de colunas (data é maior, valores são menores)
+            col_widths = [1.0*inch]  # Data
+            for _ in range(1, 8):
+                col_widths.append(0.8*inch)  # Tipos de despesa
+            col_widths.append(1.0*inch)  # Total
+            
+            resumo_table = Table(table_data, colWidths=col_widths)
             
             # Estilo da tabela
             table_style = TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-                ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-                ('ALIGN', (1, 0), (2, -1), 'RIGHT'),
+                ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+                ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
                 ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('FONTSIZE', (0, 0), (-1, -1), 8),  # Fonte menor para caber
                 ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                 ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
             ])
             
             # Destacar a linha de total
-            table_style.add('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey)
-            table_style.add('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold')
+            if not self.df_por_data.empty:
+                table_style.add('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey)
+                table_style.add('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold')
             
-            tipos_table.setStyle(table_style)
-            story.append(tipos_table)
+            resumo_table.setStyle(table_style)
+            story.append(resumo_table)
             story.append(Spacer(1, 0.2*inch))
             
-            # Adicionar gráfico de pizza
-            story.append(Paragraph("Gráfico de Distribuição", heading2_style))
-            story.append(Spacer(1, 0.1*inch))
-            
-            # Gerar gráfico para incluir no PDF
-            plt.figure(figsize=(8, 6))
-            
-            # Verificar se deve mostrar apenas o top 10
-            df = self.df_tipos_despesa.copy()
-            if len(df) > 10:
-                # Usar os 10 maiores tipos e agrupar o resto como "Outros"
-                top_df = df.head(10).copy()
-                outros_valor = df.iloc[10:]['VALOR'].sum()
-                outros_percentual = df.iloc[10:]['percentual'].sum()
-                
-                # Adicionar linha para "Outros"
-                outros_row = pd.DataFrame({
-                    'TP_DESP': ['Outros'],
-                    'VALOR': [outros_valor],
-                    'percentual': [outros_percentual]
-                })
-                
-                df = pd.concat([top_df, outros_row], ignore_index=True)
-            
-            # Criar o gráfico de pizza
-            plt.pie(
-                df['VALOR'], 
-                labels=df['TP_DESP'], 
-                autopct='%1.1f%%',
-                startangle=90,
-                colors=plt.cm.tab20.colors,
-                wedgeprops={'edgecolor': 'w', 'linewidth': 1}
-            )
-            
-            plt.title(f'Distribuição por Tipo de Despesa ({self.cliente_atual})', fontsize=14, pad=20)
-            plt.tight_layout()
-            
-            # Salvar o gráfico em um buffer
-            img_buffer = io.BytesIO()
-            plt.savefig(img_buffer, format='png', dpi=100)
-            img_buffer.seek(0)
-            plt.close()
-            
-            # Adicionar o gráfico ao PDF
-            img = Image(img_buffer, width=6*inch, height=4*inch)
-            story.append(img)
-            story.append(Spacer(1, 0.2*inch))
-            
-            # Adicionar detalhes do tipo selecionado se houver
-            if hasattr(self, 'tipo_despesa_selecionado') and self.tipo_despesa_selecionado:
-                story.append(Paragraph(f"Detalhes: {self.tipo_despesa_selecionado}", heading2_style))
+            # Se tiver uma data selecionada, adicionar detalhes
+            if hasattr(self, 'data_selecionada') and self.data_selecionada:
+                # Detalhes da data selecionada
+                data_str_detalhe = self.data_selecionada.strftime('%d/%m/%Y')
+                story.append(Paragraph(f"Detalhes - Data: {data_str_detalhe}", heading2_style))
                 story.append(Spacer(1, 0.1*inch))
                 
-                # Filtrar dados para o tipo selecionado
-                df_filtrado = self.df_despesas[self.df_despesas['TP_DESP'] == self.tipo_despesa_selecionado].copy()
+                # Filtrar dados para a data selecionada
+                df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
                 
-                # Verificar se há dados
                 if not df_filtrado.empty:
-                    # Ordenar por data se disponível
-                    if 'data' in df_filtrado.columns:
-                        df_filtrado = df_filtrado.sort_values(by='data', ascending=False)
+                    # Cabeçalhos
+                    headers = ["Tipo", "Nome", "Referência", "Valor (R$)"]
                     
-                    # Cabeçalhos e dados para a tabela
-                    headers = ["Data", "Descrição", "Valor (R$)"]
+                    # Dados da tabela de detalhes
                     table_data = [headers]
                     
                     for _, row in df_filtrado.iterrows():
-                        # Formatar data se disponível
-                        data_str = ''
-                        if 'data' in row and pd.notna(row['data']):
-                            data_str = row['data'].strftime('%d/%m/%Y')
+                        # Obter tipo de despesa
+                        tipo_num = row['TP_DESP_NUM'] if 'TP_DESP_NUM' in row else None
+                        tipo_nome = self.tipos_despesas.get(tipo_num, row.get('TP_DESP', 'Não classificado'))
                         
-                        # Obter descrição e valor
-                        descricao = row.get('descricao', '') if pd.notna(row.get('descricao', '')) else ''
+                        # Obter nome e referência
+                        nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
+                        referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
+                        
+                        # Formatar valor
                         valor = f"R$ {row['VALOR']:,.2f}".replace(',', '.').replace('.', ',')
                         
-                        table_data.append([data_str, descricao, valor])
+                        # Adicionar linha
+                        table_data.append([tipo_nome, nome, referencia, valor])
                     
-                    # Adicionar total
-                    total_tipo = df_filtrado['VALOR'].sum()
-                    table_data.append(["", "TOTAL", f"R$ {total_tipo:,.2f}".replace(',', '.').replace('.', ',')])
+                    # Adicionar linha de total
+                    total_data = df_filtrado['VALOR'].sum()
+                    total_formatado = f"R$ {total_data:,.2f}".replace(',', '.').replace('.', ',')
+                    table_data.append(["TOTAL", "", "", total_formatado])
                     
-                    # Criar tabela
-                    col_widths = [1.5*inch, 4*inch, 2*inch]
+                    # Criar tabela de detalhes
+                    col_widths = [1.5*inch, 2.0*inch, 2.0*inch, 1.0*inch]
                     detalhes_table = Table(table_data, colWidths=col_widths)
                     
                     # Estilo da tabela
                     table_style = TableStyle([
                         ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                         ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-                        ('ALIGN', (0, 0), (0, -1), 'CENTER'),
-                        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-                        ('ALIGN', (2, 0), (2, -1), 'RIGHT'),
+                        ('ALIGN', (0, 0), (2, -1), 'LEFT'),
+                        ('ALIGN', (3, 0), (3, -1), 'RIGHT'),
                         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('FONTSIZE', (0, 0), (-1, -1), 9),
+                        ('FONTSIZE', (0, 0), (-1, -1), 8),
                         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
                         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
                     ])
@@ -1412,8 +1361,50 @@ class RelatorioTipoDespesa:
                     
                     detalhes_table.setStyle(table_style)
                     story.append(detalhes_table)
+                    story.append(Spacer(1, 0.2*inch))
+                    
+                    # Adicionar gráfico
+                    story.append(Paragraph("Gráfico de Distribuição por Tipo de Despesa", heading2_style))
+                    story.append(Spacer(1, 0.1*inch))
+                    
+                    # Gerar gráfico para incluir no PDF
+                    plt.figure(figsize=(7, 5))
+                    
+                    # Preparar dados para o gráfico
+                    df_grafico = df_filtrado.groupby('TP_DESP_NUM')['VALOR'].sum().reset_index()
+                    
+                    # Adicionar nome do tipo
+                    df_grafico['tipo_nome'] = df_grafico['TP_DESP_NUM'].apply(
+                        lambda x: self.tipos_despesas.get(x, f"Tipo {x}")
+                    )
+                    
+                    # Criar gráfico de pizza
+                    if not df_grafico.empty:
+                        plt.pie(
+                            df_grafico['VALOR'], 
+                            labels=df_grafico['tipo_nome'], 
+                            autopct='%1.1f%%',
+                            startangle=90,
+                            colors=plt.cm.tab10.colors,
+                            wedgeprops={'edgecolor': 'w', 'linewidth': 1}
+                        )
+                        
+                        plt.title(f'Distribuição por Tipo de Despesa - {data_str_detalhe}', fontsize=12, pad=20)
+                        plt.tight_layout()
+                        
+                        # Salvar o gráfico em um buffer
+                        img_buffer = io.BytesIO()
+                        plt.savefig(img_buffer, format='png', dpi=100)
+                        img_buffer.seek(0)
+                        plt.close()
+                        
+                        # Adicionar o gráfico ao PDF
+                        img = Image(img_buffer, width=6*inch, height=4*inch)
+                        story.append(img)
+                    else:
+                        story.append(Paragraph("Não há dados suficientes para gerar o gráfico.", normal_style))
                 else:
-                    story.append(Paragraph("Não há lançamentos para este tipo de despesa.", normal_style))
+                    story.append(Paragraph("Não há lançamentos para esta data.", normal_style))
             
             # Construir o PDF
             doc.build(story)
