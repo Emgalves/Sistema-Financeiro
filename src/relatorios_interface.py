@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox, filedialog
 import os
 import sys
 import importlib
-from datetime import datetime
+from datetime import datetime, date
 from pathlib import Path
 import logging
 
@@ -113,7 +113,7 @@ class SistemaRelatorios:
                 "nome": "Relatório de Despesas",
                 "descricao": "Relatório financeiro de despesas por cliente",
                 "modulo": "relatorio_despesas_aprimorado",
-                "classe": "RelatorioUI",
+                "classe": "RelatorioHandler",
                 "disponivel": True
             },
             {
@@ -154,6 +154,14 @@ class SistemaRelatorios:
                 "descricao": "Resumo de fornecedores por cliente e global",
                 "modulo": "relatorio_fornecedores",
                 "classe": "RelatorioFornecedores",
+                "disponivel": True
+            },
+            {
+                "id": "lancamentos_pendentes",
+                "nome": "Relatório de Lançamentos Pendentes",
+                "descricao": "Relatório de lançamentos pendentes de múltiplos clientes",
+                "modulo": "relatorio_despesas_aprimorado",
+                "classe": "RelatorioLancamentosPendentes",
                 "disponivel": True
             }
         ]
@@ -236,6 +244,8 @@ class SistemaRelatorios:
             self.setup_opcoes_contratos(opcoes_frame)
         elif relatorio["id"] == "fornecedores":
             self.setup_opcoes_fornecedores(opcoes_frame)  # Adicionar esta condição
+        elif relatorio["id"] == "lancamentos_pendentes":  # ADICIONAR este elif
+            self.setup_opcoes_lancamentos_pendentes(opcoes_frame)
         else:
             ttk.Label(
                 opcoes_frame,
@@ -253,6 +263,23 @@ class SistemaRelatorios:
             style='Accentuated.TButton'
         ).pack(side='right', padx=5)
     
+    def preencher_combobox_clientes(self, combobox):
+        """Preenche um combobox com a lista de clientes ativos"""
+        try:
+            if hasattr(self, 'lista_clientes') and self.lista_clientes:
+                clientes = self.lista_clientes
+            else:
+                clientes = self.carregar_clientes()
+                self.lista_clientes = clientes  # Cache da lista
+            
+            combobox['values'] = clientes
+            combobox.current(0)  # Selecionar "Todos os Clientes"
+            
+        except Exception as e:
+            logger.error(f"Erro ao preencher combobox de clientes: {str(e)}")
+            combobox['values'] = ['Todos os Clientes']
+            combobox.current(0)
+
     def setup_opcoes_despesas(self, parent_frame):
         """Configura as opções específicas para relatório de despesas"""
         # Frame para data
@@ -296,9 +323,8 @@ class SistemaRelatorios:
         self.cliente_combobox = ttk.Combobox(frame_cliente, width=40)
         self.cliente_combobox.pack(side='left', padx=5)
         
-        # Preencher com alguns clientes exemplo (você deve carregá-los do arquivo real)
-        self.cliente_combobox['values'] = ['Todos os Clientes', 'Cliente 1', 'Cliente 2', 'Cliente 3']
-        self.cliente_combobox.current(0)
+        # Preencher com clientes reais
+        self.preencher_combobox_clientes(self.cliente_combobox)
         
         # Botão para selecionar arquivo individual
         ttk.Button(
@@ -361,9 +387,8 @@ class SistemaRelatorios:
         self.cliente_contratos = ttk.Combobox(frame_cliente, width=40)
         self.cliente_contratos.pack(side='left', padx=5)
         
-        # Preencher com alguns clientes exemplo (você deve carregá-los do arquivo real)
-        self.cliente_contratos['values'] = ['Todos os Clientes', 'Cliente 1', 'Cliente 2', 'Cliente 3']
-        self.cliente_contratos.current(0)
+        # Preencher com clientes reais
+        self.preencher_combobox_clientes(self.cliente_contratos)
         
         # Opções de visualização
         frame_visualizacao = ttk.LabelFrame(parent_frame, text="Opções de Visualização")
@@ -434,8 +459,7 @@ class SistemaRelatorios:
         except ImportError:
             # Fallback se tkcalendar não estiver instalado
             ttk.Label(frame_data, text="Módulo tkcalendar não encontrado. Data atual será usada.").pack(side='left')
-        
-        # Frame para seleção de cliente
+       # Frame para seleção de cliente
         frame_cliente = ttk.Frame(parent_frame)
         frame_cliente.pack(fill='x', padx=10, pady=10)
         
@@ -445,9 +469,8 @@ class SistemaRelatorios:
         self.cliente_contratos = ttk.Combobox(frame_cliente, width=40)
         self.cliente_contratos.pack(side='left', padx=5)
         
-        # Preencher com alguns clientes exemplo (você deve carregá-los do arquivo real)
-        self.cliente_contratos['values'] = ['Todos os Clientes', 'Cliente 1', 'Cliente 2', 'Cliente 3']
-        self.cliente_contratos.current(0)
+        # Preencher com clientes reais
+        self.preencher_combobox_clientes(self.cliente_contratos)
         
         # Opções de visualização
         frame_visualizacao = ttk.LabelFrame(parent_frame, text="Opções de Visualização")
@@ -493,6 +516,80 @@ class SistemaRelatorios:
             variable=self.formato_contratos,
             value="pdf"
         ).pack(side='left', padx=20, pady=5)
+
+    def setup_opcoes_lancamentos_pendentes(self, parent_frame):
+        """
+        Configura as opções específicas para relatório de lançamentos pendentes
+        """
+        # Frame para data de referência
+        frame_data = ttk.Frame(parent_frame)
+        frame_data.pack(fill='x', padx=10, pady=10)
+        
+        ttk.Label(frame_data, text="Data de Referência:").pack(side='left', padx=5)
+        
+        try:
+            from tkcalendar import DateEntry
+            self.data_referencia_pendentes = DateEntry(
+                frame_data,
+                width=12,
+                background='darkblue',
+                foreground='white',
+                borderwidth=2,
+                date_pattern='dd/mm/yyyy',
+                locale='pt_BR'
+            )
+            self.data_referencia_pendentes.pack(side='left', padx=5)
+        except ImportError:
+            ttk.Label(frame_data, text="Módulo tkcalendar não encontrado.").pack(side='left')
+        
+        # Frame para seleção de pasta
+        frame_pasta = ttk.Frame(parent_frame)
+        frame_pasta.pack(fill='x', padx=10, pady=10)
+        
+        # Botão para selecionar pasta
+        ttk.Button(
+            frame_pasta,
+            text="Selecionar Pasta com Arquivos",
+            command=self.selecionar_pasta_lancamentos
+        ).pack(side='left', padx=5)
+        
+        # Label para mostrar pasta selecionada
+        self.pasta_selecionada_label = ttk.Label(
+            frame_pasta, 
+            text="Nenhuma pasta selecionada",
+            wraplength=400
+        )
+        self.pasta_selecionada_label.pack(side='left', padx=5)
+        
+        # Descrição do processo
+        ttk.Label(
+            parent_frame,
+            text="Este relatório processará todos os arquivos Excel na pasta selecionada\n"
+                "e gerará um relatório consolidado em HTML com os lançamentos pendentes.",
+            justify='center',
+            font=('Arial', 10),
+            foreground='gray'
+        ).pack(pady=20)
+
+    # 2. Corrigir o método selecionar_pasta_lancamentos:
+    def selecionar_pasta_lancamentos(self):
+        """
+        Seleciona pasta com arquivos para relatório de lançamentos pendentes
+        """
+        pasta = filedialog.askdirectory(
+            title="Selecione a pasta com os arquivos dos clientes"
+        )
+        if pasta:
+            self.pasta_lancamentos = pasta
+            # Verificar se o label existe antes de tentar atualizar
+            if hasattr(self, 'pasta_selecionada_label'):
+                # Mostrar apenas o nome da pasta, não o caminho completo para melhor visualização
+                nome_pasta = os.path.basename(pasta) or pasta
+                self.pasta_selecionada_label.config(text=f"Pasta: {nome_pasta}")
+            else:
+                print(f"Pasta selecionada: {pasta}")  # Fallback caso o label não exista
+                messagebox.showinfo("Pasta Selecionada", f"Pasta selecionada: {pasta}")
+
     
     def selecionar_arquivo_cliente(self):
         """Abre diálogo para selecionar arquivo de cliente individual"""
@@ -555,8 +652,36 @@ class SistemaRelatorios:
                 )
                 return
             
-            # Para o relatório de fornecedores, usar uma abordagem mais direta
-            if relatorio["id"] == "fornecedores":
+            # Primeiro, carregamos o módulo
+            modulo = self.carregar_modulo(relatorio["modulo"])
+            if not modulo:
+                return
+            
+            # Agora, obtemos a classe do relatório
+            try:
+                classe_relatorio = getattr(modulo, relatorio["classe"])
+                print(f"Classe carregada com sucesso: {classe_relatorio}")
+            except AttributeError as e:
+                messagebox.showerror(
+                    "Erro",
+                    f"Classe {relatorio['classe']} não encontrada no módulo {relatorio['modulo']}\nErro: {str(e)}"
+                )
+                return
+            except Exception as e:
+                messagebox.showerror(
+                    "Erro",
+                    f"Erro ao obter classe do relatório: {str(e)}"
+                )
+                return
+            
+            # Iniciar interface conforme o tipo de relatório
+            if relatorio["id"] == "despesas":
+                self.iniciar_relatorio_despesas(classe_relatorio)
+                
+            elif relatorio["id"] == "contratos":
+                self.iniciar_relatorio_contratos(classe_relatorio)
+                
+            elif relatorio["id"] == "fornecedores":
                 print("Iniciando relatório de fornecedores")
                 self.root.withdraw()
                 
@@ -571,7 +696,6 @@ class SistemaRelatorios:
                     app.root.mainloop()
                     return
                 except ImportError:
-                    # Tentar da pasta src
                     try:
                         from src.relatorio_fornecedores import RelatorioFornecedores
                         app = RelatorioFornecedores(parent=self.root)
@@ -588,68 +712,65 @@ class SistemaRelatorios:
                         )
                         self.root.deiconify()
                         return
-            
-            # Continuar com o fluxo normal para outros relatórios
-            modulo = self.carregar_modulo(relatorio["modulo"])
-            if not modulo:
-                return
+                        
+            elif relatorio["id"] == "lancamentos_pendentes":
+                print(f"Iniciando relatório de lançamentos pendentes com classe: {classe_relatorio}")
+                self.iniciar_relatorio_lancamentos_pendentes(classe_relatorio)
                 
-            # Obter a classe do relatório
-            classe_relatorio = getattr(modulo, relatorio["classe"])
-            
-            # Iniciar interface conforme o tipo de relatório
-            if relatorio["id"] == "despesas":
-                self.iniciar_relatorio_despesas(classe_relatorio)
-            elif relatorio["id"] == "contratos":
-                self.iniciar_relatorio_contratos(classe_relatorio)
             else:
                 messagebox.showinfo(
                     "Em desenvolvimento",
                     "As opções específicas para este relatório ainda estão sendo implementadas."
                 )
-                    
+                
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             messagebox.showerror(
                 "Erro", 
                 f"Ocorreu um erro ao gerar o relatório.\nErro: {str(e)}"
             )
-            self.root.deiconify()
+            if hasattr(self, 'root'):
+                self.root.deiconify()
     
     def iniciar_relatorio_despesas(self, classe_relatorio):
-        """Inicia a geração do relatório de despesas"""
-        # Esconder a janela atual
-        self.root.withdraw()
-        
-        # Criar uma nova janela para o relatório
-        relatorio_window = tk.Toplevel(self.root)
-        
-        # Inicializar o relatório
-        app_relatorio = classe_relatorio(relatorio_window)
-        
-        # Configurar menu principal para retornar
-        app_relatorio.menu_principal = self.root
-        
-        # Se houver data selecionada, passá-la
-        if hasattr(self, 'data_entry'):
-            app_relatorio.data_selecionada.set(self.data_entry.get())
-        
-        # Configurar inclusão de lançamentos futuros
-        if hasattr(self, 'incluir_futuros'):
-            app_relatorio.incluir_futuros.set(self.incluir_futuros.get())
-        
-        # Atualizar cliente se específico foi selecionado
-        if self.cliente_combobox.get() != 'Todos os Clientes' and not self.cliente_combobox.get().startswith('Arquivo:'):
-            app_relatorio.selecionar_cliente_nome(self.cliente_combobox.get())
-        elif hasattr(self, 'arquivo_cliente_selecionado'):
-            app_relatorio.selecionar_arquivo_direto(self.arquivo_cliente_selecionado)
-        
-        # Configurar comportamento ao fechar
-        relatorio_window.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(relatorio_window))
-        
-        # Exibir janela
-        relatorio_window.lift()
-        relatorio_window.focus_force()
-        relatorio_window.mainloop()
+        """
+        Inicia a geração do relatório de despesas diretamente sem abrir nova janela
+        """
+        try:
+            # Coletar dados da interface
+            data_selecionada = self.data_entry.get_date() if hasattr(self, 'data_entry') else datetime.now()
+            incluir_futuros = self.incluir_futuros.get() if hasattr(self, 'incluir_futuros') else True
+            
+            # Verificar se foi selecionado um arquivo
+            if hasattr(self, 'arquivo_cliente_selecionado'):
+                arquivo = self.arquivo_cliente_selecionado
+            else:
+                # Selecionar arquivo
+                arquivo = filedialog.askopenfilename(
+                    title="Selecione o arquivo Excel",
+                    filetypes=[("Arquivos Excel", "*.xlsx *.xls")]
+                )
+                if not arquivo:
+                    return
+            
+            # Instanciar o handler
+            handler = classe_relatorio()
+            
+            # Função de callback para exibir status
+            def status_callback(msg):
+                messagebox.showinfo("Status", msg)
+            
+            # Gerar relatório
+            handler.gerar_relatorio_direto(
+                arquivo_path=arquivo,
+                data_relatorio=data_selecionada,
+                incluir_futuros=incluir_futuros,
+                output_callback=status_callback
+            )
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
     
     def iniciar_relatorio_contratos(self, classe_relatorio):
         """Inicia a geração do relatório de contratos e medições"""
@@ -727,6 +848,55 @@ class SistemaRelatorios:
                 f"Ocorreu um erro ao iniciar o relatório de fornecedores.\nErro: {str(e)}"
             )
             self.root.deiconify()  # Mostrar a janela principal novamente
+
+    def iniciar_relatorio_lancamentos_pendentes(self, classe_relatorio):
+        """
+        Inicia a geração do relatório de lançamentos pendentes
+        """
+        try:
+            # Debug - verificar se classe_relatorio foi passada
+            print(f"Classe recebida: {classe_relatorio}")
+            
+            # Verificar se pasta foi selecionada
+            if not hasattr(self, 'pasta_lancamentos'):
+                messagebox.showerror("Erro", "Por favor, selecione uma pasta primeiro.")
+                return
+            
+            print(f"Pasta selecionada: {self.pasta_lancamentos}")
+            
+            # Data de referência
+            data_ref = self.data_referencia_pendentes.get_date() if hasattr(self, 'data_referencia_pendentes') else datetime.now()
+        
+            # Garantir que data_ref é datetime e não apenas date
+            if isinstance(data_ref, date) and not isinstance(data_ref, datetime):
+                data_ref = datetime.combine(data_ref, datetime.min.time())
+            
+            print(f"Data de referência: {data_ref}")
+            
+            # Instanciar relatório
+            relatorio = classe_relatorio()
+            print("Instância do relatório criada com sucesso")
+            
+            # Gerar relatório
+            arquivo_saida = os.path.join(self.pasta_lancamentos, "relatorio_lancamentos_pendentes.html")
+            print(f"Arquivo de saída: {arquivo_saida}")
+            
+            # Usar o método gerar_relatorio_pendentes que já existe na classe
+            if relatorio.gerar_relatorio_pendentes(self.pasta_lancamentos, arquivo_saida, data_ref):
+                messagebox.showinfo(
+                    "Sucesso",
+                    f"Relatório gerado com sucesso!\nSalvo em: {arquivo_saida}"
+                )
+            else:
+                messagebox.showwarning(
+                    "Aviso",
+                    "Nenhum lançamento pendente encontrado."
+                )
+                
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
         
     def finalizar_sistema(self, janela):
         """Fecha a janela do sistema e mostra a janela principal"""
@@ -748,39 +918,117 @@ class SistemaRelatorios:
             self.menu_principal.focus_force()
     
     def carregar_clientes(self):
-        """Carrega a lista de clientes do arquivo de clientes"""
+        """Carrega a lista de clientes ativos do arquivo de clientes"""
         try:
-            # Importar openpyxl apenas quando necessário
+            # Importar bibliotecas necessárias
+            import pandas as pd
             from openpyxl import load_workbook
             
-            # Caminho para o arquivo de clientes (ajuste conforme necessário)
+            # Caminho para o arquivo de clientes
             try:
                 from config.config import ARQUIVO_CLIENTES
+                logger.info(f"Carregando clientes de: {ARQUIVO_CLIENTES}")
             except ImportError:
                 # Caminho padrão se não conseguir importar das configurações
                 ARQUIVO_CLIENTES = "dados/clientes.xlsx"
+                logger.warning(f"Usando caminho padrão para clientes: {ARQUIVO_CLIENTES}")
             
             # Verificar se o arquivo existe
             if not os.path.exists(ARQUIVO_CLIENTES):
                 logger.warning(f"Arquivo de clientes não encontrado: {ARQUIVO_CLIENTES}")
                 return ['Todos os Clientes']
             
-            # Carregar workbook
-            workbook = load_workbook(ARQUIVO_CLIENTES)
-            sheet = workbook['Clientes']  # Assumindo que existe uma aba chamada 'Clientes'
-            
-            # Extrair nomes dos clientes (pulando o cabeçalho)
-            clientes = ['Todos os Clientes']
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Nome do cliente está na primeira coluna
-                    clientes.append(row[0])
-            
-            workbook.close()
-            return clientes
-            
+            # Carregar o arquivo usando pandas
+            try:
+                # Ler o arquivo Excel
+                df = pd.read_excel(ARQUIVO_CLIENTES, sheet_name='Clientes')
+                
+                # Debug: mostrar as colunas disponíveis
+                logger.info(f"Colunas disponíveis: {df.columns.tolist()}")
+                
+                # Verificar se a coluna E existe (coluna 4 em índice baseado em 0)
+                # Ou verificar pelo nome da coluna se existir
+                if len(df.columns) >= 5:  # Verifica se tem pelo menos 5 colunas (A-E)
+                    # Filtrar clientes ativos (coluna E vazia)
+                    coluna_status = df.columns[4]  # Coluna E (índice 4)
+                    logger.info(f"Coluna de status: {coluna_status}")
+                    
+                    # Considera como vazio: None, NaN, '', etc.
+                    df_ativos = df[df[coluna_status].isna() | (df[coluna_status] == '')]
+                    
+                    # Verificar se a primeira coluna contém os nomes dos clientes
+                    coluna_nome = df.columns[0]  # Coluna A
+                    logger.info(f"Coluna de nome: {coluna_nome}")
+                    
+                    # Extrair nomes dos clientes ativos (assumindo que estão na primeira coluna)
+                    clientes_ativos = df_ativos[coluna_nome].dropna().tolist()
+                    
+                    logger.info(f"Total de clientes ativos encontrados: {len(clientes_ativos)}")
+                    
+                    # Ordenar alfabeticamente
+                    clientes_ativos.sort()
+                    
+                    # Adicionar "Todos os Clientes" no início
+                    clientes = ['Todos os Clientes'] + clientes_ativos
+                    
+                    return clientes
+                else:
+                    logger.warning("Arquivo não tem colunas suficientes (precisa de pelo menos 5 colunas - A até E)")
+                    return ['Todos os Clientes']
+                
+            except Exception as e:
+                logger.error(f"Erro ao ler arquivo Excel com pandas: {str(e)}")
+                # Tentar com openpyxl como fallback
+                try:
+                    workbook = load_workbook(ARQUIVO_CLIENTES)
+                    sheet = workbook['Clientes']
+                    
+                    clientes = ['Todos os Clientes']
+                    for row in sheet.iter_rows(min_row=2, values_only=True):
+                        # Verifica se a coluna E (índice 4) está vazia
+                        if row[0] and (len(row) < 5 or not row[4]):
+                            clientes.append(row[0])
+                    
+                    workbook.close()
+                    clientes.sort()  # Ordenar alfabeticamente (mantendo "Todos os Clientes" primeiro)
+                    return clientes
+                    
+                except Exception as inner_e:
+                    logger.error(f"Erro ao ler arquivo Excel com openpyxl: {str(inner_e)}")
+                    return ['Todos os Clientes']
+                
         except Exception as e:
             logger.error(f"Erro ao carregar clientes: {str(e)}", exc_info=True)
             return ['Todos os Clientes']
+
+    # Também vamos adicionar um método para atualizar o combobox quando necessário
+    def atualizar_lista_clientes(self):
+        """Atualiza a lista de clientes na combobox"""
+        try:
+            clientes = self.carregar_clientes()
+            
+            # Atualizar todos os comboboxes que mostram clientes
+            if hasattr(self, 'cliente_combobox') and self.cliente_combobox is not None:
+                self.cliente_combobox['values'] = clientes
+                self.cliente_combobox.current(0)  # Selecionar "Todos os Clientes"
+            
+            if hasattr(self, 'cliente_contratos') and self.cliente_contratos is not None:
+                self.cliente_contratos['values'] = clientes
+                self.cliente_contratos.current(0)
+                
+            logger.info(f"Lista de clientes atualizada com {len(clientes)} clientes")
+            
+        except Exception as e:
+            logger.error(f"Erro ao atualizar lista de clientes: {str(e)}")
+
+    # E adicionar um botão para recarregar a lista de clientes (opcional)
+    def adicionar_botao_atualizar_clientes(self, parent_frame):
+        """Adiciona botão para atualizar a lista de clientes"""
+        ttk.Button(
+            parent_frame,
+            text="Atualizar Lista de Clientes",
+            command=self.atualizar_lista_clientes
+        ).pack(side='right', padx=5, pady=5)
     
     def selecionar_cliente_nome(self, nome_cliente):
         """Método stub para selecionar cliente por nome"""
@@ -792,21 +1040,14 @@ class SistemaRelatorios:
     
     def run(self):
         """Inicia a execução do sistema"""
-        # Carregar lista de clientes
         try:
-            clientes = self.carregar_clientes()
+            # Pré-carregar lista de clientes
+            self.lista_clientes = self.carregar_clientes()
+            logger.info(f"Lista de clientes carregada com {len(self.lista_clientes)} itens")
             
-            # Verificar se os comboboxes foram criados
-            if hasattr(self, 'cliente_combobox') and self.cliente_combobox is not None:
-                self.cliente_combobox['values'] = clientes
-                self.cliente_combobox.current(0)
-                
-            if hasattr(self, 'cliente_contratos') and self.cliente_contratos is not None:
-                self.cliente_contratos['values'] = clientes
-                self.cliente_contratos.current(0)
-                
         except Exception as e:
             logger.error(f"Erro ao carregar lista de clientes: {str(e)}", exc_info=True)
+            self.lista_clientes = ['Todos os Clientes']
         
         # Configurar estilos
         style = ttk.Style()
