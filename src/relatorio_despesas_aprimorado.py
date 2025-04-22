@@ -629,8 +629,68 @@ class RelatorioHandler:
         }
         self.data_ref = None
 
-
-       
+    def gerar_relatorio_direto(self, arquivo_path, data_relatorio, incluir_futuros=True, output_callback=None):
+        """
+        Novo método para geração direta do relatório sem interface própria
+        
+        Args:
+            arquivo_path: Caminho do arquivo Excel
+            data_relatorio: Data do relatório (datetime)
+            incluir_futuros: Se deve incluir lançamentos futuros
+            output_callback: Função para retornar mensagens de status
+        """
+        try:
+            # Carregar e processar dados
+            df = self.carregar_dados_excel(arquivo_path)
+            df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.processar_dados(df, data_relatorio)
+            
+            # Processar lançamentos futuros
+            df_futuro = None
+            if incluir_futuros:
+                df_futuro = self.processar_lancamentos_futuros(df, data_relatorio)
+            
+            # Processar workbook
+            workbook = load_workbook(arquivo_path, data_only=True)
+            ws_resumo = workbook['RESUMO']
+            nome_cliente = ws_resumo['A3'].value
+            
+            # Obter número do relatório e valor acumulado
+            numero_relatorio = self.obter_numero_relatorio(ws_resumo, data_relatorio)
+            valor_acumulado = self.calcular_acumulado_dados(df, data_relatorio)
+            
+            dados_completos = {
+                'df_filtrado': df_filtrado,
+                'df_diaria': df_diaria,
+                'df_tp_desp_1': df_tp_desp_1,
+                'df_tp_desp_2': df_tp_desp_2,
+                'df_futuro': df_futuro,
+                'df_original': df,
+                'incluir_futuros': incluir_futuros,
+                'data_relatorio': data_relatorio,
+                'nome_cliente': nome_cliente,
+                'endereco_cliente': ws_resumo['A4'].value,
+                'numero_relatorio': numero_relatorio,
+                'acumulado': valor_acumulado
+            }
+            
+            # Gerar nome do arquivo
+            data_formatada = data_relatorio.strftime('%d-%m-%Y')
+            nome_arquivo = f"REL - {nome_cliente} - {data_formatada}.pdf"
+            caminho_output = os.path.join(os.path.dirname(arquivo_path), nome_arquivo)
+            
+            # Gerar o PDF
+            self.gerar_relatorio_pdf(dados_completos, caminho_output, arquivo_path)
+            
+            if output_callback:
+                output_callback(f"Relatório gerado com sucesso: {nome_arquivo}")
+            
+            return caminho_output
+            
+        except Exception as e:
+            erro_msg = f"Erro ao gerar relatório: {str(e)}"
+            if output_callback:
+                output_callback(erro_msg)
+            raise Exception(erro_msg)       
         
     def selecionar_arquivo(self):
         """Interface para seleção do arquivo Excel"""
@@ -760,97 +820,6 @@ class RelatorioHandler:
             logger.error(f"Erro ao calcular acumulado: {str(e)}", exc_info=True)
             return 0.0
 
-
-##  Esse método foi substituído por CALCULAR ACUMULADO DADOS EM 21/02/2025 ""
-    # def calcular_acumulado_dados(self, df, data_relatorio):
-    #     """
-    #     Calcula o valor acumulado somando todos os valores da aba 'Dados' 
-    #     com DATA_REL anterior à data do relatório.
-        
-    #     Parameters:
-    #     -----------
-    #     df : pandas.DataFrame
-    #         DataFrame com os dados da aba 'Dados'
-    #     data_relatorio : datetime
-    #         Data do relatório sendo gerado
-            
-    #     Returns:
-    #     --------
-    #     float
-    #         Valor acumulado total
-    #     """
-    #     try:
-    #         # Garantir que data_relatorio seja datetime
-    #         logger.info("Iniciando cálculo de valor acumulado")
-    #         data_rel = pd.to_datetime(data_relatorio)
-            
-    #         # Converter DATA_REL para datetime se necessário
-    #         df['DATA_REL'] = pd.to_datetime(df['DATA_REL'])
-                    
-    #         # Filtrar registros anteriores à data do relatório
-    #         df_anterior = df[df['DATA_REL'] < data_rel].copy()
-
-    #         logger.debug(f"Registros encontrados para cálculo: {len(df_anterior)}")
-            
-    #         # Converter VALOR para numérico de forma mais eficiente
-    #         df_anterior['VALOR'] = pd.to_numeric(
-    #             df_anterior['VALOR'].replace(r'[R$, ]', '', regex=True), 
-    #             errors='coerce'
-    #         ).fillna(0)
-            
-    #         # Calcular soma total
-    #         valor_acumulado = float(df_anterior['VALOR'].sum())
-    #         logger.info(f"Valor acumulado calculado: {valor_acumulado:,.2f}")
-    #         return valor_acumulado
-            
-    #     except Exception as e:
-    #         logger.error(f"Erro ao calcular acumulado: {str(e)}", exc_info=True)
-    #         return 0.0
-
-
-##  Esse método foi substituído por CALCULAR ACUMULADO DADOS EM 11/02/2025 ""
-
-##    def obter_acumulado(self, ws_resumo, data_relatorio):
-##        
-##        Obtém o valor da coluna ACUMULADO do relatório anterior
-##        
-##        print("\n=== INÍCIO OBTER ACUMULADO ===")
-##        
-##        try:
-##            # Processar data_relatorio
-##            data_ref = pd.to_datetime(data_relatorio).date()
-##            print(f"Data de referência processada: {data_ref}")
-##            
-##            # Encontrar a linha do relatório atual
-##            linha_atual = None
-##            for row in range(9, ws_resumo.max_row + 1):
-##                data_cell = ws_resumo.cell(row=row, column=1).value
-##                if isinstance(data_cell, datetime):
-##                    if data_cell.date() == data_ref:
-##                        linha_atual = row
-##                        break
-##            
-##            if linha_atual and linha_atual > 9:
-##                # Pegar valor da coluna L (ACUMULADO) da linha anterior
-##                valor_anterior = ws_resumo.cell(row=linha_atual-1, column=12).value
-##                
-##                # Converter para float se necessário
-##                if isinstance(valor_anterior, str):
-##                    valor_anterior = float(valor_anterior.replace('.', '').replace(',', '.'))
-##                
-##                print(f"Encontrado relatório anterior, acumulado: {valor_anterior}")
-##                return float(valor_anterior or 0)
-##                
-##            print("Nenhum relatório anterior encontrado")
-##            return 0.0
-##            
-##        except Exception as e:
-##            print(f"Erro ao obter acumulado: {str(e)}")
-##            return 0.0
-##        finally:
-##            print("=== FIM OBTER ACUMULADO ===\n")
- 
-    
     def carregar_dados_excel(self, arquivo_excel):
         try:
             df = pd.read_excel(arquivo_excel, sheet_name='Dados')
@@ -870,16 +839,13 @@ class RelatorioHandler:
                 lambda row: f"{row['REFERÊNCIA']} (NF: {row['NF'].strip()})", 
                 axis=1
             )
-            
-            
+             
             return df
             
         except Exception as e:
             raise Exception(f"Erro ao carregar arquivo Excel: {str(e)}")
         
-
-        
-            
+          
     def processar_dados(self, df, data_relatorio):
         """Processa os dados conforme os critérios especificados"""
         # Converter data para datetime usando formato explícito
@@ -1156,7 +1122,13 @@ class RelatorioHandler:
             colunas_ordem = ['NOME', 'SALÁRIO', 'DIAS', 
                             'TRANSPORTE', 'CAFÉ', 'TOTAL', 'DADOS BANCÁRIOS']
                 
-            return df_result.reindex(columns=colunas_ordem)
+            # Reordenar colunas
+            df_result = df_result.reindex(columns=colunas_ordem)
+            
+            # ADICIONAR ESTA LINHA:
+            df_result = df_result.sort_values('TOTAL', ascending=False)
+                
+            return df_result
                 
         except Exception as e:
             print(f"Erro ao consolidar despesas: {str(e)}")
@@ -1208,7 +1180,13 @@ class RelatorioHandler:
             colunas_ordem = ['NOME', '13º SALÁRIO', 'FÉRIAS', 
                             'RESCISÃO', 'TOTAL', 'DADOS BANCÁRIOS']
                 
-            return df_result1.reindex(columns=colunas_ordem)
+            # Reordenar colunas
+            df_result1 = df_result1.reindex(columns=colunas_ordem)
+            
+            # ADICIONAR ESTA LINHA:
+            df_result1 = df_result1.sort_values('TOTAL', ascending=False)
+                
+            return df_result1
                 
         except Exception as e:
             print(f"Erro ao consolidar despesas: {str(e)}")
@@ -1443,21 +1421,16 @@ class RelatorioHandler:
             )
 
             try:
-##                print(f"Antes de verificar logo - self.logo_path: {self.logo_path}")
-##                print(f"Caminho da logo existe? {os.path.exists(self.logo_path)}")
-                
+              
                 if self.logo_path and os.path.exists(self.logo_path):
-##                    print("Tentando criar Image")
                     logo = Image(self.logo_path, width=200, height=100)
-##                    print("Image criada com sucesso")
-                    
+               
                     info_empresa = [
                         Paragraph("Rua Zodiaco, 87 Sala 07 – Santa Lúcia - Belo Horizonte - MG", style_cabecalho),
                         Paragraph("(31) 3654-6616 / (31) 99974-1241 / (31) 98711-1139", style_cabecalho),
                         Paragraph("rvr.engenharia@gmail.com", style_cabecalho)
                     ]
-                    
-##                    print("Criando tabela do cabeçalho")
+
                     cabecalho_table = Table(
                         [[logo, info_empresa]], 
                         colWidths=[80, 650],
@@ -1471,14 +1444,11 @@ class RelatorioHandler:
                         ('RIGHTPADDING', (1, 0), (1, 0), 0),
                     ]))
                     
-##                    print("Adicionando tabela aos elementos")
                     elementos.append(cabecalho_table)
-##                    print("Tabela adicionada com sucesso")
                     
             except Exception as e:
                 print(f"Erro ao processar logo: {str(e)}")
-
-                
+    
         except Exception as e:
             print(f"Aviso: Não foi possível adicionar a logo ao cabeçalho: {e}")
             # Continua sem a logo, apenas com as informações
@@ -1596,340 +1566,6 @@ class RelatorioHandler:
                 elementos.append(Spacer(1, 16))
         logger.info("Detalhes adicionados com sucesso")
 
-
-    # def carregar_taxas_administracao(self, arquivo_excel):
-    #     """
-    #     Carrega e processa os dados de taxas de administração da aba Contratos_ADM,
-    #     considerando a estrutura específica da planilha:
-    #     - Linha 1: Títulos dos blocos
-    #     - Linha 2: Subtítulos
-    #     - Linha 3: Dados do contrato
-    #     - Linha 4: Dados dos administradores
-    #     - Linha 5: Início dos dados das parcelas
-    #     """
-    #     logger.info(f"Iniciando carregamento de taxas de administração: {arquivo_excel}")
-
-    #     try:
-    #         workbook = load_workbook(arquivo_excel, data_only=True)
-    #         if 'Contratos_ADM' not in workbook.sheetnames:
-    #             logger.warning("Aba 'Contratos_ADM' não encontrada no arquivo")
-    #             return pd.DataFrame()
-
-    #         ws_contratos = workbook['Contratos_ADM']
-    #         logger.debug(f"Total de linhas na planilha: {ws_contratos.max_row}")
-            
-    #         # Colunas para dados das parcelas com mapeamento correto
-    #         colunas_parcelas = {
-    #             'Y': 'referencia',      # Número do contrato
-    #             'Z': 'numero_parcela',  # Número da parcela
-    #             'AA': 'cpf_cnpj',       # CNPJ/CPF do Administrador
-    #             'AB': 'administrador',   # Nome do Administrador
-    #             'AC': 'data_vencimento', # Data Vencimento
-    #             'AD': 'valor_parcela',   # Valor da parcela
-    #             'AE': 'status',         # Status (PENDENTE/PAGO)
-    #             'AF': 'data_pagamento'  # Data Pagamento
-    #         }
-            
-    #         dados = []
-    #         linha_atual = 5  # Começar da linha 5
-            
-    #         while linha_atual <= ws_contratos.max_row:
-    #             valor_coluna_y = ws_contratos[f'Y{linha_atual}'].value
-    #             logger.debug(f"Processando linha {linha_atual} - Valor Y: {valor_coluna_y}")
-                
-    #             if valor_coluna_y:
-    #                 try:
-    #                     linha = {}
-                        
-    #                     # Processar cada coluna
-    #                     for col, nome in colunas_parcelas.items():
-    #                         valor = ws_contratos[f'{col}{linha_atual}'].value
-    #                         print(f"Coluna {col} ({nome}): {valor}")
-                            
-    #                         # Tratamento específico para cada tipo de campo
-    #                         if nome == 'valor_parcela':
-    #                             try:
-    #                                 if isinstance(valor, str):
-    #                                     valor = float(valor.replace('R$', '').replace('.', '').replace(',', '.').strip())
-    #                                 elif isinstance(valor, (int, float)):
-    #                                     valor = float(valor)
-    #                                 else:
-    #                                     valor = 0.0
-    #                                 print(f"Valor parcela convertido: {valor}")
-    #                             except (ValueError, TypeError) as e:
-    #                                 print(f"Erro ao converter valor_parcela: {e}")
-    #                                 valor = 0.0
-                                    
-    #                         elif nome == 'data_vencimento' or nome == 'data_pagamento':
-    #                             if isinstance(valor, datetime):
-    #                                 valor = valor.date()
-    #                             elif valor:
-    #                                 try:
-    #                                     valor = pd.to_datetime(valor).date()
-    #                                 except:
-    #                                     valor = None
-    #                             print(f"Data convertida: {valor}")
-                                        
-    #                         elif nome == 'status':
-    #                             valor = str(valor).upper() if valor else ''
-    #                             print(f"Status convertido: {valor}")
-                                
-    #                         else:
-    #                             # Outros campos mantêm o valor original
-    #                             valor = str(valor) if valor is not None else ''
-                                
-    #                         linha[nome] = valor
-                        
-    #                     # Verificar apenas as validações necessárias
-    #                     print("\nValidando dados:")
-    #                     print(f"Tem referência: {bool(linha['referencia'])}")
-    #                     print(f"Tem número da parcela: {bool(linha['numero_parcela'])}")
-    #                     print(f"Valor parcela > 0: {linha['valor_parcela'] > 0}")
-    #                     print(f"Data vencimento existe: {linha['data_vencimento'] is not None}")
-    #                     print(f"Status é PENDENTE: {linha['status'] == 'PENDENTE'}")
-                        
-    #                     # Verificações simplificadas
-    #                     if (linha['referencia'] and 
-    #                         linha['numero_parcela'] and 
-    #                         linha['valor_parcela'] > 0 and 
-    #                         linha['data_vencimento'] is not None and
-    #                         linha['status'] == 'PENDENTE'):
-    #                         dados.append(linha)
-    #                         print("Linha adicionada aos dados!")
-    #                     else:
-    #                         print("Linha não atendeu aos critérios de validação")
-                            
-    #                     linha_atual += 1
-                            
-    #                 except Exception as e:
-    #                     print(f"Erro ao processar linha {linha_atual}: {str(e)}")
-    #                     linha_atual += 1
-                        
-    #             else:
-    #                 linha_atual += 1
-            
-    #         # Criar DataFrame apenas com dados válidos
-    #         df = pd.DataFrame(dados) if dados else pd.DataFrame()
-            
-    #         logger.info(f"Total de parcelas encontradas: {len(dados)}")
-
-    #         if dados:
-    #             print("\nPrimeira parcela:")
-    #             for k, v in dados[0].items():
-    #                 print(f"{k}: {v}")
-            
-    #         return df
-            
-    #     except Exception as e:
-    #         logger.error(f"Erro ao carregar taxas de administração: {str(e)}", exc_info=True)
-    #         return pd.DataFrame()
-
-    # def processar_taxas_pendentes(self, df_contratos, data_relatorio):
-    #     """
-    #     Processa as taxas pendentes, agrupando por administrador e selecionando as próximas parcelas
-    #     """
-    #     if df_contratos.empty:
-    #         return pd.DataFrame()
-            
-    #     try:
-    #         # Converter data_relatorio para datetime
-    #         data_ref = pd.to_datetime(data_relatorio).date()
-            
-    #         # Filtrar apenas parcelas futuras em relação à data do relatório
-    #         df_futuro = df_contratos[
-    #             pd.to_datetime(df_contratos['data_vencimento']).dt.date > data_ref
-    #         ].copy()
-            
-    #         # Ordenar por data de vencimento e limitar a 3 parcelas por contrato/administrador
-    #         df_futuro = df_futuro.sort_values(['referencia', 'administrador', 'data_vencimento'])
-            
-    #         # Agrupar por contrato e administrador e pegar as 3 primeiras parcelas de cada grupo
-    #         df_final = df_futuro.groupby(['referencia', 'administrador']).head(3)
-            
-    #         # Ordenar resultado final
-    #         df_final = df_final.sort_values(['administrador', 'data_vencimento'])
-            
-    #         print("\nParcelas processadas:")
-    #         for _, row in df_final.iterrows():
-    #             print(f"Administrador: {row['administrador']}")
-    #             print(f"Contrato: {row['referencia']}")
-    #             print(f"Parcela: {row['numero_parcela']}")
-    #             print(f"Vencimento: {row['data_vencimento']}")
-    #             print(f"Valor: {row['valor_parcela']}\n")
-            
-    #         return df_final
-            
-    #     except Exception as e:
-    #         print(f"Erro ao processar taxas pendentes: {str(e)}")
-    #         return pd.DataFrame()
-
-        
-
-    # def adicionar_taxas_administracao(self, elementos, dados_taxas, config):
-    #     """
-    #     Adiciona a seção de taxas de administração pendentes ao relatório
-    #     """
-    #     if dados_taxas.empty:
-    #         return
-            
-    #     try:
-    #         # Adicionar quebra de página antes da seção de taxas
-    #         elementos.append(PageBreak())
-            
-    #         # Adicionar título e descrição
-    #         elementos.append(Paragraph(
-    #             "TAXAS DE ADMINISTRAÇÃO VINCENDAS",
-    #             config.style_heading
-    #         ))
-    #         elementos.append(Paragraph(
-    #             "(Próximas 3 parcelas a vencer por contrato)",
-    #             ParagraphStyle(
-    #                 'SubtitleStyle',
-    #                 parent=config.style_normal,
-    #                 fontSize=9,
-    #                 leading=12,
-    #                 textColor=colors.HexColor('#4A4A4A'),
-    #                 spaceBefore=2,
-    #                 spaceAfter=12
-    #             )
-    #         ))
-            
-    #         total_geral = 0.0
-            
-    #         # Agrupar por administrador
-    #         for administrador, grupo in dados_taxas.groupby('administrador'):
-    #             # Adicionar nome do administrador e CNPJ/CPF com estilo melhorado
-    #             cpf_cnpj = grupo['cpf_cnpj'].iloc[0]
-    #             elementos.append(Paragraph(
-    #                 f"{administrador}",
-    #                 ParagraphStyle(
-    #                     'AdminStyle',
-    #                     parent=config.style_despesa,
-    #                     fontSize=11,
-    #                     leading=13,
-    #                     textColor=colors.HexColor('#2F4F4F'),
-    #                     spaceBefore=12,
-    #                     spaceAfter=2
-    #                 )
-    #             ))
-    #             elementos.append(Paragraph(
-    #                 f"CNPJ/CPF: {cpf_cnpj}",
-    #                 ParagraphStyle(
-    #                     'CpfCnpjStyle',
-    #                     parent=config.style_normal,
-    #                     fontSize=8,
-    #                     leading=10,
-    #                     leftIndent=10,
-    #                     textColor=colors.HexColor('#666666'),
-    #                     spaceBefore=0,
-    #                     spaceAfter=6
-    #                 )
-    #             ))
-                
-    #             subtotal_admin = 0.0
-                
-    #             # Criar lista de parcelas por contrato para este administrador
-    #             for contrato, parcelas in grupo.groupby('referencia'):
-    #                 # Cabeçalho da tabela
-    #                 cabecalhos = ['Nº Parcela', 'Data Vencimento', 'Valor']
-    #                 dados_tabela = [cabecalhos]
-                    
-    #                 # Adicionar linhas de dados
-    #                 for _, parcela in parcelas.iterrows():
-    #                     data = pd.to_datetime(parcela['data_vencimento']).strftime('%d/%m/%Y')
-    #                     valor = self.formatar_numero(parcela['valor_parcela'])
-    #                     dados_tabela.append([
-    #                         f"Parcela {parcela['numero_parcela']}",
-    #                         data,
-    #                         f"R$ {valor}"
-    #                     ])
-    #                     subtotal_admin += float(parcela['valor_parcela'])
-    #                     total_geral += float(parcela['valor_parcela'])
-                    
-    #                 # Criar e adicionar título do contrato
-    #                 elementos.append(Paragraph(
-    #                     f"Contrato {contrato}:",
-    #                     ParagraphStyle(
-    #                         'ContratoStyle',
-    #                         parent=config.style_normal,
-    #                         fontSize=9,
-    #                         leading=11,
-    #                         leftIndent=20,
-    #                         textColor=colors.HexColor('#2F4F4F'),
-    #                         spaceBefore=6,
-    #                         spaceAfter=3
-    #                     )
-    #                 ))
-                    
-    #                 # Criar tabela com estilo melhorado
-    #                 tabela = Table(
-    #                     dados_tabela,
-    #                     colWidths=[100, 100, 100],
-    #                     style=TableStyle([
-    #                         # Estilo do cabeçalho
-    #                         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#E6E6E6')),
-    #                         ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#2F4F4F')),
-    #                         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-    #                         ('FONTSIZE', (0, 0), (-1, 0), 8),
-    #                         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
-    #                         ('BOTTOMPADDING', (0, 0), (-1, 0), 6),
-    #                         ('TOPPADDING', (0, 0), (-1, 0), 6),
-                            
-    #                         # Estilo das células de dados
-    #                         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-    #                         ('FONTSIZE', (0, 1), (-1, -1), 8),
-    #                         ('ALIGN', (0, 1), (1, -1), 'LEFT'),
-    #                         ('ALIGN', (-1, 1), (-1, -1), 'RIGHT'),
-    #                         ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
-    #                         ('TOPPADDING', (0, 1), (-1, -1), 4),
-    #                         ('LEFTPADDING', (0, 0), (-1, -1), 10),
-    #                         ('RIGHTPADDING', (0, 0), (-1, -1), 10),
-                            
-    #                         # Grades e bordas
-    #                         ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#CCCCCC')),
-    #                         ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#999999')),
-    #                     ])
-    #                 )
-                    
-    #                 # Adicionar indentação na tabela
-    #                 elementos.append(IndentedFlowable(tabela, leftIndent=30))
-    #                 elementos.append(Spacer(1, 6))
-                
-    #             # Adicionar subtotal do administrador
-    #             elementos.append(Paragraph(
-    #                 f"Subtotal {administrador}: R$ {self.formatar_numero(subtotal_admin)}",
-    #                 ParagraphStyle(
-    #                     'SubtotalStyle',
-    #                     parent=config.style_normal,
-    #                     fontSize=9,
-    #                     leading=11,
-    #                     leftIndent=30,
-    #                     textColor=colors.HexColor('#2F4F4F'),
-    #                     spaceBefore=3,
-    #                     spaceAfter=12,
-    #                     alignment=TA_CENTER  # Centraliza o texto
-    #                 )
-    #             ))
-            
-    #         # Adicionar total geral
-    #         elementos.append(Paragraph(
-    #             f"Total de Taxas Vincendas: R$ {self.formatar_numero(total_geral)}",
-    #             ParagraphStyle(
-    #                 'TotalStyle',
-    #                 parent=config.style_heading,
-    #                 fontSize=10,
-    #                 leading=12,
-    #                 textColor=colors.HexColor('#2F4F4F'),
-    #                 spaceBefore=12,
-    #                 spaceAfter=6
-    #             )
-    #         ))
-            
-    #     except Exception as e:
-    #         print(f"Erro ao adicionar taxas de administração: {str(e)}")
-    #         raise # Para ajudar no debug
-    
-
     def gerar_relatorio_pdf(self, dados, caminho_output, arquivo_excel):
         """Gera o relatório PDF final"""
         try:
@@ -2021,129 +1657,7 @@ class RelatorioHandler:
         except Exception as e:
             logger.error(f"Erro na geração do relatório: {str(e)}", exc_info=True)
             raise
-
-
-##  Esse método foi substituído porque a atualização dos dados que estava sobrescrevendo os valores calculados em 21/02/2025 ""            
-    # def gerar_relatorio_pdf(self, dados, caminho_output, arquivo_excel):
-    #     """Gera o relatório PDF final"""
-    #     try:
-    #         # Carregar workbook com data_only=True para pegar valores calculados
-    #         workbook = load_workbook(arquivo_excel, data_only=True)
-    #         ws_resumo = workbook['RESUMO']
-            
-    #         data_rel = pd.to_datetime(dados['data_relatorio'])
-            
-    #         # Obter número do relatório
-    #         relatorio_num = self.obter_numero_relatorio(ws_resumo, data_rel)
-            
-    #         # Calcular acumulado usando a nova função
-    #         df = dados.get('df_original')  # Pegamos o DataFrame original
-    #         if df is None:
-    #             df = self.carregar_dados_excel(arquivo_excel)
-    #         acumulado = self.calcular_acumulado_dados(df, data_rel)
-            
-    #         # Atualizar dados
-    #         dados.update({
-    #             'numero_relatorio': relatorio_num or 1,
-    #             'acumulado': acumulado
-    #         })
-            
-
-    #         # Get report number directly from worksheet
-    #         relatorio_num = None
-    #         acumulado = 0.0
-            
-    #         for row in range(9, 150):  # Scan reasonable range of rows
-    #             data_cell = ws_resumo.cell(row=row, column=1).value
-    #             if isinstance(data_cell, datetime):
-    #                 if data_cell.date() == data_rel.date():
-    #                     relatorio_num = ws_resumo.cell(row=row, column=2).value
-    #                     # Get previous report's accumulated value
-    #                     if row > 9:
-    #                         acumulado = ws_resumo.cell(row=row-1, column=12).value or 0.0
-    #                     break
-
-    #         # Update dados with correct values
-    #         dados.update({
-    #             'numero_relatorio': relatorio_num or 1,
-    #             'acumulado': float(acumulado)
-    #         })
-
-    #         # Continue with PDF generation
-    #         doc = SimpleDocTemplate(
-    #                 caminho_output, 
-    #                 pagesize=landscape(A4),
-    #                 rightMargin=30,
-    #                 leftMargin=30,
-    #                 topMargin=40,
-    #                 bottomMargin=30
-    #         )
-                
-    #         elementos = []
-            
-    #         # Adicionar cabeçalho
-    #         self.adicionar_cabecalho(elementos, dados)
-            
-    #         # Adicionar resumo
-    #         elementos.append(Paragraph("RESUMO DAS DESPESAS", self.config.style_heading))
-    #         tabela_subtotais, tabela_totais = self.criar_resumo_despesas(dados)
-            
-    #          # Criar tabelas com estilos específicos
-    #         estilo_subtotais = TableStyle([
-    #             ('ALIGN', (0, 0), (0, -1), 'LEFT'),    # Texto à esquerda
-    #             ('ALIGN', (1, 0), (1, -1), 'RIGHT'),   # Valores à direita
-    #             ('FONTSIZE', (0, 0), (-1, -1), 9),     # Tamanho da fonte
-    #         ])
-
-    #         estilo_totais = TableStyle([
-    #             ('ALIGN', (0, 0), (0, -1), 'LEFT'),    # Texto à esquerda
-    #             ('ALIGN', (1, 0), (1, -1), 'RIGHT'),   # Valores à direita
-    #             ('FONTSIZE', (0, 0), (-1, -1), 9),     # Tamanho da fonte
-    #             # Destacar "DESPESAS A PAGAR"
-    #             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Negrito
-    #             ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),  # Fundo cinza claro
-    #             ('BOX', (0, 0), (-1, 0), 1, colors.grey),  # Borda ao redor
-    #             # Negrito para "TOTAL DA OBRA" (última linha)
-    #             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-    #             ('TEXTCOLOR', (0, -1), (-1, -1), colors.black),
-    #         ])
-
-    #         tabela_esquerda = Table(tabela_subtotais, colWidths=[300, 70])
-    #         tabela_esquerda.setStyle(estilo_subtotais)
-
-    #         tabela_direita = Table(tabela_totais, colWidths=[180, 70])
-    #         tabela_direita.setStyle(estilo_totais)
-
-    #         # Criar tabela que combina as duas anteriores
-    #         tabela_resumo = Table(
-    #             [[tabela_esquerda, Spacer(1, 12), tabela_direita]],
-    #             colWidths=[400, 60, 280]
-    #         )
-        
-    #         elementos.append(tabela_resumo)
-            
-    #         # Adicionar quebra de página
-    #         elementos.append(PageBreak())
-            
-    #         # Adicionar detalhes
-    #         self.adicionar_detalhes(elementos, dados)
-
-    #         if dados.get('incluir_futuros', True) and dados.get('df_futuro') is not None:
-    #             self.adicionar_lancamentos_futuros(elementos, dados)
-
-    #         # Carregar e processar taxas de administração
-    #         df_taxas = self.carregar_taxas_administracao(arquivo_excel)
-    #         if not df_taxas.empty:
-    #             df_taxas_processadas = self.processar_taxas_pendentes(df_taxas, data_rel)
-    #             if not df_taxas_processadas.empty:
-    #                 self.adicionar_taxas_administracao(elementos, df_taxas_processadas, self.config)
-
-    #         # Gerar PDF
-    #         doc.build(elementos)
-
-    #     except Exception as e:
-    #         print(f"Erro na geração do relatório: {e}")
-    #         raise       
+ 
         
 class RelatorioLancamentosPendentes:
     def __init__(self):
@@ -2189,9 +1703,17 @@ class RelatorioLancamentosPendentes:
             print(f"Cliente: {nome_cliente}")
             
             # Converter DATA_REL para datetime
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'])
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], dayfirst=True)
             
-            # Filtrar lançamentos posteriores à data de referência
+            # Garantir que data_referencia seja datetime completo
+            if isinstance(data_referencia, date) and not isinstance(data_referencia, datetime):
+                # Se é apenas date, converter para datetime com hora zero
+                data_referencia = datetime.combine(data_referencia, datetime.min.time())
+            elif isinstance(data_referencia, str):
+                # Se é string, converter para datetime
+                data_referencia = pd.to_datetime(data_referencia)
+            
+            # Agora ambos são datetime, podemos comparar
             df_pendentes = df[df['DATA_REL'] > data_referencia].copy()
             
             # Remover duplicatas baseado em todas as colunas relevantes
@@ -2423,6 +1945,12 @@ class RelatorioLancamentosPendentes:
             print(f"Pasta de entrada: {pasta_entrada}")
             print(f"Arquivo de saída: {arquivo_saida}")
             print(f"Data de referência: {data_referencia}")
+
+            # Garantir que data_referencia é datetime
+            if isinstance(data_referencia, date) and not isinstance(data_referencia, datetime):
+                data_referencia = datetime.combine(data_referencia, datetime.min.time())
+            elif isinstance(data_referencia, str):
+                data_referencia = pd.to_datetime(data_referencia)
             
             # Processar todos os arquivos da pasta
             dados_clientes = self.processar_pasta(pasta_entrada, data_referencia)
@@ -2449,9 +1977,7 @@ class RelatorioLancamentosPendentes:
             import traceback
             traceback.print_exc()
             return False
-
-
-        
+   
 
 def main():
     try:
