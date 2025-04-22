@@ -155,7 +155,7 @@ class SistemaRelatorios:
                 "descricao": "Análise detalhada por tipo de despesa",
                 "modulo": "relatorio_tipo_despesa",
                 "classe": "RelatorioTipoDespesa",
-                "disponivel": False
+                "disponivel": True
             },
             {
                 "id": "fornecedores",
@@ -251,6 +251,8 @@ class SistemaRelatorios:
             self.setup_opcoes_despesas(opcoes_frame)
         elif relatorio["id"] == "contratos":
             self.setup_opcoes_contratos(opcoes_frame)
+        elif relatorio["id"] == "tipo_despesa":
+            self.setup_opcoes_tipo_despesa(opcoes_frame)
         elif relatorio["id"] == "fornecedores":
             self.setup_opcoes_fornecedores(opcoes_frame)  # Adicionar esta condição
         elif relatorio["id"] == "lancamentos_pendentes":  # ADICIONAR este elif
@@ -816,6 +818,8 @@ class SistemaRelatorios:
                 self.iniciar_relatorio_despesas(classe_relatorio)
             elif relatorio["id"] == "contratos":
                 self.iniciar_relatorio_contratos(classe_relatorio)
+            elif relatorio["id"] == "tipo_despesa":
+                self.iniciar_relatorio_tipo_despesa(classe_relatorio)
             else:
                 messagebox.showinfo(
                     "Em desenvolvimento",
