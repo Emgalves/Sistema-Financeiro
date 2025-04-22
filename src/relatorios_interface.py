@@ -103,6 +103,15 @@ class SistemaRelatorios:
             text="Voltar ao Menu Principal", 
             command=self.voltar_menu
         ).pack(side='right', padx=5)
+
+        # Carregar lista de clientes
+        self.atualizar_lista_clientes()
+        
+        # Configurar período inicial
+        # self.alterar_periodo()
+        
+        # Forçar atualização da interface para garantir que todos os widgets estejam prontos
+        self.root.update_idletasks()
     
     def setup_relatorios_list(self):
         """Configura a lista de relatórios disponíveis"""
@@ -652,36 +661,8 @@ class SistemaRelatorios:
                 )
                 return
             
-            # Primeiro, carregamos o módulo
-            modulo = self.carregar_modulo(relatorio["modulo"])
-            if not modulo:
-                return
-            
-            # Agora, obtemos a classe do relatório
-            try:
-                classe_relatorio = getattr(modulo, relatorio["classe"])
-                print(f"Classe carregada com sucesso: {classe_relatorio}")
-            except AttributeError as e:
-                messagebox.showerror(
-                    "Erro",
-                    f"Classe {relatorio['classe']} não encontrada no módulo {relatorio['modulo']}\nErro: {str(e)}"
-                )
-                return
-            except Exception as e:
-                messagebox.showerror(
-                    "Erro",
-                    f"Erro ao obter classe do relatório: {str(e)}"
-                )
-                return
-            
-            # Iniciar interface conforme o tipo de relatório
-            if relatorio["id"] == "despesas":
-                self.iniciar_relatorio_despesas(classe_relatorio)
-                
-            elif relatorio["id"] == "contratos":
-                self.iniciar_relatorio_contratos(classe_relatorio)
-                
-            elif relatorio["id"] == "fornecedores":
+            # Para o relatório de fornecedores, usar uma abordagem mais direta
+            if relatorio["id"] == "fornecedores":
                 print("Iniciando relatório de fornecedores")
                 self.root.withdraw()
                 
@@ -690,16 +671,50 @@ class SistemaRelatorios:
                     from relatorio_fornecedores import RelatorioFornecedores
                     app = RelatorioFornecedores(parent=self.root)
                     app.menu_principal = self.root
+                    
+                    # IMPORTANTE: Configurar o cliente selecionado ANTES de iniciar o mainloop
+                    if hasattr(self, 'cliente_contratos') and self.cliente_contratos:
+                        cliente_selecionado = self.cliente_contratos.get()
+                        print(f"Cliente selecionado na interface: {cliente_selecionado}")
+                        
+                        if cliente_selecionado and cliente_selecionado != 'Todos os Clientes':
+                            # Atualizar a lista de clientes primeiro
+                            app.atualizar_lista_clientes()
+                            
+                            # Aguardar um momento para garantir que a lista foi carregada
+                            app.root.update()
+                            
+                            # Configurar o cliente no relatório de fornecedores
+                            if cliente_selecionado in app.cliente_combobox['values']:
+                                app.cliente_combobox.set(cliente_selecionado)
+                                app.selecionar_cliente()
+                                print(f"Cliente configurado: {cliente_selecionado}")
+                            else:
+                                print(f"Cliente {cliente_selecionado} não encontrado na lista")
+                                
                     app.root.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(app.root))
                     app.root.lift()
                     app.root.focus_force()
                     app.root.mainloop()
                     return
-                except ImportError:
+                except ImportError as e:
                     try:
                         from src.relatorio_fornecedores import RelatorioFornecedores
                         app = RelatorioFornecedores(parent=self.root)
                         app.menu_principal = self.root
+                        
+                        # Repetir a configuração do cliente para o segundo caso de import
+                        if hasattr(self, 'cliente_contratos') and self.cliente_contratos:
+                            cliente_selecionado = self.cliente_contratos.get()
+                            
+                            if cliente_selecionado and cliente_selecionado != 'Todos os Clientes':
+                                app.atualizar_lista_clientes()
+                                app.root.update()
+                                
+                                if cliente_selecionado in app.cliente_combobox['values']:
+                                    app.cliente_combobox.set(cliente_selecionado)
+                                    app.selecionar_cliente()
+                        
                         app.root.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(app.root))
                         app.root.lift()
                         app.root.focus_force()
@@ -712,11 +727,27 @@ class SistemaRelatorios:
                         )
                         self.root.deiconify()
                         return
-                        
-            elif relatorio["id"] == "lancamentos_pendentes":
-                print(f"Iniciando relatório de lançamentos pendentes com classe: {classe_relatorio}")
-                self.iniciar_relatorio_lancamentos_pendentes(classe_relatorio)
-                
+            
+            # Código existente para outros tipos de relatório
+            modulo = self.carregar_modulo(relatorio["modulo"])
+            if not modulo:
+                return
+            
+            # Obter a classe do relatório
+            try:
+                classe_relatorio = getattr(modulo, relatorio["classe"])
+            except AttributeError:
+                messagebox.showerror(
+                    "Erro",
+                    f"Classe {relatorio['classe']} não encontrada no módulo {relatorio['modulo']}"
+                )
+                return
+            
+            # Iniciar interface conforme o tipo de relatório
+            if relatorio["id"] == "despesas":
+                self.iniciar_relatorio_despesas(classe_relatorio)
+            elif relatorio["id"] == "contratos":
+                self.iniciar_relatorio_contratos(classe_relatorio)
             else:
                 messagebox.showinfo(
                     "Em desenvolvimento",
@@ -724,14 +755,11 @@ class SistemaRelatorios:
                 )
                 
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             messagebox.showerror(
                 "Erro", 
                 f"Ocorreu um erro ao gerar o relatório.\nErro: {str(e)}"
             )
-            if hasattr(self, 'root'):
-                self.root.deiconify()
+            self.root.deiconify()
     
     def iniciar_relatorio_despesas(self, classe_relatorio):
         """
@@ -831,6 +859,27 @@ class SistemaRelatorios:
             # Configurar menu principal para retornar
             app_relatorio.menu_principal = self.root
             
+            # IMPORTANTE: Verificar se há um cliente selecionado e configurá-lo
+            if hasattr(self, 'cliente_contratos') and self.cliente_contratos:
+                cliente_selecionado = self.cliente_contratos.get()
+                if cliente_selecionado and cliente_selecionado != 'Todos os Clientes':
+                    try:
+                        # Configurar o cliente no relatório de fornecedores
+                        print(f"Configurando cliente: {cliente_selecionado}")
+                        app_relatorio.cliente_combobox.set(cliente_selecionado)
+                        
+                        # Chamar o método selecionar_cliente diretamente
+                        app_relatorio.cliente_atual = cliente_selecionado
+                        app_relatorio.arquivo_cliente = PASTA_CLIENTES / f"{cliente_selecionado}.xlsx"
+                        app_relatorio.lbl_cliente_resumo.config(text=f"Cliente: {cliente_selecionado}")
+                        
+                        # Desmarcar checkbox de todos os clientes
+                        app_relatorio.var_todos_clientes.set(False)
+                        app_relatorio.todos_clientes = False
+                        
+                    except Exception as e:
+                        print(f"Erro ao configurar cliente: {str(e)}")
+            
             # Configurar comportamento ao fechar
             app_relatorio.root.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(app_relatorio.root))
             
@@ -847,7 +896,7 @@ class SistemaRelatorios:
                 "Erro", 
                 f"Ocorreu um erro ao iniciar o relatório de fornecedores.\nErro: {str(e)}"
             )
-            self.root.deiconify()  # Mostrar a janela principal novamente
+            self.root.deiconify()
 
     def iniciar_relatorio_lancamentos_pendentes(self, classe_relatorio):
         """
