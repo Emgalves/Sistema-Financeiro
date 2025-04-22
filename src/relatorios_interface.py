@@ -322,8 +322,36 @@ class SistemaRelatorios:
             variable=self.incluir_futuros
         ).pack(anchor='w', padx=15, pady=5)
         
+        # Frame para tipo de geração (individual ou lote)
+        frame_tipo = ttk.LabelFrame(parent_frame, text="Tipo de Geração")
+        frame_tipo.pack(fill='x', padx=10, pady=10)
+        
+        self.tipo_geracao = tk.StringVar(value="individual")
+        
+        # Radio button para relatório individual
+        ttk.Radiobutton(
+            frame_tipo,
+            text="Relatório Individual",
+            variable=self.tipo_geracao,
+            value="individual",
+            command=self.alternar_tipo_geracao
+        ).pack(anchor='w', padx=15, pady=5)
+        
+        # Radio button para relatório em lote
+        ttk.Radiobutton(
+            frame_tipo,
+            text="Relatório em Lote",
+            variable=self.tipo_geracao,
+            value="lote",
+            command=self.alternar_tipo_geracao
+        ).pack(anchor='w', padx=15, pady=5)
+        
+        # Frame para seleção individual
+        self.frame_individual = ttk.Frame(parent_frame)
+        self.frame_individual.pack(fill='x', padx=10, pady=10)
+        
         # Frame para seleção de cliente
-        frame_cliente = ttk.Frame(parent_frame)
+        frame_cliente = ttk.Frame(self.frame_individual)
         frame_cliente.pack(fill='x', padx=10, pady=10)
         
         ttk.Label(frame_cliente, text="Cliente:").pack(side='left', padx=5)
@@ -337,10 +365,27 @@ class SistemaRelatorios:
         
         # Botão para selecionar arquivo individual
         ttk.Button(
-            parent_frame,
+            self.frame_individual,
             text="Selecionar Arquivo de Cliente",
             command=self.selecionar_arquivo_cliente
         ).pack(anchor='w', padx=15, pady=10)
+        
+        # Frame para seleção em lote (inicialmente oculto)
+        self.frame_lote = ttk.Frame(parent_frame)
+        
+        # Botão para selecionar arquivos em lote
+        ttk.Button(
+            self.frame_lote,
+            text="Selecionar Arquivos para Lote",
+            command=self.selecionar_arquivos_lote
+        ).pack(anchor='w', padx=15, pady=10)
+        
+        # Label para mostrar quantidade de arquivos selecionados
+        self.lbl_arquivos_lote = ttk.Label(self.frame_lote, text="")
+        self.lbl_arquivos_lote.pack(anchor='w', padx=15, pady=5)
+        
+        # Inicializar lista de arquivos em lote
+        self.arquivos_lote = []
         
         # Frame para formato de saída
         frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
@@ -360,6 +405,29 @@ class SistemaRelatorios:
             variable=self.formato_saida,
             value="excel"
         ).pack(side='left', padx=20, pady=5)
+        
+        # Inicializar mostrando apenas a opção individual
+        self.frame_lote.pack_forget()
+
+    def alternar_tipo_geracao(self):
+        """Alterna entre opções de geração individual e em lote"""
+        if self.tipo_geracao.get() == "individual":
+            self.frame_lote.pack_forget()
+            self.frame_individual.pack(fill='x', padx=10, pady=10)
+        else:
+            self.frame_individual.pack_forget()
+            self.frame_lote.pack(fill='x', padx=10, pady=10)
+
+    def selecionar_arquivos_lote(self):
+        """Abre diálogo para selecionar múltiplos arquivos para geração em lote"""
+        arquivos = filedialog.askopenfilenames(
+            title="Selecione os arquivos Excel",
+            filetypes=[("Arquivos Excel", "*.xlsx *.xls")]
+        )
+        if arquivos:
+            self.arquivos_lote = arquivos
+            self.lbl_arquivos_lote.config(text=f"{len(arquivos)} arquivos selecionados")
+
     
     def setup_opcoes_contratos(self, parent_frame):
         """Configura as opções específicas para relatório de contratos e medições"""
@@ -762,43 +830,140 @@ class SistemaRelatorios:
             self.root.deiconify()
     
     def iniciar_relatorio_despesas(self, classe_relatorio):
-        """
-        Inicia a geração do relatório de despesas diretamente sem abrir nova janela
-        """
+        """Inicia a geração do relatório de despesas diretamente sem abrir nova janela"""
         try:
             # Coletar dados da interface
             data_selecionada = self.data_entry.get_date() if hasattr(self, 'data_entry') else datetime.now()
             incluir_futuros = self.incluir_futuros.get() if hasattr(self, 'incluir_futuros') else True
             
-            # Verificar se foi selecionado um arquivo
-            if hasattr(self, 'arquivo_cliente_selecionado'):
-                arquivo = self.arquivo_cliente_selecionado
-            else:
-                # Selecionar arquivo
-                arquivo = filedialog.askopenfilename(
-                    title="Selecione o arquivo Excel",
-                    filetypes=[("Arquivos Excel", "*.xlsx *.xls")]
+            # Verificar se é geração individual ou em lote
+            if self.tipo_geracao.get() == "individual":
+                # Processar relatório individual
+                if hasattr(self, 'arquivo_cliente_selecionado'):
+                    arquivo = self.arquivo_cliente_selecionado
+                else:
+                    # Selecionar arquivo
+                    arquivo = filedialog.askopenfilename(
+                        title="Selecione o arquivo Excel",
+                        filetypes=[("Arquivos Excel", "*.xlsx *.xls")]
+                    )
+                    if not arquivo:
+                        return
+                
+                # Instanciar o handler
+                handler = classe_relatorio()
+                
+                # Função de callback para exibir status
+                def status_callback(msg):
+                    messagebox.showinfo("Status", msg)
+                
+                # Gerar relatório
+                handler.gerar_relatorio_direto(
+                    arquivo_path=arquivo,
+                    data_relatorio=data_selecionada,
+                    incluir_futuros=incluir_futuros,
+                    output_callback=status_callback
                 )
-                if not arquivo:
+            else:
+                # Processar relatório em lote
+                if not self.arquivos_lote:
+                    messagebox.showwarning("Aviso", "Nenhum arquivo selecionado para processamento em lote.")
                     return
+                
+                self.processar_relatorios_lote(classe_relatorio, data_selecionada, incluir_futuros)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
+
+    def processar_relatorios_lote(self, classe_relatorio, data_selecionada, incluir_futuros):
+        """Processa geração de relatórios em lote com barra de progresso"""
+        try:
+            # Criar janela de progresso
+            progress_window = tk.Toplevel(self.root)
+            progress_window.title("Gerando Relatórios em Lote")
+            progress_window.geometry("700x550")
+            progress_window.transient(self.root)
+            
+            # Frame principal
+            main_frame = ttk.Frame(progress_window, padding=20)
+            main_frame.pack(fill='both', expand=True)
+            
+            # Label para mostrar progresso
+            progress_label = ttk.Label(main_frame, text="Iniciando processamento...", font=('Arial', 12))
+            progress_label.pack(pady=10)
+            
+            # Barra de progresso
+            progress_bar = ttk.Progressbar(main_frame, length=600, mode='determinate')
+            progress_bar.pack(pady=20)
+            
+            # Lista de resultados
+            result_frame = ttk.LabelFrame(main_frame, text="Relatórios Processados")
+            result_frame.pack(fill='both', expand=True, pady=10)
+            
+            result_list = tk.Listbox(result_frame, font=('Courier', 10), height=15)
+            scrollbar = ttk.Scrollbar(result_frame, orient='vertical', command=result_list.yview)
+            result_list.configure(yscrollcommand=scrollbar.set)
+            result_list.pack(side='left', fill='both', expand=True, padx=5, pady=5)
+            scrollbar.pack(side='right', fill='y')
+            
+            # Configurar barra de progresso
+            total_arquivos = len(self.arquivos_lote)
+            progress_bar['maximum'] = total_arquivos
             
             # Instanciar o handler
             handler = classe_relatorio()
             
-            # Função de callback para exibir status
-            def status_callback(msg):
-                messagebox.showinfo("Status", msg)
+            # Processar cada arquivo
+            for i, arquivo in enumerate(self.arquivos_lote, 1):
+                try:
+                    nome_arquivo = os.path.basename(arquivo)
+                    progress_label.config(text=f"Processando {i}/{total_arquivos}: {nome_arquivo}")
+                    progress_bar['value'] = i - 0.5
+                    progress_window.update()
+                    
+                    # Gerar relatório
+                    resultado = handler.gerar_relatorio_direto(
+                        arquivo_path=arquivo,
+                        data_relatorio=data_selecionada,
+                        incluir_futuros=incluir_futuros
+                    )
+                    
+                    # Atualizar lista de resultados
+                    status = "✓" if resultado else "✗"
+                    result_list.insert(tk.END, f"{status} {nome_arquivo}")
+                    result_list.itemconfig(tk.END, fg="green" if resultado else "red")
+                    result_list.see(tk.END)
+                    
+                    # Atualizar barra de progresso
+                    progress_bar['value'] = i
+                    progress_window.update()
+                    
+                except Exception as e:
+                    # Registrar erro na lista
+                    result_list.insert(tk.END, f"✗ {nome_arquivo} - Erro: {str(e)}")
+                    result_list.itemconfig(tk.END, fg="red")
+                    result_list.see(tk.END)
+                    continue
             
-            # Gerar relatório
-            handler.gerar_relatorio_direto(
-                arquivo_path=arquivo,
-                data_relatorio=data_selecionada,
-                incluir_futuros=incluir_futuros,
-                output_callback=status_callback
-            )
+            # Finalização
+            progress_label.config(text="Processamento concluído!")
+            
+            # Botão para fechar
+            ttk.Button(
+                main_frame,
+                text="Fechar",
+                command=progress_window.destroy
+            ).pack(pady=20)
+            
+            # Tornar a janela modal
+            progress_window.grab_set()
+            progress_window.focus_set()
+            progress_window.wait_window()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao processar relatórios em lote: {str(e)}")
+            if 'progress_window' in locals():
+                progress_window.destroy()
     
     def iniciar_relatorio_contratos(self, classe_relatorio):
         """Inicia a geração do relatório de contratos e medições"""
