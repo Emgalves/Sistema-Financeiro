@@ -1,3 +1,50 @@
+# Adicione no início do arquivo
+import sys
+import os
+import traceback
+
+# Configurar captura de erros
+log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "erro_inicializacao.log")
+
+def log_error(message):
+    with open(log_file, "a", encoding="utf-8") as f:
+        f.write(f"{message}\n")
+
+# Registrar informações de inicialização
+log_error(f"=== Iniciando aplicação em {__file__} ===")
+log_error(f"Diretório atual: {os.getcwd()}")
+log_error(f"sys.path: {sys.path}")
+
+# Manipulador de exceções não tratadas
+def exception_handler(exctype, value, tb):
+    error_msg = ''.join(traceback.format_exception(exctype, value, tb))
+    log_error(f"ERRO FATAL: {error_msg}")
+    # Ainda chama o manipulador original
+    sys.__excepthook__(exctype, value, tb)
+
+sys.excepthook = exception_handler
+
+# Redirecionar stdout e stderr para o arquivo de log
+class LogRedirector:
+    def __init__(self, log_file):
+        self.log_file = log_file
+        self.original_stdout = sys.stdout
+        self.original_stderr = sys.stderr
+        
+    def write(self, message):
+        with open(self.log_file, "a", encoding="utf-8") as f:
+            f.write(message)
+        self.original_stdout.write(message)
+        
+    def flush(self):
+        self.original_stdout.flush()
+
+sys.stdout = LogRedirector(log_file)
+sys.stderr = LogRedirector(log_file)
+
+# Agora prossiga com o código normal
+log_error("Configuração de log concluída, continuando a inicialização...")
+
 # Diagnóstico imediato - coloque no início de sistema_principal.py
 try:
     with open("diagnostico_sistema.log", "w") as log:
@@ -50,11 +97,52 @@ try:
 except ImportError:
     from config.window_config import configurar_janela
 
+# Onde você importa o logger
 try:
-    from config.logger_config import system_logger, log_action
-    print("Logger importado com sucesso")
+    # Tente todas as combinações possíveis
+    try:
+        from src.config.logger_config import system_logger, log_action
+        print("Logger importado de src.config com sucesso")
+    except ImportError:
+        try:
+            from config.logger_config import system_logger, log_action
+            print("Logger importado de config com sucesso")
+        except ImportError:
+            import os
+            # Caminho absoluto
+            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
+            print(f"Tentando adicionar caminho: {config_path}")
+            import sys
+            if config_path not in sys.path:
+                sys.path.append(config_path)
+            from logger_config import system_logger, log_action
+            print("Logger importado de caminho absoluto com sucesso")
 except ImportError as e:
     print(f"Erro ao importar logger: {str(e)}")
+    # Criar um logger substituto básico
+    import logging
+    class SimpleLogger:
+        def __init__(self):
+            self.logger = logging.getLogger("sistema")
+            self.logger.setLevel(logging.INFO)
+            handler = logging.StreamHandler()
+            self.logger.addHandler(handler)
+            self.log_format = "%(asctime)s - %(levelname)s - %(message)s"
+            
+        def get_logger(self):
+            return self.logger
+            
+        def set_user(self, username):
+            pass
+    
+    system_logger = SimpleLogger()
+    
+    def log_action(action_name):
+        def decorator(func):
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+            return wrapper
+        return decorator
 
 try:
     from src.config.config import (
