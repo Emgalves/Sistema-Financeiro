@@ -19,8 +19,8 @@ VERSION_INFO = {
         "Criação de uma interface com todos os relatórios",
         "Criação de relatório de Fornecedores",
         "Criação de relatório de Medições",
-        "Criação de relatório de Tipos de Despesas"
-        "Separação de relatório de Lançamentos Futuros"
+        "Criação de relatório de Tipos de Despesas",
+        "Separação de relatório de Lançamentos Futuros",
         "Inclusão das etapas de obra nos contratos de administração de obras"
     ]
 }
