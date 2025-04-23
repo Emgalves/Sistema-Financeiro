@@ -173,3 +173,15 @@ Obtendo número do relatório para data 2025-04-20
 2025-04-22 20:15:26,018 - sistema_relatorios - INFO - Coluna de nome: Nome
 2025-04-22 20:15:26,019 - sistema_relatorios - INFO - Total de clientes ativos encontrados: 13
 2025-04-22 20:15:26,020 - sistema_relatorios - INFO - Lista de clientes carregada com 14 itens
+2025-04-22 20:20:06,019 - sistema_relatorios - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-04-22 20:20:06,100 - sistema_relatorios - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-04-22 20:20:06,101 - sistema_relatorios - INFO - Coluna de status: Data Final
+2025-04-22 20:20:06,107 - sistema_relatorios - INFO - Coluna de nome: Nome
+2025-04-22 20:20:06,108 - sistema_relatorios - INFO - Total de clientes ativos encontrados: 13
+2025-04-22 20:20:06,109 - sistema_relatorios - INFO - Lista de clientes atualizada com 14 clientes
+2025-04-22 20:20:06,137 - sistema_relatorios - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-04-22 20:20:06,165 - sistema_relatorios - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-04-22 20:20:06,165 - sistema_relatorios - INFO - Coluna de status: Data Final
+2025-04-22 20:20:06,166 - sistema_relatorios - INFO - Coluna de nome: Nome
+2025-04-22 20:20:06,167 - sistema_relatorios - INFO - Total de clientes ativos encontrados: 13
+2025-04-22 20:20:06,167 - sistema_relatorios - INFO - Lista de clientes carregada com 14 itens
