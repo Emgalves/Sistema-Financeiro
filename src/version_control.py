@@ -13,6 +13,7 @@ VERSION_INFO = {
     "patch": 0,
     "release_date": "24/04/2025",
     "changes": [
+        "Incluído botão para importar dados da folha a partir de planilha",
         "Criação do módulo para rateio de despesas comuns a todos os clientes",
         "Criação do módulo de controle de medições de empreiteiros",
         "Ajuste na aba Clientes, permitindo a inclusão do témino da obra ou do contrato",
