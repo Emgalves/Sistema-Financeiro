@@ -34,29 +34,20 @@ def add_project_root():
 add_project_root()
 
 # Importar logger
-try:
-    from config.logger_config import system_logger, log_action
-    logger = system_logger.get_logger()
-    logger.info("Logger importado com sucesso")
-except Exception as e:
-    print(f"Erro ao importar logger: {str(e)}")
 
-try:
-    from config.config import (
+from src.config.logger_config import system_logger, log_action
+   
+
+from src.config.config import (
         ARQUIVO_CLIENTES,
         ARQUIVO_MODELO,
         PASTA_CLIENTES,
         BASE_PATH,
         ARQUIVO_FORNECEDORES
-    )
-    logger.info("Configurações do sistema importadas com sucesso")
-except Exception as e:
-    logger.error(f"Erro ao importar configurações do sistema: {str(e)}")
-    raise
+ )
 
-try:
-    # Primeira tentativa: importar como está no desenvolvimento
-    from config.utils import (
+
+from src.config.utils import (
         PASTA_CLIENTES,
         formatar_moeda,
         validar_data,
@@ -64,39 +55,9 @@ try:
         aplicar_formatacao_celula,
         buscar_dados_bancarios_fornecedor
     )
-except ImportError:
-    try:
-        # Segunda tentativa: importar do src
-        from src.config.utils import (
-            PASTA_CLIENTES,
-            formatar_moeda,
-            validar_data,
-            formatar_valor_excel,
-            aplicar_formatacao_celula,
-            buscar_dados_bancarios_fornecedor
-        )
-    except ImportError:
-        # Terceira tentativa: ajustar path e importar
-        current_dir = Path(__file__).resolve().parent
-        root_dir = current_dir.parent
-        sys.path.insert(0, str(root_dir))
-        from config.utils import (
-            PASTA_CLIENTES,
-            formatar_moeda,
-            validar_data,
-            formatar_valor_excel,
-            aplicar_formatacao_celula,
-            buscar_dados_bancarios_fornecedor
-        )
 
-try:
-    from config.window_config import configurar_janela
-    print("window_config importado com sucesso")
-except ImportError as e:
-    print(f"Erro ao importar window_config: {str(e)}")
-    from src.config.window_config import configurar_janela
-    print("window_config importado pelo caminho alternativo")
-
+from src.config.window_config import configurar_janela
+    
 # Para criação de planilhas
 from openpyxl import Workbook
 
@@ -441,7 +402,7 @@ class InterfaceDespesasRateadas:
                 self.tree_fornecedores.delete(item)
             
             # Carregar arquivo de fornecedores
-            from config.config import ARQUIVO_FORNECEDORES
+            from src.config.config import ARQUIVO_FORNECEDORES
             wb = load_workbook(ARQUIVO_FORNECEDORES)
             ws = wb['Fornecedores']
             

@@ -1,75 +1,89 @@
-# Adicione no início do arquivo
-import sys
+"""
+Script principal simplificado com foco em caminhos corretos para PyInstaller
+"""
 import os
-import traceback
+import sys
+import logging
+from pathlib import Path
 
-# Configurar captura de erros
-log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "erro_inicializacao.log")
+# Configurar logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler()]
+)
+logger = logging.getLogger("sistema")
 
-def log_error(message):
-    with open(log_file, "a", encoding="utf-8") as f:
-        f.write(f"{message}\n")
+# Ajustar caminhos baseado no modo de execução
+if getattr(sys, 'frozen', False):
+    # PyInstaller
+    base_dir = Path(sys._MEIPASS)
+    logger.info(f"Executando a partir do PyInstaller em: {base_dir}")
+    
+    # Verificar arquivos empacotados
+    logger.info("Arquivos no pacote:")
+    for root, dirs, files in os.walk(base_dir):
+        if 'src/config' in root or 'src\\config' in root:
+            for file in files:
+                logger.info(f"  - {os.path.join(root, file)}")
+else:
+    # Execução normal
+    base_dir = Path(__file__).resolve().parent
+    logger.info(f"Executando em modo normal a partir de: {base_dir}")
 
-# Registrar informações de inicialização
-log_error(f"=== Iniciando aplicação em {__file__} ===")
-log_error(f"Diretório atual: {os.getcwd()}")
-log_error(f"sys.path: {sys.path}")
+# Garantir que caminhos importantes estão no sys.path
+src_dir = base_dir / 'src'
+config_dir = src_dir / 'config'
 
-# Manipulador de exceções não tratadas
-def exception_handler(exctype, value, tb):
-    error_msg = ''.join(traceback.format_exception(exctype, value, tb))
-    log_error(f"ERRO FATAL: {error_msg}")
-    # Ainda chama o manipulador original
-    sys.__excepthook__(exctype, value, tb)
+for path in [str(base_dir), str(src_dir), str(config_dir)]:
+    if path not in sys.path:
+        sys.path.insert(0, path)
+        logger.info(f"Adicionado ao path: {path}")
 
-sys.excepthook = exception_handler
-
-# Redirecionar stdout e stderr para o arquivo de log
-class LogRedirector:
-    def __init__(self, log_file):
-        self.log_file = log_file
-        self.original_stdout = sys.stdout
-        self.original_stderr = sys.stderr
-        
-    def write(self, message):
-        with open(self.log_file, "a", encoding="utf-8") as f:
-            f.write(message)
-        self.original_stdout.write(message)
-        
-    def flush(self):
-        self.original_stdout.flush()
-
-sys.stdout = LogRedirector(log_file)
-sys.stderr = LogRedirector(log_file)
-
-# Agora prossiga com o código normal
-log_error("Configuração de log concluída, continuando a inicialização...")
-
-# Diagnóstico imediato - coloque no início de sistema_principal.py
+# Verificar módulos primeiro
 try:
-    with open("diagnostico_sistema.log", "w") as log:
-        import os, sys, platform
-        from pathlib import Path
+    logger.info("Verificando módulos de configuração...")
+    
+    # Tentativa 1: Importação absoluta com src
+    try:
+        import src.config
+        logger.info("Módulo src.config importado com sucesso")
         
-        log.write(f"=== Diagnóstico do Sistema ===\n")
-        log.write(f"Data/Hora: {__import__('datetime').datetime.now()}\n")
-        log.write(f"Sistema: {platform.system()} {platform.release()}\n")
-        log.write(f"Diretório atual: {os.getcwd()}\n")
-        log.write(f"SISTEMA_AMBIENTE: {os.getenv('SISTEMA_AMBIENTE', 'NÃO DEFINIDO')}\n")
+        # Tentar importar submódulos
+        import src.config.utils
+        import src.config.logger_config
+        import src.config.window_config
+        import src.config.config
+        logger.info("Todos os submódulos de src.config importados com sucesso")
+    except ImportError as e:
+        logger.error(f"Erro ao importar via src.config: {e}")
         
-        # Verificar caminho do Google Drive
-        drive_path = Path("H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios")
-        log.write(f"Caminho do Drive existe? {drive_path.exists()}\n")
-        
-        # Se existir, listar diretórios
-        if drive_path.exists():
-            log.write("Diretórios encontrados:\n")
-            for item in drive_path.iterdir():
-                if item.is_dir():
-                    log.write(f" - {item.name}\n")
+        # Tentativa 2: Importação direta
+        try:
+            import config
+            logger.info("Módulo config importado com sucesso")
+            
+            import config.utils
+            import config.logger_config
+            import config.window_config
+            import config.config
+            logger.info("Todos os submódulos de config importados com sucesso")
+        except ImportError as e:
+            logger.error(f"Erro ao importar via config direta: {e}")
+            
+            # Se chegou aqui, há um problema sério
+            logger.error("FALHA CRÍTICA: Não foi possível importar os módulos de configuração")
+            if getattr(sys, 'frozen', False):
+                # Mostrar mensagem e pausar no modo compilado
+                print("\nERRO CRÍTICO: Módulos de configuração não encontrados!")
+                print("Este problema geralmente ocorre quando o PyInstaller não empacota corretamente os arquivos.")
+                input("Pressione ENTER para sair...")
+                sys.exit(1)
 except Exception as e:
-    with open("erro_diagnostico.log", "w") as err_log:
-        err_log.write(f"Erro no diagnóstico: {str(e)}")
+    logger.error(f"Erro ao verificar módulos: {str(e)}")
+    if getattr(sys, 'frozen', False):
+        input("Erro crítico. Pressione ENTER para sair...")
+        sys.exit(1)
 
 import tkinter as tk
 from tkinter import ttk, PhotoImage, messagebox
@@ -92,67 +106,14 @@ def add_project_root():
 
 add_project_root()
 
-try:
-    from src.config.window_config import configurar_janela
-except ImportError:
-    from config.window_config import configurar_janela
+from src.config.window_config import configurar_janela
+from src.controle_pagamentos_taxas import ControlePagamentos as ControladorTaxas
 
 # Onde você importa o logger
-try:
-    # Tente todas as combinações possíveis
-    try:
-        from src.config.logger_config import system_logger, log_action
-        print("Logger importado de src.config com sucesso")
-    except ImportError:
-        try:
-            from config.logger_config import system_logger, log_action
-            print("Logger importado de config com sucesso")
-        except ImportError:
-            import os
-            # Caminho absoluto
-            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
-            print(f"Tentando adicionar caminho: {config_path}")
-            import sys
-            if config_path not in sys.path:
-                sys.path.append(config_path)
-            from logger_config import system_logger, log_action
-            print("Logger importado de caminho absoluto com sucesso")
-except ImportError as e:
-    print(f"Erro ao importar logger: {str(e)}")
-    # Criar um logger substituto básico
-    import logging
-    class SimpleLogger:
-        def __init__(self):
-            self.logger = logging.getLogger("sistema")
-            self.logger.setLevel(logging.INFO)
-            handler = logging.StreamHandler()
-            self.logger.addHandler(handler)
-            self.log_format = "%(asctime)s - %(levelname)s - %(message)s"
-            
-        def get_logger(self):
-            return self.logger
-            
-        def set_user(self, username):
-            pass
-    
-    system_logger = SimpleLogger()
-    
-    def log_action(action_name):
-        def decorator(func):
-            def wrapper(*args, **kwargs):
-                return func(*args, **kwargs)
-            return wrapper
-        return decorator
+from src.config.logger_config import system_logger, log_action
+print("Logger importado de src.config com sucesso")
 
-try:
-    from src.config.config import (
-        ARQUIVO_CLIENTES,
-        ARQUIVO_MODELO,
-        PASTA_CLIENTES,
-        BASE_PATH
-    )
-except ImportError:
-    from config.config import (
+from src.config.config import (
         ARQUIVO_CLIENTES,
         ARQUIVO_MODELO,
         PASTA_CLIENTES,
@@ -217,7 +178,6 @@ class SistemaPrincipal:
     def __init__(self):
         self.usuario_atual = None
         self.root = tk.Tk()
-
         
         # Configurar a janela principal
         titulo_com_versao = f"Sistema de Gestão Financeira v{version_control.get_version_string()}"
@@ -262,7 +222,7 @@ class SistemaPrincipal:
         main_frame.pack(expand=True, fill="both", padx=20, pady=20)
 
         # Logo
-        self.logo_path = resource_path("logo.png")
+        self.logo_path = resource_path(os.path.join("recursos", "imagens", "logo.png"))
         self.logo = PhotoImage(file=self.logo_path)
         logo_label = ttk.Label(main_frame, image=self.logo)
         logo_label.pack(pady=10)

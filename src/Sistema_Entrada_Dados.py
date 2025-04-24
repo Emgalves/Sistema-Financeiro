@@ -1,4 +1,3 @@
-# No início do arquivo Sistema_Entrada_Dados.py
 # Imports da biblioteca padrão Python
 import os
 import sys
@@ -7,7 +6,7 @@ import re
 from datetime import datetime
 from decimal import Decimal
 
-# Imports relacionados ao Tkinter
+# Imports relacionados ao Tkinter (MUITO IMPORTANTE - NÃO REMOVER)
 import tkinter as tk
 from tkinter import ttk, messagebox, StringVar
 from tkinter import *
@@ -22,42 +21,130 @@ import openpyxl
 import babel
 from dateutil.relativedelta import relativedelta
 
-# Imports para validação
-from validate_docbr import CPF, CNPJ
+# Detectar modo PyInstaller e ajustar paths
+if getattr(sys, 'frozen', False):
+    # Estamos em um executável criado pelo PyInstaller
+    base_dir = Path(sys._MEIPASS)
+    # Garantir que src e src/config estão no path
+    for subdir in ['src', os.path.join('src', 'config')]:
+        path = os.path.join(base_dir, subdir)
+        if path not in sys.path:
+            sys.path.insert(0, path)
+            print(f"PyInstaller: Adicionando {path} ao sys.path")
 
+# Configurar caminhos de importação
 def add_project_root():
     import sys
     from pathlib import Path
     current_dir = Path(__file__).resolve().parent
     project_root = current_dir.parent
-    if str(project_root) not in sys.path:
-        sys.path.append(str(project_root))
+    config_dir = current_dir / 'config'
+    
+    # Adicionar todos os caminhos necessários
+    for path in [str(current_dir), str(project_root), str(config_dir)]:
+        if path not in sys.path:
+            sys.path.insert(0, path)
+            print(f"Adicionado ao path: {path}")
 
 add_project_root()
 
-# Importar logger
-try:
-    from config.logger_config import system_logger, log_action
-    logger = system_logger.get_logger()
-    logger.info("Logger importado com sucesso")
-except Exception as e:
-    print(f"Erro ao importar logger: {str(e)}")
+# Configurar logging básico para diagnóstico
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler()]
+)
+logger = logging.getLogger("sistema")
 
+# Importações centralizadas com tratamento de erro
+try:
+    # Primeiro, tentar importação com 'src.config'
+    from src.config.utils import *
+    from src.config.logger_config import system_logger, log_action
+    from src.config.window_config import configurar_janela
+    from src.config.config import (
+        ARQUIVO_CLIENTES,
+        ARQUIVO_MODELO,
+        PASTA_CLIENTES,
+        BASE_PATH,
+        ARQUIVO_FORNECEDORES
+    )
+    logger.info("Configurações importadas com sucesso via src.config")
+except ImportError:
+    # Se falhar, tentar importação direta de 'config'
+    try:
+        from config.utils import *
+        from config.logger_config import system_logger, log_action
+        from config.window_config import configurar_janela
+        from config.config import (
+            ARQUIVO_CLIENTES,
+            ARQUIVO_MODELO,
+            PASTA_CLIENTES,
+            BASE_PATH,
+            ARQUIVO_FORNECEDORES
+        )
+        logger.info("Configurações importadas com sucesso via config")
+    except ImportError as e:
+        # Último recurso - importações relativas
+        try:
+            from src.config.utils import *
+            from src.config.logger_config import system_logger, log_action
+            from src.config.window_config import configurar_janela
+            from src.config.config import (
+                ARQUIVO_CLIENTES,
+                ARQUIVO_MODELO,
+                PASTA_CLIENTES,
+                BASE_PATH,
+                ARQUIVO_FORNECEDORES
+            )
+            logger.info("Configurações importadas com sucesso via .config")
+        except Exception as e:
+            logger.error(f"Erro ao importar configurações: {str(e)}")
+            # Não raise aqui para permitir definições alternativas
+
+# Definir funções de compatibilidade, caso a importação das configurações falhe
 def get_categorias_fornecedor():
     """Retorna a lista de categorias de fornecedor"""
-    return GerenciadorConfiguracoes.get_categorias_fornecedor()
+    try:
+        # Tentar importar do arquivo de configurações
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
+        return GerenciadorConfiguracoes.get_categorias_fornecedor()
+    except:
+        # Valores padrão como fallback
+        return ['MO', 'MAT', 'SERV', 'DIV', 'ADM', 'LOC', 'TP']
 
 def carregar_configuracoes():
     """Carrega as configurações do sistema"""
-    return GerenciadorConfiguracoes.carregar_configuracoes()
+    try:
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
+        return GerenciadorConfiguracoes.carregar_configuracoes()
+    except:
+        # Configurações padrão como fallback
+        return {
+            'cafe': {'valor_atual': 4.0}
+        }
 
 def get_bancos():
     """Retorna a lista de bancos"""
-    return GerenciadorConfiguracoes.get_bancos()
+    try:
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
+        return GerenciadorConfiguracoes.get_bancos()
+    except:
+        # Valores padrão como fallback
+        return [
+            '104 - CAIXA ECONÔMICA FEDERAL',
+            '001 - BANCO DO BRASIL',
+            '033 - BANCO SANTANDER',
+            '237 - BRADESCO',
+            '341 - ITAÚ',
+            '077 - BANCO INTER',
+            '260 - NUBANK'
+        ]
 
 # Importar configurações
 try:
-    from config.utils import *
+    from src.config.utils import *
     from src.configuracoes_sistema import GerenciadorConfiguracoes
     logger.info("Configurações importadas com sucesso")
 except Exception as e:
@@ -66,7 +153,7 @@ except Exception as e:
 
 # Importar configurações do sistema
 try:
-    from config.config import (
+    from src.config.config import (
         ARQUIVO_CLIENTES,
         ARQUIVO_MODELO,
         PASTA_CLIENTES,
@@ -77,15 +164,8 @@ except Exception as e:
     logger.error(f"Erro ao importar configurações do sistema: {str(e)}")
     raise
 
-try:
-    from config.window_config import configurar_janela
-    print("window_config importado com sucesso")
-except ImportError as e:
-    print(f"Erro ao importar window_config: {str(e)}")
-    from src.config.window_config import configurar_janela
-    print("window_config importado pelo caminho alternativo")
-except Exception as e:
-    print(f"Erro inesperado ao importar window_config: {str(e)}")
+from src.config.window_config import configurar_janela
+    
 
 # Modificação para usar o método de utils.py
 from src.config.utils import buscar_dados_bancarios_fornecedor
@@ -481,7 +561,7 @@ class EditorLancamento:
         
         try:
             # Usar a função centralizada em utils
-            from config.utils import buscar_dados_bancarios_fornecedor
+            from src.config.utils import buscar_dados_bancarios_fornecedor
             dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento)
         except ImportError:
             # Implementação alternativa se a função não estiver disponível
@@ -6520,8 +6600,7 @@ class ImportadorRH:
             print(f"Erro ao buscar dados bancários: {str(e)}")
             return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
                 
-# Aqui termina a última classe
-# Agora pode vir o if __name__ == "__main__"
+
 if __name__ == "__main__":
     print("Iniciando aplicação...")
     app = SistemaEntradaDados()

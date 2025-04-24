@@ -25,14 +25,14 @@ add_project_root()
 
 # Importar configurações e utilitários
 try:
-    from config.logger_config import system_logger, log_action
+    from src.config.logger_config import system_logger, log_action
     logger = system_logger.get_logger()
     logger.info("Logger importado com sucesso em gestao_medicoes.py")
 except Exception as e:
     print(f"Erro ao importar logger: {str(e)}")
     
 try:
-    from config.config import (
+    from src.config.config import (
         ARQUIVO_CLIENTES,
         ARQUIVO_FORNECEDORES,
         ARQUIVO_MODELO,
@@ -44,15 +44,12 @@ except ImportError as e:
     print(f"Erro ao importar configurações: {str(e)}")
     raise
 
-try:
-    from config.window_config import configurar_janela
-    print("window_config importado com sucesso")
-except ImportError as e:
-    from src.config.window_config import configurar_janela
-    print("window_config importado pelo caminho alternativo")
+
+from src.config.window_config import configurar_janela
+print("window_config importado pelo caminho alternativo")
     
 # Importar funções auxiliares
-from config.utils import (
+from src.config.utils import (
     formatar_cnpj_cpf,
     buscar_dados_bancarios_fornecedor,
     validar_cnpj_cpf,

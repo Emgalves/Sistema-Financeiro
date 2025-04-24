@@ -1,3 +1,54 @@
+# Adicionar este adaptador no início do arquivo configuracoes_sistema.py
+# import os
+# import sys
+# from pathlib import Path
+
+# # Detectar modo PyInstaller e ajustar paths
+# if getattr(sys, 'frozen', False):
+#     # Estamos em um executável criado pelo PyInstaller
+#     base_dir = Path(sys._MEIPASS)
+#     # Garantir que src e src/config estão no path
+#     for subdir in ['src', os.path.join('src', 'config')]:
+#         path = os.path.join(base_dir, subdir)
+#         if path not in sys.path:
+#             sys.path.insert(0, path)
+#             print(f"PyInstaller: Adicionando {path} ao sys.path")
+
+# # Importações com tratamento de erro
+# try:
+#     # Primeiro, tentar importação com 'src.config'
+#     from src.config.logger_config import system_logger, log_action
+#     print("Importado logger_config via src.config")
+# except ImportError:
+#     # Se falhar, tentar importação direta de 'config'
+#     try:
+#         from config.logger_config import system_logger, log_action
+#         print("Importado logger_config via config direta")
+#     except ImportError:
+#         # Último recurso - criar stubs de logger
+#         print("ATENÇÃO: Criando stubs de logger!")
+#         import logging
+        
+#         class SystemLoggerStub:
+#             def __init__(self):
+#                 self.logger = logging.getLogger("sistema_stub")
+            
+#             def get_logger(self):
+#                 return self.logger
+            
+#             def set_user(self, username):
+#                 print(f"[LOG] Usuário definido: {username}")
+        
+#         system_logger = SystemLoggerStub()
+        
+#         def log_action(action_name):
+#             def decorator(func):
+#                 def wrapper(*args, **kwargs):
+#                     print(f"[LOG] Ação: {action_name}")
+#                     return func(*args, **kwargs)
+#                 return wrapper
+#             return decorator
+        
 import tkinter as tk
 from tkinter import ttk, messagebox
 import json
@@ -5,7 +56,7 @@ from datetime import datetime
 from pathlib import Path
 import os
 from openpyxl import load_workbook, Workbook
-from config.logger_config import system_logger, log_action
+from src.config.logger_config import system_logger, log_action
 
 logger = system_logger.get_logger()
 

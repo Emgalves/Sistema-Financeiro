@@ -1,8 +1,6 @@
 # src/config/window_config.py
 import tkinter as tk
 
-print("Carregando configurações de janela...")
-
 def configurar_janela(janela, titulo, largura=900, altura=1000):
     """
     Configura o posicionamento e dimensionamento padrão de uma janela
