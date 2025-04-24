@@ -12,5 +12,21 @@
             "Adição de preenchimento automático da referência baseado na especificação do fornecedor"
         ],
         "timestamp": "2025-04-07T10:42:22.323514"
+    },
+    {
+        "version": "1.2.0",
+        "release_date": "24/04/2025",
+        "changes": [
+            "Criação do módulo para rateio de despesas comuns a todos os clientes",
+            "Criação do módulo de controle de medições de empreiteiros",
+            "Ajuste na aba Clientes, permitindo a inclusão do témino da obra ou do contrato",
+            "Criação de uma interface com todos os relatórios",
+            "Criação de relatório de Fornecedores",
+            "Criação de relatório de Medições",
+            "Criação de relatório de Tipos de Despesas",
+            "Separação de relatório de Lançamentos Futuros",
+            "Inclusão das etapas de obra nos contratos de administração de obras"
+        ],
+        "timestamp": "2025-04-23T15:42:34.550328"
     }
 ]

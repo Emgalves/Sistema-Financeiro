@@ -6,6 +6,11 @@ Limpe as pastas build e dist:
 rmdir /s /q build
 rmdir /s /q dist
 
+
+Criar .spec:
+pyinstaller --name="Sistema_Gestao_Financeira" --windowed src/sistema_principal.py
+
+
 Gere o executável:
 pyinstaller Sistema_Gestao_Financeira.spec
 

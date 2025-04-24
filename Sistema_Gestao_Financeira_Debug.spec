@@ -5,10 +5,10 @@ block_cipher = None
 
 
 a = Analysis(
-    ['sistema_principal_final.py'],
+    ['src\\sistema_principal.py'],
     pathex=[],
     binaries=[],
-    datas=[('logo.png', '.'), ('logo1.png', '.'), ('src', 'src')],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -26,12 +26,12 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='Sistema_Gestao_Financeira',
+    name='Sistema_Gestao_Financeira_Debug',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console=False,
+    console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
@@ -46,5 +46,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='Sistema_Gestao_Financeira',
+    name='Sistema_Gestao_Financeira_Debug',
 )
