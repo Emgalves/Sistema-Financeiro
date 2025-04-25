@@ -68,7 +68,7 @@ class ControlePagamentos:
 
         # Cria nova janela
         self.janela = tk.Toplevel(self.parent)
-        configurar_janela(self.janela, "Controle de Pagamentos", 920, 650)
+        configurar_janela(self.janela, "Controle de Pagamentos", 900, 1000)
 
         # Permitir que esta função detecte quando a aplicação é executada diretamente
         is_main_window = self.parent and self.parent.winfo_toplevel() == self.parent
@@ -132,7 +132,7 @@ class ControlePagamentos:
         
         # Texto explicativo
         frame_info = ttk.LabelFrame(frame_principal, text="Informações")
-        frame_info.pack(fill='x', pady=20, padx=50)
+        frame_info.pack(fill='x', pady=40, padx=50)
         
         texto_info = """
         • Pagamentos por Percentual da Quinzena: 
