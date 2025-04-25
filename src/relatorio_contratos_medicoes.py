@@ -45,19 +45,43 @@ try:
 except ImportError as e:
     print(f"Erro ao importar window_config: {str(e)}")
     # Implementação simples de configurar_janela como fallback
-    def configurar_janela(janela, titulo="Janela", largura=800, altura=600):
+    def configurar_janela(janela, titulo, largura=900, altura=1000):
+        """
+        Configura o posicionamento e dimensionamento padrão de uma janela
+        
+        Args:
+            janela: Instância de tk.Tk ou tk.Toplevel
+            titulo: Título da janela
+            largura: Largura desejada (default 900)
+            altura: Altura desejada (default 1000)
+        """
         janela.title(titulo)
-        janela.geometry(f"{largura}x{altura}")
+        
+        # Obter dimensões da tela
+        screen_width = janela.winfo_screenwidth()
+        screen_height = janela.winfo_screenheight()
+        
+        # Ajustar dimensões para não exceder o tamanho da tela
+        largura = min(largura, screen_width)
+        altura = min(altura, screen_height)
+        
+        # Definir posição (sempre no topo esquerdo)
+        x = 0
+        y = 0
+        
+        # Configurar geometria
+        janela.geometry(f"{largura}x{altura}+{x}+{y}")
+        
+        # Permitir redimensionamento
         janela.resizable(True, True)
         
-        # Centralizar na tela
-        janela.update_idletasks()
-        width = janela.winfo_width()
-        height = janela.winfo_height()
-        x = (janela.winfo_screenwidth() // 2) - (width // 2)
-        y = (janela.winfo_screenheight() // 2) - (height // 2)
-        janela.geometry(f'{width}x{height}+{x}+{y}')
-
+        # Configurar peso das linhas/colunas para redimensionamento proporcional
+        janela.grid_rowconfigure(0, weight=1)
+        janela.grid_columnconfigure(0, weight=1)
+        
+        # Trazer janela para frente
+        janela.lift()
+        janela.focus_force()
 # Importar funções auxiliares ou definir aqui
 def formatar_moeda_br(valor):
     """Formata um valor numérico como moeda brasileira"""
@@ -338,10 +362,10 @@ class RelatorioContratos:
         self.tree_medicoes.heading('Status', text='Status')
         
         # Ajustar larguras das colunas
-        self.tree_medicoes.column('ID', width=40, anchor='center')
-        self.tree_medicoes.column('Data Medição', width=100, anchor='center')
-        self.tree_medicoes.column('Data Pagamento', width=100, anchor='center')
-        self.tree_medicoes.column('Referência', width=250)
+        self.tree_medicoes.column('ID', width=30, anchor='center')
+        self.tree_medicoes.column('Data Medição', width=80, anchor='center')
+        self.tree_medicoes.column('Data Pagamento', width=80, anchor='center')
+        self.tree_medicoes.column('Referência', width=300)
         self.tree_medicoes.column('Valor', width=100, anchor='e')
         self.tree_medicoes.column('Status', width=80, anchor='center')
         
@@ -632,12 +656,19 @@ class RelatorioContratos:
             else:
                 data_pag = str(medicao['data_pagamento'] if medicao['data_pagamento'] else "")
             
+            # Combinar referência e observação
+            referencia_completa = medicao['referencia'] or ""
+            if medicao['observacao']:
+                if referencia_completa:
+                    referencia_completa += " - "
+                referencia_completa += medicao['observacao']
+            
             # Inserir na treeview
             self.tree_medicoes.insert('', 'end', values=(
                 medicao['id_medicao'],
                 data_med,
                 data_pag,
-                medicao['referencia'],
+                referencia_completa,
                 formatar_moeda_br(medicao['valor']),
                 medicao['status']
             ))
