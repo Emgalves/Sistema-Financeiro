@@ -31,7 +31,7 @@ class ControlePagamentos:
             self.is_independent = False  # Marcar como janela secundária
         
         self.root.title("Controle de Pagamentos de Taxas")
-        self.root.geometry("1100x1000")
+        self.root.geometry("1100x1000+0+0")
         
         # Variáveis de controle
         self.cliente_selecionado = None
