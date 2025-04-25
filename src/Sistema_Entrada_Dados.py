@@ -6376,25 +6376,23 @@ class ImportadorRH:
             return
             
         try:
-            # Carregar planilha
-            df = pd.read_excel(arquivo)
+            # Carregar planilha garantindo que o CPF seja lido como string
+            # Isso evita que o Excel/pandas converta para números e perca os zeros à esquerda
+            df = pd.read_excel(
+                arquivo,
+                dtype={'CPF': str}  # Forçar leitura do CPF como string
+            )
             
-            # Obter os nomes das colunas reais
-            colunas = df.columns.tolist()
+            # Verificar se as colunas necessárias existem
+            colunas_necessarias = ['Cliente', 'Nome_Empregado', 'CPF', 'Valor_Líquido', 'Dados_Bancarios']
+            colunas_faltantes = [col for col in colunas_necessarias if col not in df.columns]
             
-            # Verificar se temos colunas suficientes
-            if len(colunas) < 24:  # Assumindo que a coluna 'X' é a 24ª coluna (índice 23)
+            if colunas_faltantes:
                 messagebox.showerror(
                     "Erro", 
-                    f"A planilha parece não ter colunas suficientes. Esperado pelo menos 24, encontrado {len(colunas)}."
+                    f"As seguintes colunas estão faltando na planilha: {', '.join(colunas_faltantes)}"
                 )
                 return
-            
-            # Usar colunas por índice em vez de nome
-            coluna_empresa = 0   # Coluna A (empresa/cliente)
-            coluna_nome = 4      # Coluna E (nome do funcionário)
-            coluna_cpf = 15      # Coluna P (CPF)
-            coluna_valor = 23    # Coluna X (valor)
             
             registros_processados = 0
             erros = []
@@ -6404,9 +6402,9 @@ class ImportadorRH:
             cliente_encontrado = False
             
             for idx, row in df.iterrows():
-                # Verificar se esta linha tem um valor na coluna empresa (possível nome de cliente)
-                if not pd.isna(row.iloc[coluna_empresa]):
-                    cliente_atual = str(row.iloc[coluna_empresa]).strip().upper()
+                # Verificar se esta linha tem um valor na coluna Cliente (possível nome de cliente)
+                if not pd.isna(row['Cliente']):
+                    cliente_atual = str(row['Cliente']).strip().upper()
                     
                     # Verificar se é o cliente que estamos procurando
                     if cliente_atual == cliente_alvo:
@@ -6421,20 +6419,20 @@ class ImportadorRH:
                     continue
                     
                 # Verificar se esta linha representa um funcionário (tem nome, CPF e valor)
-                if (pd.isna(row.iloc[coluna_nome]) or 
-                    pd.isna(row.iloc[coluna_cpf]) or 
-                    pd.isna(row.iloc[coluna_valor])):
+                if (pd.isna(row['Nome_Empregado']) or 
+                    pd.isna(row['CPF']) or 
+                    pd.isna(row['Valor_Líquido'])):
                     continue
                     
-                # Processar dados do funcionário
-                cpf = str(row.iloc[coluna_cpf]).strip()
-                nome = str(row.iloc[coluna_nome]).strip().upper()
+                # Usar o CPF como está, sem alteração
+                cpf = str(row['CPF']).strip()
+                nome = str(row['Nome_Empregado']).strip().upper()
                 
                 # Verificar se o valor é numérico
                 try:
-                    valor = float(row.iloc[coluna_valor])
+                    valor = float(row['Valor_Líquido'])
                 except (ValueError, TypeError):
-                    erros.append(f"Valor inválido para {nome}: {row.iloc[coluna_valor]}")
+                    erros.append(f"Valor inválido para {nome}: {row['Valor_Líquido']}")
                     continue
                 
                 # Definir data do relatório atual
@@ -6460,13 +6458,13 @@ class ImportadorRH:
                     else:
                         dt_vencto = data_base.replace(month=data_base.month + 1, day=5).strftime('%d/%m/%Y')
                 
-                # Buscar dados bancários
-                dados_bancarios = self.buscar_dados_bancarios(cpf)
+                # Obter dados bancários diretamente da planilha
+                dados_bancarios = str(row['Dados_Bancarios']) if not pd.isna(row['Dados_Bancarios']) else 'DADOS BANCÁRIOS NÃO CADASTRADOS'
                 
-                # Criar registro
+                # Criar registro - usar o CPF como está, sem reformatar
                 registro = {
                     'data': data_rel,
-                    'cnpj_cpf': self.formatar_cpf(cpf),
+                    'cnpj_cpf': cpf,  # Usar o CPF como está na planilha
                     'nome': nome,
                     'categoria': 'MO',
                     'tp_desp': '1',
@@ -6476,7 +6474,7 @@ class ImportadorRH:
                     'dias': 1,
                     'valor': f"{valor:.2f}",
                     'dt_vencto': dt_vencto,
-                    'dados_bancarios': dados_bancarios or 'DADOS BANCÁRIOS NÃO CADASTRADOS',
+                    'dados_bancarios': dados_bancarios,
                     'observacao': f"IMPORTADO RH - SALÁRIO",
                     'forma_pagamento': 'PIX'
                 }
@@ -6537,68 +6535,69 @@ class ImportadorRH:
         # Formatar como XXX.XXX.XXX-XX
         return f"{cpf_formatado[:3]}.{cpf_formatado[3:6]}.{cpf_formatado[6:9]}-{cpf_formatado[9:]}"
     
-    def buscar_dados_bancarios(self, cpf):
-        """Busca dados bancários do fornecedor pelo CPF"""
-        try:
-            # Converter para string, garantindo que o valor original seja preservado
-            cpf_str = str(cpf)
+
+    # def buscar_dados_bancarios(self, cpf):
+    #     """Busca dados bancários do fornecedor pelo CPF"""
+    #     try:
+    #         # Converter para string, garantindo que o valor original seja preservado
+    #         cpf_str = str(cpf)
             
-            # Tratar caso específico de notação científica ou formato float
-            if 'e' in cpf_str.lower() or '.' in cpf_str:
-                # Tentar extrair o valor original sem notação científica
-                try:
-                    # Converter para float primeiro para lidar com notação científica
-                    cpf_float = float(cpf_str)
-                    # Converter para int para remover decimais
-                    cpf_int = int(cpf_float)
-                    # Converter para string novamente
-                    cpf_str = str(cpf_int)
-                except:
-                    # Se falhar, usar a string original
-                    pass
+    #         # Tratar caso específico de notação científica ou formato float
+    #         if 'e' in cpf_str.lower() or '.' in cpf_str:
+    #             # Tentar extrair o valor original sem notação científica
+    #             try:
+    #                 # Converter para float primeiro para lidar com notação científica
+    #                 cpf_float = float(cpf_str)
+    #                 # Converter para int para remover decimais
+    #                 cpf_int = int(cpf_float)
+    #                 # Converter para string novamente
+    #                 cpf_str = str(cpf_int)
+    #             except:
+    #                 # Se falhar, usar a string original
+    #                 pass
             
-            # Remover caracteres não numéricos
-            cpf_limpo = ''.join(filter(str.isdigit, cpf_str))
+    #         # Remover caracteres não numéricos
+    #         cpf_limpo = ''.join(filter(str.isdigit, cpf_str))
             
-            # Garantir exatamente 11 dígitos com zeros à esquerda
-            cpf_limpo = cpf_limpo.zfill(11)
+    #         # Garantir exatamente 11 dígitos com zeros à esquerda
+    #         cpf_limpo = cpf_limpo.zfill(11)
             
-            print(f"Buscando dados bancários para CPF: {cpf_limpo}")
+    #         print(f"Buscando dados bancários para CPF: {cpf_limpo}")
             
-            # Tentar buscar com diferentes formatos
-            formatos_cpf = [
-                cpf_limpo,  # Apenas dígitos com zeros à esquerda: 03473509680
-                f"{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}"  # 034.735.096-80
-            ]
+    #         # Tentar buscar com diferentes formatos
+    #         formatos_cpf = [
+    #             cpf_limpo,  # Apenas dígitos com zeros à esquerda: 03473509680
+    #             f"{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}"  # 034.735.096-80
+    #         ]
             
-            for cpf_formato in formatos_cpf:
-                fornecedor = self.sistema.buscar_fornecedor_completo(cpf_formato)
-                if fornecedor:
-                    print(f"Fornecedor encontrado: {fornecedor['nome']} com CPF: {cpf_formato}")
+    #         for cpf_formato in formatos_cpf:
+    #             fornecedor = self.sistema.buscar_fornecedor_completo(cpf_formato)
+    #             if fornecedor:
+    #                 print(f"Fornecedor encontrado: {fornecedor['nome']} com CPF: {cpf_formato}")
                     
-                    # Priorizar PIX
-                    if fornecedor['chave_pix']:
-                        return f"PIX: {fornecedor['chave_pix']}"
+    #                 # Priorizar PIX
+    #                 if fornecedor['chave_pix']:
+    #                     return f"PIX: {fornecedor['chave_pix']}"
                     
-                    # Montar dados para TED
-                    dados_ted = []
-                    if fornecedor['banco']: dados_ted.append(str(fornecedor['banco']))
-                    if fornecedor['op']: dados_ted.append(str(fornecedor['op']))
-                    if fornecedor['agencia']: dados_ted.append(str(fornecedor['agencia']))
-                    if fornecedor['conta']: dados_ted.append(str(fornecedor['conta']))
-                    dados_ted.append(str(fornecedor['cnpj_cpf']))
+    #                 # Montar dados para TED
+    #                 dados_ted = []
+    #                 if fornecedor['banco']: dados_ted.append(str(fornecedor['banco']))
+    #                 if fornecedor['op']: dados_ted.append(str(fornecedor['op']))
+    #                 if fornecedor['agencia']: dados_ted.append(str(fornecedor['agencia']))
+    #                 if fornecedor['conta']: dados_ted.append(str(fornecedor['conta']))
+    #                 dados_ted.append(str(fornecedor['cnpj_cpf']))
                     
-                    dados = ' - '.join(filter(None, dados_ted))
-                    if dados.strip() != '':
-                        return dados
+    #                 dados = ' - '.join(filter(None, dados_ted))
+    #                 if dados.strip() != '':
+    #                     return dados
             
-            # Se chegou aqui, não encontrou o fornecedor
-            print(f"Nenhum fornecedor encontrado para CPF: {cpf_limpo} em nenhum formato tentado")
-            return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+    #         # Se chegou aqui, não encontrou o fornecedor
+    #         print(f"Nenhum fornecedor encontrado para CPF: {cpf_limpo} em nenhum formato tentado")
+    #         return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
                 
-        except Exception as e:
-            print(f"Erro ao buscar dados bancários: {str(e)}")
-            return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+    #     except Exception as e:
+    #         print(f"Erro ao buscar dados bancários: {str(e)}")
+    #         return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
                 
 
 if __name__ == "__main__":
