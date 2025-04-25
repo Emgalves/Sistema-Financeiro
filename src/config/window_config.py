@@ -9,7 +9,7 @@ def configurar_janela(janela, titulo, largura=900, altura=1000):
         janela: Instância de tk.Tk ou tk.Toplevel
         titulo: Título da janela
         largura: Largura desejada (default 900)
-        altura: Altura desejada (default 900)
+        altura: Altura desejada (default 1000)
     """
     janela.title(titulo)
     
