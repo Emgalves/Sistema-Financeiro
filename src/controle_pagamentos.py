@@ -9,9 +9,8 @@ import sys
 from pathlib import Path
 
 # No início de controle_pagamentos.py
-try:
-    # Primeira tentativa: importar como está no desenvolvimento
-    from config.utils import (
+
+from src.config.utils import (
         PASTA_CLIENTES,
         formatar_moeda,
         validar_data,
@@ -19,30 +18,7 @@ try:
         aplicar_formatacao_celula,
         buscar_dados_bancarios_fornecedor
     )
-except ImportError:
-    try:
-        # Segunda tentativa: importar do src
-        from src.config.utils import (
-            PASTA_CLIENTES,
-            formatar_moeda,
-            validar_data,
-            formatar_valor_excel,
-            aplicar_formatacao_celula,
-            buscar_dados_bancarios_fornecedor
-        )
-    except ImportError:
-        # Terceira tentativa: ajustar path e importar
-        current_dir = Path(__file__).resolve().parent
-        root_dir = current_dir.parent
-        sys.path.insert(0, str(root_dir))
-        from config.utils import (
-            PASTA_CLIENTES,
-            formatar_moeda,
-            validar_data,
-            formatar_valor_excel,
-            aplicar_formatacao_celula,
-            buscar_dados_bancarios_fornecedor
-        )
+
 class ControlePagamentos:
     def __init__(self, parent=None):
         self.parent = parent
@@ -55,7 +31,7 @@ class ControlePagamentos:
             self.is_independent = False  # Marcar como janela secundária
         
         self.root.title("Controle de Pagamentos de Taxas")
-        self.root.geometry("1200x700")
+        self.root.geometry("1100x1000")
         
         # Variáveis de controle
         self.cliente_selecionado = None
@@ -93,14 +69,14 @@ class ControlePagamentos:
         
         # Configurar colunas
         larguras_iniciais = {
-            'Nº Contrato': 80,
+            'Nº Contrato': 70,
             'Nº Parcela': 70,
-            'CNPJ': 120,
+            'CNPJ': 100,
             'Adm': 180,
             'Eventos/Fases': 330,
-            'Valor': 100,
-            'Status': 100,
-            'Data Pagamento': 100
+            'Valor': 110,
+            'Status': 110,
+            'Data Pagamento': 80
         }
 
         for col in colunas:
