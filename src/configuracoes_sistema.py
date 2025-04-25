@@ -61,70 +61,48 @@ from src.config.logger_config import system_logger, log_action
 logger = system_logger.get_logger()
 
 class GerenciadorConfiguracoes:
+    # Importar o caminho do BASE_PATH definido no config.py
+    from src.config.config import BASE_PATH
+    
+    # Definir o caminho do arquivo de configurações no mesmo local das planilhas base
+    CONFIG_PATH = BASE_PATH / "parametros_sistema.json"
+    
+    # Cache de configurações para acesso rápido
+    _config_cache = None
+    
+    @staticmethod
+    def _atualizar_cache(config):
+        """Atualiza o cache de configurações"""
+        GerenciadorConfiguracoes._config_cache = config
+    
     @staticmethod
     @log_action("Carregar configurações")
     def carregar_configuracoes():
         """
         Método estático para carregar configurações do sistema
         """
-        config_path = Path(__file__).parent / 'config' / 'parametros_sistema.json'
+        # Verificar se há cache disponível
+        if GerenciadorConfiguracoes._config_cache is not None:
+            return GerenciadorConfiguracoes._config_cache
+            
+        config_path = GerenciadorConfiguracoes.CONFIG_PATH
+        
+        # Imprimir informação de debug
+        print(f"Tentando carregar configurações de: {config_path}")
+        print(f"O arquivo existe? {config_path.exists()}")
         
         if config_path.exists():
             try:
                 with open(config_path, 'r', encoding='utf-8') as f:
-                    return json.load(f)
+                    config = json.load(f)
+                    # Atualizar o cache
+                    GerenciadorConfiguracoes._atualizar_cache(config)
+                    return config
             except Exception as e:
                 logger.error(f"Erro ao carregar configurações: {e}")
                 return None
-        return None
-
-    @staticmethod
-    def get_bancos():
-        """Retorna a lista de bancos"""
-        config = GerenciadorConfiguracoes.carregar_configuracoes()
-        if config and 'bancos' in config:
-            return config['bancos']['lista']
-        return []
-
-    @staticmethod
-    def get_categorias_fornecedor():
-        """Retorna a lista de categorias de fornecedor"""
-        config = GerenciadorConfiguracoes.carregar_configuracoes()
-        if config and 'categorias' in config:
-            return config['categorias']['lista']
-        return ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP']
-    
-    @staticmethod
-    def carregar_configuracoes():
-        """Método estático para carregar configurações do sistema"""
-        config_path = Path(__file__).parent / 'config' / 'parametros_sistema.json'
         
-        if config_path.exists():
-            try:
-                with open(config_path, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except Exception as e:
-                logger.error(f"Erro ao carregar configurações: {e}")
-                return None
-        return None
-
-    def __init__(self, parent=None):
-        self.root = tk.Toplevel(parent) if parent else tk.Tk()
-        self.root.title("Configurações do Sistema")
-        self.root.geometry("800x600")
-        
-        # Caminho para o arquivo de configurações
-        self.config_path = Path(__file__).parent / 'config' / 'parametros_sistema.json'
-        self.config_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Carregar ou criar configurações iniciais
-        self.carregar_configuracoes_locais()
-        
-        # Setup da interface
-        self.setup_gui()
-
-    def carregar_configuracoes_locais(self):
-        """Carrega ou cria as configurações do sistema"""
+        # Se o arquivo não existir, criar com configurações padrão
         default_config = {
             'cafe': {
                 'valor_atual': 4.00,
@@ -143,20 +121,88 @@ class GerenciadorConfiguracoes:
         }
         
         try:
-            if self.config_path.exists():
-                with open(self.config_path, 'r', encoding='utf-8') as f:
-                    self.config = json.load(f)
-            else:
-                self.config = default_config
-                self.salvar_configuracoes()
-        except Exception:
-            self.config = default_config
+            # Garantir que o diretório existe
+            config_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(default_config, f, indent=4, ensure_ascii=False)
+            
+            GerenciadorConfiguracoes._atualizar_cache(default_config)
+            return default_config
+        except Exception as e:
+            logger.error(f"Erro ao criar arquivo de configurações: {e}")
+            return None
+
+    @staticmethod
+    def get_bancos():
+        """Retorna a lista de bancos"""
+        config = GerenciadorConfiguracoes.carregar_configuracoes()
+        if config and 'bancos' in config:
+            return config['bancos']['lista']
+        return []
+
+    @staticmethod
+    def get_categorias_fornecedor():
+        """Retorna a lista de categorias de fornecedor"""
+        config = GerenciadorConfiguracoes.carregar_configuracoes()
+        if config and 'categorias' in config:
+            return config['categorias']['lista']
+        return ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP']
+
+    def __init__(self, parent=None):
+        self.root = tk.Toplevel(parent) if parent else tk.Tk()
+        self.root.title("Configurações do Sistema")
+        self.root.geometry("800x600")
+        
+        # Usar o caminho da variável de classe 
+        self.config_path = GerenciadorConfiguracoes.CONFIG_PATH
+        
+        # Carregar ou criar configurações iniciais
+        self.carregar_configuracoes_locais()
+        
+        # Setup da interface
+        self.setup_gui()
+
+    def carregar_configuracoes_locais(self):
+        """Carrega as configurações do sistema"""
+        self.config = GerenciadorConfiguracoes.carregar_configuracoes()
+        
+        # Se não foi possível carregar, criar configurações padrão
+        if self.config is None:
+            self.config = {
+                'cafe': {
+                    'valor_atual': 4.00,
+                    'historico': [
+                        {'valor': 4.00, 'data_inicio': '01/01/2024', 'data_fim': None}
+                    ]
+                },
+                'bancos': {
+                    'lista': ['BANCO DO BRASIL', 'BRADESCO', 'CAIXA', 'ITAU', 'SANTANDER'],
+                    'historico_alteracoes': []
+                },
+                'categorias': {
+                    'lista': ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
+                    'historico_alteracoes': []
+                }
+            }
             self.salvar_configuracoes()
 
     def salvar_configuracoes(self):
         """Salva as configurações no arquivo"""
-        with open(self.config_path, 'w', encoding='utf-8') as f:
-            json.dump(self.config, f, indent=4, ensure_ascii=False)
+        try:
+            # Garantir que o diretório existe
+            self.config_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(self.config_path, 'w', encoding='utf-8') as f:
+                json.dump(self.config, f, indent=4, ensure_ascii=False)
+            
+            # Atualizar o cache ao salvar
+            GerenciadorConfiguracoes._atualizar_cache(self.config)
+            
+            print(f"Configurações salvas com sucesso em: {self.config_path}")
+        except Exception as e:
+            logger.error(f"Erro ao salvar configurações: {e}")
+            messagebox.showerror("Erro", f"Não foi possível salvar as configurações: {e}")
 
     def setup_gui(self):
         """Configura a interface gráfica"""
