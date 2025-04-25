@@ -6449,14 +6449,7 @@ class ImportadorRH:
                             data_rel = hoje.replace(day=5).strftime('%d/%m/%Y')
                 
                 # Calcular data de vencimento
-                data_base = datetime.strptime(data_rel, '%d/%m/%Y')
-                if data_base.day == 5:
-                    dt_vencto = data_base.replace(day=20).strftime('%d/%m/%Y')
-                else:  # dia 20
-                    if data_base.month == 12:
-                        dt_vencto = data_base.replace(year=data_base.year + 1, month=1, day=5).strftime('%d/%m/%Y')
-                    else:
-                        dt_vencto = data_base.replace(month=data_base.month + 1, day=5).strftime('%d/%m/%Y')
+                dt_vencto = data_rel
                 
                 # Obter dados bancários diretamente da planilha
                 dados_bancarios = str(row['Dados_Bancarios']) if not pd.isna(row['Dados_Bancarios']) else 'DADOS BANCÁRIOS NÃO CADASTRADOS'
