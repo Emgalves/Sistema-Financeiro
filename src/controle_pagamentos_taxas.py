@@ -69,24 +69,26 @@ class ControlePagamentos:
         # Cria nova janela
         self.janela = tk.Toplevel(self.parent)
         configurar_janela(self.janela, "Controle de Pagamentos", 900, 1000)
+        # Posicionar a janela no canto superior esquerdo
+        self.janela.geometry("+0+0")
 
         # Permitir que esta função detecte quando a aplicação é executada diretamente
         is_main_window = self.parent and self.parent.winfo_toplevel() == self.parent
         
         # Frame principal
-        frame_principal = ttk.Frame(self.janela, padding=10)
+        frame_principal = ttk.Frame(self.janela, padding=20)
         frame_principal.pack(fill='both', expand=True)
         
         # Título
         ttk.Label(
             frame_principal, 
             text="Sistema de Controle de Pagamentos", 
-            font=('Arial', 14, 'bold')
-        ).pack(pady=10)
+            font=('Arial', 16, 'bold')
+        ).pack(pady=15)
         
         # Frame para opções
         frame_opcoes = ttk.Frame(frame_principal)
-        frame_opcoes.pack(fill='x', pady=20)
+        frame_opcoes.pack(fill='x', pady=25)
         
         # Estilo para botões grandes
         style = ttk.Style()
@@ -94,7 +96,13 @@ class ControlePagamentos:
         
         # Botões em grade (2x2)
         frame_botoes = ttk.Frame(frame_opcoes)
-        frame_botoes.pack(padx=50, pady=20)
+        frame_botoes.pack(padx=60, pady=25, fill='both', expand=True)
+        
+        # Configurar o grid para distribuir espaço igualmente
+        frame_botoes.columnconfigure(0, weight=1)
+        frame_botoes.columnconfigure(1, weight=1)
+        frame_botoes.rowconfigure(0, weight=1)
+        frame_botoes.rowconfigure(1, weight=1)
         
         # Linha 1
         ttk.Button(
@@ -102,16 +110,16 @@ class ControlePagamentos:
             text="Pagamentos por Percentual da Quinzena",
             command=self.abrir_percentual_quinzena,
             style='Big.TButton',
-            width=35
-        ).grid(row=0, column=0, padx=10, pady=10)
+            width=40
+        ).grid(row=0, column=0, padx=15, pady=15, sticky='nsew')
         
         ttk.Button(
             frame_botoes,
             text="Pagamentos por Eventos",
             command=self.abrir_gestao_eventos,
             style='Big.TButton',
-            width=35
-        ).grid(row=0, column=1, padx=10, pady=10)
+            width=40
+        ).grid(row=0, column=1, padx=15, pady=15, sticky='nsew')
         
         # Linha 2
         ttk.Button(
@@ -119,20 +127,20 @@ class ControlePagamentos:
             text="Contratos de Administração",
             command=self.abrir_gestao_contratos,
             style='Big.TButton',
-            width=35
-        ).grid(row=1, column=0, padx=10, pady=10)
+            width=40
+        ).grid(row=1, column=0, padx=15, pady=15, sticky='nsew')
         
         ttk.Button(
             frame_botoes,
             text="Relatórios e Consultas",
             command=self.abrir_relatorios,
             style='Big.TButton',
-            width=35
-        ).grid(row=1, column=1, padx=10, pady=10)
+            width=40
+        ).grid(row=1, column=1, padx=15, pady=15, sticky='nsew')
         
         # Texto explicativo
         frame_info = ttk.LabelFrame(frame_principal, text="Informações")
-        frame_info.pack(fill='x', pady=40, padx=50)
+        frame_info.pack(fill='both', expand=True, pady=40, padx=50)
         
         texto_info = """
         • Pagamentos por Percentual da Quinzena: 
@@ -148,30 +156,30 @@ class ControlePagamentos:
         Relatórios gerenciais e consultas de pagamentos por período.
         """
         
-        texto = tk.Text(frame_info, wrap='word', height=10, width=80)
-        texto.pack(padx=10, pady=10, fill='both', expand=True)
+        texto = tk.Text(frame_info, wrap='word', height=10, width=90, font=('Arial', 11))
+        texto.pack(padx=15, pady=15, fill='both', expand=True)
         texto.insert('1.0', texto_info)
         texto.config(state='disabled')
         
         # Frame para botões de ação
         frame_acoes = ttk.Frame(frame_principal)
-        frame_acoes.pack(side='right', pady=10)
+        frame_acoes.pack(fill='x', pady=20)
         
         # NOVO BOTÃO: Voltar ao Menu Principal
         ttk.Button(
             frame_acoes,
             text="Voltar ao Menu Principal",
             command=self.voltar_menu_principal,
-            width=20
-        ).pack(side='right', padx=5)
+            width=25
+        ).pack(side='right', padx=10)
         
         # Botão para fechar (agora apenas fecha esta janela)
         ttk.Button(
             frame_acoes,
             text="Fechar",
             command=lambda: self.fechar_janela(is_main_window),
-            width=20
-        ).pack(side='right', padx=5)
+            width=25
+        ).pack(side='right', padx=10)
 
     # Adicionar um novo método voltar_menu_principal na classe ControlePagamentos
     def voltar_menu_principal(self):
