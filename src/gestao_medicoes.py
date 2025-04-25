@@ -1193,9 +1193,8 @@ class GestaoMedicoes:
                                 foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
         data_pagamento.grid(row=1, column=1, padx=5, pady=5, sticky='w')
         
-        # Calcular data de pagamento padrão (30 dias após a medição)
-        data_pag_default = datetime.now() + relativedelta(days=30)
-        data_pagamento.set_date(data_pag_default)
+        # Calcular data de pagamento padrão (data da medição)
+        data_pagamento = data_medicao
         
         # Referência
         ttk.Label(frame_medicao, text="Referência:*").grid(row=2, column=0, padx=5, pady=5, sticky='e')
@@ -1550,8 +1549,12 @@ class GestaoMedicoes:
                 
             # Validar valor
             try:
-                valor_org = float(valor_original.replace(',', '.'))
-                valor_novo_float = float(valor_novo.replace(',', '.'))
+                valor_original_limpo = valor_original.replace('R$', '').strip()
+                valor_original_limpo = valor_original_limpo.replace('.', '')
+                valor_original_limpo = valor_original_limpo.replace(',', '.')
+                valor_org = float(valor_original_limpo)
+                valor_novo_limpo = valor_novo.replace('R$', '').strip().replace('.', '').replace(',', '.')
+                valor_novo_float = float(valor_novo_limpo)
                 if valor_novo_float <= 0:
                     messagebox.showerror("Erro", "Valor deve ser maior que zero!")
                     return
