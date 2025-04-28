@@ -44,6 +44,9 @@ except ImportError as e:
     print(f"Erro ao importar configurações: {str(e)}")
     raise
 
+# Importar o utils.py
+from src.config.utils import atualizar_combobox_clientes, cliente_esta_ativo, obter_info_cliente
+
 
 from src.config.window_config import configurar_janela
 print("window_config importado pelo caminho alternativo")
@@ -385,42 +388,44 @@ class GestaoMedicoes:
 
     # Funções da aba Cliente
     def atualizar_lista_clientes(self):
-        """Atualiza a lista de clientes no combobox"""
+        """Atualiza a lista de clientes no combobox usando a função centralizada"""
         try:
-            # Carregar arquivo de clientes
-            workbook = load_workbook(ARQUIVO_CLIENTES)
-            sheet = workbook['Clientes']  # Assumindo que existe uma aba chamada 'Clientes'
+            # Usar a função centralizada (apenas clientes ativos)
+            self.info_clientes = atualizar_combobox_clientes(self.cliente_combobox, mostrar_inativos=False)
             
-            # Limpar lista atual
-            self.cliente_combobox['values'] = []
-            
-            # Pegar todos os clientes (pulando o cabeçalho)
-            clientes = []
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Nome do cliente está na primeira coluna
-                    clientes.append(row[0])
-            
-            # Atualizar combobox
-            self.cliente_combobox['values'] = sorted(clientes)
-            workbook.close()
-            
-        except FileNotFoundError:
-            messagebox.showerror("Erro", "Arquivo de clientes não encontrado.")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
-    
+
+    # E modifique o método selecionar_cliente:
+
     def selecionar_cliente(self, event=None):
-        """Atualiza seleção de cliente e habilita botão de continuar"""
+        """Atualiza o cliente selecionado"""
         self.cliente_atual = self.cliente_combobox.get()
         
-        # Atualiza label em todas as abas
         if self.cliente_atual:
-            # Atualiza labels nas abas
-            self.lbl_cliente_contratos.config(text=f"Cliente: {self.cliente_atual}")
-            self.lbl_cliente_medicoes.config(text=f"Cliente: {self.cliente_atual}")
+            # Verificar se o cliente está ativo (extra proteção)
+            if not cliente_esta_ativo(self.cliente_atual):
+                messagebox.showwarning(
+                    "Cliente Inativo", 
+                    f"O cliente '{self.cliente_atual}' está inativo (contrato finalizado). " +
+                    "Os dados serão mostrados somente para consulta."
+                )
             
-            # Define o caminho do arquivo
-            self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
+            # Obter informações do cliente
+            info_cliente = obter_info_cliente(self.cliente_atual)
+            
+            # Atualizar label
+            if hasattr(self, 'lbl_cliente_resumo'):
+                texto_cliente = f"Cliente: {self.cliente_atual}"
+                if info_cliente and not info_cliente['ativo']:
+                    texto_cliente += " (INATIVO)"
+                self.lbl_cliente_resumo.config(text=texto_cliente)
+            
+            # Definir o caminho do arquivo
+            if info_cliente and 'arquivo' in info_cliente:
+                self.arquivo_cliente = info_cliente['arquivo']
+            else:
+                self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
             
             # Verifica se arquivo existe e cria a aba de medições se necessário
             self.verificar_aba_medicoes()
