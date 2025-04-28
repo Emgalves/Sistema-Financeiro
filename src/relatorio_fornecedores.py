@@ -27,7 +27,7 @@ add_project_root()
 
 # Importar configurações
 try:
-    from config.config import (
+    from src.config.config import (
         ARQUIVO_CLIENTES,
         PASTA_CLIENTES,
         BASE_PATH
@@ -41,7 +41,7 @@ except ImportError as e:
     PASTA_CLIENTES = BASE_PATH / "dados" / "clientes"
 
 try:
-    from config.window_config import configurar_janela
+    from src.config.window_config import configurar_janela
     print("window_config importado com sucesso")
 except ImportError as e:
     print(f"Erro ao importar window_config: {str(e)}")
