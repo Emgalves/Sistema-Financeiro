@@ -359,6 +359,8 @@ class RelatorioFornecedores:
         self.tree_resumo.column('percentual', width=100, anchor='center')
         self.tree_resumo.column('qtd_lancamentos', width=150, anchor='center')
         self.tree_resumo.column('tipos_despesa', width=150)
+
+        self.tree_resumo.bind("<Double-1>", self.mostrar_detalhes_por_clique)
         
         # Scrollbars
         scrolly = ttk.Scrollbar(frame_tabela, orient='vertical', command=self.tree_resumo.yview)
@@ -435,23 +437,25 @@ class RelatorioFornecedores:
         frame_lancamentos = ttk.LabelFrame(self.aba_detalhes, text="Lançamentos")
         frame_lancamentos.pack(fill='both', expand=True, pady=5, padx=5)
         
-        # Tree para lançamentos
-        colunas = ('data', 'cliente', 'tipo_despesa', 'referencia', 'valor')
+        # Tree para lançamentos com as novas colunas
+        colunas = ('data', 'tipo_despesa', 'referencia', 'dt_vencto', 'valor', 'observacao')
         self.tree_lancamentos = ttk.Treeview(frame_lancamentos, columns=colunas, show='headings', height=15)
         
         # Configurar colunas
         self.tree_lancamentos.heading('data', text='Data')
-        self.tree_lancamentos.heading('cliente', text='Cliente')
         self.tree_lancamentos.heading('tipo_despesa', text='Tipo')
         self.tree_lancamentos.heading('referencia', text='Referência')
+        self.tree_lancamentos.heading('dt_vencto', text='Vencimento')
         self.tree_lancamentos.heading('valor', text='Valor')
+        self.tree_lancamentos.heading('observacao', text='Observação')
         
         # Ajustar larguras
-        self.tree_lancamentos.column('data', width=100, anchor='center')
-        self.tree_lancamentos.column('cliente', width=150)
+        self.tree_lancamentos.column('data', width=80, anchor='center')
         self.tree_lancamentos.column('tipo_despesa', width=50, anchor='center')
-        self.tree_lancamentos.column('referencia', width=300)
+        self.tree_lancamentos.column('referencia', width=250)
+        self.tree_lancamentos.column('dt_vencto', width=80, anchor='center')
         self.tree_lancamentos.column('valor', width=100, anchor='e')
+        self.tree_lancamentos.column('observacao', width=150)
         
         # Scrollbars
         scrolly = ttk.Scrollbar(frame_lancamentos, orient='vertical', command=self.tree_lancamentos.yview)
@@ -484,7 +488,28 @@ class RelatorioFornecedores:
         # Frame para o gráfico
         self.frame_grafico = ttk.Frame(self.aba_grafico)
         self.frame_grafico.pack(fill='both', expand=True, pady=5)
+
+    def mostrar_detalhes_por_clique(self, event):
+        """Abre a aba de detalhes quando o usuário dá duplo clique em um fornecedor"""
+        # Obter o item selecionado
+        item = self.tree_resumo.identify('item', event.x, event.y)
+        if not item:
+            return
+            
+        # Obter a posição do fornecedor (valor da primeira coluna)
+        posicao = self.tree_resumo.item(item, 'values')[0]
         
+        # Selecionar o fornecedor correspondente no combobox
+        if self.fornecedor_combobox['values']:
+            # Os valores do combobox começam com a posição (ex: "1. Nome do Fornecedor")
+            for i, valor in enumerate(self.fornecedor_combobox['values']):
+                if valor.startswith(f"{posicao}. "):
+                    self.fornecedor_combobox.current(i)
+                    self.carregar_detalhes_fornecedor()
+                    # Mudar para a aba de detalhes
+                    self.notebook.select(1)  # Índice 1 = aba de detalhes
+                    break
+
     def alterar_periodo(self, event=None):
         """Atualiza o período de análise com base na seleção"""
         periodo_selecionado = self.periodo_combobox.get()
@@ -771,11 +796,32 @@ class RelatorioFornecedores:
                     # Obter tipo de despesa
                     tipo_despesa = int(row['TP_DESP']) if pd.notnull(row['TP_DESP']) else 0
                     
-                    # Obter referência
+                    # Obter referência e incluir NF se disponível
                     referencia = str(row['REFERÊNCIA']) if pd.notnull(row['REFERÊNCIA']) else ""
+                    
+                    # Verificar se existe coluna 'NF' e adicionar à referência se disponível
+                    if 'NF' in df.columns and pd.notnull(row['NF']) and str(row['NF']).strip():
+                        nf = str(row['NF']).strip()
+                        if nf and nf.lower() != 'nan':
+                            referencia = f"{referencia} (NF: {nf})"
                     
                     # Obter data
                     data = row['DATA_REL']
+                    
+                    # Obter data de vencimento se disponível
+                    dt_vencto = None
+                    if 'DT_VENCTO' in df.columns and pd.notnull(row['DT_VENCTO']):
+                        try:
+                            dt_vencto = pd.to_datetime(row['DT_VENCTO'])
+                        except:
+                            dt_vencto = None
+                    
+                    # Obter observação se disponível
+                    observacao = ""
+                    if 'OBSERVACAO' in df.columns and pd.notnull(row['OBSERVACAO']):
+                        observacao = str(row['OBSERVACAO'])
+                    elif 'OBSERVAÇÃO' in df.columns and pd.notnull(row['OBSERVAÇÃO']):
+                        observacao = str(row['OBSERVAÇÃO'])
                     
                     # Criar identificador do mês para análise mensal
                     mes_ano = f"{data.year}-{data.month:02d}"
@@ -794,7 +840,9 @@ class RelatorioFornecedores:
                         'cliente': nome_cliente,
                         'tipo_despesa': tipo_despesa,
                         'referencia': referencia,
-                        'valor': valor
+                        'dt_vencto': dt_vencto,
+                        'valor': valor,
+                        'observacao': observacao
                     })
                     
                     # Atualizar total geral
@@ -935,12 +983,19 @@ class RelatorioFornecedores:
         
         # Adicionar lançamentos à tabela
         for lancamento in lancamentos_ordenados:
+            # Formatar data de vencimento
+            dt_vencto_str = ""
+            if lancamento.get('dt_vencto'):
+                dt_vencto_str = lancamento['dt_vencto'].strftime('%d/%m/%Y')
+            
+            # Adicionar linha
             self.tree_lancamentos.insert('', 'end', values=(
                 lancamento['data'].strftime('%d/%m/%Y'),
-                lancamento['cliente'],
                 lancamento['tipo_despesa'],
                 lancamento['referencia'],
-                formatar_moeda_br(lancamento['valor'])
+                dt_vencto_str,
+                formatar_moeda_br(lancamento['valor']),
+                lancamento.get('observacao', '')
             ))
     
     def atualizar_grafico(self):
@@ -1537,24 +1592,33 @@ class RelatorioFornecedores:
                 for lancamento in lancamentos_ordenados:
                     row += 1
                     
+                    # Formatar data de vencimento
+                    dt_vencto = lancamento.get('dt_vencto')
+                    
                     ws_fornecedor.cell(row=row, column=1, value=lancamento['data'])
-                    ws_fornecedor.cell(row=row, column=2, value=lancamento['cliente'])
-                    ws_fornecedor.cell(row=row, column=3, value=lancamento['tipo_despesa'])
-                    ws_fornecedor.cell(row=row, column=4, value=lancamento['referencia'])
+                    ws_fornecedor.cell(row=row, column=2, value=lancamento['tipo_despesa'])
+                    ws_fornecedor.cell(row=row, column=3, value=lancamento['referencia'])
+                    ws_fornecedor.cell(row=row, column=4, value=dt_vencto)
                     ws_fornecedor.cell(row=row, column=5, value=lancamento['valor'])
+                    ws_fornecedor.cell(row=row, column=6, value=lancamento.get('observacao', ''))
                     
                     # Formatar data
                     ws_fornecedor.cell(row=row, column=1).number_format = 'dd/mm/yyyy'
                     
+                    # Formatar data de vencimento se existir
+                    if dt_vencto:
+                        ws_fornecedor.cell(row=row, column=4).number_format = 'dd/mm/yyyy'
+                    
                     # Formatar valor como moeda
                     ws_fornecedor.cell(row=row, column=5).number_format = '#,##0.00'
-                
+
                 # Ajustar larguras
-                ws_fornecedor.column_dimensions['A'].width = 15
-                ws_fornecedor.column_dimensions['B'].width = 25
-                ws_fornecedor.column_dimensions['C'].width = 10
-                ws_fornecedor.column_dimensions['D'].width = 40
-                ws_fornecedor.column_dimensions['E'].width = 15
+                ws_fornecedor.column_dimensions['A'].width = 15  # Data
+                ws_fornecedor.column_dimensions['B'].width = 10  # Tipo
+                ws_fornecedor.column_dimensions['C'].width = 40  # Referência
+                ws_fornecedor.column_dimensions['D'].width = 15  # Vencimento
+                ws_fornecedor.column_dimensions['E'].width = 15  # Valor
+                ws_fornecedor.column_dimensions['F'].width = 30  # Observação
             
             # Salvar o arquivo
             wb.save(arquivo)
