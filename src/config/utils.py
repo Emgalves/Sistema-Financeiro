@@ -24,6 +24,147 @@ from src.config.config import (
     ARQUIVO_CONTROLE
 )
 
+
+# === CLIENTES ===
+def obter_clientes_ativos(mostrar_inativos=False):
+    """
+    Obtém a lista de clientes ativos (sem data final ou com data final futura)
+    
+    Args:
+        mostrar_inativos (bool): Se True, retorna todos os clientes, incluindo inativos
+                                 Se False, retorna apenas clientes ativos
+    
+    Returns:
+        list: Lista de nomes dos clientes ativos (ou todos os clientes se mostrar_inativos=True)
+        dict: Dicionário com informações adicionais de cada cliente (pode ser útil para exibir status)
+    """
+    try:
+        # Verifica se o arquivo de clientes existe
+        if not os.path.exists(ARQUIVO_CLIENTES):
+            print(f"Arquivo de clientes não encontrado: {ARQUIVO_CLIENTES}")
+            return [], {}
+        
+        # Carrega os dados do arquivo de clientes
+        df_clientes = pd.read_excel(ARQUIVO_CLIENTES, sheet_name='Clientes')
+        
+        # Data atual para comparação
+        data_atual = datetime.now().date()
+        
+        # Dicionário para armazenar informações adicionais de clientes
+        info_clientes = {}
+        
+        # Lista de clientes ativos
+        clientes_ativos = []
+        
+        # Itera sobre os clientes (assumindo que a coluna A tem o nome e a coluna E tem a data final)
+        for _, row in df_clientes.iterrows():
+            # Pular linhas sem nome de cliente
+            if pd.isna(row.iloc[0]) or not row.iloc[0]:
+                continue
+            
+            nome_cliente = str(row.iloc[0]).strip()
+            data_final = None
+            
+            # Verifica se a coluna E (índice 4) existe e tem uma data final
+            if len(row) > 4 and not pd.isna(row.iloc[4]):
+                try:
+                    # Tenta converter para data
+                    data_final = pd.to_datetime(row.iloc[4]).date()
+                except:
+                    # Se falhar, tenta outros formatos ou deixa como None
+                    try:
+                        if isinstance(row.iloc[4], str):
+                            data_final = datetime.strptime(row.iloc[4], '%d/%m/%Y').date()
+                    except:
+                        data_final = None
+            
+            # Verifica se o cliente está ativo (sem data final ou data final futura)
+            cliente_ativo = data_final is None or data_final > data_atual
+            
+            # Armazenar informações adicionais
+            info_clientes[nome_cliente] = {
+                'ativo': cliente_ativo,
+                'data_final': data_final,
+                'arquivo': os.path.join(PASTA_CLIENTES, f"{nome_cliente}.xlsx")
+            }
+            
+            # Adicionar à lista de clientes ativos ou todos, dependendo do parâmetro
+            if mostrar_inativos or cliente_ativo:
+                clientes_ativos.append(nome_cliente)
+        
+        # Retorna a lista ordenada e o dicionário de informações
+        return sorted(clientes_ativos), info_clientes
+        
+    except Exception as e:
+        print(f"Erro ao obter clientes ativos: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return [], {}
+
+
+def atualizar_combobox_clientes(combobox, mostrar_inativos=False):
+    """
+    Atualiza um combobox com a lista de clientes ativos
+    
+    Args:
+        combobox: O widget Combobox a ser atualizado
+        mostrar_inativos (bool): Se True, inclui clientes inativos no combobox
+    
+    Returns:
+        dict: Dicionário com informações dos clientes
+    """
+    clientes, info_clientes = obter_clientes_ativos(mostrar_inativos)
+    
+    # Limpar lista atual
+    combobox['values'] = []
+    
+    # Atualizar combobox
+    combobox['values'] = clientes
+    
+    # Se houver clientes, selecionar o primeiro
+    if clientes:
+        combobox.current(0)
+    
+    return info_clientes
+
+
+def cliente_esta_ativo(nome_cliente):
+    """
+    Verifica se um cliente específico está ativo
+    
+    Args:
+        nome_cliente (str): Nome do cliente a verificar
+    
+    Returns:
+        bool: True se o cliente estiver ativo, False caso contrário
+    """
+    _, info_clientes = obter_clientes_ativos(mostrar_inativos=True)
+    
+    if nome_cliente in info_clientes:
+        return info_clientes[nome_cliente]['ativo']
+    
+    # Se o cliente não for encontrado, retorna False
+    return False
+
+
+def obter_info_cliente(nome_cliente):
+    """
+    Obtém informações detalhadas sobre um cliente específico
+    
+    Args:
+        nome_cliente (str): Nome do cliente
+    
+    Returns:
+        dict: Dicionário com informações do cliente ou None se não encontrado
+    """
+    _, info_clientes = obter_clientes_ativos(mostrar_inativos=True)
+    
+    if nome_cliente in info_clientes:
+        return info_clientes[nome_cliente]
+    
+    return None
+
+
 # === DATA VALIDATION AND FORMATTING ===
 def validar_data(data_str):
     """Valida se uma string está no formato de data correto"""
