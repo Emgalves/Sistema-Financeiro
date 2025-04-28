@@ -788,17 +788,17 @@ class SistemaRelatorios:
             else:
                 # Tentar importar do caminho atual
                 try:
-                    print(f"Tentando importar direto: {nome_modulo}")
-                    modulo = importlib.import_module(nome_modulo)
+                    print(f"Tentando importar de src: src.{nome_modulo}")
+                    modulo = importlib.import_module(f"src.{nome_modulo}")
                 except ImportError as e1:
                     print(f"Erro importando direto: {str(e1)}")
                     # Tentar importar de src
-                    try:
-                        print(f"Tentando importar de src: src.{nome_modulo}")
-                        modulo = importlib.import_module(f"src.{nome_modulo}")
-                    except ImportError as e2:
-                        print(f"Erro importando de src: {str(e2)}")
-                        raise ImportError(f"Não foi possível importar {nome_modulo}: {str(e1)}, {str(e2)}")
+                    # try:
+                    #     print(f"Tentando importar de src: src.{nome_modulo}")
+                    #     modulo = importlib.import_module(f"src.{nome_modulo}")
+                    # except ImportError as e2:
+                    #     print(f"Erro importando de src: {str(e2)}")
+                    #     raise ImportError(f"Não foi possível importar {nome_modulo}: {str(e1)}, {str(e2)}")
             
             # Armazenar módulo carregado
             self.modulos_carregados[nome_modulo] = modulo
