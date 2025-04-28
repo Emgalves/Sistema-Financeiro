@@ -49,8 +49,10 @@ from src.config.config import (
 
 from src.config.utils import (
         PASTA_CLIENTES,
-        formatar_moeda,
         validar_data,
+        validar_data_quinzena,
+        calcular_proxima_data_quinzena,
+        formatar_moeda,
         formatar_valor_excel,
         aplicar_formatacao_celula,
         buscar_dados_bancarios_fornecedor
@@ -74,6 +76,13 @@ class InterfaceDespesasRateadas:
         altura_maxima = min(1000, altura_tela - 100)  # 100 pixels de margem
 
         self.root.geometry(f"900x{altura_maxima}")
+
+        # Importar funções necessárias
+        from src.config.utils import validar_data_quinzena, calcular_proxima_data_quinzena
+        
+        # Calcular a próxima data de relatório válida (dia 5 ou 20)
+        data_atual = datetime.now().date()
+        self.proxima_data_quinzena, _ = calcular_proxima_data_quinzena(data_atual)
         
         # Variáveis
         self.clientes = []
@@ -196,8 +205,13 @@ class InterfaceDespesasRateadas:
         self.valor_total.grid(row=1, column=1, padx=5, pady=5, sticky='w')
         
         ttk.Label(frame_despesa, text="Data de Referência:").grid(row=1, column=2, padx=5, pady=5, sticky='e')
-        self.data_ref = DateEntry(frame_despesa, width=15, date_pattern='dd/mm/yyyy', locale='pt_BR')
-        self.data_ref.grid(row=1, column=3, padx=5, pady=5, sticky='w')
+        self.data_rel = DateEntry(frame_despesa, width=15, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_rel.set_date(self.proxima_data_quinzena)  # Definir a data calculada
+        self.data_rel.grid(row=1, column=3, padx=5, pady=5, sticky='w')
+
+        ttk.Label(frame_despesa, text="Data de Vencimento:").grid(row=1, column=4, padx=5, pady=5, sticky='e')
+        self.data_vencto = DateEntry(frame_despesa, width=15, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_vencto.grid(row=1, column=5, padx=5, pady=5, sticky='w')
         
         # Linha 2: Tipo de Despesa e Observações
         ttk.Label(frame_despesa, text="Tipo de Despesa:").grid(row=2, column=0, padx=5, pady=5, sticky='e')
@@ -289,6 +303,11 @@ class InterfaceDespesasRateadas:
         ttk.Button(frame_ajuste, text="Aplicar ao Selecionado", 
                 command=self.aplicar_percentual_selecionado).pack(side='left', padx=5, pady=5)
         
+        ttk.Separator(frame_ajuste, orient='vertical').pack(side='left', padx=10, fill='y', pady=5)
+
+        ttk.Button(frame_ajuste, text="Editar Valores Individuais", 
+                    command=self.janela_editar_valores_individuais).pack(side='left', padx=5, pady=5)
+
         # Frame para botões de ação
         frame_botoes = ttk.Frame(self.aba_rateio)
         frame_botoes.pack(fill='x', padx=10, pady=10)
@@ -776,9 +795,10 @@ class InterfaceDespesasRateadas:
                 valores = self.tree_clientes.item(item)['values']
                 novo_status = "✓" if cliente['ativo'] else " "
                 
+                # Usar o nome do cliente da tag, não dos valores
                 self.tree_clientes.item(item, values=(
                     novo_status,
-                    valores[1],
+                    nome_cliente,  # Usar o nome das tags em vez de valores[1]
                     valores[2],
                     valores[3]
                 ))
@@ -800,13 +820,16 @@ class InterfaceDespesasRateadas:
             self.tree_clientes.heading('Percentual', text='Valor (R$)')
             self.lbl_total_rateio.config(text=f"Total Rateado: R$ {self.calcular_total_valor():.2f}")
         
-        # Limpar os valores atuais
+        # Limpar os valores atuais preservando o status ativo e o nome do cliente
         for item in self.tree_clientes.get_children():
             valores = self.tree_clientes.item(item)['values']
+            ativo = valores[0]  # Status ativo
+            nome_cliente = valores[1]  # Nome do cliente
+            
             if modo == "percentual":
-                self.tree_clientes.item(item, values=(valores[0], "0.00%", "R$ 0.00"))
+                self.tree_clientes.item(item, values=(ativo, nome_cliente, "0.00%", "R$ 0.00"))
             else:
-                self.tree_clientes.item(item, values=(valores[0], "R$ 0.00", "R$ 0.00"))
+                self.tree_clientes.item(item, values=(ativo, nome_cliente, "R$ 0.00", "R$ 0.00"))
         
         # Resetar valores nos dados
         for cliente in self.clientes:
@@ -827,8 +850,12 @@ class InterfaceDespesasRateadas:
         coluna = self.tree_clientes.identify_column(event.x)
         coluna_idx = int(coluna[1:]) - 1  # Converter #1, #2, etc. para 0, 1, etc.
         
-        # Só permitir edição na coluna Percentual ou Valor (índice 1)
-        if coluna_idx != 1:
+        # No modo "valor", permitir edição na coluna 2 (Valor)
+        # No modo "percentual", permitir edição na coluna 2 (Percentual)
+        if (self.modo_rateio.get() == "valor" and coluna_idx == 2) or \
+        (self.modo_rateio.get() == "percentual" and coluna_idx == 2):
+            pass
+        else:
             return
             
         # Obter o item selecionado
@@ -838,8 +865,13 @@ class InterfaceDespesasRateadas:
             
         # Obter o valor atual
         valores = self.tree_clientes.item(item)['values']
-        cliente_nome = valores[0]
-        valor_texto = valores[1]
+        nome_cliente = valores[1]  # Nome do cliente está no índice 1
+        valor_texto = valores[2]   # Percentual ou Valor está no índice 2
+        
+        # Obter o tag para identificar o cliente
+        tags = self.tree_clientes.item(item)['tags']
+        if not tags:
+            return
         
         # Limpar símbolos e formatos
         if self.modo_rateio.get() == "percentual":
@@ -872,19 +904,25 @@ class InterfaceDespesasRateadas:
                 novo_valor_float = float(novo_valor)
                 
                 # Atualizar o valor no cliente correspondente
-                for i, cliente in enumerate(self.clientes):
-                    if cliente['nome'] == cliente_nome:
+                for cliente in self.clientes:
+                    if cliente['nome'] == tags[0]:  # Usando a tag como identificador
                         if self.modo_rateio.get() == "percentual":
                             cliente['percentual'] = novo_valor_float
+                            # Atualizar a treeview
+                            status = "✓" if cliente['ativo'] else " "
                             self.tree_clientes.item(item, values=(
-                                cliente_nome, 
+                                status,
+                                cliente['nome'], 
                                 f"{novo_valor_float:.2f}%", 
                                 f"R$ {cliente['valor']:.2f}"
                             ))
                         else:  # modo == "valor"
                             cliente['valor'] = novo_valor_float
+                            # Atualizar a treeview
+                            status = "✓" if cliente['ativo'] else " "
                             self.tree_clientes.item(item, values=(
-                                cliente_nome, 
+                                status,
+                                cliente['nome'], 
                                 f"R$ {novo_valor_float:.2f}", 
                                 f"R$ {cliente['valor']:.2f}"
                             ))
@@ -903,6 +941,164 @@ class InterfaceDespesasRateadas:
         entry.bind("<Return>", finalizar_edicao)
         entry.bind("<FocusOut>", finalizar_edicao)
     
+    def janela_editar_valores_individuais(self):
+        """Abre uma janela para editar valores individuais para cada cliente"""
+        # Verificar se estamos no modo valor
+        if self.modo_rateio.get() != "valor":
+            messagebox.showinfo("Informação", "Esta funcionalidade está disponível apenas no modo de rateio por valor.")
+            return
+        
+        # Verificar se há um valor total definido
+        try:
+            valor_total = float(self.valor_total.get().replace(',', '.'))
+            if valor_total <= 0:
+                messagebox.showerror("Erro", "Informe um valor total válido primeiro!")
+                return
+        except ValueError:
+            messagebox.showerror("Erro", "Informe um valor total válido primeiro!")
+            return
+        
+        # Criar janela para edição de valores
+        janela = tk.Toplevel(self.root)
+        janela.title("Editar Valores Individuais")
+        janela.geometry("500x550")
+        janela.transient(self.root)
+        janela.grab_set()
+        
+        # Frame principal
+        frame = ttk.Frame(janela, padding="10")
+        frame.pack(fill='both', expand=True)
+        
+        # Título
+        ttk.Label(frame, text="Editar Valores para Cada Cliente", font=('Helvetica', 12, 'bold')).pack(pady=10)
+        ttk.Label(frame, text=f"Valor Total: R$ {valor_total:.2f}").pack(pady=5)
+        
+        # Criar frame com scroll para listar clientes
+        frame_clientes = ttk.Frame(frame)
+        frame_clientes.pack(fill='both', expand=True, pady=10)
+        
+        # Canvas e scrollbar
+        canvas = tk.Canvas(frame_clientes)
+        scrollbar = ttk.Scrollbar(frame_clientes, orient="vertical", command=canvas.yview)
+        scroll_frame = ttk.Frame(canvas)
+        
+        scroll_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Variáveis para armazenar os valores temporariamente
+        valor_entries = {}
+        
+        # Adicionar campos para cada cliente
+        row = 0
+        clientes_ativos = [c for c in self.clientes if c['ativo']]
+        
+        for cliente in clientes_ativos:
+            ttk.Label(scroll_frame, text=cliente['nome'], width=30, anchor='w').grid(row=row, column=0, padx=5, pady=2, sticky='w')
+            
+            valor_var = tk.StringVar(value=f"{cliente['valor']:.2f}")
+            valor_entries[cliente['nome']] = valor_var
+            
+            ttk.Entry(scroll_frame, textvariable=valor_var, width=15).grid(row=row, column=1, padx=5, pady=2)
+            ttk.Label(scroll_frame, text="R$").grid(row=row, column=2, padx=0, pady=2, sticky='w')
+            
+            row += 1
+        
+        # Mostrar soma atual
+        def atualizar_soma(*args):
+            try:
+                soma = sum(float(valor_entries[c['nome']].get().replace(',', '.')) for c in clientes_ativos)
+                diferenca = valor_total - soma
+                lbl_soma.config(text=f"Total Atual: R$ {soma:.2f}")
+                lbl_diferenca.config(text=f"Diferença: R$ {diferenca:.2f}")
+                
+                # Mudar cor do texto da diferença
+                if abs(diferenca) < 0.01:  # Tolerância de 1 centavo
+                    lbl_diferenca.config(foreground="green")
+                else:
+                    lbl_diferenca.config(foreground="red")
+            except ValueError:
+                lbl_soma.config(text="Total Atual: Erro")
+                lbl_diferenca.config(text="Diferença: Erro", foreground="red")
+        
+        # Vincular eventos de mudança
+        for var in valor_entries.values():
+            var.trace_add("write", atualizar_soma)
+        
+        # Frame para mostrar resumo
+        frame_resumo = ttk.Frame(frame)
+        frame_resumo.pack(fill='x', pady=5)
+        
+        lbl_soma = ttk.Label(frame_resumo, text="Total Atual: R$ 0.00")
+        lbl_soma.pack(side='left', padx=10)
+        
+        lbl_diferenca = ttk.Label(frame_resumo, text="Diferença: R$ 0.00")
+        lbl_diferenca.pack(side='left', padx=10)
+        
+        # Atualizar soma inicial
+        atualizar_soma()
+        
+        # Botões
+        frame_botoes = ttk.Frame(frame)
+        frame_botoes.pack(fill='x', pady=10)
+        
+        def aplicar_valores():
+            try:
+                # Verificar se a soma está correta
+                soma = sum(float(valor_entries[c['nome']].get().replace(',', '.')) for c in clientes_ativos)
+                diferenca = valor_total - soma
+                
+                if abs(diferenca) > 0.01:  # Tolerância de 1 centavo
+                    if not messagebox.askyesno("Confirmação", 
+                                            f"A soma dos valores (R$ {soma:.2f}) não corresponde ao valor total (R$ {valor_total:.2f}).\n"
+                                            f"Deseja continuar mesmo assim?"):
+                        return
+                
+                # Aplicar valores
+                for cliente in self.clientes:
+                    if cliente['nome'] in valor_entries:
+                        cliente['valor'] = float(valor_entries[cliente['nome']].get().replace(',', '.'))
+                
+                # Atualizar a treeview
+                for item in self.tree_clientes.get_children():
+                    tags = self.tree_clientes.item(item)['tags']
+                    if tags:
+                        nome_cliente = tags[0]
+                        for cliente in self.clientes:
+                            if cliente['nome'] == nome_cliente:
+                                status = "✓" if cliente['ativo'] else " "
+                                self.tree_clientes.item(item, values=(
+                                    status,
+                                    cliente['nome'], 
+                                    f"R$ {cliente['valor']:.2f}", 
+                                    f"R$ {cliente['valor']:.2f}"
+                                ))
+                                break
+                
+                # Atualizar resumo
+                self.atualizar_resumo()
+                
+                # Fechar janela
+                janela.destroy()
+                messagebox.showinfo("Sucesso", "Valores aplicados com sucesso!")
+                
+            except ValueError as e:
+                messagebox.showerror("Erro", f"Erro ao aplicar valores: {str(e)}")
+        
+        ttk.Button(frame_botoes, text="Aplicar", command=aplicar_valores).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Cancelar", command=janela.destroy).pack(side='right', padx=5)
+        
+        # Centralizar a janela
+        janela.update_idletasks()
+        width = janela.winfo_width()
+        height = janela.winfo_height()
+        x = (janela.winfo_screenwidth() // 2) - (width // 2)
+        y = (janela.winfo_screenheight() // 2) - (height // 2)
+        janela.geometry(f'{width}x{height}+{x}+{y}')
+
     def atualizar_resumo(self):
         """Atualiza as informações de resumo"""
         # Atualizar o número de clientes
@@ -1136,15 +1332,7 @@ class InterfaceDespesasRateadas:
             # Obter datas do relatório e de vencimento
             data_rel_obj = self.data_rel.get_date()
             data_vencto_obj = self.data_vencto.get_date()
-            
-            # Verificar e ajustar a data do relatório para dia 5 ou 20
-            # data_rel_ajustada, mensagem = validar_data_quinzena(data_rel_obj)
-            # if mensagem:
-            #     if not messagebox.askyesno("Confirmação", 
-            #                             f"{mensagem}\nDeseja continuar com esta data?"):
-            #         return
-            #     data_rel_obj = data_rel_ajustada
-            
+                        
             # Converter datas para string formatada
             data_rel_str = data_rel_obj.strftime('%d/%m/%Y')
             data_vencto_str = data_vencto_obj.strftime('%d/%m/%Y')
@@ -1257,15 +1445,25 @@ class InterfaceDespesasRateadas:
     def registrar_historico(self, registros):
         """Registra o rateio no histórico"""
         try:
+            from src.config.config import BASE_PATH  # Importar o caminho base
+            
             data_atual = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            data_rel = self.data_rel.get()
+            data_rel_obj = self.data_ref.get_date()
+            data_rel_str = data_rel_obj.strftime('%d/%m/%Y')
             descricao = self.descricao.get()
             valor_total = float(self.valor_total.get().replace(',', '.'))
             tipo_despesa = self.tipo_despesa.get()
             
+            # Caminho para salvar no Google Drive
+            drive_path = Path(BASE_PATH) / "Financeiro" / "Planilhas_Base" / "historico_rateios.xlsx"
+            
+            # Certificar-se de que a pasta existe
+            drive_dir = drive_path.parent
+            if not drive_dir.exists():
+                drive_dir.mkdir(parents=True, exist_ok=True)
+            
             # Criar arquivo de histórico se não existir
-            historico_path = Path('historico_rateios.xlsx')
-            if not historico_path.exists():
+            if not drive_path.exists():
                 wb = Workbook()
                 ws = wb.active
                 ws.title = "Histórico"
@@ -1276,16 +1474,16 @@ class InterfaceDespesasRateadas:
                 for col, header in enumerate(headers, 1):
                     ws.cell(row=1, column=col, value=header)
                     
-                wb.save(historico_path)
+                wb.save(drive_path)
             
             # Abrir arquivo de histórico
-            wb = load_workbook(historico_path)
+            wb = load_workbook(drive_path)
             ws = wb["Histórico"]
             
             # Adicionar registro principal
             proxima_linha = ws.max_row + 1
             ws.cell(row=proxima_linha, column=1, value=data_atual)
-            ws.cell(row=proxima_linha, column=2, value=data_rel)
+            ws.cell(row=proxima_linha, column=2, value=data_rel_str)
             ws.cell(row=proxima_linha, column=3, value=descricao)
             
             # Aplicar formato monetário à coluna de Valor Total
@@ -1323,8 +1521,11 @@ class InterfaceDespesasRateadas:
                 
                 ws_details.cell(row=proxima_linha_det, column=4, value=registro['status'])
             
-            # Salvar histórico
-            wb.save(historico_path)
+            # Salvar histórico no Google Drive
+            wb.save(drive_path)
+            
+            # Registrar log da ação
+            log_action(f"Rateio de despesa aplicado: {descricao} - R$ {valor_total:.2f} - {len(registros)} clientes")
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao registrar histórico: {str(e)}")
@@ -1437,17 +1638,21 @@ class InterfaceDespesasRateadas:
     def mostrar_historico_rateios(self):
         """Carrega e mostra o histórico de rateios"""
         try:
+            from src.config.config import BASE_PATH  # Importar o caminho base
+            
             # Limpar a treeview
             for item in self.tree_historico.get_children():
                 self.tree_historico.delete(item)
                     
+            # Caminho do arquivo no Google Drive
+            drive_path = Path(BASE_PATH) / "Financeiro" / "Planilhas_Base" / "historico_rateios.xlsx"
+            
             # Verificar se o arquivo de histórico existe
-            historico_path = Path('historico_rateios.xlsx')
-            if not historico_path.exists():
+            if not drive_path.exists():
                 return
                     
             # Abrir arquivo de histórico
-            wb = load_workbook(historico_path)
+            wb = load_workbook(drive_path)
             ws = wb["Histórico"]
             
             # Preencher a treeview com os registros
@@ -1476,6 +1681,8 @@ class InterfaceDespesasRateadas:
     def filtrar_historico(self):
         """Filtra o histórico de rateios"""
         try:
+            from src.config.config import BASE_PATH  # Importar o caminho base
+            
             # Obter dados do filtro
             data_inicial = self.data_inicial.get_date()
             data_final = self.data_final.get_date()
@@ -1485,13 +1692,15 @@ class InterfaceDespesasRateadas:
             for item in self.tree_historico.get_children():
                 self.tree_historico.delete(item)
                 
+            # Caminho do arquivo no Google Drive
+            drive_path = Path(BASE_PATH) / "Financeiro" / "Planilhas_Base" / "historico_rateios.xlsx"
+            
             # Verificar se o arquivo de histórico existe
-            historico_path = Path('historico_rateios.xlsx')
-            if not historico_path.exists():
+            if not drive_path.exists():
                 return
                 
             # Abrir arquivo de histórico
-            wb = load_workbook(historico_path)
+            wb = load_workbook(drive_path)
             ws = wb["Histórico"]
             
             # Preencher a treeview com os registros filtrados
@@ -1521,12 +1730,16 @@ class InterfaceDespesasRateadas:
                 # Adicionar à treeview
                 self.tree_historico.insert('', 'end', values=row)
             
+            wb.close()
+            
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao filtrar histórico: {str(e)}")
     
     def mostrar_detalhes_rateio(self, event):
         """Mostra os detalhes do rateio selecionado"""
         try:
+            from src.config.config import BASE_PATH  # Importar o caminho base
+            
             # Obter item selecionado
             selecionado = self.tree_historico.selection()
             if not selecionado:
@@ -1539,13 +1752,15 @@ class InterfaceDespesasRateadas:
             for item in self.tree_detalhes.get_children():
                 self.tree_detalhes.delete(item)
                     
+            # Caminho do arquivo no Google Drive
+            drive_path = Path(BASE_PATH) / "Financeiro" / "Planilhas_Base" / "historico_rateios.xlsx"
+            
             # Verificar se o arquivo de histórico existe
-            historico_path = Path('historico_rateios.xlsx')
-            if not historico_path.exists():
+            if not drive_path.exists():
                 return
                     
             # Abrir arquivo de histórico
-            wb = load_workbook(historico_path)
+            wb = load_workbook(drive_path)
             if "Detalhes" not in wb.sheetnames:
                 return
                     
