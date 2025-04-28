@@ -788,17 +788,17 @@ class SistemaRelatorios:
             else:
                 # Tentar importar do caminho atual
                 try:
-                    print(f"Tentando importar de src: src.{nome_modulo}")
-                    modulo = importlib.import_module(f"src.{nome_modulo}")
+                    print(f"Tentando importar direto: {nome_modulo}")
+                    modulo = importlib.import_module(nome_modulo)
                 except ImportError as e1:
                     print(f"Erro importando direto: {str(e1)}")
                     # Tentar importar de src
-                    # try:
-                    #     print(f"Tentando importar de src: src.{nome_modulo}")
-                    #     modulo = importlib.import_module(f"src.{nome_modulo}")
-                    # except ImportError as e2:
-                    #     print(f"Erro importando de src: {str(e2)}")
-                    #     raise ImportError(f"Não foi possível importar {nome_modulo}: {str(e1)}, {str(e2)}")
+                    try:
+                        print(f"Tentando importar de src: src.{nome_modulo}")
+                        modulo = importlib.import_module(f"src.{nome_modulo}")
+                    except ImportError as e2:
+                        print(f"Erro importando de src: {str(e2)}")
+                        raise ImportError(f"Não foi possível importar {nome_modulo}: {str(e1)}, {str(e2)}")
             
             # Armazenar módulo carregado
             self.modulos_carregados[nome_modulo] = modulo
@@ -825,6 +825,25 @@ class SistemaRelatorios:
                     "Este relatório ainda está em desenvolvimento e não está disponível."
                 )
                 return
+            
+            # Para o relatório de lançamentos pendentes, usamos uma abordagem específica
+            if relatorio["id"] == "lancamentos_pendentes":
+                modulo = self.carregar_modulo(relatorio["modulo"])
+                if not modulo:
+                    return
+                    
+                # Obter a classe do relatório
+                try:
+                    classe_relatorio = getattr(modulo, relatorio["classe"])
+                    # Iniciar o relatório de lançamentos pendentes
+                    self.iniciar_relatorio_lancamentos_pendentes(classe_relatorio)
+                    return
+                except AttributeError:
+                    messagebox.showerror(
+                        "Erro",
+                        f"Classe {relatorio['classe']} não encontrada no módulo {relatorio['modulo']}"
+                    )
+                    return
             
             # Para o relatório de fornecedores, usar uma abordagem mais direta
             if relatorio["id"] == "fornecedores":
@@ -1212,15 +1231,10 @@ class SistemaRelatorios:
         Inicia a geração do relatório de lançamentos pendentes
         """
         try:
-            # Debug - verificar se classe_relatorio foi passada
-            print(f"Classe recebida: {classe_relatorio}")
-            
             # Verificar se pasta foi selecionada
             if not hasattr(self, 'pasta_lancamentos'):
                 messagebox.showerror("Erro", "Por favor, selecione uma pasta primeiro.")
                 return
-            
-            print(f"Pasta selecionada: {self.pasta_lancamentos}")
             
             # Data de referência
             data_ref = self.data_referencia_pendentes.get_date() if hasattr(self, 'data_referencia_pendentes') else datetime.now()
@@ -1229,15 +1243,11 @@ class SistemaRelatorios:
             if isinstance(data_ref, date) and not isinstance(data_ref, datetime):
                 data_ref = datetime.combine(data_ref, datetime.min.time())
             
-            print(f"Data de referência: {data_ref}")
-            
             # Instanciar relatório
             relatorio = classe_relatorio()
-            print("Instância do relatório criada com sucesso")
             
             # Gerar relatório
             arquivo_saida = os.path.join(self.pasta_lancamentos, "relatorio_lancamentos_pendentes.html")
-            print(f"Arquivo de saída: {arquivo_saida}")
             
             # Usar o método gerar_relatorio_pendentes que já existe na classe
             if relatorio.gerar_relatorio_pendentes(self.pasta_lancamentos, arquivo_saida, data_ref):
@@ -1284,7 +1294,7 @@ class SistemaRelatorios:
             
             # Caminho para o arquivo de clientes
             try:
-                from config.config import ARQUIVO_CLIENTES
+                from src.config.config import ARQUIVO_CLIENTES
                 logger.info(f"Carregando clientes de: {ARQUIVO_CLIENTES}")
             except ImportError:
                 # Caminho padrão se não conseguir importar das configurações
