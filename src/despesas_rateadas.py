@@ -82,7 +82,7 @@ class InterfaceDespesasRateadas:
         
         # Calcular a próxima data de relatório válida (dia 5 ou 20)
         data_atual = datetime.now().date()
-        self.proxima_data_quinzena, _ = calcular_proxima_data_quinzena(data_atual)
+        self.proxima_data_quinzena = calcular_proxima_data_quinzena(data_atual)
         
         # Variáveis
         self.clientes = []
@@ -1448,7 +1448,7 @@ class InterfaceDespesasRateadas:
             from src.config.config import BASE_PATH  # Importar o caminho base
             
             data_atual = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            data_rel_obj = self.data_ref.get_date()
+            data_rel_obj = self.data_rel.get_date()
             data_rel_str = data_rel_obj.strftime('%d/%m/%Y')
             descricao = self.descricao.get()
             valor_total = float(self.valor_total.get().replace(',', '.'))
