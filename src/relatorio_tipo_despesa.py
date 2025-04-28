@@ -39,6 +39,9 @@ except ImportError as e:
     ARQUIVO_CLIENTES = BASE_PATH / "dados" / "clientes.xlsx"
     PASTA_CLIENTES = BASE_PATH / "dados" / "clientes"
 
+# Importar o utils.py
+from src.config.utils import atualizar_combobox_clientes, cliente_esta_ativo, obter_info_cliente
+
 try:
     from src.config.window_config import configurar_janela
     print("window_config importado com sucesso")
@@ -300,7 +303,7 @@ class RelatorioTipoDespesa:
         frame_tabela.pack(fill='both', expand=True, pady=5)
         
         # Criar TreeView para os lançamentos da data selecionada
-        colunas = ('data', 'tipo', 'nome', 'referencia', 'valor', 'observacao')
+        colunas = ('data', 'tipo', 'nome', 'referencia', 'dt_vencto', 'valor', 'observacao')
         self.tv_detalhes = ttk.Treeview(frame_tabela, columns=colunas, show='headings', height=15)
         
         # Configurar cabeçalhos
@@ -308,16 +311,18 @@ class RelatorioTipoDespesa:
         self.tv_detalhes.heading('tipo', text='Tipo de Despesa')
         self.tv_detalhes.heading('nome', text='Nome')
         self.tv_detalhes.heading('referencia', text='Referência')
+        self.tv_detalhes.heading('dt_vencto', text='Data Vencto')
         self.tv_detalhes.heading('valor', text='Valor (R$)')
         self.tv_detalhes.heading('observacao', text='Observação')
         
         # Configurar colunas
-        self.tv_detalhes.column('data', width=100, anchor='center')
-        self.tv_detalhes.column('tipo', width=150, anchor='w')
-        self.tv_detalhes.column('nome', width=200, anchor='w')
+        self.tv_detalhes.column('data', width=80, anchor='center')
+        self.tv_detalhes.column('tipo', width=50, anchor='center')  # Reduzido para mostrar apenas número
+        self.tv_detalhes.column('nome', width=210, anchor='w')
         self.tv_detalhes.column('referencia', width=250, anchor='w')
+        self.tv_detalhes.column('dt_vencto', width=80, anchor='center')
         self.tv_detalhes.column('valor', width=120, anchor='e')
-        self.tv_detalhes.column('observacao', width=200, anchor='w')
+        self.tv_detalhes.column('observacao', width=180, anchor='w')
         
         # Configurar scrollbars
         scrollbar_y = ttk.Scrollbar(frame_tabela, orient='vertical', command=self.tv_detalhes.yview)
@@ -383,41 +388,44 @@ class RelatorioTipoDespesa:
         self.frame_grafico.pack(fill='both', expand=True, pady=5)
     
     def atualizar_lista_clientes(self):
-        """Atualiza a lista de clientes no combobox"""
+        """Atualiza a lista de clientes no combobox usando a função centralizada"""
         try:
-            # Carregar arquivo de clientes
-            workbook = load_workbook(ARQUIVO_CLIENTES)
-            sheet = workbook['Clientes']  # Assumindo que existe uma aba chamada 'Clientes'
+            # Usar a função centralizada (apenas clientes ativos)
+            self.info_clientes = atualizar_combobox_clientes(self.cliente_combobox, mostrar_inativos=False)
             
-            # Limpar lista atual
-            self.cliente_combobox['values'] = []
-            
-            # Pegar todos os clientes (pulando o cabeçalho)
-            clientes = []
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Nome do cliente está na primeira coluna
-                    clientes.append(row[0])
-            
-            # Atualizar combobox
-            self.cliente_combobox['values'] = sorted(clientes)
-            workbook.close()
-            
-        except FileNotFoundError:
-            messagebox.showerror("Erro", "Arquivo de clientes não encontrado.")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
-    
+
+    # E modifique o método selecionar_cliente:
+
     def selecionar_cliente(self, event=None):
         """Atualiza o cliente selecionado"""
         self.cliente_atual = self.cliente_combobox.get()
         
         if self.cliente_atual:
-            # Atualizar label (se já tiver sido criada)
+            # Verificar se o cliente está ativo (extra proteção)
+            if not cliente_esta_ativo(self.cliente_atual):
+                messagebox.showwarning(
+                    "Cliente Inativo", 
+                    f"O cliente '{self.cliente_atual}' está inativo (contrato finalizado). " +
+                    "Os dados serão mostrados somente para consulta."
+                )
+            
+            # Obter informações do cliente
+            info_cliente = obter_info_cliente(self.cliente_atual)
+            
+            # Atualizar label
             if hasattr(self, 'lbl_cliente_resumo'):
-                self.lbl_cliente_resumo.config(text=f"Cliente: {self.cliente_atual}")
+                texto_cliente = f"Cliente: {self.cliente_atual}"
+                if info_cliente and not info_cliente['ativo']:
+                    texto_cliente += " (INATIVO)"
+                self.lbl_cliente_resumo.config(text=texto_cliente)
             
             # Definir o caminho do arquivo
-            self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
+            if info_cliente and 'arquivo' in info_cliente:
+                self.arquivo_cliente = info_cliente['arquivo']
+            else:
+                self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
     
     def gerar_relatorio(self):
         """Gera o relatório com base nos dados selecionados"""
@@ -469,6 +477,13 @@ class RelatorioTipoDespesa:
                 # Converter DATA_REL para datetime
                 self.df_despesas['DATA_REL'] = pd.to_datetime(self.df_despesas['DATA_REL'], errors='coerce')
                 
+                # Converter DT_VENCTO para datetime (se existir)
+                if 'DT_VENCTO' in self.df_despesas.columns:
+                    self.df_despesas['DT_VENCTO'] = pd.to_datetime(self.df_despesas['DT_VENCTO'], errors='coerce')
+                else:
+                    # Se não existir, criar coluna vazia
+                    self.df_despesas['DT_VENCTO'] = pd.NaT
+
                 # Garantir valores numéricos para a coluna valor
                 self.df_despesas['VALOR'] = pd.to_numeric(self.df_despesas['VALOR'], errors='coerce').fillna(0)
                 
@@ -735,11 +750,25 @@ class RelatorioTipoDespesa:
                 
                 # Obter tipo de despesa
                 tipo_num = row['TP_DESP_NUM'] if 'TP_DESP_NUM' in row else None
-                tipo_nome = self.tipos_despesas.get(tipo_num, row.get('TP_DESP', 'Não classificado'))
+                tipo_str = str(tipo_num) if tipo_num is not None else "?"
                 
                 # Obter nome e referência
                 nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
+                
+                # Obter referência e NF (juntar referência e NF)
                 referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
+                nf = row.get('NF', '') if pd.notna(row.get('NF', '')) else ''
+
+                # Concatenar referência e NF se ambos existirem
+                if referencia and nf:
+                    referencia = f"{referencia} - NF: {nf}"
+                elif nf:
+                    referencia = f"NF: {nf}"
+
+                # Data de vencimento
+                dt_vencto_str = ''
+                if 'DT_VENCTO' in row and pd.notna(row['DT_VENCTO']):
+                    dt_vencto_str = row['DT_VENCTO'].strftime('%d/%m/%Y')
                 
                 # Obter valor
                 valor = formatar_moeda_br(row['VALOR'])
@@ -752,9 +781,10 @@ class RelatorioTipoDespesa:
                     '', 'end', 
                     values=(
                         data_str,
-                        tipo_nome,
+                        tipo_str,
                         nome,
                         referencia,
+                        dt_vencto_str,
                         valor,
                         observacao
                     )
