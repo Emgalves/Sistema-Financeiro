@@ -1,3 +1,20 @@
 2025-04-28 09:15:57,726 - sistema - logger_config - INFO - Iniciando: Gerar relatório
 2025-04-28 09:24:27,057 - sistema - logger_config - INFO - Iniciando: Gerar relatório
 2025-04-28 09:24:55,127 - sistema - logger_config - INFO - Concluído: Gerar relatório
+2025-04-28 09:30:55,348 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 09:59:09,523 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 10:03:30,832 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 10:06:46,742 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 10:09:00,548 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 10:30:27,657 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-28 10:30:36,191 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 10:31:10,363 - sistema - logger_config - INFO - Concluído: Gerar relatório
+2025-04-28 10:33:01,338 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-04-28 10:33:11,830 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 10:33:23,574 - sistema - logger_config - INFO - Concluído: Gerar relatório
+2025-04-28 10:33:41,517 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 10:33:57,741 - sistema - logger_config - INFO - Concluído: Gerar relatório
+2025-04-28 11:42:42,746 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 11:43:58,499 - sistema - logger_config - INFO - Concluído: Gerar relatório
+2025-04-28 11:46:53,992 - sistema - logger_config - INFO - Iniciando: Gerar relatório
+2025-04-28 11:48:28,492 - sistema - logger_config - INFO - Concluído: Gerar relatório
