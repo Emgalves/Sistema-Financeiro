@@ -1455,7 +1455,7 @@ class InterfaceDespesasRateadas:
             tipo_despesa = self.tipo_despesa.get()
             
             # Caminho para salvar no Google Drive
-            drive_path = Path(BASE_PATH) / "Financeiro" / "Planilhas_Base" / "historico_rateios.xlsx"
+            drive_path = Path(BASE_PATH) / "historico_rateios.xlsx"
             
             # Certificar-se de que a pasta existe
             drive_dir = drive_path.parent
@@ -1645,7 +1645,7 @@ class InterfaceDespesasRateadas:
                 self.tree_historico.delete(item)
                     
             # Caminho do arquivo no Google Drive
-            drive_path = Path(BASE_PATH) / "Financeiro" / "Planilhas_Base" / "historico_rateios.xlsx"
+            drive_path = Path(BASE_PATH) / "historico_rateios.xlsx"
             
             # Verificar se o arquivo de histórico existe
             if not drive_path.exists():
@@ -1753,7 +1753,7 @@ class InterfaceDespesasRateadas:
                 self.tree_detalhes.delete(item)
                     
             # Caminho do arquivo no Google Drive
-            drive_path = Path(BASE_PATH) / "Financeiro" / "Planilhas_Base" / "historico_rateios.xlsx"
+            drive_path = Path(BASE_PATH) / "historico_rateios.xlsx"
             
             # Verificar se o arquivo de histórico existe
             if not drive_path.exists():
