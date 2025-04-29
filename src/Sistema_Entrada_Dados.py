@@ -6338,26 +6338,352 @@ class ImportadorRH:
         # Criar pasta se não existir
         os.makedirs(self.pasta_rh, exist_ok=True)
         
+        # Mapeamento de cabeçalhos (original -> sistema)
+        self.mapeamento_cabecalhos = {
+            'Empresa': 'Cliente',
+            'Nome Empregado': 'Nome_Empregado',
+            'Valor Líquido': 'Valor_Líquido',
+            'Tipo Folha': 'Tipo_Folha',
+            'Forma Pagto': 'Forma_Pagamento',
+            'Nome Banco': 'Nome_Banco',
+            'Agência': 'Agencia',
+            'N° Conta': 'Numero_Conta',
+            'Dig. Conta': 'Digito_Conta',
+            'Conta': 'Numero_Conta',
+            'Dígito': 'Digito_Conta'
+        }
+        
+        # Mapeamento para referências
+        self.mapeamento_referencias = {
+            '13º SALÁRIO': '13º SALÁRIO',
+            'ADIANTAMENTO 13º SALÁRIO': '13º SALÁRIO',
+            'ADIANTAMENTO': 'SALÁRIO',
+            'MENSAL': 'SALÁRIO',
+            'FÉRIAS': 'FÉRIAS',
+            'RESCISÃO NORMAL': 'RESCISÃO',
+            'RESCISÃO': 'RESCISÃO',
+            '13 SALÁRIO': '13º SALÁRIO',
+            '13': '13º SALÁRIO',
+            'FERIAS': 'FÉRIAS'
+        }
+        
     def selecionar_arquivo(self):
         """Permite ao usuário selecionar um arquivo Excel de RH para importar"""
         arquivo = filedialog.askopenfilename(
             title="Selecione a planilha de RH",
-            filetypes=[("Arquivos Excel", "*.xlsx *.xls")],
+            filetypes=[
+                ("Todos os formatos suportados", "*.xlsx *.xls *.csv *.txt *.xlsm *.xlsb"),
+                ("Arquivos Excel", "*.xlsx *.xls *.xlsm *.xlsb"),
+                ("Arquivos CSV", "*.csv *.txt")
+            ],
             initialdir=str(self.pasta_rh)
         )
         
         if not arquivo:
             return None
         
+        # Verificar se é formato antigo do Excel (.xls)
+        extensao = os.path.splitext(arquivo)[1].lower()
+        if extensao == '.xls':
+            # Tentar converter automaticamente
+            arquivo_convertido = self.converter_xls_para_xlsx(arquivo)
+            if arquivo_convertido:
+                arquivo = arquivo_convertido
+            else:
+                # Se a conversão falhou e o usuário cancelou, retornar None
+                return None
+        
         # Copiar arquivo para a pasta_rh se estiver em outro local
         nome_arquivo = os.path.basename(arquivo)
         destino = self.pasta_rh / nome_arquivo
         
         if Path(arquivo) != destino:
-            import shutil
-            shutil.copy2(arquivo, destino)
+            try:
+                import shutil
+                shutil.copy2(arquivo, destino)
+                print(f"Arquivo copiado para {destino}")
+            except Exception as e:
+                print(f"Erro ao copiar arquivo: {str(e)}")
+                # Continuar usando o arquivo original
+                return arquivo
             
         return destino
+
+    def converter_xls_para_xlsx(self, arquivo_origem):
+        """
+        Converte um arquivo XLS (Excel 97-2003) para XLSX (Excel moderno)
+        Returns:
+            str: Caminho do arquivo XLSX convertido ou None se falhar
+        """
+        print(f"Tentando converter arquivo {arquivo_origem} para formato XLSX")
+        
+        # Verificar se é um arquivo XLS
+        extensao = os.path.splitext(arquivo_origem)[1].lower()
+        if extensao != '.xls':
+            print("Arquivo não é XLS, não precisa converter")
+            return arquivo_origem
+        
+        # Criar nome para arquivo convertido
+        nome_base = os.path.splitext(os.path.basename(arquivo_origem))[0]
+        arquivo_destino = self.pasta_rh / f"{nome_base}_convertido.xlsx"
+        
+        # Método 1: Tentar usar Excel via COM (Windows)
+        try:
+            print("Tentando converter usando Excel via COM...")
+            import win32com.client
+            excel = win32com.client.Dispatch("Excel.Application")
+            excel.Visible = False
+            excel.DisplayAlerts = False
+            
+            wb = excel.Workbooks.Open(str(arquivo_origem))
+            wb.SaveAs(str(arquivo_destino), FileFormat=51)  # 51 = xlOpenXMLWorkbook (*.xlsx)
+            wb.Close()
+            excel.Quit()
+            
+            print(f"Arquivo convertido com sucesso para {arquivo_destino}")
+            return arquivo_destino
+        except Exception as e:
+            print(f"Erro ao converter usando Excel COM: {str(e)}")
+        
+        # Método 2: Tentar usar pandas para ler e salvar
+        try:
+            print("Tentando converter usando pandas...")
+            df = pd.read_excel(arquivo_origem, engine='xlrd')
+            df.to_excel(arquivo_destino, index=False)
+            print(f"Arquivo convertido com sucesso para {arquivo_destino} usando pandas")
+            return arquivo_destino
+        except Exception as e:
+            print(f"Erro ao converter usando pandas: {str(e)}")
+        
+        # Método 3: Tentar usar xlrd + openpyxl
+        try:
+            print("Tentando converter usando xlrd + openpyxl...")
+            import xlrd
+            from openpyxl import Workbook
+            
+            # Abrir arquivo XLS
+            xls_wb = xlrd.open_workbook(arquivo_origem)
+            xls_sheet = xls_wb.sheet_by_index(0)
+            
+            # Criar novo arquivo XLSX
+            xlsx_wb = Workbook()
+            xlsx_sheet = xlsx_wb.active
+            
+            # Copiar dados
+            for row_idx in range(xls_sheet.nrows):
+                for col_idx in range(xls_sheet.ncols):
+                    cell_value = xls_sheet.cell_value(row_idx, col_idx)
+                    xlsx_sheet.cell(row=row_idx+1, column=col_idx+1, value=cell_value)
+            
+            # Salvar arquivo XLSX
+            xlsx_wb.save(arquivo_destino)
+            print(f"Arquivo convertido com sucesso para {arquivo_destino} usando xlrd + openpyxl")
+            return arquivo_destino
+        except Exception as e:
+            print(f"Erro ao converter usando xlrd + openpyxl: {str(e)}")
+        
+        # Se todas as tentativas falharem, mostrar mensagem e perguntar ao usuário
+        resposta = messagebox.askyesno(
+            "Formato Antigo do Excel", 
+            "O arquivo selecionado está no formato antigo do Excel (97-2003) e não foi possível convertê-lo automaticamente.\n\n"
+            "Sugestão: Abra o arquivo no Excel e salve-o como 'Pasta de Trabalho do Excel' (.xlsx).\n\n"
+            "Deseja tentar abrir o arquivo original mesmo assim?"
+        )
+        
+        if resposta:
+            return arquivo_origem
+        else:
+            return None
+
+    def tentar_converter_para_csv(self, arquivo):
+        """Tenta converter o arquivo para CSV usando ferramentas externas"""
+        try:
+            # Perguntar ao usuário se deseja tentar converter
+            if not messagebox.askyesno(
+                "Problema de Formato", 
+                "O arquivo está em um formato difícil de ler. Deseja tentar convertê-lo para CSV?\n\n"
+                "Isso pode ajudar a importar arquivos com problemas de compatibilidade."
+            ):
+                return None
+                
+            # Criar um nome para o arquivo CSV de saída
+            base_nome = os.path.splitext(arquivo)[0]
+            csv_arquivo = f"{base_nome}_convertido.csv"
+            
+            # Verificar se o Excel está instalado no sistema e usar para conversão
+            try:
+                import win32com.client
+                excel = win32com.client.Dispatch("Excel.Application")
+                excel.Visible = False
+                
+                wb = excel.Workbooks.Open(arquivo)
+                # Salvar como CSV
+                wb.SaveAs(csv_arquivo, FileFormat=6)  # 6 = CSV
+                wb.Close()
+                excel.Quit()
+                
+                messagebox.showinfo(
+                    "Conversão Realizada", 
+                    f"Arquivo convertido para CSV: {csv_arquivo}\n\nTentando importar novamente."
+                )
+                return csv_arquivo
+            except Exception as e:
+                print(f"Erro ao usar Excel para conversão: {str(e)}")
+                
+                # Se o Excel falhar, tentar com pandas
+                try:
+                    # Tentar ler com xlrd, que pode funcionar para versões mais antigas
+                    with open(arquivo, 'rb') as file:
+                        data = file.read(8)  # Lê os primeiros 8 bytes para verificar a assinatura
+                    
+                    # Verificar se os primeiros bytes são consistentes com XLS
+                    if data[:2] == b'\xd0\xcf':  # Possível assinatura de arquivo XLS
+                        import xlrd
+                        wb = xlrd.open_workbook(arquivo, formatting_info=False)
+                        sheet = wb.sheet_by_index(0)
+                        
+                        # Extrair dados
+                        dados = []
+                        for row_idx in range(sheet.nrows):
+                            row_data = []
+                            for col_idx in range(sheet.ncols):
+                                cell_value = sheet.cell_value(row_idx, col_idx)
+                                row_data.append(cell_value)
+                            dados.append(row_data)
+                        
+                        # Criar DataFrame e salvar como CSV
+                        df = pd.DataFrame(dados)
+                        df.to_csv(csv_arquivo, index=False, header=False)
+                        return csv_arquivo
+                except Exception as xlrd_error:
+                    print(f"Erro ao converter manualmente: {str(xlrd_error)}")
+                
+                messagebox.showerror(
+                    "Erro na Conversão", 
+                    "Não foi possível converter o arquivo para CSV. Tente exportar o arquivo como CSV diretamente do Excel."
+                )
+                return None
+        except Exception as e:
+            print(f"Erro geral na conversão: {str(e)}")
+            return None
+    
+    def montar_dados_bancarios(self, row):
+        """Monta os dados bancários com base na forma de pagamento"""
+        forma_pagto = self.obter_valor_coluna(row, 'Forma Pagto')
+        
+        # Se for dinheiro, deixar em branco
+        if forma_pagto and str(forma_pagto).upper() == "DINHEIRO":
+            return ''
+            
+        # Se for PIX, usar a chave PIX se estiver disponível
+        if forma_pagto and str(forma_pagto).upper() == "PIX":
+            chave_pix = self.obter_valor_coluna(row, 'Chave PIX')
+            if chave_pix and not pd.isna(chave_pix):
+                return f"PIX: {chave_pix}"
+        
+        # Para Crédito CC ou outros casos, montar os dados bancários
+        nome_banco = self.obter_valor_coluna(row, 'Nome Banco', '')
+        # Substituir CAIXA ECONÔMICA FEDERAL por CAIXA
+        if nome_banco and "CAIXA ECONÔMICA FEDERAL" in str(nome_banco).upper():
+            nome_banco = "CAIXA"
+            
+        agencia = self.obter_valor_coluna(row, 'Agência', '')
+        
+        # Tentar diferentes nomes para o número da conta
+        numero_conta = self.obter_valor_coluna(row, 'N° Conta', '')
+        if not numero_conta:
+            numero_conta = self.obter_valor_coluna(row, 'Conta', '')
+        
+        # Tentar diferentes nomes para o dígito da conta
+        digito_conta = self.obter_valor_coluna(row, 'Dig. Conta', '')
+        if not digito_conta:
+            digito_conta = self.obter_valor_coluna(row, 'Dígito', '')
+            
+        # Formatar conta com dígito
+        conta = f"{numero_conta}"
+        if digito_conta and not pd.isna(digito_conta):
+            conta = f"{numero_conta}-{digito_conta}"
+            
+        # Obter CPF para incluir nos dados bancários
+        cpf = self.obter_valor_coluna(row, 'CPF', '')
+        
+        # Formatar o CPF se não estiver formatado
+        cpf_limpo = ''.join(filter(str.isdigit, str(cpf)))
+        if len(cpf_limpo) == 11:
+            cpf_formatado = f"{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}"
+        else:
+            cpf_formatado = cpf
+        
+        # Montar dados bancários
+        partes = [nome_banco, agencia, conta, cpf_formatado]
+        partes_filtradas = [str(p) for p in partes if p and not pd.isna(p) and str(p).strip()]
+        
+        if partes_filtradas:
+            return ' - '.join(partes_filtradas)
+        else:
+            return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+    
+    def obter_valor_coluna(self, row, coluna_original, default=''):
+        """Tenta obter o valor de uma coluna com tratamento de erro"""
+        try:
+            # Verificar se a coluna original existe
+            if coluna_original in row:
+                valor = row[coluna_original]
+                if pd.isna(valor):
+                    return default
+                return valor
+            
+            # Verificar se o nome mapeado existe
+            coluna_mapeada = self.mapeamento_cabecalhos.get(coluna_original)
+            if coluna_mapeada and coluna_mapeada in row:
+                valor = row[coluna_mapeada]
+                if pd.isna(valor):
+                    return default
+                return valor
+            
+            # Verificar se alguma variação do nome da coluna existe (case insensitive)
+            for col in row.index:
+                if coluna_original.lower() == col.lower():
+                    valor = row[col]
+                    if pd.isna(valor):
+                        return default
+                    return valor
+                    
+            return default
+        except:
+            return default
+    
+    def obter_referencia(self, row):
+        """Obtém a referência com base no tipo de folha"""
+        tipo_folha = self.obter_valor_coluna(row, 'Tipo Folha', 'MENSAL')
+        
+        # Padronizar o valor (remover acentos, converter para maiúsculo)
+        tipo_folha = self.normalizar_texto(tipo_folha)
+        
+        # Se o tipo_folha estiver no mapeamento, usá-lo
+        for key, value in self.mapeamento_referencias.items():
+            if self.normalizar_texto(key) == tipo_folha:
+                return value
+        
+        # Caso contrário, usar SALÁRIO como padrão
+        return 'SALÁRIO'
+    
+    def normalizar_texto(self, texto):
+        """Normaliza um texto para facilitar comparações"""
+        import unicodedata
+        import re
+        
+        # Converter para string
+        texto = str(texto).strip().upper()
+        
+        # Remover acentos
+        texto = unicodedata.normalize('NFKD', texto)
+        texto = ''.join([c for c in texto if not unicodedata.combining(c)])
+        
+        # Remover caracteres especiais
+        texto = re.sub(r'[^\w\s]', '', texto)
+        
+        return texto
     
     def importar_dados(self):
         """Importa dados da planilha de RH apenas para o cliente atualmente selecionado"""
@@ -6374,25 +6700,137 @@ class ImportadorRH:
         arquivo = self.selecionar_arquivo()
         if not arquivo:
             return
-            
+
+        # Tentar ler o arquivo
         try:
-            # Carregar planilha garantindo que o CPF seja lido como string
-            # Isso evita que o Excel/pandas converta para números e perca os zeros à esquerda
-            df = pd.read_excel(
-                arquivo,
-                dtype={'CPF': str}  # Forçar leitura do CPF como string
-            )
+            # Verificar extensão do arquivo
+            extensao = os.path.splitext(arquivo)[1].lower()
             
-            # Verificar se as colunas necessárias existem
-            colunas_necessarias = ['Cliente', 'Nome_Empregado', 'CPF', 'Valor_Líquido', 'Dados_Bancarios']
-            colunas_faltantes = [col for col in colunas_necessarias if col not in df.columns]
+            # Tentar diferentes métodos de importação baseados na extensão e no conteúdo
+            df = None
+            erro_leitura = None
             
-            if colunas_faltantes:
-                messagebox.showerror(
-                    "Erro", 
-                    f"As seguintes colunas estão faltando na planilha: {', '.join(colunas_faltantes)}"
+            # Se for CSV, tentar abrir diretamente
+            if extensao in ['.csv', '.txt']:
+                # Tentar diferentes delimitadores e encodings
+                delimitadores = [',', ';', '\t']
+                encodings = ['utf-8', 'latin-1', 'cp1252']
+                
+                for encoding in encodings:
+                    for delim in delimitadores:
+                        try:
+                            print(f"Tentando abrir CSV com delimitador: {delim}, encoding: {encoding}")
+                            df = pd.read_csv(
+                                arquivo,
+                                dtype={'CPF': str},
+                                delimiter=delim,
+                                encoding=encoding
+                            )
+                            print(f"Sucesso ao abrir CSV com delimitador: {delim}, encoding: {encoding}")
+                            break
+                        except Exception as e:
+                            print(f"Erro ao abrir CSV com delimitador {delim}, encoding {encoding}: {str(e)}")
+                    
+                    if df is not None:
+                        break
+            
+            # Se não for CSV ou não conseguiu abrir, tentar como Excel
+            if df is None and extensao in ['.xlsx', '.xls', '.xlsm', '.xlsb']:
+                engines = ['openpyxl', 'xlrd']
+                
+                for engine in engines:
+                    try:
+                        print(f"Tentando abrir com engine: {engine}")
+                        df = pd.read_excel(
+                            arquivo,
+                            dtype={'CPF': str},  # Forçar leitura do CPF como string
+                            engine=engine
+                        )
+                        print(f"Sucesso ao abrir com engine: {engine}")
+                        break
+                    except Exception as e:
+                        print(f"Erro ao abrir com engine {engine}: {str(e)}")
+                        erro_leitura = str(e)
+            
+            # Se ainda não conseguiu abrir, tentar converter para CSV
+            if df is None:
+                csv_arquivo = self.tentar_converter_para_csv(arquivo)
+                if csv_arquivo:
+                    # Tentar ler o CSV convertido
+                    delimitadores = [',', ';', '\t']
+                    for delim in delimitadores:
+                        try:
+                            print(f"Tentando abrir o CSV convertido com delimitador: {delim}")
+                            df = pd.read_csv(
+                                csv_arquivo,
+                                dtype={'CPF': str},
+                                delimiter=delim,
+                                encoding='utf-8'
+                            )
+                            print(f"Sucesso ao abrir o CSV convertido")
+                            break
+                        except Exception as e:
+                            print(f"Erro ao abrir o CSV convertido com delimitador {delim}: {str(e)}")
+                            
+                    # Se ainda não funcionou, tentar com encoding latin-1
+                    if df is None:
+                        for delim in delimitadores:
+                            try:
+                                df = pd.read_csv(
+                                    csv_arquivo,
+                                    dtype={'CPF': str},
+                                    delimiter=delim,
+                                    encoding='latin-1'
+                                )
+                                print(f"Sucesso ao abrir o CSV convertido com encoding latin-1")
+                                break
+                            except Exception as e:
+                                print(f"Erro ao abrir o CSV convertido com encoding latin-1: {str(e)}")
+            if extensao == '.xls' and df is None:
+                messagebox.showinfo(
+                    "Sugestão", 
+                    "Parece que você está tentando importar um arquivo no formato Excel 97-2003 (.xls).\n\n"
+                    "Este formato pode causar problemas de compatibilidade. Sugerimos abrir o arquivo no Excel e "
+                    "salvá-lo como 'Pasta de Trabalho do Excel' (.xlsx) antes de importar."
                 )
-                return
+
+            # Se ainda não conseguiu abrir o arquivo, oferecer opção para selecionar outro
+            if df is None:
+                if messagebox.askyesno(
+                    "Erro de Formato", 
+                    "Não foi possível abrir o arquivo. Tente salvar o arquivo como CSV no Excel e importar novamente.\n\nDeseja selecionar outro arquivo?"
+                ):
+                    return self.importar_dados()  # Reiniciar o processo
+                else:
+                    return  # Cancelar importação
+            
+            # Mostrar informações sobre as colunas disponíveis
+            print(f"Colunas disponíveis na planilha: {df.columns.tolist()}")
+            
+            # Pedir ao usuário que confirme o mapeamento de colunas se necessário
+            if not any(col in df.columns for col in ['Empresa', 'Cliente']):
+                # Nenhuma coluna de cliente encontrada, perguntar ao usuário
+                messagebox.showinfo(
+                    "Configuração Manual",
+                    "Não foi possível identificar automaticamente a coluna que contém o nome do cliente.\n"
+                    "Na próxima tela, selecione a coluna que contém o nome do cliente/empresa."
+                )
+                
+                # Solicitar ao usuário que escolha a coluna para o cliente
+                from tkinter import simpledialog
+                coluna_cliente = simpledialog.askstring(
+                    "Selecionar Coluna", 
+                    f"Selecione a coluna que contém o nome do cliente entre as opções:\n\n{', '.join(df.columns.tolist())}"
+                )
+                
+                if coluna_cliente and coluna_cliente in df.columns:
+                    # Adicionar ao mapeamento temporariamente
+                    self.mapeamento_cabecalhos['Empresa'] = coluna_cliente
+                else:
+                    messagebox.showwarning(
+                        "Coluna não encontrada",
+                        "Coluna selecionada não encontrada ou inválida. Continuando com as colunas padrão."
+                    )
             
             registros_processados = 0
             erros = []
@@ -6401,38 +6839,76 @@ class ImportadorRH:
             cliente_atual = None
             cliente_encontrado = False
             
+            # Determinar o número total de linhas para exibir progresso
+            total_linhas = len(df)
+            linhas_processadas = 0
+            
             for idx, row in df.iterrows():
-                # Verificar se esta linha tem um valor na coluna Cliente (possível nome de cliente)
-                if not pd.isna(row['Cliente']):
-                    cliente_atual = str(row['Cliente']).strip().upper()
+                linhas_processadas += 1
+                
+                if linhas_processadas % 10 == 0:
+                    print(f"Processando linha {linhas_processadas}/{total_linhas} ({linhas_processadas/total_linhas*100:.1f}%)")
+                
+                # Verificar se esta linha tem um valor na coluna Empresa/Cliente (possível nome de cliente)
+                empresa = self.obter_valor_coluna(row, 'Empresa')
+                
+                if empresa and not pd.isna(empresa):
+                    # Corrigir possíveis espaços extras e converter para maiúsculas
+                    empresa_limpa = str(empresa).strip().upper()
                     
-                    # Verificar se é o cliente que estamos procurando
-                    if cliente_atual == cliente_alvo:
-                        cliente_encontrado = True
-                        print(f"Cliente alvo encontrado: {cliente_atual}")
-                    else:
-                        cliente_encontrado = False
-                        print(f"Cliente diferente encontrado: {cliente_atual}, ignorando")
+                    # Ignorar linhas vazias ou com 'EMPRESA' (cabeçalho)
+                    if empresa_limpa and empresa_limpa != 'EMPRESA':
+                        cliente_atual = empresa_limpa
+                        
+                        # Verificar se é o cliente que estamos procurando
+                        # Fazer comparação mais flexível, usando apenas parte do nome se necessário
+                        if cliente_atual == cliente_alvo:
+                            cliente_encontrado = True
+                            print(f"Cliente alvo encontrado (match exato): {cliente_atual}")
+                        elif cliente_atual in cliente_alvo or cliente_alvo in cliente_atual:
+                            cliente_encontrado = True
+                            print(f"Cliente alvo encontrado (match parcial): {cliente_atual} ≈ {cliente_alvo}")
+                        else:
+                            cliente_encontrado = False
+                            print(f"Cliente diferente encontrado: {cliente_atual}, ignorando")
                 
                 # Se não for o cliente alvo, pular esta linha
                 if not cliente_encontrado:
                     continue
                     
+                # Obter os valores necessários
+                nome = self.obter_valor_coluna(row, 'Nome Empregado', '').strip().upper()
+                cpf = self.obter_valor_coluna(row, 'CPF', '').strip()
+                valor_liquido = self.obter_valor_coluna(row, 'Valor Líquido')
+                
+                # Verificar se parece ser uma linha de cabeçalho
+                if "NOME EMPREGADO" in nome or "FUNCIONARIO" in nome or "FUNCIONÁRIO" in nome:
+                    print(f"Ignorando provável linha de cabeçalho: {nome}")
+                    continue
+                # Tentar outras colunas comuns para nome se não encontrar
+                if not nome:
+                    nome = self.obter_valor_coluna(row, 'Nome', '').strip().upper()
+                    if not nome:
+                        nome = self.obter_valor_coluna(row, 'Funcionário', '').strip().upper()
+                
+                # Tentar outras colunas comuns para valor líquido se não encontrar
+                if pd.isna(valor_liquido):
+                    valor_liquido = self.obter_valor_coluna(row, 'Líquido')
+                    if pd.isna(valor_liquido):
+                        valor_liquido = self.obter_valor_coluna(row, 'Valor')
+                
                 # Verificar se esta linha representa um funcionário (tem nome, CPF e valor)
-                if (pd.isna(row['Nome_Empregado']) or 
-                    pd.isna(row['CPF']) or 
-                    pd.isna(row['Valor_Líquido'])):
+                if not nome or not cpf or pd.isna(valor_liquido):
+                    # Se falta apenas o CPF, mas tem nome e valor, gerar um aviso
+                    if nome and not pd.isna(valor_liquido) and not cpf:
+                        erros.append(f"Funcionário {nome} sem CPF definido")
                     continue
                     
-                # Usar o CPF como está, sem alteração
-                cpf = str(row['CPF']).strip()
-                nome = str(row['Nome_Empregado']).strip().upper()
-                
-                # Verificar se o valor é numérico
+               # Verificar se o valor é numérico
                 try:
-                    valor = float(row['Valor_Líquido'])
+                    valor = float(str(valor_liquido).replace(',', '.'))
                 except (ValueError, TypeError):
-                    erros.append(f"Valor inválido para {nome}: {row['Valor_Líquido']}")
+                    erros.append(f"Valor inválido para {nome}: {valor_liquido}")
                     continue
                 
                 # Definir data do relatório atual
@@ -6451,25 +6927,44 @@ class ImportadorRH:
                 # Calcular data de vencimento
                 dt_vencto = data_rel
                 
-                # Obter dados bancários diretamente da planilha
-                dados_bancarios = str(row['Dados_Bancarios']) if not pd.isna(row['Dados_Bancarios']) else 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+                # Obter referência com base no tipo de folha
+                referencia = self.obter_referencia(row)
                 
-                # Criar registro - usar o CPF como está, sem reformatar
+                # Montar dados bancários
+                dados_bancarios = self.montar_dados_bancarios(row)
+                # Agora verificamos explicitamente se está vazio
+                if dados_bancarios == '':
+                    dados_bancarios = ''  # Manter vazio quando for pagamento em dinheiro
+                elif not dados_bancarios:
+                    dados_bancarios = 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+                
+                # Determinar forma de pagamento
+                forma_pagto = self.obter_valor_coluna(row, 'Forma Pagto', 'PIX')
+                forma_pagamento = 'PIX' if forma_pagto.upper() == 'PIX' else 'TED'
+                
+                # Formatar o CPF
+                cpf_numerico = ''.join(filter(str.isdigit, str(cpf)))
+                if len(cpf_numerico) == 11:
+                    cpf_formatado = f"{cpf_numerico[:3]}.{cpf_numerico[3:6]}.{cpf_numerico[6:9]}-{cpf_numerico[9:]}"
+                else:
+                    cpf_formatado = cpf
+                
+                # Criar registro
                 registro = {
                     'data': data_rel,
-                    'cnpj_cpf': cpf,  # Usar o CPF como está na planilha
+                    'cnpj_cpf': cpf_formatado,
                     'nome': nome,
                     'categoria': 'MO',
                     'tp_desp': '1',
-                    'referencia': 'SALÁRIO',
+                    'referencia': referencia,
                     'nf': '',
                     'vr_unit': f"{valor:.2f}",
                     'dias': 1,
                     'valor': f"{valor:.2f}",
                     'dt_vencto': dt_vencto,
                     'dados_bancarios': dados_bancarios,
-                    'observacao': f"IMPORTADO RH - SALÁRIO",
-                    'forma_pagamento': 'PIX'
+                    'observacao': f"IMPORTADO RH - {referencia}",
+                    'forma_pagamento': forma_pagamento
                 }
                 
                 # Adicionar à lista para incluir
@@ -6508,89 +7003,6 @@ class ImportadorRH:
             messagebox.showerror("Erro", f"Erro ao importar dados: {str(e)}")
             import traceback
             traceback.print_exc()
-
-    # Adicione também esta função para formatação de CPF
-    def formatar_cpf(self, cpf):
-        """Formata um CPF preservando zeros à esquerda"""
-        # Converter para string e remover caracteres não numéricos
-        cpf_str = str(cpf)
-        
-        # Tratar caso de número decimal (remover parte decimal)
-        if '.' in cpf_str:
-            cpf_str = cpf_str.split('.')[0]
-        
-        # Remover caracteres não numéricos
-        cpf_limpo = ''.join(filter(str.isdigit, cpf_str))
-        
-        # Garantir 11 dígitos com zeros à esquerda
-        cpf_formatado = cpf_limpo.zfill(11)
-        
-        # Formatar como XXX.XXX.XXX-XX
-        return f"{cpf_formatado[:3]}.{cpf_formatado[3:6]}.{cpf_formatado[6:9]}-{cpf_formatado[9:]}"
-    
-
-    # def buscar_dados_bancarios(self, cpf):
-    #     """Busca dados bancários do fornecedor pelo CPF"""
-    #     try:
-    #         # Converter para string, garantindo que o valor original seja preservado
-    #         cpf_str = str(cpf)
-            
-    #         # Tratar caso específico de notação científica ou formato float
-    #         if 'e' in cpf_str.lower() or '.' in cpf_str:
-    #             # Tentar extrair o valor original sem notação científica
-    #             try:
-    #                 # Converter para float primeiro para lidar com notação científica
-    #                 cpf_float = float(cpf_str)
-    #                 # Converter para int para remover decimais
-    #                 cpf_int = int(cpf_float)
-    #                 # Converter para string novamente
-    #                 cpf_str = str(cpf_int)
-    #             except:
-    #                 # Se falhar, usar a string original
-    #                 pass
-            
-    #         # Remover caracteres não numéricos
-    #         cpf_limpo = ''.join(filter(str.isdigit, cpf_str))
-            
-    #         # Garantir exatamente 11 dígitos com zeros à esquerda
-    #         cpf_limpo = cpf_limpo.zfill(11)
-            
-    #         print(f"Buscando dados bancários para CPF: {cpf_limpo}")
-            
-    #         # Tentar buscar com diferentes formatos
-    #         formatos_cpf = [
-    #             cpf_limpo,  # Apenas dígitos com zeros à esquerda: 03473509680
-    #             f"{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}"  # 034.735.096-80
-    #         ]
-            
-    #         for cpf_formato in formatos_cpf:
-    #             fornecedor = self.sistema.buscar_fornecedor_completo(cpf_formato)
-    #             if fornecedor:
-    #                 print(f"Fornecedor encontrado: {fornecedor['nome']} com CPF: {cpf_formato}")
-                    
-    #                 # Priorizar PIX
-    #                 if fornecedor['chave_pix']:
-    #                     return f"PIX: {fornecedor['chave_pix']}"
-                    
-    #                 # Montar dados para TED
-    #                 dados_ted = []
-    #                 if fornecedor['banco']: dados_ted.append(str(fornecedor['banco']))
-    #                 if fornecedor['op']: dados_ted.append(str(fornecedor['op']))
-    #                 if fornecedor['agencia']: dados_ted.append(str(fornecedor['agencia']))
-    #                 if fornecedor['conta']: dados_ted.append(str(fornecedor['conta']))
-    #                 dados_ted.append(str(fornecedor['cnpj_cpf']))
-                    
-    #                 dados = ' - '.join(filter(None, dados_ted))
-    #                 if dados.strip() != '':
-    #                     return dados
-            
-    #         # Se chegou aqui, não encontrou o fornecedor
-    #         print(f"Nenhum fornecedor encontrado para CPF: {cpf_limpo} em nenhum formato tentado")
-    #         return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
-                
-    #     except Exception as e:
-    #         print(f"Erro ao buscar dados bancários: {str(e)}")
-    #         return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
                 
 
 if __name__ == "__main__":
