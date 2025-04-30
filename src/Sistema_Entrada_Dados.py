@@ -6963,7 +6963,7 @@ class ImportadorRH:
                     'valor': f"{valor:.2f}",
                     'dt_vencto': dt_vencto,
                     'dados_bancarios': dados_bancarios,
-                    'observacao': f"IMPORTADO RH - {referencia}",
+                    'observacao': f"IMPORTADO RH - {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}",
                     'forma_pagamento': forma_pagamento
                 }
                 
