@@ -597,7 +597,7 @@ class EditorLancamento:
         """Calcula o valor total baseado no valor unitário e dias"""
         try:
             vr_unit = float(self.vr_unit.get().replace(',', '.'))
-            dias = int(self.dias.get() or 1)
+            dias = float(self.dias.get() or 1)
             valor_total = vr_unit * dias
             
             self.valor.config(state='normal')
@@ -2962,7 +2962,7 @@ class SistemaEntradaDados:
             # Calcular com base no tipo
             if tp_desp == '1':  # Tipo que usa dias
                 dias_str = self.campos_despesa['dias'].get().strip()
-                dias = int(dias_str) if dias_str else 1
+                dias = float(dias_str) if dias_str else 1
                 valor_total = vr_unit * dias
             else:
                 valor_total = vr_unit
