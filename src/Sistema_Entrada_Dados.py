@@ -2962,7 +2962,7 @@ class SistemaEntradaDados:
             # Calcular com base no tipo
             if tp_desp == '1':  # Tipo que usa dias
                 dias_str = self.campos_despesa['dias'].get().strip()
-                dias = float(dias_str) if dias_str else 1
+                dias = float(dias_str.replace(',', '.')) if dias_str else 1
                 valor_total = vr_unit * dias
             else:
                 valor_total = vr_unit
@@ -3063,7 +3063,7 @@ class SistemaEntradaDados:
                 'referencia': self.campos_despesa['referencia'].get().upper(),
                 'nf': self.campos_despesa['nf'].get().upper(),
                 'vr_unit': f"{vr_unit:.2f}",
-                'dias': int(self.campos_despesa['dias'].get() or 1),
+                'dias': float(self.campos_despesa['dias'].get().replace(',', '.')) if self.campos_despesa['dias'].get() else 1,
                 'valor': f"{valor:.2f}",
                 'dt_vencto': self.campos_despesa['dt_vencto'].get(),
                 'dados_bancarios': self.campos_fornecedor['dados_bancarios'].get(),
@@ -3174,7 +3174,8 @@ class SistemaEntradaDados:
                 messagebox.showerror("Erro", "Quantidade de dias é obrigatória para tipo 1!")
                 return False
             try:
-                if int(dias) <= 0:
+                dias_float = float(dias.replace(',', '.'))
+                if dias_float <= 0:
                     messagebox.showerror("Erro", "Quantidade de dias deve ser maior que zero!")
                     return False
             except ValueError:
