@@ -6578,17 +6578,32 @@ class ImportadorRH:
             
         # Se for PIX, usar a chave PIX se estiver disponível
         if forma_pagto and str(forma_pagto).upper() == "PIX":
-            chave_pix = self.obter_valor_coluna(row, 'Chave PIX')
+            chave_pix = self.obter_valor_coluna(row, 'Tipo Conta/Chave PIX')
             if chave_pix and not pd.isna(chave_pix):
                 return f"PIX: {chave_pix}"
         
         # Para Crédito CC ou outros casos, montar os dados bancários
         nome_banco = self.obter_valor_coluna(row, 'Nome Banco', '')
         # Substituir CAIXA ECONÔMICA FEDERAL por CAIXA
-        if nome_banco and "CAIXA ECONÔMICA FEDERAL" in str(nome_banco).upper():
+        nome_banco_normalizado = self.normalizar_texto(str(nome_banco))
+        if nome_banco and "CAIXA ECONOMICA FEDERAL" in nome_banco_normalizado:
             nome_banco = "CAIXA"
             
-        agencia = self.obter_valor_coluna(row, 'Agência', '')
+        # Obter e formatar agência com zeros à esquerda
+        agencia_raw = self.obter_valor_coluna(row, 'Agência', '')
+        
+        # Limpar o valor da agência para remover possíveis decimais
+        if agencia_raw:
+            try:
+                # Remover possíveis casas decimais e converter para inteiro
+                agencia_clean = str(agencia_raw).split('.')[0]
+                # Formatar com zeros à esquerda para garantir 4 dígitos
+                agencia = agencia_clean.zfill(4)
+            except:
+                # Em caso de erro, manter o valor original
+                agencia = str(agencia_raw)
+        else:
+            agencia = ''
         
         # Tentar diferentes nomes para o número da conta
         numero_conta = self.obter_valor_coluna(row, 'N° Conta', '')
