@@ -242,15 +242,6 @@ class VisualizadorLancamentos:
         self.tree.pack(fill='both', expand=True)
         scrolly.pack(side='right', fill='y')
         scrollx.pack(side='bottom', fill='x')
-
-    def formatar_valor_br(self, valor):
-        """Formata um valor numérico para o padrão brasileiro (com vírgula)"""
-        try:
-            if isinstance(valor, str):
-                valor = float(valor.replace(',', '.'))
-            return f"{valor:.2f}".replace('.', ',')
-        except (ValueError, TypeError):
-            return valor
     
     def atualizar_dados(self, dados):
         """Atualiza os dados na visualização"""
@@ -262,9 +253,6 @@ class VisualizadorLancamentos:
         # Inserir novos dados
         valor_total = 0
         for lancamento in self.dados_para_incluir:
-            # Formatar dias como decimal quando necessário
-            dias_formatado = self.formatar_valor_br(lancamento['dias']) if isinstance(lancamento['dias'], float) else lancamento['dias']
-        
             valores = (
                 lancamento['data'],
                 lancamento['tp_desp'],
@@ -272,9 +260,9 @@ class VisualizadorLancamentos:
                 lancamento['nome'],
                 lancamento['referencia'],
                 lancamento.get('nf', ''),
-                self.formatar_valor_br(lancamento['vr_unit']),
-                dias_formatado,
-                self.formatar_valor_br(lancamento['valor']),
+                lancamento['vr_unit'],
+                lancamento['dias'],
+                lancamento['valor'],
                 lancamento['dt_vencto'],
                 lancamento['categoria'],
                 lancamento.get('forma_pagamento', ''),  
@@ -332,10 +320,6 @@ class VisualizadorLancamentos:
             # Converter observação para maiúsculas
             novos_dados['observacao'] = novos_dados['observacao'].upper()
 
-            # Garantir que dias seja tratado como float
-            if isinstance(novos_dados['dias'], str):
-                novos_dados['dias'] = float(novos_dados['dias'].replace(',', '.'))
-
             # Atualizar na treeview
             item = self.tree.get_children()[indice]
             valores = (
@@ -345,9 +329,9 @@ class VisualizadorLancamentos:
                 novos_dados['nome'],
                 novos_dados['referencia'],
                 novos_dados['nf'],
-                self.formatar_valor_br(novos_dados['vr_unit']),
-                dias_formatado,
-                self.formatar_valor_br(novos_dados['valor']),
+                novos_dados['vr_unit'],
+                novos_dados['dias'],
+                novos_dados['valor'],
                 novos_dados['dt_vencto'],
                 novos_dados['categoria'],
                 novos_dados['dados_bancarios'],
@@ -618,7 +602,7 @@ class EditorLancamento:
             
             self.valor.config(state='normal')
             self.valor.delete(0, tk.END)
-            self.valor.insert(0, f"{valor_total:.2f}".replace('.', ','))  # Usar formato brasileiro
+            self.valor.insert(0, f"{valor_total:.2f}")
             self.valor.config(state='readonly')
             
         except (ValueError, AttributeError):
@@ -3319,9 +3303,7 @@ class SistemaEntradaDados:
                 vr_unit_cell = sheet.cell(row=proxima_linha, column=7, value=vr_unit)
                 aplicar_formatacao_celula(vr_unit_cell)
 
-                # Dias (campo 8) - garantir que seja salvo como número
-                dias_valor = float(dados['dias']) if isinstance(dados['dias'], (int, float)) else float(str(dados['dias']).replace(',', '.'))
-                sheet.cell(row=proxima_linha, column=8, value=dias_valor)
+                sheet.cell(row=proxima_linha, column=8, value=int(dados.get('dias', 1)))
 
                 valor = float(dados['valor'].replace(',', '.'))
                 valor_cell = sheet.cell(row=proxima_linha, column=9, value=valor)
