@@ -243,6 +243,15 @@ class VisualizadorLancamentos:
         scrolly.pack(side='right', fill='y')
         scrollx.pack(side='bottom', fill='x')
 
+    def formatar_valor_br(self, valor):
+        """Formata um valor numérico para o padrão brasileiro (com vírgula)"""
+        try:
+            if isinstance(valor, str):
+                valor = float(valor.replace(',', '.'))
+            return f"{valor:.2f}".replace('.', ',')
+        except (ValueError, TypeError):
+            return valor
+    
     def atualizar_dados(self, dados):
         """Atualiza os dados na visualização"""
         self.dados_para_incluir = dados.copy()
@@ -253,6 +262,9 @@ class VisualizadorLancamentos:
         # Inserir novos dados
         valor_total = 0
         for lancamento in self.dados_para_incluir:
+            # Formatar dias como decimal quando necessário
+            dias_formatado = self.formatar_valor_br(lancamento['dias']) if isinstance(lancamento['dias'], float) else lancamento['dias']
+        
             valores = (
                 lancamento['data'],
                 lancamento['tp_desp'],
@@ -260,9 +272,9 @@ class VisualizadorLancamentos:
                 lancamento['nome'],
                 lancamento['referencia'],
                 lancamento.get('nf', ''),
-                lancamento['vr_unit'],
-                lancamento['dias'],
-                lancamento['valor'],
+                self.formatar_valor_br(lancamento['vr_unit']),
+                dias_formatado,
+                self.formatar_valor_br(lancamento['valor']),
                 lancamento['dt_vencto'],
                 lancamento['categoria'],
                 lancamento.get('forma_pagamento', ''),  
@@ -320,6 +332,10 @@ class VisualizadorLancamentos:
             # Converter observação para maiúsculas
             novos_dados['observacao'] = novos_dados['observacao'].upper()
 
+            # Garantir que dias seja tratado como float
+            if isinstance(novos_dados['dias'], str):
+                novos_dados['dias'] = float(novos_dados['dias'].replace(',', '.'))
+
             # Atualizar na treeview
             item = self.tree.get_children()[indice]
             valores = (
@@ -329,9 +345,9 @@ class VisualizadorLancamentos:
                 novos_dados['nome'],
                 novos_dados['referencia'],
                 novos_dados['nf'],
-                novos_dados['vr_unit'],
-                novos_dados['dias'],
-                novos_dados['valor'],
+                self.formatar_valor_br(novos_dados['vr_unit']),
+                dias_formatado,
+                self.formatar_valor_br(novos_dados['valor']),
                 novos_dados['dt_vencto'],
                 novos_dados['categoria'],
                 novos_dados['dados_bancarios'],
@@ -602,7 +618,7 @@ class EditorLancamento:
             
             self.valor.config(state='normal')
             self.valor.delete(0, tk.END)
-            self.valor.insert(0, f"{valor_total:.2f}")
+            self.valor.insert(0, f"{valor_total:.2f}".replace('.', ','))  # Usar formato brasileiro
             self.valor.config(state='readonly')
             
         except (ValueError, AttributeError):
@@ -637,7 +653,7 @@ class EditorLancamento:
                 'referencia': self.referencia.get(),
                 'nf': self.nf.get(),
                 'vr_unit': self.vr_unit.get(),
-                'dias': int(self.dias.get() or 1),
+                'dias': float(self.dias.get().replace(',', '.') if self.dias.get() else 1),
                 'valor': self.valor.get(),
                 'dt_vencto': self.dt_vencto.get(),
                 'categoria': self.dados['categoria'],
@@ -3303,7 +3319,9 @@ class SistemaEntradaDados:
                 vr_unit_cell = sheet.cell(row=proxima_linha, column=7, value=vr_unit)
                 aplicar_formatacao_celula(vr_unit_cell)
 
-                sheet.cell(row=proxima_linha, column=8, value=int(dados.get('dias', 1)))
+                # Dias (campo 8) - garantir que seja salvo como número
+                dias_valor = float(dados['dias']) if isinstance(dados['dias'], (int, float)) else float(str(dados['dias']).replace(',', '.'))
+                sheet.cell(row=proxima_linha, column=8, value=dias_valor)
 
                 valor = float(dados['valor'].replace(',', '.'))
                 valor_cell = sheet.cell(row=proxima_linha, column=9, value=valor)
@@ -6576,11 +6594,29 @@ class ImportadorRH:
         if forma_pagto and str(forma_pagto).upper() == "DINHEIRO":
             return ''
             
-        # Se for PIX, usar a chave PIX se estiver disponível
+         # Se for PIX, usar a chave PIX se estiver disponível
         if forma_pagto and str(forma_pagto).upper() == "PIX":
             chave_pix = self.obter_valor_coluna(row, 'Tipo Conta/Chave PIX')
             if chave_pix and not pd.isna(chave_pix):
-                return f"PIX: {chave_pix}"
+                # Tratar a chave PIX para remover prefixos desnecessários
+                chave_pix_str = str(chave_pix).strip()
+                
+                # Verificar se contém ":" e tratar os diferentes formatos
+                if ":" in chave_pix_str:
+                    # Remove prefixos comuns mantendo apenas o que vem depois do ":"
+                    prefixos = ["CPF:", "Celular:", "E-mail:", "Email:"]
+                    
+                    for prefixo in prefixos:
+                        if chave_pix_str.upper().startswith(prefixo.upper()):
+                            # Extrair apenas o que vem depois do ":"
+                            chave_pix_str = chave_pix_str[len(prefixo):].strip()
+                            break
+                    
+                    # Se ainda houver outros formatos com ":" não listados acima
+                    if ":" in chave_pix_str and not any(prefixo.upper() in chave_pix_str.upper() for prefixo in prefixos):
+                        chave_pix_str = chave_pix_str.split(":", 1)[1].strip()
+                
+                return f"PIX: {chave_pix_str}"
         
         # Para Crédito CC ou outros casos, montar os dados bancários
         nome_banco = self.obter_valor_coluna(row, 'Nome Banco', '')
