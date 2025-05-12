@@ -387,6 +387,14 @@ def formatar_moeda_br(valor):
         except:
             return f"R$ 0,00"
 
+def formatar_valor_br(self, valor):
+    """Formata um valor numérico para o padrão brasileiro (com vírgula)"""
+    try:
+        if isinstance(valor, str):
+            valor = float(valor.replace(',', '.'))
+        return f"{valor:.2f}".replace('.', ',')
+    except (ValueError, TypeError):
+        return valor
 
 # === DADOS BANCARIOS ===
 
