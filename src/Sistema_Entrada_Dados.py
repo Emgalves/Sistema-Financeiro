@@ -114,6 +114,7 @@ def get_categorias_fornecedor():
         # Valores padrão como fallback
         return ['MO', 'MAT', 'SERV', 'DIV', 'ADM', 'LOC', 'TP']
 
+@log_action("Carregar configurações")
 def carregar_configuracoes():
     """Carrega as configurações do sistema"""
     try:
@@ -179,6 +180,16 @@ class VisualizadorLancamentos:
         self.alteracoes = False
         self.dados_para_incluir = []
         
+        # Adicionar um flag para controlar comportamento de foco
+        self.focus_locked = False
+        
+        # Configurar comportamento quando a janela é fechada
+        self.janela.protocol("WM_DELETE_WINDOW", self.on_close)
+        
+        # Vincular evento de foco para manter a janela na frente quando necessário
+        self.janela.bind("<FocusIn>", self.on_focus_in)
+        self.janela.bind("<Map>", self.on_map)  # Quando janela é mapeada (mostrada)
+
         # Frame principal
         self.frame_principal = ttk.Frame(self.janela)
         self.frame_principal.pack(fill='both', expand=True, padx=10, pady=5)
@@ -208,7 +219,35 @@ class VisualizadorLancamentos:
     
         # Variável para rastrear se houve alterações
         self.alteracoes = False
-        
+    
+    def on_close(self):
+        """Manipula o fechamento da janela"""
+        if hasattr(self.sistema, 'on_visualizador_close'):
+            self.sistema.on_visualizador_close()
+        else:
+            self.janela.destroy()
+    
+    def on_focus_in(self, event=None):
+        """Quando a janela recebe foco"""
+        if self.focus_locked:
+            # Garantir que esta janela permaneça na frente
+            self.janela.attributes('-topmost', True)
+            # Agendar a remoção do estado topmost após um curto período
+            self.janela.after(100, lambda: self.janela.attributes('-topmost', False))
+    
+    def on_map(self, event=None):
+        """Quando a janela é mapeada (tornada visível)"""
+        # Trazer para frente e forçar foco
+        self.janela.lift()
+        self.janela.focus_force()
+    
+    def travar_foco(self, travar=True):
+        """Define se a janela deve ser mantida à frente"""
+        self.focus_locked = travar
+        if travar:
+            # Trazer para frente imediatamente
+            self.janela.lift()
+            self.janela.focus_force()        
 
     def criar_treeview(self):
         # Alterar a lista de colunas para incluir forma de pagamento
@@ -245,10 +284,17 @@ class VisualizadorLancamentos:
     
     def atualizar_dados(self, dados):
         """Atualiza os dados na visualização"""
-        self.dados_para_incluir = dados.copy()
+        self.dados_para_incluir = dados.copy() if dados else []
+        
         # Limpar dados existentes
         for item in self.tree.get_children():
             self.tree.delete(item)
+            
+        if not dados:
+            # Atualizar resumo para zero quando não houver dados
+            self.lbl_total_lancamentos.config(text="Total de Lançamentos: 0")
+            self.lbl_valor_total.config(text="Valor Total: R$ 0,00")
+            return
             
         # Inserir novos dados
         valor_total = 0
@@ -276,12 +322,11 @@ class VisualizadorLancamentos:
         self.lbl_total_lancamentos.config(text=f"Total de Lançamentos: {len(dados)}")
         self.lbl_valor_total.config(text=f"Valor Total: R$ {valor_total:,.2f}")
 
-
     def editar_lancamento(self):
         """Abre a janela de edição para o lançamento selecionado"""
         item_selecionado = self.tree.selection()
         if not item_selecionado:
-            messagebox.showwarning("Aviso", "Selecione um lançamento para editar")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um lançamento para editar")
             return
 
         # Obter índice do item selecionado
@@ -356,10 +401,13 @@ class VisualizadorLancamentos:
     def remover_lancamento(self):
         item_selecionado = self.tree.selection()
         if not item_selecionado:
-            messagebox.showwarning("Aviso", "Selecione um lançamento para remover")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um lançamento para remover")
             return
+        
+        # Travar o foco durante a operação
+        self.travar_foco(True)
             
-        if messagebox.askyesno("Confirmação", "Deseja realmente remover este lançamento?"):
+        if self.sistema.custom_messagebox("yesno", "Confirmação", "Deseja realmente remover este lançamento?"):
             # Obter índice do item selecionado
             todos_items = self.tree.get_children()
             indice = todos_items.index(item_selecionado[0])
@@ -374,12 +422,21 @@ class VisualizadorLancamentos:
             # Atualizar contadores e totais
             self.atualizar_resumo()
 
+        # Destravar o foco após a operação
+        self.travar_foco(False)
+        
+        # Garantir que a janela volte a ter foco após o diálogo
+        self.janela.after(100, lambda: self.janela.focus_force())
+
     def salvar_na_planilha(self):
         """Salva os dados diretamente na planilha"""
         try:
             if not self.dados_para_incluir:
-                messagebox.showwarning("Aviso", "Não há dados para salvar!")
+                self.sistema.custom_messagebox("warning", "Aviso", "Não há dados para salvar!")
                 return
+
+            # Travar o foco durante a operação
+            self.travar_foco(True)
 
             # Atualizar dados do sistema principal
             self.sistema.dados_para_incluir = self.dados_para_incluir.copy()
@@ -389,10 +446,13 @@ class VisualizadorLancamentos:
                 self.sistema.enviar_dados()
                 self.janela.destroy()  # Fecha o visualizador após salvar
             else:
-                messagebox.showerror("Erro", "Referência ao sistema principal não encontrada")
-                
+                self.custom_messagebox("error", "Erro", "Referência ao sistema principal não encontrada")
+
+            # Destravar o foco após a operação
+            self.travar_foco(False)
+
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao salvar dados: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao salvar dados: {str(e)}")
             print(f"Erro detalhado ao salvar: {str(e)}")  # Log para debug
 
         
@@ -615,7 +675,7 @@ class EditorLancamento:
         try:
             # Validar campos obrigatórios
             if not all([self.tp_desp.get(), self.referencia.get(), self.vr_unit.get()]):
-                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!")
+                self.custom_messagebox("error", "Erro", "Preencha todos os campos obrigatórios!")
                 return
             
             # Validar datas
@@ -624,7 +684,7 @@ class EditorLancamento:
                 try:
                     datetime.strptime(data_str, '%d/%m/%Y')
                 except ValueError:
-                    messagebox.showerror("Erro", "Data inválida!")
+                    self.custom_messagebox("error", "Erro", "Data inválida!")
                     return
             
             # Atualizar dados
@@ -650,10 +710,10 @@ class EditorLancamento:
                 messagebox.showinfo("Sucesso", "Alterações salvas com sucesso!")
                 self.janela.destroy()
             else:
-                messagebox.showerror("Erro", "Não foi possível salvar as alterações!")
+                self.custom_messagebox("error", "Erro", "Não foi possível salvar as alterações!")
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao salvar alterações: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao salvar alterações: {str(e)}")
 
         
 
@@ -810,6 +870,145 @@ class SistemaEntradaDados:
         
         print("Calendários configurados para permitir navegação livre.")
 
+    def custom_messagebox(self, tipo, titulo, mensagem, opcoes=None):
+        """
+        Cria uma caixa de diálogo personalizada posicionada no canto inferior direito
+        
+        Args:
+            tipo: string - 'info', 'warning', 'error', 'yesno'
+            titulo: string - título da janela
+            mensagem: string - mensagem a ser exibida
+            opcoes: lista de strings - opções de botões (apenas para tipo 'yesno')
+            
+        Returns:
+            Para 'yesno': boolean - True se "Sim", False se "Não"
+            Para outros tipos: None
+        """
+        # Criar nova janela
+        dialog = tk.Toplevel(self.root)
+        dialog.title(titulo)
+        dialog.geometry("450x200")
+        dialog.resizable(False, False)
+        
+        # Tornar modal
+        dialog.transient(self.root)
+        dialog.grab_set()
+        
+        # Configuração de estilos e ícones baseado no tipo
+        if tipo == 'info':
+            icon_text = "ℹ️"
+            cor_cabecalho = "#4287f5"  # Azul
+        elif tipo == 'warning':
+            icon_text = "⚠️"
+            cor_cabecalho = "#f5a742"  # Amarelo
+        elif tipo == 'error':
+            icon_text = "❌"
+            cor_cabecalho = "#f54242"  # Vermelho
+        elif tipo == 'yesno':
+            icon_text = "❓"
+            cor_cabecalho = "#42f5a7"  # Verde claro
+        else:
+            icon_text = "ℹ️"
+            cor_cabecalho = "#4287f5"  # Azul padrão
+        
+        # Frame para o cabeçalho colorido
+        frame_cabecalho = tk.Frame(dialog, bg=cor_cabecalho, height=40)
+        frame_cabecalho.pack(fill='x')
+        
+        # Título no cabeçalho
+        tk.Label(
+            frame_cabecalho, 
+            text=titulo, 
+            bg=cor_cabecalho, 
+            fg="white", 
+            font=('Arial', 12, 'bold')
+        ).pack(pady=8)
+        
+        # Frame para o conteúdo
+        frame_conteudo = tk.Frame(dialog, bg="white")
+        frame_conteudo.pack(fill='both', expand=True)
+        
+        # Ícone e mensagem
+        frame_mensagem = tk.Frame(frame_conteudo, bg="white")
+        frame_mensagem.pack(fill='both', expand=True, padx=20, pady=10)
+        
+        tk.Label(
+            frame_mensagem, 
+            text=icon_text, 
+            font=('Arial', 24), 
+            bg="white"
+        ).pack(side='left', padx=(0, 15))
+        
+        tk.Label(
+            frame_mensagem, 
+            text=mensagem, 
+            justify='left', 
+            wraplength=300, 
+            font=('Arial', 10), 
+            bg="white"
+        ).pack(side='left')
+        
+        # Frame para botões
+        frame_botoes = tk.Frame(dialog, bg="#f0f0f0", height=50)
+        frame_botoes.pack(fill='x')
+        
+        resposta = [False]  # Para armazenar a resposta do yesno
+        
+        if tipo == 'yesno':
+            def responder_sim():
+                resposta[0] = True
+                dialog.destroy()
+                
+            def responder_nao():
+                resposta[0] = False
+                dialog.destroy()
+            
+            ttk.Button(
+                frame_botoes, 
+                text="Sim", 
+                command=responder_sim, 
+                width=10
+            ).pack(side='right', padx=10, pady=10)
+            
+            ttk.Button(
+                frame_botoes, 
+                text="Não", 
+                command=responder_nao, 
+                width=10
+            ).pack(side='right', padx=5, pady=10)
+        else:
+            ttk.Button(
+                frame_botoes, 
+                text="OK", 
+                command=dialog.destroy, 
+                width=10
+            ).pack(side='right', padx=10, pady=10)
+        
+        # Posicionar no canto inferior direito da tela
+        dialog.update_idletasks()
+        width = dialog.winfo_width()
+        height = dialog.winfo_height()
+        
+        # Obter dimensões da tela
+        screen_width = dialog.winfo_screenwidth()
+        screen_height = dialog.winfo_screenheight()
+        
+        # Calcular posição (canto inferior direito com margem de 20 pixels)
+        x = screen_width - width - 20
+        y = screen_height - height - 70  # Um pouco mais alto para evitar a barra de tarefas
+        
+        dialog.geometry(f"+{x}+{y}")
+        
+        # Manter a janela do diálogo sempre na frente
+        dialog.attributes('-topmost', True)
+        
+        # Aguardar o fechamento da janela
+        dialog.wait_window()
+        
+        # Retornar resposta para 'yesno'
+        if tipo == 'yesno':
+            return resposta[0]
+        return None
 
     def setup_aba_selecao(self):
         """Configura a aba de seleção de cliente"""
@@ -897,7 +1096,7 @@ class SistemaEntradaDados:
     def abrir_gestao_contratos(self):
         """Abre a gestão de contratos para o cliente atual"""
         if not self.cliente_atual:
-            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
             return
         
         # Ocultar temporariamente a janela principal
@@ -949,9 +1148,9 @@ class SistemaEntradaDados:
             controle = ControlePagamentos(self.root)
             controle.abrir_janela_controle()
         except ImportError as e:
-            messagebox.showerror("Erro", f"Não foi possível importar o módulo de Controle de Pagamentos: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Não foi possível importar o módulo de Controle de Pagamentos: {str(e)}")
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
 
     def selecionar_cliente(self, event):
         """Atualiza seleção de cliente e habilita botão de continuar"""
@@ -973,7 +1172,7 @@ class SistemaEntradaDados:
         if self.cliente_atual:
             self.notebook.select(1)  # Vai para aba de fornecedor
         else:
-            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
 
 
 
@@ -994,7 +1193,7 @@ class SistemaEntradaDados:
             messagebox.showinfo("Informação", "Arquivo de clientes criado com sucesso!")
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao criar arquivo de clientes: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao criar arquivo de clientes: {str(e)}")
 
 
  
@@ -1026,7 +1225,7 @@ class SistemaEntradaDados:
             """Valida se a data selecionada é dia 5 ou 20"""
             data = data_entry.get_date()
             if data.day not in [5, 20]:
-                messagebox.showwarning(
+                self.sistema.custom_messagebox("warning", 
                     "Data Inválida",
                     "A data inicial deve ser dia 5 ou 20 do mês.\n"
                     "Por favor, selecione uma data válida."
@@ -1058,17 +1257,17 @@ class SistemaEntradaDados:
             observacoes = obs_entry.get().strip()
             
             if not nome or not endereco:
-                messagebox.showerror("Erro", "Nome e Endereço são obrigatórios!")
+                self.custom_messagebox("error", "Erro", "Nome e Endereço são obrigatórios!")
                 return
 
             # Verificar se a data é válida
             try:
                 data = datetime.strptime(data, '%Y-%m-%d').date()
                 if data.day not in [5, 20]:
-                    messagebox.showerror("Erro", "A data inicial deve ser dia 5 ou 20 do mês!")
+                    self.custom_messagebox("error", "Erro", "A data inicial deve ser dia 5 ou 20 do mês!")
                     return
             except ValueError:
-                messagebox.showerror("Erro", "Data inválida!")
+                self.custom_messagebox("error", "Erro", "Data inválida!")
                 return
 
             try:
@@ -1080,7 +1279,7 @@ class SistemaEntradaDados:
                 # Verificar se cliente já existe
                 for row in sheet.iter_rows(min_row=2, values_only=True):
                     if row[0] and row[0].upper() == nome.upper():
-                        messagebox.showerror("Erro", "Cliente já cadastrado!")
+                        self.custom_messagebox("error", "Erro", "Cliente já cadastrado!")
                         return
 
                 # Adicionar novo cliente
@@ -1099,7 +1298,7 @@ class SistemaEntradaDados:
                     janela_cliente.destroy()
 
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao cadastrar cliente: {str(e)}")
+                self.custom_messagebox("error", "Erro", f"Erro ao cadastrar cliente: {str(e)}")
 
         tk.Button(janela_cliente, text="Salvar", command=salvar_cliente).pack(pady=10)
         tk.Button(janela_cliente, text="Cancelar", 
@@ -1130,7 +1329,7 @@ class SistemaEntradaDados:
         except Exception as e:
             print(f"Erro detalhado ao criar arquivo de clientes: {str(e)}")
             print(f"Tipo do erro: {type(e)}")
-            messagebox.showerror("Erro", f"Erro ao criar arquivo de clientes: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao criar arquivo de clientes: {str(e)}")
 
     def mostrar_todos_clientes(self):
         """Mostra todos os clientes, incluindo os que têm data final"""
@@ -1188,7 +1387,7 @@ class SistemaEntradaDados:
             def selecionar_finalizado():
                 selected = lista_finalizados.curselection()
                 if not selected:
-                    messagebox.showwarning("Aviso", "Selecione um cliente finalizado")
+                    self.sistema.custom_messagebox("warning", "Aviso", "Selecione um cliente finalizado")
                     return
                     
                 cliente = lista_finalizados.get(selected[0])
@@ -1203,7 +1402,7 @@ class SistemaEntradaDados:
                     command=janela_todos.destroy).pack(side='right', pady=10)
                     
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar todos os clientes: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao carregar todos os clientes: {str(e)}")
 
     def criar_arquivo_cliente(self, nome_cliente, endereco):
         """Cria um novo arquivo Excel para o cliente baseado no MODELO.xlsx"""
@@ -1350,7 +1549,7 @@ class SistemaEntradaDados:
             return True
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao criar arquivo do cliente: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao criar arquivo do cliente: {str(e)}")
             if 'wb_clientes' in locals():
                 wb_clientes.close()
             return False
@@ -1361,7 +1560,7 @@ class SistemaEntradaDados:
         """Edita o cliente selecionado"""
         cliente_selecionado = self.cliente_combobox.get()
         if not cliente_selecionado:
-            messagebox.showwarning("Aviso", "Selecione um cliente para editar")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um cliente para editar")
             return
 
         try:
@@ -1385,7 +1584,7 @@ class SistemaEntradaDados:
             wb.close()
             
             if not dados_cliente:
-                messagebox.showerror("Erro", "Cliente não encontrado!")
+                self.custom_messagebox("error", "Erro", "Cliente não encontrado!")
                 return
                 
             # Criar janela de edição
@@ -1476,7 +1675,7 @@ class SistemaEntradaDados:
                     endereco = endereco_entry.get().strip()
                     
                     if not nome or not endereco:
-                        messagebox.showerror("Erro", "Nome e Endereço são obrigatórios!")
+                        self.custom_messagebox("error", "Erro", "Nome e Endereço são obrigatórios!")
                         return
 
                     wb = load_workbook(ARQUIVO_CLIENTES)
@@ -1518,7 +1717,7 @@ class SistemaEntradaDados:
                     janela_edicao.destroy()
 
                 except Exception as e:
-                    messagebox.showerror("Erro", f"Erro ao salvar alterações: {str(e)}")
+                    self.custom_messagebox("error", "Erro", f"Erro ao salvar alterações: {str(e)}")
 
             # Frame para botões
             frame_botoes = ttk.Frame(frame)
@@ -1532,7 +1731,7 @@ class SistemaEntradaDados:
                     command=janela_edicao.destroy).pack(side='left', padx=5)
 
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir editor: {str(e)}")   
+            self.custom_messagebox("error", "Erro", f"Erro ao abrir editor: {str(e)}")   
     
 
     def atualizar_lista_clientes(self):
@@ -1564,7 +1763,7 @@ class SistemaEntradaDados:
             # Se o arquivo não existir, criar novo
             self.criar_arquivo_clientes()
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao carregar clientes: {str(e)}")
 
 
     def setup_aba_fornecedor(self):
@@ -1784,7 +1983,7 @@ class SistemaEntradaDados:
         def validar_entrada_data(event=None):
             data = self.data_rel_entry.get()
             if not validar_data(data):
-                messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa")
+                self.custom_messagebox("error", "Erro", "Data inválida! Use o formato dd/mm/aaaa")
                 self.data_rel_entry.delete(0, tk.END)
                 self.data_rel_entry.insert(0, datetime.now().strftime('%d/%m/%Y'))
                 return False
@@ -1993,8 +2192,11 @@ class SistemaEntradaDados:
 
     def visualizar_lancamentos(self):
         """Abre a janela de visualização de lançamentos pendentes"""
-        if hasattr(self, 'visualizador') and self.visualizador:
-            self.visualizador.janela.destroy()
+        if hasattr(self, 'visualizador') and self.visualizador and hasattr(self.visualizador, 'janela') and self.visualizador.janela.winfo_exists():
+            # Se o visualizador já existir, apenas trazê-lo para frente
+            self.visualizador.janela.lift()
+            self.visualizador.janela.focus_force()
+            return
         
         # Criar nova instância do visualizador
         self.visualizador = VisualizadorLancamentos(self)
@@ -2005,6 +2207,10 @@ class SistemaEntradaDados:
         # Atualizar dados
         self.visualizador.dados_para_incluir = self.dados_para_incluir.copy()
         self.visualizador.atualizar_dados(self.dados_para_incluir)
+        
+        # Garantir que a janela fique na frente
+        self.visualizador.janela.lift()
+        self.visualizador.janela.focus_force()
 
     def on_visualizador_close(self):
         """Manipula o fechamento da janela do visualizador"""
@@ -2027,7 +2233,7 @@ class SistemaEntradaDados:
             
         # Validar se há fornecedor selecionado
         if not self.campos_fornecedor['cnpj_cpf'].get():
-            messagebox.showerror("Erro", "Selecione um fornecedor antes de processar as parcelas!")
+            self.custom_messagebox("error", "Erro", "Selecione um fornecedor antes de processar as parcelas!")
             return False
             
         # Guardar dados do fornecedor atual
@@ -2096,7 +2302,7 @@ class SistemaEntradaDados:
                 messagebox.showinfo("Sucesso", 
                                   f"Todas as {total_parcelas} parcelas foram processadas com sucesso!")
             else:
-                messagebox.showwarning("Aviso", 
+                self.sistema.custom_messagebox("warning", "Aviso", 
                                      f"Apenas {processadas} de {total_parcelas} parcelas foram processadas.")
             
             return processadas == total_parcelas
@@ -2104,7 +2310,7 @@ class SistemaEntradaDados:
         except Exception as e:
             erro_msg = f"Erro ao processar parcelas: {str(e)}"
             print(erro_msg)
-            messagebox.showerror("Erro", erro_msg)
+            self.custom_messagebox("error", "Erro", erro_msg)
             return False
             
         finally:
@@ -2121,7 +2327,7 @@ class SistemaEntradaDados:
         cnpj_cpf = self.campos_fornecedor['cnpj_cpf'].get()
         if not cnpj_cpf:
             print("Erro: Fornecedor não selecionado")
-            messagebox.showerror("Erro", "Selecione um fornecedor antes de criar parcelas!")
+            self.custom_messagebox("error", "Erro", "Selecione um fornecedor antes de criar parcelas!")
             return
 
         print("\nCapturando dados do fornecedor...")
@@ -2136,7 +2342,7 @@ class SistemaEntradaDados:
         # Validar se todos os campos do fornecedor estão preenchidos
         if not all(dados_fornecedor.values()):
             print("Erro: Dados do fornecedor incompletos")
-            messagebox.showerror("Erro", "Dados do fornecedor incompletos!")
+            self.custom_messagebox("error", "Erro", "Dados do fornecedor incompletos!")
             return
 
         print("Abrindo janela de parcelamento...")
@@ -2200,7 +2406,7 @@ class SistemaEntradaDados:
                 except Exception as e:
                     success = False
                     print(f"Erro ao processar parcela {i}: {str(e)}")
-                    messagebox.showerror("Erro", f"Erro ao processar parcela {i}: {str(e)}")
+                    self.custom_messagebox("error", "Erro", f"Erro ao processar parcela {i}: {str(e)}")
                     break
             
             if success:
@@ -2222,7 +2428,7 @@ class SistemaEntradaDados:
                 self.limpar_campos_despesa()
                 self.notebook.select(1)  # Volta para aba fornecedor
             else:
-                messagebox.showerror("Erro", "Houve um erro no processamento das parcelas.")
+                self.custom_messagebox("error", "Erro", "Houve um erro no processamento das parcelas.")
         else:
             print("Nenhuma parcela para processar")
 
@@ -2248,7 +2454,7 @@ class SistemaEntradaDados:
         
             ttk.Button(top, text="OK", command=selecionar_data).pack(pady=5)
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir calendário: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao abrir calendário: {str(e)}")
 
     def atualizar_campo_referencia(self, event=None):
         """Atualiza o campo de referência baseado no tipo de despesa"""
@@ -2334,7 +2540,7 @@ class SistemaEntradaDados:
         """Abre janela para edição de fornecedor existente"""
         selecionado = self.tree_fornecedores.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um fornecedor para editar")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um fornecedor para editar")
             return
 
         # Buscar dados completos do fornecedor
@@ -2342,7 +2548,7 @@ class SistemaEntradaDados:
             self.tree_fornecedores.item(selecionado)['values'][0]
         )
         if not fornecedor:
-            messagebox.showerror("Erro", "Fornecedor não encontrado")
+            self.custom_messagebox("error", "Erro", "Fornecedor não encontrado")
             return
 
         # Criar janela de edição
@@ -2400,7 +2606,7 @@ class SistemaEntradaDados:
             self.janela_fornecedor.grab_set()
 
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar dados do fornecedor: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao carregar dados do fornecedor: {str(e)}")
             self.janela_fornecedor.destroy()
 
     def selecionar_fornecedor(self):
@@ -2498,7 +2704,7 @@ class SistemaEntradaDados:
             gestao = GestaoTaxasAdministracao(self.root)
             gestao.abrir_controle_pagamentos()
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
 
     def abrir_finalizacao_quinzena(self):
         """Abre a finalização de quinzena"""
@@ -2507,7 +2713,7 @@ class SistemaEntradaDados:
             gestao = GestaoTaxasAdministracao(self.root)
             gestao.abrir_finalizacao_quinzena()
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir finalização de quinzena: {str(e)}")    
+            self.custom_messagebox("error", "Erro", f"Erro ao abrir finalização de quinzena: {str(e)}")    
 
     def buscar_fornecedor_completo(self, cnpj_cpf):
         """Busca todos os dados de um fornecedor"""
@@ -2729,7 +2935,7 @@ class SistemaEntradaDados:
         campos_obrigatorios = ['tipo_pessoa', 'cnpj_cpf', 'razao_social', 'nome', 'categoria']
         for campo in campos_obrigatorios:
             if not self.campos_form[campo].get().strip():
-                messagebox.showerror("Erro", f"O campo {campo} é obrigatório!")
+                self.custom_messagebox("error", "Erro", f"O campo {campo} é obrigatório!")
                 return
 
         # Validar CNPJ/CPF
@@ -2737,7 +2943,7 @@ class SistemaEntradaDados:
         cnpj_cpf = self.campos_form['cnpj_cpf'].get().strip()
         
         if not validar_cnpj_cpf(cnpj_cpf):
-            messagebox.showerror("Erro", f"{'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
+            self.custom_messagebox("error", "Erro", f"{'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
             return
             
             cnpj_cpf = formatar_cnpj_cpf(cnpj_cpf)
@@ -2776,7 +2982,7 @@ class SistemaEntradaDados:
             self.janela_fornecedor.destroy()
             self.buscar_fornecedor()
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao salvar fornecedor: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao salvar fornecedor: {str(e)}")
 
     def salvar_na_base_fornecedores(self, dados):
         """Salva os dados na planilha de fornecedores"""
@@ -2897,7 +3103,7 @@ class SistemaEntradaDados:
         campos_obrigatorios = ['razao_social', 'nome', 'categoria']
         for campo in campos_obrigatorios:
             if not self.campos_form[campo].get().strip():
-                messagebox.showerror("Erro", f"O campo {campo} é obrigatório!")
+                self.custom_messagebox("error", "Erro", f"O campo {campo} é obrigatório!")
                 return
 
         try:
@@ -2929,7 +3135,7 @@ class SistemaEntradaDados:
             self.janela_fornecedor.destroy()
             self.buscar_fornecedor()  # Atualiza a lista
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao atualizar fornecedor: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao atualizar fornecedor: {str(e)}")
 
 
     def preencher_dados_fornecedor(self, dados):
@@ -3034,22 +3240,23 @@ class SistemaEntradaDados:
 
     def adicionar_dados(self, eh_parcelamento=False):
         """Adiciona dados à lista temporária e retorna à aba fornecedor"""
-        print("Iniciando adição de dados...")
+        logger = system_logger.get_logger()
+        logger.info(f"Iniciando adição de dados - Cliente: {self.cliente_atual}")
 
         if not self.validar_campos():
-            print("Falha na validação dos campos")
-            return False # Importante retornar False aqui
+            logger.warning(f"Falha na validação dos campos")
+            return False
         try:
             # Coleta do primeiro conjunto de dados
             vr_unit_str = self.campos_despesa['vr_unit'].get().strip()
             if not vr_unit_str:
-                messagebox.showerror("Erro", "Valor unitário é obrigatório!")
+                self.custom_messagebox("error", "Erro", "Valor unitário é obrigatório!")
                 return
             vr_unit = float(vr_unit_str.replace(',', '.'))
         
             valor_str = self.campos_despesa['valor'].get().strip()
             if not valor_str:
-                messagebox.showerror("Erro", "Valor total não foi calculado!")
+                self.custom_messagebox("error", "Erro", "Valor total não foi calculado!")
                 return
             valor = float(valor_str.replace(',', '.'))
 
@@ -3098,7 +3305,7 @@ class SistemaEntradaDados:
                     messagebox.showinfo("Informação", 
                         f"Lançamento de CAFÉ adicionado automaticamente com valor de R$ {vr_unit_cafe:.2f} por dia!")
                 except Exception as e:
-                    messagebox.showwarning("Aviso", 
+                    self.sistema.custom_messagebox("warning", "Aviso", 
                         f"Erro ao processar lançamento automático do café: {str(e)}\n"
                         "O lançamento principal foi salvo, mas o café não foi gerado.")
 
@@ -3120,76 +3327,67 @@ class SistemaEntradaDados:
                 self.tree_fornecedores.selection_remove(self.tree_fornecedores.selection())
                 self.busca_entry.delete(0, tk.END)
             
-            return True  # Importante retornar True aqui
+            logger.info(f"Dados adicionados com sucesso - Cliente: {self.cliente_atual}, Total: {len(self.dados_para_incluir)}")
+            return True
             
         except ValueError as e:
-            messagebox.showerror("Erro", f"Erro ao processar valores: {str(e)}")
-            return False  # Importante retornar False aqui
-
-        
+            logger.error(f"Erro ao processar valores: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao processar valores: {str(e)}")
+            return False
+    
     def validar_campos(self):
         """Valida os campos antes de adicionar/enviar dados"""
         # Validar data
         if not self.data_rel_entry.get():
-            messagebox.showerror("Erro", "Data de referência é obrigatória!")
+            self.custom_messagebox("error", "Erro", "Data de referência é obrigatória!")
             return False
 
         # Validar fornecedor
         if not self.campos_fornecedor['cnpj_cpf'].get():
-            messagebox.showerror("Erro", "Selecione um fornecedor!")
+            self.custom_messagebox("error", "Erro", "Selecione um fornecedor!")
             return False
 
-##        # Validar categoria
-##        categoria = self.campos_fornecedor['categoria'].get().strip()
-##        if categoria:
-##            categorias_validas = get_categorias_fornecedor()
-##            if categoria not in categorias_validas:
-##                messagebox.showerror(
-##                    "Erro", 
-##                    f"Categoria inválida! Categorias permitidas: {', '.join(categorias_validas)}"
-##                )
-##                return False
 
         # Validar tipo de despesa
         tp_desp = self.campos_despesa['tp_desp'].get().strip()
         if not tp_desp or not tp_desp.isdigit() or not (1 <= int(tp_desp) <= 7):
-            messagebox.showerror("Erro", "Tipo de despesa deve ser um número entre 1 e 7!")
+            self.custom_messagebox("error", "Erro", "Tipo de despesa deve ser um número entre 1 e 7!")
             return False
 
         # Validar valor unitário
         vr_unit = self.campos_despesa['vr_unit'].get().strip()
         if not vr_unit:
-            messagebox.showerror("Erro", "Valor unitário é obrigatório!")
+            self.custom_messagebox("error", "Erro", "Valor unitário é obrigatório!")
             return False
         try:
             float(vr_unit.replace(',', '.'))
         except ValueError:
-            messagebox.showerror("Erro", "Valor unitário inválido!")
+            self.custom_messagebox("error", "Erro", "Valor unitário inválido!")
             return False
 
         # Validar dias para tipo de despesa 1
         if tp_desp == '1':
             dias = self.campos_despesa['dias'].get().strip()
             if not dias:
-                messagebox.showerror("Erro", "Quantidade de dias é obrigatória para tipo 1!")
+                self.custom_messagebox("error", "Erro", "Quantidade de dias é obrigatória para tipo 1!")
                 return False
             try:
                 dias_float = float(dias.replace(',', '.'))
                 if dias_float <= 0:
-                    messagebox.showerror("Erro", "Quantidade de dias deve ser maior que zero!")
+                    self.custom_messagebox("error", "Erro", "Quantidade de dias deve ser maior que zero!")
                     return False
             except ValueError:
-                messagebox.showerror("Erro", "Quantidade de dias inválida!")
+                self.custom_messagebox("error", "Erro", "Quantidade de dias inválida!")
                 return False
 
         # Validar referência
         if not self.campos_despesa['referencia'].get().strip():
-            messagebox.showerror("Erro", "Referência é obrigatória!")
+            self.custom_messagebox("error", "Erro", "Referência é obrigatória!")
             return False
 
         # Validar data de vencimento
         if not self.campos_despesa['dt_vencto'].get():
-            messagebox.showerror("Erro", "Data de vencimento é obrigatória!")
+            self.custom_messagebox("error", "Erro", "Data de vencimento é obrigatória!")
             return False
 
         return True
@@ -3231,40 +3429,119 @@ class SistemaEntradaDados:
         self.campos_despesa['referencia'].config(state='normal')
         self.campos_despesa['referencia']['values'] = []
 
+    def verificar_duplicidade_antes_salvar(self, sheet, dados):
+        """
+        Verifica se um lançamento similar já existe na planilha usando critérios mais precisos
+        incluindo número da nota fiscal e data de vencimento.
+        """
+        logger = system_logger.get_logger()
+        logger.debug(f"Verificando duplicidade para: {dados['nome']} - {dados['referencia']} - Valor: {dados['valor']}")
+        
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            # Pular linhas vazias
+            if not row[0]:
+                continue
+                
+            # Verificar se os critérios principais correspondem
+            try:
+                valor_planilha = float(str(row[8]).replace(',', '.'))
+                valor_novo = float(str(dados['valor']).replace(',', '.'))
+                diferenca_valor = abs(valor_planilha - valor_novo)
+                
+                if (row[3] == dados['nome'] and                  # Nome do fornecedor
+                    row[4] == dados['referencia'] and            # Referência 
+                    diferenca_valor < 0.01):                     # Valor com tolerância
+                    
+                    # Critérios adicionais para distinguir lançamentos legítimos repetidos
+                    nf_corresponde = True
+                    dt_vencto_corresponde = True
+                    
+                    # Verificar NF se estiver presente no lançamento e na planilha
+                    if 'nf' in dados and dados['nf'] and row[5]:
+                        nf_corresponde = (str(dados['nf']).strip().upper() == str(row[5]).strip().upper())
+                    
+                    # Verificar data de vencimento
+                    if 'dt_vencto' in dados and row[9]:
+                        # Normalizar formato de data para comparação
+                        if isinstance(row[9], datetime):
+                            data_planilha = row[9].strftime('%d/%m/%Y')
+                        else:
+                            data_planilha = str(row[9])
+                        
+                        dt_vencto_corresponde = (str(dados['dt_vencto']).strip() == data_planilha.strip())
+                    
+                    # Se todos os critérios correspondem, consideramos um potencial duplicado
+                    if nf_corresponde and dt_vencto_corresponde:
+                        logger.warning(f"Duplicata detectada: {dados['nome']} - {dados['referencia']} - {dados['valor']} - NF: {dados.get('nf', 'N/A')} - Vencto: {dados.get('dt_vencto', 'N/A')}")
+                        return True
+            except Exception as e:
+                logger.error(f"Erro ao verificar duplicidade: {str(e)}")
+                # Continuar verificando outras linhas em caso de erro
+        
+        return False
+
     def enviar_dados(self):
         """Salva os dados na planilha existente do cliente"""
-        print("Iniciando envio de dados...")  # Log para debug
+        logger = system_logger.get_logger()
+        logger.info(f"Iniciando envio de dados - Cliente: {self.cliente_atual}, Registros: {len(self.dados_para_incluir) if self.dados_para_incluir else 0}")
         
-        if not self.cliente_atual:
-            messagebox.showerror("Erro", "Selecione um cliente!")
-            return
+        # Desabilitar botão para evitar múltiplos cliques - CORRIGIDO
+        btn_enviar = None
+        
+        # Buscar o botão "Enviar" em todas as abas do notebook
+        for aba in [self.aba_dados, self.aba_fornecedor]:
+            for child in aba.winfo_children():
+                # Verificar se é um frame 
+                if isinstance(child, ttk.Frame):
+                    # Procurar o botão dentro deste frame
+                    for widget in child.winfo_children():
+                        if isinstance(widget, ttk.Button) and widget['text'] == "Enviar":
+                            btn_enviar = widget
+                            break
+        
+        if btn_enviar:
+            btn_enviar.config(state='disabled')
         
         try:
-            # Verificar se temos dados para processar
+            # Verificar se há cliente selecionado
+            if not self.cliente_atual:
+                self.custom_messagebox("error", "Erro", "Selecione um cliente!")
+                return
+            
+            # Verificar se existem dados para processar
             dados_para_processar = []
             if hasattr(self, 'visualizador') and self.visualizador and self.visualizador.tree.winfo_exists():
-                print("Obtendo dados do visualizador...")  # Log para debug
+                logger.info("Obtendo dados do visualizador")
                 dados_para_processar = self.visualizador.get_dados_atualizados()
             elif self.dados_para_incluir:
-                print("Usando dados_para_incluir existentes...")  # Log para debug
+                logger.info("Usando dados_para_incluir existentes")
                 dados_para_processar = self.dados_para_incluir.copy()
-                
+                    
             if not dados_para_processar:
-                messagebox.showwarning("Aviso", "Não há dados para enviar!")
+                self.sistema.custom_messagebox("warning", "Aviso", "Não há dados para enviar!")
                 return
 
-            print(f"Total de registros a processar: {len(dados_para_processar)}")  # Log para debug
+            logger.info(f"Total de registros a processar: {len(dados_para_processar)}")
+
+            # Adicionar identificadores únicos para cada lançamento
+            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            for i, lancamento in enumerate(dados_para_processar):
+                lancamento['id'] = f"{timestamp}-{i}"
 
             # Atualizar lista principal com dados mais recentes
             self.dados_para_incluir = dados_para_processar
 
             arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
-            print(f"Salvando em: {arquivo_cliente}")  # Log para debug
+            logger.info(f"Salvando em: {arquivo_cliente}")
             
+            # Abrir workbook, verificar duplicidade e salvar os dados
             try:
-                workbook = load_workbook(arquivo_cliente)
+                # Testar se o arquivo pode ser aberto para escrita
+                with open(arquivo_cliente, 'a+b') as test_file:
+                    pass  # Só tentamos abrir e fechar para testar acesso
             except PermissionError:
-                messagebox.showerror(
+                logger.error(f"Permissão negada ao abrir arquivo: {arquivo_cliente}")
+                self.custom_messagebox("error", 
                     "Erro", 
                     f"A planilha '{self.cliente_atual}.xlsx' está aberta!\n\n"
                     "Por favor:\n"
@@ -3272,131 +3549,263 @@ class SistemaEntradaDados:
                     "2. Clique em OK\n"
                     "3. Tente enviar novamente"
                 )
+                self._is_saving = False
+                return
+            except Exception as e:
+                logger.error(f"Erro ao verificar acesso ao arquivo: {str(e)}")
+                self.custom_messagebox("error","Erro", f"Erro ao verificar acesso ao arquivo: {str(e)}")
+                self._is_saving = False
                 return
             
-            sheet = workbook["Dados"]
-
-            if sheet.tables:
-                table_name = list(sheet.tables.keys())[0]
-                sheet.tables.pop(table_name)
-                
-            # Processar registros
-            for dados in dados_para_processar:
-                proxima_linha = sheet.max_row + 1
-                
-                # Converter e salvar data de referência
-                data_rel = datetime.strptime(dados['data'], '%d/%m/%Y')
-                data_cell = sheet.cell(row=proxima_linha, column=1, value=data_rel)
-                data_cell.number_format = 'DD/MM/YYYY'
-
-                # Converter tipo de despesa para número
-                tp_desp_cell = sheet.cell(row=proxima_linha, column=2, value=int(dados['tp_desp']))
-                tp_desp_cell.number_format = '0'
-
-                sheet.cell(row=proxima_linha, column=3, value=dados['cnpj_cpf'])
-                sheet.cell(row=proxima_linha, column=4, value=dados['nome'])
-                sheet.cell(row=proxima_linha, column=5, value=dados['referencia'])
-                sheet.cell(row=proxima_linha, column=6, value=dados['nf'])
-
-                # No método enviar_dados
-                vr_unit = float(dados['vr_unit'].replace(',', '.'))
-                vr_unit_cell = sheet.cell(row=proxima_linha, column=7, value=vr_unit)
-                aplicar_formatacao_celula(vr_unit_cell)
-
-                sheet.cell(row=proxima_linha, column=8, value=int(dados.get('dias', 1)))
-
-                valor = float(dados['valor'].replace(',', '.'))
-                valor_cell = sheet.cell(row=proxima_linha, column=9, value=valor)
-                aplicar_formatacao_celula(valor_cell)
-
-                dt_vencto = datetime.strptime(dados['dt_vencto'], '%d/%m/%Y')
-                dt_vencto_cell = sheet.cell(row=proxima_linha, column=10, value=dt_vencto)
-                dt_vencto_cell.number_format = 'DD/MM/YYYY'
-
-                sheet.cell(row=proxima_linha, column=11, value=dados['categoria'])
-                sheet.cell(row=proxima_linha, column=12, value=dados['dados_bancarios'])
-                sheet.cell(row=proxima_linha, column=13, value=dados['observacao'])
-
+            # Agora tente abrir com openpyxl
             try:
-                # Tentar salvar o arquivo
-                workbook.save(arquivo_cliente)
-                messagebox.showinfo("Sucesso", "Dados salvos com sucesso!")
-                    
-                # Limpar após salvar
-                self.dados_para_incluir.clear()
-                if hasattr(self, 'visualizador') and self.visualizador:
-                    self.visualizador.janela.destroy()
-                    self.visualizador = None
-                    
-                # Criar uma janela de diálogo personalizada
-                dialog = tk.Toplevel(self.root)
-                dialog.title("Continuar")
-                dialog.geometry("300x250")
-                dialog.transient(self.root)
-                dialog.grab_set()
+                workbook = load_workbook(arquivo_cliente)
+                sheet = workbook["Dados"]
                 
-                # Centralizar a janela
-                dialog.update_idletasks()
-                width = dialog.winfo_width()
-                height = dialog.winfo_height()
-                x = (dialog.winfo_screenwidth() // 2) - (width // 2)
-                y = (dialog.winfo_screenheight() // 2) - (height // 2)
-                dialog.geometry(f'{width}x{height}+{x}+{y}')
+                # Verificar duplicatas antes de salvar
+                lancamentos_duplicados = []
+                for dados in dados_para_processar:
+                    if self.verificar_duplicidade_antes_salvar(sheet, dados):
+                        lancamentos_duplicados.append(dados)
                 
-                ttk.Label(dialog, 
-                         text="O que você deseja fazer?",
-                         font=('Helvetica', 10, 'bold')).pack(pady=10)
-                
-                def continuar_entrada():
-                    dialog.destroy()
-                    self.limpar_campos_despesa()
-                    self.notebook.select(1)  # Volta para aba de fornecedor
+                if lancamentos_duplicados:
+                    logger.warning(f"Detectados {len(lancamentos_duplicados)} possíveis lançamentos duplicados")
                     
-                def voltar_menu_local():  # Renomeada para evitar conflito
-                    dialog.destroy()
-                    self.root.destroy()
-                    if hasattr(self, 'menu_principal'):
-                        self.menu_principal.deiconify()
+                    # Criar uma janela para mostrar os lançamentos duplicados
+                    janela_duplicados = tk.Toplevel(self.root)
+                    janela_duplicados.title("Possíveis Lançamentos Duplicados")
+                    janela_duplicados.geometry("800x500")
+                    janela_duplicados.transient(self.root)
+                    janela_duplicados.grab_set()  # Faz a janela modal
                     
-                def sair_sistema():
-                    dialog.destroy()
-                    self.root.destroy()
-                    sys.exit()
+                    # Frame com scrollbar para conteúdo
+                    frame_principal = ttk.Frame(janela_duplicados)
+                    frame_principal.pack(fill='both', expand=True, padx=10, pady=10)
+                    
+                    # Texto explicativo
+                    ttk.Label(
+                        frame_principal,
+                        text="Os seguintes lançamentos parecem ser duplicados de registros já existentes:",
+                        font=('Arial', 10, 'bold'),
+                        wraplength=760
+                    ).pack(fill='x', pady=10)
+                    
+                    # Frame para os lançamentos duplicados com scrollbar
+                    frame_scroll = ttk.Frame(frame_principal)
+                    frame_scroll.pack(fill='both', expand=True)
+                    
+                    # Adicionar scrollbar
+                    scrollbar = ttk.Scrollbar(frame_scroll)
+                    scrollbar.pack(side='right', fill='y')
+                    
+                    # Texto formatado para mostrar duplicatas
+                    texto_duplicatas = tk.Text(
+                        frame_scroll, 
+                        wrap='word', 
+                        height=15, 
+                        width=80,
+                        yscrollcommand=scrollbar.set
+                    )
+                    texto_duplicatas.pack(side='left', fill='both', expand=True)
+                    scrollbar.config(command=texto_duplicatas.yview)
+                    
+                    # Popular o texto com as duplicatas
+                    for i, dados in enumerate(lancamentos_duplicados, 1):
+                        texto_duplicatas.insert('end', f"Lançamento {i}:\n")
+                        texto_duplicatas.insert('end', f"Fornecedor: {dados['nome']}\n")
+                        texto_duplicatas.insert('end', f"Referência: {dados['referencia']}\n")
+                        texto_duplicatas.insert('end', f"Valor: R$ {dados['valor']}\n")
+                        texto_duplicatas.insert('end', f"NF: {dados.get('nf', 'N/A')}\n")
+                        texto_duplicatas.insert('end', f"Vencimento: {dados.get('dt_vencto', 'N/A')}\n")
+                        texto_duplicatas.insert('end', "--------------------------------------------\n")
+                    
+                    texto_duplicatas.config(state='disabled')  # Tornar somente leitura
+                    
+                    # Frame para botões
+                    frame_botoes = ttk.Frame(janela_duplicados)
+                    frame_botoes.pack(fill='x', pady=10)
+                    
+                    # Função para configurar resposta
+                    resposta_usuario = [False]  # Lista para armazenar resposta (hack para closure)
+                    
+                    def confirmar_continuacao():
+                        resposta_usuario[0] = True
+                        janela_duplicados.destroy()
+                        
+                    def cancelar_operacao():
+                        janela_duplicados.destroy()
+                    
+                    # Botões de ação
+                    ttk.Button(
+                        frame_botoes,
+                        text="Continuar mesmo assim",
+                        command=confirmar_continuacao
+                    ).pack(side='right', padx=5)
+                    
+                    ttk.Button(
+                        frame_botoes,
+                        text="Cancelar operação",
+                        command=cancelar_operacao
+                    ).pack(side='right', padx=5)
+                    
+                    # Centralizar a janela
+                    janela_duplicados.update_idletasks()
+                    width = janela_duplicados.winfo_width()
+                    height = janela_duplicados.winfo_height()
+                    x = (janela_duplicados.winfo_screenwidth() // 2) - (width // 2)
+                    y = (janela_duplicados.winfo_screenheight() // 2) - (height // 2)
+                    janela_duplicados.geometry(f'{width}x{height}+{x}+{y}')
+                    
+                    # Aguardar a resposta do usuário (janela modal)
+                    self.root.wait_window(janela_duplicados)
+                    
+                    if not resposta_usuario[0]:
+                        logger.info("Operação cancelada pelo usuário devido a duplicatas")
+                        self._is_saving = False
+                        return
+                        
+                    logger.info("Usuário optou por continuar apesar das duplicatas")
 
-                # Frame para os botões
-                btn_frame = ttk.Frame(dialog)
-                btn_frame.pack(fill='x', pady=10)
-                
-                # Botões com a função local correta
-                ttk.Button(btn_frame, 
-                          text="Continuar Entrada de Dados", 
-                          command=continuar_entrada).pack(pady=5, padx=10, fill='x')
-                
-                ttk.Button(btn_frame, 
-                          text="Voltar ao Menu Principal", 
-                          command=voltar_menu_local).pack(pady=5, padx=10, fill='x')
-                
-                ttk.Button(btn_frame, 
-                          text="Sair do Sistema", 
-                          command=sair_sistema).pack(pady=5, padx=10, fill='x')
+                if sheet.tables:
+                    table_name = list(sheet.tables.keys())[0]
+                    sheet.tables.pop(table_name)
+                    
+                # Processar registros
+                for dados in dados_para_processar:
+                    proxima_linha = sheet.max_row + 1
+                    
+                    # Converter e salvar data de referência
+                    data_rel = datetime.strptime(dados['data'], '%d/%m/%Y')
+                    data_cell = sheet.cell(row=proxima_linha, column=1, value=data_rel)
+                    data_cell.number_format = 'DD/MM/YYYY'
 
-            except PermissionError:
-                messagebox.showerror(
-                    "Erro", 
-                    f"Não foi possível salvar! A planilha '{self.cliente_atual}.xlsx' está aberta.\n\n"
-                    "Por favor:\n"
-                    "1. Feche a planilha\n"
-                    "2. Clique em OK\n"
-                    "3. Tente enviar novamente"
-                )
+                    # Converter tipo de despesa para número
+                    tp_desp_cell = sheet.cell(row=proxima_linha, column=2, value=int(dados['tp_desp']))
+                    tp_desp_cell.number_format = '0'
+
+                    sheet.cell(row=proxima_linha, column=3, value=dados['cnpj_cpf'])
+                    sheet.cell(row=proxima_linha, column=4, value=dados['nome'])
+                    sheet.cell(row=proxima_linha, column=5, value=dados['referencia'])
+                    sheet.cell(row=proxima_linha, column=6, value=dados['nf'])
+
+                    # No método enviar_dados
+                    vr_unit = float(dados['vr_unit'].replace(',', '.'))
+                    vr_unit_cell = sheet.cell(row=proxima_linha, column=7, value=vr_unit)
+                    aplicar_formatacao_celula(vr_unit_cell)
+
+                    sheet.cell(row=proxima_linha, column=8, value=int(dados.get('dias', 1)))
+
+                    valor = float(dados['valor'].replace(',', '.'))
+                    valor_cell = sheet.cell(row=proxima_linha, column=9, value=valor)
+                    aplicar_formatacao_celula(valor_cell)
+
+                    dt_vencto = datetime.strptime(dados['dt_vencto'], '%d/%m/%Y')
+                    dt_vencto_cell = sheet.cell(row=proxima_linha, column=10, value=dt_vencto)
+                    dt_vencto_cell.number_format = 'DD/MM/YYYY'
+
+                    sheet.cell(row=proxima_linha, column=11, value=dados['categoria'])
+                    sheet.cell(row=proxima_linha, column=12, value=dados['dados_bancarios'])
+                    sheet.cell(row=proxima_linha, column=13, value=dados['observacao'])
+                    
+                    # Adicionar o ID único como uma coluna extra para ajudar a identificar duplicatas
+                    if 'id' in dados:
+                        sheet.cell(row=proxima_linha, column=14, value=dados['id'])
+
+                # Salvar o arquivo com tratamento de erro aprimorado
+                try:
+                    # Tente salvar com tratamento explícito para PermissionError
+                    workbook.save(arquivo_cliente)
+                    messagebox.showinfo("Sucesso", "Dados salvos com sucesso!")
+                    
+                    # Após salvar com sucesso
+                    logger.info(f"Dados salvos com sucesso - Cliente: {self.cliente_atual}, Registros: {len(dados_para_processar)}")
+                    
+                    # Limpar dados após salvar com sucesso
+                    self.dados_para_incluir.clear()
+                    if hasattr(self, 'visualizador') and self.visualizador:
+                        self.visualizador.janela.destroy()
+                        self.visualizador = None
+                    
+                    # Criar uma janela de diálogo personalizada
+                    dialog = tk.Toplevel(self.root)
+                    dialog.title("Continuar")
+                    dialog.geometry("300x250")
+                    dialog.transient(self.root)
+                    dialog.grab_set()
+                    
+                    # Centralizar a janela
+                    dialog.update_idletasks()
+                    width = dialog.winfo_width()
+                    height = dialog.winfo_height()
+                    x = (dialog.winfo_screenwidth() // 2) - (width // 2)
+                    y = (dialog.winfo_screenheight() // 2) - (height // 2)
+                    dialog.geometry(f'{width}x{height}+{x}+{y}')
+                    
+                    ttk.Label(dialog, 
+                            text="O que você deseja fazer?",
+                            font=('Helvetica', 10, 'bold')).pack(pady=10)
+                    
+                    def continuar_entrada():
+                        dialog.destroy()
+                        self.limpar_campos_despesa()
+                        self.notebook.select(1)  # Volta para aba de fornecedor
+                        
+                    def voltar_menu_local():  # Renomeada para evitar conflito
+                        dialog.destroy()
+                        self.root.destroy()
+                        if hasattr(self, 'menu_principal'):
+                            self.menu_principal.deiconify()
+                        
+                    def sair_sistema():
+                        dialog.destroy()
+                        self.root.destroy()
+                        sys.exit()
+
+                    # Frame para os botões
+                    btn_frame = ttk.Frame(dialog)
+                    btn_frame.pack(fill='x', pady=10)
+                    
+                    # Botões com a função local correta
+                    ttk.Button(btn_frame, 
+                            text="Continuar Entrada de Dados", 
+                            command=continuar_entrada).pack(pady=5, padx=10, fill='x')
+                    
+                    ttk.Button(btn_frame, 
+                            text="Voltar ao Menu Principal", 
+                            command=voltar_menu_local).pack(pady=5, padx=10, fill='x')
+                    
+                    ttk.Button(btn_frame, 
+                            text="Sair do Sistema", 
+                            command=sair_sistema).pack(pady=5, padx=10, fill='x')
+
+                except PermissionError:
+                    logger.error("Permissão negada ao salvar arquivo - provável arquivo aberto")
+                    self.custom_messagebox("error", 
+                        "Erro", 
+                        f"Não foi possível salvar! A planilha '{self.cliente_atual}.xlsx' está aberta.\n\n"
+                        "Por favor:\n"
+                        "1. Feche a planilha\n"
+                        "2. Clique em OK\n"
+                        "3. Tente enviar novamente"
+                    )
+                except Exception as e:
+                    logger.error(f"Erro ao salvar arquivo: {str(e)}")
+                    self.custom_messagebox("error", "Erro", f"Erro ao salvar arquivo: {str(e)}")
+            
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao salvar arquivo: {str(e)}")
-                
+                logger.error(f"Erro ao processar dados: {str(e)}", exc_info=True)
+                self.custom_messagebox("error", "Erro", f"Erro ao processar dados: {str(e)}")
+            
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao processar dados: {str(e)}")
+            logger.error(f"Erro geral no método enviar_dados: {str(e)}", exc_info=True)
+            self.custom_messagebox("error", "Erro", f"Erro ao enviar dados: {str(e)}")
+            
+        finally:
+            # Desmarcar flag de processamento
+            self._is_saving = False
 
 class EditorCliente:
-    def __init__(self, parent):
+    def __init__(self, parent): 
         self.parent = parent
         self.root = tk.Toplevel(parent)
         self.root.title("Editor de Clientes")
@@ -3465,19 +3874,19 @@ class EditorCliente:
             
             wb.close()
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao carregar clientes: {str(e)}")
 
     def atualizar_taxa(self):
         """Atualiza a taxa de administração do cliente selecionado"""
         selecionado = self.tree_clientes.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um cliente")
+            self.sistema.custom_messagebox("warning","Aviso", "Selecione um cliente")
             return
 
         try:
             taxa = float(self.taxa_entry.get().replace(',', '.'))
             if not (0 <= taxa <= 100):
-                messagebox.showerror("Erro", "Taxa deve estar entre 0 e 100")
+                self.custom_messagebox("error", "Erro", "Taxa deve estar entre 0 e 100")
                 return
                 
             cliente = self.tree_clientes.item(selecionado)['values'][0]
@@ -3497,15 +3906,15 @@ class EditorCliente:
             messagebox.showinfo("Sucesso", "Taxa atualizada com sucesso!")
             
         except ValueError:
-            messagebox.showerror("Erro", "Taxa inválida")
+            self.custom_messagebox("error", "Erro", "Taxa inválida")
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao atualizar taxa: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao atualizar taxa: {str(e)}")
 
     def remover_taxa(self):
         """Remove a taxa de administração do cliente selecionado"""
         selecionado = self.tree_clientes.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um cliente")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um cliente")
             return
 
         if messagebox.askyesno("Confirmar", "Deseja remover a taxa de administração?"):
@@ -3527,7 +3936,7 @@ class EditorCliente:
                 messagebox.showinfo("Sucesso", "Taxa removida com sucesso!")
                 
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao remover taxa: {str(e)}")
+                self.custom_messagebox("error", "Erro", f"Erro ao remover taxa: {str(e)}")
 
 
 
@@ -3579,7 +3988,7 @@ class GestaoContratos:
         try:
             # Verificar se o arquivo existe
             if not os.path.exists(self.arquivo_cliente):
-                messagebox.showerror("Erro", f"Arquivo do cliente {self.cliente_atual} não encontrado!")
+                self.custom_messagebox("error", "Erro", f"Arquivo do cliente {self.cliente_atual} não encontrado!")
                 on_close_callback()  # Fechar a janela em caso de erro
                 return
 
@@ -3694,159 +4103,13 @@ class GestaoContratos:
         except Exception as e:
             import traceback
             traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao abrir janela de contratos: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao abrir janela de contratos: {str(e)}")
             if 'wb' in locals():
                 wb.close()
             # Garantir que a janela principal seja restaurada em caso de erro
             on_close_callback()
 
-    ## Este método foi substituído por def criar_interface_contratos em 31/03/2025
-    # def abrir_janela_contrato(self, cliente):
-    #     """Abre janela para gestão de contratos"""
-    #     self.cliente_atual = cliente
-    #     self.arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-        
-    #     try:
-    #         # Verificar se o arquivo existe
-    #         if not os.path.exists(self.arquivo_cliente):
-    #             messagebox.showerror("Erro", f"Arquivo do cliente {cliente} não encontrado!")
-    #             return
-
-    #         # Abrir arquivo e verificar aba
-    #         wb = load_workbook(self.arquivo_cliente)
-    #         if 'Contratos_ADM' not in wb.sheetnames:
-    #             # Se não existir a aba, criar
-    #             print(f"Criando aba Contratos_ADM para {cliente}")
-    #             ws = wb.create_sheet("Contratos_ADM")
-                
-    #             # Definir os blocos na linha 1
-    #             blocos = ["CONTRATOS", "", "", "", "", "",
-    #                      "ADMINISTRADORES_CONTRATO", "", "", "", "", "", "",
-    #                      "ADITIVOS", "", "", "",
-    #                      "ADMINISTRADORES_ADITIVO", "", "", "", "", "", "",
-    #                      "PARCELAS", "", "", "", ""]
-                
-    #             for col, valor in enumerate(blocos, 1):
-    #                 ws.cell(row=1, column=col, value=valor)
-                
-    #             # Definir cabeçalhos na linha 2
-    #             headers = [
-    #                 # CONTRATOS
-    #                 "Nº Contrato", "Data Início", "Data Fim", "Status", "Observações", "",
-    #                 # ADMINISTRADORES_CONTRATO
-    #                 "Nº Contrato", "CNPJ/CPF", "Nome/Razão Social", "Tipo", "Valor/Percentual", "Valor Total", "Nº Parcelas", 
-    #                 # ADITIVOS
-    #                 "Nº Contrato", "Nº Aditivo", "Data Início", "Data Fim",
-    #                 # ADMINISTRADORES_ADITIVO
-    #                 "Nº Contrato", "Nº Aditivo", "CNPJ/CPF", "Nome/Razão Social", "Tipo", "Valor/Percentual", "Valor Total",
-    #                 # PARCELAS
-    #                 "Referência", "Número", "CNPJ/CPF", "Nome", "Data Vencimento", "Valor", "Status", "Data Pagamento"
-    #             ]
-                
-    #             for col, header in enumerate(headers, 1):
-    #                 cell = ws.cell(row=2, column=col, value=header)
-    #                 cell.font = openpyxl.styles.Font(bold=True)
-    #                 cell.alignment = openpyxl.styles.Alignment(horizontal='center')
-                
-    #             # Ajustar largura das colunas
-    #             for col in range(1, len(headers) + 1):
-    #                 ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 15
-                
-    #             # Salvar as alterações
-    #             wb.save(self.arquivo_cliente)
-
-    #         # Usar o método centralizar_janela para posicionar e configurar
-    #         self.centralizar_janela(janela, 800, 750, self.parent)
-            
-    #         # Importante: Tornar a janela modal e garantir que fique na frente
-    #         janela.transient(self.parent)
-    #         janela.grab_set()
-    #         janela.focus_force()
-            
-    #         # Trazer a janela para frente após um breve atraso
-    #         janela.after(100, lambda: janela.lift())
-            
-    #         # Frame principal
-    #         frame_principal = ttk.Frame(janela, padding="10")
-    #         frame_principal.pack(fill='both', expand=True)
-
-    #         # Frame para lista de contratos existentes
-    #         frame_contratos = ttk.LabelFrame(frame_principal, text="Contratos Existentes")
-    #         frame_contratos.pack(fill='both', expand=True, pady=5)
-
-    #         # Treeview para contratos
-    #         colunas = ('Nº Contrato', 'Data Início', 'Data Fim', 'Status')
-    #         self.tree_contratos = ttk.Treeview(frame_contratos, columns=colunas, show='headings')
-    #         for col in colunas:
-    #             self.tree_contratos.heading(col, text=col)
-    #             self.tree_contratos.column(col, width=100)
-            
-    #         # Adicionar scrollbars
-    #         scroll_y = ttk.Scrollbar(frame_contratos, orient='vertical', command=self.tree_contratos.yview)
-    #         scroll_x = ttk.Scrollbar(frame_contratos, orient='horizontal', command=self.tree_contratos.xview)
-    #         self.tree_contratos.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
-            
-    #         self.tree_contratos.pack(fill='both', expand=True, padx=5, pady=5)
-    #         scroll_y.pack(side='right', fill='y')
-    #         scroll_x.pack(side='bottom', fill='x')
-
-    #         # Frame para lista de administradores do contrato selecionado
-    #         frame_admins = ttk.LabelFrame(frame_principal, text="Administradores do Contrato")
-    #         frame_admins.pack(fill='both', expand=True, pady=5)
-
-    #         # Treeview para administradores
-    #         colunas_adm = ('CNPJ/CPF', 'Nome', 'Tipo', 'Valor/Percentual', 'Valor Total', 'Nº Parcelas', 'Data Inicial Pagamento')
-    #         self.tree_adm_contrato = ttk.Treeview(frame_admins, columns=colunas_adm, show='headings')
-    #         for col in colunas_adm:
-    #             self.tree_adm_contrato.heading(col, text=col)
-    #             self.tree_adm_contrato.column(col, width=100)
-            
-    #         # Adicionar scrollbars para administradores
-    #         scroll_y_adm = ttk.Scrollbar(frame_admins, orient='vertical', command=self.tree_adm_contrato.yview)
-    #         scroll_x_adm = ttk.Scrollbar(frame_admins, orient='horizontal', command=self.tree_adm_contrato.xview)
-    #         self.tree_adm_contrato.configure(yscrollcommand=scroll_y_adm.set, xscrollcommand=scroll_x_adm.set)
-            
-    #         self.tree_adm_contrato.pack(fill='both', expand=True, padx=5, pady=5)
-    #         scroll_y_adm.pack(side='right', fill='y')
-    #         scroll_x_adm.pack(side='bottom', fill='x')
-
-    #         # Botões de ação
-    #         frame_botoes = ttk.Frame(frame_principal)
-    #         frame_botoes.pack(fill='x', pady=5)
-
-    #         ttk.Button(frame_botoes, text="Novo Contrato", 
-    #                 command=lambda: self.criar_novo_contrato(janela)).pack(side='left', padx=5)
-    #         ttk.Button(frame_botoes, text="Editar Contrato", 
-    #                 command=self.editar_contrato).pack(side='left', padx=5)
-    #         ttk.Button(frame_botoes, text="Excluir Contrato", 
-    #                 command=self.excluir_contrato).pack(side='left', padx=5)
-            
-    #         # Botão Fechar com função para garantir que a janela principal fique em primeiro plano
-    #         ttk.Button(frame_botoes, text="Fechar", 
-    #                 command=lambda: (janela.destroy(), self.parent.lift(), self.parent.focus_force())
-    #                 ).pack(side='right', padx=5)
-
-    #         # Carregar contratos existentes
-    #         self.carregar_contratos()
-
-    #         # Binding para atualizar administradores quando selecionar contrato
-    #         self.tree_contratos.bind('<<TreeviewSelect>>', self.mostrar_administradores)
-            
-    #         # Protocolo para quando a janela for fechada pelo X da janela
-    #         janela.protocol("WM_DELETE_WINDOW", lambda: (janela.destroy(), self.parent.lift(), self.parent.focus_force()))
-            
-    #         # Configurar evento para quando a janela se tornar visível
-    #         janela.bind("<Map>", lambda e: janela.after(100, lambda: janela.lift()))
-            
-    #         # Adicionar mais um esforço para trazer a janela para frente
-    #         self.parent.after(200, lambda: (janela.lift(), janela.focus_force()))
-
-    #     except Exception as e:
-    #         messagebox.showerror("Erro", f"Erro ao abrir janela de contratos: {str(e)}")
-    #         if 'wb' in locals():
-    #             wb.close()
-
-
+    
     def carregar_contratos(self):
         try:
             wb = load_workbook(self.arquivo_cliente)
@@ -3894,7 +4157,7 @@ class GestaoContratos:
             wb.close()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar contratos: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao carregar contratos: {str(e)}")
 
     def mostrar_administradores(self, event=None):
         """Mostra administradores do contrato selecionado"""
@@ -3932,7 +4195,7 @@ class GestaoContratos:
             wb.close()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar administradores: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao carregar administradores: {str(e)}")
   
 
     def criar_novo_contrato(self, janela_principal):
@@ -4044,22 +4307,22 @@ class GestaoContratos:
         def salvar():
             # Validar campos obrigatórios
             if not num_contrato.get() or not data_inicio.get() or not data_fim.get() or not valor_global.get():
-                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios do contrato!")
+                self.custom_messagebox("error", "Erro", "Preencha todos os campos obrigatórios do contrato!")
                 return
                 
             # Validar valor global
             try:
                 valor_global_float = float(valor_global.get().replace(',', '.'))
                 if valor_global_float <= 0:
-                    messagebox.showerror("Erro", "Valor global deve ser maior que zero!")
+                    self.custom_messagebox("error", "Erro", "Valor global deve ser maior que zero!")
                     return
             except ValueError:
-                messagebox.showerror("Erro", "Valor global inválido!")
+                self.custom_messagebox("error", "Erro", "Valor global inválido!")
                 return
                 
             # Validar administradores
             if not self.tree_adm.get_children():
-                messagebox.showerror("Erro", "Adicione pelo menos um administrador!")
+                self.custom_messagebox("error", "Erro", "Adicione pelo menos um administrador!")
                 return
                 
             # Criar contrato
@@ -4118,7 +4381,7 @@ class GestaoContratos:
         """Edita o contrato selecionado"""
         selecionado = self.tree_contratos.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um contrato para editar")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um contrato para editar")
             return
 
         try:
@@ -4177,7 +4440,7 @@ class GestaoContratos:
                     self.carregar_contratos()
                     
                 except Exception as e:
-                    messagebox.showerror("Erro", f"Erro ao salvar alterações: {str(e)}")
+                    self.custom_messagebox("error", "Erro", f"Erro ao salvar alterações: {str(e)}")
 
             # Botões
             frame_botoes = ttk.Frame(frame)
@@ -4187,7 +4450,7 @@ class GestaoContratos:
             ttk.Button(frame_botoes, text="Cancelar", command=janela.destroy).pack(side='left', padx=5)
 
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir edição: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao abrir edição: {str(e)}")
 
 
 
@@ -4195,16 +4458,16 @@ class GestaoContratos:
         """Versão modificada para incluir os detalhes de parcelas/eventos na tela do administrador"""
         # Verificar se valor global foi informado
         if not valor_global_entry.get():
-            messagebox.showerror("Erro", "Informe o valor global do contrato primeiro")
+            self.custom_messagebox("error", "Erro", "Informe o valor global do contrato primeiro")
             return
             
         try:
             valor_global_float = float(valor_global_entry.get().replace(',', '.'))
             if valor_global_float <= 0:
-                messagebox.showerror("Erro", "Valor global deve ser maior que zero")
+                self.custom_messagebox("error", "Erro", "Valor global deve ser maior que zero")
                 return
         except ValueError:
-            messagebox.showerror("Erro", "Valor global inválido")
+            self.custom_messagebox("error", "Erro", "Valor global inválido")
             return
             
         # Obter o método de pagamento selecionado
@@ -4413,12 +4676,12 @@ class GestaoContratos:
                 try:
                     # Validar número de parcelas
                     if not num_parcelas_entry.get():
-                        messagebox.showerror("Erro", "Informe o número de parcelas primeiro")
+                        self.custom_messagebox("error", "Erro", "Informe o número de parcelas primeiro")
                         return
                         
                     num_parcelas = int(num_parcelas_entry.get())
                     if num_parcelas <= 0:
-                        messagebox.showerror("Erro", "Número de parcelas deve ser maior que zero")
+                        self.custom_messagebox("error", "Erro", "Número de parcelas deve ser maior que zero")
                         return
                     
                     # Criar janela para configurar descrições
@@ -4506,7 +4769,7 @@ class GestaoContratos:
                     janela_descricoes.grab_set()
                     
                 except Exception as e:
-                    messagebox.showerror("Erro", f"Erro ao configurar descrições: {str(e)}")
+                    self.custom_messagebox("error", "Erro", f"Erro ao configurar descrições: {str(e)}")
                     
             # Botão para configurar descrições individuais
             btn_config_descricoes = ttk.Button(frame_descricoes, 
@@ -4577,23 +4840,23 @@ class GestaoContratos:
             def adicionar_evento():
                 """Adiciona um evento à lista"""
                 if not valor_global_entry.get():
-                    messagebox.showerror("Erro", "Informe o valor global do contrato primeiro")
+                    self.custom_messagebox("error", "Erro", "Informe o valor global do contrato primeiro")
                     return
                     
                 descricao = evento_descricao.get().strip()
                 percentual_str = evento_percentual.get().strip()
                 
                 if not descricao:
-                    messagebox.showerror("Erro", "Informe a descrição do evento")
+                    self.custom_messagebox("error", "Erro", "Informe a descrição do evento")
                     return
                     
                 try:
                     percentual = float(percentual_str.replace(',', '.'))
                     if percentual <= 0 or percentual > 100:
-                        messagebox.showerror("Erro", "Percentual deve estar entre 0 e 100")
+                        self.custom_messagebox("error", "Erro", "Percentual deve estar entre 0 e 100")
                         return
                 except ValueError:
-                    messagebox.showerror("Erro", "Percentual inválido")
+                    self.custom_messagebox("error", "Erro", "Percentual inválido")
                     return
                     
                 # Calcular total atual
@@ -4601,7 +4864,7 @@ class GestaoContratos:
                 
                 # Verificar se ultrapassa 100%
                 if total_atual + percentual > 100:
-                    messagebox.showerror("Erro", "Total de percentual não pode exceder 100%")
+                    self.custom_messagebox("error", "Erro", "Total de percentual não pode exceder 100%")
                     return
                     
                 # Calcular valor baseado no percentual
@@ -4634,7 +4897,7 @@ class GestaoContratos:
                 """Remove o evento selecionado"""
                 selecionado = tree_eventos.selection()
                 if not selecionado:
-                    messagebox.showwarning("Aviso", "Selecione um evento para remover")
+                    self.sistema.custom_messagebox("warning", "Aviso", "Selecione um evento para remover")
                     return
                     
                 # Obter valores
@@ -4694,7 +4957,7 @@ class GestaoContratos:
             """Confirma a adição do administrador"""
             try:
                 if not cnpj_cpf_entry.get() or not nome_entry.get() or not tipo_combo.get():
-                    messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!")
+                    self.custom_messagebox("error", "Erro", "Preencha todos os campos obrigatórios!")
                     return
                     
                 # Capturar a forma de pagamento para os dados bancários
@@ -4704,36 +4967,36 @@ class GestaoContratos:
                 if metodo == "Valor Fixo em Parcelas":
                     # Validar número de parcelas
                     if not num_parcelas_entry.get():
-                        messagebox.showerror("Erro", "Informe o número de parcelas!")
+                        self.custom_messagebox("error", "Erro", "Informe o número de parcelas!")
                         return
                         
                     try:
                         num_parcelas = int(num_parcelas_entry.get())
                         if num_parcelas <= 0:
-                            messagebox.showerror("Erro", "Número de parcelas deve ser maior que zero!")
+                            self.custom_messagebox("error", "Erro", "Número de parcelas deve ser maior que zero!")
                             return
                     except ValueError:
-                        messagebox.showerror("Erro", "Número de parcelas inválido!")
+                        self.custom_messagebox("error", "Erro", "Número de parcelas inválido!")
                         return
                     
                     # Se tem entrada configurada, validar entrada
                     if var_tem_entrada.get():
                         if not valor_entrada_entry.get():
-                            messagebox.showerror("Erro", "Informe o valor da entrada!")
+                            self.custom_messagebox("error", "Erro", "Informe o valor da entrada!")
                             return
                         
                         try:
                             valor_entrada = float(valor_entrada_entry.get().replace(',', '.'))
                             if valor_entrada <= 0:
-                                messagebox.showerror("Erro", "Valor da entrada deve ser maior que zero!")
+                                self.custom_messagebox("error", "Erro", "Valor da entrada deve ser maior que zero!")
                                 return
                         except ValueError:
-                            messagebox.showerror("Erro", "Valor da entrada inválido!")
+                            self.custom_messagebox("error", "Erro", "Valor da entrada inválido!")
                             return
                 
                 # Verificar eventos para contratos do tipo Eventos/Fases
                 if metodo == "Eventos/Fases" and not eventos:
-                    messagebox.showerror("Erro", "Adicione pelo menos um evento para este administrador!")
+                    self.custom_messagebox("error", "Erro", "Adicione pelo menos um evento para este administrador!")
                     return
                     
                 # Para contratos de eventos, verificar total de percentuais
@@ -4747,13 +5010,13 @@ class GestaoContratos:
                 if tipo_combo.get() == 'Percentual':
                     # Validar percentual
                     if not percentual_entry.get():
-                        messagebox.showerror("Erro", "Preencha o percentual!")
+                        self.custom_messagebox("error", "Erro", "Preencha o percentual!")
                         return
                     
                     try:
                         perc = float(percentual_entry.get().replace(',', '.'))
                         if perc <= 0 or perc > 100:
-                            messagebox.showerror("Erro", "Percentual deve estar entre 0 e 100!")
+                            self.custom_messagebox("error", "Erro", "Percentual deve estar entre 0 e 100!")
                             return
                             
                         # Configurar campos adicionais conforme método
@@ -4799,21 +5062,21 @@ class GestaoContratos:
                         tree.insert('', 'end', values=valores_percentual, tags=tags_finais)
                         
                     except ValueError:
-                        messagebox.showerror("Erro", "Percentual inválido!")
+                        self.custom_messagebox("error", "Erro", "Percentual inválido!")
                         return
                         
                 elif tipo_combo.get() == 'Fixo':
                     if not valor_total_entry.get():
-                        messagebox.showerror("Erro", "Preencha o valor total!")
+                        self.custom_messagebox("error", "Erro", "Preencha o valor total!")
                         return
                         
                     try:
                         valor_total_adm = float(valor_total_entry.get().replace(',', '.'))
                         if valor_total_adm <= 0:
-                            messagebox.showerror("Erro", "Valor total deve ser maior que zero!")
+                            self.custom_messagebox("error", "Erro", "Valor total deve ser maior que zero!")
                             return
                     except ValueError:
-                        messagebox.showerror("Erro", "Valor total inválido!")
+                        self.custom_messagebox("error", "Erro", "Valor total inválido!")
                         return
                     
                     # Configurar campos adicionais conforme método
@@ -4892,7 +5155,7 @@ class GestaoContratos:
                     ))
                 
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao confirmar: {str(e)}")
+                self.custom_messagebox("error", "Erro", f"Erro ao confirmar: {str(e)}")
                 
         # Botões
         frame_botoes = ttk.Frame(frame_admin)
@@ -5127,7 +5390,7 @@ class GestaoContratos:
             # Verificar se o contrato já existe
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if row[0] and str(row[0]).upper() == num_contrato.upper():
-                    messagebox.showerror("Erro", "Número de contrato já existe!")
+                    self.custom_messagebox("error", "Erro", "Número de contrato já existe!")
                     return
 
             # Salvar dados do contrato
@@ -5232,12 +5495,12 @@ class GestaoContratos:
                 wb.save(self.arquivo_cliente)
                 wb.close()  # Importante fechar o arquivo
             except PermissionError:
-                messagebox.showerror("Erro", f"Não foi possível salvar a planilha. Ela pode estar aberta em outro programa.")
+                self.custom_messagebox("error", "Erro", f"Não foi possível salvar a planilha. Ela pode estar aberta em outro programa.")
                 return
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-                messagebox.showerror("Erro", f"Erro ao salvar planilha: {str(e)}")
+                self.custom_messagebox("error", "Erro", f"Erro ao salvar planilha: {str(e)}")
                 return
                 
             # Exibir mensagem de sucesso
@@ -5260,7 +5523,7 @@ class GestaoContratos:
         except Exception as e:
             import traceback
             traceback.print_exc()  # Imprime o stack trace completo
-            messagebox.showerror("Erro", f"Erro ao salvar contrato: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao salvar contrato: {str(e)}")
             if 'wb' in locals() and wb:
                 try:
                     wb.close()
@@ -5271,7 +5534,7 @@ class GestaoContratos:
         """Exclui o contrato selecionado"""
         selecionado = self.tree_contratos.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um contrato para excluir")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um contrato para excluir")
             return
             
         if messagebox.askyesno("Confirmação", 
@@ -5292,7 +5555,7 @@ class GestaoContratos:
                 messagebox.showinfo("Sucesso", "Contrato marcado como inativo")
                 
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao excluir contrato: {str(e)})")
+                self.custom_messagebox("error", "Erro", f"Erro ao excluir contrato: {str(e)})")
 
             
 class GestaoTaxasFixas:
@@ -5477,7 +5740,7 @@ class GestaoAdministradores:
         """Adiciona um fornecedor selecionado como administrador"""
         selecionado = self.tree_fornecedores.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um fornecedor")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um fornecedor")
             return
             
         fornecedor = self.tree_fornecedores.item(selecionado)['values']
@@ -5485,16 +5748,16 @@ class GestaoAdministradores:
         
         # Validar percentual
         if not percentual:
-            messagebox.showerror("Erro", "Informe o percentual!")
+            self.custom_messagebox("error", "Erro", "Informe o percentual!")
             return
             
         try:
             percentual_float = float(percentual.replace(',', '.'))
             if percentual_float <= 0 or percentual_float > 100:
-                messagebox.showerror("Erro", "Percentual deve estar entre 0 e 100!")
+                self.custom_messagebox("error", "Erro", "Percentual deve estar entre 0 e 100!")
                 return
         except ValueError:
-            messagebox.showerror("Erro", "Percentual inválido!")
+            self.custom_messagebox("error", "Erro", "Percentual inválido!")
             return
             
         # Formatar CNPJ/CPF como string
@@ -5503,14 +5766,14 @@ class GestaoAdministradores:
         # Verificar se o fornecedor já está na lista
         for admin in self.administradores:
             if admin[0] == cnpj_cpf:  # Compara CNPJ/CPF
-                messagebox.showerror("Erro", "Este fornecedor já está cadastrado como administrador!")
+                self.custom_messagebox("error", "Erro", "Este fornecedor já está cadastrado como administrador!")
                 return
                 
         # Verificar se o total de percentuais não excede 100%
         total_atual = sum(float(item[2].replace(',', '.')) 
                          for item in self.administradores)
         if total_atual + percentual_float > 100:
-            messagebox.showerror("Erro", "Soma dos percentuais excede 100%!")
+            self.custom_messagebox("error", "Erro", "Soma dos percentuais excede 100%!")
             return
             
         # Adicionar à lista e à treeview usando o CNPJ/CPF como string
@@ -5524,7 +5787,7 @@ class GestaoAdministradores:
         """Remove o administrador selecionado"""
         selecionado = self.tree_admin.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um administrador para remover")
+            self.sistema.custom_messagebox("warning", "Aviso", "Selecione um administrador para remover")
             return
         
         self.tree_admin.delete(selecionado)
@@ -5538,7 +5801,7 @@ class GestaoAdministradores:
         total = sum(float(perc.replace(',', '.')) 
                    for _, _, perc in self.administradores)
         if total > 100:
-            messagebox.showerror("Erro", "Soma dos percentuais excede 100%!")
+            self.custom_messagebox("error", "Erro", "Soma dos percentuais excede 100%!")
             return
         
         self.janela_admin.destroy()
@@ -5832,29 +6095,29 @@ class GestorParcelas:
     def validar_dados_entrada(self, valor_original, num_parcelas, referencia_base, tipo):
         """Valida os dados básicos antes de gerar parcelas"""
         if not referencia_base or num_parcelas <= 0:
-            messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!")
+            self.custom_messagebox("error", "Erro", "Preencha todos os campos obrigatórios!")
             return False
 
         # Validações específicas por tipo de parcelamento
         if tipo == "Prazo Fixo em Dias":
             if not hasattr(self, 'prazo_dias') or not self.prazo_dias.get():
-                messagebox.showerror("Erro", "Informe o prazo entre as parcelas!")
+                self.custom_messagebox("error", "Erro", "Informe o prazo entre as parcelas!")
                 return False
         elif tipo == "Datas Específicas":
             if not hasattr(self, 'texto_datas'):
-                messagebox.showerror("Erro", "Configure as datas específicas!")
+                self.custom_messagebox("error", "Erro", "Configure as datas específicas!")
                 return False
         elif tipo == "Cartão de Crédito":
             if not hasattr(self, 'dia_vencimento') or not self.dia_vencimento.get():
-                messagebox.showerror("Erro", "Informe o dia do vencimento!")
+                self.custom_messagebox("error", "Erro", "Informe o dia do vencimento!")
                 return False
             try:
                 dia_vencimento = int(self.dia_vencimento.get())
                 if not (1 <= dia_vencimento <= 31):
-                    messagebox.showerror("Erro", "Dia de vencimento deve estar entre 1 e 31!")
+                    self.custom_messagebox("error", "Erro", "Dia de vencimento deve estar entre 1 e 31!")
                     return False
             except ValueError:
-                messagebox.showerror("Erro", "Dia de vencimento inválido!")
+                self.custom_messagebox("error", "Erro", "Dia de vencimento inválido!")
                 return False
 
         return True
@@ -5927,7 +6190,7 @@ class GestorParcelas:
                 return True
 
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao gerar parcelas: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao gerar parcelas: {str(e)}")
             return False
 
     def adicionar_parcela(self, data_rel, dt_vencto, valor_parcela, referencia_base, i, num_parcelas, eh_primeira_parcela, nf):
@@ -5976,7 +6239,7 @@ class GestorParcelas:
         
         num_datas_esperado = num_parcelas
         if len(datas_texto) != num_datas_esperado:
-            messagebox.showerror(
+            self.custom_messagebox("error", 
                 "Erro", 
                 f"Para {num_parcelas} {'parcelas após a entrada' if self.tem_entrada.get() else 'parcelas'}, "
                 f"é necessário informar {num_datas_esperado} data(s) de vencimento."
@@ -6011,10 +6274,10 @@ class GestorParcelas:
                 )
                 
             except ValueError as e:
-                messagebox.showerror("Erro", f"Erro ao processar data: {str(e)}")
+                self.custom_messagebox("error", "Erro", f"Erro ao processar data: {str(e)}")
                 return
             except IndexError:
-                messagebox.showerror("Erro", "Número insuficiente de datas fornecidas")
+                self.custom_messagebox("error", "Erro", "Número insuficiente de datas fornecidas")
                 return
 
     def gerar_parcelas_cartao(self, data_base, valores_parcelas, referencia_base, num_parcelas, nf):
@@ -6066,7 +6329,7 @@ class GestorParcelas:
         try:
             if self.tem_entrada.get():
                 if not self.modalidade_entrada.get():
-                    messagebox.showerror("Erro", "Selecione a modalidade de entrada!")
+                    self.custom_messagebox("error", "Erro", "Selecione a modalidade de entrada!")
                     return None
                 valores_parcelas = self.calcular_parcelas_entrada(valor_original, num_parcelas)
             else:
@@ -6075,7 +6338,7 @@ class GestorParcelas:
             # Verificar se a soma está correta
             soma_parcelas = sum(valores_parcelas)
             if abs(soma_parcelas - valor_original) > 0.01:
-                messagebox.showerror(
+                self.custom_messagebox("error", 
                     "Erro", 
                     f"Erro no cálculo das parcelas: soma ({soma_parcelas:.2f}) " 
                     f"diferente do valor original ({valor_original:.2f})!"
@@ -6084,7 +6347,7 @@ class GestorParcelas:
 
             return valores_parcelas
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao calcular valores: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao calcular valores: {str(e)}")
             return None
 
     def calcular_parcelas_entrada(self, valor_total, num_parcelas):
@@ -6559,7 +6822,7 @@ class ImportadorRH:
                 except Exception as xlrd_error:
                     print(f"Erro ao converter manualmente: {str(xlrd_error)}")
                 
-                messagebox.showerror(
+                self.custom_messagebox("error", 
                     "Erro na Conversão", 
                     "Não foi possível converter o arquivo para CSV. Tente exportar o arquivo como CSV diretamente do Excel."
                 )
@@ -6723,7 +6986,7 @@ class ImportadorRH:
         """Importa dados da planilha de RH apenas para o cliente atualmente selecionado"""
         # Verificar se há um cliente selecionado
         if not self.sistema.cliente_atual:
-            messagebox.showerror(
+            self.custom_messagebox("error", 
                 "Erro", 
                 "Nenhum cliente selecionado. Por favor, selecione um cliente antes de importar dados."
             )
@@ -6861,7 +7124,7 @@ class ImportadorRH:
                     # Adicionar ao mapeamento temporariamente
                     self.mapeamento_cabecalhos['Empresa'] = coluna_cliente
                 else:
-                    messagebox.showwarning(
+                    self.sistema.custom_messagebox("warning", 
                         "Coluna não encontrada",
                         "Coluna selecionada não encontrada ou inválida. Continuando com as colunas padrão."
                     )
@@ -7028,13 +7291,13 @@ class ImportadorRH:
                 ):
                     self.sistema.visualizar_lancamentos()
             else:
-                messagebox.showwarning(
+                self.sistema.custom_messagebox("warning", 
                     "Aviso",
                     f"Nenhum registro foi processado para o cliente {cliente_alvo}. Verifique se este cliente está presente na planilha."
                 )
                 
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao importar dados: {str(e)}")
+            self.custom_messagebox("error", "Erro", f"Erro ao importar dados: {str(e)}")
             import traceback
             traceback.print_exc()
                 
