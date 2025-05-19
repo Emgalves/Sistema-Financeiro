@@ -1,0 +1,167 @@
+2025-05-19 10:28:35,457 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 10:28:35,493 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 11:31:02,668 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 11:31:02,683 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 11:31:21,409 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 11:31:24,931 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-05-19 11:31:48,854 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 11:31:48,855 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 11:32:54,961 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 11:32:57,731 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-05-19 11:33:00,276 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 11:33:00,276 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 11:33:18,376 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 11:33:20,492 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2025-05-19 11:33:31,304 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 11:39:48,038 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 11:40:07,854 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 11:48:20,886 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 11:48:20,901 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 11:48:41,403 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 11:48:43,076 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-05-19 11:48:54,480 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 11:48:54,481 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 11:49:09,563 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 11:49:10,996 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-05-19 11:49:14,090 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 11:49:14,091 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 11:49:41,634 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 11:49:43,135 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2025-05-19 11:49:50,379 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 11:49:50,380 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 11:49:50,380 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-19 11:49:50,381 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 11:49:51,063 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao salvar dados: [Errno 13] Permission denied: 'H:\\.shortcut-targets-by-id\\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\\Relatórios\\Financeiro\\Clientes\\BRUNO SANTANA RINALDI.xlsx'
+2025-05-19 11:53:45,616 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 11:53:45,620 - sistema - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-05-19 11:53:45,621 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-19 11:53:45,622 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 11:53:48,713 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 12:09:08,159 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 12:09:08,170 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 12:09:23,867 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 12:09:25,949 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-05-19 12:09:33,089 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 12:09:33,090 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 12:09:48,187 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 12:09:49,429 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-05-19 12:09:52,355 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 12:09:52,356 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 12:10:06,483 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 12:10:08,117 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2025-05-19 12:10:14,411 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 12:10:14,412 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 12:10:14,413 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-19 12:10:14,413 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 12:10:14,417 - sistema - Sistema_Entrada_Dados - ERROR - Permissão negada ao abrir arquivo: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 12:10:27,562 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 12:10:27,563 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 12:10:27,564 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-19 12:10:27,564 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 12:10:27,862 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: NIVALDO DA SILVA  - DIÁRIA - 2500.00 - NF:  - Vencto: 20/05/2025
+2025-05-19 12:10:27,868 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: JB CIMENTO - CIMENTO - 1254.00 - NF: 1235 - Vencto: 20/05/2025
+2025-05-19 12:10:27,869 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 2 possíveis lançamentos duplicados
+2025-05-19 12:10:41,314 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-19 12:11:04,522 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-05-19 12:11:04,523 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 12:11:04,524 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-05-19 12:11:04,524 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 12:11:07,913 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-05-19 12:42:40,732 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 12:42:40,743 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 12:42:53,334 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 12:42:54,535 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-05-19 12:43:01,672 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 12:43:01,673 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 12:43:16,350 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 12:43:17,592 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-05-19 12:43:20,674 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 12:43:20,674 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 12:43:30,526 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 12:43:31,841 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2025-05-19 12:43:39,039 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 12:43:39,039 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 12:43:56,014 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 12:43:57,032 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 4
+2025-05-19 12:44:03,745 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 12:44:03,746 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 12:44:22,774 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 12:44:24,119 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 5
+2025-05-19 12:44:36,801 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 12:44:36,801 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 12:44:51,014 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 12:44:52,082 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 6
+2025-05-19 12:45:02,262 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 6
+2025-05-19 12:45:02,263 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 12:45:02,264 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 6
+2025-05-19 12:45:02,264 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 12:45:02,481 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: NIVALDO DA SILVA  - DIÁRIA - 2500.00 - NF:  - Vencto: 20/05/2025
+2025-05-19 12:45:02,488 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: JB CIMENTO - CIMENTO - 1254.00 - NF: 1236 - Vencto: 20/05/2025
+2025-05-19 12:45:02,503 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 2 possíveis lançamentos duplicados
+2025-05-19 12:45:25,280 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-19 12:48:49,428 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 4
+2025-05-19 12:48:49,430 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 12:48:49,430 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 4
+2025-05-19 12:48:49,431 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 12:48:51,858 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 4
+2025-05-19 14:06:19,418 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 14:06:19,435 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 14:06:33,799 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 14:06:35,257 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-05-19 14:06:43,542 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 14:06:43,542 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 14:06:57,847 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 14:06:59,001 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-05-19 14:07:02,006 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 14:07:02,007 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 14:07:11,783 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 14:07:13,024 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2025-05-19 14:07:20,362 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 14:07:20,362 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 14:07:29,423 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 14:07:30,960 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 4
+2025-05-19 14:07:42,267 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 14:07:42,268 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 14:08:02,135 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 14:08:03,234 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 5
+2025-05-19 14:08:10,119 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 5
+2025-05-19 14:08:10,120 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 14:08:10,121 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 5
+2025-05-19 14:08:10,121 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 14:08:10,352 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: NIVALDO DA SILVA  - DIÁRIA - 2500.00 - NF:  - Vencto: 20/05/2025
+2025-05-19 14:08:10,361 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: JB CIMENTO - CIMENTO - 1254.00 - NF: 1236 - Vencto: 20/05/2025
+2025-05-19 14:08:10,374 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 2 possíveis lançamentos duplicados
+2025-05-19 14:08:23,105 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-19 14:08:51,902 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 14:08:51,904 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 14:08:51,904 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-19 14:08:51,904 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 14:08:57,015 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 16:20:46,101 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 16:20:46,103 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 16:20:46,104 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-19 16:20:46,105 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 16:20:46,769 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao salvar arquivo: 'SistemaEntradaDados' object has no attribute 'sistema'
+2025-05-19 16:53:14,049 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 16:53:14,051 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 16:53:14,052 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-19 16:53:14,052 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 16:53:14,304 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ALEXSANDRO VENANCIO DA SILVA - SALÁRIO - 1156.00 - NF:  - Vencto: 20/05/2025
+2025-05-19 16:53:14,308 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CRISTOFER BARBOSA ROSA - SALÁRIO - 854.80 - NF:  - Vencto: 20/05/2025
+2025-05-19 16:53:14,312 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: GERALDO ROSA JUNIOR - SALÁRIO - 2080.00 - NF:  - Vencto: 20/05/2025
+2025-05-19 16:53:14,313 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 3 possíveis lançamentos duplicados
+2025-05-19 16:53:24,443 - sistema - Sistema_Entrada_Dados - INFO - Usuário optou por continuar apesar das duplicatas
+2025-05-19 16:53:27,024 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 16:54:58,836 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-19 16:54:58,855 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-19 16:56:46,512 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 16:56:46,513 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-05-19 16:56:46,518 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 16:56:46,520 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-05-19 16:56:46,524 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-19 16:56:46,527 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2025-05-19 16:57:32,880 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-19 16:57:32,881 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-19 16:57:32,882 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-19 16:57:32,882 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-19 16:57:36,320 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 3
