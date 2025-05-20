@@ -67,3 +67,56 @@
 2025-05-20 15:57:27,682 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: GERALDO ROSA JUNIOR - SALÁRIO - 2080.00 - NF:  - Vencto: 20/05/2025
 2025-05-20 15:57:27,683 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 3 possíveis lançamentos duplicados
 2025-05-20 15:57:32,549 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-20 19:16:39,560 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-05-20 19:16:39,561 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-20 19:16:39,562 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-05-20 19:16:39,563 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-20 19:16:39,808 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CRISTOFER BARBOSA ROSA - SALÁRIO - 854.80 - NF:  - Vencto: 20/05/2025
+2025-05-20 19:16:39,812 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: GERALDO ROSA JUNIOR - SALÁRIO - 2080.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 19:16:39,813 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 2 possíveis lançamentos duplicados
+2025-05-20 19:16:46,602 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-20 19:30:46,611 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-05-20 19:30:46,612 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-20 19:30:46,613 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-05-20 19:30:46,613 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-20 19:30:46,830 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CRISTOFER BARBOSA ROSA - SALÁRIO - 854.80 - NF:  - Vencto: 20/05/2025
+2025-05-20 19:30:46,835 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: GERALDO ROSA JUNIOR - SALÁRIO - 2080.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 19:30:46,835 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 2 possíveis lançamentos duplicados
+2025-05-20 19:31:09,173 - sistema - Sistema_Entrada_Dados - INFO - Usuário optou por continuar apesar das duplicatas
+2025-05-20 19:31:12,099 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-05-20 20:05:35,646 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-20 20:05:35,647 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-20 20:05:35,648 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-20 20:05:35,648 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-20 20:05:35,912 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ALEXSANDRO VENANCIO DA SILVA - SALÁRIO - 1156.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:05:35,918 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CRISTOFER BARBOSA ROSA - SALÁRIO - 854.80 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:05:35,924 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: GERALDO ROSA JUNIOR - SALÁRIO - 2080.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:05:35,927 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 3 possíveis lançamentos duplicados
+2025-05-20 20:05:48,680 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-20 20:06:46,284 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-20 20:06:46,285 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-20 20:06:46,287 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-20 20:06:46,287 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-20 20:06:46,503 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ALEXSANDRO VENANCIO DA SILVA - SALÁRIO - 1156.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:06:46,507 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CRISTOFER BARBOSA ROSA - SALÁRIO - 854.80 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:06:46,513 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: GERALDO ROSA JUNIOR - SALÁRIO - 2080.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:06:46,514 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 3 possíveis lançamentos duplicados
+2025-05-20 20:06:51,239 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-20 20:07:43,292 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-20 20:07:43,294 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-20 20:07:43,294 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-20 20:07:43,295 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-20 20:07:43,725 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ALEXSANDRO VENANCIO DA SILVA - SALÁRIO - 1156.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:07:43,732 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CRISTOFER BARBOSA ROSA - SALÁRIO - 854.80 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:07:43,741 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: GERALDO ROSA JUNIOR - SALÁRIO - 2080.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:07:43,742 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 3 possíveis lançamentos duplicados
+2025-05-20 20:07:49,808 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-20 20:14:40,178 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-20 20:14:40,179 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-20 20:14:40,180 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-05-20 20:14:40,180 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-20 20:14:40,409 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ALEXSANDRO VENANCIO DA SILVA - SALÁRIO - 1156.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:14:40,413 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CRISTOFER BARBOSA ROSA - SALÁRIO - 854.80 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:14:40,418 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: GERALDO ROSA JUNIOR - SALÁRIO - 2080.00 - NF:  - Vencto: 20/05/2025
+2025-05-20 20:14:40,418 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 3 possíveis lançamentos duplicados
+2025-05-20 20:15:01,900 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas

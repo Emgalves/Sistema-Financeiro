@@ -341,14 +341,20 @@ class SistemaPrincipal:
                 # Primeira tentativa: importar diretamente
                 logger.debug("Tentando importar diretamente...")
                 from Sistema_Entrada_Dados import SistemaEntradaDados
+                # Importar função para configurar janela principal
+                from src.config.dialogs import set_main_window
             except ImportError:
                 # Segunda tentativa: importar de src
                 logger.debug("Tentando importar de src...")
                 from src.Sistema_Entrada_Dados import SistemaEntradaDados
+                from src.config.dialogs import set_main_window
             
             self.root.withdraw()
             
             app = SistemaEntradaDados(parent=self.root)
+            
+            # Registrar a janela root como principal para os diálogos
+            set_main_window(app.root)
             
             app.root.lift()
             app.root.focus_force()
