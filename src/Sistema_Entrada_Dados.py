@@ -1,3 +1,33 @@
+import os
+import sys
+import traceback
+
+# Configurar diretório de log no desktop do usuário
+log_dir = os.path.join(os.path.expanduser("~"), "Desktop")
+log_file = os.path.join(log_dir, "sistema_log.txt")
+
+def log_error(message):
+    """Grava mensagens de erro em arquivo no desktop"""
+    try:
+        with open(log_file, "a") as f:
+            f.write(f"{message}\n")
+    except:
+        pass
+
+# Capturar e registrar exceções não tratadas
+def handle_exception(exc_type, exc_value, exc_traceback):
+    """Manipulador para exceções não capturadas"""
+    error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+    log_error(f"\n\n--- ERRO NÃO TRATADO: {error_msg}")
+    # Mostrar mensagem simples para o usuário
+    import tkinter.messagebox as msgbox
+    msgbox.showerror("Erro", f"Ocorreu um erro: {str(exc_value)}\nDetalhes foram registrados em: {log_file}")
+    
+# Substituir o manipulador de exceções padrão
+sys.excepthook = handle_exception
+
+log_error(f"\n\n--- INICIANDO APLICAÇÃO: {sys.argv[0]} ---")
+
 # Imports da biblioteca padrão Python
 import os
 import sys
@@ -178,7 +208,15 @@ class VisualizadorLancamentos:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal  # referência ao sistema principal
         self.janela = tk.Toplevel(sistema_principal.root)  # usar .root para o Toplevel
-        configurar_janela(self.janela, "Visualização de Lançamentos Pendentes", 1000, 600)
+        configurar_janela(self.janela, "Visualização de Lançamentos Pendentes", 1000, 400)
+
+        # Registrar esta janela para os diálogos
+        try:
+            from src.config.dialogs import set_main_window
+            set_main_window(self.janela)
+        except ImportError:
+            pass
+
         self.alteracoes = False
         self.dados_para_incluir = []
         
@@ -872,10 +910,6 @@ class SistemaEntradaDados:
         
         print("Calendários configurados para permitir navegação livre.")
 
-    def custom_messagebox(self, tipo, titulo, mensagem, opcoes=None):
-        """Wrapper para a função do módulo dialogs"""
-        from src.config.dialogs import custom_messagebox
-        return custom_messagebox(tipo, titulo, mensagem, opcoes)
 
     def setup_aba_selecao(self):
         """Configura a aba de seleção de cliente"""
@@ -1426,8 +1460,17 @@ class SistemaEntradaDados:
     def editar_cliente(self):
         """Edita o cliente selecionado"""
         cliente_selecionado = self.cliente_combobox.get()
-        if not cliente_selecionado:
-            custom_messagebox("warning",  "Aviso", "Selecione um cliente para editar")
+        
+        try:
+            if not cliente_selecionado:
+                from src.config.dialogs import custom_messagebox
+                custom_messagebox("warning", "Aviso", "Selecione um cliente para editar")
+                return
+        except Exception as e:
+            # Fallback em caso de erro
+            import tkinter.messagebox as msgbox
+            msgbox.showwarning("Aviso", "Selecione um cliente para editar")
+            print(f"Erro ao mostrar diálogo personalizado: {str(e)}")
             return
 
         try:
@@ -3441,7 +3484,7 @@ class SistemaEntradaDados:
                     # Criar uma janela para mostrar os lançamentos duplicados
                     janela_duplicados = tk.Toplevel(self.root)
                     janela_duplicados.title("Possíveis Lançamentos Duplicados")
-                    janela_duplicados.geometry("800x500")
+                    janela_duplicados.geometry("500x400")
                     janela_duplicados.transient(self.root)
                     janela_duplicados.grab_set()  # Faz a janela modal
                     
