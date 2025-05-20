@@ -10,19 +10,13 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 2,
-    "patch": 0,
-    "release_date": "24/04/2025",
+    "patch": 1,
+    "release_date": "20/05/2025",
     "changes": [
-        "Incluído botão para importar dados da folha a partir de planilha",
-        "Criação do módulo para rateio de despesas comuns a todos os clientes",
-        "Criação do módulo de controle de medições de empreiteiros",
-        "Ajuste na aba Clientes, permitindo a inclusão do témino da obra ou do contrato",
-        "Criação de uma interface com todos os relatórios",
-        "Criação de relatório de Fornecedores",
-        "Criação de relatório de Medições",
-        "Criação de relatório de Tipos de Despesas",
-        "Separação de relatório de Lançamentos Futuros",
-        "Inclusão das etapas de obra nos contratos de administração de obras"
+        "Incluído verificador de lançamentos iguais",
+        "Modificado o campo Dias para permitir 1/2 diária",
+        "Adicionado campo com ID do lançamento",
+        "Refeita a verificação se a planilha está aberta"
     ]
 }
 
