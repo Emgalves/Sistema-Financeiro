@@ -1,10 +1,76 @@
+"""
+Módulo para funções de diálogo personalizadas que funcionam em qualquer contexto.
+"""
 import tkinter as tk
-from tkinter import ttk
+from tkinter import messagebox
+
+# Armazenar uma referência global para a janela principal atual
+_main_window = None
+
+def set_main_window(window):
+    """Define a janela principal atual do aplicativo.
+    Isso deve ser chamado quando o aplicativo é iniciado."""
+    global _main_window
+    _main_window = window
+
+def get_main_window():
+    """Obtém a janela principal atual ou localiza uma se não estiver definida."""
+    global _main_window
+    
+    if _main_window is not None and _main_window.winfo_exists():
+        return _main_window
+    
+    # Procurar por janelas existentes
+    if hasattr(tk, '_default_root') and tk._default_root:
+        return tk._default_root
+    
+    # Procurar por Toplevels nas instâncias existentes
+    if hasattr(tk, '_default_root') and tk._default_root:
+        for widget in tk._default_root.winfo_children():
+            if isinstance(widget, (tk.Toplevel, tk.Tk)):
+                # Encontrada uma janela existente
+                _main_window = widget
+                return _main_window
+    
+    # Criar uma nova Tk temporária se necessário
+    temp_root = tk.Tk()
+    temp_root.withdraw()
+    return temp_root
+
+def _center_on_parent(dialog, parent=None):
+    """Centraliza o diálogo na janela pai ou na tela"""
+    dialog.update_idletasks()
+    width = dialog.winfo_width()
+    height = dialog.winfo_height()
+    
+    # Se tivermos uma janela pai válida, centralizar nela
+    if parent and parent.winfo_exists():
+        try:
+            x = parent.winfo_x() + (parent.winfo_width() // 2) - (width // 2)
+            y = parent.winfo_y() + (parent.winfo_height() // 2) - (height // 2)
+        except:
+            # Centralizar na tela em caso de erro
+            x = (dialog.winfo_screenwidth() // 2) - (width // 2)
+            y = (dialog.winfo_screenheight() // 2) - (height // 2)
+    else:
+        # Centralizar na tela
+        x = (dialog.winfo_screenwidth() // 2) - (width // 2)
+        y = (dialog.winfo_screenheight() // 2) - (height // 2)
+    
+    # Garantir que a janela fique dentro da tela
+    screen_width = dialog.winfo_screenwidth()
+    screen_height = dialog.winfo_screenheight()
+    
+    if x < 0: x = 0
+    if y < 0: y = 0
+    if x + width > screen_width: x = screen_width - width
+    if y + height > screen_height: y = screen_height - height
+    
+    dialog.geometry(f"+{x}+{y}")
 
 def custom_messagebox(tipo="info", titulo="Mensagem", mensagem="", opcoes=None):
     """
-    Cria uma caixa de diálogo personalizada que sempre fica visível,
-    mesmo quando chamada de uma janela configurada como 'always on top'.
+    Função unificada de diálogo que funciona em qualquer contexto.
     
     Args:
         tipo: string - 'info', 'warning', 'error', 'yesno'
@@ -16,206 +82,123 @@ def custom_messagebox(tipo="info", titulo="Mensagem", mensagem="", opcoes=None):
         Para 'yesno': boolean - True se "Sim", False se "Não"
         Para outros tipos: None
     """
-    # Encontrar a janela principal da aplicação
-    root = None
+    # Obter a janela principal atual para centralização
+    parent = get_main_window()
+    
+    # Tente usar os diálogos padrão do Tkinter primeiro
     try:
-        if hasattr(tk, '_default_root') and tk._default_root:
-            root = tk._default_root
-    except:
-        pass
-    
-    # Se não encontrou uma janela raiz, criar uma temporária
-    if root is None:
-        root = tk.Tk()
-        root.withdraw()  # Ocultar a janela temporária
-    
-    # Criar nova janela
-    dialog = tk.Toplevel(root)
-    dialog.title(titulo)
-    dialog.geometry("450x250")
-    dialog.resizable(False, False)
-    
-    # Tornar modal
-    dialog.transient(root)
-    dialog.grab_set()
-    
-    # Configurar para ficar sempre na frente
-    dialog.attributes('-topmost', True)
-    
-    # Configuração de estilos e ícones baseado no tipo
-    if tipo == 'info':
-        icon_text = "ℹ️"
-        cor_cabecalho = "#4287f5"  # Azul
-    elif tipo == 'warning':
-        icon_text = "⚠️"
-        cor_cabecalho = "#f5a742"  # Amarelo
-    elif tipo == 'error':
-        icon_text = "❌"
-        cor_cabecalho = "#f54242"  # Vermelho
-    elif tipo == 'yesno':
-        icon_text = "❓"
-        cor_cabecalho = "#42f5a7"  # Verde claro
-    else:
-        icon_text = "ℹ️"
-        cor_cabecalho = "#4287f5"  # Azul padrão
-    
-    # Frame para o cabeçalho colorido
-    frame_cabecalho = tk.Frame(dialog, bg=cor_cabecalho, height=40)
-    frame_cabecalho.pack(fill='x')
-    
-    # Título no cabeçalho
-    tk.Label(
-        frame_cabecalho, 
-        text=titulo, 
-        bg=cor_cabecalho, 
-        fg="white", 
-        font=('Arial', 12, 'bold')
-    ).pack(pady=8)
-    
-    # Frame para o conteúdo
-    frame_conteudo = tk.Frame(dialog, bg="white")
-    frame_conteudo.pack(fill='both', expand=True)
-    
-    # Ícone e mensagem
-    frame_mensagem = tk.Frame(frame_conteudo, bg="white")
-    frame_mensagem.pack(fill='both', expand=True, padx=20, pady=10)
-    
-    tk.Label(
-        frame_mensagem, 
-        text=icon_text, 
-        font=('Arial', 24), 
-        bg="white"
-    ).pack(side='left', padx=(0, 15))
-    
-    tk.Label(
-        frame_mensagem, 
-        text=mensagem, 
-        justify='left', 
-        wraplength=300, 
-        font=('Arial', 10), 
-        bg="white"
-    ).pack(side='left')
-    
-    # Frame para botões
-    frame_botoes = tk.Frame(dialog, bg="#f0f0f0", height=50)
-    frame_botoes.pack(fill='x')
-    
-    resposta = [False]  # Para armazenar a resposta do yesno
-    
-    if tipo == 'yesno':
-        def responder_sim():
-            resposta[0] = True
-            dialog.destroy()
+        # Forçar diálogo a ficar no topo
+        if hasattr(messagebox, 'tk'):
+            messagebox.tk.call('wm', 'attributes', '.', '-topmost', True)
+        
+        if tipo == "info":
+            result = messagebox.showinfo(titulo, mensagem, parent=parent)
+        elif tipo == "warning":
+            result = messagebox.showwarning(titulo, mensagem, parent=parent)
+        elif tipo == "error":
+            result = messagebox.showerror(titulo, mensagem, parent=parent)
+        elif tipo == "yesno":
+            result = messagebox.askyesno(titulo, mensagem, parent=parent)
+        else:
+            result = None
+        
+        # Restaurar estado normal
+        if hasattr(messagebox, 'tk'):
+            messagebox.tk.call('wm', 'attributes', '.', '-topmost', False)
             
-        def responder_nao():
-            resposta[0] = False
-            dialog.destroy()
-        
-        # Botão "Sim"
-        btn_sim = ttk.Button(
-            frame_botoes, 
-            text="Sim", 
-            command=responder_sim, 
-            width=10
-        )
-        btn_sim.pack(side='right', padx=10, pady=10)
-        
-        # Botão "Não"
-        btn_nao = ttk.Button(
-            frame_botoes, 
-            text="Não", 
-            command=responder_nao, 
-            width=10
-        )
-        btn_nao.pack(side='right', padx=5, pady=10)
-        
-        # Binding para teclas
-        dialog.bind('<Return>', lambda e: responder_sim())  # Enter = Sim
-        dialog.bind('<Escape>', lambda e: responder_nao())  # Esc = Não
-        
-    else:
-        # Função para fechar com OK
-        def fechar_dialog(event=None):
-            dialog.destroy()
-        
-        # Botão OK
-        btn_ok = ttk.Button(
-            frame_botoes, 
-            text="OK", 
-            command=fechar_dialog, 
-            width=10
-        )
-        btn_ok.pack(side='right', padx=10, pady=10)
-        
-        # Binding para Enter e Escape
-        dialog.bind('<Return>', fechar_dialog)
-        dialog.bind('<Escape>', fechar_dialog)
+        return result
     
-    # Centralizar o diálogo na janela pai
-    dialog.update_idletasks()
-    dialog_width = dialog.winfo_width()
-    dialog_height = dialog.winfo_height()
-    
-    # Tentar obter a posição da janela pai
+    except Exception as e:
+        print(f"Erro ao mostrar diálogo padrão: {e}")
+        # Se falhar, tente um diálogo personalizado como fallback
+        return _custom_dialog_fallback(tipo, titulo, mensagem, parent)
+
+def _custom_dialog_fallback(tipo, titulo, mensagem, parent=None):
+    """Versão de fallback usando um diálogo personalizado."""
     try:
-        parent_x = root.winfo_x()
-        parent_y = root.winfo_y()
-        parent_width = root.winfo_width()
-        parent_height = root.winfo_height()
-    except:
-        # Se falhar, centralizar na tela
-        screen_width = dialog.winfo_screenwidth()
-        screen_height = dialog.winfo_screenheight()
-        parent_x = 0
-        parent_y = 0
-        parent_width = screen_width
-        parent_height = screen_height
-    
-    # Calcular centro da janela pai
-    center_x = parent_x + parent_width // 2
-    center_y = parent_y + parent_height // 2
-    
-    # Centralizar a janela de diálogo nesse ponto
-    x = center_x - dialog_width // 2
-    y = center_y - dialog_height // 2
-    
-    # Garantir que a janela não fique fora da tela
-    screen_width = dialog.winfo_screenwidth()
-    screen_height = dialog.winfo_screenheight()
-    
-    if x < 0: x = 0
-    if y < 0: y = 0
-    if x + dialog_width > screen_width: x = screen_width - dialog_width
-    if y + dialog_height > screen_height: y = screen_height - dialog_height
-    
-    # Definir a posição
-    dialog.geometry(f"+{x}+{y}")
-    
-    # Importante: Mantenha topmost até que a janela tenha sido posicionada e exibida
-    # para garantir que ela não fique atrás de nenhuma outra janela
-    dialog.attributes('-topmost', True)
-    dialog.update()  # Forçar atualização para aplicar posicionamento
-    
-    # Definir foco no botão apropriado
-    if tipo == 'yesno':
-        btn_sim.focus_set()  # Foco no botão Sim para caixas de confirmação
-    else:
-        btn_ok.focus_set()   # Foco no botão OK para outras caixas
-    
-    # Configurar evento para "Re-levantar" a janela se ela perder o foco
-    def manter_na_frente():
-        dialog.lift()
+        # Criar janela de diálogo
+        dialog = tk.Toplevel(parent)
+        dialog.title(titulo)
+        dialog.transient(parent)
         dialog.attributes('-topmost', True)
-        # Agendar próxima verificação
-        dialog.after(100, manter_na_frente)
-    
-    # Iniciar o mecanismo para manter na frente
-    manter_na_frente()
-    
-    # Aguardar o fechamento da janela
-    dialog.wait_window()
-    
-    # Retornar resposta para 'yesno'
-    if tipo == 'yesno':
-        return resposta[0]
-    return None
+        dialog.grab_set()
+        
+        # Configurar o diálogo
+        tk.Label(dialog, text=mensagem, padx=20, pady=20, wraplength=300).pack()
+        
+        # Resultado para diálogos yesno
+        result = [False]
+        
+        if tipo == "yesno":
+            def on_yes():
+                result[0] = True
+                dialog.destroy()
+                
+            def on_no():
+                result[0] = False
+                dialog.destroy()
+                
+            # Frame para botões
+            btn_frame = tk.Frame(dialog)
+            btn_frame.pack(pady=10)
+            
+            # Botões
+            yes_btn = tk.Button(btn_frame, text="Sim", command=on_yes, width=10)
+            yes_btn.pack(side="left", padx=5)
+            
+            no_btn = tk.Button(btn_frame, text="Não", command=on_no, width=10)
+            no_btn.pack(side="left", padx=5)
+            
+            # Configurar teclas
+            dialog.bind("<Return>", lambda e: on_yes())
+            dialog.bind("<Escape>", lambda e: on_no())
+            
+            # Foco no botão Sim
+            yes_btn.focus_set()
+        else:
+            # Botão OK
+            ok_btn = tk.Button(dialog, text="OK", command=dialog.destroy, width=10)
+            ok_btn.pack(pady=10)
+            
+            # Configurar teclas
+            dialog.bind("<Return>", lambda e: dialog.destroy())
+            dialog.bind("<Escape>", lambda e: dialog.destroy())
+            
+            # Foco no botão OK
+            ok_btn.focus_set()
+        
+        # Centralizar na janela pai
+        _center_on_parent(dialog, parent)
+        
+        # Manter no topo - especialmente para mostrar acima do visualizador
+        dialog.attributes('-topmost', True)
+        dialog.update()
+        
+        # Função para manter a janela no topo
+        def keep_on_top():
+            try:
+                if dialog.winfo_exists():
+                    dialog.lift()
+                    dialog.attributes('-topmost', True)
+                    dialog.after(200, keep_on_top)
+            except:
+                pass
+                
+        # Iniciar processo para manter no topo
+        dialog.after(100, keep_on_top)
+        
+        # Esperar até fechar
+        dialog.wait_window()
+        
+        # Retornar resultado
+        if tipo == "yesno":
+            return result[0]
+        return None
+        
+    except Exception as e:
+        print(f"Erro no diálogo personalizado: {e}")
+        # Se tudo falhar, use print como último recurso
+        print(f"\n--- {titulo} ---\n{mensagem}\n")
+        if tipo == "yesno":
+            return False
+        return None
