@@ -887,7 +887,7 @@ class SistemaEntradaDados:
         # Criar nova janela
         dialog = tk.Toplevel(self.root)
         dialog.title(titulo)
-        dialog.geometry("450x200")
+        dialog.geometry("450x250")
         dialog.resizable(False, False)
         
         # Tornar modal
