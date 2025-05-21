@@ -1,6 +1,7 @@
 """
 Módulo para funções de diálogo personalizadas que funcionam em qualquer contexto.
 """
+import sys
 import tkinter as tk
 from tkinter import messagebox
 
@@ -49,14 +50,25 @@ def _center_on_parent(dialog, parent=None):
             x = parent.winfo_x() + (parent.winfo_width() // 2) - (width // 2)
             y = parent.winfo_y() + (parent.winfo_height() // 2) - (height // 2)
         except:
-            # Centralizar na tela em caso de erro
-            x = (dialog.winfo_screenwidth() // 2) - (width // 2)
-            y = (dialog.winfo_screenheight() // 2) - (height // 2)
+            # Fallback para a posição da janela pai
+            x = parent.winfo_x() + 50
+            y = parent.winfo_y() + 50
     else:
-        # Centralizar na tela
-        x = (dialog.winfo_screenwidth() // 2) - (width // 2)
-        y = (dialog.winfo_screenheight() // 2) - (height // 2)
-    
+        # Se não tiver parent, tenta obter a janela principal do sistema
+        main_window = get_main_window()
+        if main_window and main_window.winfo_exists():
+            # Centralizar com base na janela principal do sistema
+            x = main_window.winfo_x() + (main_window.winfo_width() // 2) - (width // 2)
+            y = main_window.winfo_y() + (main_window.winfo_height() // 2) - (height // 2)
+        else:
+            # Último recurso: ajustar para a parte esquerda da tela (onde seu sistema fica)
+            screen_width = dialog.winfo_screenwidth()
+            screen_height = dialog.winfo_screenheight()
+            # Considerando que seu sistema ocupa a parte esquerda da tela,
+            # centralizamos apenas nessa área (metade da largura da tela)
+            x = (screen_width // 4) - (width // 2)
+            y = (screen_height // 2) - (height // 2)
+            
     # Garantir que a janela fique dentro da tela
     screen_width = dialog.winfo_screenwidth()
     screen_height = dialog.winfo_screenheight()
@@ -87,27 +99,35 @@ def custom_messagebox(tipo="info", titulo="Mensagem", mensagem="", opcoes=None):
     
     # Tente usar os diálogos padrão do Tkinter primeiro
     try:
-        # Forçar diálogo a ficar no topo
-        if hasattr(messagebox, 'tk'):
-            messagebox.tk.call('wm', 'attributes', '.', '-topmost', True)
+        # Verificar se estamos em um executável
+        is_executable = getattr(sys, 'frozen', False)
         
+        # Usar o diálogo padrão do Tkinter
+        import tkinter.messagebox as tkMessageBox
+        
+        # Preparar a janela para exibir o diálogo centralizado
+        if parent and parent.winfo_exists():
+            parent.update_idletasks()
+            
+            # Para executáveis, forçar diálogo a ficar visível
+            if is_executable:
+                parent.lift()
+                parent.focus_force()
+        
+        # Exibir o diálogo apropriado
         if tipo == "info":
-            result = messagebox.showinfo(titulo, mensagem, parent=parent)
+            result = tkMessageBox.showinfo(titulo, mensagem, parent=parent)
         elif tipo == "warning":
-            result = messagebox.showwarning(titulo, mensagem, parent=parent)
+            result = tkMessageBox.showwarning(titulo, mensagem, parent=parent)
         elif tipo == "error":
-            result = messagebox.showerror(titulo, mensagem, parent=parent)
+            result = tkMessageBox.showerror(titulo, mensagem, parent=parent)
         elif tipo == "yesno":
-            result = messagebox.askyesno(titulo, mensagem, parent=parent)
+            result = tkMessageBox.askyesno(titulo, mensagem, parent=parent)
         else:
             result = None
         
-        # Restaurar estado normal
-        if hasattr(messagebox, 'tk'):
-            messagebox.tk.call('wm', 'attributes', '.', '-topmost', False)
-            
         return result
-    
+        
     except Exception as e:
         print(f"Erro ao mostrar diálogo padrão: {e}")
         # Se falhar, tente um diálogo personalizado como fallback
@@ -120,7 +140,6 @@ def _custom_dialog_fallback(tipo, titulo, mensagem, parent=None):
         dialog = tk.Toplevel(parent)
         dialog.title(titulo)
         dialog.transient(parent)
-        dialog.attributes('-topmost', True)
         dialog.grab_set()
         
         # Configurar o diálogo
@@ -167,27 +186,14 @@ def _custom_dialog_fallback(tipo, titulo, mensagem, parent=None):
             # Foco no botão OK
             ok_btn.focus_set()
         
-        # Centralizar na janela pai
+        # Centralizar diálogo na janela pai
         _center_on_parent(dialog, parent)
         
-        # Manter no topo - especialmente para mostrar acima do visualizador
-        dialog.attributes('-topmost', True)
-        dialog.update()
+        # Levantar o diálogo para o topo
+        dialog.lift()
+        dialog.focus_force()
         
-        # Função para manter a janela no topo
-        def keep_on_top():
-            try:
-                if dialog.winfo_exists():
-                    dialog.lift()
-                    dialog.attributes('-topmost', True)
-                    dialog.after(200, keep_on_top)
-            except:
-                pass
-                
-        # Iniciar processo para manter no topo
-        dialog.after(100, keep_on_top)
-        
-        # Esperar até fechar
+        # Esperar até o diálogo ser fechado
         dialog.wait_window()
         
         # Retornar resultado
