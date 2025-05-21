@@ -270,10 +270,7 @@ class VisualizadorLancamentos:
     def on_focus_in(self, event=None):
         """Quando a janela recebe foco"""
         if self.focus_locked:
-            # Garantir que esta janela permaneça na frente
-            self.janela.attributes('-topmost', True)
-            # Agendar a remoção do estado topmost após um curto período
-            self.janela.after(100, lambda: self.janela.attributes('-topmost', False))
+            self.janela.lift()
     
     def on_map(self, event=None):
         """Quando a janela é mapeada (tornada visível)"""
@@ -3477,104 +3474,170 @@ class SistemaEntradaDados:
                 for dados in dados_para_processar:
                     if self.verificar_duplicidade_antes_salvar(sheet, dados):
                         lancamentos_duplicados.append(dados)
-                
+
+                # Inicializar variável para controle do fluxo
+                continuar_operacao = True  # Por padrão, permite continuar
+
                 if lancamentos_duplicados:
                     logger.warning(f"Detectados {len(lancamentos_duplicados)} possíveis lançamentos duplicados")
                     
-                    # Criar uma janela para mostrar os lançamentos duplicados
-                    janela_duplicados = tk.Toplevel(self.root)
-                    janela_duplicados.title("Possíveis Lançamentos Duplicados")
-                    janela_duplicados.geometry("500x400")
-                    janela_duplicados.transient(self.root)
-                    janela_duplicados.grab_set()  # Faz a janela modal
-                    
-                    # Frame com scrollbar para conteúdo
-                    frame_principal = ttk.Frame(janela_duplicados)
-                    frame_principal.pack(fill='both', expand=True, padx=10, pady=10)
-                    
-                    # Texto explicativo
-                    ttk.Label(
-                        frame_principal,
-                        text="Os seguintes lançamentos parecem ser duplicados de registros já existentes:",
-                        font=('Arial', 10, 'bold'),
-                        wraplength=760
-                    ).pack(fill='x', pady=10)
-                    
-                    # Frame para os lançamentos duplicados com scrollbar
-                    frame_scroll = ttk.Frame(frame_principal)
-                    frame_scroll.pack(fill='both', expand=True)
-                    
-                    # Adicionar scrollbar
-                    scrollbar = ttk.Scrollbar(frame_scroll)
-                    scrollbar.pack(side='right', fill='y')
-                    
-                    # Texto formatado para mostrar duplicatas
-                    texto_duplicatas = tk.Text(
-                        frame_scroll, 
-                        wrap='word', 
-                        height=15, 
-                        width=80,
-                        yscrollcommand=scrollbar.set
-                    )
-                    texto_duplicatas.pack(side='left', fill='both', expand=True)
-                    scrollbar.config(command=texto_duplicatas.yview)
-                    
-                    # Popular o texto com as duplicatas
-                    for i, dados in enumerate(lancamentos_duplicados, 1):
-                        texto_duplicatas.insert('end', f"Lançamento {i}:\n")
-                        texto_duplicatas.insert('end', f"Fornecedor: {dados['nome']}\n")
-                        texto_duplicatas.insert('end', f"Referência: {dados['referencia']}\n")
-                        texto_duplicatas.insert('end', f"Valor: R$ {dados['valor']}\n")
-                        texto_duplicatas.insert('end', f"NF: {dados.get('nf', 'N/A')}\n")
-                        texto_duplicatas.insert('end', f"Vencimento: {dados.get('dt_vencto', 'N/A')}\n")
-                        texto_duplicatas.insert('end', "--------------------------------------------\n")
-                    
-                    texto_duplicatas.config(state='disabled')  # Tornar somente leitura
-                    
-                    # Frame para botões
-                    frame_botoes = ttk.Frame(janela_duplicados)
-                    frame_botoes.pack(fill='x', pady=10)
-                    
-                    # Função para configurar resposta
-                    resposta_usuario = [False]  # Lista para armazenar resposta (hack para closure)
-                    
-                    def confirmar_continuacao():
-                        resposta_usuario[0] = True
-                        janela_duplicados.destroy()
+                    try:
+                        # Importar funções de diálogo personalizadas
+                        import sys  # Garantir que sys está disponível
+                        from src.config.dialogs import set_main_window, _center_on_parent
+
+                        # Temporariamente remover o atributo topmost do visualizador, se existir
+                        visualizador_topmost = False
+                        if hasattr(self, 'visualizador') and self.visualizador and hasattr(self.visualizador, 'janela'):
+                            try:
+                                visualizador_topmost = self.visualizador.janela.attributes('-topmost')
+                                # Desabilitar temporariamente o topmost do visualizador
+                                self.visualizador.janela.attributes('-topmost', False)
+                            except:
+                                pass
                         
-                    def cancelar_operacao():
-                        janela_duplicados.destroy()
-                    
-                    # Botões de ação
-                    ttk.Button(
-                        frame_botoes,
-                        text="Continuar mesmo assim",
-                        command=confirmar_continuacao
-                    ).pack(side='right', padx=5)
-                    
-                    ttk.Button(
-                        frame_botoes,
-                        text="Cancelar operação",
-                        command=cancelar_operacao
-                    ).pack(side='right', padx=5)
-                    
-                    # Centralizar a janela
-                    janela_duplicados.update_idletasks()
-                    width = janela_duplicados.winfo_width()
-                    height = janela_duplicados.winfo_height()
-                    x = (janela_duplicados.winfo_screenwidth() // 2) - (width // 2)
-                    y = (janela_duplicados.winfo_screenheight() // 2) - (height // 2)
-                    janela_duplicados.geometry(f'{width}x{height}+{x}+{y}')
-                    
-                    # Aguardar a resposta do usuário (janela modal)
-                    self.root.wait_window(janela_duplicados)
-                    
-                    if not resposta_usuario[0]:
-                        logger.info("Operação cancelada pelo usuário devido a duplicatas")
-                        self._is_saving = False
-                        return
+                        # Criar uma janela para mostrar os lançamentos duplicados
+                        janela_duplicados = tk.Toplevel(self.root)
+                        janela_duplicados.title("Possíveis Lançamentos Duplicados")
+                        janela_duplicados.geometry("500x400")
+                        janela_duplicados.transient(self.root)
                         
-                    logger.info("Usuário optou por continuar apesar das duplicatas")
+                        # Garantir que esta janela fique no topo
+                        janela_duplicados.attributes('-topmost', True)
+                        
+                        # Registrar esta janela como principal para centralização correta
+                        set_main_window(janela_duplicados)
+                        
+                        # Frame com scrollbar para conteúdo
+                        frame_principal = ttk.Frame(janela_duplicados)
+                        frame_principal.pack(fill='both', expand=True, padx=10, pady=10)
+                        
+                        # Texto explicativo
+                        ttk.Label(
+                            frame_principal,
+                            text="Os seguintes lançamentos parecem ser duplicados de registros já existentes:",
+                            font=('Arial', 10, 'bold'),
+                            wraplength=480
+                        ).pack(fill='x', pady=10)
+                        
+                        # Frame para os lançamentos duplicados com scrollbar
+                        frame_scroll = ttk.Frame(frame_principal)
+                        frame_scroll.pack(fill='both', expand=True)
+                        
+                        # Adicionar scrollbar
+                        scrollbar = ttk.Scrollbar(frame_scroll)
+                        scrollbar.pack(side='right', fill='y')
+                        
+                        # Texto formatado para mostrar duplicatas
+                        texto_duplicatas = tk.Text(
+                            frame_scroll, 
+                            wrap='word', 
+                            height=15, 
+                            width=80,
+                            yscrollcommand=scrollbar.set
+                        )
+                        texto_duplicatas.pack(side='left', fill='both', expand=True)
+                        scrollbar.config(command=texto_duplicatas.yview)
+                        
+                        # Popular o texto com as duplicatas
+                        for i, dados in enumerate(lancamentos_duplicados, 1):
+                            texto_duplicatas.insert('end', f"Lançamento {i}:\n")
+                            texto_duplicatas.insert('end', f"Fornecedor: {dados['nome']}\n")
+                            texto_duplicatas.insert('end', f"Referência: {dados['referencia']}\n")
+                            texto_duplicatas.insert('end', f"Valor: R$ {dados['valor']}\n")
+                            texto_duplicatas.insert('end', f"NF: {dados.get('nf', 'N/A')}\n")
+                            texto_duplicatas.insert('end', f"Vencimento: {dados.get('dt_vencto', 'N/A')}\n")
+                            texto_duplicatas.insert('end', "--------------------------------------------\n")
+                        
+                        texto_duplicatas.config(state='disabled')  # Tornar somente leitura
+                        
+                        # Frame para botões
+                        frame_botoes = ttk.Frame(janela_duplicados)
+                        frame_botoes.pack(fill='x', pady=10)
+                        
+                        # Variável para controle de resposta
+                        continuar_operacao = False  # Inicialmente não permite continuar
+                        
+                        def confirmar_continuacao():
+                            nonlocal continuar_operacao
+                            continuar_operacao = True
+                            janela_duplicados.destroy()  # Importante: Destruir a janela para liberar wait_window
+                            
+                        def cancelar_operacao():
+                            nonlocal continuar_operacao
+                            continuar_operacao = False
+                            janela_duplicados.destroy()  # Importante: Destruir a janela para liberar wait_window
+                        
+                        # Capturar evento WM_DELETE_WINDOW (fechar com X)
+                        janela_duplicados.protocol("WM_DELETE_WINDOW", cancelar_operacao)
+                        
+                        # Função para manter a janela no topo
+                        def keep_on_top():
+                            if janela_duplicados.winfo_exists():
+                                janela_duplicados.lift()
+                                janela_duplicados.focus_force()
+                                janela_duplicados.attributes('-topmost', True)
+                                janela_duplicados.after(100, keep_on_top)
+                        
+                        # Iniciar a função para manter no topo
+                        janela_duplicados.after(100, keep_on_top)
+                        
+                        # Botões de ação
+                        ttk.Button(
+                            frame_botoes,
+                            text="Continuar mesmo assim",
+                            command=confirmar_continuacao
+                        ).pack(side='right', padx=5)
+                        
+                        ttk.Button(
+                            frame_botoes,
+                            text="Cancelar operação",
+                            command=cancelar_operacao
+                        ).pack(side='right', padx=5)
+                        
+                        # Centralizar a janela em relação à janela principal
+                        _center_on_parent(janela_duplicados, self.root)
+                        
+                        # Garantir que a janela esteja visível e no topo
+                        janela_duplicados.lift()
+                        janela_duplicados.focus_force()
+                        
+                        # Tornar a janela modal e esperar interação do usuário
+                        janela_duplicados.grab_set()  # Impede interação com outras janelas
+                        
+                        # Método 1: Aguardar a destruição da janela
+                        self.root.wait_window(janela_duplicados)
+                        
+                        # Restaurar o estado topmost do visualizador
+                        if hasattr(self, 'visualizador') and self.visualizador and hasattr(self.visualizador, 'janela'):
+                            try:
+                                self.visualizador.janela.attributes('-topmost', visualizador_topmost)
+                                # Garantir que o visualizador receba foco novamente
+                                self.visualizador.janela.lift()
+                                self.visualizador.janela.focus_force()
+                            except Exception as e:
+                                logger.error(f"Erro ao restaurar visualizador: {str(e)}")
+                        
+                        # Verificar a resposta do usuário
+                        if not continuar_operacao:
+                            logger.info("Operação cancelada pelo usuário devido a duplicatas")
+                            self._is_saving = False
+                            return
+                            
+                        logger.info("Usuário optou por continuar apesar das duplicatas")
+                    
+                    except Exception as e:
+                        # Log do erro para depuração
+                        logger.error(f"Erro no diálogo de duplicatas: {str(e)}")
+                        # Em caso de erro, cancelar a operação por segurança
+                        continuar_operacao = False
+                        
+                        # Fallback simples
+                        if not custom_messagebox("yesno", "Duplicatas Detectadas", 
+                                            f"Foram detectados {len(lancamentos_duplicados)} possíveis lançamentos duplicados. Deseja continuar mesmo assim?"):
+                            logger.info("Operação cancelada pelo usuário devido a duplicatas (fallback)")
+                            self._is_saving = False
+                            return
 
                 if sheet.tables:
                     table_name = list(sheet.tables.keys())[0]
@@ -3644,12 +3707,22 @@ class SistemaEntradaDados:
                     dialog.grab_set()
                     
                     # Centralizar a janela
-                    dialog.update_idletasks()
-                    width = dialog.winfo_width()
-                    height = dialog.winfo_height()
-                    x = (dialog.winfo_screenwidth() // 2) - (width // 2)
-                    y = (dialog.winfo_screenheight() // 2) - (height // 2)
-                    dialog.geometry(f'{width}x{height}+{x}+{y}')
+                    janela_duplicados.update_idletasks()
+                    width = janela_duplicados.winfo_width()
+                    height = janela_duplicados.winfo_height()
+                    x = (janela_duplicados.winfo_screenwidth() // 2) - (width // 2)
+                    y = (janela_duplicados.winfo_screenheight() // 2) - (height // 2)
+                    janela_duplicados.geometry(f'{width}x{height}+{x}+{y}')
+                    
+                    # Aguardar a resposta do usuário (janela modal)
+                    self.root.wait_window(janela_duplicados)
+                    
+                    if not resposta_usuario[0]:
+                        logger.info("Operação cancelada pelo usuário devido a duplicatas")
+                        self._is_saving = False
+                        return
+                        
+                    logger.info("Usuário optou por continuar apesar das duplicatas")
                     
                     ttk.Label(dialog, 
                             text="O que você deseja fazer?",
