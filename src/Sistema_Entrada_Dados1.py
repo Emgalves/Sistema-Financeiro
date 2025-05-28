@@ -7152,6 +7152,43 @@ class GestorTaxasAdministracao:
         except Exception as e:
             return {"sucesso": False, "mensagem": f"Erro ao recalcular taxas: {str(e)}"}
     
+    def identificar_lancamentos_taxa_admin(self, df):
+        """Identifica lançamentos de taxa de administração"""
+        # Padrões comuns para identificar taxas de administração
+        padroes_taxa = [
+            'TAXA DE ADMINISTRAÇÃO',
+            'ADM',
+            'ADMINISTRAÇÃO', 
+            'TAXA ADM',
+            'TX ADM',
+            'PERCENTUAL ADM'
+        ]
+        
+        mask_taxa = df['REFERÊNCIA'].str.contains('|'.join(padroes_taxa), case=False, na=False)
+        return df[mask_taxa].copy()
+
+    def calcular_base_calculo_taxa(self, df, data_relatorio, incluir_excluidos=False):
+        """Calcula a base para cálculo da taxa de administração"""
+        # Filtrar dados para a quinzena
+        df_quinzena = df[df['DATA_REL'] == pd.to_datetime(data_relatorio)].copy()
+        
+        # Se não incluir excluídos, filtrar apenas ativos
+        if not incluir_excluidos:
+            df_quinzena = df_quinzena[df_quinzena.get('STATUS', 'ATIVO') != 'EXCLUIDO']
+        
+        # Excluir as próprias taxas do cálculo para evitar recursão
+        df_base = df_quinzena[~df_quinzena['REFERÊNCIA'].str.contains(
+            'TAXA|ADM|ADMINISTRAÇÃO', case=False, na=False
+        )].copy()
+        
+        # Converter valores para numérico
+        df_base['VALOR_NUM'] = pd.to_numeric(
+            df_base['VALOR'].astype(str).str.replace('R$', '').str.replace(',', '.'),
+            errors='coerce'
+        ).fillna(0)
+        
+        return df_base['VALOR_NUM'].sum()
+    
     def obter_percentual_taxa_cliente(self, cliente):
         """Obtém o percentual de taxa configurado para o cliente"""
         try:
@@ -7160,8 +7197,11 @@ class GestorTaxasAdministracao:
             
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if row[0] == cliente:  # Nome do cliente
-                    # Assumindo que a taxa está na coluna 6 (ajustar conforme sua estrutura)
-                    return float(row[6]) if row[6] else None
+                    # CORREÇÃO: Verificar se existe coluna de taxa (assumindo coluna 5 ou 6)
+                    if len(row) > 6 and row[6]:  # Coluna 6 (índice 6)
+                        return float(row[6])
+                    elif len(row) > 5 and row[5]:  # Coluna 5 (índice 5) 
+                        return float(row[5])
             
             return None
             
@@ -7230,6 +7270,8 @@ class GerenciadorLancamentos:
         self.janela = None
         self.tree_lancamentos = None
         self.dados_originais = []
+
+        self.gestor_taxas = GestorTaxasAdministracao(sistema_principal)
         
     def abrir_gerenciador(self):
         """Abre a janela de gerenciamento de lançamentos"""
@@ -7239,7 +7281,7 @@ class GerenciadorLancamentos:
             
         self.janela = tk.Toplevel(self.sistema.root)
         self.janela.title(f"Gerenciar Lançamentos - {self.sistema.cliente_atual}")
-        self.janela.geometry("1200x700")
+        self.janela.geometry("1000x700")
         
         # Configurar janela
         self.janela.transient(self.sistema.root)
@@ -7292,7 +7334,7 @@ class GerenciadorLancamentos:
             if col == 'ID':
                 self.tree_lancamentos.column(col, width=0, stretch=False)  # Ocultar coluna ID
             elif col in ['Data', 'Vencimento']:
-                self.tree_lancamentos.column(col, width=100)
+                self.tree_lancamentos.column(col, width=70)
             elif col == 'Valor':
                 self.tree_lancamentos.column(col, width=100, anchor='e')
             elif col == 'Status':
@@ -7309,26 +7351,84 @@ class GerenciadorLancamentos:
         self.tree_lancamentos.pack(side='left', fill='both', expand=True)
         scrolly.pack(side='right', fill='y')
         scrollx.pack(side='bottom', fill='x')
-        
-        # Frame de botões (existente)
+
+        # Frame de botões (MODIFICAR esta parte)
         frame_botoes = ttk.Frame(main_frame)
         frame_botoes.pack(fill='x', pady=(10, 0))
         
+        # Organizar botões em grupos
+        # Grupo 1: Ações nos lançamentos
         ttk.Button(frame_botoes, text="Editar", command=self.editar_lancamento).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Excluir", command=self.excluir_lancamento).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Restaurar", command=self.restaurar_lancamento).pack(side='left', padx=5)
         
-        # ADICIONE ESTA LINHA:
-        ttk.Button(frame_botoes, text="Recalcular Taxas", 
-                command=self.recalcular_taxas_manual).pack(side='left', padx=5)
-                
-        ttk.Button(frame_botoes, text="Atualizar", command=self.carregar_lancamentos).pack(side='left', padx=20)
-        ttk.Button(frame_botoes, text="Fechar", command=self.janela.destroy).pack(side='right', padx=5)
+        # ADICIONAR ESTE BOTÃO:
+        ttk.Button(frame_botoes, text="Ver Histórico", 
+                command=self.visualizar_historico_lancamento).pack(side='left', padx=5)
         
+        # Separador visual
+        ttk.Separator(frame_botoes, orient='vertical').pack(side='left', fill='y', padx=10)
+        
+        # Grupo 2: Ações gerais
+        ttk.Button(frame_botoes, text="Atualizar", command=self.carregar_lancamentos).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Fechar", command=self.janela.destroy).pack(side='right', padx=5)
+
         # Configurar tags para cores
         self.tree_lancamentos.tag_configure('excluido', background='#ffcccc')
         self.tree_lancamentos.tag_configure('normal', background='white')
-        
+
+        self.configurar_atalhos()
+    
+    def configurar_atalhos(self):
+        """Configura atalhos de teclado"""
+        try:
+            # CORREÇÃO 1: Duplo clique no Treeview
+            def on_double_click(event):
+                # Verificar se há item selecionado
+                if self.tree_lancamentos.selection():
+                    self.visualizar_historico_lancamento()
+            
+            self.tree_lancamentos.bind('<Double-1>', on_double_click)
+            
+            # CORREÇÃO 2: Atalho de teclado - Focar na janela principal primeiro
+            def on_key_h(event):
+                # Só funciona se a janela do gerenciador estiver em foco
+                if self.tree_lancamentos.selection():
+                    self.visualizar_historico_lancamento()
+                else:
+                    custom_messagebox("info", "Atalho H", "Selecione um lançamento primeiro para ver o histórico")
+            
+            # Bind na janela principal
+            self.janela.bind('<Key-h>', on_key_h)
+            self.janela.bind('<Key-H>', on_key_h)
+            
+            # CORREÇÃO 3: Também bind no Treeview para garantir que funcione
+            self.tree_lancamentos.bind('<Key-h>', on_key_h)
+            self.tree_lancamentos.bind('<Key-H>', on_key_h)
+            
+            # CORREÇÃO 4: Tornar a janela focável para receber eventos de teclado
+            self.janela.focus_set()
+            
+            print("DEBUG: Atalhos configurados - Duplo clique e tecla H")
+            
+        except Exception as e:
+            print(f"Erro ao configurar atalhos: {str(e)}")
+
+
+    def formatar_tipo_despesa(self, tp_desp):
+        """Formata tipo de despesa como inteiro"""
+        try:
+            if pd.isna(tp_desp) or tp_desp == "":
+                return ""
+            
+            # Converter para float primeiro, depois para int para remover decimais
+            valor_numerico = float(tp_desp)
+            return str(int(valor_numerico))
+            
+        except (ValueError, TypeError):
+            # Se não conseguir converter, retornar como string
+            return str(tp_desp)
+    
     def carregar_lancamentos(self):
         """Carrega os lançamentos da planilha"""
         try:
@@ -7346,21 +7446,53 @@ class GerenciadorLancamentos:
             df['STATUS'] = df['STATUS'].replace('', 'ATIVO')
             df['STATUS'] = df['STATUS'].fillna('ATIVO')
             
-            # Adicionar ID único se não existir
+            # CORREÇÃO: Adicionar/corrigir ID único se não existir ou estiver inconsistente
             if 'ID_LANCAMENTO' not in df.columns:
+                
                 df['ID_LANCAMENTO'] = range(1, len(df) + 1)
+            else:
+                # Verificar se há IDs vazios ou inválidos
+                mask_id_vazio = (df['ID_LANCAMENTO'].isna()) | (df['ID_LANCAMENTO'] == '') | (df['ID_LANCAMENTO'] == 0)
+                if mask_id_vazio.any():
+                    
+                    # Encontrar o próximo ID disponível
+                    ids_existentes = df.loc[~mask_id_vazio, 'ID_LANCAMENTO']
+                    
+                    # CORREÇÃO: Converter para numérico primeiro, depois encontrar o máximo
+                    ids_numericos = pd.to_numeric(ids_existentes, errors='coerce').dropna()
+                    proximo_id = int(ids_numericos.max()) + 1 if len(ids_numericos) > 0 else 1
+                    
+                    # Atribuir novos IDs sequenciais
+                    indices_vazios = df.index[mask_id_vazio].tolist()
+                    for i, idx in enumerate(indices_vazios):
+                        df.loc[idx, 'ID_LANCAMENTO'] = proximo_id + i
+                        
             
-            # CORREÇÃO: Preencher IDs em branco
-            mask_id_vazio = (df['ID_LANCAMENTO'].isna()) | (df['ID_LANCAMENTO'] == '')
-            df.loc[mask_id_vazio, 'ID_LANCAMENTO'] = range(1, mask_id_vazio.sum() + 1)
+            # CORREÇÃO: Garantir que ID_LANCAMENTO seja numérico (convertendo todos de uma vez)
+            df['ID_LANCAMENTO'] = pd.to_numeric(df['ID_LANCAMENTO'], errors='coerce')
+            
+            # CORREÇÃO: Para IDs que ainda ficaram NaN após conversão, atribuir sequencialmente
+            mask_nan = df['ID_LANCAMENTO'].isna()
+            if mask_nan.any():
+                
+                # Encontrar o maior ID existente
+                ids_validos = df.loc[~mask_nan, 'ID_LANCAMENTO']
+                proximo_id = int(ids_validos.max()) + 1 if len(ids_validos) > 0 else 1
+                
+                # Atribuir IDs sequenciais aos NaN
+                indices_nan = df.index[mask_nan].tolist()
+                for i, idx in enumerate(indices_nan):
+                    df.loc[idx, 'ID_LANCAMENTO'] = proximo_id + i
+            
+            # Converter para int (agora que não há mais NaN)
+            df['ID_LANCAMENTO'] = df['ID_LANCAMENTO'].astype(int)
+            
             
             # Salvar dados originais
             self.dados_originais = df.copy()
             
-            # Salvar as correções na planilha se necessário
-            if 'STATUS' not in pd.read_excel(arquivo_cliente, sheet_name='Dados').columns or \
-            df['STATUS'].isna().any() or (df['STATUS'] == '').any():
-                self.corrigir_planilha_status(arquivo_cliente, df)
+            # Corrigir planilha se necessário
+            self.corrigir_planilha_status(arquivo_cliente, df)
             
             # Limpar tree
             for item in self.tree_lancamentos.get_children():
@@ -7379,17 +7511,29 @@ class GerenciadorLancamentos:
                 data_vencto = self.formatar_data(row['DT_VENCTO'])
                 valor = self.formatar_valor(row['VALOR'])
                 
+                # CORREÇÃO: Formatar TP_DESP como inteiro
+                tp_desp = self.formatar_tipo_despesa(row['TP_DESP'])
+                
+                # CORREÇÃO: Garantir que o ID seja um inteiro
+                id_lancamento = int(row['ID_LANCAMENTO'])
+                
+                valores_tree = (data_rel, tp_desp, row['NOME'], 
+                            row['REFERÊNCIA'], valor, data_vencto, status, id_lancamento)
+                
                 self.tree_lancamentos.insert('', 'end', 
-                    values=(data_rel, row['TP_DESP'], row['NOME'], 
-                        row['REFERÊNCIA'], valor, data_vencto, status, row.get('ID_LANCAMENTO', idx)),
+                    values=valores_tree,
                     tags=(tag,))
             
             # Aplicar filtros se existirem
             self.aplicar_filtros()
             
+        
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             custom_messagebox("error", "Erro", f"Erro ao carregar lançamentos: {str(e)}")
 
+    # CORREÇÃO ADICIONAL: Método para corrigir planilha também precisa ser atualizado
     def corrigir_planilha_status(self, arquivo_cliente, df):
         """Corrige o status na planilha para dados antigos"""
         try:
@@ -7404,27 +7548,25 @@ class GerenciadorLancamentos:
             if ws.cell(row=1, column=15).value != 'ID_LANCAMENTO':
                 ws.cell(row=1, column=15, value='ID_LANCAMENTO')
             
-            # Adicionar cabeçalho ID_LANCAMENTO se não existir
+            # Adicionar cabeçalho HISTORICO_ALTERACAO se não existir
             if ws.cell(row=1, column=16).value != 'HISTORICO_ALTERACAO':
                 ws.cell(row=1, column=16, value='HISTORICO_ALTERACAO')
             
             # Preencher STATUS e ID para todas as linhas
-            for idx, (_, row) in enumerate(df.iterrows(), start=2):
+            for idx, (df_idx, row) in enumerate(df.iterrows(), start=2):
                 # STATUS
                 status_atual = ws.cell(row=idx, column=14).value
                 if not status_atual or status_atual == '':
                     ws.cell(row=idx, column=14, value='ATIVO')
                 
-                # ID_LANCAMENTO
-                id_atual = ws.cell(row=idx, column=15).value
-                if not id_atual or id_atual == '':
-                    ws.cell(row=idx, column=15, value=int(idx - 1))
+                # ID_LANCAMENTO - CORREÇÃO: usar o ID do DataFrame
+                ws.cell(row=idx, column=15, value=int(row['ID_LANCAMENTO']))
             
             wb.save(arquivo_cliente)
-            print("STATUS e IDs corrigidos na planilha")
-            
+                        
         except Exception as e:
-            print(f"Erro ao corrigir status na planilha: {str(e)}")
+            print(f"DEBUG: Erro ao corrigir status na planilha: {str(e)}")
+            # Não levantar exceção aqui para não interromper o carregamento
     
     def aplicar_filtros(self):
         """Aplica os filtros selecionados"""
@@ -7434,7 +7576,6 @@ class GerenciadorLancamentos:
             data_inicio = self.data_inicio.get_date()
             data_fim = self.data_fim.get_date()
             
-            print(f"DEBUG: Aplicando filtros - Status: {status_filtro}, Data início: {data_inicio}, Data fim: {data_fim}")
             
             # Filtrar itens na tree
             for item in self.tree_lancamentos.get_children():
@@ -7489,14 +7630,103 @@ class GerenciadorLancamentos:
             custom_messagebox("warning", "Aviso", "Selecione um lançamento para editar")
             return
         
-        valores = self.tree_lancamentos.item(item_selecionado[0])['values']
-        id_lancamento = valores[7]  # ID do lançamento
-        
-        # Buscar dados completos
-        lancamento = self.dados_originais[self.dados_originais['ID_LANCAMENTO'] == id_lancamento].iloc[0]
-        
-        # Abrir editor
-        editor = EditorLancamentoCompleto(self.janela, lancamento, self.salvar_edicao)
+        try:
+            valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+            
+           
+            # CORREÇÃO: Verificar se temos valores suficientes
+            if len(valores) < 8:
+                custom_messagebox("error", "Erro", "Dados insuficientes no lançamento selecionado")
+                return
+                
+            id_lancamento = valores[7]  # ID do lançamento (8ª coluna, índice 7)
+            
+            
+            # CORREÇÃO: Verificar se o ID é válido
+            if not id_lancamento or pd.isna(id_lancamento):
+                custom_messagebox("error", "Erro", "ID do lançamento não encontrado")
+                return
+            
+            # CORREÇÃO: Buscar dados completos com tratamento de erro
+            try:
+                # Converter ID para o tipo correto se necessário
+                if isinstance(id_lancamento, str):
+                    try:
+                        id_lancamento = int(float(id_lancamento))
+                    except ValueError:
+                        custom_messagebox("error", "Erro", f"ID inválido: {id_lancamento}")
+                        return
+                
+                # Buscar no DataFrame usando diferentes abordagens
+                lancamento = None
+                
+                # Tentativa 1: Busca direta
+                mask = self.dados_originais['ID_LANCAMENTO'] == id_lancamento
+                dados_filtrados = self.dados_originais[mask]
+                
+                if not dados_filtrados.empty:
+                    lancamento = dados_filtrados.iloc[0]
+                   
+                else:
+                    # Tentativa 2: Busca com conversão de tipos
+                    
+                    for idx, row in self.dados_originais.iterrows():
+                        row_id = row.get('ID_LANCAMENTO')
+                        if pd.notna(row_id):
+                            try:
+                                if int(float(row_id)) == int(float(id_lancamento)):
+                                    lancamento = row
+                                    
+                                    break
+                            except (ValueError, TypeError):
+                                continue
+                
+                if lancamento is None:
+                    # Tentativa 3: Busca por posição (fallback)
+                    
+                    try:
+                        # Pegar o índice do item na tree
+                        todos_items = self.tree_lancamentos.get_children()
+                        indice_item = list(todos_items).index(item_selecionado[0])
+                        
+                        # Verificar se temos dados suficientes
+                        if indice_item < len(self.dados_originais):
+                            lancamento = self.dados_originais.iloc[indice_item]
+                            
+                        else:
+                            raise IndexError("Índice fora do range")
+                            
+                    except (ValueError, IndexError) as e:
+                        
+                        custom_messagebox("error", "Erro", 
+                            f"Não foi possível encontrar o lançamento.\n"
+                            f"ID buscado: {id_lancamento}\n"
+                            f"IDs disponíveis: {list(self.dados_originais['ID_LANCAMENTO'].unique())}")
+                        return
+                
+            except Exception as e:
+                custom_messagebox("error", "Erro", f"Erro ao buscar dados do lançamento: {str(e)}")
+                return
+            
+            # CORREÇÃO: Verificar se encontrou o lançamento
+            if lancamento is None:
+                custom_messagebox("error", "Erro", 
+                    f"Lançamento com ID {id_lancamento} não encontrado nos dados carregados")
+                return
+            
+            # CORREÇÃO: Abrir editor com tratamento de erro
+            try:
+                editor = EditorLancamentoCompleto(self.janela, lancamento, self.salvar_edicao)
+                
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                custom_messagebox("error", "Erro", f"Erro ao abrir editor: {str(e)}")
+                
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            custom_messagebox("error", "Erro", f"Erro ao editar lançamento: {str(e)}")
     
     def excluir_lancamento(self):
         """Marca lançamento como excluído"""
@@ -7579,7 +7809,184 @@ class GerenciadorLancamentos:
             
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao restaurar lançamento: {str(e)}")
-    
+
+    def visualizar_historico_lancamento(self):
+        """Mostra o histórico completo de alterações de um lançamento"""
+        item_selecionado = self.tree_lancamentos.selection()
+        if not item_selecionado:
+            custom_messagebox("warning", "Aviso", "Selecione um lançamento para ver o histórico")
+            return
+        
+        try:
+            valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+            id_lancamento = valores[7]
+            
+            # Buscar dados completos
+            lancamento = self.dados_originais[self.dados_originais['ID_LANCAMENTO'] == id_lancamento].iloc[0]
+            
+            # Buscar histórico da planilha
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            wb = load_workbook(arquivo_cliente)
+            ws = wb['Dados']
+            
+            historico = ""
+            for row in range(2, ws.max_row + 1):
+                if ws.cell(row=row, column=15).value == id_lancamento:
+                    historico = ws.cell(row=row, column=16).value or "Nenhuma alteração registrada"
+                    break
+            
+            wb.close()  # Importante fechar o workbook
+            
+            # Criar janela de histórico
+            janela_historico = tk.Toplevel(self.janela)
+            janela_historico.title(f"Histórico - ID {id_lancamento}")
+            janela_historico.geometry("700x500")
+            janela_historico.transient(self.janela)
+            janela_historico.grab_set()
+            
+            # Centralizar janela
+            janela_historico.update_idletasks()
+            x = (janela_historico.winfo_screenwidth() // 2) - (350)
+            y = (janela_historico.winfo_screenheight() // 2) - (250)
+            janela_historico.geometry(f"700x500+{x}+{y}")
+            
+            frame = ttk.Frame(janela_historico, padding="15")
+            frame.pack(fill='both', expand=True)
+            
+            # Título
+            titulo_frame = ttk.Frame(frame)
+            titulo_frame.pack(fill='x', pady=(0, 15))
+            
+            ttk.Label(titulo_frame, 
+                     text=f"Histórico de Alterações - ID: {id_lancamento}", 
+                     font=('Arial', 14, 'bold')).pack()
+            
+            # Informações do lançamento
+            info_frame = ttk.LabelFrame(frame, text="Informações do Lançamento")
+            info_frame.pack(fill='x', pady=(0, 10))
+            
+            info_content = ttk.Frame(info_frame)
+            info_content.pack(fill='x', padx=10, pady=5)
+            
+            # Organizar informações em duas colunas
+            # Coluna esquerda
+            col1 = ttk.Frame(info_content)
+            col1.pack(side='left', fill='x', expand=True)
+            
+            ttk.Label(col1, text=f"Nome: {lancamento['NOME']}", 
+                     font=('Arial', 9)).pack(anchor='w')
+            ttk.Label(col1, text=f"Referência: {lancamento['REFERÊNCIA']}", 
+                     font=('Arial', 9)).pack(anchor='w')
+            ttk.Label(col1, text=f"Categoria: {lancamento.get('CATEGORIA', 'N/A')}", 
+                     font=('Arial', 9)).pack(anchor='w')
+            
+            # Coluna direita
+            col2 = ttk.Frame(info_content)
+            col2.pack(side='right', fill='x', expand=True)
+            
+            ttk.Label(col2, text=f"Valor: R$ {self.formatar_valor(lancamento['VALOR'])}", 
+                     font=('Arial', 9)).pack(anchor='w')
+            ttk.Label(col2, text=f"Status: {lancamento.get('STATUS', 'ATIVO')}", 
+                     font=('Arial', 9)).pack(anchor='w')
+            ttk.Label(col2, text=f"Data: {self.formatar_data(lancamento['DATA_REL'])}", 
+                     font=('Arial', 9)).pack(anchor='w')
+            
+            # Histórico
+            historico_frame = ttk.LabelFrame(frame, text="Histórico de Alterações")
+            historico_frame.pack(fill='both', expand=True, pady=(10, 0))
+            
+            # Frame com scrollbar para o histórico
+            scroll_frame = ttk.Frame(historico_frame)
+            scroll_frame.pack(fill='both', expand=True, padx=10, pady=5)
+            
+            text_historico = tk.Text(scroll_frame, 
+                                   wrap=tk.WORD, 
+                                   font=('Consolas', 9),
+                                   bg='#f8f9fa',
+                                   relief='sunken',
+                                   borderwidth=1)
+            
+            scrollbar_hist = ttk.Scrollbar(scroll_frame, orient='vertical', command=text_historico.yview)
+            text_historico.configure(yscrollcommand=scrollbar_hist.set)
+            
+            text_historico.pack(side='left', fill='both', expand=True)
+            scrollbar_hist.pack(side='right', fill='y')
+            
+            # Formatar e inserir histórico
+            if historico and historico != "Nenhuma alteração registrada":
+                acoes = historico.split(' | ')
+                text_historico.insert(tk.END, "LINHA DO TEMPO DE ALTERAÇÕES:\n")
+                text_historico.insert(tk.END, "=" * 50 + "\n\n")
+                
+                for i, acao in enumerate(acoes, 1):
+                    # Destacar tipo de ação
+                    if "EDITADO" in acao:
+                        prefixo = "📝 EDIÇÃO"
+                    elif "EXCLUÍDO" in acao:
+                        prefixo = "🗑️ EXCLUSÃO"
+                    elif "RESTAURADO" in acao:
+                        prefixo = "↩️ RESTAURAÇÃO"
+                    else:
+                        prefixo = "📋 ALTERAÇÃO"
+                    
+                    text_historico.insert(tk.END, f"{i:2d}. {prefixo}\n")
+                    text_historico.insert(tk.END, f"    {acao}\n\n")
+                    
+                text_historico.insert(tk.END, "=" * 50 + "\n")
+                text_historico.insert(tk.END, f"Total de alterações: {len(acoes)}")
+            else:
+                text_historico.insert(tk.END, "📄 LANÇAMENTO ORIGINAL\n")
+                text_historico.insert(tk.END, "=" * 30 + "\n\n")
+                text_historico.insert(tk.END, "Este lançamento não possui histórico de alterações.\n")
+                text_historico.insert(tk.END, "Foi criado e mantém seus dados originais.")
+            
+            text_historico.config(state='disabled')
+            
+            # Botões
+            botoes_frame = ttk.Frame(frame)
+            botoes_frame.pack(fill='x', pady=(15, 0))
+            
+            ttk.Button(botoes_frame, 
+                      text="Fechar", 
+                      command=janela_historico.destroy).pack(side='right', padx=(10, 0))
+            
+            # Opcional: Botão para exportar histórico
+            def exportar_historico():
+                try:
+                    from tkinter import filedialog
+                    arquivo = filedialog.asksaveasfilename(
+                        title="Salvar Histórico",
+                        defaultextension=".txt",
+                        filetypes=[("Arquivo de Texto", "*.txt"), ("Todos os Arquivos", "*.*")],
+                        initialname=f"historico_lancamento_{id_lancamento}.txt"
+                    )
+                    
+                    if arquivo:
+                        with open(arquivo, 'w', encoding='utf-8') as f:
+                            f.write(f"HISTÓRICO DO LANÇAMENTO ID: {id_lancamento}\n")
+                            f.write("=" * 50 + "\n\n")
+                            f.write(f"Nome: {lancamento['NOME']}\n")
+                            f.write(f"Referência: {lancamento['REFERÊNCIA']}\n")
+                            f.write(f"Valor: R$ {self.formatar_valor(lancamento['VALOR'])}\n")
+                            f.write(f"Status: {lancamento.get('STATUS', 'ATIVO')}\n\n")
+                            f.write("ALTERAÇÕES:\n")
+                            f.write("-" * 30 + "\n")
+                            f.write(text_historico.get('1.0', tk.END))
+                        
+                        custom_messagebox("info", "Sucesso", f"Histórico exportado para:\n{arquivo}")
+                        
+                except Exception as e:
+                    custom_messagebox("error", "Erro", f"Erro ao exportar: {str(e)}")
+            
+            ttk.Button(botoes_frame, 
+                      text="Exportar", 
+                      command=exportar_historico).pack(side='right', padx=(5, 0))
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao visualizar histórico: {str(e)}")
+            import traceback
+            traceback.print_exc()
+
     def identificar_lancamentos_taxa_admin(self, df):
         """Identifica lançamentos de taxa de administração"""
         # Padrões comuns para identificar taxas de administração
@@ -7634,7 +8041,6 @@ class GerenciadorLancamentos:
             # Encontrar linha do lançamento
             linha_encontrada = False
             for row in range(2, ws.max_row + 1):
-                # CORREÇÃO: A coluna ID_LANCAMENTO está na coluna 15, não na última
                 id_na_planilha = ws.cell(row=row, column=15).value  # Coluna 15 = ID_LANCAMENTO
                 print(f"DEBUG: Linha {row}, ID na planilha: {id_na_planilha}")
                 
@@ -7656,14 +8062,19 @@ class GerenciadorLancamentos:
                     ws.cell(row=row, column=11, value=dados_editados['categoria'])
                     ws.cell(row=row, column=12, value=dados_editados['dados_bancarios'])
                     
-                    # Adicionar timestamp de edição
+                    # CORREÇÃO: Manter observação original, adicionar histórico na coluna correta
+                    ws.cell(row=row, column=13, value=dados_editados['observacao'])  # Observação original
+                    
+                    # Adicionar timestamp de edição na coluna HISTORICO_ALTERACAO
                     timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-                    obs_atual = dados_editados['observacao']
-                    if 'EDITADO EM:' not in obs_atual:
-                        nova_obs = f"{obs_atual} - EDITADO EM: {timestamp}"
-                        ws.cell(row=row, column=13, value=nova_obs)
+                    historico_atual = ws.cell(row=row, column=16).value or ""  # Coluna 16 = HISTORICO_ALTERACAO
+                    
+                    if historico_atual:
+                        novo_historico = f"{historico_atual} | EDITADO EM: {timestamp}"
                     else:
-                        ws.cell(row=row, column=13, value=obs_atual)
+                        novo_historico = f"EDITADO EM: {timestamp}"
+                    
+                    ws.cell(row=row, column=16, value=novo_historico)
                     
                     print(f"DEBUG: Dados atualizados na linha {row}")
                     break
@@ -7695,26 +8106,39 @@ class GerenciadorLancamentos:
             wb = load_workbook(arquivo_cliente)
             ws = wb['Dados']
             
-            # Verificar se coluna STATUS existe, se não, criar
+            # Verificar se colunas existem, se não, criar
             if ws.cell(row=1, column=14).value != 'STATUS':
                 ws.cell(row=1, column=14, value='STATUS')
             
-            # Verificar se coluna ID_LANCAMENTO existe, se não, criar
             if ws.cell(row=1, column=15).value != 'ID_LANCAMENTO':
                 ws.cell(row=1, column=15, value='ID_LANCAMENTO')
-                # Adicionar IDs para linhas existentes
-                for row in range(2, ws.max_row + 1):
-                    if not ws.cell(row=row, column=15).value:
-                        ws.cell(row=row, column=15, value=int(row - 1))
+                
+            if ws.cell(row=1, column=16).value != 'HISTORICO_ALTERACAO':
+                ws.cell(row=1, column=16, value='HISTORICO_ALTERACAO')
             
             # Encontrar e atualizar linha
             for row in range(2, ws.max_row + 1):
                 if ws.cell(row=row, column=15).value == id_lancamento:
+                    # Atualizar status
                     ws.cell(row=row, column=14, value=novo_status)
-                    # Adicionar timestamp
+                    
+                    # Adicionar ao histórico
                     timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+                    historico_atual = ws.cell(row=row, column=16).value or ""
+                    
                     if novo_status == 'EXCLUIDO':
-                        ws.cell(row=row, column=16, value=f'EXCLUIDO EM: {timestamp}')
+                        acao = f"EXCLUÍDO EM: {timestamp}"
+                    elif novo_status == 'ATIVO':
+                        acao = f"RESTAURADO EM: {timestamp}"
+                    else:
+                        acao = f"STATUS ALTERADO PARA {novo_status} EM: {timestamp}"
+                    
+                    if historico_atual:
+                        novo_historico = f"{historico_atual} | {acao}"
+                    else:
+                        novo_historico = acao
+                        
+                    ws.cell(row=row, column=16, value=novo_historico)
                     break
             
             wb.save(arquivo_cliente)
@@ -7855,10 +8279,10 @@ class EditorLancamentoCompleto:
             if pd.notna(self.lancamento['DT_VENCTO']):
                 self.dt_vencto.set_date(pd.to_datetime(self.lancamento['DT_VENCTO']))
             
-            # Campos de texto - VERSÃO CORRIGIDA
+            # Campos de texto
             tp_desp_valor = self.lancamento.get('TP_DESP', '')
             if pd.notna(tp_desp_valor):
-                self.tp_desp.insert(0, str(int(float(tp_desp_valor))))  # CORRIGIDO
+                self.tp_desp.insert(0, str(int(float(tp_desp_valor))))
             
             self.cnpj_cpf.insert(0, str(self.lancamento.get('CNPJ_CPF', '')))
             self.nome.insert(0, str(self.lancamento.get('NOME', '')))
@@ -7866,7 +8290,7 @@ class EditorLancamentoCompleto:
             self.referencia.insert(0, str(self.lancamento.get('REFERÊNCIA', '')))
             self.nf.insert(0, str(self.lancamento.get('NF', '')))
             
-            # Valores numéricos - CORRIGIDOS
+            # Valores numéricos
             vr_unit_valor = self.lancamento.get('VR_UNIT', '')
             if pd.notna(vr_unit_valor) and vr_unit_valor != '':
                 self.vr_unit.insert(0, str(float(vr_unit_valor)).replace('.', ','))
@@ -7880,7 +8304,14 @@ class EditorLancamentoCompleto:
                 self.valor.insert(0, str(float(valor_valor)).replace('.', ','))
             
             self.dados_bancarios.insert(0, str(self.lancamento.get('DADOS_BANCARIOS', '')))
-            self.observacao.insert(0, str(self.lancamento.get('OBSERVAÇÃO', '')))
+            
+            # CORREÇÃO: Preencher apenas a observação original (sem histórico de edições)
+            observacao_original = str(self.lancamento.get('OBSERVAÇÃO', ''))
+            # Remover informações de edição anteriores se existirem
+            if 'EDITADO EM:' in observacao_original:
+                observacao_original = observacao_original.split(' - EDITADO EM:')[0]
+            
+            self.observacao.insert(0, observacao_original)
             
         except Exception as e:
             print(f"Erro ao preencher dados: {str(e)}")
@@ -7896,28 +8327,7 @@ class EditorLancamentoCompleto:
             self.valor.insert(0, f"{total:.2f}")
         except:
             pass
-    
-    def recalcular_taxas_manual(self):
-        """Permite recálculo manual das taxas"""
-        if not custom_messagebox("yesno", "Recálculo de Taxas",
-                                "Deseja recalcular as taxas de administração?\n\n"
-                                "Isso irá atualizar todas as taxas baseado nos lançamentos ativos."):
-            return
-        
-        try:
-            # Obter data de referência do usuário
-            data_ref = self.data_inicio.get_date()  # Usar data do filtro
-            
-            resultado = self.gestor_taxas.recalcular_taxas_afetadas(data_ref)
-            
-            if resultado["sucesso"]:
-                custom_messagebox("info", "Sucesso", resultado["mensagem"])
-                self.carregar_lancamentos()  # Recarregar para mostrar atualizações
-            else:
-                custom_messagebox("error", "Erro", resultado["mensagem"])
-                
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro no recálculo: {str(e)}")
+   
 
     def salvar(self):
         """Salva as alterações"""
