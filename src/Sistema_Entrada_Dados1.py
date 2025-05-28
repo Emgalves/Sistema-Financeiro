@@ -7310,7 +7310,7 @@ class GerenciadorLancamentos:
         scrolly.pack(side='right', fill='y')
         scrollx.pack(side='bottom', fill='x')
         
-        # Frame de botões
+        # Frame de botões (existente)
         frame_botoes = ttk.Frame(main_frame)
         frame_botoes.pack(fill='x', pady=(10, 0))
         
@@ -7318,9 +7318,10 @@ class GerenciadorLancamentos:
         ttk.Button(frame_botoes, text="Excluir", command=self.excluir_lancamento).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Restaurar", command=self.restaurar_lancamento).pack(side='left', padx=5)
         
+        # ADICIONE ESTA LINHA:
         ttk.Button(frame_botoes, text="Recalcular Taxas", 
-              command=self.recalcular_taxas_manual).pack(side='left', padx=5)
-        
+                command=self.recalcular_taxas_manual).pack(side='left', padx=5)
+                
         ttk.Button(frame_botoes, text="Atualizar", command=self.carregar_lancamentos).pack(side='left', padx=20)
         ttk.Button(frame_botoes, text="Fechar", command=self.janela.destroy).pack(side='right', padx=5)
         
@@ -7402,6 +7403,10 @@ class GerenciadorLancamentos:
             # Adicionar cabeçalho ID_LANCAMENTO se não existir
             if ws.cell(row=1, column=15).value != 'ID_LANCAMENTO':
                 ws.cell(row=1, column=15, value='ID_LANCAMENTO')
+            
+            # Adicionar cabeçalho ID_LANCAMENTO se não existir
+            if ws.cell(row=1, column=16).value != 'HISTORICO_ALTERACAO':
+                ws.cell(row=1, column=16, value='HISTORICO_ALTERACAO')
             
             # Preencher STATUS e ID para todas as linhas
             for idx, (_, row) in enumerate(df.iterrows(), start=2):
