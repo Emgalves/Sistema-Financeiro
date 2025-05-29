@@ -1,89 +1,18 @@
-# Adicione no início do arquivo
+# sistema_principal.py - VERSÃO CORRIGIDA
 import sys
 import os
 import traceback
-
-# Configurar captura de erros
-log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "erro_inicializacao.log")
-
-def log_error(message):
-    with open(log_file, "a", encoding="utf-8") as f:
-        f.write(f"{message}\n")
-
-# Registrar informações de inicialização
-log_error(f"=== Iniciando aplicação em {__file__} ===")
-log_error(f"Diretório atual: {os.getcwd()}")
-log_error(f"sys.path: {sys.path}")
-
-# Manipulador de exceções não tratadas
-def exception_handler(exctype, value, tb):
-    error_msg = ''.join(traceback.format_exception(exctype, value, tb))
-    log_error(f"ERRO FATAL: {error_msg}")
-    # Ainda chama o manipulador original
-    sys.__excepthook__(exctype, value, tb)
-
-sys.excepthook = exception_handler
-
-# Redirecionar stdout e stderr para o arquivo de log
-class LogRedirector:
-    def __init__(self, log_file):
-        self.log_file = log_file
-        self.original_stdout = sys.stdout
-        self.original_stderr = sys.stderr
-        
-    def write(self, message):
-        with open(self.log_file, "a", encoding="utf-8") as f:
-            f.write(message)
-        self.original_stdout.write(message)
-        
-    def flush(self):
-        self.original_stdout.flush()
-
-sys.stdout = LogRedirector(log_file)
-sys.stderr = LogRedirector(log_file)
-
-# Agora prossiga com o código normal
-log_error("Configuração de log concluída, continuando a inicialização...")
-
-# Diagnóstico imediato - coloque no início de sistema_principal.py
-try:
-    with open("diagnostico_sistema.log", "w") as log:
-        import os, sys, platform
-        from pathlib import Path
-        
-        log.write(f"=== Diagnóstico do Sistema ===\n")
-        log.write(f"Data/Hora: {__import__('datetime').datetime.now()}\n")
-        log.write(f"Sistema: {platform.system()} {platform.release()}\n")
-        log.write(f"Diretório atual: {os.getcwd()}\n")
-        log.write(f"SISTEMA_AMBIENTE: {os.getenv('SISTEMA_AMBIENTE', 'NÃO DEFINIDO')}\n")
-        
-        # Verificar caminho do Google Drive
-        drive_path = Path("H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios")
-        log.write(f"Caminho do Drive existe? {drive_path.exists()}\n")
-        
-        # Se existir, listar diretórios
-        if drive_path.exists():
-            log.write("Diretórios encontrados:\n")
-            for item in drive_path.iterdir():
-                if item.is_dir():
-                    log.write(f" - {item.name}\n")
-except Exception as e:
-    with open("erro_diagnostico.log", "w") as err_log:
-        err_log.write(f"Erro no diagnóstico: {str(e)}")
-
 import tkinter as tk
 from tkinter import ttk, PhotoImage, messagebox
 import importlib
-import sys
-import os
-import logging
-from io import StringIO
 from datetime import datetime
 from dotenv import load_dotenv
+
+# Carregar variáveis de ambiente
 load_dotenv()
 
 def add_project_root():
-    import sys
+    """Adiciona o diretório raiz do projeto ao sys.path"""
     from pathlib import Path
     current_dir = Path(__file__).resolve().parent
     project_root = current_dir.parent
@@ -92,57 +21,77 @@ def add_project_root():
 
 add_project_root()
 
+# Configuração de logging simplificada para PyInstaller
+def setup_simple_logging():
+    """Configura logging simples que funciona com PyInstaller"""
+    import logging
+    
+    # Criar logger básico
+    logger = logging.getLogger("sistema")
+    logger.setLevel(logging.INFO)
+    
+    # Handler para arquivo (se possível)
+    try:
+        log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sistema.log")
+        file_handler = logging.FileHandler(log_file, encoding='utf-8')
+        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        logger.addHandler(file_handler)
+    except:
+        pass  # Se não conseguir criar arquivo, continua sem
+    
+    # Handler para console (sempre funciona)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
+    logger.addHandler(console_handler)
+    
+    return logger
+
+# Configurar logging simples
+simple_logger = setup_simple_logging()
+
+# Criar classes substitutas para o sistema de logging
+class SimpleSystemLogger:
+    def __init__(self):
+        self.logger = simple_logger
+        self.current_user = None
+    
+    def get_logger(self):
+        return self.logger
+    
+    def set_user(self, username):
+        self.current_user = username
+        self.logger.info(f"Usuário logado: {username}")
+
+def log_action(action_name):
+    """Decorator simplificado para logging de ações"""
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            simple_logger.info(f"Executando ação: {action_name}")
+            try:
+                result = func(*args, **kwargs)
+                simple_logger.info(f"Ação concluída: {action_name}")
+                return result
+            except Exception as e:
+                simple_logger.error(f"Erro na ação {action_name}: {str(e)}")
+                raise
+        return wrapper
+    return decorator
+
+# Instanciar o logger do sistema
+system_logger = SimpleSystemLogger()
+
+# Importações de configuração
 try:
     from src.config.window_config import configurar_janela
 except ImportError:
-    from config.window_config import configurar_janela
-
-# Onde você importa o logger
-try:
-    # Tente todas as combinações possíveis
     try:
-        from src.config.logger_config import system_logger, log_action
-        print("Logger importado de src.config com sucesso")
+        from config.window_config import configurar_janela
     except ImportError:
-        try:
-            from config.logger_config import system_logger, log_action
-            print("Logger importado de config com sucesso")
-        except ImportError:
-            import os
-            # Caminho absoluto
-            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config")
-            print(f"Tentando adicionar caminho: {config_path}")
-            import sys
-            if config_path not in sys.path:
-                sys.path.append(config_path)
-            from logger_config import system_logger, log_action
-            print("Logger importado de caminho absoluto com sucesso")
-except ImportError as e:
-    print(f"Erro ao importar logger: {str(e)}")
-    # Criar um logger substituto básico
-    import logging
-    class SimpleLogger:
-        def __init__(self):
-            self.logger = logging.getLogger("sistema")
-            self.logger.setLevel(logging.INFO)
-            handler = logging.StreamHandler()
-            self.logger.addHandler(handler)
-            self.log_format = "%(asctime)s - %(levelname)s - %(message)s"
-            
-        def get_logger(self):
-            return self.logger
-            
-        def set_user(self, username):
-            pass
-    
-    system_logger = SimpleLogger()
-    
-    def log_action(action_name):
-        def decorator(func):
-            def wrapper(*args, **kwargs):
-                return func(*args, **kwargs)
-            return wrapper
-        return decorator
+        # Fallback: configuração básica de janela
+        def configurar_janela(root, titulo):
+            root.title(titulo)
+            root.geometry("800x600")
+            root.configure(bg='#f0f0f0')
 
 try:
     from src.config.config import (
@@ -152,45 +101,53 @@ try:
         BASE_PATH
     )
 except ImportError:
-    from config.config import (
-        ARQUIVO_CLIENTES,
-        ARQUIVO_MODELO,
-        PASTA_CLIENTES,
-        BASE_PATH
-    )
+    try:
+        from config.config import (
+            ARQUIVO_CLIENTES,
+            ARQUIVO_MODELO,
+            PASTA_CLIENTES,
+            BASE_PATH
+        )
+    except ImportError:
+        # Valores padrão se não conseguir importar
+        ARQUIVO_CLIENTES = "clientes.xlsx"
+        ARQUIVO_MODELO = "modelo.xlsx"
+        PASTA_CLIENTES = "clientes"
+        BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 def force_exit():
     """Força a saída do programa"""
-    print("Forçando encerramento do programa...")
+    simple_logger.info("Forçando encerramento do programa...")
     import os
     os._exit(0)
 
+# Importar módulo de controle de pagamentos
 try:
     from src.controle_pagamentos_taxas import ControlePagamentos as ControladorTaxas
 except ImportError:
     try:
         from controle_pagamentos_taxas import ControlePagamentos as ControladorTaxas
-    except ImportError as e:
-        print(f"Erro ao importar ControlePagamentos: {str(e)}")
-        # Criar stub básico se o módulo não existir
+    except ImportError:
+        simple_logger.warning("Módulo ControlePagamentos não encontrado, criando stub")
+        
         class ControladorTaxasStub:
             def __init__(self, parent=None):
                 self.parent = parent
                 
             def abrir_janela_controle(self):
-                import tkinter.messagebox as messagebox
                 messagebox.showerror("Erro", "Módulo de Controle de Pagamentos não encontrado")
                 
         ControladorTaxas = ControladorTaxasStub
 
-# Importar o módulo de controle de versões
+# Importar módulo de controle de versões
 try:
     import version_control
 except ImportError:
     try:
         from src import version_control
     except ImportError:
-        # Criar stub básico se o módulo não existir
+        simple_logger.warning("Módulo version_control não encontrado, criando stub")
+        
         class VersionControlStub:
             @staticmethod
             def get_version_string():
@@ -204,27 +161,29 @@ except ImportError:
         
         version_control = VersionControlStub()
 
-
 def resource_path(relative_path):
+    """Obtém o caminho correto para recursos, funciona com PyInstaller"""
     try:
+        # PyInstaller cria uma pasta temporária e armazena o caminho em _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base_path, relative_path)
 
-
 class SistemaPrincipal:
     def __init__(self):
         self.usuario_atual = None
         self.root = tk.Tk()
-
         
         # Configurar a janela principal
         titulo_com_versao = f"Sistema de Gestão Financeira v{version_control.get_version_string()}"
         configurar_janela(self.root, titulo_com_versao)
 
         # Salvar histórico de versões
-        version_control.save_version_history()
+        try:
+            version_control.save_version_history()
+        except:
+            pass  # Ignorar se não conseguir salvar
         
         # Inicializar gerenciador de taxas
         self.controlador_taxas = ControladorTaxas(self.root)
@@ -233,11 +192,11 @@ class SistemaPrincipal:
         self.setup_style()
         self.create_main_content()
         
+        simple_logger.info("Sistema principal inicializado com sucesso")
+        
     def login(self, username):
         self.usuario_atual = username
         system_logger.set_user(username)
-        logger.info(f"Login realizado") # type: ignore
-
 
     def setup_style(self):
         """Configura o estilo visual do aplicativo"""
@@ -261,13 +220,19 @@ class SistemaPrincipal:
         main_frame = ttk.Frame(self.root)
         main_frame.pack(expand=True, fill="both", padx=20, pady=20)
 
-        # Logo
-        self.logo_path = resource_path("logo.png")
-        self.logo = PhotoImage(file=self.logo_path)
-        logo_label = ttk.Label(main_frame, image=self.logo)
-        logo_label.pack(pady=10)
+        # Logo - com tratamento de erro
+        try:
+            self.logo_path = resource_path("logo.png")
+            if os.path.exists(self.logo_path):
+                self.logo = PhotoImage(file=self.logo_path)
+                logo_label = ttk.Label(main_frame, image=self.logo)
+                logo_label.pack(pady=10)
+            else:
+                simple_logger.warning("Logo não encontrado, continuando sem imagem")
+        except Exception as e:
+            simple_logger.warning(f"Erro ao carregar logo: {str(e)}")
 
-        # Título (sem a versão ao lado)
+        # Título
         title_label = ttk.Label(
             main_frame,
             text="Sistema de Gestão Financeira",
@@ -305,16 +270,14 @@ class SistemaPrincipal:
                         "Gerenciar parâmetros básicos",
                         self.abrir_configuracoes, 2, 1)
         
-        
-        # Frame para botões inferiores (Sobre, Versão e Sair)
+        # Frame para botões inferiores
         bottom_frame = ttk.Frame(main_frame)
         bottom_frame.pack(pady=20)
         
-        # Versão e botão Sobre à esquerda do botão Sair
+        # Versão e botão Sobre à esquerda
         version_frame = ttk.Frame(bottom_frame)
         version_frame.pack(side='left', padx=20)
         
-        # Label com a versão
         version_label = ttk.Label(
             version_frame,
             text=f"Versão {version_control.get_version_string()}",
@@ -323,7 +286,6 @@ class SistemaPrincipal:
         )
         version_label.pack(pady=5)
         
-        # Botão Sobre
         about_button = ttk.Button(
             bottom_frame,
             text="Sobre",
@@ -331,18 +293,11 @@ class SistemaPrincipal:
         )
         about_button.pack(side='left', padx=10)
         
-        # Botão Sair em destaque (lado direito)
-        adicionar_btn = ttk.Button(bottom_frame, text="Sair", 
+        # Botão Sair
+        sair_btn = ttk.Button(bottom_frame, text="Sair", 
                                 command=self.sair_sistema,
                                 style='Medium.TButton')
-        adicionar_btn.pack(side='right', padx=5)
-        
-        # Configurar um estilo especial para o botão Adicionar (opcional)
-        style = ttk.Style()
-        style.configure('Destaque.TButton', 
-                    background='#0056b3',  # Esta propriedade pode não ter efeito em todos os temas
-                    font=('Arial', 11, 'bold'))
-        adicionar_btn.configure(style='Destaque.TButton')
+        sair_btn.pack(side='right', padx=5)
 
     def create_card(self, parent, title, description, command, row, col):
         """Cria um card na interface"""
@@ -374,88 +329,65 @@ class SistemaPrincipal:
     def abrir_entrada_dados(self):
         """Abre o sistema de entrada de dados"""
         try:
-            logger = system_logger.get_logger()
-            logger.debug("Iniciando abertura do sistema de entrada de dados")
+            simple_logger.info("Abrindo sistema de entrada de dados")
             
             try:
-                # Primeira tentativa: importar diretamente
-                logger.debug("Tentando importar diretamente...")
                 from Sistema_Entrada_Dados import SistemaEntradaDados
             except ImportError:
-                # Segunda tentativa: importar de src
-                logger.debug("Tentando importar de src...")
                 from src.Sistema_Entrada_Dados import SistemaEntradaDados
             
             self.root.withdraw()
-            
             app = SistemaEntradaDados(parent=self.root)
-            
             app.root.lift()
             app.root.focus_force()
             app.root.mainloop()
 
         except Exception as e:
-            logger = system_logger.get_logger()
-            logger.error(f"Erro ao abrir sistema de entrada de dados: {str(e)}", exc_info=True)
-            messagebox.showerror("Erro",
-                "Erro ao abrir sistema de entrada de dados. Por favor, contate o suporte.")
+            simple_logger.error(f"Erro ao abrir sistema de entrada de dados: {str(e)}")
+            messagebox.showerror("Erro", "Erro ao abrir sistema de entrada de dados.")
             self.root.deiconify()
 
     def abrir_gestao_taxas(self):
         """Abre o menu de gestão de taxas"""
         try:
-            # Agora chama diretamente o método abrir_janela_controle do ControladorTaxas
             self.controlador_taxas.abrir_janela_controle()
         except Exception as e:
-            messagebox.showerror("Erro",
-                f"Erro ao abrir gestão de taxas: {str(e)}")
+            simple_logger.error(f"Erro ao abrir gestão de taxas: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir gestão de taxas: {str(e)}")
 
     @log_action("Gerar relatório")
     def abrir_relatorios(self):
         """Abre o sistema integrado de relatórios"""
         try:
-            # Importar o novo módulo de sistema de relatórios
             modulo = self.reload_module('relatorios_interface')
             if not modulo:
-                # Fallback para o sistema de relatórios antigo
                 modulo = self.reload_module('relatorio_despesas_aprimorado')
                 if not modulo:
                     messagebox.showerror("Erro", "Não foi possível carregar o módulo de relatórios.")
                     return
                 
-                # Se o sistema integrado falhou, mas o módulo de relatório de despesas funcionou
                 self.root.withdraw()
                 relatorio_window = tk.Toplevel(self.root)
-                
                 app = modulo.RelatorioUI(relatorio_window)
                 app.menu_principal = self.root
-                
                 relatorio_window.protocol("WM_DELETE_WINDOW", 
                     lambda: self.finalizar_sistema(relatorio_window))
-                
                 relatorio_window.lift()
                 relatorio_window.focus_force()
                 relatorio_window.mainloop()
                 return
                 
-            # Se o sistema integrado foi carregado com sucesso
             self.root.withdraw()
-            
-            # Iniciar o sistema de relatórios integrado
             app = modulo.SistemaRelatorios(parent=self.root)
-            
-            # Definir comportamento ao fechar
             app.root.protocol("WM_DELETE_WINDOW", 
                 lambda: self.finalizar_sistema(app.root))
-            
-            # Exibir janela
             app.root.lift()
             app.root.focus_force()
             app.run()
             
         except Exception as e:
-            messagebox.showerror("Erro",
-                f"Erro ao abrir sistema de relatórios: {str(e)}")
+            simple_logger.error(f"Erro ao abrir sistema de relatórios: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir sistema de relatórios: {str(e)}")
             self.root.deiconify()
 
     def abrir_despesas_rateadas(self):
@@ -467,94 +399,74 @@ class SistemaPrincipal:
 
             self.root.withdraw()
             rateio_window = tk.Toplevel(self.root)
-            
             app = modulo.InterfaceDespesasRateadas(rateio_window)
             app.menu_principal = self.root
-            
             rateio_window.protocol("WM_DELETE_WINDOW", 
                 lambda: self.finalizar_sistema(rateio_window))
-            
             rateio_window.lift()
             rateio_window.focus_force()
             rateio_window.mainloop()
             
         except Exception as e:
-            messagebox.showerror("Erro",
-                f"Erro ao abrir sistema de despesas rateadas: {str(e)}")
+            simple_logger.error(f"Erro ao abrir sistema de despesas rateadas: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir sistema de despesas rateadas: {str(e)}")
             self.root.deiconify()
 
     def abrir_gestao_medicoes(self):
         """Abre o sistema de gestão de medições"""
         try:
-            # Recarregar o módulo para garantir que as alterações sejam aplicadas
             modulo = self.reload_module('gestao_medicoes')
             if not modulo:
                 return
 
-            # Inicializar a classe GestaoMedicoes
-            self.root.withdraw()  # Ocultar a janela principal
-            app = modulo.GestaoMedicoes(parent=self.root)  # Passar self.root como parent
-            
-            # Configurar o comportamento ao fechar a janela
+            self.root.withdraw()
+            app = modulo.GestaoMedicoes(parent=self.root)
             app.root.protocol("WM_DELETE_WINDOW", 
                 lambda: self.finalizar_sistema(app.root))
-            
-            # Exibir a janela
             app.root.lift()
             app.root.focus_force()
             app.root.mainloop()
             
         except Exception as e:
-            # Exibir mensagem de erro e reexibir a janela principal
+            simple_logger.error(f"Erro ao abrir sistema de gestão de medições: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao abrir sistema de gestão de medições: {str(e)}")
             self.root.deiconify()
 
-
     def reload_module(self, module_name):
-        """
-        Recarrega um módulo e retorna a versão atualizada
-        Args:
-            module_name (str): Nome do módulo a ser recarregado
-        Returns:
-            module: Módulo recarregado
-        """
+        """Recarrega um módulo e retorna a versão atualizada"""
         try:
-            # Remover todas as referências ao módulo e seus submódulos
+            # Remover todas as referências ao módulo
             for key in list(sys.modules.keys()):
                 if key == module_name or key.startswith(f"{module_name}."):
                     del sys.modules[key]
             
-            # Importar o módulo novamente
             module = importlib.import_module(module_name)
             return module
         except Exception as e:
+            simple_logger.error(f"Erro ao carregar módulo {module_name}: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao carregar módulo {module_name}: {str(e)}")
             return None
-        
 
     def abrir_configuracoes(self):
         try:
             from configuracoes_sistema import GerenciadorConfiguracoes
             self.root.withdraw()
             app = GerenciadorConfiguracoes(parent=self.root)
-            app.menu_principal = self.root  # Passa a referência correta do menu principal
+            app.menu_principal = self.root
             app.root.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(app.root))
             app.run()
         except Exception as e:
+            simple_logger.error(f"Erro ao abrir configurações: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao abrir configurações do sistema: {str(e)}")
             self.root.deiconify()
 
-
     def finalizar_sistema(self, janela):
         """Fecha a janela do sistema e mostra a janela principal"""
-        print("Finalizando janela secundária...")
         try:
-            # Primeiro destruir a janela
             janela.destroy()
         except Exception as e:
-            print(f"Erro ao destruir janela: {str(e)}")
+            simple_logger.error(f"Erro ao destruir janela: {str(e)}")
         
-        # Mostrar a janela principal novamente
         self.root.deiconify()
         self.root.lift()
         self.root.focus_force()
@@ -562,70 +474,25 @@ class SistemaPrincipal:
     def sair_sistema(self):
         """Fecha o sistema após confirmação"""
         if messagebox.askyesno("Confirmar Saída", "Deseja realmente sair do sistema?"):
-            print("Saída confirmada, finalizando sistema...")
+            simple_logger.info("Saída confirmada, finalizando sistema")
             self.root.destroy()
-            # Aguardar brevemente antes de forçar a saída
             self.root.after(200, force_exit)
 
     def run(self):
         """Inicia a execução do sistema"""
         self.root.mainloop()
 
-
-class OutputManager:
-    def __init__(self, logger=None):
-        self.dev_mode = os.getenv('DEV_MODE', 'False').lower() == 'true'
-        self.logger = logger
-        
-        # Remover redirecionamento de output que está causando problemas
-        self.stdout_buffer = None
-        self.stderr_buffer = None
-        self.original_stdout = None
-        self.original_stderr = None
-    
-    def start(self):
-        """Método simplificado que não faz redirecionamento"""
-        pass
-    
-    def stop(self):
-        """Método simplificado que não faz redirecionamento"""
-        pass
-    
-    def get_output(self):
-        """Retorna None em vez de tentar acessar buffers"""
-        return None
-
 def main():
-    # Tentar importar o logger, mas criar substituto se falhar
+    """Função principal"""
     try:
-        from src.config.logger_config import system_logger
-    except ImportError:
-        # Criar logger substituto simples
-        import logging
-        class SimpleLogger:
-            def __init__(self):
-                self.logger = logging.getLogger("sistema")
-                handler = logging.StreamHandler()
-                self.logger.addHandler(handler)
-                self.log_format = "%(asctime)s - %(levelname)s - %(message)s"
-            
-            def get_logger(self):
-                return self.logger
-                
-            def set_user(self, username):
-                pass
-        
-        system_logger = SimpleLogger()
-    
-    # Não usar o OutputManager para redirecionamento
-    try:
+        simple_logger.info("=== Iniciando Sistema de Gestão Financeira ===")
         app = SistemaPrincipal()
         app.run()
     except Exception as e:
+        simple_logger.error(f"Erro crítico no sistema principal: {str(e)}")
         print(f"Erro no sistema principal: {str(e)}")
         import traceback
         traceback.print_exc()
 
-# Executar o aplicativo
 if __name__ == "__main__":
     main()
