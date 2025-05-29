@@ -474,6 +474,25 @@ class RelatorioTipoDespesa:
                         messagebox.showerror("Erro", f"A coluna '{coluna}' não foi encontrada na aba Dados!")
                         return False
                 
+                # Filtrar apenas lançamentos ativos
+                if 'STATUS' in self.df_despesas.columns:
+                    # Filtrar apenas registros com STATUS = 'ATIVO'
+                    df_original_len = len(self.df_despesas)
+                    self.df_despesas = self.df_despesas[
+                        self.df_despesas['STATUS'].str.upper().str.strip() == 'ATIVO'
+                    ].copy()
+                    df_filtrado_len = len(self.df_despesas)
+                    
+                    print(f"Cliente {self.cliente_atual}: {df_original_len} registros totais, {df_filtrado_len} ativos processados")
+                    
+                    # Se não há registros ativos, mostrar aviso
+                    if self.df_despesas.empty:
+                        messagebox.showinfo("Aviso", f"Nenhum lançamento ativo encontrado para o cliente {self.cliente_atual}")
+                        return False
+                else:
+                    # Se não existe a coluna STATUS, processar todos (compatibilidade)
+                    print(f"Cliente {self.cliente_atual}: Coluna STATUS não encontrada, processando todos os registros")
+
                 # Converter DATA_REL para datetime
                 self.df_despesas['DATA_REL'] = pd.to_datetime(self.df_despesas['DATA_REL'], errors='coerce')
                 
