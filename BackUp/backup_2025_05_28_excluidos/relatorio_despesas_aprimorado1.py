@@ -216,33 +216,32 @@ class RelatorioUI:
 
             logger.info(f"Iniciando geração de relatório para arquivo: {self.arquivo_path}")
             data_rel = datetime.strptime(self.data_selecionada.get(), '%d/%m/%Y')
-                
-            # Carregar e processar dados
-            df = self.handler.carregar_dados_excel(self.arquivo_path)
             
-            # Se o usuário optou por incluir excluídos, recarregar sem filtro
-            if hasattr(self, 'incluir_excluidos') and self.incluir_excluidos.get():
-                df_original = pd.read_excel(self.arquivo_path, sheet_name='Dados')
-                df_original = df_original.fillna("")
-                if 'STATUS' not in df_original.columns:
-                    df_original['STATUS'] = 'ATIVO'
-                df = df_original
-            
-            df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.handler.processar_dados(df, data_rel)
+            # CORREÇÃO: Verificar se deve incluir excluídos
+            incluir_excluidos = hasattr(self, 'incluir_excluidos') and self.incluir_excluidos.get()
+            logger.info(f"Incluir excluídos: {incluir_excluidos}")
                 
-            # Processar lançamentos futuros
+            # CORREÇÃO: Carregar dados passando o parâmetro incluir_excluidos
+            df = self.handler.carregar_dados_excel(self.arquivo_path, incluir_excluidos)
+            
+            # CORREÇÃO: Processar dados passando o parâmetro incluir_excluidos
+            df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.handler.processar_dados(
+                df, data_rel, incluir_excluidos
+            )
+                
+            # CORREÇÃO: Processar lançamentos futuros passando o parâmetro incluir_excluidos
             df_futuro = None
             if self.incluir_futuros.get():
-                df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel)
+                df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
                     
             # Processar workbook
             workbook = load_workbook(self.arquivo_path, data_only=True)
             ws_resumo = workbook['RESUMO']
             nome_cliente = ws_resumo['A3'].value
                 
-            # Obter número do relatório e valor acumulado
+            # CORREÇÃO: Obter número do relatório e valor acumulado passando o parâmetro incluir_excluidos
             numero_relatorio = self.handler.obter_numero_relatorio(ws_resumo, data_rel)
-            valor_acumulado = self.handler.calcular_acumulado_dados(df, data_rel)
+            valor_acumulado = self.handler.calcular_acumulado_dados(df, data_rel, incluir_excluidos)
             
             logger.info(f"Número do relatório: {numero_relatorio}")
             logger.info(f"Valor acumulado calculado: {valor_acumulado:,.2f}")
@@ -255,7 +254,7 @@ class RelatorioUI:
                 'df_futuro': df_futuro,
                 'df_original': df,
                 'incluir_futuros': self.incluir_futuros.get(),
-                'incluir_excluidos': getattr(self, 'incluir_excluidos', BooleanVar(value=False)).get(),
+                'incluir_excluidos': incluir_excluidos,
                 'data_relatorio': data_rel,
                 'nome_cliente': nome_cliente,
                 'endereco_cliente': ws_resumo['A4'].value,
@@ -271,8 +270,8 @@ class RelatorioUI:
             data_formatada = data_rel.strftime('%d-%m-%Y')
             nome_arquivo = f"REL - {nome_cliente} - {data_formatada}.pdf"
             
-            # Adicionar sufixo se incluir excluídos
-            if dados_completos['incluir_excluidos']:
+            # CORREÇÃO: Adicionar sufixo se incluir excluídos
+            if incluir_excluidos:
                 nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
                 
             caminho_output = os.path.join(os.path.dirname(self.arquivo_path), nome_arquivo)
@@ -287,11 +286,15 @@ class RelatorioUI:
             logger.error(f"Erro ao gerar relatório: {str(e)}", exc_info=True)
             self.status_label.config(text=f"Erro: {str(e)}")
 
-
+    # CORREÇÃO NO MÉTODO processar_lote da classe RelatorioUI
     def processar_lote(self, arquivos):
         """Processa arquivos em lote"""
         try:
             logger.info(f"Iniciando processamento em lote de {len(arquivos)} arquivos")
+            
+            # CORREÇÃO: Verificar se deve incluir excluídos
+            incluir_excluidos = hasattr(self, 'incluir_excluidos') and self.incluir_excluidos.get()
+            logger.info(f"Lote - Incluir excluídos: {incluir_excluidos}")
 
             progress_window = Toplevel(self.root)
             progress_window.title("Gerando Relatórios em Lote")
@@ -329,18 +332,20 @@ class RelatorioUI:
                         
                         data_rel = datetime.strptime(self.data_selecionada.get(), '%d/%m/%Y')
                         
-                        # Carregar dados usando handler
-                        df = self.handler.carregar_dados_excel(arquivo)
-                        df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.handler.processar_dados(df, data_rel)
+                        # CORREÇÃO: Carregar dados usando parâmetro incluir_excluidos
+                        df = self.handler.carregar_dados_excel(arquivo, incluir_excluidos)
+                        df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.handler.processar_dados(
+                            df, data_rel, incluir_excluidos
+                        )
                         
-                        # Processar lançamentos futuros
+                        # CORREÇÃO: Processar lançamentos futuros
                         df_futuro = None
                         if self.incluir_futuros.get():
-                            df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel)
+                            df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
                         
-                        # Obter número do relatório e valor acumulado
+                        # CORREÇÃO: Obter valor acumulado
                         numero_relatorio = self.handler.obter_numero_relatorio(ws_resumo, data_rel)
-                        valor_acumulado = self.handler.calcular_acumulado_dados(df, data_rel)
+                        valor_acumulado = self.handler.calcular_acumulado_dados(df, data_rel, incluir_excluidos)
                         
                         logger.info(f"Arquivo: {arquivo_nome}")
                         logger.info(f"Número do relatório: {numero_relatorio}")
@@ -354,6 +359,7 @@ class RelatorioUI:
                             'df_futuro': df_futuro,
                             'df_original': df,
                             'incluir_futuros': self.incluir_futuros.get(),
+                            'incluir_excluidos': incluir_excluidos,
                             'data_relatorio': data_rel,
                             'nome_cliente': nome_cliente,
                             'endereco_cliente': ws_resumo['A4'].value,
@@ -364,6 +370,11 @@ class RelatorioUI:
                         # Gerar nome do arquivo
                         data_formatada = data_rel.strftime('%d-%m-%Y')
                         nome_arquivo = f"REL - {nome_cliente} - {data_formatada}.pdf"
+                        
+                        # CORREÇÃO: Adicionar sufixo se incluir excluídos
+                        if incluir_excluidos:
+                            nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
+                            
                         caminho_output = os.path.join(os.path.dirname(arquivo), nome_arquivo)
                         
                         # Gerar relatório
@@ -393,8 +404,6 @@ class RelatorioUI:
         except Exception as e:
             logger.error(f"Erro no processamento em lote: {str(e)}", exc_info=True)
             raise
-
-
         
     def gerar_relatorio_lote():
         try:
@@ -796,9 +805,9 @@ class RelatorioHandler:
             logger.error(f"Erro ao obter número do relatório: {str(e)}", exc_info=True)
             return 1
 
-    def calcular_acumulado_dados(self, df, data_relatorio):
+    def calcular_acumulado_dados(self, df, data_relatorio, incluir_excluidos=False):
         """
-        Versão modificada que considera apenas registros ativos
+        Versão modificada que considera apenas registros ativos ou todos dependendo da opção
         """
         try:
             logger.info(f"Calculando acumulado para data {data_relatorio}")
@@ -806,9 +815,12 @@ class RelatorioHandler:
             # Criar cópia do DataFrame
             df = df.copy()
             
-            # Filtrar apenas registros ativos
-            if 'STATUS' in df.columns:
+            # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
+            if not incluir_excluidos and 'STATUS' in df.columns:
                 df = df[df['STATUS'] != 'EXCLUIDO'].copy()
+                logger.info(f"Acumulado - registros após filtrar excluídos: {len(df)}")
+            else:
+                logger.info(f"Acumulado - incluindo todos os registros: {len(df)}")
             
             if 'VALOR' not in df.columns:
                 logger.error("Coluna 'VALOR' não encontrada no DataFrame")
@@ -841,7 +853,8 @@ class RelatorioHandler:
             # Calcular soma
             valor_acumulado = float(df_anterior['VALOR_NUMERICO'].sum())
             
-            logger.info(f"Valor acumulado calculado (apenas ativos): {valor_acumulado:,.2f}")
+            status_info = "incluindo excluídos" if incluir_excluidos else "apenas ativos"
+            logger.info(f"Valor acumulado calculado ({status_info}): {valor_acumulado:,.2f}")
             logger.debug(f"Total de registros considerados: {len(df_anterior)}")
             
             return valor_acumulado
@@ -850,7 +863,7 @@ class RelatorioHandler:
             logger.error(f"Erro ao calcular acumulado: {str(e)}", exc_info=True)
             return 0.0
 
-    def carregar_dados_excel(self, arquivo_excel):
+    def carregar_dados_excel(self, arquivo_excel, incluir_excluidos=False):
         """Versão modificada que considera status de exclusão"""
         try:
             df = pd.read_excel(arquivo_excel, sheet_name='Dados')
@@ -865,8 +878,12 @@ class RelatorioHandler:
             if 'STATUS' not in df.columns:
                 df['STATUS'] = 'ATIVO'
             
-            # Filtrar apenas registros ativos
-            df = df[df['STATUS'] != 'EXCLUIDO'].copy()
+            # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
+            if not incluir_excluidos:
+                df = df[df['STATUS'] != 'EXCLUIDO'].copy()
+                print(f"Registros após filtrar excluídos: {len(df)}")
+            else:
+                print(f"Incluindo todos os registros (incluindo excluídos): {len(df)}")
             
             # Converter NF para string antes de processar
             df['NF'] = df['NF'].astype(str)
@@ -882,9 +899,8 @@ class RelatorioHandler:
             
         except Exception as e:
             raise Exception(f"Erro ao carregar arquivo Excel: {str(e)}")
-        
-          
-    def processar_dados(self, df, data_relatorio):
+
+    def processar_dados(self, df, data_relatorio, incluir_excluidos=False):
         """Versão modificada que considera status de exclusão"""
         # Converter data para datetime usando formato explícito
         try:
@@ -896,9 +912,12 @@ class RelatorioHandler:
         # Criar cópia do DataFrame para não modificar o original
         df = df.copy()
         
-        # Filtrar apenas registros ativos
-        if 'STATUS' in df.columns:
+        # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
+        if not incluir_excluidos and 'STATUS' in df.columns:
             df = df[df['STATUS'] != 'EXCLUIDO'].copy()
+            print(f"Processando dados - registros após filtrar excluídos: {len(df)}")
+        else:
+            print(f"Processando dados - incluindo todos os registros: {len(df)}")
         
         # Converter corretamente a coluna DT_VENCTO para datetime para ordenação
         if 'DT_VENCTO' in df.columns:
@@ -920,7 +939,7 @@ class RelatorioHandler:
             df['DADOS_BANCARIOS_ORIGINAL'] = df['DADOS_BANCARIOS']
             df.loc[df['TP_DESP'].isin([3, 5]), 'DADOS_BANCARIOS'] = ''
 
-        # Filtrar dados (já considerando apenas ativos)
+        # Filtrar dados (considerando a opção de incluir excluídos)
         df_filtrado = df[
             (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] != 1)
@@ -960,7 +979,7 @@ class RelatorioHandler:
         
         return df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2
 
-    def processar_lancamentos_futuros(self, df, data_relatorio):
+    def processar_lancamentos_futuros(self, df, data_relatorio, incluir_excluidos=False):
         """Versão modificada que considera status de exclusão"""
         # Converter a data do relatório para datetime usando formato explícito
         try:
@@ -971,9 +990,12 @@ class RelatorioHandler:
         # Converter a coluna DATA_REL para datetime
         df = df.copy()
         
-        # Filtrar apenas registros ativos
-        if 'STATUS' in df.columns:
+        # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
+        if not incluir_excluidos and 'STATUS' in df.columns:
             df = df[df['STATUS'] != 'EXCLUIDO'].copy()
+            print(f"Lançamentos futuros - registros após filtrar excluídos: {len(df)}")
+        else:
+            print(f"Lançamentos futuros - incluindo todos os registros: {len(df)}")
         
         df['DATA_REL'] = pd.to_datetime(df['DATA_REL'])
         df['DT_VENCTO'] = pd.to_datetime(df['DT_VENCTO'], format='%d/%m/%Y', errors='coerce')

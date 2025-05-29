@@ -1,0 +1,89 @@
+2025-05-27 16:42:20,727 - sistema - Sistema_Entrada_Dados1 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-27 16:42:20,727 - sistema - Sistema_Entrada_Dados1 - INFO - Obtendo dados do visualizador
+2025-05-27 16:42:20,728 - sistema - Sistema_Entrada_Dados1 - INFO - Total de registros a processar: 3
+2025-05-27 16:42:20,728 - sistema - Sistema_Entrada_Dados1 - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 16:42:20,969 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: GERALDO ROSA JUNIOR - SALÁRIO - 2080.00 - NF:  - Vencto: 05/06/2025
+2025-05-27 16:42:20,970 - sistema - Sistema_Entrada_Dados1 - WARNING - Detectados 1 possíveis lançamentos duplicados
+2025-05-27 16:42:34,617 - sistema - Sistema_Entrada_Dados1 - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-27 16:42:51,005 - sistema - Sistema_Entrada_Dados1 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-05-27 16:42:51,006 - sistema - Sistema_Entrada_Dados1 - INFO - Obtendo dados do visualizador
+2025-05-27 16:42:51,007 - sistema - Sistema_Entrada_Dados1 - INFO - Total de registros a processar: 2
+2025-05-27 16:42:51,008 - sistema - Sistema_Entrada_Dados1 - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 16:42:53,571 - sistema - Sistema_Entrada_Dados1 - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-05-27 16:42:53,599 - sistema - Sistema_Entrada_Dados1 - ERROR - Erro ao salvar arquivo: cannot access local variable 'janela_duplicados' where it is not associated with a value
+2025-05-27 17:06:03,669 - sistema - Sistema_Entrada_Dados1 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 4
+2025-05-27 17:06:03,671 - sistema - Sistema_Entrada_Dados1 - INFO - Obtendo dados do visualizador
+2025-05-27 17:06:03,672 - sistema - Sistema_Entrada_Dados1 - INFO - Total de registros a processar: 4
+2025-05-27 17:06:03,672 - sistema - Sistema_Entrada_Dados1 - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 17:06:05,972 - sistema - Sistema_Entrada_Dados1 - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 4
+2025-05-27 17:06:06,011 - sistema - Sistema_Entrada_Dados1 - ERROR - Erro ao salvar arquivo: cannot access local variable 'janela_duplicados' where it is not associated with a value
+2025-05-27 17:16:35,473 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-05-27 17:16:35,474 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-27 17:16:35,475 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-05-27 17:16:35,475 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 17:16:35,679 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ITALO RAFAEL PINHO SANTOS - RESCISÃO - 5199.13 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:16:35,680 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 1 possíveis lançamentos duplicados
+2025-05-27 17:16:39,937 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-27 17:17:34,483 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-05-27 17:17:34,518 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-05-27 17:18:20,768 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-05-27 17:18:22,841 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-05-27 17:18:30,272 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-05-27 17:18:30,273 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-05-27 17:18:30,274 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-05-27 17:18:30,274 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 17:18:32,807 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-05-27 17:18:32,831 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao salvar arquivo: cannot access local variable 'janela_duplicados' where it is not associated with a value
+2025-05-27 17:34:50,411 - sistema - Sistema_Entrada_Dados1 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2025-05-27 17:34:50,412 - sistema - Sistema_Entrada_Dados1 - INFO - Obtendo dados do visualizador
+2025-05-27 17:34:50,413 - sistema - Sistema_Entrada_Dados1 - INFO - Total de registros a processar: 3
+2025-05-27 17:34:50,413 - sistema - Sistema_Entrada_Dados1 - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 17:34:50,655 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: ITALO RAFAEL PINHO SANTOS - RESCISÃO - 5199.13 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:34:50,656 - sistema - Sistema_Entrada_Dados1 - WARNING - Detectados 1 possíveis lançamentos duplicados
+2025-05-27 17:35:02,675 - sistema - Sistema_Entrada_Dados1 - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-27 17:35:12,363 - sistema - Sistema_Entrada_Dados1 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-05-27 17:35:12,363 - sistema - Sistema_Entrada_Dados1 - INFO - Obtendo dados do visualizador
+2025-05-27 17:35:12,363 - sistema - Sistema_Entrada_Dados1 - INFO - Total de registros a processar: 2
+2025-05-27 17:35:12,364 - sistema - Sistema_Entrada_Dados1 - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 17:35:15,065 - sistema - Sistema_Entrada_Dados1 - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-05-27 17:35:30,643 - sistema - Sistema_Entrada_Dados1 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 7
+2025-05-27 17:35:30,643 - sistema - Sistema_Entrada_Dados1 - INFO - Obtendo dados do visualizador
+2025-05-27 17:35:30,644 - sistema - Sistema_Entrada_Dados1 - INFO - Total de registros a processar: 7
+2025-05-27 17:35:30,644 - sistema - Sistema_Entrada_Dados1 - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 17:35:30,833 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: DAVID LOPES DOS SANTOS - SALÁRIO - 1511.76 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:35:30,845 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: SONEANDERSON DE JESUS SOUZA - SALÁRIO - 743.26 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:35:30,851 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: MARCOS VIANA FREITAS - RESCISÃO - 1603.83 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:35:30,859 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: PEDRO HENRIQUE LOPES DOS SANTOS - RESCISÃO - 6047.20 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:35:30,866 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: RODOLFO DIAS DA SILVA - RESCISÃO - 6347.08 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:35:30,877 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: ITALO RAFAEL PINHO SANTOS - RESCISÃO - 5199.13 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:35:30,878 - sistema - Sistema_Entrada_Dados1 - WARNING - Detectados 6 possíveis lançamentos duplicados
+2025-05-27 17:35:58,259 - sistema - Sistema_Entrada_Dados1 - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-27 17:36:56,530 - sistema - Sistema_Entrada_Dados1 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 7
+2025-05-27 17:36:56,531 - sistema - Sistema_Entrada_Dados1 - INFO - Obtendo dados do visualizador
+2025-05-27 17:36:56,532 - sistema - Sistema_Entrada_Dados1 - INFO - Total de registros a processar: 7
+2025-05-27 17:36:56,532 - sistema - Sistema_Entrada_Dados1 - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 17:36:56,732 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: DAVID LOPES DOS SANTOS - SALÁRIO - 1511.76 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:36:56,742 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: SONEANDERSON DE JESUS SOUZA - SALÁRIO - 743.26 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:36:56,747 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: MARCOS VIANA FREITAS - RESCISÃO - 1603.83 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:36:56,756 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: PEDRO HENRIQUE LOPES DOS SANTOS - RESCISÃO - 6047.20 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:36:56,767 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: RODOLFO DIAS DA SILVA - RESCISÃO - 6347.08 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:36:56,773 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: ITALO RAFAEL PINHO SANTOS - RESCISÃO - 5199.13 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:36:56,773 - sistema - Sistema_Entrada_Dados1 - WARNING - Detectados 6 possíveis lançamentos duplicados
+2025-05-27 17:37:11,312 - sistema - Sistema_Entrada_Dados1 - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-27 17:38:31,201 - sistema - Sistema_Entrada_Dados1 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 7
+2025-05-27 17:38:31,202 - sistema - Sistema_Entrada_Dados1 - INFO - Obtendo dados do visualizador
+2025-05-27 17:38:31,203 - sistema - Sistema_Entrada_Dados1 - INFO - Total de registros a processar: 7
+2025-05-27 17:38:31,204 - sistema - Sistema_Entrada_Dados1 - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 17:38:31,400 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: DAVID LOPES DOS SANTOS - SALÁRIO - 1511.76 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:38:31,411 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: SONEANDERSON DE JESUS SOUZA - SALÁRIO - 743.26 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:38:31,417 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: MARCOS VIANA FREITAS - RESCISÃO - 1603.83 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:38:31,426 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: PEDRO HENRIQUE LOPES DOS SANTOS - RESCISÃO - 6047.20 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:38:31,433 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: RODOLFO DIAS DA SILVA - RESCISÃO - 6347.08 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:38:31,440 - sistema - Sistema_Entrada_Dados1 - WARNING - Duplicata detectada: ITALO RAFAEL PINHO SANTOS - RESCISÃO - 5199.13 - NF:  - Vencto: 05/06/2025
+2025-05-27 17:38:31,441 - sistema - Sistema_Entrada_Dados1 - WARNING - Detectados 6 possíveis lançamentos duplicados
+2025-05-27 17:38:56,442 - sistema - Sistema_Entrada_Dados1 - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-05-27 17:39:26,193 - sistema - Sistema_Entrada_Dados1 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-05-27 17:39:26,194 - sistema - Sistema_Entrada_Dados1 - INFO - Obtendo dados do visualizador
+2025-05-27 17:39:26,194 - sistema - Sistema_Entrada_Dados1 - INFO - Total de registros a processar: 1
+2025-05-27 17:39:26,195 - sistema - Sistema_Entrada_Dados1 - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-05-27 17:39:28,631 - sistema - Sistema_Entrada_Dados1 - INFO - Dados salvos com sucesso - Cliente: BRUNO SANTANA RINALDI, Registros: 1
