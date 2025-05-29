@@ -4,12 +4,14 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from datetime import datetime
 import pandas as pd
+import numpy as np
 from pathlib import Path
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.ticker as mticker
 
 # Adicionar diretório raiz ao path para importar módulos corretamente
 def add_project_root():
@@ -24,7 +26,7 @@ add_project_root()
 
 # Importar configurações
 try:
-    from config.config import (
+    from src.config.config import (
         ARQUIVO_CLIENTES,
         PASTA_CLIENTES,
         BASE_PATH
@@ -37,8 +39,11 @@ except ImportError as e:
     ARQUIVO_CLIENTES = BASE_PATH / "dados" / "clientes.xlsx"
     PASTA_CLIENTES = BASE_PATH / "dados" / "clientes"
 
+# Importar o utils.py
+from src.config.utils import atualizar_combobox_clientes, cliente_esta_ativo, obter_info_cliente
+
 try:
-    from config.window_config import configurar_janela
+    from src.config.window_config import configurar_janela
     print("window_config importado com sucesso")
 except ImportError as e:
     print(f"Erro ao importar window_config: {str(e)}")
@@ -56,7 +61,7 @@ except ImportError as e:
         y = (janela.winfo_screenheight() // 2) - (height // 2)
         janela.geometry(f'{width}x{height}+{x}+{y}')
 
-# Importar funções auxiliares ou definir aqui
+# Funções auxiliares
 def formatar_moeda_br(valor):
     """Formata um valor numérico como moeda brasileira"""
     try:
@@ -66,7 +71,8 @@ def formatar_moeda_br(valor):
         return f"R$ 0,00"
 
 class RelatorioCategoria:
-    """Classe base para implementação de relatórios"""
+    """Classe para geração de relatórios por categoria de despesa"""
+    
     def __init__(self, parent=None):
         """Inicializa a interface do relatório"""
         self.parent = parent
@@ -78,16 +84,31 @@ class RelatorioCategoria:
             self.root = tk.Tk()
             self.menu_principal = None
             
-        configurar_janela(self.root, "Relatório Relatório por Categoria", 900, 1000)
+        configurar_janela(self.root, "Relatório por Categoria de Despesa", 1200, 1000)
+        
+        # Definição das categorias de despesa
+        self.categorias_despesas = {
+            'ADM': "ADMINISTRATIVO",
+            'DIV': "DIVERSOS",
+            'LOC': "LOCAÇÃO", 
+            'MAT': "MATERIAL", 
+            'MO': "MÃO-DE-OBRA", 
+            'SERV': "SERVIÇOS",
+            'TP': "TARIFAS/TRIBUTOS PÚBLICOS"
+        }
         
         # Configuração de variáveis
         self.cliente_atual = None
         self.arquivo_cliente = None
         self.data_referencia = datetime.now()
+        self.df_despesas = None
+        self.df_por_data = None
+        self.data_selecionada = None
+        self.dados_grafico = {}
         
         # Configurar interface
         self.setup_gui()
-        
+    
     def setup_gui(self):
         """Configuração da interface gráfica principal"""
         # Frame principal
@@ -107,35 +128,9 @@ class RelatorioCategoria:
         self.cliente_combobox.pack(side='left', padx=5)
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.selecionar_cliente)
         
-        # Container para data
+        # Container para botão de gerar relatório
         frame_data = ttk.Frame(self.frame_selecao)
         frame_data.pack(fill='x', padx=10, pady=10)
-        
-        ttk.Label(frame_data, text="Data de Referência:", font=('Arial', 11)).pack(side='left', pady=5)
-        
-        # Usar DateEntry se disponível, caso contrário usar Entry simples
-        try:
-            from tkcalendar import DateEntry
-            self.data_entry = DateEntry(
-                frame_data, 
-                width=12,
-                background='darkblue',
-                foreground='white',
-                borderwidth=2,
-                date_pattern='dd/mm/yyyy',
-                locale='pt_BR',
-                font=('Arial', 11)
-            )
-            self.data_entry.pack(side='left', padx=5)
-            self.data_entry.set_date(datetime.now())
-        except ImportError:
-            self.data_var = tk.StringVar(value=datetime.now().strftime('%d/%m/%Y'))
-            ttk.Entry(
-                frame_data,
-                textvariable=self.data_var,
-                width=12,
-                font=('Arial', 11)
-            ).pack(side='left', padx=5)
         
         # Botão de gerar relatório
         ttk.Button(
@@ -195,9 +190,9 @@ class RelatorioCategoria:
         
         # Carregar lista de clientes
         self.atualizar_lista_clientes()
-        
+    
     def setup_aba_resumo(self):
-        """Configura a aba de resumo do relatório"""
+        """Configura a aba de resumo do relatório por data e categoria de despesa"""
         # Frame para informações do cliente
         frame_info = ttk.Frame(self.aba_resumo, padding=5)
         frame_info.pack(fill='x', pady=5)
@@ -218,18 +213,148 @@ class RelatorioCategoria:
         )
         self.lbl_data_resumo.pack(side='left', padx=10)
         
-        # Adicionar elementos específicos para resumo
-        # IMPLEMENTE AQUI OS ELEMENTOS ESPECÍFICOS
-        pass
+        # Frame para o TreeView com os dados por data
+        frame_resumo = ttk.Frame(self.aba_resumo, padding=5)
+        frame_resumo.pack(fill='both', expand=True, pady=5)
+        
+        # Criar TreeView para os dados por data
+        # Colunas: 'data', categorias (ADM, DIV, LOC, MAT, MO, SERV, TP), 'total'
+        colunas = ['data']
+        for categoria in self.categorias_despesas.keys():
+            colunas.append(f'cat_{categoria}')
+        colunas.append('total')
+        
+        self.tv_resumo = ttk.Treeview(frame_resumo, columns=colunas, show='headings', height=15)
+        
+        # Configurar cabeçalhos
+        self.tv_resumo.heading('data', text='Data')
+        for categoria in self.categorias_despesas.keys():
+            # Usar a sigla da categoria para o cabeçalho
+            self.tv_resumo.heading(f'cat_{categoria}', text=categoria)
+            
+        self.tv_resumo.heading('total', text='Total (R$)')
+        
+        # Configurar colunas
+        self.tv_resumo.column('data', width=100, anchor='center')
+        for categoria in self.categorias_despesas.keys():
+            self.tv_resumo.column(f'cat_{categoria}', width=100, anchor='e', stretch=True)
+        self.tv_resumo.column('total', width=120, anchor='e')
+        
+        # Configurar scrollbars
+        scrollbar_y = ttk.Scrollbar(frame_resumo, orient='vertical', command=self.tv_resumo.yview)
+        scrollbar_x = ttk.Scrollbar(frame_resumo, orient='horizontal', command=self.tv_resumo.xview)
+        self.tv_resumo.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+        
+        # Adicionar à tela
+        self.tv_resumo.pack(side='top', fill='both', expand=True)
+        scrollbar_y.pack(side='right', fill='y')
+        scrollbar_x.pack(side='bottom', fill='x')
+        
+        # Adicionar evento de seleção
+        self.tv_resumo.bind('<<TreeviewSelect>>', self.selecionar_data)
+        
+        # Frame para resumo de totais
+        frame_totais = ttk.LabelFrame(self.aba_resumo, text="Resumo Financeiro", padding=10)
+        frame_totais.pack(fill='x', pady=10, padx=10)
+        
+        # Adicionar labels para total geral
+        ttk.Label(frame_totais, text="Total de Despesas:", font=('Arial', 11, 'bold')).grid(row=0, column=0, sticky='e', padx=5, pady=5)
+        self.lbl_total_geral = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 11))
+        self.lbl_total_geral.grid(row=0, column=1, sticky='w', padx=5, pady=5)
+        
+        ttk.Label(frame_totais, text="Número de Datas:", font=('Arial', 11, 'bold')).grid(row=1, column=0, sticky='e', padx=5, pady=5)
+        self.lbl_num_datas = ttk.Label(frame_totais, text="0", font=('Arial', 11))
+        self.lbl_num_datas.grid(row=1, column=1, sticky='w', padx=5, pady=5)
+        
+        ttk.Label(frame_totais, text="Média por Data:", font=('Arial', 11, 'bold')).grid(row=0, column=2, sticky='e', padx=5, pady=5)
+        self.lbl_media_data = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 11))
+        self.lbl_media_data.grid(row=0, column=3, sticky='w', padx=5, pady=5)
+        
+        ttk.Label(frame_totais, text="Data de Maior Valor:", font=('Arial', 11, 'bold')).grid(row=1, column=2, sticky='e', padx=5, pady=5)
+        self.lbl_maior_data = ttk.Label(frame_totais, text="Nenhuma", font=('Arial', 11))
+        self.lbl_maior_data.grid(row=1, column=3, sticky='w', padx=5, pady=5)
     
     def setup_aba_detalhes(self):
-        """Configura a aba de detalhes do relatório"""
-        # Adicionar elementos específicos para detalhes
-        # IMPLEMENTE AQUI OS ELEMENTOS ESPECÍFICOS
-        pass
+        """Configura a aba de detalhes do relatório para a data selecionada"""
+        # Frame para informações da data selecionada
+        frame_info_data = ttk.Frame(self.aba_detalhes, padding=5)
+        frame_info_data.pack(fill='x', pady=5)
+        
+        self.lbl_data_detalhe = ttk.Label(
+            frame_info_data, 
+            text="Data Selecionada: Nenhuma", 
+            font=('Arial', 12, 'bold'),
+            foreground='#0056b3'
+        )
+        self.lbl_data_detalhe.pack(side='left', padx=10)
+        
+        self.lbl_total_data_detalhe = ttk.Label(
+            frame_info_data, 
+            text="Total: R$ 0,00", 
+            font=('Arial', 12, 'bold'),
+            foreground='#0056b3'
+        )
+        self.lbl_total_data_detalhe.pack(side='left', padx=10)
+        
+        # Frame para a tabela de detalhes
+        frame_tabela = ttk.Frame(self.aba_detalhes, padding=5)
+        frame_tabela.pack(fill='both', expand=True, pady=5)
+        
+        # Criar TreeView para os lançamentos da data selecionada
+        colunas = ('data', 'categoria', 'nome', 'referencia', 'dt_vencto', 'valor', 'observacao')
+        self.tv_detalhes = ttk.Treeview(frame_tabela, columns=colunas, show='headings', height=15)
+        
+        # Configurar cabeçalhos
+        self.tv_detalhes.heading('data', text='Data')
+        self.tv_detalhes.heading('categoria', text='Categoria')
+        self.tv_detalhes.heading('nome', text='Nome')
+        self.tv_detalhes.heading('referencia', text='Referência')
+        self.tv_detalhes.heading('dt_vencto', text='Data Vencto')
+        self.tv_detalhes.heading('valor', text='Valor (R$)')
+        self.tv_detalhes.heading('observacao', text='Observação')
+        
+        # Configurar colunas
+        self.tv_detalhes.column('data', width=80, anchor='center')
+        self.tv_detalhes.column('categoria', width=90, anchor='center')
+        self.tv_detalhes.column('nome', width=180, anchor='w')
+        self.tv_detalhes.column('referencia', width=220, anchor='w')
+        self.tv_detalhes.column('dt_vencto', width=80, anchor='center')
+        self.tv_detalhes.column('valor', width=120, anchor='e')
+        self.tv_detalhes.column('observacao', width=180, anchor='w')
+        
+        # Configurar scrollbars
+        scrollbar_y = ttk.Scrollbar(frame_tabela, orient='vertical', command=self.tv_detalhes.yview)
+        scrollbar_x = ttk.Scrollbar(frame_tabela, orient='horizontal', command=self.tv_detalhes.xview)
+        self.tv_detalhes.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+        
+        # Adicionar à tela
+        self.tv_detalhes.pack(side='top', fill='both', expand=True)
+        scrollbar_y.pack(side='right', fill='y')
+        scrollbar_x.pack(side='bottom', fill='x')
+        
+        # Frame para estatísticas da data
+        frame_stats = ttk.LabelFrame(self.aba_detalhes, text="Estatísticas", padding=10)
+        frame_stats.pack(fill='x', pady=10, padx=10)
+        
+        # Adicionar labels para estatísticas
+        ttk.Label(frame_stats, text="Número de Lançamentos:", font=('Arial', 11, 'bold')).grid(row=0, column=0, sticky='e', padx=5, pady=5)
+        self.lbl_num_lancamentos = ttk.Label(frame_stats, text="0", font=('Arial', 11))
+        self.lbl_num_lancamentos.grid(row=0, column=1, sticky='w', padx=5, pady=5)
+        
+        ttk.Label(frame_stats, text="Média por Lançamento:", font=('Arial', 11, 'bold')).grid(row=0, column=2, sticky='e', padx=5, pady=5)
+        self.lbl_media_lancamento = ttk.Label(frame_stats, text="R$ 0,00", font=('Arial', 11))
+        self.lbl_media_lancamento.grid(row=0, column=3, sticky='w', padx=5, pady=5)
+        
+        ttk.Label(frame_stats, text="Maior Lançamento:", font=('Arial', 11, 'bold')).grid(row=1, column=0, sticky='e', padx=5, pady=5)
+        self.lbl_maior_lancamento = ttk.Label(frame_stats, text="R$ 0,00", font=('Arial', 11))
+        self.lbl_maior_lancamento.grid(row=1, column=1, sticky='w', padx=5, pady=5)
+        
+        ttk.Label(frame_stats, text="Menor Lançamento:", font=('Arial', 11, 'bold')).grid(row=1, column=2, sticky='e', padx=5, pady=5)
+        self.lbl_menor_lancamento = ttk.Label(frame_stats, text="R$ 0,00", font=('Arial', 11))
+        self.lbl_menor_lancamento.grid(row=1, column=3, sticky='w', padx=5, pady=5)
     
     def setup_aba_grafico(self):
-        """Configura a aba de gráficos"""
+        """Configura a aba de gráficos para a data selecionada"""
         # Frame para controles do gráfico
         frame_controles = ttk.Frame(self.aba_grafico, padding=5)
         frame_controles.pack(fill='x', pady=5)
@@ -237,53 +362,66 @@ class RelatorioCategoria:
         ttk.Label(frame_controles, text="Tipo de Gráfico:").pack(side='left', padx=5)
         self.combo_tipo_grafico = ttk.Combobox(frame_controles, values=[
             "Gráfico de Pizza",
-            "Gráfico de Barras",
-            "Gráfico de Linha"
+            "Gráfico de Barras"
         ], state='readonly', width=30)
         self.combo_tipo_grafico.pack(side='left', padx=5)
         self.combo_tipo_grafico.current(0)
         
         ttk.Button(frame_controles, text="Atualizar Gráfico", command=self.atualizar_grafico).pack(side='left', padx=20)
         
+        # Frame para informações da data no gráfico
+        frame_info_grafico = ttk.Frame(self.aba_grafico, padding=5)
+        frame_info_grafico.pack(fill='x', pady=5)
+        
+        self.lbl_data_grafico = ttk.Label(
+            frame_info_grafico, 
+            text="Data Selecionada: Nenhuma", 
+            font=('Arial', 12, 'bold'),
+            foreground='#0056b3'
+        )
+        self.lbl_data_grafico.pack(side='left', padx=10)
+        
         # Frame para o gráfico
         self.frame_grafico = ttk.Frame(self.aba_grafico)
         self.frame_grafico.pack(fill='both', expand=True, pady=5)
-        
+    
     def atualizar_lista_clientes(self):
-        """Atualiza a lista de clientes no combobox"""
+        """Atualiza a lista de clientes no combobox usando a função centralizada"""
         try:
-            # Carregar arquivo de clientes
-            workbook = load_workbook(ARQUIVO_CLIENTES)
-            sheet = workbook['Clientes']  # Assumindo que existe uma aba chamada 'Clientes'
+            # Usar a função centralizada (apenas clientes ativos)
+            self.info_clientes = atualizar_combobox_clientes(self.cliente_combobox, mostrar_inativos=False)
             
-            # Limpar lista atual
-            self.cliente_combobox['values'] = []
-            
-            # Pegar todos os clientes (pulando o cabeçalho)
-            clientes = []
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Nome do cliente está na primeira coluna
-                    clientes.append(row[0])
-            
-            # Atualizar combobox
-            self.cliente_combobox['values'] = sorted(clientes)
-            workbook.close()
-            
-        except FileNotFoundError:
-            messagebox.showerror("Erro", "Arquivo de clientes não encontrado.")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
-    
+
     def selecionar_cliente(self, event=None):
         """Atualiza o cliente selecionado"""
         self.cliente_atual = self.cliente_combobox.get()
         
         if self.cliente_atual:
+            # Verificar se o cliente está ativo (extra proteção)
+            if not cliente_esta_ativo(self.cliente_atual):
+                messagebox.showwarning(
+                    "Cliente Inativo", 
+                    f"O cliente '{self.cliente_atual}' está inativo (contrato finalizado). " +
+                    "Os dados serão mostrados somente para consulta."
+                )
+            
+            # Obter informações do cliente
+            info_cliente = obter_info_cliente(self.cliente_atual)
+            
             # Atualizar label
-            self.lbl_cliente_resumo.config(text=f"Cliente: {self.cliente_atual}")
+            if hasattr(self, 'lbl_cliente_resumo'):
+                texto_cliente = f"Cliente: {self.cliente_atual}"
+                if info_cliente and not info_cliente['ativo']:
+                    texto_cliente += " (INATIVO)"
+                self.lbl_cliente_resumo.config(text=texto_cliente)
             
             # Definir o caminho do arquivo
-            self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
+            if info_cliente and 'arquivo' in info_cliente:
+                self.arquivo_cliente = info_cliente['arquivo']
+            else:
+                self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
     
     def gerar_relatorio(self):
         """Gera o relatório com base nos dados selecionados"""
@@ -291,18 +429,8 @@ class RelatorioCategoria:
             messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
             return
             
-        # Obter data de referência
-        try:
-            # Verificar se estamos usando DateEntry ou Entry
-            if hasattr(self, 'data_entry'):
-                self.data_referencia = datetime.strptime(self.data_entry.get(), '%d/%m/%Y')
-            else:
-                self.data_referencia = datetime.strptime(self.data_var.get(), '%d/%m/%Y')
-                
-            self.lbl_data_resumo.config(text=f"Data: {self.data_referencia.strftime('%d/%m/%Y')}")
-        except ValueError:
-            messagebox.showerror("Erro", "Data inválida!")
-            return
+        # Definir data de referência como data atual (apenas para o relatório exportado)
+        self.data_referencia = datetime.now()
             
         # Carregar dados
         if not self.carregar_dados():
@@ -311,82 +439,550 @@ class RelatorioCategoria:
         # Preencher resumo
         self.preencher_resumo()
         
-        # Preencher detalhes
-        self.preencher_detalhes()
+        # Limpar detalhes (pois ainda não há data selecionada)
+        if hasattr(self, 'tv_detalhes'):
+            for item in self.tv_detalhes.get_children():
+                self.tv_detalhes.delete(item)
         
-        # Gerar gráfico inicial
-        self.atualizar_grafico()
+        # Resetar gráfico
+        self.limpar_grafico()
         
         # Selecionar aba de resumo
-        self.notebook.select(0)
+        self.notebook.select(0)  # Índice 0 corresponde à primeira aba (resumo)
     
     def carregar_dados(self):
-        """Carrega os dados para o relatório"""
+        """Carrega os dados para o relatório a partir da aba 'Dados'"""
         try:
             if not os.path.exists(self.arquivo_cliente):
                 messagebox.showerror("Erro", f"Arquivo do cliente '{self.cliente_atual}' não encontrado!")
                 return False
+            
+            # Carregar dados do Excel - da aba 'Dados'
+            try:
+                # Usar pandas para ler a aba Dados
+                self.df_despesas = pd.read_excel(self.arquivo_cliente, sheet_name='Dados')
+                print(f"Colunas do DataFrame: {self.df_despesas.columns.tolist()}")
                 
-            # Carregar dados específicos do relatório
-            # IMPLEMENTE AQUI A LÓGICA DE CARREGAMENTO
-            
-            return True
-            
+                # Verificar se as colunas necessárias existem
+                colunas_necessarias = ['VALOR', 'DATA_REL']
+                for coluna in colunas_necessarias:
+                    if coluna not in self.df_despesas.columns:
+                        messagebox.showerror("Erro", f"A coluna '{coluna}' não foi encontrada na aba Dados!")
+                        return False
+                
+                # Verificar se existe a coluna K (categoria) - índice 10 (base 0)
+                if len(self.df_despesas.columns) < 11:
+                    messagebox.showerror("Erro", "A coluna K (categoria) não foi encontrada na aba Dados!")
+                    return False
+                
+                # Nomear a coluna K como 'CATEGORIA' se ainda não tiver nome
+                nome_coluna_k = self.df_despesas.columns[10]  # Coluna K (índice 10)
+                if nome_coluna_k != 'CATEGORIA':
+                    # Renomear a coluna K para CATEGORIA
+                    self.df_despesas = self.df_despesas.rename(columns={nome_coluna_k: 'CATEGORIA'})
+                
+                print(f"Coluna de categoria identificada: {nome_coluna_k} -> CATEGORIA")
+                
+                # NOVO: Filtrar apenas lançamentos ativos
+                if 'STATUS' in self.df_despesas.columns:
+                    # Filtrar apenas registros com STATUS = 'ATIVO'
+                    df_original_len = len(self.df_despesas)
+                    self.df_despesas = self.df_despesas[
+                        self.df_despesas['STATUS'].str.upper().str.strip() == 'ATIVO'
+                    ].copy()
+                    df_filtrado_len = len(self.df_despesas)
+                    
+                    print(f"Cliente {self.cliente_atual}: {df_original_len} registros totais, {df_filtrado_len} ativos processados")
+                    
+                    # Se não há registros ativos, mostrar aviso
+                    if self.df_despesas.empty:
+                        messagebox.showinfo("Aviso", f"Nenhum lançamento ativo encontrado para o cliente {self.cliente_atual}")
+                        return False
+                else:
+                    # Se não existe a coluna STATUS, processar todos (compatibilidade)
+                    print(f"Cliente {self.cliente_atual}: Coluna STATUS não encontrada, processando todos os registros")
+                
+                # Converter DATA_REL para datetime
+                self.df_despesas['DATA_REL'] = pd.to_datetime(self.df_despesas['DATA_REL'], errors='coerce')
+                
+                # Converter DT_VENCTO para datetime (se existir)
+                if 'DT_VENCTO' in self.df_despesas.columns:
+                    self.df_despesas['DT_VENCTO'] = pd.to_datetime(self.df_despesas['DT_VENCTO'], errors='coerce')
+                else:
+                    # Se não existir, criar coluna vazia
+                    self.df_despesas['DT_VENCTO'] = pd.NaT
+
+                # Garantir valores numéricos para a coluna valor
+                self.df_despesas['VALOR'] = pd.to_numeric(self.df_despesas['VALOR'], errors='coerce').fillna(0)
+                
+                # Processar categorias - converter para string e limpar
+                self.df_despesas['CATEGORIA'] = self.df_despesas['CATEGORIA'].astype(str).str.upper().str.strip()
+                
+                # Substituir valores vazios ou 'nan' por 'DIV' (DIVERSOS)
+                self.df_despesas['CATEGORIA'] = self.df_despesas['CATEGORIA'].replace(['', 'NAN', 'NONE'], 'DIV')
+                
+                # Verificar se existem categorias não mapeadas
+                categorias_encontradas = set(self.df_despesas['CATEGORIA'].unique())
+                categorias_validas = set(self.categorias_despesas.keys())
+                categorias_invalidas = categorias_encontradas - categorias_validas
+                
+                if categorias_invalidas:
+                    print(f"Categorias não mapeadas encontradas: {categorias_invalidas}")
+                    # Substituir categorias inválidas por 'DIV'
+                    self.df_despesas.loc[self.df_despesas['CATEGORIA'].isin(categorias_invalidas), 'CATEGORIA'] = 'DIV'
+                
+                # Ordenar dados por data
+                self.df_despesas = self.df_despesas.sort_values(by='DATA_REL')
+                
+                # Agrupar dados por data e categoria
+                self.preparar_dados_por_data()
+                
+                return True
+                
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao carregar dados do Excel: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                return False
+                
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar dados: {str(e)}")
             return False
     
+    def preparar_dados_por_data(self):
+        """Prepara os dados agrupados por data"""
+        try:
+            # Criar um DataFrame para armazenar os dados agrupados por data e categoria
+            # Agrupar por data e categoria de despesa
+            df_pivot = self.df_despesas.pivot_table(
+                index='DATA_REL', 
+                columns='CATEGORIA', 
+                values='VALOR', 
+                aggfunc='sum'
+            ).fillna(0)
+            
+            # Resetar o índice para tornar a data uma coluna
+            df_pivot = df_pivot.reset_index()
+            
+            # Criar colunas para cada categoria se não existirem
+            for categoria in self.categorias_despesas.keys():
+                if categoria not in df_pivot.columns:
+                    df_pivot[categoria] = 0.0
+            
+            # Calcular total por data
+            df_pivot['total'] = df_pivot[[cat for cat in self.categorias_despesas.keys() if cat in df_pivot.columns]].sum(axis=1)
+            
+            # Ordenar por data (ascendente)
+            df_pivot = df_pivot.sort_values(by='DATA_REL')
+            
+            # Armazenar o DataFrame para uso posterior
+            self.df_por_data = df_pivot
+            
+            # Preparar dados para gráficos
+            self.preparar_dados_grafico()
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao preparar dados por data: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    def preparar_dados_grafico(self):
+        """Prepara os dados para os gráficos"""
+        try:
+            # Inicializar dicionário de dados para gráficos
+            self.dados_grafico = {}
+            
+            # Se não temos dados ou data selecionada, não há o que fazer
+            if not hasattr(self, 'df_por_data') or self.df_por_data.empty:
+                return
+                
+            # Dados para gráfico de pizza e barras por data selecionada
+            # Serão preenchidos quando uma data for selecionada
+            self.dados_grafico['pizza'] = None
+            self.dados_grafico['barras'] = None
+            
+        except Exception as e:
+            print(f"Erro ao preparar dados para gráfico: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
     def preencher_resumo(self):
         """Preenche os dados da aba de resumo"""
-        # IMPLEMENTE AQUI A LÓGICA DO RESUMO
-        pass
+        try:
+            # Limpar TreeView
+            for item in self.tv_resumo.get_children():
+                self.tv_resumo.delete(item)
+            
+            # Adicionar dados à TreeView
+            for _, row in self.df_por_data.iterrows():
+                # Formatar data
+                data_str = row['DATA_REL'].strftime('%d/%m/%Y')
+                
+                # Preparar valores para cada categoria
+                valores = []
+                for categoria in self.categorias_despesas.keys():
+                    valor_formatado = formatar_moeda_br(row[categoria]) if categoria in row else "R$ 0,00"
+                    valores.append(valor_formatado)
+                
+                # Adicionar total
+                total_formatado = formatar_moeda_br(row['total'])
+                
+                # Inserir na treeview
+                self.tv_resumo.insert(
+                    '', 'end', 
+                    values=[data_str] + valores + [total_formatado]
+                )
+            
+            # Atualizar labels de totais
+            total_geral = self.df_por_data['total'].sum()
+            num_datas = len(self.df_por_data)
+            
+            self.lbl_total_geral.config(text=formatar_moeda_br(total_geral))
+            self.lbl_num_datas.config(text=str(num_datas))
+            
+            # Calcular média por data
+            if num_datas > 0:
+                media_data = total_geral / num_datas
+                self.lbl_media_data.config(text=formatar_moeda_br(media_data))
+            else:
+                self.lbl_media_data.config(text="R$ 0,00")
+            
+            # Identificar data de maior valor
+            if not self.df_por_data.empty:
+                idx_maior = self.df_por_data['total'].idxmax()
+                data_maior = self.df_por_data.loc[idx_maior, 'DATA_REL'].strftime('%d/%m/%Y')
+                self.lbl_maior_data.config(text=data_maior)
+            else:
+                self.lbl_maior_data.config(text="Nenhuma")
+                
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao preencher resumo: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
-    def preencher_detalhes(self):
-        """Preenche os dados da aba de detalhes"""
-        # IMPLEMENTE AQUI A LÓGICA DOS DETALHES
-        pass
+    def selecionar_data(self, event=None):
+        """Atualiza a data selecionada e preenche as abas de detalhes e gráfico"""
+        try:
+            # Obter seleção atual
+            selecao = self.tv_resumo.selection()
+            if not selecao:
+                return
+                
+            # Obter data selecionada
+            item = self.tv_resumo.item(selecao[0])
+            data_str = item['values'][0]  # Primeira coluna é a data
+            
+            # Converter string de data para datetime
+            try:
+                self.data_selecionada = datetime.strptime(data_str, '%d/%m/%Y')
+            except ValueError:
+                messagebox.showerror("Erro", f"Formato de data inválido: {data_str}")
+                return
+            
+            # Atualizar label na aba de detalhes
+            self.lbl_data_detalhe.config(text=f"Data Selecionada: {data_str}")
+            
+            # Atualizar label na aba de gráfico
+            self.lbl_data_grafico.config(text=f"Data Selecionada: {data_str}")
+            
+            # Encontrar o total da data no DataFrame
+            df_data = self.df_por_data[self.df_por_data['DATA_REL'] == self.data_selecionada]
+            if not df_data.empty:
+                total_data = df_data.iloc[0]['total']
+                self.lbl_total_data_detalhe.config(text=f"Total: {formatar_moeda_br(total_data)}")
+            
+            # Filtrar dados para a data selecionada
+            df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
+            
+            # Preencher detalhes
+            self.preencher_detalhes(df_filtrado)
+            
+            # Preparar dados para gráfico
+            self.preparar_grafico_data_selecionada(df_filtrado)
+            
+            # Atualizar gráfico
+            self.atualizar_grafico()
+            
+            # Alternar para a aba de detalhes
+            self.notebook.select(1)  # Índice 1 corresponde à aba de detalhes
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao selecionar data: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
-    def atualizar_grafico(self):
-        """Atualiza o gráfico com base no tipo selecionado"""
-        tipo_grafico = self.combo_tipo_grafico.get()
-        
-        # Limpar frame do gráfico
+    def preparar_grafico_data_selecionada(self, df_filtrado):
+        """Prepara dados para os gráficos da data selecionada"""
+        try:
+            if df_filtrado.empty:
+                self.dados_grafico['pizza'] = None
+                self.dados_grafico['barras'] = None
+                return
+                
+            # Agrupar por categoria
+            df_agrupado = df_filtrado.groupby('CATEGORIA')['VALOR'].sum().reset_index()
+            
+            # Adicionar nome completo da categoria
+            df_agrupado['categoria_nome'] = df_agrupado['CATEGORIA'].apply(
+                lambda x: f"{x} - {self.categorias_despesas.get(x, 'Não classificado')}" if pd.notna(x) else "Não classificado"
+            )
+            
+            # Ordenar por categoria
+            df_agrupado = df_agrupado.sort_values(by='CATEGORIA')
+            
+            # Armazenar para gráficos
+            self.dados_grafico['pizza'] = df_agrupado.copy()
+            self.dados_grafico['barras'] = df_agrupado.copy()
+            
+        except Exception as e:
+            print(f"Erro ao preparar gráfico para data selecionada: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    def preencher_detalhes(self, df_filtrado):
+        """Preenche os detalhes para a data selecionada"""
+        try:
+            # Limpar tabela
+            for item in self.tv_detalhes.get_children():
+                self.tv_detalhes.delete(item)
+            
+            # Verificar se o DataFrame está vazio
+            if df_filtrado.empty:
+                return
+            
+            # Ordenar o DataFrame por Categoria (ascendente), Nome (ascendente) e Valor (descendente)
+            df_ordenado = df_filtrado.copy()
+            
+            # Garantir que todos os campos necessários existam
+            if 'NOME' not in df_ordenado.columns:
+                df_ordenado['NOME'] = ''
+                
+            # Ordenar primeiro por categoria, depois por nome (asc) e finalmente por valor (desc)
+            df_ordenado = df_ordenado.sort_values(
+                by=['CATEGORIA', 'NOME', 'VALOR'], 
+                ascending=[True, True, False]
+            )
+            
+            # Adicionar dados à tabela
+            for _, row in df_ordenado.iterrows():
+                # Formatar data
+                data_str = row['DATA_REL'].strftime('%d/%m/%Y') if pd.notna(row['DATA_REL']) else ''
+                
+                # Obter categoria
+                categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
+                categoria_nome = f"{categoria} - {self.categorias_despesas.get(categoria, 'Não classificado')}"
+                
+                # Obter nome e referência
+                nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
+                
+                # Obter referência e NF (juntar referência e NF)
+                referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
+                nf = row.get('NF', '') if pd.notna(row.get('NF', '')) else ''
+
+                # Concatenar referência e NF se ambos existirem
+                if referencia and nf:
+                    referencia = f"{referencia} - NF: {nf}"
+                elif nf:
+                    referencia = f"NF: {nf}"
+
+                # Data de vencimento
+                dt_vencto_str = ''
+                if 'DT_VENCTO' in row and pd.notna(row['DT_VENCTO']):
+                    dt_vencto_str = row['DT_VENCTO'].strftime('%d/%m/%Y')
+                
+                # Obter valor
+                valor = formatar_moeda_br(row['VALOR'])
+                
+                # Obter observação
+                observacao = row.get('OBSERVAÇÃO', '') if pd.notna(row.get('OBSERVAÇÃO', '')) else ''
+                
+                # Inserir na tabela
+                self.tv_detalhes.insert(
+                    '', 'end', 
+                    values=(
+                        data_str,
+                        categoria_nome,
+                        nome,
+                        referencia,
+                        dt_vencto_str,
+                        valor,
+                        observacao
+                    )
+                )
+            
+            # Atualizar estatísticas
+            num_lancamentos = len(df_filtrado)
+            total_data = df_filtrado['VALOR'].sum()
+            
+            self.lbl_num_lancamentos.config(text=str(num_lancamentos))
+            
+            # Média por lançamento
+            if num_lancamentos > 0:
+                media_lancamento = total_data / num_lancamentos
+                self.lbl_media_lancamento.config(text=formatar_moeda_br(media_lancamento))
+            else:
+                self.lbl_media_lancamento.config(text="R$ 0,00")
+            
+            # Maior e menor lançamento
+            if not df_filtrado.empty:
+                maior_valor = df_filtrado['VALOR'].max()
+                menor_valor = df_filtrado['VALOR'].min()
+                
+                self.lbl_maior_lancamento.config(text=formatar_moeda_br(maior_valor))
+                self.lbl_menor_lancamento.config(text=formatar_moeda_br(menor_valor))
+            else:
+                self.lbl_maior_lancamento.config(text="R$ 0,00")
+                self.lbl_menor_lancamento.config(text="R$ 0,00")
+                
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao preencher detalhes: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    def limpar_grafico(self):
+        """Limpa o gráfico atual"""
         for widget in self.frame_grafico.winfo_children():
             widget.destroy()
+    
+    def atualizar_grafico(self, event=None):
+        """Atualiza o gráfico com base na data selecionada"""
+        try:
+            tipo_grafico = self.combo_tipo_grafico.get()
             
-        # Verificar se há dados para gerar o gráfico
-        if not hasattr(self, 'dados_grafico') or not self.dados_grafico:
-            return
+            # Limpar frame do gráfico
+            self.limpar_grafico()
+                
+            # Verificar se há dados para gerar o gráfico
+            if not hasattr(self, 'dados_grafico') or not self.dados_grafico:
+                return
+                
+            # Verificar se temos uma data selecionada
+            if not self.data_selecionada:
+                return
+                
+            # Criar figura
+            fig, ax = plt.subplots(figsize=(10, 6))
             
-        # Criar figura
-        fig, ax = plt.subplots(figsize=(8, 6))
-        
-        if tipo_grafico == "Gráfico de Pizza":
-            self.criar_grafico_pizza(fig, ax)
-        elif tipo_grafico == "Gráfico de Barras":
-            self.criar_grafico_barras(fig, ax)
-        elif tipo_grafico == "Gráfico de Linha":
-            self.criar_grafico_linha(fig, ax)
+            if tipo_grafico == "Gráfico de Pizza":
+                self.criar_grafico_pizza(fig, ax)
+            elif tipo_grafico == "Gráfico de Barras":
+                self.criar_grafico_barras(fig, ax)
+                
+            # Exibir o gráfico
+            canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
+            canvas.draw()
+            canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
             
-        # Exibir o gráfico
-        canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar gráfico: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     def criar_grafico_pizza(self, fig, ax):
-        """Cria um gráfico de pizza"""
-        # IMPLEMENTE AQUI A LÓGICA DO GRÁFICO DE PIZZA
-        pass
+        """Cria um gráfico de pizza com as categorias da data selecionada"""
+        try:
+            # Usar os dados para gráfico de pizza
+            df = self.dados_grafico.get('pizza')
+            
+            if df is None or df.empty:
+                ax.text(0.5, 0.5, "Não há dados para exibir", 
+                    horizontalalignment='center', verticalalignment='center',
+                    transform=ax.transAxes, fontsize=14)
+                return
+            
+            # Cores para o gráfico
+            colors = plt.cm.tab10.colors
+            
+            # Criar o gráfico de pizza
+            wedges, texts, autotexts = ax.pie(
+                df['VALOR'], 
+                labels=df['categoria_nome'], 
+                autopct='%1.1f%%',
+                startangle=90,
+                colors=colors,
+                wedgeprops={'edgecolor': 'w', 'linewidth': 1}
+            )
+            
+            # Melhorar aparência
+            for text in texts:
+                text.set_fontsize(9)
+            
+            for autotext in autotexts:
+                autotext.set_fontsize(9)
+                autotext.set_fontweight('bold')
+            
+            # Adicionar título
+            data_str = self.data_selecionada.strftime('%d/%m/%Y')
+            ax.set_title(f'Distribuição por Categoria de Despesa - {data_str}', fontsize=14, pad=20)
+            
+            # Ajustar layout
+            fig.tight_layout()
+            
+        except Exception as e:
+            print(f"Erro ao criar gráfico de pizza: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            
+            # Mostrar erro no gráfico
+            ax.text(0.5, 0.5, f"Erro ao gerar gráfico: {str(e)}", 
+                horizontalalignment='center', verticalalignment='center',
+                transform=ax.transAxes, fontsize=12, color='red')
     
     def criar_grafico_barras(self, fig, ax):
-        """Cria um gráfico de barras"""
-        # IMPLEMENTE AQUI A LÓGICA DO GRÁFICO DE BARRAS
-        pass
-    
-    def criar_grafico_linha(self, fig, ax):
-        """Cria um gráfico de linha"""
-        # IMPLEMENTE AQUI A LÓGICA DO GRÁFICO DE LINHA
-        pass
+        """Cria um gráfico de barras com as categorias da data selecionada"""
+        try:
+            # Usar os dados para gráfico de barras
+            df = self.dados_grafico.get('barras')
+            
+            if df is None or df.empty:
+                ax.text(0.5, 0.5, "Não há dados para exibir", 
+                    horizontalalignment='center', verticalalignment='center',
+                    transform=ax.transAxes, fontsize=14)
+                return
+            
+            # Ordenar por valor para melhor visualização
+            df = df.sort_values(by='VALOR', ascending=True)
+            
+            # Cores para o gráfico
+            colors = plt.cm.tab10.colors[:len(df)]
+            
+            # Criar o gráfico de barras
+            bars = ax.barh(df['categoria_nome'], df['VALOR'], color=colors)
+            
+            # Adicionar valores nas barras
+            for bar in bars:
+                width = bar.get_width()
+                label_x_pos = width + width * 0.01
+                ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'R$ {width:,.2f}'.replace(',', '.'),
+                       va='center', fontsize=9)
+            
+            # Ajustar formatação do eixo x (valores)
+            def format_real(x, pos):
+                return f'R$ {x:,.0f}'.replace(',', '.')
+            
+            ax.xaxis.set_major_formatter(mticker.FuncFormatter(format_real))
+            
+            # Adicionar títulos e labels
+            data_str = self.data_selecionada.strftime('%d/%m/%Y')
+            ax.set_title(f'Valores por Categoria de Despesa - {data_str}', fontsize=14)
+            ax.set_xlabel('Valor (R$)', fontsize=11)
+            ax.set_ylabel('Categoria de Despesa', fontsize=11)
+            
+            # Adicionar grid
+            ax.grid(axis='x', linestyle='--', alpha=0.7)
+            
+            # Ajustar layout
+            fig.tight_layout()
+            
+        except Exception as e:
+            print(f"Erro ao criar gráfico de barras: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            
+            # Mostrar erro no gráfico
+            ax.text(0.5, 0.5, f"Erro ao gerar gráfico: {str(e)}", 
+                horizontalalignment='center', verticalalignment='center',
+                transform=ax.transAxes, fontsize=12, color='red')
     
     def exportar_excel(self):
         """Exporta o relatório para um arquivo Excel"""
@@ -396,7 +992,7 @@ class RelatorioCategoria:
             
         # Solicitar nome do arquivo ao usuário
         data_str = self.data_referencia.strftime('%d-%m-%Y')
-        nome_padrao = f"Relatorio_{self.__class__.__name__}_{self.cliente_atual}_{data_str}.xlsx"
+        nome_padrao = f"Relatorio_Categoria_{self.cliente_atual}_{data_str}.xlsx"
         
         arquivo = filedialog.asksaveasfilename(
             defaultextension=".xlsx",
@@ -411,7 +1007,143 @@ class RelatorioCategoria:
             # Criar workbook
             wb = Workbook()
             
-            # IMPLEMENTE AQUI A LÓGICA DE EXPORTAÇÃO PARA EXCEL
+            # Remover a aba padrão
+            if 'Sheet' in wb.sheetnames:
+                del wb['Sheet']
+            
+            # Criar aba de resumo
+            ws_resumo = wb.create_sheet("Resumo")
+            
+            # Adicionar cabeçalho
+            ws_resumo['A1'] = "Relatório por Categoria de Despesa"
+            ws_resumo['A1'].font = Font(size=14, bold=True)
+            ws_resumo.merge_cells('A1:I1')
+            ws_resumo['A1'].alignment = Alignment(horizontal='center')
+            
+            ws_resumo['A2'] = f"Cliente: {self.cliente_atual}"
+            ws_resumo['A2'].font = Font(size=12, bold=True)
+            ws_resumo.merge_cells('A2:I2')
+            
+            ws_resumo['A3'] = f"Data do relatório: {data_str}"
+            ws_resumo['A3'].font = Font(size=12)
+            ws_resumo.merge_cells('A3:I3')
+            
+            # Adicionar cabeçalhos da tabela
+            headers = ["Data"] + list(self.categorias_despesas.keys()) + ["Total (R$)"]
+            for col, header in enumerate(headers, start=1):
+                cell = ws_resumo.cell(row=5, column=col, value=header)
+                cell.font = Font(bold=True)
+                cell.alignment = Alignment(horizontal='center')
+                cell.fill = PatternFill(fgColor="DDDDDD", fill_type="solid")
+            
+            # Adicionar dados
+            for i, (_, row) in enumerate(self.df_por_data.iterrows(), start=6):
+                # Data formatada
+                ws_resumo.cell(row=i, column=1, value=row['DATA_REL'])
+                ws_resumo.cell(row=i, column=1).number_format = "dd/mm/yyyy"
+                
+                # Valores por categoria
+                for j, categoria in enumerate(self.categorias_despesas.keys(), start=2):
+                    ws_resumo.cell(row=i, column=j, value=row[categoria] if categoria in row else 0)
+                    ws_resumo.cell(row=i, column=j).number_format = "R$ #,##0.00"
+                
+                # Total
+                ws_resumo.cell(row=i, column=len(headers), value=row['total'])
+                ws_resumo.cell(row=i, column=len(headers)).number_format = "R$ #,##0.00"
+            
+            # Ajustar largura das colunas
+            ws_resumo.column_dimensions['A'].width = 15
+            for col in range(2, len(headers) + 1):
+                ws_resumo.column_dimensions[get_column_letter(col)].width = 15
+            
+            # Adicionar totais
+            total_row = 6 + len(self.df_por_data)
+            
+            ws_resumo.cell(row=total_row, column=1, value="TOTAL")
+            ws_resumo.cell(row=total_row, column=1).font = Font(bold=True)
+            
+            # Totais por categoria
+            for j, categoria in enumerate(self.categorias_despesas.keys(), start=2):
+                formula = f"=SUM({get_column_letter(j)}6:{get_column_letter(j)}{total_row-1})"
+                ws_resumo.cell(row=total_row, column=j, value=formula)
+                ws_resumo.cell(row=total_row, column=j).font = Font(bold=True)
+                ws_resumo.cell(row=total_row, column=j).number_format = "R$ #,##0.00"
+            
+            # Total geral
+            total_formula = f"=SUM({get_column_letter(len(headers))}6:{get_column_letter(len(headers))}{total_row-1})"
+            ws_resumo.cell(row=total_row, column=len(headers), value=total_formula)
+            ws_resumo.cell(row=total_row, column=len(headers)).font = Font(bold=True)
+            ws_resumo.cell(row=total_row, column=len(headers)).number_format = "R$ #,##0.00"
+            
+            # Criar aba de detalhes se tivermos uma data selecionada
+            if hasattr(self, 'data_selecionada') and self.data_selecionada:
+                ws_detalhes = wb.create_sheet("Detalhes")
+                
+                # Adicionar cabeçalho
+                data_str_detalhe = self.data_selecionada.strftime('%d/%m/%Y')
+                ws_detalhes['A1'] = f"Detalhes da Data: {data_str_detalhe}"
+                ws_detalhes['A1'].font = Font(size=14, bold=True)
+                ws_detalhes.merge_cells('A1:G1')
+                ws_detalhes['A1'].alignment = Alignment(horizontal='center')
+                
+                # Filtrando dados para a data selecionada
+                df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
+                
+                # Adicionar cabeçalhos da tabela
+                headers = ["Data", "Categoria", "Nome", "Referência", "Valor (R$)", "Observação"]
+                for col, header in enumerate(headers, start=1):
+                    cell = ws_detalhes.cell(row=3, column=col, value=header)
+                    cell.font = Font(bold=True)
+                    cell.alignment = Alignment(horizontal='center')
+                    cell.fill = PatternFill(fgColor="DDDDDD", fill_type="solid")
+                
+                # Adicionar dados
+                for i, (_, row) in enumerate(df_filtrado.iterrows(), start=4):
+                    # Data formatada
+                    if pd.notna(row['DATA_REL']):
+                        ws_detalhes.cell(row=i, column=1, value=row['DATA_REL'])
+                        ws_detalhes.cell(row=i, column=1).number_format = "dd/mm/yyyy"
+                    
+                    # Categoria
+                    categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
+                    categoria_nome = f"{categoria} - {self.categorias_despesas.get(categoria, 'Não classificado')}"
+                    ws_detalhes.cell(row=i, column=2, value=categoria_nome)
+                    
+                    # Nome
+                    if 'NOME' in row and pd.notna(row['NOME']):
+                        ws_detalhes.cell(row=i, column=3, value=row['NOME'])
+                    
+                    # Referência
+                    if 'REFERÊNCIA' in row and pd.notna(row['REFERÊNCIA']):
+                        ws_detalhes.cell(row=i, column=4, value=row['REFERÊNCIA'])
+                    
+                    # Valor
+                    ws_detalhes.cell(row=i, column=5, value=row['VALOR'])
+                    ws_detalhes.cell(row=i, column=5).number_format = "R$ #,##0.00"
+                    
+                    # Observação
+                    if 'OBSERVAÇÃO' in row and pd.notna(row['OBSERVAÇÃO']):
+                        ws_detalhes.cell(row=i, column=6, value=row['OBSERVAÇÃO'])
+                
+                # Ajustar largura das colunas
+                ws_detalhes.column_dimensions['A'].width = 15
+                ws_detalhes.column_dimensions['B'].width = 25
+                ws_detalhes.column_dimensions['C'].width = 30
+                ws_detalhes.column_dimensions['D'].width = 30
+                ws_detalhes.column_dimensions['E'].width = 15
+                ws_detalhes.column_dimensions['F'].width = 40
+                
+                # Adicionar total
+                total_row = 4 + len(df_filtrado)
+                
+                ws_detalhes.cell(row=total_row, column=4, value="TOTAL")
+                ws_detalhes.cell(row=total_row, column=4).font = Font(bold=True)
+                
+                # Total em R$
+                total_formula = f"=SUM(E4:E{total_row-1})"
+                ws_detalhes.cell(row=total_row, column=5, value=total_formula)
+                ws_detalhes.cell(row=total_row, column=5).font = Font(bold=True)
+                ws_detalhes.cell(row=total_row, column=5).number_format = "R$ #,##0.00"
             
             # Salvar o arquivo
             wb.save(arquivo)
@@ -419,6 +1151,8 @@ class RelatorioCategoria:
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao exportar para Excel: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     def exportar_pdf(self):
         """Exporta o relatório para um arquivo PDF"""
@@ -428,7 +1162,7 @@ class RelatorioCategoria:
             
         # Solicitar nome do arquivo ao usuário
         data_str = self.data_referencia.strftime('%d-%m-%Y')
-        nome_padrao = f"Relatorio_{self.__class__.__name__}_{self.cliente_atual}_{data_str}.pdf"
+        nome_padrao = f"Relatorio_Categoria_{self.cliente_atual}_{data_str}.pdf"
         
         arquivo = filedialog.asksaveasfilename(
             defaultextension=".pdf",
@@ -440,13 +1174,226 @@ class RelatorioCategoria:
             return
             
         try:
-            # IMPLEMENTE AQUI A LÓGICA DE EXPORTAÇÃO PARA PDF
-            # Esta função geralmente requer a biblioteca reportlab
+            # Verificar se temos a biblioteca reportlab disponível
+            try:
+                from reportlab.lib.pagesizes import letter, A4
+                from reportlab.lib import colors
+                from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+                from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+                from reportlab.lib.units import inch
+                import matplotlib.pyplot as plt
+                import io
+            except ImportError:
+                messagebox.showerror("Erro", "Biblioteca ReportLab não encontrada. Por favor instale usando 'pip install reportlab'.")
+                return
             
+            # Criar documento PDF
+            doc = SimpleDocTemplate(arquivo, pagesize=A4, leftMargin=0.5*inch, rightMargin=0.5*inch)
+            story = []
+            
+            # Estilos
+            styles = getSampleStyleSheet()
+            title_style = styles['Title']
+            heading1_style = styles['Heading1']
+            heading2_style = styles['Heading2']
+            normal_style = styles['Normal']
+            
+            # Título
+            story.append(Paragraph(f"Relatório por Categoria de Despesa", title_style))
+            story.append(Spacer(1, 0.2*inch))
+            
+            # Informações do cliente
+            story.append(Paragraph(f"Cliente: {self.cliente_atual}", heading1_style))
+            story.append(Paragraph(f"Data do relatório: {data_str}", normal_style))
+            story.append(Spacer(1, 0.2*inch))
+            
+            # Resumo por data
+            story.append(Paragraph("Resumo por Data", heading2_style))
+            story.append(Spacer(1, 0.1*inch))
+            
+            # Cabeçalhos
+            headers = ["Data"] + list(self.categorias_despesas.keys()) + ["Total (R$)"]
+            
+            # Dados da tabela de resumo
+            table_data = [headers]
+            
+            for _, row in self.df_por_data.iterrows():
+                # Formatar data
+                data_str = row['DATA_REL'].strftime('%d/%m/%Y')
+                
+                # Preparar valores para cada categoria
+                valores = [data_str]
+                for categoria in self.categorias_despesas.keys():
+                    valor_formatado = f"R$ {row[categoria]:,.2f}".replace(',', '.').replace('.', ',') if categoria in row else "R$ 0,00"
+                    valores.append(valor_formatado)
+                
+                # Adicionar total
+                total_formatado = f"R$ {row['total']:,.2f}".replace(',', '.').replace('.', ',')
+                valores.append(total_formatado)
+                
+                table_data.append(valores)
+            
+            # Adicionar linha de total
+            if not self.df_por_data.empty:
+                total_row = ["TOTAL"]
+                for categoria in self.categorias_despesas.keys():
+                    total_cat = self.df_por_data[categoria].sum() if categoria in self.df_por_data.columns else 0
+                    total_formatado = f"R$ {total_cat:,.2f}".replace(',', '.').replace('.', ',')
+                    total_row.append(total_formatado)
+                
+                # Total geral
+                total_geral = self.df_por_data['total'].sum()
+                total_geral_formatado = f"R$ {total_geral:,.2f}".replace(',', '.').replace('.', ',')
+                total_row.append(total_geral_formatado)
+                
+                table_data.append(total_row)
+            
+            # Criar tabela de resumo
+            # Calcular larguras de colunas
+            num_categorias = len(self.categorias_despesas)
+            col_width_data = 1.0*inch  # Data
+            col_width_cat = (6.0*inch) / num_categorias  # Dividir espaço restante entre categorias
+            col_width_total = 1.0*inch  # Total
+            
+            col_widths = [col_width_data] + [col_width_cat] * num_categorias + [col_width_total]
+            
+            resumo_table = Table(table_data, colWidths=col_widths)
+            
+            # Estilo da tabela
+            table_style = TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+                ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 8),  # Fonte menor para caber
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ])
+            
+            # Destacar a linha de total
+            if not self.df_por_data.empty:
+                table_style.add('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey)
+                table_style.add('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold')
+            
+            resumo_table.setStyle(table_style)
+            story.append(resumo_table)
+            story.append(Spacer(1, 0.2*inch))
+            
+            # Se tiver uma data selecionada, adicionar detalhes
+            if hasattr(self, 'data_selecionada') and self.data_selecionada:
+                # Detalhes da data selecionada
+                data_str_detalhe = self.data_selecionada.strftime('%d/%m/%Y')
+                story.append(Paragraph(f"Detalhes - Data: {data_str_detalhe}", heading2_style))
+                story.append(Spacer(1, 0.1*inch))
+                
+                # Filtrar dados para a data selecionada
+                df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
+                
+                if not df_filtrado.empty:
+                    # Cabeçalhos
+                    headers = ["Categoria", "Nome", "Referência", "Valor (R$)"]
+                    
+                    # Dados da tabela de detalhes
+                    table_data = [headers]
+                    
+                    for _, row in df_filtrado.iterrows():
+                        # Obter categoria
+                        categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
+                        categoria_nome = f"{categoria} - {self.categorias_despesas.get(categoria, 'Não classificado')}"
+                        
+                        # Obter nome e referência
+                        nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
+                        referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
+                        
+                        # Formatar valor
+                        valor = f"R$ {row['VALOR']:,.2f}".replace(',', '.').replace('.', ',')
+                        
+                        # Adicionar linha
+                        table_data.append([categoria_nome, nome, referencia, valor])
+                    
+                    # Adicionar linha de total
+                    total_data = df_filtrado['VALOR'].sum()
+                    total_formatado = f"R$ {total_data:,.2f}".replace(',', '.').replace('.', ',')
+                    table_data.append(["TOTAL", "", "", total_formatado])
+                    
+                    # Criar tabela de detalhes
+                    col_widths = [1.8*inch, 1.8*inch, 2.0*inch, 1.0*inch]
+                    detalhes_table = Table(table_data, colWidths=col_widths)
+                    
+                    # Estilo da tabela
+                    table_style = TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                        ('ALIGN', (0, 0), (2, -1), 'LEFT'),
+                        ('ALIGN', (3, 0), (3, -1), 'RIGHT'),
+                        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('FONTSIZE', (0, 0), (-1, -1), 8),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                    ])
+                    
+                    # Destacar a linha de total
+                    table_style.add('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey)
+                    table_style.add('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold')
+                    
+                    detalhes_table.setStyle(table_style)
+                    story.append(detalhes_table)
+                    story.append(Spacer(1, 0.2*inch))
+                    
+                    # Adicionar gráfico
+                    story.append(Paragraph("Gráfico de Distribuição por Categoria de Despesa", heading2_style))
+                    story.append(Spacer(1, 0.1*inch))
+                    
+                    # Gerar gráfico para incluir no PDF
+                    plt.figure(figsize=(7, 5))
+                    
+                    # Preparar dados para o gráfico
+                    df_grafico = df_filtrado.groupby('CATEGORIA')['VALOR'].sum().reset_index()
+                    
+                    # Adicionar nome da categoria
+                    df_grafico['categoria_nome'] = df_grafico['CATEGORIA'].apply(
+                        lambda x: f"{x} - {self.categorias_despesas.get(x, 'Não classificado')}"
+                    )
+                    
+                    # Criar gráfico de pizza
+                    if not df_grafico.empty:
+                        plt.pie(
+                            df_grafico['VALOR'], 
+                            labels=df_grafico['categoria_nome'], 
+                            autopct='%1.1f%%',
+                            startangle=90,
+                            colors=plt.cm.tab10.colors,
+                            wedgeprops={'edgecolor': 'w', 'linewidth': 1}
+                        )
+                        
+                        plt.title(f'Distribuição por Categoria de Despesa - {data_str_detalhe}', fontsize=12, pad=20)
+                        plt.tight_layout()
+                        
+                        # Salvar o gráfico em um buffer
+                        img_buffer = io.BytesIO()
+                        plt.savefig(img_buffer, format='png', dpi=100)
+                        img_buffer.seek(0)
+                        plt.close()
+                        
+                        # Adicionar o gráfico ao PDF
+                        img = Image(img_buffer, width=6*inch, height=4*inch)
+                        story.append(img)
+                    else:
+                        story.append(Paragraph("Não há dados suficientes para gerar o gráfico.", normal_style))
+                else:
+                    story.append(Paragraph("Não há lançamentos para esta data.", normal_style))
+            
+            # Construir o PDF
+            doc.build(story)
             messagebox.showinfo("Sucesso", f"Relatório exportado com sucesso para:\n{arquivo}")
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao exportar para PDF: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     def voltar_menu(self):
         """Volta ao menu principal"""
@@ -460,7 +1407,7 @@ class RelatorioCategoria:
 
 def main():
     """Função principal para executar o módulo de forma independente"""
-    app = RelatorioModelo()
+    app = RelatorioCategoria()
     app.root.mainloop()
     
 if __name__ == "__main__":
