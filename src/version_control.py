@@ -9,14 +9,14 @@ from pathlib import Path
 # Informações da versão atual
 VERSION_INFO = {
     "major": 1,
-    "minor": 2,
-    "patch": 1,
-    "release_date": "20/05/2025",
+    "minor": 3,
+    "patch": 0,
+    "release_date": "29/05/2025",
     "changes": [
-        "Incluído verificador de lançamentos iguais",
-        "Modificado o campo Dias para permitir 1/2 diária",
-        "Adicionado campo com ID do lançamento",
-        "Refeita a verificação se a planilha está aberta"
+        "Incluído Gerenciador de lançamentos, permitindo edição e exclusão de dados da planilha",
+        "Adicionados campos na planilha com 'STATUS', 'ID_LANCAMENTO' e 'HISTORICO_ALTERACAO'",
+        "Modificados todos relatórios para identificar o 'STATUS' dos lançamentos",
+        "Liberado Relatório por Categoria"
     ]
 }
 
