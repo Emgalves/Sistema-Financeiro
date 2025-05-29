@@ -171,7 +171,57 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 class SistemaPrincipal:
+
+    def _configurar_paths_sistema(self):
+        """Configura os paths do sistema para garantir que todos os módulos sejam encontrados"""
+        import sys
+        from pathlib import Path
+        
+        try:
+            # Obter diretório atual e raiz do projeto
+            current_dir = Path(__file__).resolve().parent
+            project_root = current_dir.parent
+            
+            # Lista de diretórios para adicionar ao path
+            paths_adicionar = [
+                str(current_dir),      # src/
+                str(project_root),     # raiz do projeto
+            ]
+            
+            # Adicionar paths se não estiverem já incluídos
+            for path in paths_adicionar:
+                if path not in sys.path:
+                    sys.path.insert(0, path)
+                    print(f"Path adicionado: {path}")
+            
+            # Limpar cache de módulos problemáticos para forçar reload
+            modulos_problematicos = [
+                'relatorios_interface',
+                'relatorio_despesas_aprimorado',
+                'despesas_rateadas',
+                'gestao_medicoes', 
+                'configuracoes_sistema'
+            ]
+            
+            for modulo in modulos_problematicos:
+                # Remover versão direta
+                if modulo in sys.modules:
+                    del sys.modules[modulo]
+                    print(f"Cache limpo: {modulo}")
+                
+                # Remover versão com src
+                modulo_src = f"src.{modulo}"
+                if modulo_src in sys.modules:
+                    del sys.modules[modulo_src] 
+                    print(f"Cache limpo: {modulo_src}")
+                    
+        except Exception as e:
+            print(f"Erro ao configurar paths: {str(e)}")
+
     def __init__(self):
+        # FIX: Configurar paths antes de qualquer operação
+        self._configurar_paths_sistema()
+        
         self.usuario_atual = None
         self.root = tk.Tk()
         
@@ -359,9 +409,9 @@ class SistemaPrincipal:
     def abrir_relatorios(self):
         """Abre o sistema integrado de relatórios"""
         try:
-            modulo = self.reload_module('relatorios_interface')
+            modulo = self.reload_module('src.relatorios_interface')
             if not modulo:
-                modulo = self.reload_module('relatorio_despesas_aprimorado')
+                modulo = self.reload_module('src.relatorio_despesas_aprimorado')
                 if not modulo:
                     messagebox.showerror("Erro", "Não foi possível carregar o módulo de relatórios.")
                     return
@@ -393,7 +443,7 @@ class SistemaPrincipal:
     def abrir_despesas_rateadas(self):
         """Abre o sistema de despesas rateadas"""
         try:
-            modulo = self.reload_module('despesas_rateadas')
+            modulo = self.reload_module('src.despesas_rateadas')
             if not modulo:
                 return
 
@@ -415,7 +465,7 @@ class SistemaPrincipal:
     def abrir_gestao_medicoes(self):
         """Abre o sistema de gestão de medições"""
         try:
-            modulo = self.reload_module('gestao_medicoes')
+            modulo = self.reload_module('src.gestao_medicoes')
             if not modulo:
                 return
 
@@ -449,7 +499,7 @@ class SistemaPrincipal:
 
     def abrir_configuracoes(self):
         try:
-            from configuracoes_sistema import GerenciadorConfiguracoes
+            from src.configuracoes_sistema import GerenciadorConfiguracoes
             self.root.withdraw()
             app = GerenciadorConfiguracoes(parent=self.root)
             app.menu_principal = self.root
