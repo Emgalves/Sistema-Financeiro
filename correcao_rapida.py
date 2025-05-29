@@ -1,201 +1,236 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Correção rápida para o problema de módulos de relatório
-Este script atualiza automaticamente o build com os módulos corretos
+Script para diagnosticar por que os módulos não estão sendo encontrados no executável
 """
 
 import os
 import sys
-import subprocess
-from pathlib import Path
+import importlib
+import traceback
 
-def find_report_modules():
-    """Encontra todos os módulos relacionados a relatórios"""
-    report_modules = []
+def testar_imports():
+    """Testa se os módulos podem ser importados normalmente"""
     
-    # Procurar na pasta src
-    src_path = Path("src")
-    if src_path.exists():
-        for py_file in src_path.glob("*.py"):
-            filename = py_file.stem.lower()
-            if any(term in filename for term in ['relatorio', 'relatório', 'report']):
-                # Adicionar múltiplas variações
-                base_name = py_file.stem
-                report_modules.extend([
-                    base_name,
-                    f"src.{base_name}",
-                ])
-                print(f"✅ Encontrado módulo de relatório: {base_name}")
+    print("=" * 60)
+    print("DIAGNÓSTICO DE IMPORTS")
+    print("=" * 60)
     
-    # Procurar na raiz
-    for py_file in Path(".").glob("*.py"):
-        filename = py_file.stem.lower()
-        if any(term in filename for term in ['relatorio', 'relatório', 'report']):
-            base_name = py_file.stem
-            report_modules.append(base_name)
-            print(f"✅ Encontrado módulo de relatório na raiz: {base_name}")
-    
-    return report_modules
-
-def update_build_script():
-    """Atualiza o build_script.py com os módulos corretos"""
-    
-    print("🔍 Procurando módulos de relatório...")
-    report_modules = find_report_modules()
-    
-    if not report_modules:
-        print("⚠️  Nenhum módulo de relatório encontrado!")
-        return False
-    
-    print(f"📊 Encontrados {len(report_modules)} módulos de relatório")
-    
-    # Ler o build_script atual
-    build_script_path = "build_script.py"
-    if not os.path.exists(build_script_path):
-        print(f"❌ {build_script_path} não encontrado!")
-        return False
-    
-    with open(build_script_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-    
-    # Procurar pela função get_hidden_imports
-    start_marker = "def get_hidden_imports():"
-    end_marker = "return hidden_imports"
-    
-    start_idx = content.find(start_marker)
-    end_idx = content.find(end_marker, start_idx)
-    
-    if start_idx == -1 or end_idx == -1:
-        print("❌ Não foi possível encontrar a função get_hidden_imports()")
-        return False
-    
-    # Construir nova lista de módulos
-    new_modules = []
-    
-    # Módulos básicos (manter os existentes)
-    basic_modules = [
-        # GUI
-        "'tkinter'",
-        "'tkinter.ttk'", 
-        "'tkinter.messagebox'",
-        "'tkinter.filedialog'",
-        
-        # Dados e relatórios
-        "'pandas'",
-        "'numpy'",
-        "'openpyxl'",
-        "'xlwings'",
-        "'reportlab'",
-        "'reportlab.pdfgen'",
-        "'reportlab.lib'",
-        "'matplotlib'",
-        "'matplotlib.pyplot'",
-        "'PIL'",
-        "'PIL.Image'",
-        
-        # Específicos do sistema
-        "'Sistema_Entrada_Dados'",
-        "'src.Sistema_Entrada_Dados'",
-        "'controle_pagamentos_taxas'",
-        "'src.controle_pagamentos_taxas'",
-        "'despesas_rateadas'",
-        "'src.despesas_rateadas'",
-        "'gestao_medicoes'",
-        "'src.gestao_medicoes'",
+    # Lista de módulos para testar
+    modulos_teste = [
+        'relatorios_interface',
+        'src.relatorios_interface',
+        'relatorio_despesas_aprimorado',
+        'src.relatorio_despesas_aprimorado',
+        'Sistema_Entrada_Dados',
+        'src.Sistema_Entrada_Dados'
     ]
     
-    new_modules.extend(basic_modules)
+    resultados = {}
     
-    # Adicionar módulos de relatório encontrados
-    for module in report_modules:
-        new_modules.append(f"'{module}'")
-    
-    # Criar nova função
-    new_function = f'''def get_hidden_imports():
-    """Retorna lista de imports que podem não ser detectados automaticamente"""
-    hidden_imports = [
-        {chr(10).join(f"        {module}," for module in new_modules)}
-    ]
-    
-    return hidden_imports'''
-    
-    # Substituir no conteúdo
-    before = content[:start_idx]
-    after = content[end_idx + len(end_marker):]
-    new_content = before + new_function + after
-    
-    # Salvar arquivo atualizado
-    with open(build_script_path, 'w', encoding='utf-8') as f:
-        f.write(new_content)
-    
-    print("✅ build_script.py atualizado com sucesso!")
-    return True
-
-def rebuild_executable():
-    """Reconstrói o executável com as correções"""
-    print("\n🔨 Reconstruindo executável...")
-    
-    try:
-        # Limpar build anterior
-        if os.path.exists("build"):
-            import shutil
-            shutil.rmtree("build")
-            print("🧹 Build anterior limpo")
-        
-        # Executar build
-        result = subprocess.run([sys.executable, "build_script.py"], 
-                              capture_output=True, text=True)
-        
-        if result.returncode == 0:
-            print("✅ Build concluído com sucesso!")
+    for modulo in modulos_teste:
+        print(f"\nTestando: {modulo}")
+        try:
+            # Tentar importar
+            mod = importlib.import_module(modulo)
+            print(f"✅ SUCESSO: {modulo}")
             
-            # Verificar se executável foi criado
-            exe_path = Path("dist/Sistema_Gestao_Financeira.exe")
-            if exe_path.exists():
-                print(f"📦 Executável atualizado: {exe_path.absolute()}")
-                return True
-            else:
-                print("⚠️  Executável não encontrado após build")
-                
+            # Verificar se tem as classes esperadas
+            if 'relatorios_interface' in modulo:
+                if hasattr(mod, 'SistemaRelatorios'):
+                    print(f"  ✅ Classe SistemaRelatorios encontrada")
+                else:
+                    print(f"  ⚠️  Classe SistemaRelatorios NÃO encontrada")
+            
+            if 'relatorio_despesas_aprimorado' in modulo:
+                if hasattr(mod, 'RelatorioUI'):
+                    print(f"  ✅ Classe RelatorioUI encontrada")
+                else:
+                    print(f"  ⚠️  Classe RelatorioUI NÃO encontrada")
+            
+            resultados[modulo] = {'status': 'OK', 'modulo': mod}
+            
+        except ImportError as e:
+            print(f"❌ ERRO: {modulo} - {str(e)}")
+            resultados[modulo] = {'status': 'ERRO', 'erro': str(e)}
+        except Exception as e:
+            print(f"❌ ERRO INESPERADO: {modulo} - {str(e)}")
+            resultados[modulo] = {'status': 'ERRO', 'erro': str(e)}
+    
+    return resultados
+
+def verificar_caminhos():
+    """Verifica os caminhos do Python"""
+    
+    print(f"\n" + "=" * 60)
+    print("DIAGNÓSTICO DE CAMINHOS")
+    print("=" * 60)
+    
+    print(f"Diretório atual: {os.getcwd()}")
+    print(f"Python executável: {sys.executable}")
+    print(f"Versão Python: {sys.version}")
+    
+    print(f"\nSys.path:")
+    for i, caminho in enumerate(sys.path):
+        print(f"  {i}: {caminho}")
+    
+    # Verificar se diretórios importantes existem
+    print(f"\nDiretórios importantes:")
+    dirs_verificar = ['.', 'src', 'dist', 'build']
+    
+    for dir_name in dirs_verificar:
+        if os.path.exists(dir_name):
+            arquivos = [f for f in os.listdir(dir_name) if f.endswith('.py')]
+            print(f"✅ {dir_name}/ - {len(arquivos)} arquivos .py")
         else:
-            print("❌ Erro durante o build:")
-            print(result.stderr)
-            
-    except Exception as e:
-        print(f"❌ Erro ao executar build: {e}")
+            print(f"❌ {dir_name}/ - NÃO EXISTE")
+
+def simular_reload_module():
+    """Simula o método reload_module do sistema principal"""
     
-    return False
+    print(f"\n" + "=" * 60)
+    print("SIMULAÇÃO DO RELOAD_MODULE")
+    print("=" * 60)
+    
+    def reload_module(module_name):
+        """Simulação do método reload_module"""
+        try:
+            print(f"Tentando carregar: {module_name}")
+            
+            # Remover módulo se já estiver carregado
+            for key in list(sys.modules.keys()):
+                if key == module_name or key.startswith(f"{module_name}."):
+                    del sys.modules[key]
+                    print(f"  Removido do cache: {key}")
+            
+            # Tentar importar
+            module = importlib.import_module(module_name)
+            print(f"  ✅ Sucesso: {module_name}")
+            return module
+            
+        except Exception as e:
+            print(f"  ❌ Erro: {module_name} - {str(e)}")
+            return None
+    
+    # Testar os módulos problemáticos
+    modulos_testar = ['relatorios_interface', 'relatorio_despesas_aprimorado']
+    
+    for modulo in modulos_testar:
+        print(f"\n--- Testando {modulo} ---")
+        resultado = reload_module(modulo)
+        
+        if resultado:
+            print(f"Módulo carregado: {resultado}")
+            print(f"Arquivo: {getattr(resultado, '__file__', 'N/A')}")
+            
+            # Verificar classes específicas
+            if modulo == 'relatorios_interface':
+                if hasattr(resultado, 'SistemaRelatorios'):
+                    print(f"Classe SistemaRelatorios: OK")
+                else:
+                    print(f"Classe SistemaRelatorios: NÃO ENCONTRADA")
+                    print(f"Atributos disponíveis: {[attr for attr in dir(resultado) if not attr.startswith('_')]}")
+            
+            if modulo == 'relatorio_despesas_aprimorado':
+                if hasattr(resultado, 'RelatorioUI'):
+                    print(f"Classe RelatorioUI: OK")
+                else:
+                    print(f"Classe RelatorioUI: NÃO ENCONTRADA")
+                    print(f"Atributos disponíveis: {[attr for attr in dir(resultado) if not attr.startswith('_')]}")
+
+def verificar_executavel():
+    """Verifica se estamos rodando de um executável PyInstaller"""
+    
+    print(f"\n" + "=" * 60)
+    print("VERIFICAÇÃO DE AMBIENTE")
+    print("=" * 60)
+    
+    # Verificar se é PyInstaller
+    if hasattr(sys, '_MEIPASS'):
+        print(f"✅ Executando de PyInstaller")
+        print(f"Diretório temporário: {sys._MEIPASS}")
+        
+        # Listar arquivos no diretório temporário
+        try:
+            temp_files = os.listdir(sys._MEIPASS)
+            print(f"Arquivos no diretório temporário: {len(temp_files)}")
+            
+            # Procurar por nossos módulos
+            modulos_procurar = ['relatorios_interface', 'relatorio_despesas_aprimorado']
+            for modulo in modulos_procurar:
+                arquivos_modulo = [f for f in temp_files if modulo in f]
+                if arquivos_modulo:
+                    print(f"  ✅ {modulo}: {arquivos_modulo}")
+                else:
+                    print(f"  ❌ {modulo}: NÃO ENCONTRADO")
+                    
+        except Exception as e:
+            print(f"Erro ao listar arquivos temporários: {str(e)}")
+            
+    else:
+        print(f"⚠️  Executando em modo desenvolvimento")
+        print(f"Diretório de execução: {os.getcwd()}")
+
+def gerar_relatorio_diagnostico():
+    """Gera um relatório completo do diagnóstico"""
+    
+    print(f"\n" + "=" * 60)
+    print("RELATÓRIO DE DIAGNÓSTICO")
+    print("=" * 60)
+    
+    # Executar todos os diagnósticos
+    resultados_import = testar_imports()
+    verificar_caminhos()
+    simular_reload_module()
+    verificar_executavel()
+    
+    # Gerar arquivo de log
+    with open("diagnostico_executavel.log", "w", encoding="utf-8") as f:
+        f.write("DIAGNÓSTICO DO EXECUTÁVEL\n")
+        f.write("=" * 60 + "\n\n")
+        
+        f.write("RESULTADOS DOS IMPORTS:\n")
+        for modulo, resultado in resultados_import.items():
+            f.write(f"{modulo}: {resultado['status']}\n")
+            if resultado['status'] == 'ERRO':
+                f.write(f"  Erro: {resultado['erro']}\n")
+        
+        f.write(f"\nDiretório atual: {os.getcwd()}\n")
+        f.write(f"Python: {sys.executable}\n")
+        f.write(f"Versão: {sys.version}\n")
+        
+        if hasattr(sys, '_MEIPASS'):
+            f.write(f"PyInstaller: SIM\n")
+            f.write(f"Diretório temporário: {sys._MEIPASS}\n")
+        else:
+            f.write(f"PyInstaller: NÃO\n")
+    
+    print(f"Relatório salvo em: diagnostico_executavel.log")
+    
+    # Sugestões
+    print(f"\n" + "=" * 60)
+    print("SUGESTÕES DE CORREÇÃO")
+    print("=" * 60)
+    
+    problemas_encontrados = [mod for mod, res in resultados_import.items() 
+                           if res['status'] == 'ERRO' and 'relatorio' in mod]
+    
+    if problemas_encontrados:
+        print(f"❌ Módulos com problema: {problemas_encontrados}")
+        print(f"\nSOLUÇÕES:")
+        print(f"1. Execute: python build_final.py")
+        print(f"2. O novo build incluirá hooks específicos para estes módulos")
+        print(f"3. Teste novamente o executável")
+    else:
+        print(f"✅ Todos os módulos estão sendo importados corretamente")
+        print(f"O problema pode estar em outro lugar.")
 
 def main():
-    print("=" * 60)
-    print("🔧 CORREÇÃO RÁPIDA - Módulos de Relatório")
-    print("=" * 60)
-    
-    # Verificar se estamos no diretório correto
-    if not os.path.exists("src/sistema_principal.py"):
-        print("❌ Execute este script no diretório raiz do projeto!")
-        return
-    
-    print("📁 Diretório correto confirmado")
-    
-    # Passo 1: Atualizar build script
-    if not update_build_script():
-        print("❌ Falha ao atualizar build script")
-        return
-    
-    # Passo 2: Perguntar se quer rebuildar
-    response = input("\n🤔 Deseja rebuildar o executável agora? (s/n): ").lower()
-    
-    if response == 's':
-        if rebuild_executable():
-            print("\n🎉 CORREÇÃO CONCLUÍDA COM SUCESSO!")
-            print("📋 Teste o executável abrindo diretamente 'Geração de Relatórios'")
-        else:
-            print("\n⚠️  Build falhou. Execute manualmente: python build_script.py")
-    else:
-        print("\n💡 Para rebuildar depois, execute: python build_script.py")
-    
-    print("\n" + "=" * 60)
+    try:
+        gerar_relatorio_diagnostico()
+    except Exception as e:
+        print(f"Erro durante diagnóstico: {str(e)}")
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()
