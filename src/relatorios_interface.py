@@ -35,7 +35,7 @@ try:
     from src.config.window_config import configurar_janela
 except ImportError:
     # Implementação básica caso o módulo não seja encontrado
-    def configurar_janela(janela, titulo, largura=900, altura=1000):
+    def configurar_janela(janela, titulo, largura=700, altura=1000):
         """
         Configura o posicionamento e dimensionamento padrão de uma janela
         
@@ -89,7 +89,7 @@ class SistemaRelatorios:
             self.menu_principal = None
             
         # Configurar a janela
-        configurar_janela(self.root, "Sistema Integrado de Relatórios", 900, 980)
+        configurar_janela(self.root, "Sistema Integrado de Relatórios", 800, 1000)
         
         # Acompanhar quais módulos foram carregados
         self.modulos_carregados = {}
@@ -172,7 +172,7 @@ class SistemaRelatorios:
                 "descricao": "Análise de despesas agrupadas por categoria",
                 "modulo": "relatorio_categoria",
                 "classe": "RelatorioCategoria",
-                "disponivel": False
+                "disponivel": True
             },
             {
                 "id": "tipo_despesa",
@@ -276,6 +276,8 @@ class SistemaRelatorios:
             self.setup_opcoes_despesas(opcoes_frame)
         elif relatorio["id"] == "contratos":
             self.setup_opcoes_contratos(opcoes_frame)
+        elif relatorio["id"] == "categoria":
+            self.setup_opcoes_categoria(opcoes_frame)
         elif relatorio["id"] == "tipo_despesa":
             self.setup_opcoes_tipo_despesa(opcoes_frame)
         elif relatorio["id"] == "fornecedores":
@@ -539,6 +541,76 @@ class SistemaRelatorios:
             value="pdf"
         ).pack(side='left', padx=20, pady=5)
 
+    def setup_opcoes_categoria(self, parent_frame):
+        """Configura as opções específicas para relatório por tipo de despesa"""
+        # Frame para seleção de cliente
+        frame_cliente = ttk.Frame(parent_frame)
+        frame_cliente.pack(fill='x', padx=10, pady=10)
+        
+        ttk.Label(frame_cliente, text="Cliente:").pack(side='left', padx=5)
+        
+        # Combobox para seleção de cliente
+        self.cliente_categoria = ttk.Combobox(frame_cliente, width=40)
+        self.cliente_categoria.pack(side='left', padx=5)
+        
+        # Preencher com clientes reais
+        self.preencher_combobox_clientes(self.cliente_categoria)
+        
+        # Descrição do relatório
+        ttk.Label(
+            parent_frame,
+            text="Este relatório mostra os dados agrupados por data,\n" +
+                "com colunas para cada tipo de categoria e seus totais.",
+            justify='center',
+            font=('Arial', 10),
+            foreground='gray'
+        ).pack(pady=10)
+        
+        # Opções de visualização (opcional)
+        frame_visualizacao = ttk.LabelFrame(parent_frame, text="Opções de Visualização")
+        frame_visualizacao.pack(fill='x', padx=10, pady=10)
+        
+        # Checkboxes para diferentes visualizações
+        self.mostrar_resumo_td = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            frame_visualizacao,
+            text="Mostrar Resumo",
+            variable=self.mostrar_resumo_td
+        ).pack(anchor='w', padx=15, pady=5)
+        
+        self.mostrar_detalhes_td = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            frame_visualizacao,
+            text="Mostrar Detalhes",
+            variable=self.mostrar_detalhes_td
+        ).pack(anchor='w', padx=15, pady=5)
+        
+        self.mostrar_grafico_td = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            frame_visualizacao,
+            text="Incluir Gráficos",
+            variable=self.mostrar_grafico_td
+        ).pack(anchor='w', padx=15, pady=5)
+        
+        # Frame para formato de saída
+        frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
+        frame_formato.pack(fill='x', padx=10, pady=10)
+        
+        self.formato_categoria = tk.StringVar(value="excel")
+        ttk.Radiobutton(
+            frame_formato,
+            text="Excel",
+            variable=self.formato_categoria,
+            value="excel"
+        ).pack(side='left', padx=20, pady=5)
+        
+        ttk.Radiobutton(
+            frame_formato,
+            text="PDF",
+            variable=self.formato_categoria,
+            value="pdf"
+        ).pack(side='left', padx=20, pady=5)
+
     def setup_opcoes_tipo_despesa(self, parent_frame):
         """Configura as opções específicas para relatório por tipo de despesa"""
         # Frame para seleção de cliente
@@ -557,8 +629,8 @@ class SistemaRelatorios:
         # Descrição do relatório
         ttk.Label(
             parent_frame,
-            text="Este relatório mostra os dados agrupados por data, com colunas para\n" +
-                "cada tipo de despesa e seus totais.",
+            text="Este relatório mostra os dados agrupados por data, \n" +
+                "com colunas para cada tipo de despesa e seus totais.",
             justify='center',
             font=('Arial', 10),
             foreground='gray'
@@ -738,8 +810,9 @@ class SistemaRelatorios:
         # Descrição do processo
         ttk.Label(
             parent_frame,
-            text="Este relatório processará todos os arquivos Excel na pasta selecionada\n"
-                "e gerará um relatório consolidado em HTML com os lançamentos pendentes.",
+            text="Este relatório processará todos os arquivos Excel \n"
+                "na pasta selecionada e gerará um relatório consolidado\n"
+                "em HTML com os lançamentos pendentes.",
             justify='center',
             font=('Arial', 10),
             foreground='gray'
@@ -932,6 +1005,8 @@ class SistemaRelatorios:
                 self.iniciar_relatorio_despesas(classe_relatorio)
             elif relatorio["id"] == "contratos":
                 self.iniciar_relatorio_contratos(classe_relatorio)
+            elif relatorio["id"] == "categoria":
+                self.iniciar_relatorio_categoria(classe_relatorio)
             elif relatorio["id"] == "tipo_despesa":
                 self.iniciar_relatorio_tipo_despesa(classe_relatorio)
             else:
@@ -1119,6 +1194,51 @@ class SistemaRelatorios:
                 app_relatorio.data_entry.set_date(self.data_referencia.get_date())
             except Exception as e:
                 logger.warning(f"Não foi possível configurar a data: {str(e)}")
+        
+        # Configurar comportamento ao fechar
+        app_relatorio.root.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(app_relatorio.root))
+        
+        # Exibir janela
+        app_relatorio.root.lift()
+        app_relatorio.root.focus_force()
+        app_relatorio.root.mainloop()
+
+    def iniciar_relatorio_categoria(self, classe_relatorio):
+        """Inicia a geração do relatório por tipo de despesa"""
+        # Esconder a janela atual
+        self.root.withdraw()
+        
+        # Inicializar o relatório passando a janela atual como parent
+        app_relatorio = classe_relatorio(self.root)
+        
+        # Verificar se app_relatorio tem os atributos esperados
+        if not hasattr(app_relatorio, 'root'):
+            messagebox.showerror(
+                "Erro", 
+                "Erro ao inicializar relatório. A classe do relatório não retornou o objeto esperado."
+            )
+            self.root.deiconify()
+            return
+        
+        # Configurar menu principal para retornar
+        app_relatorio.menu_principal = self.root
+        
+        # Se houver cliente selecionado, configurá-lo
+        if hasattr(app_relatorio, 'cliente_combobox') and hasattr(self, 'cliente_categoria'):
+            cliente_selecionado = self.cliente_categoria.get()
+            if cliente_selecionado and cliente_selecionado != 'Todos os Clientes':
+                try:
+                    # Atualizar lista de clientes primeiro
+                    app_relatorio.atualizar_lista_clientes()
+                    
+                    # Configurar o cliente no combobox
+                    app_relatorio.cliente_combobox.set(cliente_selecionado)
+                    
+                    # Chamar o método para selecionar cliente
+                    if hasattr(app_relatorio, 'selecionar_cliente'):
+                        app_relatorio.selecionar_cliente()
+                except Exception as e:
+                    logger.warning(f"Não foi possível selecionar o cliente: {str(e)}")
         
         # Configurar comportamento ao fechar
         app_relatorio.root.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(app_relatorio.root))
