@@ -22,7 +22,7 @@ SPEC_DIR = "."
 
 def clean_build():
     """Remove diretórios de build anteriores"""
-    print("Limpando builds anteriores...")
+    print("🧹 Limpando builds anteriores...")
     
     dirs_to_clean = [BUILD_DIR, DIST_DIR, "__pycache__"]
     
@@ -44,21 +44,21 @@ def convert_png_to_ico():
     if png_path.exists() and not ico_path.exists():
         try:
             from PIL import Image
-            print("Convertendo logo.png para .ico...")
+            print("🖼️  Convertendo logo.png para .ico...")
             
             img = Image.open(png_path)
             # Redimensionar para tamanhos padrão de ícone
             img = img.resize((256, 256), Image.Resampling.LANCZOS)
             img.save(ico_path, format='ICO', sizes=[(256, 256), (128, 128), (64, 64), (32, 32), (16, 16)])
-            print(f"   Icone criado: {ico_path}")
+            print(f"   ✅ Ícone criado: {ico_path}")
             return True
             
         except ImportError:
-            print("   Pillow nao instalado. Executavel sera criado sem icone.")
-            print("   Instale com: pip install Pillow")
+            print("   ⚠️  Pillow não instalado. Executável será criado sem ícone.")
+            print("   💡 Instale com: pip install Pillow")
             return False
         except Exception as e:
-            print(f"   Erro ao converter icone: {e}")
+            print(f"   ❌ Erro ao converter ícone: {e}")
             return False
     
     return ico_path.exists()
@@ -112,38 +112,15 @@ def get_hidden_imports():
         'python-dotenv',
         'dotenv',
         
-        # Módulos específicos do sistema - TODOS os possíveis nomes
+        # Módulos específicos do sistema
         'version_control',
         'controle_pagamentos_taxas', 
         'Sistema_Entrada_Dados',
-        
-        # Módulos de relatório - TODAS as variações possíveis
         'relatorios_interface',
-        'relatório_interface',  # Com acento
-        'relatorio_interface',  # Sem acento
-        'relatorios_sistema',
-        'relatório_despesas_aprimorado',  # Com acento
-        'relatorio_despesas_aprimorado',  # Sem acento
-        'relatorio_despesas',
-        'sistema_relatorios',
-        
-        # Outros módulos do sistema
+        'relatorio_despesas_aprimorado',
         'despesas_rateadas',
         'gestao_medicoes',
         'configuracoes_sistema',
-        
-        # Módulos de src (com prefixo)
-        'src.relatorios_interface',
-        'src.relatório_interface',
-        'src.relatorio_interface', 
-        'src.relatório_despesas_aprimorado',
-        'src.relatorio_despesas_aprimorado',
-        'src.Sistema_Entrada_Dados',
-        'src.despesas_rateadas',
-        'src.gestao_medicoes',
-        'src.configuracoes_sistema',
-        'src.controle_pagamentos_taxas',
-        'src.version_control',
     ]
     
     return hidden_imports
@@ -233,7 +210,7 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,  # Mude para True se precisar ver erros no console
+    console=False,  # False para aplicação GUI
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
@@ -241,30 +218,6 @@ exe = EXE(
     entitlements_file=None,
     icon='{ICON_FILE if os.path.exists(ICON_FILE) else None}',
 )
-
-# Versão DEBUG - descomente as linhas abaixo para debug
-# exe_debug = EXE(
-#     pyz,
-#     a.scripts,
-#     a.binaries,
-#     a.zipfiles,
-#     a.datas,
-#     [],
-#     name='{APP_NAME}_DEBUG',
-#     debug=True,
-#     bootloader_ignore_signals=False,
-#     strip=False,
-#     upx=False,
-#     upx_exclude=[],
-#     runtime_tmpdir=None,
-#     console=True,  # Console habilitado para debug
-#     disable_windowed_traceback=False,
-#     argv_emulation=False,
-#     target_arch=None,
-#     codesign_identity=None,
-#     entitlements_file=None,
-#     icon='{ICON_FILE if os.path.exists(ICON_FILE) else None}',
-# )
 '''
     
     spec_filename = f"{APP_NAME}.spec"
@@ -275,12 +228,12 @@ exe = EXE(
 
 def build_executable():
     """Executa o PyInstaller"""
-    print("Iniciando build do executavel...")
+    print("🔨 Iniciando build do executável...")
     
     # Verificar se arquivo principal existe
     if not os.path.exists(MAIN_SCRIPT):
-        print(f"ERRO: Arquivo principal nao encontrado: {MAIN_SCRIPT}")
-        print("   Ajuste a variavel MAIN_SCRIPT no inicio deste arquivo")
+        print(f"❌ Arquivo principal não encontrado: {MAIN_SCRIPT}")
+        print("   Ajuste a variável MAIN_SCRIPT no início deste arquivo")
         return False
     
     # Converter ícone se necessário
@@ -288,7 +241,7 @@ def build_executable():
     
     # Criar arquivo .spec
     spec_file = create_spec_file()
-    print(f"Arquivo spec criado: {spec_file}")
+    print(f"📄 Arquivo spec criado: {spec_file}")
     
     # Comando PyInstaller
     cmd = [
@@ -297,37 +250,37 @@ def build_executable():
         spec_file
     ]
     
-    print(f"Executando: {' '.join(cmd)}")
+    print(f"🚀 Executando: {' '.join(cmd)}")
     
     try:
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
-        print("Build concluido com sucesso!")
+        print("✅ Build concluído com sucesso!")
         
         # Mostrar localização do executável
         exe_path = Path(DIST_DIR) / f"{APP_NAME}.exe"
         if exe_path.exists():
-            print(f"Executavel criado em: {exe_path.absolute()}")
-            print(f"Tamanho: {exe_path.stat().st_size / (1024*1024):.1f} MB")
+            print(f"📦 Executável criado em: {exe_path.absolute()}")
+            print(f"💾 Tamanho: {exe_path.stat().st_size / (1024*1024):.1f} MB")
         
         return True
         
     except subprocess.CalledProcessError as e:
-        print(f"Erro durante o build:")
-        print(f"   Codigo de saida: {e.returncode}")
+        print(f"❌ Erro durante o build:")
+        print(f"   Código de saída: {e.returncode}")
         if e.stdout:
-            print(f"   Saida: {e.stdout}")
+            print(f"   Saída: {e.stdout}")
         if e.stderr:
             print(f"   Erro: {e.stderr}")
         return False
     
     except FileNotFoundError:
-        print("PyInstaller nao encontrado!")
+        print("❌ PyInstaller não encontrado!")
         print("   Instale com: pip install pyinstaller")
         return False
 
 def post_build_cleanup():
     """Limpeza pós-build"""
-    print("Fazendo limpeza pos-build...")
+    print("🧹 Fazendo limpeza pós-build...")
     
     # Manter apenas o executável em dist/
     dist_path = Path(DIST_DIR)
@@ -340,12 +293,12 @@ def post_build_cleanup():
 def main():
     """Função principal"""
     print("=" * 60)
-    print(f"BUILD SCRIPT - {APP_NAME}")
+    print(f"🏗️  BUILD SCRIPT - {APP_NAME}")
     print("=" * 60)
     
     # Verificar se estamos no diretório correto
     if not os.path.exists("src") and not os.path.exists(MAIN_SCRIPT):
-        print("ERRO: Execute este script no diretório raiz do projeto!")
+        print("❌ Execute este script no diretório raiz do projeto!")
         return
     
     try:
@@ -360,17 +313,17 @@ def main():
             # post_build_cleanup()
             
             print("\n" + "=" * 60)
-            print("BUILD CONCLUIDO COM SUCESSO!")
+            print("🎉 BUILD CONCLUÍDO COM SUCESSO!")
             print("=" * 60)
-            print(f"Executavel disponivel em: dist/{APP_NAME}.exe")
-            print("Teste o executavel antes de distribuir")
+            print(f"📦 Executável disponível em: dist/{APP_NAME}.exe")
+            print("💡 Teste o executável antes de distribuir")
         else:
-            print("\nBuild falhou. Verifique os erros acima.")
+            print("\n❌ Build falhou. Verifique os erros acima.")
     
     except KeyboardInterrupt:
-        print("\nBuild cancelado pelo usuario")
+        print("\n⚠️  Build cancelado pelo usuário")
     except Exception as e:
-        print(f"\nErro inesperado: {e}")
+        print(f"\n❌ Erro inesperado: {e}")
 
 if __name__ == "__main__":
     main()
