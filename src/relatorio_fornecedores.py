@@ -753,6 +753,23 @@ class RelatorioFornecedores:
                 print(f"Arquivo {nome_cliente} não contém todas as colunas necessárias.")
                 return
             
+            # Filtrar apenas lançamentos ativos
+            if 'STATUS' in df.columns:
+                # Filtrar apenas registros com STATUS = 'ATIVO'
+                df_original_len = len(df)
+                df = df[df['STATUS'].str.upper().str.strip() == 'ATIVO'].copy()
+                df_filtrado_len = len(df)
+                
+                print(f"Cliente {nome_cliente}: {df_original_len} registros totais, {df_filtrado_len} ativos processados")
+                
+                # Se não há registros ativos, não processar
+                if df.empty:
+                    print(f"Nenhum lançamento ativo encontrado para {nome_cliente}")
+                    return
+            else:
+                # Se não existe a coluna STATUS, processar todos (compatibilidade)
+                print(f"Cliente {nome_cliente}: Coluna STATUS não encontrada, processando todos os registros")
+
             # Converter DATA_REL para datetime
             df['DATA_REL'] = pd.to_datetime(df['DATA_REL'])
             
