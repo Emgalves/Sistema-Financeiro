@@ -219,7 +219,7 @@ class ControlePagamentos:
                 self.parent.abrir_finalizacao_quinzena()
             else:
                 # Tentar importar e executar
-                from gestao_taxas import GestaoTaxasAdministracao
+                from src.gestao_taxas import GestaoTaxasAdministracao
                 gestao = GestaoTaxasAdministracao(self.parent)
                 gestao.abrir_finalizacao_quinzena()
         except ImportError:
