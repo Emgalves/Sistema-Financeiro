@@ -1,32 +1,9 @@
 Gerar EXECUTÁVEL:
 
-cd\users\obras\sistema_gestao_testes
 
 cd\Users\Obras\Documents\GitHub\Sistema-Financeiro
 
-Limpe as pastas build e dist:
-rmdir /s /q build
-rmdir /s /q dist
+Scripts organizados:
 
-
-Criar .spec:
-pyinstaller --name="Sistema_Gestao_Financeira" --windowed src/sistema_principal.py
-
-
-Gere o executável:
-pyinstaller Sistema_Gestao_Financeira.spec
-
-
-pyinstaller --name=SistemaEntradaDados --onefile --windowed --add-data="src;src" --add-data="src/config;src/config" --add-data="src/config/parametros_sistema.json;src/config" --hidden-import=src.config --hidden-import=src.config.utils --hidden-import=src.config.logger_config --hidden-import=src.config.window_config --hidden-import=src.config.config --hidden-import=src.configuracoes_sistema --hidden-import=tkinter --hidden-import=tkinter.ttk --hidden-import=tkcalendar --hidden-import=pandas --hidden-import=openpyxl --hidden-import=xlwings --hidden-import=babel --hidden-import=babel.numbers --hidden-import=dateutil.relativedelta --hidden-import=validate_docbr main.py
-
-
-Preciso criar uma pasta compartilhada para o Sistema de Gestão com a seguinte estrutura:
-
-Caminho sugerido: G:\Sistemas\Gestao
-Permissões:
-
-- Usuários do sistema: leitura e execução
-- Administrador do sistema (eu): leitura, escrita e execução
-
-
-A pasta precisa ser acessível para todos os computadores que usarão o sistema.
+check_before_build.py - Verificação automática
+build_simples.py - Build confiável e repetível

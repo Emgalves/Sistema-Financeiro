@@ -1,0 +1,18 @@
+DIAGNÓSTICO DO EXECUTÁVEL
+============================================================
+
+RESULTADOS DOS IMPORTS:
+relatorios_interface: ERRO
+  Erro: No module named 'relatorios_interface'
+src.relatorios_interface: OK
+relatorio_despesas_aprimorado: ERRO
+  Erro: No module named 'relatorio_despesas_aprimorado'
+src.relatorio_despesas_aprimorado: OK
+Sistema_Entrada_Dados: ERRO
+  Erro: No module named 'Sistema_Entrada_Dados'
+src.Sistema_Entrada_Dados: OK
+
+Diretório atual: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+Python: C:\Users\Obras\AppData\Local\Programs\Python\Python312\python.exe
+Versão: 3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]
+PyInstaller: NÃO
