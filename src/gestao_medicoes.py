@@ -414,11 +414,21 @@ class GestaoMedicoes:
             # Obter informações do cliente
             info_cliente = obter_info_cliente(self.cliente_atual)
             
-            # Atualizar label
+            # CORREÇÃO: Atualizar TODOS os labels de cliente nas diferentes abas
+            texto_cliente = f"Cliente: {self.cliente_atual}"
+            if info_cliente and not info_cliente['ativo']:
+                texto_cliente += " (INATIVO)"
+            
+            # Atualizar label na aba de contratos
+            if hasattr(self, 'lbl_cliente_contratos'):
+                self.lbl_cliente_contratos.config(text=texto_cliente)
+            
+            # Atualizar label na aba de medições
+            if hasattr(self, 'lbl_cliente_medicoes'):
+                self.lbl_cliente_medicoes.config(text=texto_cliente)
+            
+            # Manter compatibilidade com outros labels se existirem
             if hasattr(self, 'lbl_cliente_resumo'):
-                texto_cliente = f"Cliente: {self.cliente_atual}"
-                if info_cliente and not info_cliente['ativo']:
-                    texto_cliente += " (INATIVO)"
                 self.lbl_cliente_resumo.config(text=texto_cliente)
             
             # Definir o caminho do arquivo
@@ -433,6 +443,16 @@ class GestaoMedicoes:
     def continuar_para_contratos(self):
         """Avança para a aba de contratos após confirmar seleção"""
         if self.cliente_atual:
+            # CORREÇÃO: Garantir que o label seja atualizado antes de mudar de aba
+            info_cliente = obter_info_cliente(self.cliente_atual)
+            texto_cliente = f"Cliente: {self.cliente_atual}"
+            if info_cliente and not info_cliente['ativo']:
+                texto_cliente += " (INATIVO)"
+            
+            # Atualizar label na aba de contratos
+            if hasattr(self, 'lbl_cliente_contratos'):
+                self.lbl_cliente_contratos.config(text=texto_cliente)
+            
             self.notebook.select(1)  # Vai para aba de contratos
             self.carregar_contratos()
         else:
@@ -484,6 +504,17 @@ class GestaoMedicoes:
             if not self.arquivo_cliente:
                 messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
                 return
+            
+            # CORREÇÃO: Atualizar o label do cliente na aba de contratos
+            if self.cliente_atual:
+                # Verificar se cliente está ativo
+                info_cliente = obter_info_cliente(self.cliente_atual)
+                texto_cliente = f"Cliente: {self.cliente_atual}"
+                if info_cliente and not info_cliente['ativo']:
+                    texto_cliente += " (INATIVO)"
+                
+                if hasattr(self, 'lbl_cliente_contratos'):
+                    self.lbl_cliente_contratos.config(text=texto_cliente)
                 
             # Limpar treeview
             for item in self.tree_contratos.get_children():
