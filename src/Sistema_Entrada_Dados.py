@@ -51,6 +51,8 @@ import openpyxl
 import babel
 from dateutil.relativedelta import relativedelta
 
+import json
+
 # Detectar modo PyInstaller e ajustar paths
 if getattr(sys, 'frozen', False):
     # Estamos em um executável criado pelo PyInstaller
@@ -253,6 +255,8 @@ class VisualizadorLancamentos:
         
         ttk.Button(self.frame_botoes, text="Editar", command=self.editar_lancamento).pack(side='left', padx=5)
         ttk.Button(self.frame_botoes, text="Remover", command=self.remover_lancamento).pack(side='left', padx=5)
+        ttk.Button(self.frame_botoes, text="📂 Carregar Rascunho", 
+                  command=self.carregar_rascunho).pack(side='left', padx=5)
         ttk.Button(self.frame_botoes, text="Salvar na Planilha", command=self.salvar_na_planilha).pack(side='left', padx=5)
         ttk.Button(self.frame_botoes, text="Fechar", command=self.janela.destroy).pack(side='right', padx=5)
 
@@ -507,6 +511,50 @@ class VisualizadorLancamentos:
         """Retorna todos os dados atualizados"""
         return self.dados_para_incluir.copy()
 
+    def carregar_rascunho(self):
+        """Carrega dados do arquivo de backup"""
+        try:
+            temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
+            
+            if os.path.exists(temp_file):
+                with open(temp_file, 'r', encoding='utf-8') as f:
+                    backup_data = json.load(f)
+                
+                data_backup = datetime.fromisoformat(backup_data['data_sessao'])
+                
+                resposta = custom_messagebox("yesno", 
+                    "📂 Carregar Rascunho",
+                    f"Rascunho encontrado:\n\n"
+                    f"• Cliente: {backup_data['cliente']}\n"
+                    f"• Lançamentos: {backup_data['total_lancamentos']}\n"
+                    f"• Salvo em: {data_backup.strftime('%d/%m/%Y às %H:%M')}\n\n"
+                    "Carregar estes dados?\n"
+                    "(Os dados atuais serão substituídos)")
+                
+                if resposta:
+                    # Atualizar dados no sistema
+                    self.sistema.dados_para_incluir = backup_data['lancamentos']
+                    self.sistema.cliente_atual = backup_data['cliente']
+                    
+                    # Atualizar dados no visualizador
+                    self.dados_para_incluir = backup_data['lancamentos'].copy()
+                    self.atualizar_dados(backup_data['lancamentos'])
+                    
+                    # Atualizar interface principal se necessário
+                    if hasattr(self.sistema, 'cliente_combobox'):
+                        self.sistema.cliente_combobox.set(backup_data['cliente'])
+                        self.sistema.selecionar_cliente(None)
+                    
+                    custom_messagebox("info", "✅ Rascunho Carregado", 
+                                    f"Dados carregados com sucesso!\n"
+                                    f"{len(backup_data['lancamentos'])} lançamentos carregados.")
+            else:
+                custom_messagebox("info", "📂 Rascunho", "Nenhum rascunho encontrado no Desktop.")
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao carregar rascunho: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
 class EditorLancamento:
     def __init__(self, parent, dados, indice, callback_atualizacao):
@@ -822,6 +870,17 @@ class SistemaEntradaDados:
         self.setup_aba_fornecedor()
         print("Configurando aba de dados...")
         self.setup_aba_dados()
+
+       # Configurar sistema de backup automático
+        print("Configurando sistema de backup...")
+        
+        # Verificar dados não salvos após 1 segundo (para interface carregar)
+        self.root.after(1000, self.verificar_dados_nao_salvos)
+        
+        # Configurar auto-salvamento
+        self.configurar_auto_salvamento()
+        
+        print("Sistema de backup configurado ✅")
         
         print("Finalizada inicialização do sistema")
 
@@ -3574,6 +3633,8 @@ class SistemaEntradaDados:
                     workbook.save(arquivo_cliente)
                     custom_messagebox("info", "Sucesso", "Dados salvos com sucesso!")
                     
+                    self.limpar_backup()  # Limpar backup após sucesso
+
                     # Após salvar com sucesso
                     logger.info(f"Dados salvos com sucesso - Cliente: {self.cliente_atual}, Registros: {len(dados_para_processar)}")
                     
@@ -3608,6 +3669,89 @@ class SistemaEntradaDados:
         finally:
             # Desmarcar flag de processamento
             self._is_saving = False
+
+    def __del__(self):
+        """Destrutor da classe"""
+        if hasattr(self, 'root'):
+            self.root.destroy()
+
+    def auto_salvar_dados(self):
+        """Salva automaticamente os dados em arquivo temporário"""
+        try:
+            if self.dados_para_incluir:
+                temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
+                backup_data = {
+                    'cliente': self.cliente_atual,
+                    'data_sessao': datetime.now().isoformat(),
+                    'lancamentos': self.dados_para_incluir
+                }
+                
+                with open(temp_file, 'w', encoding='utf-8') as f:
+                    import json
+                    json.dump(backup_data, f, ensure_ascii=False, indent=2)
+                
+                print(f"Auto-salvamento realizado: {len(self.dados_para_incluir)} itens")
+        except Exception as e:
+            print(f"Erro no auto-salvamento: {str(e)}")
+
+    def verificar_dados_nao_salvos(self):
+        """Verifica se existem dados não salvos de sessões anteriores"""
+        try:
+            temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
+            
+            if os.path.exists(temp_file):
+                with open(temp_file, 'r', encoding='utf-8') as f:
+                    import json
+                    backup_data = json.load(f)
+                
+                # Verificar se os dados são recentes (últimas 24 horas)
+                data_backup = datetime.fromisoformat(backup_data['data_sessao'])
+                if (datetime.now() - data_backup).days < 1:
+                    
+                    if custom_messagebox("yesno", 
+                        "Recuperação de Dados",
+                        f"Encontrados {len(backup_data['lancamentos'])} lançamentos não salvos "
+                        f"do cliente {backup_data['cliente']} em {data_backup.strftime('%d/%m/%Y %H:%M')}.\n\n"
+                        "Deseja recuperar esses dados?"):
+                        
+                        self.dados_para_incluir = backup_data['lancamentos']
+                        self.cliente_atual = backup_data['cliente']
+                        
+                        # Atualizar interface
+                        if self.cliente_atual:
+                            self.cliente_combobox.set(self.cliente_atual)
+                            self.selecionar_cliente(None)
+                        
+                        self.visualizar_lancamentos()
+                        return True
+                
+                # Remover backup antigo
+                os.remove(temp_file)
+                
+        except Exception as e:
+            print(f"Erro na verificação de recuperação: {str(e)}")
+        
+        return False
+
+    def configurar_auto_salvamento(self):
+        """Configura o auto-salvamento automático"""
+        def executar_auto_salvamento():
+            self.auto_salvar_dados()
+            # Reagendar para 2 minutos
+            self.root.after(120000, executar_auto_salvamento)  # 120000ms = 2 minutos
+        
+        # Iniciar o timer após 2 minutos
+        self.root.after(120000, executar_auto_salvamento)
+
+    def limpar_backup(self):
+        """Remove arquivo de backup após salvamento bem-sucedido"""
+        try:
+            temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+                print("Backup limpo após salvamento bem-sucedido")
+        except Exception as e:
+            print(f"Erro ao limpar backup: {str(e)}")
 
 class EditorCliente:
     def __init__(self, parent): 
@@ -6384,21 +6528,17 @@ class GestorParcelas:
             self.janela_parcelas.destroy()
             self.janela_parcelas = None
 
-            
-        
-
-
     # Fechando os métodos/classes anteriores
     def run(self):
         """Inicia a execução do sistema"""
         self.root.mainloop()
 
-    def __del__(self):
-        """Destrutor da classe"""
-        if hasattr(self, 'root'):
-            self.root.destroy()
+    # def __del__(self):
+    #     """Destrutor da classe"""
+    #     if hasattr(self, 'root'):
+    #         self.root.destroy()
 
-
+    
 class ImportadorRH:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
