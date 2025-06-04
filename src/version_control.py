@@ -10,13 +10,12 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 3,
-    "patch": 0,
-    "release_date": "29/05/2025",
+    "patch": 1,
+    "release_date": "04/06/2025",
     "changes": [
-        "Incluído Gerenciador de lançamentos, permitindo edição e exclusão de dados da planilha",
-        "Adicionados campos na planilha com 'STATUS', 'ID_LANCAMENTO' e 'HISTORICO_ALTERACAO'",
-        "Modificados todos relatórios para identificar o 'STATUS' dos lançamentos",
-        "Liberado Relatório por Categoria"
+        "Instalado sistema de Backup Automático contra quedas/travamentos"
+        "Melhoria no relatório de Tipos de Despesas, mostrando o total geral por tipo e gráfico de linha do tempo",
+        "Melhoria no relatório de Categoria, mostrando o total geral por categoria e gráfico de linha do tempo"
     ]
 }
 
