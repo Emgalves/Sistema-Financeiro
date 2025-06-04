@@ -48,5 +48,14 @@
             "Liberado Relatório por Categoria"
         ],
         "timestamp": "2025-05-29T10:57:08.833349"
+    },
+    {
+        "version": "1.3.1",
+        "release_date": "04/06/2025",
+        "changes": [
+            "Instalado sistema de Backup Automático contra quedas/travamentosMelhoria no relatório de Tipos de Despesas, mostrando o total geral por tipo e gráfico de linha do tempo",
+            "Melhoria no relatório de Categoria, mostrando o total geral por categoria e gráfico de linha do tempo"
+        ],
+        "timestamp": "2025-06-04T15:48:23.404354"
     }
 ]
