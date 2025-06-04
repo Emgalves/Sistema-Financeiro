@@ -115,9 +115,9 @@ class RelatorioTipoDespesa:
         self.frame_principal = ttk.Frame(self.root, padding=10)
         self.frame_principal.pack(fill='both', expand=True)
         
-        # Frame para seleção
+        # Frame para seleção (TOPO - FIXO)
         self.frame_selecao = ttk.LabelFrame(self.frame_principal, text="Seleção de Cliente e Data")
-        self.frame_selecao.pack(fill='x', pady=10)
+        self.frame_selecao.pack(fill='x', side='top', pady=(0, 10))
         
         # Container para cliente
         frame_cliente = ttk.Frame(self.frame_selecao)
@@ -128,7 +128,7 @@ class RelatorioTipoDespesa:
         self.cliente_combobox.pack(side='left', padx=5)
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.selecionar_cliente)
         
-        # Eliminamos o container para data de referência já que não é necessário neste relatório
+        # Container para botão de gerar relatório
         frame_data = ttk.Frame(self.frame_selecao)
         frame_data.pack(fill='x', padx=10, pady=10)
         
@@ -140,31 +140,9 @@ class RelatorioTipoDespesa:
             style='Big.TButton'
         ).pack(side='left', padx=20)
         
-        # Frame para resultados - com notebook para separar visões
-        self.frame_resultados = ttk.LabelFrame(self.frame_principal, text="Resultados")
-        self.frame_resultados.pack(fill='both', expand=True, pady=10)
-        
-        # Notebook (abas)
-        self.notebook = ttk.Notebook(self.frame_resultados)
-        self.notebook.pack(fill='both', expand=True, padx=5, pady=5)
-        
-        # Abas
-        self.aba_resumo = ttk.Frame(self.notebook)
-        self.aba_detalhes = ttk.Frame(self.notebook)
-        self.aba_grafico = ttk.Frame(self.notebook)
-        
-        self.notebook.add(self.aba_resumo, text='Resumo')
-        self.notebook.add(self.aba_detalhes, text='Detalhes')
-        self.notebook.add(self.aba_grafico, text='Gráfico')
-        
-        # Configurar cada aba
-        self.setup_aba_resumo()
-        self.setup_aba_detalhes()
-        self.setup_aba_grafico()
-        
-        # Botões na parte inferior
+        # BOTÕES NA PARTE INFERIOR (FIXO)
         frame_botoes = ttk.Frame(self.frame_principal)
-        frame_botoes.pack(fill='x', pady=10)
+        frame_botoes.pack(fill='x', side='bottom', pady=(10, 0))
         
         ttk.Button(
             frame_botoes,
@@ -183,6 +161,28 @@ class RelatorioTipoDespesa:
             text="Voltar ao Menu",
             command=self.voltar_menu
         ).pack(side='right', padx=5)
+        
+        # Frame para resultados - MEIO (EXPANSÍVEL)
+        self.frame_resultados = ttk.LabelFrame(self.frame_principal, text="Resultados")
+        self.frame_resultados.pack(fill='both', expand=True, pady=(0, 10))
+        
+        # Notebook (abas)
+        self.notebook = ttk.Notebook(self.frame_resultados)
+        self.notebook.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        # Abas
+        self.aba_resumo = ttk.Frame(self.notebook)
+        self.aba_detalhes = ttk.Frame(self.notebook)
+        self.aba_grafico = ttk.Frame(self.notebook)
+        
+        self.notebook.add(self.aba_resumo, text='Resumo')
+        self.notebook.add(self.aba_detalhes, text='Detalhes')
+        self.notebook.add(self.aba_grafico, text='Gráfico')
+        
+        # Configurar cada aba
+        self.setup_aba_resumo()
+        self.setup_aba_detalhes()
+        self.setup_aba_grafico()
         
         # Estilo para botões grandes
         style = ttk.Style()
@@ -259,22 +259,30 @@ class RelatorioTipoDespesa:
         frame_totais = ttk.LabelFrame(self.aba_resumo, text="Resumo Financeiro", padding=10)
         frame_totais.pack(fill='x', pady=10, padx=10)
         
-        # Adicionar labels para total geral
+        # Total de Despesas (primeira linha, primeira coluna)
         ttk.Label(frame_totais, text="Total de Despesas:", font=('Arial', 11, 'bold')).grid(row=0, column=0, sticky='e', padx=5, pady=5)
         self.lbl_total_geral = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 11))
         self.lbl_total_geral.grid(row=0, column=1, sticky='w', padx=5, pady=5)
         
-        ttk.Label(frame_totais, text="Número de Datas:", font=('Arial', 11, 'bold')).grid(row=1, column=0, sticky='e', padx=5, pady=5)
-        self.lbl_num_datas = ttk.Label(frame_totais, text="0", font=('Arial', 11))
-        self.lbl_num_datas.grid(row=1, column=1, sticky='w', padx=5, pady=5)
+        # Criar labels dinâmicos para cada tipo de despesa
+        self.labels_tipos = {}
+        row = 1
+        col = 0
         
-        ttk.Label(frame_totais, text="Média por Data:", font=('Arial', 11, 'bold')).grid(row=0, column=2, sticky='e', padx=5, pady=5)
-        self.lbl_media_data = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 11))
-        self.lbl_media_data.grid(row=0, column=3, sticky='w', padx=5, pady=5)
-        
-        ttk.Label(frame_totais, text="Data de Maior Valor:", font=('Arial', 11, 'bold')).grid(row=1, column=2, sticky='e', padx=5, pady=5)
-        self.lbl_maior_data = ttk.Label(frame_totais, text="Nenhuma", font=('Arial', 11))
-        self.lbl_maior_data.grid(row=1, column=3, sticky='w', padx=5, pady=5)
+        for tipo_num, tipo_nome in self.tipos_despesas.items():
+            # Label do nome do tipo (versão abreviada)
+            nome_abrev = tipo_nome.split(')')[0] + ')'
+            ttk.Label(frame_totais, text=f"{nome_abrev}:", font=('Arial', 10, 'bold')).grid(row=row, column=col, sticky='e', padx=5, pady=2)
+            
+            # Label do valor do tipo
+            self.labels_tipos[tipo_num] = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 10))
+            self.labels_tipos[tipo_num].grid(row=row, column=col+1, sticky='w', padx=5, pady=2)
+            
+            # Avançar para próxima posição
+            col += 2
+            if col >= 14:  # Máximo de 7 colunas (considerando label + valor)
+                col = 0
+                row += 1
     
     def setup_aba_detalhes(self):
         """Configura a aba de detalhes do relatório para a data selecionada"""
@@ -356,16 +364,19 @@ class RelatorioTipoDespesa:
         self.lbl_menor_lancamento.grid(row=1, column=3, sticky='w', padx=5, pady=5)
     
     def setup_aba_grafico(self):
-        """Configura a aba de gráficos para a data selecionada"""
+        """Configura a aba de gráficos"""
         # Frame para controles do gráfico
         frame_controles = ttk.Frame(self.aba_grafico, padding=5)
         frame_controles.pack(fill='x', pady=5)
         
         ttk.Label(frame_controles, text="Tipo de Gráfico:").pack(side='left', padx=5)
         self.combo_tipo_grafico = ttk.Combobox(frame_controles, values=[
-            "Gráfico de Pizza",
-            "Gráfico de Barras"
-        ], state='readonly', width=30)
+            "Gráfico de Pizza - Totais",
+            "Gráfico de Barras - Totais", 
+            "Gráfico de Linha do Tempo",
+            "Gráfico de Pizza - Data Selecionada",
+            "Gráfico de Barras - Data Selecionada"
+        ], state='readonly', width=35)
         self.combo_tipo_grafico.pack(side='left', padx=5)
         self.combo_tipo_grafico.current(0)
         
@@ -377,7 +388,7 @@ class RelatorioTipoDespesa:
         
         self.lbl_data_grafico = ttk.Label(
             frame_info_grafico, 
-            text="Data Selecionada: Nenhuma", 
+            text="Visualização: Dados Gerais", 
             font=('Arial', 12, 'bold'),
             foreground='#0056b3'
         )
@@ -448,8 +459,15 @@ class RelatorioTipoDespesa:
             for item in self.tv_detalhes.get_children():
                 self.tv_detalhes.delete(item)
         
-        # Resetar gráfico
-        self.limpar_grafico()
+        # Resetar data selecionada
+        self.data_selecionada = None
+        
+        # Atualizar label do gráfico
+        if hasattr(self, 'lbl_data_grafico'):
+            self.lbl_data_grafico.config(text="Visualização: Dados Gerais")
+        
+        # Gerar gráfico inicial de totais
+        self.atualizar_grafico()
         
         # Selecionar aba de resumo
         self.notebook.select(0)  # Índice 0 corresponde à primeira aba (resumo)
@@ -627,26 +645,18 @@ class RelatorioTipoDespesa:
             
             # Atualizar labels de totais
             total_geral = self.df_por_data['total'].sum()
-            num_datas = len(self.df_por_data)
-            
             self.lbl_total_geral.config(text=formatar_moeda_br(total_geral))
-            self.lbl_num_datas.config(text=str(num_datas))
             
-            # Calcular média por data
-            if num_datas > 0:
-                media_data = total_geral / num_datas
-                self.lbl_media_data.config(text=formatar_moeda_br(media_data))
-            else:
-                self.lbl_media_data.config(text="R$ 0,00")
-            
-            # Identificar data de maior valor
-            if not self.df_por_data.empty:
-                idx_maior = self.df_por_data['total'].idxmax()
-                data_maior = self.df_por_data.loc[idx_maior, 'DATA_REL'].strftime('%d/%m/%Y')
-                self.lbl_maior_data.config(text=data_maior)
-            else:
-                self.lbl_maior_data.config(text="Nenhuma")
+            # Atualizar totais por tipo de despesa
+            for tipo_num in range(1, 8):
+                if tipo_num in self.df_por_data.columns:
+                    total_tipo = self.df_por_data[tipo_num].sum()
+                else:
+                    total_tipo = 0
                 
+                if tipo_num in self.labels_tipos:
+                    self.labels_tipos[tipo_num].config(text=formatar_moeda_br(total_tipo))
+            
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao preencher resumo: {str(e)}")
             import traceback
@@ -692,11 +702,20 @@ class RelatorioTipoDespesa:
             # Preparar dados para gráfico
             self.preparar_grafico_data_selecionada(df_filtrado)
             
+            # Atualizar o tipo de gráfico para mostrar a data selecionada se estiver na aba de gráfico
+            if "Data Selecionada" not in self.combo_tipo_grafico.get():
+                self.combo_tipo_grafico.set("Gráfico de Pizza - Data Selecionada")
+            
             # Atualizar gráfico
             self.atualizar_grafico()
             
             # Alternar para a aba de detalhes
             self.notebook.select(1)  # Índice 1 corresponde à aba de detalhes
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao selecionar data: {str(e)}")
+            import traceback
+            traceback.print_exc()
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao selecionar data: {str(e)}")
@@ -838,35 +857,124 @@ class RelatorioTipoDespesa:
             import traceback
             traceback.print_exc()
     
+    def determinar_agrupamento_temporal(self):
+        """Determina o melhor agrupamento temporal baseado no período dos dados"""
+        if not hasattr(self, 'df_por_data') or self.df_por_data.empty:
+            return 'dia'
+        
+        # Calcular diferença em dias entre primeira e última data
+        data_inicio = self.df_por_data['DATA_REL'].min()
+        data_fim = self.df_por_data['DATA_REL'].max()
+        dias_total = (data_fim - data_inicio).days
+        
+        # Definir agrupamento baseado no período
+        if dias_total <= 31:  # Até 1 mês
+            return 'dia'
+        elif dias_total <= 93:  # Até 3 meses
+            return 'semana'
+        elif dias_total <= 365:  # Até 1 ano
+            return 'mes'
+        elif dias_total <= 1095:  # Até 3 anos
+            return 'trimestre'
+        else:  # Mais de 3 anos
+            return 'ano'
+
+    def preparar_dados_timeline(self):
+        """Prepara dados para gráfico de linha do tempo"""
+        try:
+            if not hasattr(self, 'df_despesas') or self.df_despesas.empty:
+                return None
+            
+            agrupamento = self.determinar_agrupamento_temporal()
+            df_timeline = self.df_despesas.copy()
+            
+            # Criar coluna de agrupamento temporal
+            if agrupamento == 'dia':
+                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.date
+                formato_periodo = lambda x: x.strftime('%d/%m/%Y')
+            elif agrupamento == 'semana':
+                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('W')
+                formato_periodo = lambda x: f"Sem {x.week}/{x.year}"
+            elif agrupamento == 'mes':
+                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('M')
+                formato_periodo = lambda x: f"{x.month:02d}/{x.year}"
+            elif agrupamento == 'trimestre':
+                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('Q')
+                formato_periodo = lambda x: f"Q{x.quarter}/{x.year}"
+            else:  # ano
+                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('Y')
+                formato_periodo = lambda x: str(x.year)
+            
+            # Agrupar por período e tipo de despesa
+            df_agrupado = df_timeline.groupby(['periodo', 'TP_DESP_NUM'])['VALOR'].sum().reset_index()
+            
+            # Criar pivot para ter tipos como colunas
+            df_pivot = df_agrupado.pivot(index='periodo', columns='TP_DESP_NUM', values='VALOR').fillna(0)
+            
+            # Garantir que todos os tipos existam
+            for tipo_num in range(1, 8):
+                if tipo_num not in df_pivot.columns:
+                    df_pivot[tipo_num] = 0
+            
+            # Resetar índice e formatar período
+            df_pivot = df_pivot.reset_index()
+            df_pivot['periodo_str'] = df_pivot['periodo'].apply(formato_periodo)
+            
+            # Calcular total por período
+            df_pivot['total'] = df_pivot[[i for i in range(1, 8) if i in df_pivot.columns]].sum(axis=1)
+            
+            return {
+                'dados': df_pivot,
+                'agrupamento': agrupamento,
+                'tipos': list(range(1, 8))
+            }
+            
+        except Exception as e:
+            print(f"Erro ao preparar dados de timeline: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return None
+
     def limpar_grafico(self):
         """Limpa o gráfico atual"""
         for widget in self.frame_grafico.winfo_children():
             widget.destroy()
     
     def atualizar_grafico(self, event=None):
-        """Atualiza o gráfico com base na data selecionada"""
+        """Atualiza o gráfico com base na seleção"""
         try:
             tipo_grafico = self.combo_tipo_grafico.get()
             
             # Limpar frame do gráfico
             self.limpar_grafico()
-                
-            # Verificar se há dados para gerar o gráfico
-            if not hasattr(self, 'dados_grafico') or not self.dados_grafico:
-                return
-                
-            # Verificar se temos uma data selecionada
-            if not self.data_selecionada:
-                return
-                
-            # Criar figura
-            fig, ax = plt.subplots(figsize=(10, 6))
             
-            if tipo_grafico == "Gráfico de Pizza":
-                self.criar_grafico_pizza(fig, ax)
-            elif tipo_grafico == "Gráfico de Barras":
-                self.criar_grafico_barras(fig, ax)
-                
+            # Verificar se há dados
+            if not hasattr(self, 'df_por_data') or self.df_por_data.empty:
+                return
+            
+            # Criar figura
+            fig, ax = plt.subplots(figsize=(12, 7))
+            
+            if "Linha do Tempo" in tipo_grafico:
+                self.criar_grafico_timeline(fig, ax)
+            elif "Data Selecionada" in tipo_grafico:
+                # Gráficos para data específica
+                if not self.data_selecionada:
+                    ax.text(0.5, 0.5, "Selecione uma data na aba Resumo\npara ver os gráficos da data específica", 
+                        horizontalalignment='center', verticalalignment='center',
+                        transform=ax.transAxes, fontsize=14)
+                else:
+                    if "Pizza" in tipo_grafico:
+                        self.criar_grafico_pizza(fig, ax)
+                    elif "Barras" in tipo_grafico:
+                        self.criar_grafico_barras(fig, ax)
+            else:
+                # Gráficos de totais gerais
+                if "Pizza" in tipo_grafico:
+                    self.criar_grafico_pizza_totais(fig, ax)
+                elif "Barras" in tipo_grafico:
+                    self.criar_grafico_barras_totais(fig, ax)
+            
             # Exibir o gráfico
             canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
             canvas.draw()
@@ -983,6 +1091,195 @@ class RelatorioTipoDespesa:
                 horizontalalignment='center', verticalalignment='center',
                 transform=ax.transAxes, fontsize=12, color='red')
     
+    def criar_grafico_pizza_totais(self, fig, ax):
+        """Cria um gráfico de pizza com os totais por tipo de despesa"""
+        try:
+            # Calcular totais por tipo
+            totais = {}
+            for tipo_num in range(1, 8):
+                if tipo_num in self.df_por_data.columns:
+                    totais[tipo_num] = self.df_por_data[tipo_num].sum()
+                else:
+                    totais[tipo_num] = 0
+            
+            # Filtrar tipos com valor > 0
+            totais_filtrados = {k: v for k, v in totais.items() if v > 0}
+            
+            if not totais_filtrados:
+                ax.text(0.5, 0.5, "Não há dados para exibir", 
+                    horizontalalignment='center', verticalalignment='center',
+                    transform=ax.transAxes, fontsize=14)
+                return
+            
+            # Preparar dados para o gráfico
+            tipos = list(totais_filtrados.keys())
+            valores = list(totais_filtrados.values())
+            labels = [self.tipos_despesas[tipo] for tipo in tipos]
+            
+            # Cores para o gráfico
+            colors = plt.cm.tab10.colors
+            
+            # Criar o gráfico de pizza
+            wedges, texts, autotexts = ax.pie(
+                valores, 
+                labels=labels, 
+                autopct='%1.1f%%',
+                startangle=90,
+                colors=colors,
+                wedgeprops={'edgecolor': 'w', 'linewidth': 1}
+            )
+            
+            # Melhorar aparência
+            for text in texts:
+                text.set_fontsize(8)
+            
+            for autotext in autotexts:
+                autotext.set_fontsize(9)
+                autotext.set_fontweight('bold')
+            
+            # Adicionar título
+            total_geral = sum(valores)
+            ax.set_title(f'Distribuição Total por Tipo de Despesa - {formatar_moeda_br(total_geral)}', 
+                        fontsize=14, pad=20)
+            
+            # Ajustar layout
+            fig.tight_layout()
+            
+        except Exception as e:
+            print(f"Erro ao criar gráfico de pizza totais: {str(e)}")
+            ax.text(0.5, 0.5, f"Erro ao gerar gráfico: {str(e)}", 
+                horizontalalignment='center', verticalalignment='center',
+                transform=ax.transAxes, fontsize=12, color='red')
+
+    def criar_grafico_barras_totais(self, fig, ax):
+        """Cria um gráfico de barras com os totais por tipo de despesa"""
+        try:
+            # Calcular totais por tipo
+            totais = {}
+            for tipo_num in range(1, 8):
+                if tipo_num in self.df_por_data.columns:
+                    totais[tipo_num] = self.df_por_data[tipo_num].sum()
+                else:
+                    totais[tipo_num] = 0
+            
+            # Filtrar tipos com valor > 0 e ordenar por valor
+            totais_filtrados = {k: v for k, v in totais.items() if v > 0}
+            totais_ordenados = dict(sorted(totais_filtrados.items(), key=lambda x: x[1], reverse=True))
+            
+            if not totais_ordenados:
+                ax.text(0.5, 0.5, "Não há dados para exibir", 
+                    horizontalalignment='center', verticalalignment='center',
+                    transform=ax.transAxes, fontsize=14)
+                return
+            
+            # Preparar dados para o gráfico
+            tipos = list(totais_ordenados.keys())
+            valores = list(totais_ordenados.values())
+            labels = [self.tipos_despesas[tipo] for tipo in tipos]
+            
+            # Cores para o gráfico
+            colors = plt.cm.tab10.colors[:len(tipos)]
+            
+            # Criar o gráfico de barras
+            bars = ax.barh(labels, valores, color=colors)
+            
+            # Adicionar valores nas barras
+            for bar in bars:
+                width = bar.get_width()
+                label_x_pos = width + width * 0.01
+                ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, 
+                    formatar_moeda_br(width), va='center', fontsize=9)
+            
+            # Ajustar formatação do eixo x (valores)
+            def format_real(x, pos):
+                return f'R$ {x:,.0f}'.replace(',', '.')
+            
+            ax.xaxis.set_major_formatter(mticker.FuncFormatter(format_real))
+            
+            # Adicionar títulos e labels
+            total_geral = sum(valores)
+            ax.set_title(f'Totais por Tipo de Despesa - {formatar_moeda_br(total_geral)}', fontsize=14)
+            ax.set_xlabel('Valor (R$)', fontsize=11)
+            ax.set_ylabel('Tipo de Despesa', fontsize=11)
+            
+            # Adicionar grid
+            ax.grid(axis='x', linestyle='--', alpha=0.7)
+            
+            # Ajustar layout
+            fig.tight_layout()
+            
+        except Exception as e:
+            print(f"Erro ao criar gráfico de barras totais: {str(e)}")
+            ax.text(0.5, 0.5, f"Erro ao gerar gráfico: {str(e)}", 
+                horizontalalignment='center', verticalalignment='center',
+                transform=ax.transAxes, fontsize=12, color='red')
+
+    def criar_grafico_timeline(self, fig, ax):
+        """Cria um gráfico de linha do tempo"""
+        try:
+            dados_timeline = self.preparar_dados_timeline()
+            
+            if not dados_timeline or dados_timeline['dados'].empty:
+                ax.text(0.5, 0.5, "Não há dados suficientes para linha do tempo", 
+                    horizontalalignment='center', verticalalignment='center',
+                    transform=ax.transAxes, fontsize=14)
+                return
+            
+            df = dados_timeline['dados']
+            agrupamento = dados_timeline['agrupamento']
+            tipos = dados_timeline['tipos']
+            
+            # Cores para cada tipo
+            colors = plt.cm.tab10.colors
+            
+            # Plotar linha para cada tipo de despesa
+            for i, tipo_num in enumerate(tipos):
+                if tipo_num in df.columns and df[tipo_num].sum() > 0:
+                    ax.plot(df['periodo_str'], df[tipo_num], 
+                        marker='o', linewidth=2, markersize=4,
+                        color=colors[i % len(colors)],
+                        label=self.tipos_despesas[tipo_num])
+            
+            # Plotar linha do total
+            ax.plot(df['periodo_str'], df['total'], 
+                marker='s', linewidth=3, markersize=5,
+                color='black', linestyle='--',
+                label='Total Geral')
+            
+            # Configurar eixos
+            ax.set_xlabel(f'Período ({agrupamento.title()})', fontsize=11)
+            ax.set_ylabel('Valor (R$)', fontsize=11)
+            
+            # Formatar eixo Y
+            def format_real(x, pos):
+                return f'R$ {x:,.0f}'.replace(',', '.')
+            ax.yaxis.set_major_formatter(mticker.FuncFormatter(format_real))
+            
+            # Rotacionar labels do eixo X se necessário
+            if len(df) > 10:
+                ax.tick_params(axis='x', rotation=45)
+            
+            # Adicionar grid
+            ax.grid(True, linestyle='--', alpha=0.7)
+            
+            # Adicionar legenda
+            ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+            
+            # Título
+            data_inicio = self.df_por_data['DATA_REL'].min().strftime('%d/%m/%Y')
+            data_fim = self.df_por_data['DATA_REL'].max().strftime('%d/%m/%Y')
+            ax.set_title(f'Evolução das Despesas por Tipo\n{data_inicio} a {data_fim}', 
+                        fontsize=14, pad=20)
+            
+            # Ajustar layout
+            fig.tight_layout()
+            
+        except Exception as e:
+            print(f"Erro ao criar gráfico de timeline: {str(e)}")
+            ax.text(0.5, 0.5, f"Erro ao gerar gráfico: {str(e)}", 
+                horizontalalignment='center', verticalalignment='center',
+                transform=ax.transAxes, fontsize=12, color='red')
+
     def exportar_excel(self):
         """Exporta o relatório para um arquivo Excel"""
         if not hasattr(self, 'cliente_atual') or not self.cliente_atual:
