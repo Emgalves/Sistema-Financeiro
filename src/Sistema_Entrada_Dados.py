@@ -1770,9 +1770,14 @@ class SistemaEntradaDados:
 
         # Botão de busca
         ttk.Button(busca_interno, 
-                text="Buscar", 
-                command=self.buscar_fornecedor,
-                style='Medium.TButton').pack(side='left', padx=10)
+            text="Buscar", 
+            command=self.buscar_fornecedor,
+            style='Medium.TButton').pack(side='left', padx=10)
+
+        ttk.Button(busca_interno, 
+                text="📋 Lançamentos", 
+                command=self.abrir_visualizador_fornecedor,
+                style='Medium.TButton').pack(side='left', padx=5)
 
         # Frame principal para resultados
         frame_resultados = ttk.Frame(self.aba_fornecedor)
@@ -1889,7 +1894,27 @@ class SistemaEntradaDados:
                 command=self.sair_sistema,
                 style='Medium.TButton').pack(side='right', padx=5)
 
-
+    def abrir_visualizador_fornecedor(self):
+        """Abre o visualizador de lançamentos para o fornecedor selecionado"""
+        # Verificar se há fornecedor selecionado
+        selecionado = self.tree_fornecedores.selection()
+        if not selecionado:
+            custom_messagebox("warning", "Aviso", "Selecione um fornecedor primeiro!")
+            return
+        
+        # Obter dados do fornecedor
+        valores = self.tree_fornecedores.item(selecionado[0])['values']
+        cnpj_cpf = valores[0]
+        nome = valores[1]
+        
+        # Verificar se há cliente selecionado
+        if not self.cliente_atual:
+            custom_messagebox("error", "Erro", "Selecione um cliente primeiro!")
+            return
+        
+        # Abrir visualizador
+        visualizador = VisualizadorLancamentosFornecedor(self.root, self)
+        visualizador.abrir_visualizador(cnpj_cpf, nome)
 
     def validar_tipo_despesa(self, P):
         """
@@ -8550,6 +8575,767 @@ class EditorLancamentoCompleto:
                 
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao salvar: {str(e)}")                
+
+class VisualizadorLancamentosFornecedor:
+    def __init__(self, parent, sistema_principal):
+        self.parent = parent
+        self.sistema = sistema_principal
+        self.janela = None
+        self.tree_lancamentos = None
+        self.dados_fornecedor = None
+        
+    def formatar_cnpj_cpf(self, cnpj_cpf):
+        """Formata CNPJ/CPF mantendo zeros à esquerda"""
+        try:
+            # Converter para string e extrair apenas números
+            numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))
+            
+            if len(numeros) == 11:  # CPF
+                # Garantir 11 dígitos com zeros à esquerda
+                cpf = numeros.zfill(11)
+                return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
+            elif len(numeros) == 14:  # CNPJ
+                # Garantir 14 dígitos com zeros à esquerda
+                cnpj = numeros.zfill(14)
+                return f"{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}"
+            else:
+                # Retornar original se não for CPF nem CNPJ válido
+                return str(cnpj_cpf)
+        except:
+            return str(cnpj_cpf)
+        
+    def abrir_visualizador(self, cnpj_cpf_fornecedor, nome_fornecedor):
+        """Abre o visualizador para um fornecedor específico"""
+        if not self.sistema.cliente_atual:
+            custom_messagebox("error", "Erro", "Nenhum cliente selecionado!")
+            return
+            
+        # Normalizar CNPJ/CPF com zeros à esquerda ANTES de formatar
+        cnpj_cpf_str = str(cnpj_cpf_fornecedor)
+        cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_str))
+        
+        # Garantir zeros à esquerda baseado no tamanho
+        if len(cnpj_cpf_numeros) <= 11:
+            cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(11)  # CPF
+        else:
+            cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(14)  # CNPJ
+            
+        # Formatar CNPJ/CPF corretamente
+        cnpj_cpf_formatado = self.formatar_cnpj_cpf(cnpj_cpf_normalizado)
+        
+        print(f"DEBUG: CNPJ original: {cnpj_cpf_fornecedor}")
+        print(f"DEBUG: CNPJ normalizado: {cnpj_cpf_normalizado}")
+        print(f"DEBUG: CNPJ formatado: {cnpj_cpf_formatado}")
+        
+        self.dados_fornecedor = {
+            'cnpj_cpf': cnpj_cpf_normalizado,  # Usar normalizado para busca
+            'cnpj_cpf_formatado': cnpj_cpf_formatado,  # Para exibição
+            'nome': nome_fornecedor
+        }
+        
+        self.criar_janela()
+        self.carregar_lancamentos()
+        
+    def criar_janela(self):
+        """Cria a janela do visualizador"""
+        self.janela = tk.Toplevel(self.parent)
+        self.janela.title(f"Lançamentos - {self.dados_fornecedor['nome']}")
+        self.janela.geometry("1200x900")
+        
+        # Configurar janela
+        self.janela.transient(self.parent)
+        self.janela.grab_set()
+        
+        self.criar_interface()
+        
+    def criar_interface(self):
+        """Cria a interface do visualizador"""
+        # Frame principal
+        main_frame = ttk.Frame(self.janela, padding="10")
+        main_frame.pack(fill='both', expand=True)
+        
+        # Cabeçalho com informações do fornecedor
+        frame_cabecalho = ttk.LabelFrame(main_frame, text="Informações do Fornecedor")
+        frame_cabecalho.pack(fill='x', pady=(0, 10))
+        
+        info_frame = ttk.Frame(frame_cabecalho)
+        info_frame.pack(fill='x', padx=10, pady=8)
+        
+        # Informações em duas colunas
+        ttk.Label(info_frame, text="Nome:", font=('Arial', 10, 'bold')).grid(
+            row=0, column=0, padx=5, pady=2, sticky='w')
+        ttk.Label(info_frame, text=self.dados_fornecedor['nome'], 
+                 font=('Arial', 10)).grid(row=0, column=1, padx=5, pady=2, sticky='w')
+        
+        ttk.Label(info_frame, text="CNPJ/CPF:", font=('Arial', 10, 'bold')).grid(
+            row=0, column=2, padx=20, pady=2, sticky='w')
+        ttk.Label(info_frame, text=self.dados_fornecedor['cnpj_cpf_formatado'], 
+                 font=('Arial', 10)).grid(row=0, column=3, padx=5, pady=2, sticky='w')
+        
+        ttk.Label(info_frame, text="Cliente:", font=('Arial', 10, 'bold')).grid(
+            row=1, column=0, padx=5, pady=2, sticky='w')
+        ttk.Label(info_frame, text=self.sistema.cliente_atual, 
+                 font=('Arial', 10)).grid(row=1, column=1, padx=5, pady=2, sticky='w')
+        
+        # Frame de filtros
+        frame_filtros = ttk.LabelFrame(main_frame, text="Filtros")
+        frame_filtros.pack(fill='x', pady=(0, 10))
+        
+        filtros_frame = ttk.Frame(frame_filtros)
+        filtros_frame.pack(fill='x', padx=10, pady=8)
+        
+        # Filtros por período
+        ttk.Label(filtros_frame, text="Período:").grid(row=0, column=0, padx=5, pady=5)
+        self.data_inicio = DateEntry(filtros_frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_inicio.grid(row=0, column=1, padx=5, pady=5)
+        # Definir data padrão (últimos 6 meses)
+        data_padrao = datetime.now() - relativedelta(months=6)
+        self.data_inicio.set_date(data_padrao.date())
+        
+        ttk.Label(filtros_frame, text="até").grid(row=0, column=2, padx=5, pady=5)
+        self.data_fim = DateEntry(filtros_frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_fim.grid(row=0, column=3, padx=5, pady=5)
+        
+        # Filtro por referência
+        ttk.Label(filtros_frame, text="Referência:").grid(row=0, column=4, padx=15, pady=5)
+        self.filtro_referencia = ttk.Entry(filtros_frame, width=20)
+        self.filtro_referencia.grid(row=0, column=5, padx=5, pady=5)
+        
+        # Filtro por status
+        ttk.Label(filtros_frame, text="Status:").grid(row=0, column=6, padx=15, pady=5)
+        self.combo_status = ttk.Combobox(filtros_frame, 
+                                       values=['Todos', 'Ativos', 'Excluídos'], 
+                                       state='readonly', width=10)
+        self.combo_status.set('Ativos')
+        self.combo_status.grid(row=0, column=7, padx=5, pady=5)
+        
+        # Botões de filtro
+        ttk.Button(filtros_frame, text="Filtrar", 
+                  command=self.aplicar_filtros).grid(row=0, column=8, padx=10, pady=5)
+        ttk.Button(filtros_frame, text="Limpar", 
+                  command=self.limpar_filtros).grid(row=0, column=9, padx=5, pady=5)
+        
+        # Campo de busca rápida
+        frame_busca = ttk.Frame(filtros_frame)
+        frame_busca.grid(row=1, column=0, columnspan=10, pady=10, sticky='ew')
+        
+        ttk.Label(frame_busca, text="🔍 Busca rápida por NF ou Observação:").pack(side='left', padx=5)
+        self.busca_rapida = ttk.Entry(frame_busca, width=30)
+        self.busca_rapida.pack(side='left', padx=5)
+        self.busca_rapida.bind('<KeyRelease>', self.busca_incremental)
+        
+        # Frame da lista de lançamentos
+        frame_lista = ttk.LabelFrame(main_frame, text="Lançamentos Encontrados")
+        frame_lista.pack(fill='both', expand=True)
+        
+        # Treeview para lançamentos
+        colunas = ('Data Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação')
+        self.tree_lancamentos = ttk.Treeview(frame_lista, columns=colunas, show='headings', height=18)
+        
+        # Configurar cabeçalhos e larguras
+        larguras = {'Data Rel.': 90, 'Tipo': 50, 'Referência': 200, 'NF': 100, 
+                   'Valor': 100, 'Vencimento': 90, 'Status': 80, 'Observação': 250}
+        
+        for col in colunas:
+            self.tree_lancamentos.heading(col, text=col)
+            self.tree_lancamentos.column(col, width=larguras.get(col, 100))
+            if col == 'Valor':
+                self.tree_lancamentos.column(col, anchor='e')
+        
+        # Scrollbars
+        scrolly = ttk.Scrollbar(frame_lista, orient='vertical', command=self.tree_lancamentos.yview)
+        scrollx = ttk.Scrollbar(frame_lista, orient='horizontal', command=self.tree_lancamentos.xview)
+        self.tree_lancamentos.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
+        
+        # Posicionar elementos
+        self.tree_lancamentos.pack(side='left', fill='both', expand=True, padx=5, pady=5)
+        scrolly.pack(side='right', fill='y')
+        scrollx.pack(side='bottom', fill='x')
+        
+        # Frame de resumo
+        frame_resumo = ttk.LabelFrame(main_frame, text="Resumo")
+        frame_resumo.pack(fill='x', pady=(10, 0))
+        
+        resumo_frame = ttk.Frame(frame_resumo)
+        resumo_frame.pack(fill='x', padx=10, pady=8)
+        
+        self.lbl_total_lancamentos = ttk.Label(resumo_frame, text="Total de Lançamentos: 0", 
+                                             font=('Arial', 10, 'bold'))
+        self.lbl_total_lancamentos.pack(side='left', padx=10)
+        
+        self.lbl_valor_total = ttk.Label(resumo_frame, text="Valor Total: R$ 0,00", 
+                                       font=('Arial', 10, 'bold'))
+        self.lbl_valor_total.pack(side='left', padx=10)
+        
+        self.lbl_ultimo_lancamento = ttk.Label(resumo_frame, text="Último Lançamento: -", 
+                                             font=('Arial', 10))
+        self.lbl_ultimo_lancamento.pack(side='left', padx=10)
+        
+        # Frame de botões
+        frame_botoes = ttk.Frame(main_frame)
+        frame_botoes.pack(fill='x', pady=(10, 0))
+        
+        # Botões de ação
+        ttk.Button(frame_botoes, text="📋 Exportar Lista", 
+                  command=self.exportar_lista).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="🔄 Atualizar", 
+                  command=self.carregar_lancamentos).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="📊 Ver Estatísticas", 
+                  command=self.mostrar_estatisticas).pack(side='left', padx=5)
+        
+        ttk.Button(frame_botoes, text="Fechar", 
+                  command=self.janela.destroy).pack(side='right', padx=5)
+        
+        # Configurar tags para cores
+        self.tree_lancamentos.tag_configure('excluido', background='#ffcccc')
+        self.tree_lancamentos.tag_configure('normal', background='white')
+        self.tree_lancamentos.tag_configure('recente', background='#e8f5e8')  # Verde claro para lançamentos recentes
+        
+        # Bindings
+        self.tree_lancamentos.bind('<Double-1>', self.ver_detalhes_lancamento)
+        
+    def carregar_lancamentos(self):
+        """Carrega os lançamentos do fornecedor"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            
+            # Carregar dados com CNPJ/CPF como string para preservar zeros à esquerda
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', dtype={'CNPJ_CPF': str})
+            df = df.fillna("")
+            
+            # Debug: Verificar tipos de dados na coluna VALOR
+            print(f"DEBUG: Tipos de dados na coluna VALOR: {df['VALOR'].dtypes}")
+            print(f"DEBUG: Primeiros valores da coluna VALOR: {df['VALOR'].head()}")
+            
+            # Adicionar coluna de status se não existir
+            if 'STATUS' not in df.columns:
+                df['STATUS'] = 'ATIVO'
+            
+            # Preencher status vazios
+            df['STATUS'] = df['STATUS'].replace('', 'ATIVO')
+            df['STATUS'] = df['STATUS'].fillna('ATIVO')
+            
+            # Filtrar apenas lançamentos do fornecedor
+            # CORREÇÃO: Garantir que cnpj_cpf seja string antes de usar replace
+            cnpj_cpf_original = self.dados_fornecedor['cnpj_cpf']
+            print(f"DEBUG: CNPJ/CPF original: {cnpj_cpf_original}, tipo: {type(cnpj_cpf_original)}")
+            
+            # Converter para string, garantir zeros à esquerda e limpar
+            cnpj_cpf_str = str(cnpj_cpf_original)
+            cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_str))
+            
+            # Determinar se é CPF ou CNPJ e formatar com zeros à esquerda
+            if len(cnpj_cpf_numeros) <= 11:
+                cnpj_cpf_padded = cnpj_cpf_numeros.zfill(11)  # CPF
+            else:
+                cnpj_cpf_padded = cnpj_cpf_numeros.zfill(14)  # CNPJ
+            
+            print(f"DEBUG: CNPJ/CPF com zeros: {cnpj_cpf_padded}")
+            
+            # Função para normalizar CNPJ/CPF (extrair números e adicionar zeros)
+            def normalizar_cnpj_cpf(valor):
+                if pd.isna(valor) or valor == '':
+                    return ''
+                numeros = ''.join(filter(str.isdigit, str(valor)))
+                if len(numeros) <= 11:
+                    return numeros.zfill(11)
+                else:
+                    return numeros.zfill(14)
+            
+            # Aplicar normalização na coluna da planilha
+            df['CNPJ_CPF_NORMALIZADO'] = df['CNPJ_CPF'].apply(normalizar_cnpj_cpf)
+            
+            # Criar máscara para buscar o fornecedor
+            mask_fornecedor = (
+                df['CNPJ_CPF_NORMALIZADO'] == cnpj_cpf_padded
+            ) | (
+                df['NOME'].astype(str).str.upper().str.strip() == str(self.dados_fornecedor['nome']).upper().strip()
+            )
+            
+            self.df_fornecedor = df[mask_fornecedor].copy()
+            
+            if self.df_fornecedor.empty:
+                # Tentar busca mais flexível pelo nome
+                nome_busca = str(self.dados_fornecedor['nome']).upper().strip()
+                if ' ' in nome_busca:
+                    primeiro_nome = nome_busca.split()[0]
+                else:
+                    primeiro_nome = nome_busca
+                
+                print(f"DEBUG: Tentando busca flexível por nome: {primeiro_nome}")
+                
+                mask_nome_flexivel = df['NOME'].astype(str).str.upper().str.contains(
+                    primeiro_nome, na=False
+                )
+                self.df_fornecedor = df[mask_nome_flexivel].copy()
+            
+            # Debug: Verificar dados encontrados
+            print(f"DEBUG: Encontrados {len(self.df_fornecedor)} lançamentos para o fornecedor")
+            if not self.df_fornecedor.empty:
+                print(f"DEBUG: Tipos na coluna VALOR do fornecedor: {self.df_fornecedor['VALOR'].dtypes}")
+                print(f"DEBUG: Nomes encontrados: {self.df_fornecedor['NOME'].unique()}")
+                print(f"DEBUG: CNPJs encontrados: {self.df_fornecedor['CNPJ_CPF'].unique()}")
+            else:
+                print(f"DEBUG: Nenhum lançamento encontrado. Tentando debug mais detalhado...")
+                print(f"DEBUG: Únicos CNPJs na planilha: {df['CNPJ_CPF'].unique()[:5]}")
+                print(f"DEBUG: CNPJs normalizados na planilha: {df['CNPJ_CPF_NORMALIZADO'].unique()[:5]}")
+                print(f"DEBUG: Únicos nomes na planilha: {df['NOME'].unique()[:5]}")
+            
+            # Ordenar por data (mais recente primeiro)
+            if not self.df_fornecedor.empty:
+                self.df_fornecedor['DATA_REL'] = pd.to_datetime(self.df_fornecedor['DATA_REL'], errors='coerce')
+                self.df_fornecedor = self.df_fornecedor.sort_values('DATA_REL', ascending=False)
+            
+            # Aplicar filtros iniciais
+            self.aplicar_filtros()
+            
+        except Exception as e:
+            import traceback
+            print(f"DEBUG: Erro detalhado: {traceback.format_exc()}")
+            custom_messagebox("error", "Erro", f"Erro ao carregar lançamentos: {str(e)}")
+            
+    def aplicar_filtros(self):
+        """Aplica os filtros selecionados"""
+        try:
+            # Limpar tree
+            for item in self.tree_lancamentos.get_children():
+                self.tree_lancamentos.delete(item)
+                
+            if self.df_fornecedor.empty:
+                self.atualizar_resumo(pd.DataFrame())
+                return
+            
+            df_filtrado = self.df_fornecedor.copy()
+            
+            # Filtro por período
+            data_inicio = self.data_inicio.get_date()
+            data_fim = self.data_fim.get_date()
+            
+            df_filtrado = df_filtrado[
+                (df_filtrado['DATA_REL'].dt.date >= data_inicio) &
+                (df_filtrado['DATA_REL'].dt.date <= data_fim)
+            ]
+            
+            # Filtro por status
+            status_filtro = self.combo_status.get()
+            if status_filtro == 'Ativos':
+                df_filtrado = df_filtrado[df_filtrado['STATUS'] != 'EXCLUIDO']
+            elif status_filtro == 'Excluídos':
+                df_filtrado = df_filtrado[df_filtrado['STATUS'] == 'EXCLUIDO']
+            
+            # Filtro por referência
+            referencia_filtro = self.filtro_referencia.get().strip().upper()
+            if referencia_filtro:
+                df_filtrado = df_filtrado[
+                    df_filtrado['REFERÊNCIA'].astype(str).str.upper().str.contains(referencia_filtro, na=False)
+                ]
+            
+            # Preencher tree
+            hoje = datetime.now().date()
+            limite_recente = hoje - relativedelta(days=30)  # Últimos 30 dias
+            
+            for idx, row in df_filtrado.iterrows():
+                status = row.get('STATUS', 'ATIVO')
+                tag = 'excluido' if status == 'EXCLUIDO' else 'normal'
+                
+                # Marcar lançamentos recentes
+                if pd.notna(row['DATA_REL']) and row['DATA_REL'].date() >= limite_recente:
+                    tag = 'recente'
+                
+                valores = (
+                    self.formatar_data(row['DATA_REL']),
+                    self.formatar_tipo_despesa(row['TP_DESP']),
+                    row.get('REFERÊNCIA', ''),
+                    row.get('NF', ''),
+                    self.formatar_valor(row['VALOR']),
+                    self.formatar_data(row['DT_VENCTO']),
+                    status,
+                    row.get('OBSERVAÇÃO', '')
+                )
+                
+                self.tree_lancamentos.insert('', 'end', values=valores, tags=(tag,))
+            
+            # Atualizar resumo
+            self.atualizar_resumo(df_filtrado)
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao aplicar filtros: {str(e)}")
+            
+    def busca_incremental(self, event=None):
+        """Busca incremental conforme o usuário digita"""
+        termo = self.busca_rapida.get().strip().upper()
+        
+        if not termo:
+            self.aplicar_filtros()
+            return
+            
+        # Filtrar dados
+        df_busca = self.df_fornecedor.copy()
+        
+        # Aplicar filtros básicos primeiro
+        data_inicio = self.data_inicio.get_date()
+        data_fim = self.data_fim.get_date()
+        
+        df_busca = df_busca[
+            (df_busca['DATA_REL'].dt.date >= data_inicio) &
+            (df_busca['DATA_REL'].dt.date <= data_fim)
+        ]
+        
+        # Buscar em NF ou Observação
+        mask_busca = (
+            df_busca['NF'].astype(str).str.upper().str.contains(termo, na=False) |
+            df_busca['OBSERVAÇÃO'].astype(str).str.upper().str.contains(termo, na=False) |
+            df_busca['REFERÊNCIA'].astype(str).str.upper().str.contains(termo, na=False)
+        )
+        
+        df_resultado = df_busca[mask_busca]
+        
+        # Limpar e preencher tree
+        for item in self.tree_lancamentos.get_children():
+            self.tree_lancamentos.delete(item)
+            
+        for idx, row in df_resultado.iterrows():
+            status = row.get('STATUS', 'ATIVO')
+            tag = 'excluido' if status == 'EXCLUIDO' else 'normal'
+            
+            valores = (
+                self.formatar_data(row['DATA_REL']),
+                self.formatar_tipo_despesa(row['TP_DESP']),
+                row.get('REFERÊNCIA', ''),
+                row.get('NF', ''),
+                self.formatar_valor(row['VALOR']),
+                self.formatar_data(row['DT_VENCTO']),
+                status,
+                row.get('OBSERVAÇÃO', '')
+            )
+            
+            self.tree_lancamentos.insert('', 'end', values=valores, tags=(tag,))
+        
+        self.atualizar_resumo(df_resultado)
+        
+    def limpar_filtros(self):
+        """Limpa todos os filtros e recarrega"""
+        # Restaurar valores padrão
+        data_padrao = datetime.now() - relativedelta(months=6)
+        self.data_inicio.set_date(data_padrao.date())
+        self.data_fim.set_date(datetime.now().date())
+        self.filtro_referencia.delete(0, tk.END)
+        self.combo_status.set('Ativos')
+        self.busca_rapida.delete(0, tk.END)
+        
+        # Reaplicar filtros
+        self.aplicar_filtros()
+        
+    def atualizar_resumo(self, df_filtrado):
+        """Atualiza o resumo com estatísticas"""
+        if df_filtrado.empty:
+            self.lbl_total_lancamentos.config(text="Total de Lançamentos: 0")
+            self.lbl_valor_total.config(text="Valor Total: R$ 0,00")
+            self.lbl_ultimo_lancamento.config(text="Último Lançamento: -")
+            return
+            
+        # Calcular totais
+        total_lancamentos = len(df_filtrado)
+        
+        # Calcular valor total (apenas ativos)
+        df_ativos = df_filtrado[df_filtrado['STATUS'] != 'EXCLUIDO']
+        valor_total = 0
+        
+        for _, row in df_ativos.iterrows():
+            try:
+                valor_raw = row['VALOR']
+                # Converter diferentes tipos de valor
+                if isinstance(valor_raw, str):
+                    valor_limpo = valor_raw.replace('R$', '').replace(' ', '').replace(',', '.').strip()
+                    if valor_limpo:
+                        valor = float(valor_limpo)
+                    else:
+                        valor = 0
+                elif isinstance(valor_raw, (int, float)):
+                    valor = float(valor_raw)
+                else:
+                    valor = float(str(valor_raw).replace(',', '.') if str(valor_raw) else 0)
+                
+                valor_total += valor
+            except (ValueError, TypeError, AttributeError):
+                # Em caso de erro, ignorar este valor
+                continue
+        
+        # Último lançamento
+        if not df_filtrado.empty:
+            ultimo = df_filtrado.iloc[0]  # Já ordenado por data desc
+            data_ultimo = self.formatar_data(ultimo['DATA_REL'])
+            ref_ultimo = ultimo.get('REFERÊNCIA', '')[:20] + ('...' if len(str(ultimo.get('REFERÊNCIA', ''))) > 20 else '')
+            ultimo_texto = f"{data_ultimo} - {ref_ultimo}"
+        else:
+            ultimo_texto = "-"
+        
+        # Atualizar labels
+        self.lbl_total_lancamentos.config(text=f"Total de Lançamentos: {total_lancamentos}")
+        self.lbl_valor_total.config(text=f"Valor Total: R$ {valor_total:,.2f}")
+        self.lbl_ultimo_lancamento.config(text=f"Último Lançamento: {ultimo_texto}")
+        
+    def ver_detalhes_lancamento(self, event=None):
+        """Mostra detalhes completos do lançamento selecionado"""
+        item_selecionado = self.tree_lancamentos.selection()
+        if not item_selecionado:
+            return
+            
+        # Pegar dados da linha selecionada
+        valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+        
+        # Criar janela de detalhes
+        janela_detalhes = tk.Toplevel(self.janela)
+        janela_detalhes.title("Detalhes do Lançamento")
+        janela_detalhes.geometry("600x400")
+        janela_detalhes.transient(self.janela)
+        
+        frame = ttk.Frame(janela_detalhes, padding="15")
+        frame.pack(fill='both', expand=True)
+        
+        # Título
+        ttk.Label(frame, text="Detalhes Completos do Lançamento", 
+                 font=('Arial', 14, 'bold')).pack(pady=(0, 15))
+        
+        # Criar grid de informações
+        info_frame = ttk.Frame(frame)
+        info_frame.pack(fill='both', expand=True)
+        
+        detalhes = [
+            ("Data do Relatório:", valores[0]),
+            ("Tipo de Despesa:", valores[1]),
+            ("Referência:", valores[2]),
+            ("Número da NF:", valores[3]),
+            ("Valor:", valores[4]),
+            ("Data de Vencimento:", valores[5]),
+            ("Status:", valores[6]),
+            ("Observação:", valores[7])
+        ]
+        
+        for i, (label, valor) in enumerate(detalhes):
+            ttk.Label(info_frame, text=label, font=('Arial', 10, 'bold')).grid(
+                row=i, column=0, padx=5, pady=5, sticky='w')
+            ttk.Label(info_frame, text=str(valor), font=('Arial', 10)).grid(
+                row=i, column=1, padx=15, pady=5, sticky='w')
+        
+        # Botão fechar
+        ttk.Button(frame, text="Fechar", 
+                  command=janela_detalhes.destroy).pack(pady=15)
+        
+    def mostrar_estatisticas(self):
+        """Mostra estatísticas detalhadas do fornecedor"""
+        if self.df_fornecedor.empty:
+            custom_messagebox("info", "Estatísticas", "Nenhum lançamento encontrado para este fornecedor.")
+            return
+            
+        # Criar janela de estatísticas
+        janela_stats = tk.Toplevel(self.janela)
+        janela_stats.title(f"Estatísticas - {self.dados_fornecedor['nome']}")
+        janela_stats.geometry("700x500")
+        janela_stats.transient(self.janela)
+        
+        frame = ttk.Frame(janela_stats, padding="15")
+        frame.pack(fill='both', expand=True)
+        
+        # Calcular estatísticas
+        df_ativos = self.df_fornecedor[self.df_fornecedor['STATUS'] != 'EXCLUIDO']
+        
+        # Por período
+        hoje = datetime.now().date()
+        ultimos_30 = hoje - relativedelta(days=30)
+        ultimos_90 = hoje - relativedelta(days=90)
+        ultimo_ano = hoje - relativedelta(years=1)
+        
+        stats_30 = df_ativos[df_ativos['DATA_REL'].dt.date >= ultimos_30]
+        stats_90 = df_ativos[df_ativos['DATA_REL'].dt.date >= ultimos_90]
+        stats_ano = df_ativos[df_ativos['DATA_REL'].dt.date >= ultimo_ano]
+        
+        # Por referência
+        ref_counts = df_ativos['REFERÊNCIA'].value_counts().head(5)
+        
+        # Criar interface
+        ttk.Label(frame, text="📊 Estatísticas do Fornecedor", 
+                 font=('Arial', 16, 'bold')).pack(pady=(0, 20))
+        
+        # Notebook para organizar
+        notebook = ttk.Notebook(frame)
+        notebook.pack(fill='both', expand=True)
+        
+        # Aba Geral
+        aba_geral = ttk.Frame(notebook)
+        notebook.add(aba_geral, text="Resumo Geral")
+        
+        stats_frame = ttk.Frame(aba_geral, padding="10")
+        stats_frame.pack(fill='both', expand=True)
+        
+        stats_info = [
+            ("Total de Lançamentos:", len(df_ativos)),
+            ("Últimos 30 dias:", len(stats_30)),
+            ("Últimos 90 dias:", len(stats_90)),
+            ("Último ano:", len(stats_ano)),
+            ("", ""),
+            ("Valor Total (histórico):", f"R$ {df_ativos['VALOR'].astype(float).sum():,.2f}"),
+            ("Valor (últimos 30 dias):", f"R$ {stats_30['VALOR'].astype(float).sum():,.2f}"),
+            ("Valor médio por lançamento:", f"R$ {df_ativos['VALOR'].astype(float).mean():,.2f}"),
+        ]
+        
+        for i, (label, valor) in enumerate(stats_info):
+            if label:  # Pular linhas vazias
+                ttk.Label(stats_frame, text=label, font=('Arial', 11, 'bold')).grid(
+                    row=i, column=0, padx=10, pady=5, sticky='w')
+                ttk.Label(stats_frame, text=str(valor), font=('Arial', 11)).grid(
+                    row=i, column=1, padx=20, pady=5, sticky='w')
+        
+        # Aba Referências
+        aba_ref = ttk.Frame(notebook)
+        notebook.add(aba_ref, text="Por Referência")
+        
+        ref_frame = ttk.Frame(aba_ref, padding="10")
+        ref_frame.pack(fill='both', expand=True)
+        
+        ttk.Label(ref_frame, text="Top 5 Referências:", 
+                 font=('Arial', 12, 'bold')).pack(pady=(0, 10))
+        
+        for ref, count in ref_counts.items():
+            valor_ref = df_ativos[df_ativos['REFERÊNCIA'] == ref]['VALOR'].astype(float).sum()
+            ttk.Label(ref_frame, 
+                     text=f"{ref}: {count} lançamentos (R$ {valor_ref:,.2f})",
+                     font=('Arial', 10)).pack(anchor='w', pady=2)
+        
+        ttk.Button(frame, text="Fechar", 
+                  command=janela_stats.destroy).pack(pady=15)
+        
+    def exportar_lista(self):
+        """Exporta a lista atual para Excel"""
+        try:
+            from tkinter import filedialog
+            
+            # Obter dados visíveis
+            dados_exportar = []
+            for item in self.tree_lancamentos.get_children():
+                valores = self.tree_lancamentos.item(item)['values']
+                dados_exportar.append(valores)
+            
+            if not dados_exportar:
+                custom_messagebox("warning", "Aviso", "Nenhum dado para exportar!")
+                return
+            
+            # Solicitar arquivo
+            arquivo = filedialog.asksaveasfilename(
+                title="Salvar Lista de Lançamentos",
+                defaultextension=".xlsx",
+                filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
+                initialname=f"lancamentos_{self.dados_fornecedor['nome'].replace(' ', '_')}.xlsx"
+            )
+            
+            if arquivo:
+                # Criar DataFrame
+                colunas = ['Data Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação']
+                df_export = pd.DataFrame(dados_exportar, columns=colunas)
+                
+                # Criar workbook com informações detalhadas
+                with pd.ExcelWriter(arquivo, engine='openpyxl') as writer:
+                    # Aba principal com dados
+                    df_export.to_excel(writer, sheet_name='Lançamentos', index=False, startrow=6)
+                    
+                    # Obter worksheet para adicionar cabeçalho
+                    worksheet = writer.sheets['Lançamentos']
+                    
+                    # Adicionar cabeçalho com informações
+                    worksheet['A1'] = f"LANÇAMENTOS DO FORNECEDOR: {self.dados_fornecedor['nome']}"
+                    worksheet['A2'] = f"CNPJ/CPF: {self.dados_fornecedor['cnpj_cpf_formatado']}"
+                    worksheet['A3'] = f"Cliente: {self.sistema.cliente_atual}"
+                    worksheet['A4'] = f"Período: {self.data_inicio.get()} até {self.data_fim.get()}"
+                    worksheet['A5'] = f"Exportado em: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
+                    
+                    # Formatação do cabeçalho
+                    from openpyxl.styles import Font, PatternFill, Alignment
+                    
+                    # Estilo para título
+                    title_font = Font(bold=True, size=14)
+                    info_font = Font(bold=True, size=10)
+                    
+                    worksheet['A1'].font = title_font
+                    for row in range(2, 6):
+                        worksheet[f'A{row}'].font = info_font
+                    
+                    # Ajustar largura das colunas
+                    column_widths = {'A': 12, 'B': 8, 'C': 25, 'D': 15, 'E': 12, 'F': 12, 'G': 10, 'H': 30}
+                    for col, width in column_widths.items():
+                        worksheet.column_dimensions[col].width = width
+                    
+                    # Criar aba de resumo se houver dados
+                    if not self.df_fornecedor.empty:
+                        resumo_data = []
+                        
+                        # Estatísticas básicas
+                        df_ativos = self.df_fornecedor[self.df_fornecedor['STATUS'] != 'EXCLUIDO']
+                        resumo_data.append(['Estatística', 'Valor'])
+                        resumo_data.append(['Total de Lançamentos', len(df_ativos)])
+                        resumo_data.append(['Valor Total', f"R$ {df_ativos['VALOR'].astype(float).sum():,.2f}"])
+                        resumo_data.append(['Valor Médio', f"R$ {df_ativos['VALOR'].astype(float).mean():,.2f}"])
+                        resumo_data.append(['Primeiro Lançamento', df_ativos['DATA_REL'].min().strftime('%d/%m/%Y') if not df_ativos.empty else 'N/A'])
+                        resumo_data.append(['Último Lançamento', df_ativos['DATA_REL'].max().strftime('%d/%m/%Y') if not df_ativos.empty else 'N/A'])
+                        
+                        # Por referência
+                        resumo_data.append(['', ''])
+                        resumo_data.append(['TOP REFERÊNCIAS', 'QUANTIDADE'])
+                        ref_counts = df_ativos['REFERÊNCIA'].value_counts().head(5)
+                        for ref, count in ref_counts.items():
+                            resumo_data.append([ref, count])
+                        
+                        df_resumo = pd.DataFrame(resumo_data)
+                        df_resumo.to_excel(writer, sheet_name='Resumo', index=False, header=False)
+                
+                custom_messagebox("info", "Sucesso", f"Lista exportada com sucesso!\n\nArquivo: {arquivo}")
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao exportar: {str(e)}")
+    
+    def formatar_data(self, data):
+        """Formata data para exibição"""
+        if pd.isna(data) or data == "":
+            return ""
+        try:
+            if isinstance(data, str):
+                return data
+            return data.strftime('%d/%m/%Y')
+        except:
+            return str(data)
+    
+    def formatar_valor(self, valor):
+        """Formata valor para exibição"""
+        try:
+            # Se for string, limpar e converter
+            if isinstance(valor, str):
+                # Remover caracteres não numéricos exceto vírgula e ponto
+                valor_limpo = valor.replace('R$', '').replace(' ', '').strip()
+                if valor_limpo:
+                    valor = float(valor_limpo.replace(',', '.'))
+                else:
+                    return "0,00"
+            
+            # Se for int ou float, usar diretamente
+            elif isinstance(valor, (int, float)):
+                valor = float(valor)
+            else:
+                # Para outros tipos, tentar converter
+                valor = float(str(valor).replace(',', '.') if str(valor) else 0)
+            
+            # Formatar para o padrão brasileiro
+            return f"{valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        except (ValueError, TypeError, AttributeError):
+            return "0,00"
+    
+    def formatar_tipo_despesa(self, tp_desp):
+        """Formata tipo de despesa como inteiro"""
+        try:
+            if pd.isna(tp_desp) or tp_desp == "":
+                return ""
+            valor_numerico = float(tp_desp)
+            return str(int(valor_numerico))
+        except (ValueError, TypeError):
+            return str(tp_desp)
 
 if __name__ == "__main__":
     print("Iniciando aplicação...")
