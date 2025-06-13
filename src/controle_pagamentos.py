@@ -2,13 +2,15 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
 from openpyxl import load_workbook
-from datetime import datetime
+from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 import os
 import sys
 from pathlib import Path
 
 # No início de controle_pagamentos.py
+
+from src.correcao_monetaria import GerenciadorCorrecaoMonetaria
 
 from src.config.utils import (
         PASTA_CLIENTES,
@@ -124,6 +126,7 @@ class ControlePagamentos:
         
         # Carregar lista de clientes
         self.carregar_clientes()
+        self.verificar_correcoes_pendentes()
         
     def tem_taxa_fixa(self, arquivo_cliente):
         """
@@ -462,6 +465,27 @@ class ControlePagamentos:
             messagebox.showerror("Erro", f"Erro ao registrar pagamento: {str(e)}")
             if 'wb' in locals():
                 wb.close()
+
+    def verificar_correcoes_pendentes(self):
+        """Verifica se há correções monetárias pendentes"""
+        try:
+            gerenciador_correcao = GerenciadorCorrecaoMonetaria()
+            
+            # Verificar se está na época de correção
+            hoje = date.today()
+            config_correcao = gerenciador_correcao.config.get('correcao_automatica', {})
+            
+            if (config_correcao.get('ativa', False) and 
+                hoje.day == config_correcao.get('dia_calculo', 15)):
+                
+                if messagebox.askyesno("Correção Monetária", 
+                                    "Detectamos que hoje pode ser o dia de aplicar correção monetária nos contratos.\n\n"
+                                    "Deseja abrir o gerenciador de correção?"):
+                    from src.correcao_monetaria import InterfaceIndicesCorrecao
+                    interface = InterfaceIndicesCorrecao(self.root)
+                    
+        except Exception as e:
+            print(f"Erro ao verificar correções: {str(e)}")
 
     def voltar_menu(self):
         """Fecha a janela e retorna ao menu principal"""
