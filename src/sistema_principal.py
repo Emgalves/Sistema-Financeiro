@@ -510,6 +510,17 @@ class SistemaPrincipal:
             messagebox.showerror("Erro", f"Erro ao abrir configurações do sistema: {str(e)}")
             self.root.deiconify()
 
+    def adicionar_correcao_monetaria_ao_menu():
+        """
+        Função para adicionar a opção de correção monetária ao menu principal
+        Adicione esta chamada ao seu menu principal
+        """
+        def abrir_indices_correcao():
+            app = InterfaceIndicesCorrecao()
+            app.root.mainloop()
+        
+        return abrir_indices_correcao
+
     def finalizar_sistema(self, janela):
         """Fecha a janela do sistema e mostra a janela principal"""
         try:
@@ -520,6 +531,36 @@ class SistemaPrincipal:
         self.root.deiconify()
         self.root.lift()
         self.root.focus_force()
+
+    def on_closing(self):
+        """Manipula o fechamento da janela principal"""
+        try:
+            if messagebox.askyesno("Sair", "Deseja realmente sair do sistema?"):
+                # Finalizar todos os subsistemas abertos
+                for widget in self.root.winfo_children():
+                    if isinstance(widget, tk.Toplevel):
+                        try:
+                            widget.destroy()
+                        except:
+                            pass
+                
+                # Salvar configurações finais
+                try:
+                    from src.configuracoes_sistema import GerenciadorConfiguracoes
+                    # Forçar salvamento das configurações
+                    config = GerenciadorConfiguracoes.carregar_configuracoes()
+                    if config:
+                        import json
+                        with open(GerenciadorConfiguracoes.CONFIG_PATH, 'w', encoding='utf-8') as f:
+                            json.dump(config, f, indent=4, ensure_ascii=False)
+                except:
+                    pass
+                
+                self.root.quit()
+                self.root.destroy()
+        except Exception as e:
+            print(f"Erro ao fechar: {str(e)}")
+            self.root.quit()
 
     def sair_sistema(self):
         """Fecha o sistema após confirmação"""
