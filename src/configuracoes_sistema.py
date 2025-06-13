@@ -1,54 +1,3 @@
-# Adicionar este adaptador no início do arquivo configuracoes_sistema.py
-# import os
-# import sys
-# from pathlib import Path
-
-# # Detectar modo PyInstaller e ajustar paths
-# if getattr(sys, 'frozen', False):
-#     # Estamos em um executável criado pelo PyInstaller
-#     base_dir = Path(sys._MEIPASS)
-#     # Garantir que src e src/config estão no path
-#     for subdir in ['src', os.path.join('src', 'config')]:
-#         path = os.path.join(base_dir, subdir)
-#         if path not in sys.path:
-#             sys.path.insert(0, path)
-#             print(f"PyInstaller: Adicionando {path} ao sys.path")
-
-# # Importações com tratamento de erro
-# try:
-#     # Primeiro, tentar importação com 'src.config'
-#     from src.config.logger_config import system_logger, log_action
-#     print("Importado logger_config via src.config")
-# except ImportError:
-#     # Se falhar, tentar importação direta de 'config'
-#     try:
-#         from config.logger_config import system_logger, log_action
-#         print("Importado logger_config via config direta")
-#     except ImportError:
-#         # Último recurso - criar stubs de logger
-#         print("ATENÇÃO: Criando stubs de logger!")
-#         import logging
-        
-#         class SystemLoggerStub:
-#             def __init__(self):
-#                 self.logger = logging.getLogger("sistema_stub")
-            
-#             def get_logger(self):
-#                 return self.logger
-            
-#             def set_user(self, username):
-#                 print(f"[LOG] Usuário definido: {username}")
-        
-#         system_logger = SystemLoggerStub()
-        
-#         def log_action(action_name):
-#             def decorator(func):
-#                 def wrapper(*args, **kwargs):
-#                     print(f"[LOG] Ação: {action_name}")
-#                     return func(*args, **kwargs)
-#                 return wrapper
-#             return decorator
-        
 import tkinter as tk
 from tkinter import ttk, messagebox
 import json
@@ -95,30 +44,19 @@ class GerenciadorConfiguracoes:
             try:
                 with open(config_path, 'r', encoding='utf-8') as f:
                     config = json.load(f)
-                    # Atualizar o cache
-                    GerenciadorConfiguracoes._atualizar_cache(config)
-                    return config
+                
+                # GARANTIR que as novas seções existam (para arquivos antigos)
+                config = GerenciadorConfiguracoes._garantir_estrutura_completa(config)
+                
+                # Atualizar o cache
+                GerenciadorConfiguracoes._atualizar_cache(config)
+                return config
             except Exception as e:
                 logger.error(f"Erro ao carregar configurações: {e}")
                 return None
         
-        # Se o arquivo não existir, criar com configurações padrão
-        default_config = {
-            'cafe': {
-                'valor_atual': 4.00,
-                'historico': [
-                    {'valor': 4.00, 'data_inicio': '01/01/2024', 'data_fim': None}
-                ]
-            },
-            'bancos': {
-                'lista': ['BANCO DO BRASIL', 'BRADESCO', 'CAIXA', 'ITAU', 'SANTANDER'],
-                'historico_alteracoes': []
-            },
-            'categorias': {
-                'lista': ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
-                'historico_alteracoes': []
-            }
-        }
+        # Se o arquivo não existir, criar com configurações padrão completas
+        default_config = GerenciadorConfiguracoes._obter_configuracoes_padrao_estaticas()
         
         try:
             # Garantir que o diretório existe
@@ -132,6 +70,73 @@ class GerenciadorConfiguracoes:
         except Exception as e:
             logger.error(f"Erro ao criar arquivo de configurações: {e}")
             return None
+
+    @staticmethod
+    def _garantir_estrutura_completa(config):
+        """Garante que arquivos antigos tenham a estrutura completa"""
+        estrutura_padrao = GerenciadorConfiguracoes._obter_configuracoes_padrao_estaticas()
+        
+        # Adicionar seções faltantes
+        for secao, valores_padrao in estrutura_padrao.items():
+            if secao not in config:
+                config[secao] = valores_padrao
+                print(f"Adicionada seção faltante: {secao}")
+            elif isinstance(valores_padrao, dict):
+                # Verificar subseções
+                for subsecao, sub_valores in valores_padrao.items():
+                    if subsecao not in config[secao]:
+                        config[secao][subsecao] = sub_valores
+                        print(f"Adicionada subseção faltante: {secao}.{subsecao}")
+        
+        return config
+
+    @staticmethod
+    def _obter_configuracoes_padrao_estaticas():
+        """Configurações padrão para método estático"""
+        return {
+            'cafe': {
+                'valor_atual': 4.00,
+                'historico': [
+                    {'valor': 4.00, 'data_inicio': '01/01/2024', 'data_fim': None}
+                ]
+            },
+            'bancos': {
+                'lista': ['BANCO DO BRASIL', 'BRADESCO', 'CAIXA', 'ITAU', 'SANTANDER'],
+                'historico_alteracoes': []
+            },
+            'categorias': {
+                'lista': ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
+                'historico_alteracoes': []
+            },
+            'indices_correcao': {
+                'indice_padrao': 'IGPM',
+                'indices_disponiveis': {
+                    'IGPM': {
+                        'nome_completo': 'Índice Geral de Preços do Mercado',
+                        'historico': [],
+                        'ultimo_calculo': None
+                    },
+                    'IPCA': {
+                        'nome_completo': 'Índice Nacional de Preços ao Consumidor Amplo',
+                        'historico': [],
+                        'ultimo_calculo': None
+                    },
+                    'INPC': {
+                        'nome_completo': 'Índice Nacional de Preços ao Consumidor',
+                        'historico': [],
+                        'ultimo_calculo': None
+                    }
+                }
+            },
+            'correcao_automatica': {
+                'ativa': True,
+                'dia_calculo': 15,
+                'meses_aplicacao': [1, 4, 7, 10],
+                'avisar_antes_dias': 7,
+                'ultimo_processamento': None
+            },
+            'historico_correcoes': []
+        }
 
     @staticmethod
     def get_bancos():
@@ -164,28 +169,65 @@ class GerenciadorConfiguracoes:
         self.setup_gui()
 
     def carregar_configuracoes_locais(self):
-        """Carrega as configurações do sistema"""
+        """Carrega as configurações do sistema com suporte completo a correção monetária"""
         self.config = GerenciadorConfiguracoes.carregar_configuracoes()
         
-        # Se não foi possível carregar, criar configurações padrão
+        # Se não foi possível carregar, criar configurações padrão COMPLETAS
         if self.config is None:
-            self.config = {
-                'cafe': {
-                    'valor_atual': 4.00,
-                    'historico': [
-                        {'valor': 4.00, 'data_inicio': '01/01/2024', 'data_fim': None}
-                    ]
-                },
-                'bancos': {
-                    'lista': ['BANCO DO BRASIL', 'BRADESCO', 'CAIXA', 'ITAU', 'SANTANDER'],
-                    'historico_alteracoes': []
-                },
-                'categorias': {
-                    'lista': ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
-                    'historico_alteracoes': []
-                }
-            }
+            self.config = self._obter_configuracoes_padrao_completas()
             self.salvar_configuracoes()
+
+    def _obter_configuracoes_padrao_completas(self):
+        """Retorna configurações padrão completas incluindo correção monetária"""
+        return {
+            # Configurações existentes
+            'cafe': {
+                'valor_atual': 4.00,
+                'historico': [
+                    {'valor': 4.00, 'data_inicio': '01/01/2024', 'data_fim': None}
+                ]
+            },
+            'bancos': {
+                'lista': ['BANCO DO BRASIL', 'BRADESCO', 'CAIXA', 'ITAU', 'SANTANDER'],
+                    'historico_alteracoes': []
+            },
+            'categorias': {
+                'lista': ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
+                'historico_alteracoes': []
+            },
+            # NOVAS CONFIGURAÇÕES: Índices de correção monetária
+            'indices_correcao': {
+                'indice_padrao': 'IGPM',
+                'indices_disponiveis': {
+                    'IGPM': {
+                        'nome_completo': 'Índice Geral de Preços do Mercado',
+                        'historico': [],
+                        'ultimo_calculo': None
+                    },
+                    'IPCA': {
+                        'nome_completo': 'Índice Nacional de Preços ao Consumidor Amplo',
+                        'historico': [],
+                        'ultimo_calculo': None
+                    },
+                    'INPC': {
+                        'nome_completo': 'Índice Nacional de Preços ao Consumidor',
+                        'historico': [],
+                        'ultimo_calculo': None
+                    }
+                }
+            },
+            # NOVAS CONFIGURAÇÕES: Correção automática
+            'correcao_automatica': {
+                'ativa': True,
+                'dia_calculo': 15,  # Dia do mês para calcular correções
+                'meses_aplicacao': [1, 4, 7, 10],  # Trimestral por padrão
+                'avisar_antes_dias': 7,  # Avisar 7 dias antes da correção
+                'ultimo_processamento': None
+            },
+            # NOVA SEÇÃO: Histórico de correções aplicadas
+            'historico_correcoes': []
+        }
+                   
 
     def salvar_configuracoes(self):
         """Salva as configurações no arquivo"""
@@ -214,6 +256,7 @@ class GerenciadorConfiguracoes:
         self.setup_aba_cafe()
         self.setup_aba_bancos()
         self.setup_aba_categorias()
+        self.setup_aba_indices_correcao()
         
         # Botões globais
         frame_botoes = ttk.Frame(self.root)
@@ -452,13 +495,84 @@ class GerenciadorConfiguracoes:
         for categoria in sorted(self.config['categorias']['lista']):
             self.tree_categorias.insert('', 'end', values=(categoria,))
 
+    def setup_aba_indices_correcao(self):
+        """Configura a aba de índices de correção monetária"""
+        frame_indices = ttk.Frame(self.notebook)
+        self.notebook.add(frame_indices, text='Correção Monetária')
+        
+        # Configurações gerais
+        frame_config = ttk.LabelFrame(frame_indices, text="Configurações Gerais")
+        frame_config.pack(fill='x', padx=5, pady=5)
+        
+        ttk.Label(frame_config, text="Índice Padrão:").grid(row=0, column=0, padx=5, pady=5)
+        self.combo_indice_padrao = ttk.Combobox(frame_config, state='readonly')
+        self.combo_indice_padrao['values'] = ['IGPM', 'IPCA', 'INPC']
+        
+        # Verificar se existe configuração de índices
+        indices_config = self.config.get('indices_correcao', {})
+        self.combo_indice_padrao.set(indices_config.get('indice_padrao', 'IGPM'))
+        self.combo_indice_padrao.grid(row=0, column=1, padx=5, pady=5)
+        
+        # Correção automática
+        frame_auto = ttk.LabelFrame(frame_indices, text="Correção Automática")
+        frame_auto.pack(fill='x', padx=5, pady=5)
+        
+        self.var_correcao_ativa = tk.BooleanVar()
+        correcao_config = self.config.get('correcao_automatica', {})
+        self.var_correcao_ativa.set(correcao_config.get('ativa', True))
+        
+        ttk.Checkbutton(frame_auto, text="Ativar correção automática",
+                    variable=self.var_correcao_ativa).grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        
+        ttk.Label(frame_auto, text="Dia do mês para cálculo:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        self.entry_dia_calculo = ttk.Entry(frame_auto, width=5)
+        self.entry_dia_calculo.insert(0, str(correcao_config.get('dia_calculo', 15)))
+        self.entry_dia_calculo.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        
+        # Botão para abrir gerenciador completo
+        ttk.Button(frame_indices, text="Abrir Gerenciador Completo de Índices",
+                command=self.abrir_gerenciador_indices).pack(pady=20)
+
+    def abrir_gerenciador_indices(self):
+        """Abre o gerenciador completo de índices"""
+        try:
+            from src.correcao_monetaria import InterfaceIndicesCorrecao
+            interface = InterfaceIndicesCorrecao(self.root)
+        except ImportError as e:
+            messagebox.showerror("Erro", f"Erro ao importar módulo de correção: {str(e)}")
+
     def salvar_todas_alteracoes(self):
         """Salva todas as alterações feitas nas configurações"""
         try:
+            # Salvar configurações de correção monetária
+            if hasattr(self, 'combo_indice_padrao'):
+                if 'indices_correcao' not in self.config:
+                    self.config['indices_correcao'] = {'indices_disponiveis': {
+                        'IGPM': {'nome_completo': 'Índice Geral de Preços do Mercado', 'historico': []},
+                        'IPCA': {'nome_completo': 'Índice Nacional de Preços ao Consumidor Amplo', 'historico': []},
+                        'INPC': {'nome_completo': 'Índice Nacional de Preços ao Consumidor', 'historico': []}
+                    }}
+                self.config['indices_correcao']['indice_padrao'] = self.combo_indice_padrao.get()
+            
+            if hasattr(self, 'var_correcao_ativa'):
+                if 'correcao_automatica' not in self.config:
+                    self.config['correcao_automatica'] = {}
+                self.config['correcao_automatica']['ativa'] = self.var_correcao_ativa.get()
+                
+                if hasattr(self, 'entry_dia_calculo'):
+                    try:
+                        dia = int(self.entry_dia_calculo.get())
+                        if 1 <= dia <= 31:
+                            self.config['correcao_automatica']['dia_calculo'] = dia
+                    except ValueError:
+                        pass
+            
+            # Salvar arquivo
             self.salvar_configuracoes()
             messagebox.showinfo("Sucesso", "Todas as alterações foram salvas com sucesso!")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao salvar alterações: {str(e)}")
+
 
     def voltar_menu_local(self):  
         if hasattr(self, 'menu_principal') and self.menu_principal is not None:
