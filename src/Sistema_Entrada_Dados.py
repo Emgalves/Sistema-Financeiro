@@ -940,12 +940,14 @@ class SistemaEntradaDados:
 
     def sair_sistema(self):
         """Fecha o sistema verificando dados não salvos"""
-        if self.dados_para_incluir and custom_messagebox("yesno", 
-            "Confirmação", 
-            "Existem dados não salvos. Deseja salvá-los antes de sair?"):
-            self.enviar_dados()
-        self.root.destroy()
-        sys.exit()    
+        try:
+            self.finalizar_sistema()
+        except Exception as e:
+            print(f"Erro ao finalizar sistema: {str(e)}")
+        finally:
+            # Forçar saída se necessário
+            import sys
+            sys.exit()  
     
     def configurar_todos_calendarios(self):
         """Configura a navegação para todos os calendários do sistema"""
@@ -1846,6 +1848,13 @@ class SistemaEntradaDados:
             frame_botoes_taxas, 
             text="Finalização de Quinzena",
             command=self.abrir_finalizacao_quinzena,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
+        ttk.Button(
+            frame_botoes_taxas, 
+            text="Correção Monetária",
+            command=self.abrir_correcao_monetaria,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
 
@@ -3670,11 +3679,6 @@ class SistemaEntradaDados:
             # Desmarcar flag de processamento
             self._is_saving = False
 
-    def __del__(self):
-        """Destrutor da classe"""
-        if hasattr(self, 'root'):
-            self.root.destroy()
-
     def auto_salvar_dados(self):
         """Salva automaticamente os dados em arquivo temporário"""
         try:
@@ -3752,6 +3756,49 @@ class SistemaEntradaDados:
                 print("Backup limpo após salvamento bem-sucedido")
         except Exception as e:
             print(f"Erro ao limpar backup: {str(e)}")
+
+
+    def abrir_correcao_monetaria(self):
+        """Abre o gerenciador de correção monetária"""
+        try:
+            from src.correcao_monetaria import InterfaceIndicesCorrecao
+            interface = InterfaceIndicesCorrecao(self.root)
+        except ImportError as e:
+            custom_messagebox("error", "Erro", f"Erro ao importar módulo de correção: {str(e)}")
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir correção monetária: {str(e)}")
+
+    def finalizar_sistema(self):
+        """Finaliza o sistema de forma segura"""
+        try:
+            # Salvar dados pendentes se necessário
+            if hasattr(self, 'dados_para_incluir') and self.dados_para_incluir:
+                if hasattr(self, 'custom_messagebox'):
+                    if self.custom_messagebox("yesno", "Confirmação", 
+                        "Existem dados não salvos. Deseja salvá-los antes de sair?"):
+                        self.enviar_dados()
+            
+            # Limpar backup temporário
+            if hasattr(self, 'limpar_backup'):
+                self.limpar_backup()
+            
+            # Fechar janelas filhas primeiro
+            if hasattr(self, 'visualizador') and self.visualizador:
+                try:
+                    self.visualizador.janela.destroy()
+                except:
+                    pass
+            
+            # Fechar janela principal
+            if hasattr(self, 'root') and self.root:
+                try:
+                    self.root.quit()  # Usar quit() ao invés de destroy()
+                    self.root.destroy()
+                except:
+                    pass
+                    
+        except Exception as e:
+            print(f"Aviso durante finalização: {str(e)}")
 
 class EditorCliente:
     def __init__(self, parent): 
@@ -6533,12 +6580,7 @@ class GestorParcelas:
         """Inicia a execução do sistema"""
         self.root.mainloop()
 
-    # def __del__(self):
-    #     """Destrutor da classe"""
-    #     if hasattr(self, 'root'):
-    #         self.root.destroy()
-
-    
+   
 class ImportadorRH:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
