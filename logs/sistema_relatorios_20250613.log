@@ -1,0 +1,18 @@
+2025-06-13 11:48:48,889 - sistema_relatorios - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-13 11:48:49,659 - sistema_relatorios - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-13 11:48:49,660 - sistema_relatorios - INFO - Coluna de status: Data Final
+2025-06-13 11:48:49,678 - sistema_relatorios - INFO - Coluna de nome: Nome
+2025-06-13 11:48:49,680 - sistema_relatorios - INFO - Total de clientes ativos encontrados: 13
+2025-06-13 11:48:49,682 - sistema_relatorios - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-13 11:48:49,722 - sistema_relatorios - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-13 11:48:49,749 - sistema_relatorios - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-13 11:48:49,749 - sistema_relatorios - INFO - Coluna de status: Data Final
+2025-06-13 11:48:49,751 - sistema_relatorios - INFO - Coluna de nome: Nome
+2025-06-13 11:48:49,754 - sistema_relatorios - INFO - Total de clientes ativos encontrados: 13
+2025-06-13 11:48:49,755 - sistema_relatorios - INFO - Lista de clientes carregada com 14 itens
+2025-06-13 11:49:46,602 - sistema - INFO - Abrindo sistema de entrada de dados
+2025-06-13 11:49:53,249 - sistema - INFO - Configurações importadas com sucesso via src.config
+2025-06-13 11:49:53,251 - sistema - INFO - Configurações importadas com sucesso
+2025-06-13 11:49:53,252 - sistema - INFO - Configurações do sistema importadas com sucesso
+2025-06-13 11:53:19,006 - sistema - INFO - Saída confirmada, finalizando sistema
+2025-06-13 11:53:19,059 - sistema - INFO - Ação concluída: Gerar relatório
