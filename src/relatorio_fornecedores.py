@@ -76,29 +76,36 @@ class RelatorioFornecedores:
     """Classe para geração de relatórios de principais fornecedores"""
     
     def __init__(self, parent=None):
-        """Inicializa a interface do relatório de fornecedores"""
+        """Inicializa a interface do relatório de fornecedores - VERSÃO CORRIGIDA"""
         self.parent = parent
         
         if parent:
             self.root = tk.Toplevel(parent)
             self.menu_principal = parent
+            
+            # Configurar protocolo de fechamento para janela filha
+            self.root.protocol("WM_DELETE_WINDOW", self.voltar_menu)
+            
         else:
             self.root = tk.Tk()
             self.menu_principal = None
             
+            # Configurar protocolo de fechamento para janela principal
+            self.root.protocol("WM_DELETE_WINDOW", self.fechar_aplicacao)
+            
         configurar_janela(self.root, "Relatório de Fornecedores", 900, 1000)
         
-        # Configuração de variáveis
+        # Configuração de variáveis (resto permanece igual)
         self.cliente_atual = None
         self.arquivo_cliente = None
         self.data_referencia = datetime.now()
         self.periodo_inicio = None
         self.periodo_fim = None
         self.todos_clientes = False
-        self.fornecedor_especifico = None  # NOVO: para o relatório inverso
-        self.modo_relatorio = "fornecedores"  # "fornecedores" ou "por_fornecedor"
+        self.fornecedor_especifico = None
+        self.modo_relatorio = "fornecedores"
         self.dados_fornecedores = {}
-        self.dados_por_fornecedor = {}  # NOVO: dados agrupados por cliente para um fornecedor
+        self.dados_por_fornecedor = {}
         self.top_fornecedores = []
         self.dados_carregados = False
         
@@ -168,15 +175,7 @@ class RelatorioFornecedores:
         )
         self.cb_todos_clientes.pack(side='left', padx=20)
         
-        # NOVO: Container para fornecedor (inicialmente oculto)
-        self.frame_fornecedor = ttk.Frame(self.frame_selecao)
-        
-        self.lbl_fornecedor = ttk.Label(self.frame_fornecedor, text="Selecione o Fornecedor:", font=('Arial', 11))
-        self.lbl_fornecedor.pack(side='left', pady=5)
-        
-        self.fornecedor_especifico_combobox = ttk.Combobox(self.frame_fornecedor, width=40, font=('Arial', 11))
-        self.fornecedor_especifico_combobox.pack(side='left', padx=5)
-        self.fornecedor_especifico_combobox.bind('<<ComboboxSelected>>', self.selecionar_fornecedor_especifico)
+        self.setup_frame_fornecedor_melhorado()
         
         ttk.Button(
             self.frame_fornecedor,
@@ -363,9 +362,94 @@ class RelatorioFornecedores:
         # Configurar modo inicial
         self.alterar_modo_relatorio()
 
+    def setup_frame_fornecedor_melhorado(self):
+        """Configura o frame de seleção de fornecedor com busca aprimorada"""
+        # Container principal para fornecedor
+        self.frame_fornecedor = ttk.Frame(self.frame_selecao)
+        
+        # Primeira linha: Label e campo de busca
+        frame_busca = ttk.Frame(self.frame_fornecedor)
+        frame_busca.pack(fill='x', pady=5)
+        
+        self.lbl_fornecedor = ttk.Label(frame_busca, text="Buscar Fornecedor:", font=('Arial', 11))
+        self.lbl_fornecedor.pack(side='left', pady=5)
+        
+        # Campo de busca com autocomplete
+        self.fornecedor_busca_var = tk.StringVar()
+        self.fornecedor_busca_entry = ttk.Entry(
+            frame_busca, 
+            textvariable=self.fornecedor_busca_var,
+            width=50, 
+            font=('Arial', 11)
+        )
+        self.fornecedor_busca_entry.pack(side='left', padx=5)
+        self.fornecedor_busca_entry.bind('<KeyRelease>', self.filtrar_fornecedores)
+        self.fornecedor_busca_entry.bind('<Return>', self.selecionar_primeiro_resultado)
+        
+        # Botão para limpar busca
+        ttk.Button(
+            frame_busca,
+            text="Limpar",
+            command=self.limpar_busca_fornecedor,
+            width=8
+        ).pack(side='left', padx=5)
+        
+        # Botão para buscar fornecedores
+        ttk.Button(
+            frame_busca,
+            text="Buscar Fornecedores",
+            command=self.carregar_fornecedores
+        ).pack(side='left', padx=20)
+        
+        # Segunda linha: Lista de resultados
+        frame_resultados = ttk.Frame(self.frame_fornecedor)
+        frame_resultados.pack(fill='both', expand=True, pady=5)
+        
+        # Label para status
+        self.lbl_status_busca = ttk.Label(
+            frame_resultados, 
+            text="Use o botão 'Buscar Fornecedores' para carregar a lista",
+            font=('Arial', 10),
+            foreground='gray'
+        )
+        self.lbl_status_busca.pack(pady=5)
+        
+        # Treeview para mostrar resultados da busca
+        self.tree_fornecedores = ttk.Treeview(
+            frame_resultados, 
+            columns=('nome',), 
+            show='headings', 
+            height=8
+        )
+        self.tree_fornecedores.heading('nome', text='Fornecedores Encontrados')
+        self.tree_fornecedores.column('nome', width=400)
+        
+        # Scrollbar para a lista
+        scrollbar_fornecedores = ttk.Scrollbar(
+            frame_resultados, 
+            orient='vertical', 
+            command=self.tree_fornecedores.yview
+        )
+        self.tree_fornecedores.configure(yscrollcommand=scrollbar_fornecedores.set)
+        
+        # Eventos para seleção
+        self.tree_fornecedores.bind('<Double-1>', self.selecionar_fornecedor_da_lista)
+        self.tree_fornecedores.bind('<Return>', self.selecionar_fornecedor_da_lista)
+        
+        # Inicialmente ocultos
+        self.tree_fornecedores.pack_forget()
+        scrollbar_fornecedores.pack_forget()
+        
+        # Variáveis para controle
+        self.fornecedores_disponiveis = []
+        self.fornecedores_filtrados = []
+
     # NOVO: Método para alternar modo de relatório
     def alterar_modo_relatorio(self):
-        """Alterna entre os modos de relatório"""
+        """Alterna entre os modos de relatório com limpeza completa"""
+        # Limpar todos os dados antes de alternar
+        self.limpar_dados_completo()
+        
         self.modo_relatorio = self.var_modo.get()
         
         if self.modo_relatorio == "fornecedores":
@@ -374,44 +458,296 @@ class RelatorioFornecedores:
             self.frame_fornecedor.pack_forget()
             
             # Atualizar labels das abas
-            self.notebook.tab(0, text="Resumo")
+            self.notebook.tab(0, text="Resumo - Principais Fornecedores")
+            self.notebook.tab(1, text="Detalhes do Fornecedor")
             self.lbl_cliente.config(text="Selecione o Cliente:")
-            self.frame_opcoes.config(text="Opções de Análise")
+            self.frame_opcoes.config(text="Opções de Análise - Fornecedores")
+            
+            # Atualizar labels específicos do modo
+            self.lbl_cliente_resumo.config(text="Cliente: Nenhum selecionado")
+            self.cb_todos_clientes.config(text="Analisar todos os clientes")
             
         else:
             # Novo modo: clientes de um fornecedor
             self.frame_cliente.pack_forget()
-            self.frame_fornecedor.pack(fill='x', padx=10, pady=10)
+            self.frame_fornecedor.pack(fill='both', expand=True, padx=10, pady=10)
             
             # Atualizar labels das abas
-            self.notebook.tab(0, text="Clientes do Fornecedor")
-            self.frame_opcoes.config(text="Opções de Análise")
+            self.notebook.tab(0, text="Resumo - Clientes do Fornecedor")
+            self.notebook.tab(1, text="Detalhes do Cliente")
+            self.frame_opcoes.config(text="Opções de Análise - Por Fornecedor")
             
-            # Carregar fornecedores se ainda não foi feito
-            if not self.fornecedor_especifico_combobox['values']:
-                self.carregar_fornecedores()
+            # Limpar seleção de fornecedor se necessário
+            if hasattr(self, 'fornecedor_busca_var'):
+                self.limpar_busca_fornecedor()
+
+    def limpar_dados_completo(self):
+        """Limpa completamente todos os dados e interface"""
+        try:
+            # Resetar variáveis de controle
+            self.dados_carregados = False
+            self.cliente_atual = None
+            self.fornecedor_especifico = None
+            self.todos_clientes = False
+            
+            # Limpar dados dos relatórios
+            self.dados_fornecedores = {}
+            self.dados_por_fornecedor = {}
+            self.top_fornecedores = []
+            self.total_geral = 0.0
+            
+            # Limpar seleções
+            self.cliente_combobox.set("")
+            if hasattr(self, 'fornecedor_busca_var'):
+                self.fornecedor_busca_var.set("")
+            
+            # Resetar checkbox de todos os clientes
+            self.var_todos_clientes.set(False)
+            self.cliente_combobox.config(state='normal')
+            
+            # Limpar todas as abas
+            self.limpar_aba_resumo()
+            self.limpar_aba_detalhes()
+            self.limpar_aba_grafico()
+            
+            # Resetar labels informativos
+            self.lbl_periodo_resumo.config(text="Período: Não definido")
+            
+            print("Dados limpos completamente ao alternar modo de relatório")
+            
+        except Exception as e:
+            print(f"Erro ao limpar dados: {str(e)}")
+
+    # NOVO MÉTODO: Limpar aba de resumo
+    def limpar_aba_resumo(self):
+        """Limpa completamente a aba de resumo"""
+        try:
+            # Limpar tabela de resumo
+            for item in self.tree_resumo.get_children():
+                self.tree_resumo.delete(item)
+            
+            # Resetar totais
+            self.lbl_total_geral.config(text="Total Geral: R$ 0,00")
+            self.lbl_total_apresentado.config(text="Total Apresentado: R$ 0,00 (0%)")
+            
+        except Exception as e:
+            print(f"Erro ao limpar aba de resumo: {str(e)}")
+
+    # NOVO MÉTODO: Limpar aba de detalhes
+    def limpar_aba_detalhes(self):
+        """Limpa completamente a aba de detalhes"""
+        try:
+            # Limpar combobox de seleção
+            self.item_detalhes_combobox['values'] = ()
+            self.item_detalhes_combobox.set('')
+            
+            # Limpar informações do item
+            self.lbl_nome_item.config(text="")
+            self.lbl_total_item.config(text="")
+            self.lbl_qtd_lancamentos_item.config(text="")
+            self.lbl_media_lancamento_item.config(text="")
+            self.lbl_tipos_despesa_item.config(text="")
+            
+            # Limpar tabela de lançamentos
+            for item in self.tree_lancamentos.get_children():
+                self.tree_lancamentos.delete(item)
+                
+        except Exception as e:
+            print(f"Erro ao limpar aba de detalhes: {str(e)}")
 
     # NOVO: Método para carregar lista de fornecedores
     def carregar_fornecedores(self):
-        """Carrega a lista de fornecedores do arquivo de fornecedores"""
+        """Carrega a lista de fornecedores encontrados nos arquivos dos clientes"""
         try:
-            if not os.path.exists(ARQUIVO_FORNECEDORES):
-                messagebox.showwarning("Aviso", "Arquivo de fornecedores não encontrado!")
+            fornecedores_encontrados = set()
+            clientes_processados = 0
+            
+            # Processar todos os arquivos de clientes para encontrar fornecedores
+            if not os.path.exists(PASTA_CLIENTES):
+                messagebox.showwarning("Aviso", "Pasta de clientes não encontrada!")
                 return
             
-            df = pd.read_excel(ARQUIVO_FORNECEDORES, sheet_name='Fornecedores')
+            # Mostrar progresso
+            progress_window = tk.Toplevel(self.root)
+            progress_window.title("Carregando Fornecedores...")
+            progress_window.geometry("400x100")
+            progress_window.resizable(False, False)
+            progress_window.transient(self.root)
+            progress_window.grab_set()
             
-            # Ordenar por nome
-            fornecedores = sorted(df['NOME'].dropna().unique())
+            # Centralizar janela de progresso
+            progress_window.update_idletasks()
+            x = (progress_window.winfo_screenwidth() // 2) - (progress_window.winfo_width() // 2)
+            y = (progress_window.winfo_screenheight() // 2) - (progress_window.winfo_height() // 2)
+            progress_window.geometry(f"+{x}+{y}")
             
-            # Atualizar combobox
-            self.fornecedor_especifico_combobox['values'] = fornecedores
+            progress_label = ttk.Label(progress_window, text="Processando arquivos de clientes...")
+            progress_label.pack(pady=20)
             
-            messagebox.showinfo("Sucesso", f"{len(fornecedores)} fornecedores carregados!")
+            progress_bar = ttk.Progressbar(progress_window, mode='indeterminate')
+            progress_bar.pack(pady=10, padx=20, fill='x')
+            progress_bar.start()
+            
+            # Forçar atualização da interface
+            self.root.update()
+            
+            for arquivo in os.listdir(PASTA_CLIENTES):
+                if arquivo.endswith('.xlsx'):
+                    try:
+                        caminho_arquivo = os.path.join(PASTA_CLIENTES, arquivo)
+                        nome_cliente = os.path.splitext(arquivo)[0]
+                        
+                        # Atualizar label de progresso
+                        progress_label.config(text=f"Processando: {nome_cliente}")
+                        self.root.update()
+                        
+                        # Carregar dados do Excel
+                        df = pd.read_excel(caminho_arquivo, sheet_name='Dados')
+                        
+                        # Verificar se existe coluna NOME
+                        if 'NOME' not in df.columns:
+                            continue
+                        
+                        # Filtrar apenas lançamentos ativos se a coluna STATUS existir
+                        if 'STATUS' in df.columns:
+                            df = df[df['STATUS'].str.upper().str.strip() == 'ATIVO'].copy()
+                        
+                        # Obter fornecedores únicos (removendo valores nulos e vazios)
+                        fornecedores_cliente = df['NOME'].dropna().str.strip()
+                        fornecedores_cliente = fornecedores_cliente[fornecedores_cliente != '']
+                        
+                        # Adicionar ao conjunto de fornecedores
+                        fornecedores_encontrados.update(fornecedores_cliente.unique())
+                        clientes_processados += 1
+                        
+                    except Exception as e:
+                        print(f"Erro ao processar arquivo {arquivo}: {str(e)}")
+                        continue
+            
+            # Fechar janela de progresso
+            progress_window.destroy()
+            
+            if not fornecedores_encontrados:
+                messagebox.showwarning("Aviso", "Nenhum fornecedor encontrado nos arquivos dos clientes!")
+                return
+            
+            # Ordenar fornecedores alfabeticamente e armazenar
+            self.fornecedores_disponiveis = sorted(list(fornecedores_encontrados))
+            
+            # Limpar busca atual
+            self.limpar_busca_fornecedor()
+            
+            # Atualizar status
+            self.lbl_status_busca.config(
+                text=f"{len(self.fornecedores_disponiveis)} fornecedores carregados. Digite para buscar.",
+                foreground='blue'
+            )
+            
+            messagebox.showinfo(
+                "Sucesso", 
+                f"{len(self.fornecedores_disponiveis)} fornecedores encontrados em {clientes_processados} clientes!\n\n" +
+                "Use o campo de busca para encontrar fornecedores específicos."
+            )
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar fornecedores: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
+    def filtrar_fornecedores(self, event=None):
+        """Filtra a lista de fornecedores conforme o usuário digita"""
+        if not self.fornecedores_disponiveis:
+            return
+        
+        termo_busca = self.fornecedor_busca_var.get().upper().strip()
+        
+        # Limpar lista atual
+        for item in self.tree_fornecedores.get_children():
+            self.tree_fornecedores.delete(item)
+        
+        if not termo_busca:
+            # Se não há termo de busca, mostrar todos (limitado)
+            self.fornecedores_filtrados = self.fornecedores_disponiveis[:100]  # Limitar a 100
+            self.lbl_status_busca.config(
+                text=f"Mostrando primeiros 100 de {len(self.fornecedores_disponiveis)} fornecedores"
+            )
+        else:
+            # Filtrar fornecedores que contêm o termo
+            self.fornecedores_filtrados = [
+                f for f in self.fornecedores_disponiveis 
+                if termo_busca in f.upper()
+            ]
+            
+            # Limitar resultados para performance
+            if len(self.fornecedores_filtrados) > 50:
+                self.fornecedores_filtrados = self.fornecedores_filtrados[:50]
+                self.lbl_status_busca.config(
+                    text=f"Mostrando primeiros 50 resultados (digite mais para refinar a busca)"
+                )
+            else:
+                self.lbl_status_busca.config(
+                    text=f"{len(self.fornecedores_filtrados)} fornecedores encontrados"
+                )
+        
+        # Adicionar resultados ao Treeview
+        for fornecedor in self.fornecedores_filtrados:
+            self.tree_fornecedores.insert('', 'end', values=(fornecedor,))
+        
+        # Mostrar a lista se há resultados
+        if self.fornecedores_filtrados:
+            self.tree_fornecedores.pack(side='left', fill='both', expand=True)
+            # Note: scrollbar seria necessária aqui, mas simplificando
+        else:
+            self.tree_fornecedores.pack_forget()
+            if termo_busca:
+                self.lbl_status_busca.config(text="Nenhum fornecedor encontrado")
+
+    def selecionar_primeiro_resultado(self, event=None):
+        """Seleciona o primeiro resultado da lista ao pressionar Enter"""
+        children = self.tree_fornecedores.get_children()
+        if children:
+            # Selecionar primeiro item
+            self.tree_fornecedores.selection_set(children[0])
+            self.tree_fornecedores.focus(children[0])
+            self.selecionar_fornecedor_da_lista()
+
+    def selecionar_fornecedor_da_lista(self, event=None):
+        """Seleciona o fornecedor clicado na lista"""
+        selecionado = self.tree_fornecedores.selection()
+        if selecionado:
+            item = self.tree_fornecedores.item(selecionado[0])
+            fornecedor_selecionado = item['values'][0]
+            
+            # Atualizar campo de busca e variável
+            self.fornecedor_busca_var.set(fornecedor_selecionado)
+            self.fornecedor_especifico = fornecedor_selecionado
+            
+            # Ocultar lista após seleção
+            self.tree_fornecedores.pack_forget()
+            
+            # Atualizar status
+            self.lbl_status_busca.config(
+                text=f"Fornecedor selecionado: {fornecedor_selecionado}",
+                foreground='green'
+            )
+
+    def limpar_busca_fornecedor(self):
+        """Limpa a busca de fornecedor"""
+        self.fornecedor_busca_var.set('')
+        self.fornecedor_especifico = None
+        self.tree_fornecedores.pack_forget()
+        
+        if self.fornecedores_disponiveis:
+            self.lbl_status_busca.config(
+                text=f"{len(self.fornecedores_disponiveis)} fornecedores disponíveis. Digite para buscar.",
+                foreground='gray'
+            )
+        else:
+            self.lbl_status_busca.config(
+                text="Use o botão 'Buscar Fornecedores' para carregar a lista",
+                foreground='gray'
+            )
+               
     # NOVO: Método para selecionar fornecedor específico
     def selecionar_fornecedor_especifico(self, event=None):
         """Seleciona o fornecedor para análise"""
@@ -759,16 +1095,30 @@ class RelatorioFornecedores:
                 self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
     
     def gerar_relatorio(self):
-        """Gera o relatório com base nos dados selecionados"""
+        """Gera o relatório com validação melhorada"""
         # Validações específicas por modo
         if self.modo_relatorio == "fornecedores":
             if not self.cliente_atual and not self.todos_clientes:
-                messagebox.showwarning("Aviso", "Selecione um cliente ou marque a opção 'Analisar todos os clientes'!")
+                messagebox.showwarning(
+                    "Aviso", 
+                    "Para o relatório de 'Principais Fornecedores':\n" +
+                    "• Selecione um cliente específico, OU\n" +
+                    "• Marque a opção 'Analisar todos os clientes'"
+                )
                 return
         else:
             if not self.fornecedor_especifico:
-                messagebox.showwarning("Aviso", "Selecione um fornecedor para análise!")
+                messagebox.showwarning(
+                    "Aviso", 
+                    "Para o relatório 'Clientes de um Fornecedor':\n" +
+                    "• Use o botão 'Buscar Fornecedores' para carregar a lista\n" +
+                    "• Digite parte do nome do fornecedor no campo de busca\n" +
+                    "• Selecione o fornecedor desejado na lista"
+                )
                 return
+        
+        # Limpar dados anteriores antes de gerar novo relatório
+        self.limpar_dados_relatorio_anterior()
         
         # Se o período for personalizado, obter as datas selecionadas
         if self.periodo_combobox.get() == "Personalizado":
@@ -788,31 +1138,134 @@ class RelatorioFornecedores:
             text=f"Período: {self.periodo_inicio.strftime('%d/%m/%Y')} a {self.periodo_fim.strftime('%d/%m/%Y')}"
         )
         
-        # Carregar dados conforme o modo
-        if self.modo_relatorio == "fornecedores":
-            if not self.carregar_dados_fornecedores():
-                return
-        else:
-            if not self.carregar_dados_por_fornecedor():
-                return
+        # Mostrar progresso
+        self.mostrar_progresso_geracao()
         
-        # Preencher resumo
-        self.preencher_resumo()
-        
-        # Atualizar lista para a aba de detalhes
-        self.atualizar_lista_detalhes()
-        
-        # Limpar detalhes
-        self.limpar_detalhes()
-        
-        # Gerar gráfico inicial
-        self.atualizar_grafico()
-        
-        # Marcar que os dados foram carregados
-        self.dados_carregados = True
-        
-        # Selecionar aba de resumo
-        self.notebook.select(0)
+        try:
+            # Carregar dados conforme o modo
+            if self.modo_relatorio == "fornecedores":
+                if not self.carregar_dados_fornecedores():
+                    self.ocultar_progresso_geracao()
+                    return
+            else:
+                if not self.carregar_dados_por_fornecedor():
+                    self.ocultar_progresso_geracao()
+                    return
+            
+            # Preencher resumo
+            self.preencher_resumo()
+            
+            # Atualizar lista para a aba de detalhes
+            self.atualizar_lista_detalhes()
+            
+            # Limpar detalhes
+            self.limpar_detalhes()
+            
+            # Gerar gráfico inicial
+            self.atualizar_grafico()
+            
+            # Marcar que os dados foram carregados
+            self.dados_carregados = True
+            
+            # Selecionar aba de resumo
+            self.notebook.select(0)
+            
+            # Ocultar progresso
+            self.ocultar_progresso_geracao()
+            
+            # Mostrar resumo do que foi gerado
+            self.mostrar_resumo_geracao()
+            
+        except Exception as e:
+            self.ocultar_progresso_geracao()
+            messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
+
+    # NOVO MÉTODO: Limpar dados do relatório anterior
+    def limpar_dados_relatorio_anterior(self):
+        """Limpa apenas os dados do relatório anterior mantendo as configurações"""
+        try:
+            # Manter: modo_relatorio, cliente_atual, fornecedor_especifico, periodo
+            # Limpar: apenas os dados gerados
+            
+            self.dados_fornecedores = {}
+            self.dados_por_fornecedor = {}
+            self.top_fornecedores = []
+            self.total_geral = 0.0
+            self.dados_carregados = False
+            
+            # Limpar apenas as tabelas (não os controles)
+            for item in self.tree_resumo.get_children():
+                self.tree_resumo.delete(item)
+            
+            for item in self.tree_lancamentos.get_children():
+                self.tree_lancamentos.delete(item)
+            
+            # Resetar totais
+            self.lbl_total_geral.config(text="Total Geral: R$ 0,00")
+            self.lbl_total_apresentado.config(text="Total Apresentado: R$ 0,00 (0%)")
+            
+        except Exception as e:
+            print(f"Erro ao limpar dados do relatório anterior: {str(e)}")
+
+    # NOVOS MÉTODOS: Controle de progresso
+    def mostrar_progresso_geracao(self):
+        """Mostra indicador de progresso durante a geração"""
+        try:
+            # Criar ou atualizar uma label de status
+            if not hasattr(self, 'lbl_status_geracao'):
+                self.lbl_status_geracao = ttk.Label(
+                    self.frame_selecao,
+                    text="Gerando relatório...",
+                    font=('Arial', 10, 'italic'),
+                    foreground='blue'
+                )
+            
+            self.lbl_status_geracao.config(text="Gerando relatório, aguarde...")
+            self.lbl_status_geracao.pack(pady=5)
+            self.root.update()
+            
+        except Exception as e:
+            print(f"Erro ao mostrar progresso: {str(e)}")
+
+    def ocultar_progresso_geracao(self):
+        """Oculta o indicador de progresso"""
+        try:
+            if hasattr(self, 'lbl_status_geracao'):
+                self.lbl_status_geracao.pack_forget()
+                
+        except Exception as e:
+            print(f"Erro ao ocultar progresso: {str(e)}")
+
+    def mostrar_resumo_geracao(self):
+        """Mostra um resumo do que foi gerado"""
+        try:
+            if self.modo_relatorio == "fornecedores":
+                if self.todos_clientes:
+                    cliente_info = "todos os clientes"
+                else:
+                    cliente_info = f"cliente '{self.cliente_atual}'"
+                
+                resumo = f"Relatório gerado para {cliente_info}:\n" + \
+                        f"• {len(self.top_fornecedores)} fornecedores encontrados\n" + \
+                        f"• Total geral: {formatar_moeda_br(self.total_geral)}"
+            else:
+                resumo = f"Relatório gerado para fornecedor '{self.fornecedor_especifico}':\n" + \
+                        f"• {len(self.top_fornecedores)} clientes encontrados\n" + \
+                        f"• Total geral: {formatar_moeda_br(self.total_geral)}"
+            
+            # Mostrar na barra de status temporariamente
+            if hasattr(self, 'lbl_status_geracao'):
+                self.lbl_status_geracao.config(
+                    text=f"Relatório gerado com sucesso! {len(self.top_fornecedores)} registros encontrados.",
+                    foreground='green'
+                )
+                self.lbl_status_geracao.pack(pady=5)
+                
+                # Ocultar após 3 segundos
+                self.root.after(3000, self.ocultar_progresso_geracao)
+            
+        except Exception as e:
+            print(f"Erro ao mostrar resumo: {str(e)}")
 
     # NOVO: Método para carregar dados por fornecedor específico
     def carregar_dados_por_fornecedor(self):
@@ -879,7 +1332,230 @@ class RelatorioFornecedores:
             import traceback
             traceback.print_exc()
             return False
+                
+
+    # NOVO: Método para processar arquivo de cliente para um fornecedor específico
+    def processar_arquivo_cliente_fornecedor(self, caminho_arquivo, nome_cliente):
+        """Processa um arquivo de cliente buscando lançamentos de um fornecedor específico"""
+        try:
+            # Carregar dados do Excel
+            df = pd.read_excel(caminho_arquivo, sheet_name='Dados')
+            
+            # Verificar colunas necessárias
+            colunas_necessarias = ['DATA_REL', 'TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR']
+            if not all(coluna in df.columns for coluna in colunas_necessarias):
+                print(f"Arquivo {nome_cliente} não contém todas as colunas necessárias.")
+                return False
+            
+            # Filtrar apenas lançamentos ativos
+            if 'STATUS' in df.columns:
+                df = df[df['STATUS'].str.upper().str.strip() == 'ATIVO'].copy()
+                if df.empty:
+                    return False
+            
+            # Converter DATA_REL para datetime
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            # Remover linhas com datas inválidas
+            df = df.dropna(subset=['DATA_REL'])
+            
+            # Filtrar por período
+            df_periodo = df[
+                (df['DATA_REL'] >= self.periodo_inicio) & 
+                (df['DATA_REL'] <= self.periodo_fim)
+            ]
+            
+            if df_periodo.empty:
+                return False
+            
+            # Busca mais precisa pelo fornecedor específico
+            # Primeiro, busca exata (case-insensitive)
+            fornecedor_mask_exato = df_periodo['NOME'].str.upper().str.strip() == self.fornecedor_especifico.upper().strip()
+            df_fornecedor = df_periodo[fornecedor_mask_exato].copy()
+            
+            # Se não encontrou com busca exata, fazer busca parcial
+            if df_fornecedor.empty:
+                # Busca por contém (case-insensitive)
+                fornecedor_mask_parcial = df_periodo['NOME'].str.upper().str.contains(
+                    self.fornecedor_especifico.upper().strip(), 
+                    na=False, 
+                    regex=False
+                )
+                df_fornecedor = df_periodo[fornecedor_mask_parcial].copy()
+            
+            if df_fornecedor.empty:
+                return False
+            
+            encontrou_lancamentos = False
+            
+            # Processar cada lançamento do fornecedor
+            for _, row in df_fornecedor.iterrows():
+                try:
+                    # Obter valor do lançamento
+                    valor = 0.0
+                    if isinstance(row['VALOR'], (int, float)):
+                        valor = float(row['VALOR'])
+                    elif isinstance(row['VALOR'], str):
+                        # Limpar string e converter para float
+                        valor_str = row['VALOR'].replace('R$', '').replace('.', '').replace(',', '.').strip()
+                        try:
+                            valor = float(valor_str)
+                        except ValueError:
+                            valor = 0.0
+                    
+                    # Ignorar lançamentos com valor zero ou negativo
+                    if valor <= 0:
+                        continue
+                    
+                    # Obter tipo de despesa
+                    tipo_despesa = int(row['TP_DESP']) if pd.notnull(row['TP_DESP']) else 0
+                    
+                    # Obter referência
+                    referencia = str(row['REFERÊNCIA']) if pd.notnull(row['REFERÊNCIA']) else ""
+                    
+                    # Verificar se existe coluna 'NF' e adicionar à referência se disponível
+                    nf = ""
+                    if 'NF' in df.columns and pd.notnull(row['NF']) and str(row['NF']).strip():
+                        nf = str(row['NF']).strip()
+                        if nf and nf.lower() != 'nan':
+                            if referencia:
+                                referencia = f"{referencia} (NF: {nf})"
+                            else:
+                                referencia = f"NF: {nf}"
+                    
+                    # Obter data
+                    data = row['DATA_REL']
+                    
+                    # Obter data de vencimento se disponível
+                    dt_vencto = None
+                    if 'DT_VENCTO' in df.columns and pd.notnull(row['DT_VENCTO']):
+                        try:
+                            dt_vencto = pd.to_datetime(row['DT_VENCTO'])
+                        except:
+                            dt_vencto = None
+                    
+                    # Obter observação se disponível
+                    observacao = ""
+                    for col_obs in ['OBSERVACAO', 'OBSERVAÇÃO']:
+                        if col_obs in df.columns and pd.notnull(row[col_obs]):
+                            observacao = str(row[col_obs])
+                            break
+                    
+                    # Criar identificador do mês para análise mensal
+                    mes_ano = f"{data.year}-{data.month:02d}"
+                    
+                    # Atualizar dados do cliente
+                    self.dados_por_fornecedor[nome_cliente]['total'] += valor
+                    self.dados_por_fornecedor[nome_cliente]['qtd_lancamentos'] += 1
+                    self.dados_por_fornecedor[nome_cliente]['tipos_despesa'].add(tipo_despesa)
+                    self.dados_por_fornecedor[nome_cliente]['por_mes'][mes_ano] += valor
+                    self.dados_por_fornecedor[nome_cliente]['por_tipo'][tipo_despesa] += valor
+                    
+                    # Adicionar lançamento à lista de lançamentos do cliente
+                    self.dados_por_fornecedor[nome_cliente]['lancamentos'].append({
+                        'data': data,
+                        'fornecedor': str(row['NOME']).strip(),  # Nome real do fornecedor
+                        'tipo_despesa': tipo_despesa,
+                        'referencia': referencia,
+                        'nf': nf,
+                        'dt_vencto': dt_vencto,
+                        'valor': valor,
+                        'observacao': observacao
+                    })
+                    
+                    # Atualizar total geral
+                    self.total_geral += valor
+                    encontrou_lancamentos = True
+                    
+                except Exception as e:
+                    print(f"Erro ao processar lançamento no cliente {nome_cliente}: {str(e)}")
+                    continue
+            
+            if encontrou_lancamentos:
+                print(f"Cliente {nome_cliente}: {len(df_fornecedor)} lançamentos encontrados para '{self.fornecedor_especifico}'")
+            
+            return encontrou_lancamentos
+            
+        except Exception as e:
+            print(f"Erro ao processar arquivo {nome_cliente}: {str(e)}")
+            return False
     
+    def carregar_dados_fornecedores(self):
+        """Carrega os dados para o relatório (modo original)"""
+        try:
+            # Dicionário para armazenar dados por fornecedor
+            self.dados_fornecedores = defaultdict(lambda: {
+                'total': 0.0,
+                'lancamentos': [],
+                'qtd_lancamentos': 0,
+                'tipos_despesa': set(),
+                'clientes': set(),
+                'por_mes': defaultdict(float),
+                'por_tipo': defaultdict(float)
+            })
+            
+            # Variáveis para somatórios
+            self.total_geral = 0.0
+            
+            if self.todos_clientes:
+                # Processar todos os arquivos de clientes
+                clientes_processados = []
+                
+                for arquivo in os.listdir(PASTA_CLIENTES):
+                    if arquivo.endswith('.xlsx'):
+                        try:
+                            caminho_arquivo = os.path.join(PASTA_CLIENTES, arquivo)
+                            nome_cliente = os.path.splitext(arquivo)[0]
+                            
+                            # Processar arquivo do cliente
+                            self.processar_arquivo_cliente(caminho_arquivo, nome_cliente)
+                            clientes_processados.append(nome_cliente)
+                        except Exception as e:
+                            print(f"Erro ao processar arquivo {arquivo}: {str(e)}")
+                
+                if not clientes_processados:
+                    messagebox.showwarning("Aviso", "Nenhum arquivo de cliente encontrado!")
+                    return False
+                    
+                print(f"Clientes processados: {len(clientes_processados)}")
+                
+            else:
+                # Processar apenas o cliente selecionado
+                if not os.path.exists(self.arquivo_cliente):
+                    messagebox.showerror("Erro", f"Arquivo do cliente '{self.cliente_atual}' não encontrado!")
+                    return False
+                
+                # Processar arquivo do cliente
+                self.processar_arquivo_cliente(self.arquivo_cliente, self.cliente_atual)
+            
+            # Verificar se encontrou algum lançamento
+            if self.total_geral == 0:
+                messagebox.showinfo("Aviso", "Nenhum lançamento encontrado no período selecionado.")
+                return False
+            
+            # Ordenar fornecedores por valor total (decrescente)
+            fornecedores_ordenados = sorted(
+                self.dados_fornecedores.items(),
+                key=lambda x: x[1]['total'],
+                reverse=True
+            )
+            
+            # Obter top N fornecedores
+            try:
+                top_n = int(self.top_n_var.get())
+            except ValueError:
+                top_n = 10
+                
+            self.top_fornecedores = fornecedores_ordenados[:top_n]
+            
+            return True
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar dados: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return False
+
     def processar_arquivo_cliente(self, caminho_arquivo, nome_cliente):
         """Processa um arquivo de cliente (método original)"""
         try:
@@ -910,7 +1586,10 @@ class RelatorioFornecedores:
                 print(f"Cliente {nome_cliente}: Coluna STATUS não encontrada, processando todos os registros")
 
             # Converter DATA_REL para datetime
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'])
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            # Remover linhas com datas inválidas
+            df = df.dropna(subset=['DATA_REL'])
             
             # Filtrar por período
             df_periodo = df[
@@ -931,7 +1610,7 @@ class RelatorioFornecedores:
                     if not isinstance(fornecedor, str) or not fornecedor.strip():
                         continue
                     
-                    fornecedor = fornecedor.strip().upper()
+                    fornecedor = fornecedor.strip()
                     
                     # Obter valor do lançamento
                     valor = 0.0
@@ -939,75 +1618,20 @@ class RelatorioFornecedores:
                         valor = float(row['VALOR'])
                     elif isinstance(row['VALOR'], str):
                         # Limpar string e converter para float
-                        valor_str = row['VALOR'].replace('R
-
-    # NOVO: Método para processar arquivo de cliente para um fornecedor específico
-    def processar_arquivo_cliente_fornecedor(self, caminho_arquivo, nome_cliente):
-        """Processa um arquivo de cliente buscando lançamentos de um fornecedor específico"""
-        try:
-            # Carregar dados do Excel
-            df = pd.read_excel(caminho_arquivo, sheet_name='Dados')
-            
-            # Verificar colunas necessárias
-            colunas_necessarias = ['DATA_REL', 'TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR']
-            if not all(coluna in df.columns for coluna in colunas_necessarias):
-                print(f"Arquivo {nome_cliente} não contém todas as colunas necessárias.")
-                return False
-            
-            # Filtrar apenas lançamentos ativos
-            if 'STATUS' in df.columns:
-                df = df[df['STATUS'].str.upper().str.strip() == 'ATIVO'].copy()
-                if df.empty:
-                    return False
-            
-            # Converter DATA_REL para datetime
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'])
-            
-            # Filtrar por período
-            df_periodo = df[
-                (df['DATA_REL'] >= self.periodo_inicio) & 
-                (df['DATA_REL'] <= self.periodo_fim)
-            ]
-            
-            if df_periodo.empty:
-                return False
-            
-            # Filtrar pelo fornecedor específico (busca flexível)
-            fornecedor_mask = df_periodo['NOME'].str.upper().str.contains(
-                self.fornecedor_especifico.upper(), 
-                na=False, 
-                regex=False
-            )
-            df_fornecedor = df_periodo[fornecedor_mask].copy()
-            
-            if df_fornecedor.empty:
-                return False
-            
-            encontrou_lancamentos = False
-            
-            # Processar cada lançamento do fornecedor
-            for _, row in df_fornecedor.iterrows():
-                try:
-                    # Obter valor do lançamento
-                    valor = 0.0
-                    if isinstance(row['VALOR'], (int, float)):
-                        valor = float(row['VALOR'])
-                    elif isinstance(row['VALOR'], str):
-                        # Limpar string e converter para float
-                        valor_str = row['VALOR'].replace('R, '').replace('.', '').replace(',', '.').strip()
+                        valor_str = row['VALOR'].replace('R$', '').replace('.', '').replace(',', '.').strip()
                         try:
                             valor = float(valor_str)
                         except ValueError:
                             valor = 0.0
                     
-                    # Ignorar lançamentos com valor zero
+                    # Ignorar lançamentos com valor zero ou negativo
                     if valor <= 0:
                         continue
                     
                     # Obter tipo de despesa
                     tipo_despesa = int(row['TP_DESP']) if pd.notnull(row['TP_DESP']) else 0
                     
-                    # Obter referência e incluir NF se disponível
+                    # Obter referência
                     referencia = str(row['REFERÊNCIA']) if pd.notnull(row['REFERÊNCIA']) else ""
                     
                     # Verificar se existe coluna 'NF' e adicionar à referência se disponível
@@ -1015,7 +1639,10 @@ class RelatorioFornecedores:
                     if 'NF' in df.columns and pd.notnull(row['NF']) and str(row['NF']).strip():
                         nf = str(row['NF']).strip()
                         if nf and nf.lower() != 'nan':
-                            referencia = f"{referencia} (NF: {nf})"
+                            if referencia:
+                                referencia = f"{referencia} (NF: {nf})"
+                            else:
+                                referencia = f"NF: {nf}"
                     
                     # Obter data
                     data = row['DATA_REL']
@@ -1030,25 +1657,26 @@ class RelatorioFornecedores:
                     
                     # Obter observação se disponível
                     observacao = ""
-                    if 'OBSERVACAO' in df.columns and pd.notnull(row['OBSERVACAO']):
-                        observacao = str(row['OBSERVAÇÃO'])
-                    elif 'OBSERVAÇÃO' in df.columns and pd.notnull(row['OBSERVAÇÃO']):
-                        observacao = str(row['OBSERVAÇÃO'])
+                    for col_obs in ['OBSERVACAO', 'OBSERVAÇÃO']:
+                        if col_obs in df.columns and pd.notnull(row[col_obs]):
+                            observacao = str(row[col_obs])
+                            break
                     
                     # Criar identificador do mês para análise mensal
                     mes_ano = f"{data.year}-{data.month:02d}"
                     
-                    # Atualizar dados do cliente
-                    self.dados_por_fornecedor[nome_cliente]['total'] += valor
-                    self.dados_por_fornecedor[nome_cliente]['qtd_lancamentos'] += 1
-                    self.dados_por_fornecedor[nome_cliente]['tipos_despesa'].add(tipo_despesa)
-                    self.dados_por_fornecedor[nome_cliente]['por_mes'][mes_ano] += valor
-                    self.dados_por_fornecedor[nome_cliente]['por_tipo'][tipo_despesa] += valor
+                    # Atualizar dados do fornecedor
+                    self.dados_fornecedores[fornecedor]['total'] += valor
+                    self.dados_fornecedores[fornecedor]['qtd_lancamentos'] += 1
+                    self.dados_fornecedores[fornecedor]['tipos_despesa'].add(tipo_despesa)
+                    self.dados_fornecedores[fornecedor]['clientes'].add(nome_cliente)
+                    self.dados_fornecedores[fornecedor]['por_mes'][mes_ano] += valor
+                    self.dados_fornecedores[fornecedor]['por_tipo'][tipo_despesa] += valor
                     
-                    # Adicionar lançamento à lista de lançamentos do cliente
-                    self.dados_por_fornecedor[nome_cliente]['lancamentos'].append({
+                    # Adicionar lançamento à lista de lançamentos do fornecedor
+                    self.dados_fornecedores[fornecedor]['lancamentos'].append({
                         'data': data,
-                        'fornecedor': row['NOME'],  # Nome real do fornecedor
+                        'cliente': nome_cliente,
                         'tipo_despesa': tipo_despesa,
                         'referencia': referencia,
                         'nf': nf,
@@ -1059,313 +1687,648 @@ class RelatorioFornecedores:
                     
                     # Atualizar total geral
                     self.total_geral += valor
-                    encontrou_lancamentos = True
                     
                 except Exception as e:
                     print(f"Erro ao processar lançamento: {str(e)}")
                     continue
             
-            if encontrou_lancamentos:
-                print(f"Cliente {nome_cliente} processado: {len(df_fornecedor)} lançamentos do fornecedor {self.fornecedor_especifico}.")
-            
-            return encontrou_lancamentos
+            print(f"Cliente {nome_cliente} processado: {len(df_periodo)} lançamentos no período.")
             
         except Exception as e:
             print(f"Erro ao processar arquivo {nome_cliente}: {str(e)}")
-            return False
-    
-    def carregar_dados_fornecedores(self):
-        """Carrega os dados para o relatório (modo original)"""
-        try:
-            # Dicionário para armazenar dados por fornecedor
-            self.dados_fornecedores = defaultdict(lambda: {
-                'total': 0.0,
-                'lancamentos': [],
-                'qtd_lancamentos': 0,
-                'tipos_despesa': set(),
-                'clientes': set(),
-                'por_mes': defaultdict(float),
-                'por_tipo': defaultdict(float)
-            })
-            
-            # Variáveis para somatórios
-            self.total_geral = 0.0
-            
-            if self.todos_clientes:
-                # Processar todos os arquivos de clientes
-                clientes_processados = []
-                
-                for arquivo in os.listdir(PASTA_CLIENTES):
-                    if arquivo.endswith('.xlsx'):
-                        try:
-                            caminho_arquivo = os.path.join(PASTA_CLIENTES, arquivo)
-                            nome_cliente = os.path.splitext(arquivo)[0]
-                            
-                            # Processar arquivo do cliente
-                            self.processar_arquivo_cliente(caminho_arquivo, nome_cliente)
-                            clientes_processados.append(nome_cliente)
-                        except Exception as e:
-                            print(f"Erro ao processar arquivo {arquivo}: {str(e)}")
-                
-                if not clientes_processados:
-                    messagebox.showwarning("Aviso", "Nenhum arquivo de cliente encontrado!")
-                    return False
-                    
-                print(f"Clientes processados: {len(clientes_processados)}")
-                
-            else:
-                # Processar apenas o cliente selecionado
-                if not os.path.exists(self.arquivo_cliente):
-                    messagebox.showerror("Erro", f"Arquivo do cliente '{self.cliente_atual}' não encontrado!")
-                    return False
-                
-                # Processar arquivo do cliente
-                self.processar_arquivo_cliente(self.arquivo_cliente, self.cliente_atual)
-            
-            # Verificar se encontrou algum lançamento
-            if self.total_geral == 0:
-                messagebox.showinfo("Aviso", "Nenhum lançamento encontrado no período selecionado.")
-                return False
-            
-            # Ordenar fornecedores por valor total (decrescente)
-            fornecedores_ordenados = sorted(
-                self.dados_fornecedores.items(),
-                key=lambda x: x[1]['total'],
-                reverse=True
-            )
-            
-            # Obter top N fornecedores
-            try:
-                top_n = int(self.top_n_var.get())
-            except ValueError:
-                top_n = 10
-                
-            self.top_fornecedores = fornecedores_ordenados[:top_n]
-            
-            return True
-            
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar dados: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            return False, '').replace('.', '').replace(',', '.').strip()
-                        try:
-                            valor = float(valor_str)
-                        except ValueError:
-                            valor = 0.0
-                    
-                    # Ignorar lançamentos com valor zero
-                    if valor <= 0:
-                
 
-    # NOVO: Método para processar arquivo de cliente para um fornecedor específico
-    def processar_arquivo_cliente_fornecedor(self, caminho_arquivo, nome_cliente):
-        """Processa um arquivo de cliente buscando lançamentos de um fornecedor específico"""
+    def preencher_resumo(self):
+        """Preenche a aba de resumo com os dados carregados"""
         try:
-            # Carregar dados do Excel
-            df = pd.read_excel(caminho_arquivo, sheet_name='Dados')
+            # Limpar dados anteriores
+            for item in self.tree_resumo.get_children():
+                self.tree_resumo.delete(item)
             
-            # Verificar colunas necessárias
-            colunas_necessarias = ['DATA_REL', 'TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR']
-            if not all(coluna in df.columns for coluna in colunas_necessarias):
-                print(f"Arquivo {nome_cliente} não contém todas as colunas necessárias.")
-                return False
+            # Atualizar colunas conforme o modo
+            self.atualizar_colunas_resumo()
             
-            # Filtrar apenas lançamentos ativos
-            if 'STATUS' in df.columns:
-                df = df[df['STATUS'].str.upper().str.strip() == 'ATIVO'].copy()
-                if df.empty:
-                    return False
-            
-            # Converter DATA_REL para datetime
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'])
-            
-            # Filtrar por período
-            df_periodo = df[
-                (df['DATA_REL'] >= self.periodo_inicio) & 
-                (df['DATA_REL'] <= self.periodo_fim)
-            ]
-            
-            if df_periodo.empty:
-                return False
-            
-            # Filtrar pelo fornecedor específico (busca flexível)
-            fornecedor_mask = df_periodo['NOME'].str.upper().str.contains(
-                self.fornecedor_especifico.upper(), 
-                na=False, 
-                regex=False
-            )
-            df_fornecedor = df_periodo[fornecedor_mask].copy()
-            
-            if df_fornecedor.empty:
-                return False
-            
-            encontrou_lancamentos = False
-            
-            # Processar cada lançamento do fornecedor
-            for _, row in df_fornecedor.iterrows():
-                try:
-                    # Obter valor do lançamento
-                    valor = 0.0
-                    if isinstance(row['VALOR'], (int, float)):
-                        valor = float(row['VALOR'])
-                    elif isinstance(row['VALOR'], str):
-                        # Limpar string e converter para float
-                        valor_str = row['VALOR'].replace('R, '').replace('.', '').replace(',', '.').strip()
-                        try:
-                            valor = float(valor_str)
-                        except ValueError:
-                            valor = 0.0
-                    
-                    # Ignorar lançamentos com valor zero
-                    if valor <= 0:
-                        continue
-                    
-                    # Obter tipo de despesa
-                    tipo_despesa = int(row['TP_DESP']) if pd.notnull(row['TP_DESP']) else 0
-                    
-                    # Obter referência e incluir NF se disponível
-                    referencia = str(row['REFERÊNCIA']) if pd.notnull(row['REFERÊNCIA']) else ""
-                    
-                    # Verificar se existe coluna 'NF' e adicionar à referência se disponível
-                    nf = ""
-                    if 'NF' in df.columns and pd.notnull(row['NF']) and str(row['NF']).strip():
-                        nf = str(row['NF']).strip()
-                        if nf and nf.lower() != 'nan':
-                            referencia = f"{referencia} (NF: {nf})"
-                    
-                    # Obter data
-                    data = row['DATA_REL']
-                    
-                    # Obter data de vencimento se disponível
-                    dt_vencto = None
-                    if 'DT_VENCTO' in df.columns and pd.notnull(row['DT_VENCTO']):
-                        try:
-                            dt_vencto = pd.to_datetime(row['DT_VENCTO'])
-                        except:
-                            dt_vencto = None
-                    
-                    # Obter observação se disponível
-                    observacao = ""
-                    if 'OBSERVACAO' in df.columns and pd.notnull(row['OBSERVACAO']):
-                        observacao = str(row['OBSERVAÇÃO'])
-                    elif 'OBSERVAÇÃO' in df.columns and pd.notnull(row['OBSERVAÇÃO']):
-                        observacao = str(row['OBSERVAÇÃO'])
-                    
-                    # Criar identificador do mês para análise mensal
-                    mes_ano = f"{data.year}-{data.month:02d}"
-                    
-                    # Atualizar dados do cliente
-                    self.dados_por_fornecedor[nome_cliente]['total'] += valor
-                    self.dados_por_fornecedor[nome_cliente]['qtd_lancamentos'] += 1
-                    self.dados_por_fornecedor[nome_cliente]['tipos_despesa'].add(tipo_despesa)
-                    self.dados_por_fornecedor[nome_cliente]['por_mes'][mes_ano] += valor
-                    self.dados_por_fornecedor[nome_cliente]['por_tipo'][tipo_despesa] += valor
-                    
-                    # Adicionar lançamento à lista de lançamentos do cliente
-                    self.dados_por_fornecedor[nome_cliente]['lancamentos'].append({
-                        'data': data,
-                        'fornecedor': row['NOME'],  # Nome real do fornecedor
-                        'tipo_despesa': tipo_despesa,
-                        'referencia': referencia,
-                        'nf': nf,
-                        'dt_vencto': dt_vencto,
-                        'valor': valor,
-                        'observacao': observacao
-                    })
-                    
-                    # Atualizar total geral
-                    self.total_geral += valor
-                    encontrou_lancamentos = True
-                    
-                except Exception as e:
-                    print(f"Erro ao processar lançamento: {str(e)}")
-                    continue
-            
-            if encontrou_lancamentos:
-                print(f"Cliente {nome_cliente} processado: {len(df_fornecedor)} lançamentos do fornecedor {self.fornecedor_especifico}.")
-            
-            return encontrou_lancamentos
-            
-        except Exception as e:
-            print(f"Erro ao processar arquivo {nome_cliente}: {str(e)}")
-            return False
-    
-    def carregar_dados_fornecedores(self):
-        """Carrega os dados para o relatório (modo original)"""
-        try:
-            # Dicionário para armazenar dados por fornecedor
-            self.dados_fornecedores = defaultdict(lambda: {
-                'total': 0.0,
-                'lancamentos': [],
-                'qtd_lancamentos': 0,
-                'tipos_despesa': set(),
-                'clientes': set(),
-                'por_mes': defaultdict(float),
-                'por_tipo': defaultdict(float)
-            })
-            
-            # Variáveis para somatórios
-            self.total_geral = 0.0
-            
-            if self.todos_clientes:
-                # Processar todos os arquivos de clientes
-                clientes_processados = []
+            if self.modo_relatorio == "fornecedores":
+                # Preencher com dados de fornecedores
+                total_apresentado = 0.0
                 
-                for arquivo in os.listdir(PASTA_CLIENTES):
-                    if arquivo.endswith('.xlsx'):
-                        try:
-                            caminho_arquivo = os.path.join(PASTA_CLIENTES, arquivo)
-                            nome_cliente = os.path.splitext(arquivo)[0]
-                            
-                            # Processar arquivo do cliente
-                            self.processar_arquivo_cliente(caminho_arquivo, nome_cliente)
-                            clientes_processados.append(nome_cliente)
-                        except Exception as e:
-                            print(f"Erro ao processar arquivo {arquivo}: {str(e)}")
-                
-                if not clientes_processados:
-                    messagebox.showwarning("Aviso", "Nenhum arquivo de cliente encontrado!")
-                    return False
+                for i, (fornecedor, dados) in enumerate(self.top_fornecedores, 1):
+                    percentual = (dados['total'] / self.total_geral) * 100 if self.total_geral > 0 else 0
+                    tipos_despesa = ', '.join(map(str, sorted(dados['tipos_despesa'])))
                     
-                print(f"Clientes processados: {len(clientes_processados)}")
+                    self.tree_resumo.insert('', 'end', values=(
+                        i,
+                        fornecedor,
+                        formatar_moeda_br(dados['total']),
+                        f"{percentual:.1f}%",
+                        dados['qtd_lancamentos'],
+                        tipos_despesa
+                    ))
+                    
+                    total_apresentado += dados['total']
                 
             else:
-                # Processar apenas o cliente selecionado
-                if not os.path.exists(self.arquivo_cliente):
-                    messagebox.showerror("Erro", f"Arquivo do cliente '{self.cliente_atual}' não encontrado!")
-                    return False
+                # Preencher com dados de clientes
+                total_apresentado = 0.0
                 
-                # Processar arquivo do cliente
-                self.processar_arquivo_cliente(self.arquivo_cliente, self.cliente_atual)
+                for i, (cliente, dados) in enumerate(self.top_fornecedores, 1):  # Reutilizando variável
+                    percentual = (dados['total'] / self.total_geral) * 100 if self.total_geral > 0 else 0
+                    tipos_despesa = ', '.join(map(str, sorted(dados['tipos_despesa'])))
+                    
+                    self.tree_resumo.insert('', 'end', values=(
+                        i,
+                        cliente,
+                        formatar_moeda_br(dados['total']),
+                        f"{percentual:.1f}%",
+                        dados['qtd_lancamentos'],
+                        tipos_despesa
+                    ))
+                    
+                    total_apresentado += dados['total']
             
-            # Verificar se encontrou algum lançamento
-            if self.total_geral == 0:
-                messagebox.showinfo("Aviso", "Nenhum lançamento encontrado no período selecionado.")
-                return False
+            # Atualizar totais
+            self.lbl_total_geral.config(text=f"Total Geral: {formatar_moeda_br(self.total_geral)}")
             
-            # Ordenar fornecedores por valor total (decrescente)
-            fornecedores_ordenados = sorted(
-                self.dados_fornecedores.items(),
-                key=lambda x: x[1]['total'],
-                reverse=True
+            percentual_apresentado = (total_apresentado / self.total_geral) * 100 if self.total_geral > 0 else 0
+            self.lbl_total_apresentado.config(
+                text=f"Total Apresentado: {formatar_moeda_br(total_apresentado)} ({percentual_apresentado:.1f}%)"
             )
             
-            # Obter top N fornecedores
-            try:
-                top_n = int(self.top_n_var.get())
-            except ValueError:
-                top_n = 10
-                
-            self.top_fornecedores = fornecedores_ordenados[:top_n]
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao preencher resumo: {str(e)}")
+
+    def atualizar_lista_detalhes(self):
+        """Atualiza a lista de itens para a aba de detalhes"""
+        try:
+            # Limpar lista atual
+            self.item_detalhes_combobox['values'] = ()
+            self.item_detalhes_combobox.set('')
             
-            return True
+            # Atualizar label conforme o modo
+            if self.modo_relatorio == "fornecedores":
+                self.lbl_selecao_detalhes.config(text="Selecione o Fornecedor:")
+            else:
+                self.lbl_selecao_detalhes.config(text="Selecione o Cliente:")
+            
+            # Criar lista de itens
+            if self.top_fornecedores:
+                items = [f"{i}. {nome}" for i, (nome, dados) in enumerate(self.top_fornecedores, 1)]
+                self.item_detalhes_combobox['values'] = items
+                
+        except Exception as e:
+            print(f"Erro ao atualizar lista de detalhes: {str(e)}")
+
+    def limpar_detalhes(self):
+        """Limpa a aba de detalhes"""
+        try:
+            # Limpar informações do item
+            self.lbl_nome_item.config(text="")
+            self.lbl_total_item.config(text="")
+            self.lbl_qtd_lancamentos_item.config(text="")
+            self.lbl_media_lancamento_item.config(text="")
+            self.lbl_tipos_despesa_item.config(text="")
+            
+            # Limpar lista de lançamentos
+            for item in self.tree_lancamentos.get_children():
+                self.tree_lancamentos.delete(item)
+                
+        except Exception as e:
+            print(f"Erro ao limpar detalhes: {str(e)}")
+
+    def carregar_detalhes_item(self, event=None):
+        """Carrega os detalhes de um item selecionado"""
+        try:
+            selecao = self.item_detalhes_combobox.get()
+            if not selecao:
+                return
+            
+            # Extrair posição do item (formato: "1. Nome do Item")
+            posicao = int(selecao.split('.')[0]) - 1
+            
+            if 0 <= posicao < len(self.top_fornecedores):
+                nome, dados = self.top_fornecedores[posicao]
+                
+                # Atualizar informações
+                self.lbl_nome_item.config(text=nome)
+                self.lbl_total_item.config(text=formatar_moeda_br(dados['total']))
+                self.lbl_qtd_lancamentos_item.config(text=str(dados['qtd_lancamentos']))
+                
+                media = dados['total'] / dados['qtd_lancamentos'] if dados['qtd_lancamentos'] > 0 else 0
+                self.lbl_media_lancamento_item.config(text=formatar_moeda_br(media))
+                
+                tipos = ', '.join(map(str, sorted(dados['tipos_despesa'])))
+                self.lbl_tipos_despesa_item.config(text=tipos)
+                
+                # Carregar lançamentos
+                self.carregar_lancamentos_item(dados['lancamentos'])
+                
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar detalhes: {str(e)}")
+
+    def carregar_lancamentos_item(self, lancamentos):
+        """Carrega os lançamentos de um item na tabela"""
+        try:
+            # Limpar tabela
+            for item in self.tree_lancamentos.get_children():
+                self.tree_lancamentos.delete(item)
+            
+            # Atualizar colunas conforme o modo
+            self.atualizar_colunas_detalhes()
+            
+            # Adicionar lançamentos
+            for lancamento in sorted(lancamentos, key=lambda x: x['data'], reverse=True):
+                data_str = lancamento['data'].strftime('%d/%m/%Y')
+                dt_vencto_str = lancamento['dt_vencto'].strftime('%d/%m/%Y') if lancamento['dt_vencto'] else ""
+                
+                if self.modo_relatorio == "fornecedores":
+                    # Modo fornecedores: mostrar cliente
+                    cliente_ou_fornecedor = lancamento.get('cliente', '')
+                else:
+                    # Modo por fornecedor: mostrar fornecedor
+                    cliente_ou_fornecedor = lancamento.get('fornecedor', '')
+                
+                self.tree_lancamentos.insert('', 'end', values=(
+                    data_str,
+                    cliente_ou_fornecedor,
+                    lancamento['tipo_despesa'],
+                    lancamento['referencia'],
+                    lancamento['nf'],
+                    dt_vencto_str,
+                    formatar_moeda_br(lancamento['valor']),
+                    lancamento['observacao']
+                ))
+                
+        except Exception as e:
+            print(f"Erro ao carregar lançamentos: {str(e)}")
+
+    def atualizar_grafico(self):
+        """Atualiza o gráfico na aba correspondente"""
+        if not self.dados_carregados:
+            return
+        
+        # Limpar frame do gráfico
+        for widget in self.frame_grafico.winfo_children():
+            widget.destroy()
+        
+        tipo_grafico = self.combo_tipo_grafico.get()
+        
+        try:
+            if tipo_grafico == "Pizza - Total por Item":
+                self.criar_grafico_pizza()
+            elif tipo_grafico == "Barras - Top Items":
+                self.criar_grafico_barras()
+            elif tipo_grafico == "Linhas - Evolução Mensal":
+                self.criar_grafico_linhas()
+            elif tipo_grafico == "Barras Empilhadas - Por Tipo de Despesa":
+                self.criar_grafico_barras_empilhadas()
+        except Exception as e:
+            # Mostrar erro no frame do gráfico
+            error_label = ttk.Label(
+                self.frame_grafico, 
+                text=f"Erro ao gerar gráfico: {str(e)}",
+                font=('Arial', 12),
+                foreground='red'
+            )
+            error_label.pack(expand=True)
+
+    def criar_grafico_pizza(self):
+        """Cria gráfico de pizza dos principais itens"""
+        fig, ax = plt.subplots(figsize=(10, 8))
+        
+        # Preparar dados
+        nomes = []
+        valores = []
+        for nome, dados in self.top_fornecedores[:10]:  # Limitar a 10 para melhor visualização
+            nomes.append(nome[:30])  # Truncar nomes longos
+            valores.append(dados['total'])
+        
+        # Criar gráfico de pizza
+        colors = cm.Set3(np.linspace(0, 1, len(nomes)))
+        wedges, texts, autotexts = ax.pie(
+            valores, 
+            labels=nomes, 
+            autopct='%1.1f%%',
+            colors=colors,
+            startangle=90
+        )
+        
+        # Melhorar aparência
+        for autotext in autotexts:
+            autotext.set_color('white')
+            autotext.set_fontweight('bold')
+        
+        # Título
+        if self.modo_relatorio == "fornecedores":
+            ax.set_title('Principais Fornecedores - Distribuição dos Gastos', fontsize=14, fontweight='bold')
+        else:
+            ax.set_title(f'Principais Clientes - {self.fornecedor_especifico}', fontsize=14, fontweight='bold')
+        
+        # Adicionar ao frame
+        canvas = FigureCanvasTkAgg(fig, self.frame_grafico)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
+
+    def criar_grafico_barras(self):
+        """Cria gráfico de barras dos principais itens"""
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        # Preparar dados
+        nomes = []
+        valores = []
+        for nome, dados in self.top_fornecedores[:15]:  # Top 15
+            nomes.append(nome[:25])  # Truncar nomes longos
+            valores.append(dados['total'])
+        
+        # Criar gráfico de barras horizontais
+        y_pos = np.arange(len(nomes))
+        bars = ax.barh(y_pos, valores, color=cm.viridis(np.linspace(0, 1, len(nomes))))
+        
+        # Configurar eixos
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(nomes)
+        ax.invert_yaxis()  # Maior valor no topo
+        ax.set_xlabel('Valor Total (R$)')
+        
+        # Título
+        if self.modo_relatorio == "fornecedores":
+            ax.set_title('Principais Fornecedores - Ranking por Valor', fontsize=14, fontweight='bold')
+        else:
+            ax.set_title(f'Principais Clientes - {self.fornecedor_especifico}', fontsize=14, fontweight='bold')
+        
+        # Adicionar valores nas barras
+        for i, (bar, valor) in enumerate(zip(bars, valores)):
+            ax.text(valor + max(valores) * 0.01, bar.get_y() + bar.get_height()/2, 
+                   f'R$ {valor:,.0f}'.replace(',', '.'), 
+                   va='center', fontsize=9)
+        
+        # Ajustar layout
+        plt.tight_layout()
+        
+        # Adicionar ao frame
+        canvas = FigureCanvasTkAgg(fig, self.frame_grafico)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
+
+    def criar_grafico_linhas(self):
+        """Cria gráfico de linhas da evolução mensal"""
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        # Preparar dados mensais dos top 5 itens
+        top_5 = self.top_fornecedores[:5]
+        
+        # Obter todos os meses do período
+        meses = set()
+        for _, dados in top_5:
+            meses.update(dados['por_mes'].keys())
+        
+        meses_ordenados = sorted(list(meses))
+        
+        # Criar linhas para cada item
+        colors = cm.tab10(np.linspace(0, 1, len(top_5)))
+        
+        for i, (nome, dados) in enumerate(top_5):
+            valores_mes = []
+            for mes in meses_ordenados:
+                valores_mes.append(dados['por_mes'].get(mes, 0))
+            
+            ax.plot(meses_ordenados, valores_mes, 
+                   marker='o', linewidth=2, label=nome[:20], color=colors[i])
+        
+        # Configurar eixos
+        ax.set_xlabel('Mês')
+        ax.set_ylabel('Valor (R$)')
+        ax.set_title('Evolução Mensal dos Principais Itens', fontsize=14, fontweight='bold')
+        ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.grid(True, alpha=0.3)
+        
+        # Rotacionar labels do eixo x
+        plt.setp(ax.get_xticklabels(), rotation=45)
+        
+        # Ajustar layout
+        plt.tight_layout()
+        
+        # Adicionar ao frame
+        canvas = FigureCanvasTkAgg(fig, self.frame_grafico)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
+
+    def criar_grafico_barras_empilhadas(self):
+        """Cria gráfico de barras empilhadas por tipo de despesa"""
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        # Preparar dados por tipo de despesa
+        top_items = self.top_fornecedores[:10]
+        nomes = [nome[:20] for nome, _ in top_items]
+        
+        # Obter todos os tipos de despesa
+        todos_tipos = set()
+        for _, dados in top_items:
+            todos_tipos.update(dados['por_tipo'].keys())
+        
+        tipos_ordenados = sorted(list(todos_tipos))
+        
+        # Preparar dados para empilhamento
+        valores_por_tipo = {}
+        for tipo in tipos_ordenados:
+            valores_por_tipo[tipo] = []
+            for _, dados in top_items:
+                valores_por_tipo[tipo].append(dados['por_tipo'].get(tipo, 0))
+        
+        # Criar barras empilhadas
+        bottom = np.zeros(len(nomes))
+        colors = cm.Set3(np.linspace(0, 1, len(tipos_ordenados)))
+        
+        for i, tipo in enumerate(tipos_ordenados):
+            ax.bar(nomes, valores_por_tipo[tipo], bottom=bottom, 
+                  label=f'Tipo {tipo}', color=colors[i])
+            bottom += valores_por_tipo[tipo]
+        
+        # Configurar eixos
+        ax.set_ylabel('Valor (R$)')
+        ax.set_title('Distribuição por Tipo de Despesa', fontsize=14, fontweight='bold')
+        ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        
+        # Rotacionar labels do eixo x
+        plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+        
+        # Ajustar layout
+        plt.tight_layout()
+        
+        # Adicionar ao frame
+        canvas = FigureCanvasTkAgg(fig, self.frame_grafico)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
+
+    def exportar_excel(self):
+        """Exporta o relatório para Excel"""
+        if not self.dados_carregados:
+            messagebox.showwarning("Aviso", "Gere o relatório primeiro!")
+            return
+        
+        # Solicitar local para salvar
+        nome_arquivo = filedialog.asksaveasfilename(
+            defaultextension=".xlsx",
+            filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
+            title="Salvar Relatório"
+        )
+        
+        if not nome_arquivo:
+            return
+        
+        try:
+            # Criar workbook
+            wb = Workbook()
+            ws = wb.active
+            
+            # Título e informações do relatório
+            if self.modo_relatorio == "fornecedores":
+                ws.title = "Relatório Fornecedores"
+                ws['A1'] = "RELATÓRIO DE PRINCIPAIS FORNECEDORES"
+                
+                if self.todos_clientes:
+                    ws['A2'] = "Cliente: Todos os Clientes"
+                else:
+                    ws['A2'] = f"Cliente: {self.cliente_atual}"
+            else:
+                ws.title = "Relatório por Fornecedor"
+                ws['A1'] = "RELATÓRIO DE CLIENTES POR FORNECEDOR"
+                ws['A2'] = f"Fornecedor: {self.fornecedor_especifico}"
+            
+            ws['A3'] = f"Período: {self.periodo_inicio.strftime('%d/%m/%Y')} a {self.periodo_fim.strftime('%d/%m/%Y')}"
+            ws['A4'] = f"Total Geral: {formatar_moeda_br(self.total_geral)}"
+            
+            # Estilo do cabeçalho
+            header_font = Font(bold=True, size=14)
+            ws['A1'].font = header_font
+            
+            # Cabeçalhos da tabela
+            row = 6
+            if self.modo_relatorio == "fornecedores":
+                headers = ['#', 'Fornecedor', 'Total Gasto', '% do Total', 'Qtd. Lançamentos', 'Tipos de Despesa']
+            else:
+                headers = ['#', 'Cliente', 'Total Gasto', '% do Total', 'Qtd. Lançamentos', 'Tipos de Despesa']
+            
+            for col, header in enumerate(headers, 1):
+                cell = ws.cell(row=row, column=col, value=header)
+                cell.font = Font(bold=True)
+                cell.fill = PatternFill(start_color="CCCCCC", end_color="CCCCCC", fill_type="solid")
+            
+            # Dados
+            for i, (nome, dados) in enumerate(self.top_fornecedores, 1):
+                row += 1
+                percentual = (dados['total'] / self.total_geral * 100) if self.total_geral > 0 else 0
+                tipos_str = ', '.join(sorted([str(t) for t in dados['tipos_despesa']]))
+                
+                ws.cell(row=row, column=1, value=i)
+                ws.cell(row=row, column=2, value=nome)
+                ws.cell(row=row, column=3, value=dados['total'])
+                ws.cell(row=row, column=4, value=f"{percentual:.1f}%")
+                ws.cell(row=row, column=5, value=dados['qtd_lancamentos'])
+                ws.cell(row=row, column=6, value=tipos_str)
+            
+            # Ajustar largura das colunas
+            for col in range(1, 7):
+                ws.column_dimensions[get_column_letter(col)].width = 20
+            
+            # Criar aba de detalhes
+            ws_detalhes = wb.create_sheet("Detalhes")
+            
+            # Cabeçalho dos detalhes
+            if self.modo_relatorio == "fornecedores":
+                detail_headers = ['Data', 'Cliente', 'Fornecedor', 'Tipo', 'Referência', 'NF', 'Vencimento', 'Valor', 'Observação']
+            else:
+                detail_headers = ['Data', 'Fornecedor', 'Cliente', 'Tipo', 'Referência', 'NF', 'Vencimento', 'Valor', 'Observação']
+            
+            for col, header in enumerate(detail_headers, 1):
+                cell = ws_detalhes.cell(row=1, column=col, value=header)
+                cell.font = Font(bold=True)
+                cell.fill = PatternFill(start_color="CCCCCC", end_color="CCCCCC", fill_type="solid")
+            
+            # Adicionar todos os lançamentos
+            row = 2
+            for nome, dados in self.top_fornecedores:
+                for lancamento in dados['lancamentos']:
+                    ws_detalhes.cell(row=row, column=1, value=lancamento['data'].strftime('%d/%m/%Y'))
+                    
+                    if self.modo_relatorio == "fornecedores":
+                        ws_detalhes.cell(row=row, column=2, value=lancamento.get('cliente', ''))
+                        ws_detalhes.cell(row=row, column=3, value=nome)
+                    else:
+                        ws_detalhes.cell(row=row, column=2, value=lancamento.get('fornecedor', ''))
+                        ws_detalhes.cell(row=row, column=3, value=nome)
+                    
+                    ws_detalhes.cell(row=row, column=4, value=lancamento['tipo_despesa'])
+                    ws_detalhes.cell(row=row, column=5, value=lancamento['referencia'])
+                    ws_detalhes.cell(row=row, column=6, value=lancamento.get('nf', ''))
+                    
+                    dt_vencto_str = ""
+                    if lancamento['dt_vencto']:
+                        dt_vencto_str = lancamento['dt_vencto'].strftime('%d/%m/%Y')
+                    ws_detalhes.cell(row=row, column=7, value=dt_vencto_str)
+                    
+                    ws_detalhes.cell(row=row, column=8, value=lancamento['valor'])
+                    ws_detalhes.cell(row=row, column=9, value=lancamento.get('observacao', ''))
+                    
+                    row += 1
+            
+            # Ajustar largura das colunas da aba de detalhes
+            for col in range(1, 10):
+                ws_detalhes.column_dimensions[get_column_letter(col)].width = 15
+            
+            # Salvar arquivo
+            wb.save(nome_arquivo)
+            messagebox.showinfo("Sucesso", f"Relatório exportado para: {nome_arquivo}")
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar dados: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            return False
+            messagebox.showerror("Erro", f"Erro ao exportar para Excel: {str(e)}")
+
+    def exportar_pdf(self):
+        """Exporta o relatório para PDF"""
+        if not self.dados_carregados:
+            messagebox.showwarning("Aviso", "Gere o relatório primeiro!")
+            return
+        
+        try:
+            from reportlab.lib import colors
+            from reportlab.lib.pagesizes import letter, A4
+            from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+            from reportlab.lib.units import inch
+            
+            # Solicitar local para salvar
+            nome_arquivo = filedialog.asksaveasfilename(
+                defaultextension=".pdf",
+                filetypes=[("PDF files", "*.pdf"), ("All files", "*.*")],
+                title="Salvar Relatório PDF"
+            )
+            
+            if not nome_arquivo:
+                return
+            
+            # Criar documento
+            doc = SimpleDocTemplate(nome_arquivo, pagesize=A4)
+            story = []
+            
+            # Estilos
+            styles = getSampleStyleSheet()
+            title_style = ParagraphStyle(
+                'CustomTitle',
+                parent=styles['Heading1'],
+                fontSize=16,
+                spaceAfter=30,
+                alignment=1  # Centralizado
+            )
+            
+            # Título
+            if self.modo_relatorio == "fornecedores":
+                titulo = "RELATÓRIO DE PRINCIPAIS FORNECEDORES"
+            else:
+                titulo = "RELATÓRIO DE CLIENTES POR FORNECEDOR"
+            
+            story.append(Paragraph(titulo, title_style))
+            story.append(Spacer(1, 12))
+            
+            # Informações do relatório
+            if self.modo_relatorio == "fornecedores":
+                if self.todos_clientes:
+                    info_cliente = "Cliente: Todos os Clientes"
+                else:
+                    info_cliente = f"Cliente: {self.cliente_atual}"
+            else:
+                info_cliente = f"Fornecedor: {self.fornecedor_especifico}"
+            
+            story.append(Paragraph(info_cliente, styles['Normal']))
+            story.append(Paragraph(
+                f"Período: {self.periodo_inicio.strftime('%d/%m/%Y')} a {self.periodo_fim.strftime('%d/%m/%Y')}", 
+                styles['Normal']
+            ))
+            story.append(Paragraph(f"Total Geral: {formatar_moeda_br(self.total_geral)}", styles['Normal']))
+            story.append(Spacer(1, 20))
+            
+            # Preparar dados da tabela
+            if self.modo_relatorio == "fornecedores":
+                headers = ['#', 'Fornecedor', 'Total Gasto', '% do Total', 'Qtd. Lançamentos']
+            else:
+                headers = ['#', 'Cliente', 'Total Gasto', '% do Total', 'Qtd. Lançamentos']
+            
+            data = [headers]
+            
+            for i, (nome, dados) in enumerate(self.top_fornecedores, 1):
+                percentual = (dados['total'] / self.total_geral * 100) if self.total_geral > 0 else 0
+                
+                data.append([
+                    str(i),
+                    nome[:40],  # Truncar nomes muito longos
+                    formatar_moeda_br(dados['total']),
+                    f"{percentual:.1f}%",
+                    str(dados['qtd_lancamentos'])
+                ])
+            
+            # Criar tabela
+            table = Table(data)
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                ('FONTSIZE', (0, 1), (-1, -1), 10),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)
+            ]))
+            
+            story.append(table)
+            
+            # Construir PDF
+            doc.build(story)
+            messagebox.showinfo("Sucesso", f"Relatório PDF exportado para: {nome_arquivo}")
+            
+        except ImportError:
+            messagebox.showerror(
+                "Erro", 
+                "Biblioteca ReportLab não encontrada!\n" +
+                "Instale com: pip install reportlab"
+            )
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao exportar para PDF: {str(e)}")
+
+    def voltar_menu(self):
+        """Volta ao menu principal ou fecha a janela adequadamente"""
+        try:
+            # Se foi chamado como janela filha (tem parent)
+            if self.parent and self.menu_principal:
+                # Destruir apenas esta janela
+                self.root.destroy()
+                
+                # Reativar a janela pai se ela existir
+                if hasattr(self.menu_principal, 'deiconify'):
+                    self.menu_principal.deiconify()
+                elif hasattr(self.menu_principal, 'focus_force'):
+                    self.menu_principal.focus_force()
+                    
+            else:
+                # Se foi chamado como janela principal, apenas fechar
+                self.root.quit()  # Para o mainloop
+                self.root.destroy()  # Destrói a janela
+                
+        except Exception as e:
+            print(f"Erro ao voltar ao menu: {str(e)}")
+            # Em caso de erro, força o fechamento
+            try:
+                self.root.destroy()
+            except:
+                pass
+
+    def fechar_aplicacao(self):
+        """Método para fechar a aplicação adequadamente"""
+        try:
+            # Confirmar se o usuário quer sair
+            if messagebox.askyesno("Confirmar", "Deseja realmente sair?"):
+                self.voltar_menu()
+        except Exception as e:
+            print(f"Erro ao fechar aplicação: {str(e)}")
+
 
 def main():
     """Função principal para executar o módulo de forma independente"""
