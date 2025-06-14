@@ -382,9 +382,9 @@ class SistemaPrincipal:
             simple_logger.info("Abrindo sistema de entrada de dados")
             
             try:
-                from Sistema_Entrada_Dados import SistemaEntradaDados
-            except ImportError:
                 from src.Sistema_Entrada_Dados import SistemaEntradaDados
+            except ImportError:
+                from Sistema_Entrada_Dados import SistemaEntradaDados
             
             self.root.withdraw()
             app = SistemaEntradaDados(parent=self.root)
