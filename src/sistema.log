@@ -171,3 +171,33 @@
 2025-06-13 15:05:48,863 - INFO - Configurações importadas com sucesso via src.config
 2025-06-13 15:05:48,866 - INFO - Configurações importadas com sucesso
 2025-06-13 15:05:48,866 - INFO - Configurações do sistema importadas com sucesso
+2025-06-14 11:13:07,402 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-14 11:13:07,626 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-14 11:13:07,674 - INFO - Sistema principal inicializado com sucesso
+2025-06-14 11:13:09,901 - INFO - Executando ação: Gerar relatório
+2025-06-14 11:57:36,319 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-14 11:57:37,674 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-14 11:57:37,796 - INFO - Sistema principal inicializado com sucesso
+2025-06-14 11:57:40,820 - INFO - Executando ação: Gerar relatório
+2025-06-14 12:22:59,013 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-14 12:22:59,815 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-14 12:23:00,006 - INFO - Sistema principal inicializado com sucesso
+2025-06-14 12:25:52,423 - INFO - Executando ação: Gerar relatório
+2025-06-14 12:49:59,459 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-14 12:50:00,041 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-14 12:50:00,388 - INFO - Sistema principal inicializado com sucesso
+2025-06-14 12:50:02,341 - INFO - Executando ação: Gerar relatório
+2025-06-14 12:56:09,024 - INFO - Saída confirmada, finalizando sistema
+2025-06-14 12:56:09,275 - INFO - Forçando encerramento do programa...
+2025-06-14 13:00:05,882 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-14 13:00:06,120 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-14 13:00:06,177 - INFO - Sistema principal inicializado com sucesso
+2025-06-14 13:00:07,917 - INFO - Executando ação: Gerar relatório
+2025-06-14 13:29:04,975 - INFO - Saída confirmada, finalizando sistema
+2025-06-14 13:29:05,046 - INFO - Ação concluída: Gerar relatório
+2025-06-14 13:48:53,705 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-14 13:48:53,978 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-14 13:48:54,026 - INFO - Sistema principal inicializado com sucesso
+2025-06-14 13:48:56,521 - INFO - Executando ação: Gerar relatório
+2025-06-14 13:50:39,727 - INFO - Saída confirmada, finalizando sistema
+2025-06-14 13:50:39,789 - INFO - Ação concluída: Gerar relatório
