@@ -57,5 +57,13 @@
             "Melhoria no relatório de Categoria, mostrando o total geral por categoria e gráfico de linha do tempo"
         ],
         "timestamp": "2025-06-04T15:48:23.404354"
+    },
+    {
+        "version": "1.3.2",
+        "release_date": "13/06/2025",
+        "changes": [
+            "Inclusão de Visualizador de Lançamentos de FornecedorInclusão de Correção Monetária para contratos de administração, dependendo de teste para ser totalmente implementada"
+        ],
+        "timestamp": "2025-06-13T18:15:59.481736"
     }
 ]
