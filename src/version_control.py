@@ -10,12 +10,12 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 3,
-    "patch": 1,
-    "release_date": "04/06/2025",
+    "patch": 2,
+    "release_date": "13/06/2025",
     "changes": [
-        "Instalado sistema de Backup Automático contra quedas/travamentos"
-        "Melhoria no relatório de Tipos de Despesas, mostrando o total geral por tipo e gráfico de linha do tempo",
-        "Melhoria no relatório de Categoria, mostrando o total geral por categoria e gráfico de linha do tempo"
+        "Inclusão de Visualizador de Lançamentos de Fornecedor",
+        "Melhoria no Relatório de Fornecedores que está mostrando quais clientes adquiriram de um dado fornecedor",
+        "Inclusão de Correção Monetária para contratos de administração, dependendo de teste para ser totalmente implementada"
     ]
 }
 
