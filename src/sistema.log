@@ -212,3 +212,44 @@
 2025-06-15 20:47:09,449 - INFO - Executando ação: Gerar relatório
 2025-06-15 20:50:42,230 - INFO - Saída confirmada, finalizando sistema
 2025-06-15 20:50:42,508 - INFO - Forçando encerramento do programa...
+2025-06-16 09:15:52,617 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-16 09:15:53,808 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-16 09:15:53,902 - INFO - Sistema principal inicializado com sucesso
+2025-06-16 09:16:01,782 - INFO - Executando ação: Gerar relatório
+2025-06-16 09:16:01,782 - INFO - Executando ação: Gerar relatório
+2025-06-16 09:16:01,783 - INFO - Tentando abrir sistema de relatórios
+2025-06-16 09:16:01,783 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-16 09:16:01,853 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-16 09:16:09,438 - INFO - Saída confirmada, finalizando sistema
+2025-06-16 09:16:09,493 - INFO - Ação concluída: Gerar relatório
+2025-06-16 09:16:09,559 - INFO - Ação concluída: Gerar relatório
+2025-06-16 09:25:31,610 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-16 09:25:31,867 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-16 09:25:31,915 - INFO - Sistema principal inicializado com sucesso
+2025-06-16 09:25:33,495 - INFO - Executando ação: Gerar relatório
+2025-06-16 09:25:33,496 - INFO - Executando ação: Gerar relatório
+2025-06-16 09:25:33,496 - INFO - Tentando abrir sistema de relatórios
+2025-06-16 09:25:33,496 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-16 09:25:33,520 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-16 09:25:44,454 - INFO - Saída confirmada, finalizando sistema
+2025-06-16 09:25:44,498 - INFO - Ação concluída: Gerar relatório
+2025-06-16 09:25:44,562 - INFO - Ação concluída: Gerar relatório
+2025-06-16 09:28:36,244 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-16 09:28:36,503 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-16 09:28:36,578 - INFO - Sistema principal inicializado com sucesso
+2025-06-16 09:28:38,980 - INFO - Executando ação: Gerar relatório
+2025-06-16 09:28:38,981 - INFO - Tentando abrir sistema de relatórios
+2025-06-16 09:28:38,999 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-16 09:28:39,020 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-16 09:28:42,477 - INFO - Abrindo sistema de entrada de dados
+2025-06-16 09:28:50,601 - INFO - Configurações importadas com sucesso via src.config
+2025-06-16 09:28:50,605 - INFO - Configurações importadas com sucesso
+2025-06-16 09:28:50,607 - INFO - Configurações do sistema importadas com sucesso
+2025-06-16 09:29:28,532 - INFO - Executando ação: Gerar relatório
+2025-06-16 09:29:28,533 - INFO - Tentando abrir sistema de relatórios
+2025-06-16 09:29:28,535 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-16 09:29:28,536 - INFO - Cache limpo: src.relatorios_interface
+2025-06-16 09:29:28,546 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-16 09:29:45,027 - INFO - Saída confirmada, finalizando sistema
+2025-06-16 09:29:45,084 - INFO - Ação concluída: Gerar relatório
+2025-06-16 09:29:45,144 - INFO - Ação concluída: Gerar relatório
