@@ -5,21 +5,8 @@ import sys
 import importlib
 from datetime import datetime, date
 from pathlib import Path
-import logging
 
-# Configuração básica de logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(f"logs/sistema_relatorios_{datetime.now().strftime('%Y%m%d')}.log", encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
-
-logger = logging.getLogger("sistema_relatorios")
-
-# Adicionar diretório raiz ao path
+# Adicionar diretório raiz ao path ANTES de qualquer importação
 def add_project_root():
     import sys
     from pathlib import Path
@@ -30,10 +17,113 @@ def add_project_root():
 
 add_project_root()
 
-# Importar configurações
+# SISTEMA DE LOGGING ROBUSTO usando o sistema existente
+def setup_logging_safe():
+    """
+    Configura logging usando o sistema existente com fallback seguro
+    """
+    try:
+        # Tentar usar o sistema de logging existente
+        from src.config.logger_config import system_logger, log_action
+        
+        # Configurar usuário padrão se não estiver definido
+        system_logger.set_user('sistema_relatorios')
+        
+        # Obter logger
+        logger = system_logger.get_logger()
+        logger.info("Sistema de relatórios inicializando usando logger configurado")
+        
+        return logger, log_action
+        
+    except ImportError as e:
+        print(f"Aviso: Não foi possível importar sistema de logging configurado: {str(e)}")
+        
+        # Fallback: criar sistema de logging simples
+        import logging
+        
+        # Configurar logger básico
+        logger = logging.getLogger("sistema_relatorios")
+        logger.setLevel(logging.INFO)
+        
+        # Evitar handlers duplicados
+        if not logger.handlers:
+            # Handler para console
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(
+                logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+            )
+            logger.addHandler(console_handler)
+            
+            # Tentar handler para arquivo
+            try:
+                # Determinar diretório base
+                if getattr(sys, 'frozen', False):
+                    base_dir = os.path.dirname(sys.executable)
+                else:
+                    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                
+                logs_dir = os.path.join(base_dir, 'logs')
+                os.makedirs(logs_dir, exist_ok=True)
+                
+                log_file = os.path.join(logs_dir, f"sistema_relatorios_{datetime.now().strftime('%Y%m%d')}.log")
+                file_handler = logging.FileHandler(log_file, encoding='utf-8')
+                file_handler.setFormatter(
+                    logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                )
+                logger.addHandler(file_handler)
+                logger.info(f"Log de fallback criado: {log_file}")
+                
+            except Exception as file_error:
+                logger.warning(f"Não foi possível criar log em arquivo: {str(file_error)}")
+        
+        # Criar decorator simples para compatibilidade
+        def log_action_fallback(description):
+            def decorator(func):
+                def wrapper(*args, **kwargs):
+                    logger.info(f"Executando: {description}")
+                    try:
+                        result = func(*args, **kwargs)
+                        logger.info(f"Concluído: {description}")
+                        return result
+                    except Exception as e:
+                        logger.error(f"Erro em {description}: {str(e)}")
+                        raise
+                return wrapper
+            return decorator
+        
+        logger.info("Sistema de logging fallback configurado")
+        return logger, log_action_fallback
+    
+    except Exception as e:
+        print(f"Erro crítico ao configurar logging: {str(e)}")
+        
+        # Último recurso: logging mínimo para console
+        import logging
+        logger = logging.getLogger("sistema_relatorios")
+        logger.setLevel(logging.INFO)
+        
+        if not logger.handlers:
+            handler = logging.StreamHandler()
+            handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
+            logger.addHandler(handler)
+        
+        def no_op_decorator(description):
+            def decorator(func):
+                return func
+            return decorator
+        
+        logger.warning("Usando sistema de logging mínimo")
+        return logger, no_op_decorator
+
+# Configurar logging
+logger, log_action = setup_logging_safe()
+
+# Importar configurações (com fallback)
 try:
     from src.config.window_config import configurar_janela
+    logger.info("Configurações de janela importadas com sucesso")
 except ImportError:
+    logger.warning("Usando configuração de janela fallback")
     # Implementação básica caso o módulo não seja encontrado
     def configurar_janela(janela, titulo, largura=700, altura=1000):
         """
@@ -72,6 +162,9 @@ except ImportError:
         # Trazer janela para frente
         janela.lift()
         janela.focus_force()
+
+# Log de inicialização
+logger.info("=== Sistema de Relatórios Inicializando ===")
 
 class SistemaRelatorios:
     """Interface centralizada para todos os relatórios do sistema"""
