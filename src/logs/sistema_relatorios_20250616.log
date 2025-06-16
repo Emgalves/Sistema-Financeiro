@@ -1,0 +1,13 @@
+2025-06-16 09:16:01,848 - sistema_relatorios - INFO - Log inicializado com sucesso: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logs\sistema_relatorios_20250616.log
+2025-06-16 09:16:02,006 - sistema_relatorios - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-16 09:16:02,444 - sistema_relatorios - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-16 09:16:02,445 - sistema_relatorios - INFO - Coluna de status: Data Final
+2025-06-16 09:16:02,458 - sistema_relatorios - INFO - Coluna de nome: Nome
+2025-06-16 09:16:02,459 - sistema_relatorios - INFO - Total de clientes ativos encontrados: 13
+2025-06-16 09:16:02,460 - sistema_relatorios - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-16 09:16:02,505 - sistema_relatorios - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-16 09:16:02,552 - sistema_relatorios - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-16 09:16:02,553 - sistema_relatorios - INFO - Coluna de status: Data Final
+2025-06-16 09:16:02,555 - sistema_relatorios - INFO - Coluna de nome: Nome
+2025-06-16 09:16:02,556 - sistema_relatorios - INFO - Total de clientes ativos encontrados: 13
+2025-06-16 09:16:02,556 - sistema_relatorios - INFO - Lista de clientes carregada com 14 itens
