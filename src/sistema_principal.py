@@ -407,38 +407,206 @@ class SistemaPrincipal:
 
     @log_action("Gerar relatório")
     def abrir_relatorios(self):
-        """Abre o sistema integrado de relatórios"""
+        """Abre o sistema integrado de relatórios com fallback robusto"""
         try:
-            modulo = self.reload_module('src.relatorios_interface')
-            if not modulo:
-                modulo = self.reload_module('src.relatorio_despesas_aprimorado')
-                if not modulo:
-                    messagebox.showerror("Erro", "Não foi possível carregar o módulo de relatórios.")
-                    return
-                
-                self.root.withdraw()
-                relatorio_window = tk.Toplevel(self.root)
-                app = modulo.RelatorioUI(relatorio_window)
-                app.menu_principal = self.root
-                relatorio_window.protocol("WM_DELETE_WINDOW", 
-                    lambda: self.finalizar_sistema(relatorio_window))
-                relatorio_window.lift()
-                relatorio_window.focus_force()
-                relatorio_window.mainloop()
-                return
-                
-            self.root.withdraw()
-            app = modulo.SistemaRelatorios(parent=self.root)
-            app.root.protocol("WM_DELETE_WINDOW", 
-                lambda: self.finalizar_sistema(app.root))
-            app.root.lift()
-            app.root.focus_force()
-            app.run()
+            simple_logger.info("Tentando abrir sistema de relatórios")
             
+            # Primeiro, verificar se o sistema de logging está funcionando
+            try:
+                from src.config.logger_config import system_logger
+                system_logger.set_user('sistema_principal')
+                logger = system_logger.get_logger()
+                logger.info("Abrindo sistema de relatórios")
+            except:
+                pass  # Se falhar, continuar com simple_logger
+            
+            # Estratégia 1: Tentar carregar o sistema integrado de relatórios
+            try:
+                simple_logger.info("Tentativa 1: Carregando sistema integrado de relatórios")
+                
+                # Limpar cache do módulo
+                module_names = [
+                    'src.relatorios_interface',
+                    'relatorios_interface'
+                ]
+                
+                for module_name in module_names:
+                    if module_name in sys.modules:
+                        del sys.modules[module_name]
+                        simple_logger.info(f"Cache limpo: {module_name}")
+                
+                # Tentar importar
+                modulo = None
+                for module_name in module_names:
+                    try:
+                        modulo = importlib.import_module(module_name)
+                        simple_logger.info(f"Módulo carregado com sucesso: {module_name}")
+                        break
+                    except ImportError as e:
+                        simple_logger.warning(f"Falha ao importar {module_name}: {str(e)}")
+                        continue
+                
+                if modulo and hasattr(modulo, 'SistemaRelatorios'):
+                    # Sucesso - abrir sistema integrado
+                    self.root.withdraw()
+                    app = modulo.SistemaRelatorios(parent=self.root)
+                    app.root.protocol("WM_DELETE_WINDOW", 
+                        lambda: self.finalizar_sistema(app.root))
+                    app.root.lift()
+                    app.root.focus_force()
+                    app.run()
+                    return
+                else:
+                    simple_logger.warning("Módulo carregado mas classe SistemaRelatorios não encontrada")
+                    
+            except Exception as e:
+                simple_logger.warning(f"Falha na estratégia 1: {str(e)}")
+            
+            # Estratégia 2: Fallback para o sistema de relatórios simples
+            try:
+                simple_logger.info("Tentativa 2: Carregando sistema de relatórios simples")
+                
+                # Limpar cache
+                fallback_modules = [
+                    'src.relatorio_despesas_aprimorado',
+                    'relatorio_despesas_aprimorado'
+                ]
+                
+                for module_name in fallback_modules:
+                    if module_name in sys.modules:
+                        del sys.modules[module_name]
+                        simple_logger.info(f"Cache limpo (fallback): {module_name}")
+                
+                # Tentar importar módulo fallback
+                modulo_fallback = None
+                for module_name in fallback_modules:
+                    try:
+                        modulo_fallback = importlib.import_module(module_name)
+                        simple_logger.info(f"Módulo fallback carregado: {module_name}")
+                        break
+                    except ImportError as e:
+                        simple_logger.warning(f"Falha ao importar fallback {module_name}: {str(e)}")
+                        continue
+                
+                if modulo_fallback and hasattr(modulo_fallback, 'RelatorioUI'):
+                    # Sucesso com fallback
+                    self.root.withdraw()
+                    relatorio_window = tk.Toplevel(self.root)
+                    app = modulo_fallback.RelatorioUI(relatorio_window)
+                    app.menu_principal = self.root
+                    relatorio_window.protocol("WM_DELETE_WINDOW", 
+                        lambda: self.finalizar_sistema(relatorio_window))
+                    relatorio_window.lift()
+                    relatorio_window.focus_force()
+                    relatorio_window.mainloop()
+                    return
+                else:
+                    simple_logger.warning("Módulo fallback carregado mas classe RelatorioUI não encontrada")
+                    
+            except Exception as e:
+                simple_logger.warning(f"Falha na estratégia 2: {str(e)}")
+            
+            # Estratégia 3: Última tentativa - busca mais ampla
+            try:
+                simple_logger.info("Tentativa 3: Busca ampla por módulos de relatório")
+                
+                # Lista de possíveis módulos e classes
+                possibilidades = [
+                    ('src.relatorio_despesas_aprimorado', 'RelatorioHandler'),
+                    ('relatorio_despesas_aprimorado', 'RelatorioHandler'),
+                    ('src.relatorio_despesas_aprimorado', 'SistemaRelatorios'),
+                    ('relatorio_despesas_aprimorado', 'SistemaRelatorios'),
+                ]
+                
+                for module_name, class_name in possibilidades:
+                    try:
+                        # Limpar cache
+                        if module_name in sys.modules:
+                            del sys.modules[module_name]
+                        
+                        modulo = importlib.import_module(module_name)
+                        if hasattr(modulo, class_name):
+                            simple_logger.info(f"Encontrado: {module_name}.{class_name}")
+                            
+                            self.root.withdraw()
+                            
+                            # Tentar instanciar
+                            if class_name == 'RelatorioHandler':
+                                # Para handlers, criar janela wrapper
+                                relatorio_window = tk.Toplevel(self.root)
+                                relatorio_window.title("Sistema de Relatórios")
+                                relatorio_window.geometry("800x600")
+                                
+                                handler = getattr(modulo, class_name)()
+                                
+                                # Criar interface simples
+                                ttk.Label(relatorio_window, 
+                                        text="Sistema de Relatórios", 
+                                        font=('Arial', 16, 'bold')).pack(pady=20)
+                                
+                                ttk.Button(relatorio_window, 
+                                        text="Gerar Relatório de Despesas",
+                                        command=lambda: self.gerar_relatorio_simples(handler)).pack(pady=10)
+                                
+                                ttk.Button(relatorio_window, 
+                                        text="Voltar ao Menu Principal",
+                                        command=lambda: self.finalizar_sistema(relatorio_window)).pack(pady=10)
+                                
+                                relatorio_window.protocol("WM_DELETE_WINDOW", 
+                                    lambda: self.finalizar_sistema(relatorio_window))
+                                relatorio_window.lift()
+                                relatorio_window.focus_force()
+                                relatorio_window.mainloop()
+                                return
+                            else:
+                                # Para outras classes, tentar instanciar normalmente
+                                app = getattr(modulo, class_name)(parent=self.root)
+                                app.root.protocol("WM_DELETE_WINDOW", 
+                                    lambda: self.finalizar_sistema(app.root))
+                                app.root.lift()
+                                app.root.focus_force()
+                                if hasattr(app, 'run'):
+                                    app.run()
+                                else:
+                                    app.root.mainloop()
+                                return
+                                
+                    except Exception as e:
+                        simple_logger.warning(f"Falha com {module_name}.{class_name}: {str(e)}")
+                        continue
+                
+                # Se chegou aqui, nenhuma estratégia funcionou
+                raise Exception("Nenhum módulo de relatórios pôde ser carregado")
+                
+            except Exception as e:
+                simple_logger.error(f"Falha na estratégia 3: {str(e)}")
+                raise
+                
         except Exception as e:
             simple_logger.error(f"Erro ao abrir sistema de relatórios: {str(e)}")
-            messagebox.showerror("Erro", f"Erro ao abrir sistema de relatórios: {str(e)}")
+            messagebox.showerror(
+                "Erro", 
+                f"Não foi possível abrir o sistema de relatórios.\n\n"
+                f"Erro: {str(e)}\n\n"
+                f"Verifique se todos os arquivos estão presentes e tente novamente."
+            )
             self.root.deiconify()
+
+    def gerar_relatorio_simples(self, handler):
+        """Método auxiliar para gerar relatório com handler simples"""
+        try:
+            arquivo = filedialog.askopenfilename(
+                title="Selecione o arquivo Excel",
+                filetypes=[("Arquivos Excel", "*.xlsx *.xls")]
+            )
+            if arquivo:
+                handler.gerar_relatorio_direto(
+                    arquivo_path=arquivo,
+                    data_relatorio=datetime.now(),
+                    incluir_futuros=True
+                )
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
 
     def abrir_despesas_rateadas(self):
         """Abre o sistema de despesas rateadas"""
