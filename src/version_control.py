@@ -14,6 +14,7 @@ VERSION_INFO = {
     "release_date": "13/06/2025",
     "changes": [
         "Inclusão de Visualizador de Lançamentos de Fornecedor",
+        "Adicão de funcionalidade para cadastro de fornecedor PF sem CPF",
         "Melhoria no Relatório de Fornecedores que está mostrando quais clientes adquiriram de um dado fornecedor",
         "Inclusão de Correção Monetária para contratos de administração, dependendo de teste para ser totalmente implementada"
     ]
