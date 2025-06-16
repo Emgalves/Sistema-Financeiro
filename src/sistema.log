@@ -201,3 +201,14 @@
 2025-06-14 13:48:56,521 - INFO - Executando ação: Gerar relatório
 2025-06-14 13:50:39,727 - INFO - Saída confirmada, finalizando sistema
 2025-06-14 13:50:39,789 - INFO - Ação concluída: Gerar relatório
+2025-06-15 20:37:44,334 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-15 20:37:44,649 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-15 20:37:44,707 - INFO - Sistema principal inicializado com sucesso
+2025-06-15 20:38:02,456 - INFO - Abrindo sistema de entrada de dados
+2025-06-15 20:38:04,459 - INFO - Configurações importadas com sucesso via src.config
+2025-06-15 20:38:04,463 - INFO - Configurações importadas com sucesso
+2025-06-15 20:38:04,463 - INFO - Configurações do sistema importadas com sucesso
+2025-06-15 20:42:23,109 - INFO - Abrindo sistema de entrada de dados
+2025-06-15 20:47:09,449 - INFO - Executando ação: Gerar relatório
+2025-06-15 20:50:42,230 - INFO - Saída confirmada, finalizando sistema
+2025-06-15 20:50:42,508 - INFO - Forçando encerramento do programa...
