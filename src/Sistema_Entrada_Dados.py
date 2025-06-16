@@ -2765,8 +2765,81 @@ class SistemaEntradaDados:
 
 
     def buscar_fornecedor(self):
-        termo = self.busca_entry.get()
-        buscar_fornecedor(self.tree_fornecedores, termo)
+        """Busca fornecedores baseado no termo digitado"""
+        try:
+            termo = self.busca_entry.get().strip()
+            
+            # Limpar resultados anteriores
+            for item in self.tree_fornecedores.get_children():
+                self.tree_fornecedores.delete(item)
+            
+            if not termo:
+                return
+            
+            # Abrir planilha de fornecedores
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+            
+            resultados_encontrados = 0
+            termo_upper = termo.upper()
+            
+            # Buscar na planilha
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Pular linhas vazias
+                    continue
+                    
+                cnpj_cpf = str(row[0]).strip()
+                nome = str(row[3] or '').strip().upper()  # Coluna D = Nome
+                categoria = str(row[11] or '').strip()    # Coluna L = Categoria
+                
+                # Verificar se o termo está no nome
+                if termo_upper in nome:
+                    # Formatar CNPJ/CPF para exibição
+                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf)
+                    
+                    # Inserir resultado na tree
+                    self.tree_fornecedores.insert('', 'end', values=(
+                        cnpj_cpf_formatado,
+                        nome,
+                        categoria
+                    ))
+                    
+                    resultados_encontrados += 1
+                    
+                    # Limitar resultados para evitar travamento
+                    if resultados_encontrados >= 100:
+                        break
+            
+            wb.close()
+            
+            # Ordenar resultados por nome
+            if resultados_encontrados > 1:
+                # Obter todos os itens
+                items = []
+                for item in self.tree_fornecedores.get_children():
+                    values = self.tree_fornecedores.item(item)['values']
+                    items.append(values)
+                
+                # Limpar tree
+                for item in self.tree_fornecedores.get_children():
+                    self.tree_fornecedores.delete(item)
+                
+                # Ordenar por nome (segundo elemento)
+                items.sort(key=lambda x: x[1])
+                
+                # Reinserir ordenado
+                for values in items:
+                    self.tree_fornecedores.insert('', 'end', values=values)
+            
+            if resultados_encontrados == 0:
+                # Mostrar mensagem quando não encontrar
+                self.tree_fornecedores.insert('', 'end', values=(
+                    '', 'Nenhum fornecedor encontrado', ''
+                ))
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro na busca: {str(e)}")
+            print(f"Erro detalhado na busca: {str(e)}")
 
     def novo_fornecedor(self):
         """Abre janela para cadastro de novo fornecedor - VERSÃO CORRIGIDA"""
@@ -2978,34 +3051,53 @@ class SistemaEntradaDados:
             custom_messagebox("error", "Erro", f"Erro ao abrir finalização de quinzena: {str(e)}")    
 
     def buscar_fornecedor_completo(self, cnpj_cpf):
-        """Busca todos os dados de um fornecedor"""
+        """Busca todos os dados de um fornecedor - VERSÃO OTIMIZADA"""
         try:
             wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
             ws = wb['Fornecedores']
         
-            cnpj_cpf = str(cnpj_cpf).zfill(14)  # Preenche com zeros à esquerda
-            for row in ws.iter_rows(min_row=2):
-                # Garante que o CNPJ/CPF da planilha também tenha 14 dígitos
-                row_cnpj = str(row[0].value or '').zfill(14)
-                if row_cnpj == cnpj_cpf:
+            # Normalizar CNPJ/CPF de entrada
+            cnpj_cpf_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))
+            if len(cnpj_cpf_numeros) <= 11:
+                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(11)
+            else:
+                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(14)
+            
+            # Buscar na planilha
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:
+                    continue
+                    
+                # Normalizar CNPJ/CPF da planilha
+                row_cnpj_numeros = ''.join(filter(str.isdigit, str(row[0])))
+                if len(row_cnpj_numeros) <= 11:
+                    row_cnpj_normalizado = row_cnpj_numeros.zfill(11)
+                else:
+                    row_cnpj_normalizado = row_cnpj_numeros.zfill(14)
+                    
+                if row_cnpj_normalizado == cnpj_cpf_normalizado:
                     fornecedor = {
-                        'cnpj_cpf': row[0].value,
-                        'tipo_pessoa': row[1].value,
-                        'razao_social': row[2].value,
-                        'nome': row[3].value,
-                        'telefone': row[4].value,
-                        'email': row[5].value,
-                        'banco': row[6].value,
-                        'op': row[7].value,
-                        'agencia': row[8].value,
-                        'conta': row[9].value,
-                        'chave_pix': row[10].value,
-                        'categoria': row[11].value,
-                        'especificacao': row[12].value,
-                        'vinculo': row[13].value,
+                        'cnpj_cpf': row[0],
+                        'tipo_pessoa': row[1],
+                        'razao_social': row[2],
+                        'nome': row[3],
+                        'telefone': row[4],
+                        'email': row[5],
+                        'banco': row[6],
+                        'op': row[7],
+                        'agencia': row[8],
+                        'conta': row[9],
+                        'chave_pix': row[10],
+                        'categoria': row[11],
+                        'especificacao': row[12],
+                        'vinculo': row[13],
                     }
+                    wb.close()
                     return fornecedor
+            
+            wb.close()
             return None
+            
         except Exception as e:
             print(f"Erro ao buscar fornecedor: {e}")
             return None
@@ -3457,7 +3549,7 @@ class SistemaEntradaDados:
             self.campos_form['nome'].insert(0, razao_social)
 
 
-    def salvar_fornecedor_com_cpf_criado_corrigido(self):
+    def salvar_fornecedor_com_cpf_criado(self):
         """Salva fornecedor e marca CPF criado como usado - VERSÃO CORRIGIDA"""
         # Validar campos obrigatórios
         campos_obrigatorios = ['tipo_pessoa', 'cnpj_cpf', 'razao_social', 'nome', 'categoria']
@@ -3470,35 +3562,26 @@ class SistemaEntradaDados:
         tipo_pessoa = self.campos_form['tipo_pessoa'].get()
         cnpj_cpf_original = self.campos_form['cnpj_cpf'].get().strip()
         
-        # CORREÇÃO: Limpar CNPJ/CPF mantendo apenas números
+        # Limpar CNPJ/CPF mantendo apenas números
         cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_original))
         
-        print(f"DEBUG: CNPJ/CPF original: {cnpj_cpf_original}")
-        print(f"DEBUG: CNPJ/CPF apenas números: {cnpj_cpf_numeros}")
-        
-        # CORREÇÃO: Validar com números limpos
-        if not validar_cnpj_cpf_sem_formatacao(cnpj_cpf_numeros):
+        # Validar com números limpos
+        if not self.validar_cnpj_cpf_numeros(cnpj_cpf_numeros):
             custom_messagebox("error", "Erro", f"❌ {'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
             return
         
         # Verificar se é um CPF criado
         eh_cpf_criado = False
-        
         if tipo_pessoa == 'PF' and len(cnpj_cpf_numeros) == 11:
-            # Verificar se este CPF está na lista de CPFs criados
             try:
                 if not hasattr(self, 'gerenciador_cpfs'):
                     self.gerenciador_cpfs = GerenciadorCPFsCriados()
                 cpfs_disponiveis = self.gerenciador_cpfs.listar_cpfs_disponiveis()
                 if cnpj_cpf_numeros in cpfs_disponiveis:
                     eh_cpf_criado = True
-                    print(f"DEBUG: CPF {cnpj_cpf_numeros} é um CPF criado")
             except Exception as e:
                 print(f"Erro ao verificar CPF criado: {str(e)}")
 
-        # CORREÇÃO: Usar apenas números para salvar (como no modelo original)
-        cnpj_cpf_para_salvar = cnpj_cpf_numeros
-        
         # Montar dados bancários
         if self.campos_form['chave_pix'].get():
             dados_bancarios = f"PIX: {self.campos_form['chave_pix'].get()}"
@@ -3508,10 +3591,10 @@ class SistemaEntradaDados:
                             f"{self.campos_form['agencia'].get()} "
                             f"{self.campos_form['conta'].get()}").strip()
 
-        # CORREÇÃO: Preparar dados garantindo que tudo seja string
+        # Preparar dados garantindo que tudo seja string
         dados = {
             'tipo_pessoa': str(tipo_pessoa),
-            'cnpj_cpf': str(cnpj_cpf_para_salvar),  # Salvar apenas números
+            'cnpj_cpf': str(cnpj_cpf_numeros),  # Salvar apenas números
             'razao_social': str(self.campos_form['razao_social'].get().upper()),
             'nome': str(self.campos_form['nome'].get().upper()),
             'telefone': str(self.campos_form['telefone'].get()),
@@ -3527,11 +3610,9 @@ class SistemaEntradaDados:
             'dados_bancarios': str(dados_bancarios)
         }
 
-        print(f"DEBUG: Dados para salvar: {dados}")
-
         try:
             # Salvar na base de fornecedores
-            self.salvar_na_base_fornecedores_corrigida(dados)
+            self.salvar_na_base_fornecedores(dados)
             
             # Se for CPF criado, marcar como usado
             if eh_cpf_criado:
@@ -3539,44 +3620,38 @@ class SistemaEntradaDados:
                 sucesso_marcacao = self.gerenciador_cpfs.marcar_cpf_como_usado(cnpj_cpf_numeros, nome_fornecedor)
                 
                 if sucesso_marcacao:
-                    # CORREÇÃO: Mostrar CPF formatado na mensagem, mas salvar sem formatação
-                    cnpj_cpf_formatado = f"{cnpj_cpf_numeros[:3]}.{cnpj_cpf_numeros[3:6]}.{cnpj_cpf_numeros[6:9]}-{cnpj_cpf_numeros[9:]}"
+                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf_numeros)
                     mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
                                     f"🔄 CPF criado marcado como usado:\n"
                                     f"📋 {cnpj_cpf_formatado}\n"
-                                    f"👤 {nome_fornecedor}\n\n"
-                                    f"💾 Salvo como: {cnpj_cpf_numeros}")
+                                    f"👤 {nome_fornecedor}")
                 else:
                     mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
-                                    f"⚠️ Aviso: Não foi possível marcar o CPF como usado na planilha")
+                                    f"⚠️ Aviso: Não foi possível marcar o CPF como usado")
             else:
-                mensagem_sucesso = f"✅ Fornecedor salvo com sucesso!\n\n💾 CNPJ/CPF: {cnpj_cpf_numeros}"
+                mensagem_sucesso = f"✅ Fornecedor salvo com sucesso!"
                 
             custom_messagebox("info", "Sucesso", mensagem_sucesso)
             self.janela_fornecedor.destroy()
-            self.buscar_fornecedor()  # Atualizar lista de fornecedores
+            self.buscar_fornecedor()  # Atualizar lista
             
         except Exception as e:
-            print(f"DEBUG: Erro detalhado: {str(e)}")
-            import traceback
-            traceback.print_exc()
             custom_messagebox("error", "Erro", f"❌ Erro ao salvar fornecedor:\n{str(e)}")
 
-    def validar_cnpj_cpf_sem_formatacao(numeros):
+    def validar_cnpj_cpf_numeros(self, numeros):
         """Valida CNPJ ou CPF usando apenas números"""
         if not numeros or not numeros.isdigit():
             return False
         
         if len(numeros) == 11:
-            return validar_cpf_algoritmo(numeros)
+            return self.validar_cpf_algoritmo(numeros)
         elif len(numeros) == 14:
-            return validar_cnpj_algoritmo(numeros)
+            return self.validar_cnpj_algoritmo(numeros)
         else:
             return False
 
-    def validar_cpf_algoritmo(cpf):
+    def validar_cpf_algoritmo(self, cpf):
         """Valida CPF usando algoritmo oficial"""
-        # Verificar se todos os dígitos são iguais
         if cpf == cpf[0] * 11:
             return False
         
@@ -3601,9 +3676,8 @@ class SistemaEntradaDados:
         
         return int(cpf[10]) == digito2
 
-    def validar_cnpj_algoritmo(cnpj):
+    def validar_cnpj_algoritmo(self, cnpj):
         """Valida CNPJ usando algoritmo oficial"""
-        # Verificar se todos os dígitos são iguais
         if cnpj == cnpj[0] * 14:
             return False
         
