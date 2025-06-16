@@ -1,0 +1,14 @@
+{
+    "sistema": {
+        "versao": "1.0.0",
+        "logging_habilitado": true,
+        "pasta_logs": "logs",
+        "pasta_dados": "dados",
+        "pasta_clientes": "clientes"
+    },
+    "interface": {
+        "tema": "default",
+        "largura_janela": 800,
+        "altura_janela": 600
+    }
+}
