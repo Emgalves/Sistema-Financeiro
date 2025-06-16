@@ -1,0 +1,346 @@
+2025-06-15 18:22:48,315 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 18:22:48,352 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 18:22:48,839 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 18:22:48,840 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 18:22:48,841 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 18:22:48,841 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 18:22:48,859 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 18:22:48,864 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 18:23:03,819 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 18:23:03,820 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 18:23:03,820 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 18:23:03,821 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 18:23:03,821 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 18:23:03,821 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 18:23:03,830 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 18:23:03,831 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 19:07:55,702 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 19:07:55,740 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 19:07:56,478 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 19:07:56,478 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 19:07:56,479 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 19:07:56,479 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 19:07:56,496 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 19:07:56,497 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:14:42,859 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:14:42,918 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:14:43,130 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:14:43,130 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:14:43,131 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:14:43,131 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:14:43,145 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:14:43,146 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:24:31,281 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:24:31,326 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:25:18,213 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: EDIGAR BATISTA FERREIRA
+2025-06-15 20:25:19,766 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: EDIGAR BATISTA FERREIRA, Total: 1
+2025-06-15 20:29:11,736 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:29:11,793 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:29:58,750 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:30:00,642 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 1
+2025-06-15 20:30:21,942 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:30:21,943 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:38:43,333 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:38:43,360 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:39:39,079 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:39:40,503 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 1
+2025-06-15 20:39:51,077 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:39:51,078 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:40:07,238 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:40:08,216 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 2
+2025-06-15 20:40:20,783 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:40:20,784 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:40:31,678 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:40:32,518 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 3
+2025-06-15 20:40:51,854 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:40:51,854 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:41:04,502 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:41:05,696 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 4
+2025-06-15 20:41:33,150 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: SERGIO LUCIO PEREIRA, Registros: 4
+2025-06-15 20:41:33,152 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-06-15 20:41:33,152 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 4
+2025-06-15 20:41:33,153 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\SERGIO LUCIO PEREIRA.xlsx
+2025-06-15 20:41:34,876 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1620*H1620'
+2025-06-15 20:41:34,877 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1621*H1621'
+2025-06-15 20:41:34,878 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1622*H1622'
+2025-06-15 20:41:34,879 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1623*H1623'
+2025-06-15 20:41:34,879 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1624*H1624'
+2025-06-15 20:41:34,880 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1625*H1625'
+2025-06-15 20:41:34,881 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1626*H1626'
+2025-06-15 20:41:34,882 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1627*H1627'
+2025-06-15 20:41:34,882 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1628*H1628'
+2025-06-15 20:41:34,883 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1629*H1629'
+2025-06-15 20:41:34,884 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1630*H1630'
+2025-06-15 20:41:34,885 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1631*H1631'
+2025-06-15 20:41:34,885 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1632*H1632'
+2025-06-15 20:41:34,886 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1633*H1633'
+2025-06-15 20:41:34,886 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1634*H1634'
+2025-06-15 20:41:34,887 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1635*H1635'
+2025-06-15 20:41:34,888 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1636*H1636'
+2025-06-15 20:41:34,889 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1637*H1637'
+2025-06-15 20:41:34,889 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1638*H1638'
+2025-06-15 20:41:34,890 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1639*H1639'
+2025-06-15 20:41:34,891 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1640*H1640'
+2025-06-15 20:41:34,892 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1641*H1641'
+2025-06-15 20:41:34,894 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1642*H1642'
+2025-06-15 20:41:34,910 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:34,913 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:34,915 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:34,920 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:34,923 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,013 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1620*H1620'
+2025-06-15 20:41:35,015 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1621*H1621'
+2025-06-15 20:41:35,015 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1622*H1622'
+2025-06-15 20:41:35,016 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1623*H1623'
+2025-06-15 20:41:35,017 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1624*H1624'
+2025-06-15 20:41:35,018 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1625*H1625'
+2025-06-15 20:41:35,019 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1626*H1626'
+2025-06-15 20:41:35,019 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1627*H1627'
+2025-06-15 20:41:35,020 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1628*H1628'
+2025-06-15 20:41:35,021 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1629*H1629'
+2025-06-15 20:41:35,022 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1630*H1630'
+2025-06-15 20:41:35,022 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1631*H1631'
+2025-06-15 20:41:35,023 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1632*H1632'
+2025-06-15 20:41:35,024 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1633*H1633'
+2025-06-15 20:41:35,028 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1634*H1634'
+2025-06-15 20:41:35,030 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1635*H1635'
+2025-06-15 20:41:35,031 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1636*H1636'
+2025-06-15 20:41:35,032 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1637*H1637'
+2025-06-15 20:41:35,032 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1638*H1638'
+2025-06-15 20:41:35,033 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1639*H1639'
+2025-06-15 20:41:35,033 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1640*H1640'
+2025-06-15 20:41:35,034 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1641*H1641'
+2025-06-15 20:41:35,034 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1642*H1642'
+2025-06-15 20:41:35,044 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,046 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,048 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,050 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,052 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,115 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1620*H1620'
+2025-06-15 20:41:35,116 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1621*H1621'
+2025-06-15 20:41:35,116 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1622*H1622'
+2025-06-15 20:41:35,116 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1623*H1623'
+2025-06-15 20:41:35,117 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1624*H1624'
+2025-06-15 20:41:35,117 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1625*H1625'
+2025-06-15 20:41:35,118 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1626*H1626'
+2025-06-15 20:41:35,118 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1627*H1627'
+2025-06-15 20:41:35,119 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1628*H1628'
+2025-06-15 20:41:35,119 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1629*H1629'
+2025-06-15 20:41:35,120 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1630*H1630'
+2025-06-15 20:41:35,121 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1631*H1631'
+2025-06-15 20:41:35,122 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1632*H1632'
+2025-06-15 20:41:35,125 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1633*H1633'
+2025-06-15 20:41:35,127 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1634*H1634'
+2025-06-15 20:41:35,128 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1635*H1635'
+2025-06-15 20:41:35,129 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1636*H1636'
+2025-06-15 20:41:35,130 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1637*H1637'
+2025-06-15 20:41:35,130 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1638*H1638'
+2025-06-15 20:41:35,131 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1639*H1639'
+2025-06-15 20:41:35,132 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1640*H1640'
+2025-06-15 20:41:35,133 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1641*H1641'
+2025-06-15 20:41:35,136 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1642*H1642'
+2025-06-15 20:41:35,147 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,149 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,150 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,153 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,154 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,220 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1620*H1620'
+2025-06-15 20:41:35,220 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1621*H1621'
+2025-06-15 20:41:35,221 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1622*H1622'
+2025-06-15 20:41:35,221 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1623*H1623'
+2025-06-15 20:41:35,222 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1624*H1624'
+2025-06-15 20:41:35,222 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1625*H1625'
+2025-06-15 20:41:35,223 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1626*H1626'
+2025-06-15 20:41:35,223 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1627*H1627'
+2025-06-15 20:41:35,224 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1628*H1628'
+2025-06-15 20:41:35,225 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1629*H1629'
+2025-06-15 20:41:35,227 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1630*H1630'
+2025-06-15 20:41:35,228 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1631*H1631'
+2025-06-15 20:41:35,228 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1632*H1632'
+2025-06-15 20:41:35,229 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1633*H1633'
+2025-06-15 20:41:35,230 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1634*H1634'
+2025-06-15 20:41:35,230 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1635*H1635'
+2025-06-15 20:41:35,231 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1636*H1636'
+2025-06-15 20:41:35,231 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1637*H1637'
+2025-06-15 20:41:35,232 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1638*H1638'
+2025-06-15 20:41:35,233 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1639*H1639'
+2025-06-15 20:41:35,233 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1640*H1640'
+2025-06-15 20:41:35,234 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1641*H1641'
+2025-06-15 20:41:35,234 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1642*H1642'
+2025-06-15 20:41:35,243 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,245 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,246 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,249 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:35,250 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:41:38,631 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: SERGIO LUCIO PEREIRA, Registros: 4
+2025-06-15 20:41:46,954 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-06-15 20:44:52,632 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:44:52,632 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:45:35,474 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:45:36,867 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 1
+2025-06-15 20:45:47,467 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:45:47,467 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:46:10,010 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:46:11,347 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 2
+2025-06-15 20:46:22,826 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:46:22,826 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:46:43,649 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:46:44,923 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 3
+2025-06-15 20:46:58,162 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: SERGIO LUCIO PEREIRA, Registros: 3
+2025-06-15 20:46:58,162 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-06-15 20:46:58,163 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-06-15 20:46:58,163 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\SERGIO LUCIO PEREIRA.xlsx
+2025-06-15 20:46:59,206 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1620*H1620'
+2025-06-15 20:46:59,207 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1621*H1621'
+2025-06-15 20:46:59,207 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1622*H1622'
+2025-06-15 20:46:59,207 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1623*H1623'
+2025-06-15 20:46:59,208 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1624*H1624'
+2025-06-15 20:46:59,209 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1625*H1625'
+2025-06-15 20:46:59,209 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1626*H1626'
+2025-06-15 20:46:59,210 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1627*H1627'
+2025-06-15 20:46:59,210 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1628*H1628'
+2025-06-15 20:46:59,210 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1629*H1629'
+2025-06-15 20:46:59,211 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1630*H1630'
+2025-06-15 20:46:59,211 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1631*H1631'
+2025-06-15 20:46:59,212 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1632*H1632'
+2025-06-15 20:46:59,213 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1633*H1633'
+2025-06-15 20:46:59,214 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1634*H1634'
+2025-06-15 20:46:59,215 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1635*H1635'
+2025-06-15 20:46:59,215 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1636*H1636'
+2025-06-15 20:46:59,216 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1637*H1637'
+2025-06-15 20:46:59,216 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1638*H1638'
+2025-06-15 20:46:59,217 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1639*H1639'
+2025-06-15 20:46:59,217 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1640*H1640'
+2025-06-15 20:46:59,218 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1641*H1641'
+2025-06-15 20:46:59,219 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1642*H1642'
+2025-06-15 20:46:59,232 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,234 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,236 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,242 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,246 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,319 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1620*H1620'
+2025-06-15 20:46:59,321 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1621*H1621'
+2025-06-15 20:46:59,322 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1622*H1622'
+2025-06-15 20:46:59,322 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1623*H1623'
+2025-06-15 20:46:59,322 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1624*H1624'
+2025-06-15 20:46:59,323 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1625*H1625'
+2025-06-15 20:46:59,323 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1626*H1626'
+2025-06-15 20:46:59,324 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1627*H1627'
+2025-06-15 20:46:59,324 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1628*H1628'
+2025-06-15 20:46:59,325 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1629*H1629'
+2025-06-15 20:46:59,325 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1630*H1630'
+2025-06-15 20:46:59,325 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1631*H1631'
+2025-06-15 20:46:59,326 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1632*H1632'
+2025-06-15 20:46:59,327 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1633*H1633'
+2025-06-15 20:46:59,327 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1634*H1634'
+2025-06-15 20:46:59,328 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1635*H1635'
+2025-06-15 20:46:59,329 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1636*H1636'
+2025-06-15 20:46:59,329 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1637*H1637'
+2025-06-15 20:46:59,330 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1638*H1638'
+2025-06-15 20:46:59,331 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1639*H1639'
+2025-06-15 20:46:59,331 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1640*H1640'
+2025-06-15 20:46:59,332 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1641*H1641'
+2025-06-15 20:46:59,333 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1642*H1642'
+2025-06-15 20:46:59,343 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,345 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,347 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,349 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,351 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,424 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1620*H1620'
+2025-06-15 20:46:59,425 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1621*H1621'
+2025-06-15 20:46:59,425 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1622*H1622'
+2025-06-15 20:46:59,426 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1623*H1623'
+2025-06-15 20:46:59,426 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1624*H1624'
+2025-06-15 20:46:59,427 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1625*H1625'
+2025-06-15 20:46:59,427 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1626*H1626'
+2025-06-15 20:46:59,427 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1627*H1627'
+2025-06-15 20:46:59,428 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1628*H1628'
+2025-06-15 20:46:59,428 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1629*H1629'
+2025-06-15 20:46:59,429 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1630*H1630'
+2025-06-15 20:46:59,429 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1631*H1631'
+2025-06-15 20:46:59,430 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1632*H1632'
+2025-06-15 20:46:59,430 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1633*H1633'
+2025-06-15 20:46:59,431 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1634*H1634'
+2025-06-15 20:46:59,431 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1635*H1635'
+2025-06-15 20:46:59,432 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1636*H1636'
+2025-06-15 20:46:59,433 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1637*H1637'
+2025-06-15 20:46:59,433 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1638*H1638'
+2025-06-15 20:46:59,434 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1639*H1639'
+2025-06-15 20:46:59,434 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1640*H1640'
+2025-06-15 20:46:59,435 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1641*H1641'
+2025-06-15 20:46:59,436 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1642*H1642'
+2025-06-15 20:46:59,447 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,449 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,451 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,454 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:46:59,456 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:47:03,173 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: SERGIO LUCIO PEREIRA, Registros: 3
+2025-06-15 20:57:17,997 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:57:18,021 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:58:01,009 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:58:02,417 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 1
+2025-06-15 20:58:13,267 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-15 20:58:13,268 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-06-15 20:58:28,265 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-06-15 20:58:29,402 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 2
+2025-06-15 20:58:42,738 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: SERGIO LUCIO PEREIRA, Registros: 2
+2025-06-15 20:58:42,738 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-06-15 20:58:42,738 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-06-15 20:58:42,738 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\SERGIO LUCIO PEREIRA.xlsx
+2025-06-15 20:58:43,742 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1620*H1620'
+2025-06-15 20:58:43,742 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1621*H1621'
+2025-06-15 20:58:43,742 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1622*H1622'
+2025-06-15 20:58:43,742 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1623*H1623'
+2025-06-15 20:58:43,742 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1624*H1624'
+2025-06-15 20:58:43,742 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1625*H1625'
+2025-06-15 20:58:43,743 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1626*H1626'
+2025-06-15 20:58:43,743 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1627*H1627'
+2025-06-15 20:58:43,743 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1628*H1628'
+2025-06-15 20:58:43,743 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1629*H1629'
+2025-06-15 20:58:43,743 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1630*H1630'
+2025-06-15 20:58:43,743 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1631*H1631'
+2025-06-15 20:58:43,744 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1632*H1632'
+2025-06-15 20:58:43,744 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1633*H1633'
+2025-06-15 20:58:43,744 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1634*H1634'
+2025-06-15 20:58:43,744 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1635*H1635'
+2025-06-15 20:58:43,744 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1636*H1636'
+2025-06-15 20:58:43,744 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1637*H1637'
+2025-06-15 20:58:43,745 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1638*H1638'
+2025-06-15 20:58:43,745 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1639*H1639'
+2025-06-15 20:58:43,745 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1640*H1640'
+2025-06-15 20:58:43,746 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1641*H1641'
+2025-06-15 20:58:43,746 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1642*H1642'
+2025-06-15 20:58:43,757 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:43,758 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:43,759 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:43,763 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:43,764 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:43,820 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1620*H1620'
+2025-06-15 20:58:43,820 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1621*H1621'
+2025-06-15 20:58:43,821 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1622*H1622'
+2025-06-15 20:58:43,821 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1623*H1623'
+2025-06-15 20:58:43,821 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1624*H1624'
+2025-06-15 20:58:43,821 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1625*H1625'
+2025-06-15 20:58:43,821 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1626*H1626'
+2025-06-15 20:58:43,821 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1627*H1627'
+2025-06-15 20:58:43,821 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1628*H1628'
+2025-06-15 20:58:43,822 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1629*H1629'
+2025-06-15 20:58:43,822 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1630*H1630'
+2025-06-15 20:58:43,822 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1631*H1631'
+2025-06-15 20:58:43,822 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1632*H1632'
+2025-06-15 20:58:43,822 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1633*H1633'
+2025-06-15 20:58:43,822 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1634*H1634'
+2025-06-15 20:58:43,823 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1635*H1635'
+2025-06-15 20:58:43,823 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1636*H1636'
+2025-06-15 20:58:43,823 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1637*H1637'
+2025-06-15 20:58:43,823 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1638*H1638'
+2025-06-15 20:58:43,823 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1639*H1639'
+2025-06-15 20:58:43,823 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1640*H1640'
+2025-06-15 20:58:43,823 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1641*H1641'
+2025-06-15 20:58:43,824 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: '=G1642*H1642'
+2025-06-15 20:58:43,832 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:43,833 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:43,834 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:43,836 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:43,837 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar duplicidade: could not convert string to float: 'None'
+2025-06-15 20:58:51,344 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: SERGIO LUCIO PEREIRA, Registros: 2
