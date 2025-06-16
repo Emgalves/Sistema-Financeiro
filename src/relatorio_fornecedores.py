@@ -463,8 +463,11 @@ class RelatorioFornecedores:
             self.lbl_cliente.config(text="Selecione o Cliente:")
             self.frame_opcoes.config(text="Opções de Análise - Fornecedores")
             
-            # Atualizar labels específicos do modo
-            self.lbl_cliente_resumo.config(text="Cliente: Nenhum selecionado")
+            # Atualizar labels específicos do modo FORNECEDORES
+            self.lbl_cliente_resumo.config(
+                text="Cliente: Nenhum selecionado",
+                foreground='#0056b3'
+            )
             self.cb_todos_clientes.config(text="Analisar todos os clientes")
             
         else:
@@ -476,6 +479,12 @@ class RelatorioFornecedores:
             self.notebook.tab(0, text="Resumo - Clientes do Fornecedor")
             self.notebook.tab(1, text="Detalhes do Cliente")
             self.frame_opcoes.config(text="Opções de Análise - Por Fornecedor")
+            
+            # Atualizar labels específicos do modo POR FORNECEDOR
+            self.lbl_cliente_resumo.config(
+                text="Fornecedor: Nenhum selecionado",
+                foreground='#0056b3'
+            )
             
             # Limpar seleção de fornecedor se necessário
             if hasattr(self, 'fornecedor_busca_var'):
@@ -510,7 +519,8 @@ class RelatorioFornecedores:
             self.limpar_aba_detalhes()
             self.limpar_aba_grafico()
             
-            # Resetar labels informativos
+            # CORRIGIDO: Resetar labels informativos conforme o modo que será ativo
+            # (Será atualizado corretamente no alterar_modo_relatorio)
             self.lbl_periodo_resumo.config(text="Período: Não definido")
             
             print("Dados limpos completamente ao alternar modo de relatório")
@@ -725,10 +735,16 @@ class RelatorioFornecedores:
             # Ocultar lista após seleção
             self.tree_fornecedores.pack_forget()
             
-            # Atualizar status
+            # Atualizar status da busca
             self.lbl_status_busca.config(
                 text=f"Fornecedor selecionado: {fornecedor_selecionado}",
                 foreground='green'
+            )
+            
+            # NOVO: Atualizar label do resumo com o fornecedor selecionado
+            self.lbl_cliente_resumo.config(
+                text=f"Fornecedor: {fornecedor_selecionado}",
+                foreground='#0056b3'
             )
 
     def limpar_busca_fornecedor(self):
@@ -736,6 +752,13 @@ class RelatorioFornecedores:
         self.fornecedor_busca_var.set('')
         self.fornecedor_especifico = None
         self.tree_fornecedores.pack_forget()
+        
+        # NOVO: Resetar label do resumo quando limpar fornecedor
+        if self.modo_relatorio == "por_fornecedor":
+            self.lbl_cliente_resumo.config(
+                text="Fornecedor: Nenhum selecionado",
+                foreground='#0056b3'
+            )
         
         if self.fornecedores_disponiveis:
             self.lbl_status_busca.config(
@@ -1138,6 +1161,31 @@ class RelatorioFornecedores:
             text=f"Período: {self.periodo_inicio.strftime('%d/%m/%Y')} a {self.periodo_fim.strftime('%d/%m/%Y')}"
         )
         
+        # NOVO: Atualizar label principal conforme o modo ANTES de gerar o relatório
+        if self.modo_relatorio == "fornecedores":
+            if self.todos_clientes:
+                self.lbl_cliente_resumo.config(
+                    text="Cliente: Todos os Clientes",
+                    foreground='#0056b3'
+                )
+            else:
+                # Verificar se o cliente está ativo
+                info_cliente = obter_info_cliente(self.cliente_atual) if self.cliente_atual else None
+                texto_cliente = f"Cliente: {self.cliente_atual}"
+                if info_cliente and not info_cliente['ativo']:
+                    texto_cliente += " (INATIVO)"
+                
+                self.lbl_cliente_resumo.config(
+                    text=texto_cliente,
+                    foreground='#0056b3'
+                )
+        else:
+            # Modo por fornecedor
+            self.lbl_cliente_resumo.config(
+                text=f"Fornecedor: {self.fornecedor_especifico}",
+                foreground='#0056b3'
+            )
+        
         # Mostrar progresso
         self.mostrar_progresso_geracao()
         
@@ -1207,6 +1255,27 @@ class RelatorioFornecedores:
         except Exception as e:
             print(f"Erro ao limpar dados do relatório anterior: {str(e)}")
 
+    def atualizar_labels_modo(self):
+        """Atualiza todos os labels conforme o modo atual"""
+        try:
+            if self.modo_relatorio == "fornecedores":
+                # Labels para modo fornecedores
+                if self.todos_clientes:
+                    self.lbl_cliente_resumo.config(text="Cliente: Todos os Clientes")
+                elif self.cliente_atual:
+                    self.lbl_cliente_resumo.config(text=f"Cliente: {self.cliente_atual}")
+                else:
+                    self.lbl_cliente_resumo.config(text="Cliente: Nenhum selecionado")
+            else:
+                # Labels para modo por fornecedor
+                if self.fornecedor_especifico:
+                    self.lbl_cliente_resumo.config(text=f"Fornecedor: {self.fornecedor_especifico}")
+                else:
+                    self.lbl_cliente_resumo.config(text="Fornecedor: Nenhum selecionado")
+                    
+        except Exception as e:
+            print(f"Erro ao atualizar labels: {str(e)}")
+            
     # NOVOS MÉTODOS: Controle de progresso
     def mostrar_progresso_geracao(self):
         """Mostra indicador de progresso durante a geração"""
