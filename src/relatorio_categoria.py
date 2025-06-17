@@ -339,26 +339,33 @@ class RelatorioCategoria:
         scrollbar_y.pack(side='right', fill='y')
         scrollbar_x.pack(side='bottom', fill='x')
         
-        # Frame para estatísticas da data
-        frame_stats = ttk.LabelFrame(self.aba_detalhes, text="Estatísticas", padding=10)
-        frame_stats.pack(fill='x', pady=10, padx=10)
+        # Frame para resumo de totais (igual ao da aba resumo)
+        frame_totais_detalhes = ttk.LabelFrame(self.aba_detalhes, text="Resumo Financeiro", padding=10)
+        frame_totais_detalhes.pack(fill='x', pady=10, padx=10)
         
-        # Adicionar labels para estatísticas
-        ttk.Label(frame_stats, text="Número de Lançamentos:", font=('Arial', 11, 'bold')).grid(row=0, column=0, sticky='e', padx=5, pady=5)
-        self.lbl_num_lancamentos = ttk.Label(frame_stats, text="0", font=('Arial', 11))
-        self.lbl_num_lancamentos.grid(row=0, column=1, sticky='w', padx=5, pady=5)
+        # Total de Despesas (primeira linha, primeira coluna)
+        ttk.Label(frame_totais_detalhes, text="Total de Despesas:", font=('Arial', 11, 'bold')).grid(row=0, column=0, sticky='e', padx=5, pady=5)
+        self.lbl_total_geral_detalhes = ttk.Label(frame_totais_detalhes, text="R$ 0,00", font=('Arial', 11))
+        self.lbl_total_geral_detalhes.grid(row=0, column=1, sticky='w', padx=5, pady=5)
         
-        ttk.Label(frame_stats, text="Média por Lançamento:", font=('Arial', 11, 'bold')).grid(row=0, column=2, sticky='e', padx=5, pady=5)
-        self.lbl_media_lancamento = ttk.Label(frame_stats, text="R$ 0,00", font=('Arial', 11))
-        self.lbl_media_lancamento.grid(row=0, column=3, sticky='w', padx=5, pady=5)
+        # Criar labels dinâmicos para cada categoria na aba detalhes
+        self.labels_categorias_detalhes = {}
+        row = 1
+        col = 0
         
-        ttk.Label(frame_stats, text="Maior Lançamento:", font=('Arial', 11, 'bold')).grid(row=1, column=0, sticky='e', padx=5, pady=5)
-        self.lbl_maior_lancamento = ttk.Label(frame_stats, text="R$ 0,00", font=('Arial', 11))
-        self.lbl_maior_lancamento.grid(row=1, column=1, sticky='w', padx=5, pady=5)
-        
-        ttk.Label(frame_stats, text="Menor Lançamento:", font=('Arial', 11, 'bold')).grid(row=1, column=2, sticky='e', padx=5, pady=5)
-        self.lbl_menor_lancamento = ttk.Label(frame_stats, text="R$ 0,00", font=('Arial', 11))
-        self.lbl_menor_lancamento.grid(row=1, column=3, sticky='w', padx=5, pady=5)
+        for categoria, nome_completo in self.categorias_despesas.items():
+            # Label do nome da categoria
+            ttk.Label(frame_totais_detalhes, text=f"{categoria}:", font=('Arial', 10, 'bold')).grid(row=row, column=col, sticky='e', padx=5, pady=2)
+            
+            # Label do valor da categoria
+            self.labels_categorias_detalhes[categoria] = ttk.Label(frame_totais_detalhes, text="R$ 0,00", font=('Arial', 10))
+            self.labels_categorias_detalhes[categoria].grid(row=row, column=col+1, sticky='w', padx=5, pady=2)
+            
+            # Avançar para próxima posição
+            col += 2
+            if col >= 12:  # Máximo de 6 colunas (considerando label + valor)
+                col = 0
+                row += 1
     
     def setup_aba_grafico(self):
         """Configura a aba de gráficos"""
@@ -449,6 +456,17 @@ class RelatorioCategoria:
         # Preencher resumo
         self.preencher_resumo()
         
+        # Resetar resumo financeiro da aba detalhes (ainda não há data selecionada)
+        if hasattr(self, 'lbl_total_geral_detalhes'):
+            self.lbl_total_geral_detalhes.config(text="R$ 0,00")
+            
+            # PARA CATEGORIA (usar este bloco no relatorio_categoria.py):
+            if hasattr(self, 'labels_categorias_detalhes'):
+                for categoria in self.categorias_despesas.keys():
+                    if categoria in self.labels_categorias_detalhes:
+                        self.labels_categorias_detalhes[categoria].config(text="R$ 0,00")
+
+                        
         # Limpar detalhes (pois ainda não há data selecionada)
         if hasattr(self, 'tv_detalhes'):
             for item in self.tv_detalhes.get_children():
@@ -655,16 +673,16 @@ class RelatorioCategoria:
             total_geral = self.df_por_data['total'].sum()
             self.lbl_total_geral.config(text=formatar_moeda_br(total_geral))
             
-            # Atualizar totais por categoria
+            # Atualizar totais por tipo/categoria DA ABA RESUMO
             for categoria in self.categorias_despesas.keys():
                 if categoria in self.df_por_data.columns:
-                    total_categoria = self.df_por_data[categoria].sum()
+                    total_tipo = self.df_por_data[categoria].sum()
                 else:
-                    total_categoria = 0
+                    total_tipo = 0
                 
                 if categoria in self.labels_categorias:
-                    self.labels_categorias[categoria].config(text=formatar_moeda_br(total_categoria))
-                
+                    self.labels_categorias[categoria].config(text=formatar_moeda_br(total_tipo))
+           
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao preencher resumo: {str(e)}")
             import traceback
@@ -689,6 +707,7 @@ class RelatorioCategoria:
                 messagebox.showerror("Erro", f"Formato de data inválido: {data_str}")
                 return
             
+           
             # Atualizar label na aba de detalhes
             self.lbl_data_detalhe.config(text=f"Data Selecionada: {data_str}")
             
@@ -704,8 +723,15 @@ class RelatorioCategoria:
             # Filtrar dados para a data selecionada
             df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
             
+            # Atualizar resumo financeiro da aba detalhes com dados da data selecionada
+            self.atualizar_resumo_financeiro_detalhes(df_filtrado)
+
             # Preencher detalhes
             self.preencher_detalhes(df_filtrado)
+
+             # Atualizar resumo financeiro da aba detalhes com dados da data selecionada
+            self.atualizar_resumo_financeiro_detalhes(df_filtrado)
+
             
             # Preparar dados para gráfico
             self.preparar_grafico_data_selecionada(df_filtrado)
@@ -725,6 +751,34 @@ class RelatorioCategoria:
             import traceback
             traceback.print_exc()
     
+    def atualizar_resumo_financeiro_detalhes(self, df_filtrado):
+        """Atualiza o resumo financeiro da aba detalhes com dados da data selecionada"""
+        try:
+            if df_filtrado.empty:
+                # Se não há dados, zerar tudo
+                self.lbl_total_geral_detalhes.config(text="R$ 0,00")
+                for categoria in self.categorias_despesas.keys():
+                    if categoria in self.labels_categorias_detalhes:
+                        self.labels_categorias_detalhes[categoria].config(text="R$ 0,00")
+                return
+            
+            # Calcular total da data selecionada
+            total_data = df_filtrado['VALOR'].sum()
+            if hasattr(self, 'lbl_total_geral_detalhes'):
+                self.lbl_total_geral_detalhes.config(text=formatar_moeda_br(total_data))
+            
+            # Calcular totais por categoria da data selecionada
+            totais_por_categoria = df_filtrado.groupby('CATEGORIA')['VALOR'].sum()
+            
+            # Atualizar labels das categorias
+            for categoria in self.categorias_despesas.keys():
+                if categoria in self.labels_categorias_detalhes:
+                    valor_categoria = totais_por_categoria.get(categoria, 0)
+                    self.labels_categorias_detalhes[categoria].config(text=formatar_moeda_br(valor_categoria))
+                    
+        except Exception as e:
+            print(f"Erro ao atualizar resumo financeiro detalhes: {str(e)}")
+
     def preparar_grafico_data_selecionada(self, df_filtrado):
         """Prepara dados para os gráficos da data selecionada"""
         try:
@@ -824,29 +878,6 @@ class RelatorioCategoria:
                     )
                 )
             
-            # Atualizar estatísticas
-            num_lancamentos = len(df_filtrado)
-            total_data = df_filtrado['VALOR'].sum()
-            
-            self.lbl_num_lancamentos.config(text=str(num_lancamentos))
-            
-            # Média por lançamento
-            if num_lancamentos > 0:
-                media_lancamento = total_data / num_lancamentos
-                self.lbl_media_lancamento.config(text=formatar_moeda_br(media_lancamento))
-            else:
-                self.lbl_media_lancamento.config(text="R$ 0,00")
-            
-            # Maior e menor lançamento
-            if not df_filtrado.empty:
-                maior_valor = df_filtrado['VALOR'].max()
-                menor_valor = df_filtrado['VALOR'].min()
-                
-                self.lbl_maior_lancamento.config(text=formatar_moeda_br(maior_valor))
-                self.lbl_menor_lancamento.config(text=formatar_moeda_br(menor_valor))
-            else:
-                self.lbl_maior_lancamento.config(text="R$ 0,00")
-                self.lbl_menor_lancamento.config(text="R$ 0,00")
                 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao preencher detalhes: {str(e)}")
