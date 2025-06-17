@@ -177,12 +177,6 @@ class RelatorioFornecedores:
         
         self.setup_frame_fornecedor_melhorado()
         
-        ttk.Button(
-            self.frame_fornecedor,
-            text="Buscar Fornecedores",
-            command=self.carregar_fornecedores
-        ).pack(side='left', padx=20)
-        
         # Container para período
         frame_periodo = ttk.Frame(self.frame_selecao)
         frame_periodo.pack(fill='x', padx=10, pady=10)
