@@ -253,3 +253,145 @@
 2025-06-16 09:29:45,027 - INFO - Saída confirmada, finalizando sistema
 2025-06-16 09:29:45,084 - INFO - Ação concluída: Gerar relatório
 2025-06-16 09:29:45,144 - INFO - Ação concluída: Gerar relatório
+2025-06-16 19:45:11,690 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-16 19:45:12,980 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-16 19:45:13,007 - INFO - Sistema principal inicializado com sucesso
+2025-06-16 19:45:28,194 - INFO - Executando ação: Gerar relatório
+2025-06-16 19:45:28,195 - INFO - Tentando abrir sistema de relatórios
+2025-06-16 19:45:28,206 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-16 19:45:28,229 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-16 20:03:57,074 - INFO - Saída confirmada, finalizando sistema
+2025-06-16 20:03:57,125 - INFO - Ação concluída: Gerar relatório
+2025-06-16 20:15:50,931 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-16 20:15:51,217 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-16 20:15:51,255 - INFO - Sistema principal inicializado com sucesso
+2025-06-16 20:15:53,115 - INFO - Executando ação: Gerar relatório
+2025-06-16 20:15:53,116 - INFO - Tentando abrir sistema de relatórios
+2025-06-16 20:15:53,124 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-16 20:15:53,140 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-16 20:18:33,392 - INFO - Saída confirmada, finalizando sistema
+2025-06-16 20:18:33,436 - INFO - Ação concluída: Gerar relatório
+2025-06-16 20:18:49,700 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-16 20:18:49,902 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-16 20:18:49,935 - INFO - Sistema principal inicializado com sucesso
+2025-06-16 20:18:51,280 - INFO - Executando ação: Gerar relatório
+2025-06-16 20:18:51,281 - INFO - Tentando abrir sistema de relatórios
+2025-06-16 20:18:51,289 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-16 20:18:51,301 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-16 20:20:26,798 - INFO - Saída confirmada, finalizando sistema
+2025-06-16 20:20:26,844 - INFO - Ação concluída: Gerar relatório
+2025-06-16 20:24:11,746 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-16 20:24:12,016 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-16 20:24:12,058 - INFO - Sistema principal inicializado com sucesso
+2025-06-16 20:24:13,372 - INFO - Executando ação: Gerar relatório
+2025-06-16 20:24:13,373 - INFO - Tentando abrir sistema de relatórios
+2025-06-16 20:24:13,383 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-16 20:24:13,405 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-16 20:25:07,970 - INFO - Saída confirmada, finalizando sistema
+2025-06-16 20:25:08,009 - INFO - Ação concluída: Gerar relatório
+2025-06-16 20:29:29,278 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-16 20:29:29,619 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-16 20:29:29,665 - INFO - Sistema principal inicializado com sucesso
+2025-06-16 20:29:31,192 - INFO - Executando ação: Gerar relatório
+2025-06-16 20:29:31,193 - INFO - Tentando abrir sistema de relatórios
+2025-06-16 20:29:31,220 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-16 20:29:31,244 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-16 20:39:06,433 - INFO - Saída confirmada, finalizando sistema
+2025-06-16 20:39:06,494 - INFO - Ação concluída: Gerar relatório
+2025-06-17 09:29:26,432 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-17 09:29:27,446 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-17 09:29:27,514 - INFO - Sistema principal inicializado com sucesso
+2025-06-17 09:30:05,997 - INFO - Executando ação: Gerar relatório
+2025-06-17 09:30:05,998 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 09:30:06,009 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 09:30:06,030 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 09:41:17,924 - INFO - Saída confirmada, finalizando sistema
+2025-06-17 09:41:17,973 - INFO - Ação concluída: Gerar relatório
+2025-06-17 09:48:32,571 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-17 09:48:32,851 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-17 09:48:32,892 - INFO - Sistema principal inicializado com sucesso
+2025-06-17 09:48:34,871 - INFO - Executando ação: Gerar relatório
+2025-06-17 09:48:34,872 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 09:48:34,888 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 09:48:34,904 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 09:59:24,007 - INFO - Abrindo sistema de entrada de dados
+2025-06-17 09:59:25,504 - INFO - Configurações importadas com sucesso via src.config
+2025-06-17 09:59:25,507 - INFO - Configurações importadas com sucesso
+2025-06-17 09:59:25,508 - INFO - Configurações do sistema importadas com sucesso
+2025-06-17 10:01:05,165 - INFO - Executando ação: Gerar relatório
+2025-06-17 10:01:05,166 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 10:01:05,169 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 10:01:05,169 - INFO - Cache limpo: src.relatorios_interface
+2025-06-17 10:01:05,177 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 10:08:58,344 - INFO - Saída confirmada, finalizando sistema
+2025-06-17 10:08:58,609 - INFO - Forçando encerramento do programa...
+2025-06-17 10:14:57,235 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-17 10:14:57,532 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-17 10:14:57,582 - INFO - Sistema principal inicializado com sucesso
+2025-06-17 10:15:00,028 - INFO - Executando ação: Gerar relatório
+2025-06-17 10:15:00,028 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 10:15:00,041 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 10:15:00,063 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 10:19:36,360 - INFO - Saída confirmada, finalizando sistema
+2025-06-17 10:19:36,636 - INFO - Forçando encerramento do programa...
+2025-06-17 10:24:03,958 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-17 10:24:04,308 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-17 10:24:04,379 - INFO - Sistema principal inicializado com sucesso
+2025-06-17 10:24:20,572 - INFO - Executando ação: Gerar relatório
+2025-06-17 10:24:20,573 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 10:24:20,589 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 10:24:20,629 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 10:25:34,963 - INFO - Saída confirmada, finalizando sistema
+2025-06-17 10:25:35,223 - INFO - Forçando encerramento do programa...
+2025-06-17 11:27:23,929 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-17 11:27:25,158 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-17 11:27:25,229 - INFO - Sistema principal inicializado com sucesso
+2025-06-17 11:27:43,045 - INFO - Executando ação: Gerar relatório
+2025-06-17 11:27:43,046 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 11:27:43,159 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 11:27:43,215 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 11:37:46,061 - INFO - Saída confirmada, finalizando sistema
+2025-06-17 11:37:46,334 - INFO - Forçando encerramento do programa...
+2025-06-17 17:25:58,277 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-17 17:26:00,222 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-17 17:26:00,709 - INFO - Sistema principal inicializado com sucesso
+2025-06-17 17:27:00,781 - INFO - Executando ação: Gerar relatório
+2025-06-17 17:27:00,781 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 17:27:00,794 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 17:27:00,823 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 17:29:10,211 - INFO - Executando ação: Gerar relatório
+2025-06-17 17:29:10,212 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 17:29:10,213 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 17:29:10,213 - INFO - Cache limpo: src.relatorios_interface
+2025-06-17 17:29:10,219 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 17:29:34,081 - INFO - Saída confirmada, finalizando sistema
+2025-06-17 17:29:34,346 - INFO - Forçando encerramento do programa...
+2025-06-17 17:36:26,684 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-17 17:36:26,872 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-17 17:36:26,910 - INFO - Sistema principal inicializado com sucesso
+2025-06-17 17:36:28,478 - INFO - Executando ação: Gerar relatório
+2025-06-17 17:36:28,479 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 17:36:28,486 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 17:36:28,498 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 17:37:00,631 - INFO - Saída confirmada, finalizando sistema
+2025-06-17 17:37:00,887 - INFO - Forçando encerramento do programa...
+2025-06-17 17:41:29,190 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-17 17:41:29,370 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-17 17:41:29,412 - INFO - Sistema principal inicializado com sucesso
+2025-06-17 17:41:30,810 - INFO - Executando ação: Gerar relatório
+2025-06-17 17:41:30,811 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 17:41:30,818 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 17:41:30,832 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 17:43:32,447 - INFO - Saída confirmada, finalizando sistema
+2025-06-17 17:43:32,706 - INFO - Forçando encerramento do programa...
+2025-06-17 17:49:38,271 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-06-17 17:49:38,451 - WARNING - Logo não encontrado, continuando sem imagem
+2025-06-17 17:49:38,494 - INFO - Sistema principal inicializado com sucesso
+2025-06-17 17:50:38,187 - INFO - Executando ação: Gerar relatório
+2025-06-17 17:50:38,188 - INFO - Tentando abrir sistema de relatórios
+2025-06-17 17:50:38,202 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-06-17 17:50:38,214 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-06-17 17:52:29,594 - INFO - Abrindo sistema de entrada de dados
+2025-06-17 17:52:35,174 - INFO - Configurações importadas com sucesso via src.config
+2025-06-17 17:52:35,178 - INFO - Configurações importadas com sucesso
+2025-06-17 17:52:35,179 - INFO - Configurações do sistema importadas com sucesso
