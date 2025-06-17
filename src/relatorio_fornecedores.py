@@ -911,7 +911,7 @@ class RelatorioFornecedores:
         frame_lancamentos.pack(fill='both', expand=True, pady=5, padx=5)
         
         # Tree para lançamentos
-        colunas = ('data', 'cliente_ou_fornecedor', 'tipo_despesa', 'referencia', 'nf', 'dt_vencto', 'valor', 'observacao')
+        colunas = ('data', 'cliente_ou_fornecedor', 'tipo_despesa', 'referencia', 'dt_vencto', 'valor', 'observacao')
         self.tree_lancamentos = ttk.Treeview(frame_lancamentos, columns=colunas, show='headings', height=15)
         
         # Configurar colunas (serão atualizadas conforme o modo)
@@ -927,7 +927,6 @@ class RelatorioFornecedores:
         scrolly.pack(side='right', fill='y')
         scrollx.pack(side='bottom', fill='x')
 
-    # NOVO: Método para atualizar colunas da aba de detalhes
     def atualizar_colunas_detalhes(self):
         """Atualiza as colunas da tabela de detalhes conforme o modo"""
         if self.modo_relatorio == "fornecedores":
@@ -936,7 +935,7 @@ class RelatorioFornecedores:
             self.tree_lancamentos.heading('cliente_ou_fornecedor', text='Cliente')
             self.tree_lancamentos.heading('tipo_despesa', text='Tipo')
             self.tree_lancamentos.heading('referencia', text='Referência')
-            self.tree_lancamentos.heading('nf', text='NF')
+            # REMOVER: self.tree_lancamentos.heading('nf', text='NF')
             self.tree_lancamentos.heading('dt_vencto', text='Vencimento')
             self.tree_lancamentos.heading('valor', text='Valor')
             self.tree_lancamentos.heading('observacao', text='Observação')
@@ -946,19 +945,19 @@ class RelatorioFornecedores:
             self.tree_lancamentos.heading('cliente_ou_fornecedor', text='Fornecedor')
             self.tree_lancamentos.heading('tipo_despesa', text='Tipo')
             self.tree_lancamentos.heading('referencia', text='Referência')
-            self.tree_lancamentos.heading('nf', text='NF')
+            # REMOVER: self.tree_lancamentos.heading('nf', text='NF')
             self.tree_lancamentos.heading('dt_vencto', text='Vencimento')
             self.tree_lancamentos.heading('valor', text='Valor')
             self.tree_lancamentos.heading('observacao', text='Observação')
         
-        # Ajustar larguras
-        self.tree_lancamentos.column('data', width=80, anchor='center')
+        # Ajustar larguras - EXPANDIR Data e Vencimento, remover NF
+        self.tree_lancamentos.column('data', width=100, anchor='center')  # Era 80
         self.tree_lancamentos.column('cliente_ou_fornecedor', width=200)
         self.tree_lancamentos.column('tipo_despesa', width=50, anchor='center')
-        self.tree_lancamentos.column('referencia', width=250)
-        self.tree_lancamentos.column('nf', width=100)
-        self.tree_lancamentos.column('dt_vencto', width=80, anchor='center')
-        self.tree_lancamentos.column('valor', width=100, anchor='e')
+        self.tree_lancamentos.column('referencia', width=300)  # Era 250, expandir pois terá NF
+        # REMOVER: self.tree_lancamentos.column('nf', width=100)
+        self.tree_lancamentos.column('dt_vencto', width=100, anchor='center')  # Era 80
+        self.tree_lancamentos.column('valor', width=120, anchor='e')  # Era 100
         self.tree_lancamentos.column('observacao', width=150)
 
     def setup_aba_grafico(self):
@@ -1914,7 +1913,6 @@ class RelatorioFornecedores:
                     cliente_ou_fornecedor,
                     lancamento['tipo_despesa'],
                     lancamento['referencia'],
-                    lancamento['nf'],
                     dt_vencto_str,
                     formatar_moeda_br(lancamento['valor']),
                     lancamento['observacao']
@@ -2197,9 +2195,9 @@ class RelatorioFornecedores:
             
             # Cabeçalho dos detalhes
             if self.modo_relatorio == "fornecedores":
-                detail_headers = ['Data', 'Cliente', 'Fornecedor', 'Tipo', 'Referência', 'NF', 'Vencimento', 'Valor', 'Observação']
+                detail_headers = ['Data', 'Cliente', 'Fornecedor', 'Tipo', 'Referência', 'Vencimento', 'Valor', 'Observação']
             else:
-                detail_headers = ['Data', 'Fornecedor', 'Cliente', 'Tipo', 'Referência', 'NF', 'Vencimento', 'Valor', 'Observação']
+                detail_headers = ['Data', 'Fornecedor', 'Cliente', 'Tipo', 'Referência', 'Vencimento', 'Valor', 'Observação']
             
             for col, header in enumerate(detail_headers, 1):
                 cell = ws_detalhes.cell(row=1, column=col, value=header)
@@ -2221,8 +2219,7 @@ class RelatorioFornecedores:
                     
                     ws_detalhes.cell(row=row, column=4, value=lancamento['tipo_despesa'])
                     ws_detalhes.cell(row=row, column=5, value=lancamento['referencia'])
-                    ws_detalhes.cell(row=row, column=6, value=lancamento.get('nf', ''))
-                    
+               
                     dt_vencto_str = ""
                     if lancamento['dt_vencto']:
                         dt_vencto_str = lancamento['dt_vencto'].strftime('%d/%m/%Y')
@@ -2234,7 +2231,7 @@ class RelatorioFornecedores:
                     row += 1
             
             # Ajustar largura das colunas da aba de detalhes
-            for col in range(1, 10):
+            for col in range(1, 9):
                 ws_detalhes.column_dimensions[get_column_letter(col)].width = 15
             
             # Salvar arquivo
