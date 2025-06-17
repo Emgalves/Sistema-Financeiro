@@ -1477,84 +1477,193 @@ class RelatorioHandler:
         return tabela_subtotais, tabela_totais
 
     def adicionar_cabecalho(self, elementos, dados):
-        
+        """Adiciona cabeçalho ao relatório PDF - VERSÃO CORRIGIDA"""
         try:
+            logger.info("=== INICIANDO ADIÇÃO DO CABEÇALHO ===")
+            
+            # Verificar se elementos é uma lista válida
             if not isinstance(elementos, list):
-                print("ERRO: elementos não é uma lista!")
-                elementos = []
-                
-            # Criar estilo customizado com espaçamento de 0
-            style_cabecalho = ParagraphStyle(
-                'CabecalhoStyle',
+                logger.error("ERRO: elementos não é uma lista válida")
+                return
+            
+            # Criar estilo para informações da empresa
+            style_empresa = ParagraphStyle(
+                'StyleEmpresa',
                 parent=self.config.style_normal,
-                alignment=2,
+                fontSize=10,
+                leading=12,
+                alignment=2,  # Alinhamento à direita
                 spaceBefore=0,
-                spaceAfter=0,
-                leading=12
+                spaceAfter=0
             )
-
-            try:
-              
-                if self.logo_path and os.path.exists(self.logo_path):
-                    logo = Image(self.logo_path, width=200, height=100)
-               
-                    info_empresa = [
-                        Paragraph("Rua Zodiaco, 87 Sala 07 – Santa Lúcia - Belo Horizonte - MG", style_cabecalho),
-                        Paragraph("(31) 3654-6616 / (31) 99974-1241 / (31) 98711-1139", style_cabecalho),
-                        Paragraph("rvr.engenharia@gmail.com", style_cabecalho)
-                    ]
-
-                    cabecalho_table = Table(
-                        [[logo, info_empresa]], 
-                        colWidths=[80, 650],
-                        rowHeights=[60]
-                    )
-                    
-                    cabecalho_table.setStyle(TableStyle([
-                        ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-                        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
-                        ('VALIGN', (0, 0), (1, 0), 'TOP'),
-                        ('RIGHTPADDING', (1, 0), (1, 0), 0),
-                    ]))
-                    
-                    elementos.append(cabecalho_table)
-                    
-            except Exception as e:
-                print(f"Erro ao processar logo: {str(e)}")
-    
-        except Exception as e:
-            print(f"Aviso: Não foi possível adicionar a logo ao cabeçalho: {e}")
-            # Continua sem a logo, apenas com as informações
-            info_empresa = [
-                Paragraph("Rua Zodiaco, 87 Sala 07 – Santa Lúcia - Belo Horizonte - MG", style_cabecalho),
-                Paragraph("(31) 3654-6616 / (31) 99974-1241 / (31) 98711-1139", style_cabecalho),
-                Paragraph("rvr.engenharia@gmail.com", style_cabecalho)
+            
+            # Informações da empresa (texto completo)
+            texto_empresa = [
+                "Rua Zodiaco, 87 Sala 07 – Santa Lúcia - Belo Horizonte - MG",
+                "(31) 3654-6616 / (31) 99974-1241 / (31) 98711-1139",
+                "rvr.engenharia@gmail.com"
             ]
-            elementos.extend(info_empresa)
-
-        # Espaço após o cabeçalho
-        elementos.append(Spacer(1, 40))
-        
-        # Criar tabela para nome/endereço do cliente e número/data do relatório
-        data_formatada = pd.to_datetime(dados.get('data_relatorio')).strftime('%d/%m/%Y')
-        info_cliente = [
-            [Paragraph(dados.get('nome_cliente', ''), self.config.style_heading),
-             Paragraph(f"Relatório nº: {dados.get('numero_relatorio', '')}", self.config.style_normal)],
-            [Paragraph(dados.get('endereco_cliente', ''), self.config.style_normal),
-             Paragraph(f"Data: {data_formatada}", self.config.style_normal)]
-        ]
-
-        cliente_table = Table(
-            info_cliente,
-            colWidths=[680, 100],  # Ajuste as larguras conforme necessário
-            rowHeights=[20, 20]   
-        )
-        cliente_table.setStyle(TableStyle([
-            ('ALIGN', (0, 0), (0, -1), 'LEFT'),    # Alinhar informações do cliente à esquerda
-            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),   # Alinhar número e data à direita
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ]))
-        elementos.append(cliente_table)
+            
+            # Tentar carregar a logo
+            logo_carregada = False
+            logo_element = None
+            
+            # Verificar múltiplos locais para a logo
+            possíveis_logos = [
+                self.logo_path,  # Caminho atual definido no __init__
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo1.png"),
+                os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.png"),
+                "logo1.png",
+                "logo.png"
+            ]
+            
+            for logo_path in possíveis_logos:
+                if logo_path and os.path.exists(logo_path):
+                    try:
+                        logger.info(f"Tentando carregar logo: {logo_path}")
+                        logo_element = Image(logo_path, width=180, height=90)
+                        logo_carregada = True
+                        logger.info("Logo carregada com sucesso!")
+                        break
+                    except Exception as e:
+                        logger.warning(f"Erro ao carregar logo {logo_path}: {str(e)}")
+                        continue
+            
+            if not logo_carregada:
+                logger.warning("Nenhuma logo encontrada, continuando sem logo")
+            
+            # Criar cabeçalho
+            if logo_carregada and logo_element:
+                logger.info("Criando cabeçalho COM logo")
+                
+                # Converter texto da empresa em Paragraphs
+                paragraphs_empresa = []
+                for linha in texto_empresa:
+                    paragraphs_empresa.append(Paragraph(linha, style_empresa))
+                
+                # Criar tabela com logo + informações
+                cabecalho_data = [[logo_element, paragraphs_empresa]]
+                
+                cabecalho_table = Table(
+                    cabecalho_data,
+                    colWidths=[200, 550],  # Logo: 200pt, Texto: 550pt
+                    rowHeights=[100]
+                )
+                
+                cabecalho_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (0, 0), 'LEFT'),     # Logo à esquerda
+                    ('ALIGN', (1, 0), (1, 0), 'RIGHT'),    # Texto à direita
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),   # Alinhamento no topo
+                    ('LEFTPADDING', (0, 0), (0, 0), 0),
+                    ('RIGHTPADDING', (1, 0), (1, 0), 0),
+                    ('TOPPADDING', (0, 0), (-1, -1), 5),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                ]))
+                
+                elementos.append(cabecalho_table)
+                
+            else:
+                logger.info("Criando cabeçalho SEM logo")
+                
+                # Cabeçalho apenas com texto (alinhado à direita)
+                for linha in texto_empresa:
+                    elementos.append(Paragraph(linha, style_empresa))
+                
+                # Adicionar espaço extra para compensar a falta da logo
+                elementos.append(Spacer(1, 60))
+            
+            # Espaço após cabeçalho da empresa
+            elementos.append(Spacer(1, 25))
+            
+            # === INFORMAÇÕES DO CLIENTE E RELATÓRIO ===
+            try:
+                # Formatar data
+                if isinstance(dados.get('data_relatorio'), str):
+                    data_formatada = dados.get('data_relatorio')
+                else:
+                    data_formatada = pd.to_datetime(dados.get('data_relatorio')).strftime('%d/%m/%Y')
+                
+                # Estilo para informações do cliente
+                style_cliente_nome = ParagraphStyle(
+                    'ClienteNome',
+                    parent=self.config.style_normal,
+                    fontSize=14,
+                    leading=16,
+                    alignment=0,  # Esquerda
+                    spaceBefore=0,
+                    spaceAfter=0,
+                    fontName='Helvetica-Bold'
+                )
+                
+                style_cliente_info = ParagraphStyle(
+                    'ClienteInfo',
+                    parent=self.config.style_normal,
+                    fontSize=11,
+                    leading=13,
+                    alignment=0,  # Esquerda
+                    spaceBefore=0,
+                    spaceAfter=0
+                )
+                
+                style_relatorio_info = ParagraphStyle(
+                    'RelatorioInfo',
+                    parent=self.config.style_normal,
+                    fontSize=11,
+                    leading=13,
+                    alignment=2,  # Direita
+                    spaceBefore=0,
+                    spaceAfter=0
+                )
+                
+                # Dados do cliente e relatório
+                info_cliente_data = [
+                    [
+                        Paragraph(dados.get('nome_cliente', 'CLIENTE NÃO INFORMADO'), style_cliente_nome),
+                        Paragraph(f"Relatório nº: {dados.get('numero_relatorio', 'N/A')}", style_relatorio_info)
+                    ],
+                    [
+                        Paragraph(dados.get('endereco_cliente', 'ENDEREÇO NÃO INFORMADO'), style_cliente_info),
+                        Paragraph(f"Data: {data_formatada}", style_relatorio_info)
+                    ]
+                ]
+                
+                cliente_table = Table(
+                    info_cliente_data,
+                    colWidths=[550, 200],  # Cliente: 550pt, Relatório: 200pt
+                    rowHeights=[25, 25]
+                )
+                
+                cliente_table.setStyle(TableStyle([
+                    ('ALIGN', (0, 0), (0, -1), 'LEFT'),     # Coluna cliente à esquerda
+                    ('ALIGN', (1, 0), (1, -1), 'RIGHT'),    # Coluna relatório à direita
+                    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), # Centralizado verticalmente
+                    ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                    ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                    ('TOPPADDING', (0, 0), (-1, -1), 2),
+                    ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+                ]))
+                
+                elementos.append(cliente_table)
+                logger.info("Informações do cliente adicionadas com sucesso")
+                
+            except Exception as e:
+                logger.error(f"Erro ao processar informações do cliente: {str(e)}")
+                # Fallback em caso de erro
+                elementos.append(Paragraph("ERRO: Informações do cliente indisponíveis", self.config.style_normal))
+            
+            # Espaço final antes do conteúdo
+            elementos.append(Spacer(1, 30))
+            
+            logger.info("=== CABEÇALHO CONCLUÍDO COM SUCESSO ===")
+            
+        except Exception as e:
+            logger.error(f"ERRO CRÍTICO no cabeçalho: {str(e)}", exc_info=True)
+            # Em caso de erro total, adicionar pelo menos um título
+            try:
+                elementos.append(Paragraph("SISTEMA DE RELATÓRIOS", self.config.style_heading))
+                elementos.append(Spacer(1, 30))
+            except:
+                pass  # Se nem isso funcionar, continuar sem cabeçalho
 
     
     def adicionar_detalhes(self, elementos, dados):
