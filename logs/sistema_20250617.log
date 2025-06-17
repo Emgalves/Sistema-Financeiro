@@ -1,0 +1,215 @@
+2025-06-17 09:30:06,005 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-06-17 09:30:06,008 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 09:30:06,009 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 09:30:06,024 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 09:30:06,027 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 09:30:06,028 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 09:30:06,029 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 09:30:06,168 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 09:30:06,359 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 09:30:06,360 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 09:30:06,372 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 09:30:06,373 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 09:30:06,375 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 09:30:06,429 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 09:30:06,456 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 09:30:06,456 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 09:30:06,462 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 09:30:06,463 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 09:30:06,463 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 09:48:34,885 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-06-17 09:48:34,886 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 09:48:34,887 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 09:48:34,901 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 09:48:34,901 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 09:48:34,902 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 09:48:34,902 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 09:48:35,046 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 09:48:35,182 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 09:48:35,183 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 09:48:35,194 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 09:48:35,195 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 09:48:35,195 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 09:48:35,232 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 09:48:35,274 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 09:48:35,275 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 09:48:35,279 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 09:48:35,281 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 09:48:35,281 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 09:59:42,584 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-17 09:59:42,585 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-17 09:59:42,633 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-06-17 09:59:42,633 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-06-17 09:59:42,634 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-17 09:59:42,635 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-06-17 09:59:42,643 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-06-17 09:59:42,643 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-06-17 10:01:05,167 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 10:01:05,168 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 10:01:05,174 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 10:01:05,174 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 10:01:05,175 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 10:01:05,176 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 10:01:05,250 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 10:01:05,367 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 10:01:05,374 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 10:01:05,377 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 10:01:05,378 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 10:01:05,380 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 10:01:05,422 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 10:01:05,456 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 10:01:05,457 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 10:01:05,459 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 10:01:05,460 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 10:01:05,461 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 10:15:00,035 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-06-17 10:15:00,038 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 10:15:00,039 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 10:15:00,055 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 10:15:00,056 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 10:15:00,058 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 10:15:00,060 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 10:15:00,186 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 10:15:00,322 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 10:15:00,323 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 10:15:00,334 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 10:15:00,335 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 10:15:00,336 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 10:15:00,366 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 10:15:00,398 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 10:15:00,400 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 10:15:00,404 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 10:15:00,406 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 10:15:00,408 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 10:24:20,578 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-06-17 10:24:20,587 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 10:24:20,588 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 10:24:20,627 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 10:24:20,627 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 10:24:20,628 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 10:24:20,628 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 10:24:20,791 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 10:24:21,363 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 10:24:21,363 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 10:24:21,726 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 10:24:21,727 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 10:24:21,740 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 10:24:21,827 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 10:24:22,012 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 10:24:22,012 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 10:24:22,014 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 10:24:22,015 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 10:24:22,016 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 11:27:43,093 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-06-17 11:27:43,095 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 11:27:43,131 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 11:27:43,183 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 11:27:43,213 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 11:27:43,214 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 11:27:43,215 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 11:27:43,353 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 11:27:43,519 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 11:27:43,520 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 11:27:43,538 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 11:27:43,540 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 11:27:43,541 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 11:27:43,587 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 11:27:43,662 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 11:27:43,663 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 11:27:43,666 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 11:27:43,667 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 11:27:43,667 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 17:27:00,789 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-06-17 17:27:00,792 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 17:27:00,793 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 17:27:00,810 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 17:27:00,815 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 17:27:00,817 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 17:27:00,821 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 17:27:01,000 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:27:01,234 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:27:01,234 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:27:01,252 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:27:01,254 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:27:01,255 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 17:27:01,296 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:27:01,328 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:27:01,328 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:27:01,330 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:27:01,330 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:27:01,331 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 17:29:10,212 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 17:29:10,213 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 17:29:10,217 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 17:29:10,217 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 17:29:10,218 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 17:29:10,218 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 17:29:10,270 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:29:10,391 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:29:10,392 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:29:10,394 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:29:10,395 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:29:10,396 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 17:29:10,438 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:29:10,464 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:29:10,467 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:29:10,469 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:29:10,470 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:29:10,471 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 17:36:28,484 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-06-17 17:36:28,484 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 17:36:28,485 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 17:36:28,496 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 17:36:28,496 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 17:36:28,497 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 17:36:28,497 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 17:36:28,584 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:36:28,695 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:36:28,695 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:36:28,697 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:36:28,698 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:36:28,699 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 17:36:28,735 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:36:28,763 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:36:28,764 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:36:28,765 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:36:28,766 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:36:28,767 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 17:41:30,816 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-06-17 17:41:30,817 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 17:41:30,817 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 17:41:30,827 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 17:41:30,827 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 17:41:30,829 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 17:41:30,831 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 17:41:30,933 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:41:31,019 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:41:31,019 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:41:31,021 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:41:31,022 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:41:31,022 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 17:41:31,056 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:41:31,088 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:41:31,089 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:41:31,092 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:41:31,095 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:41:31,095 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
+2025-06-17 17:50:38,196 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-06-17 17:50:38,197 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-06-17 17:50:38,200 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-06-17 17:50:38,211 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-06-17 17:50:38,213 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-06-17 17:50:38,213 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-06-17 17:50:38,214 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-06-17 17:50:38,298 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:50:38,429 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:50:38,430 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:50:38,433 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:50:38,434 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:50:38,435 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 14 clientes
+2025-06-17 17:50:38,466 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-06-17 17:50:38,495 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-06-17 17:50:38,496 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-06-17 17:50:38,497 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-06-17 17:50:38,498 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 13
+2025-06-17 17:50:38,498 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 14 itens
