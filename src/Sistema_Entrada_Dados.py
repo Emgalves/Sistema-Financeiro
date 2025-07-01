@@ -2092,17 +2092,25 @@ class SistemaEntradaDados:
                 text="Visualizar Lançamentos", 
                 command=self.visualizar_lancamentos,
                 style='Medium.TButton').pack(side='left', padx=5)
-        ttk.Button(frame_botoes_fornecedor, 
-                text="Enviar Registros", 
-                command=self.enviar_dados,
-                style='Medium.TButton').pack(side='left', padx=5)
+        
+        ttk.Button(
+            frame_botoes_fornecedor, 
+            text="🚛 Importar Transporte", 
+            command=self.importar_transporte_cafe,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
+        # ttk.Button(frame_botoes_fornecedor, 
+        #         text="Enviar Registros", 
+        #         command=self.enviar_dados,
+        #         style='Medium.TButton').pack(side='left', padx=5)
         ttk.Button(
             frame_botoes_fornecedor, 
             text="Importar Folha RH", 
             command=self.importar_folha_rh,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
-
+       
         ttk.Button(frame_botoes_fornecedor, 
                 text="Voltar ao Menu", 
                 command=self.voltar_menu,
@@ -4136,6 +4144,15 @@ class SistemaEntradaDados:
         else:
             importador = ImportadorRH(self)
             importador.importar_dados()
+
+    def importar_transporte_cafe(self):
+        """Chama a importação de transporte através do ImportadorRH"""
+        try:
+            importador = ImportadorRH(self)
+            importador.importar_transporte_cafe()
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir importador de transporte: {str(e)}")
+
 
     def limpar_campos_despesa(self):
         """Limpa os campos de despesa mantendo alguns valores padrão"""
@@ -8021,6 +8038,360 @@ class ImportadorRH:
             custom_messagebox("error", "Erro", f"Erro ao importar dados: {str(e)}")
             import traceback
             traceback.print_exc()
+
+    def importar_transporte_cafe(self):
+        """
+        Importa dados específicos de transporte e gera café automaticamente
+        Estrutura esperada da planilha:
+        - Coluna B: NOME
+        - Coluna C: CPF  
+        - Coluna D: DIAS
+        - Coluna E: VALOR TRANSPORTE
+        """
+        # Verificar se há um cliente selecionado
+        if not self.sistema.cliente_atual:
+            custom_messagebox("error", 
+                "Erro", 
+                "Nenhum cliente selecionado. Por favor, selecione um cliente antes de importar dados de transporte."
+            )
+            return
+            
+        cliente_alvo = self.sistema.cliente_atual.upper()
+        
+        # Selecionar arquivo específico de transporte
+        arquivo = filedialog.askopenfilename(
+            title="Selecione a planilha de TRANSPORTE",
+            filetypes=[
+                ("Arquivos Excel", "*.xlsx *.xls *.xlsm *.xlsb"),
+                ("Arquivos CSV", "*.csv *.txt"),
+                ("Todos os formatos suportados", "*.xlsx *.xls *.csv *.txt *.xlsm *.xlsb")
+            ],
+            initialdir=str(self.pasta_rh)
+        )
+        
+        if not arquivo:
+            return
+
+        try:
+            # Tentar ler o arquivo
+            df = None
+            extensao = os.path.splitext(arquivo)[1].lower()
+            
+            if extensao in ['.csv', '.txt']:
+                # Para CSV, tentar diferentes delimitadores
+                for delim in [',', ';', '\t']:
+                    try:
+                        df = pd.read_csv(arquivo, dtype={'CPF': str}, delimiter=delim, encoding='utf-8')
+                        break
+                    except:
+                        try:
+                            df = pd.read_csv(arquivo, dtype={'CPF': str}, delimiter=delim, encoding='latin-1')
+                            break
+                        except:
+                            continue
+            else:
+                # Para Excel
+                df = pd.read_excel(arquivo, dtype={'CPF': str})
+            
+            if df is None:
+                custom_messagebox("error", "Erro", "Não foi possível ler o arquivo. Verifique o formato.")
+                return
+            
+            print(f"Arquivo lido com sucesso. Colunas disponíveis: {df.columns.tolist()}")
+            print(f"Primeiras linhas:\n{df.head()}")
+            
+            # Processar dados de transporte
+            registros_processados = self.processar_dados_transporte(df, cliente_alvo)
+            
+            if registros_processados > 0:
+                # Calcular totais
+                total_transporte = len([r for r in self.sistema.dados_para_incluir 
+                                     if r.get('referencia') == 'TRANSPORTE'])
+                total_cafe = len([r for r in self.sistema.dados_para_incluir 
+                                if r.get('referencia') == 'CAFÉ'])
+                
+                mensagem = (
+                    f"🚛 Importação de TRANSPORTE concluída!\n\n"
+                    f"📊 Resultados:\n"
+                    f"• Lançamentos de TRANSPORTE: {total_transporte}\n"
+                    f"• Lançamentos de CAFÉ (automático): {total_cafe}\n"
+                    f"• Total de registros: {total_transporte + total_cafe}\n\n"
+                    f"👤 Cliente: {cliente_alvo}"
+                )
+                
+                custom_messagebox("info", "Sucesso na Importação", mensagem)
+                
+                # Perguntar se deseja visualizar
+                if custom_messagebox("yesno", 
+                    "Visualizar Lançamentos", 
+                    "Deseja visualizar os lançamentos antes de salvar?"
+                ):
+                    self.sistema.visualizar_lancamentos()
+            else:
+                custom_messagebox("warning", 
+                    "Nenhum Registro", 
+                    f"Nenhum registro de transporte foi processado.\n\n"
+                    f"Verifique se:\n"
+                    f"• As colunas estão corretas (B=NOME, C=CPF, D=DIAS, E=VALOR)\n"
+                    f"• Os dados não estão vazios\n"
+                    f"• O formato do arquivo está correto"
+                )
+                    
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao importar dados de transporte: {str(e)}")
+            import traceback
+            traceback.print_exc()
+
+    def processar_dados_transporte(self, df, cliente_alvo):
+        """
+        Processa os dados da planilha de transporte
+        Retorna o número de registros processados
+        """
+        registros_processados = 0
+        erros = []
+        
+        print(f"Iniciando processamento de {len(df)} linhas para transporte...")
+        
+        # Calcular data de referência baseada na regra do sistema
+        data_rel = self.calcular_data_referencia_transporte()
+        print(f"Data de referência calculada: {data_rel}")
+        
+        # Processar linha por linha
+        for idx, row in df.iterrows():
+            try:
+                # Extrair dados das colunas específicas
+                nome = self.extrair_valor_coluna_transporte(row, 'B', 1)  # Coluna B (índice 1)
+                cpf = self.extrair_valor_coluna_transporte(row, 'C', 2)   # Coluna C (índice 2)
+                dias = self.extrair_valor_coluna_transporte(row, 'D', 3)  # Coluna D (índice 3)
+                valor_transporte = self.extrair_valor_coluna_transporte(row, 'E', 4)  # Coluna E (índice 4)
+                
+                print(f"Linha {idx}: Nome={nome}, CPF={cpf}, Dias={dias}, Valor={valor_transporte}")
+                
+                # Validar dados obrigatórios
+                if not nome or not cpf or not dias or not valor_transporte:
+                    if nome:  # Se tem nome mas falta outros dados
+                        erros.append(f"Linha {idx+1}: {nome} - dados incompletos")
+                    continue
+                
+                # Limpar e validar nome
+                nome_limpo = str(nome).strip().upper()
+                if not nome_limpo or nome_limpo in ['NOME', 'FUNCIONARIO', 'FUNCIONÁRIO']:
+                    continue  # Pular cabeçalhos
+                
+                # Limpar e validar CPF
+                cpf_numeros = ''.join(filter(str.isdigit, str(cpf)))
+                if len(cpf_numeros) != 11:
+                    erros.append(f"Linha {idx+1}: {nome_limpo} - CPF inválido: {cpf}")
+                    continue
+                
+                # Formatar CPF
+                cpf_formatado = f"{cpf_numeros[:3]}.{cpf_numeros[3:6]}.{cpf_numeros[6:9]}-{cpf_numeros[9:]}"
+                
+                # Validar dias
+                try:
+                    dias_int = int(float(str(dias).replace(',', '.')))
+                    if dias_int <= 0:
+                        erros.append(f"Linha {idx+1}: {nome_limpo} - Dias inválido: {dias}")
+                        continue
+                except (ValueError, TypeError):
+                    erros.append(f"Linha {idx+1}: {nome_limpo} - Dias não numérico: {dias}")
+                    continue
+                
+                # Validar valor do transporte (valor unitário)
+                try:
+                    vr_unit_float = float(str(valor_transporte).replace(',', '.'))
+                    if vr_unit_float <= 0:
+                        erros.append(f"Linha {idx+1}: {nome_limpo} - Valor unitário inválido: {valor_transporte}")
+                        continue
+                except (ValueError, TypeError):
+                    erros.append(f"Linha {idx+1}: {nome_limpo} - Valor unitário não numérico: {valor_transporte}")
+                    continue
+                
+                # CORREÇÃO: Calcular valor total = vr_unit * dias
+                valor_total = vr_unit_float * dias_int
+                
+                # Buscar dados bancários do funcionário
+                dados_bancarios = self.buscar_dados_bancarios_funcionario(cpf_formatado)
+                
+                # Criar registro de TRANSPORTE
+                registro_transporte = {
+                    'data': data_rel,
+                    'cnpj_cpf': cpf_formatado,
+                    'nome': nome_limpo,
+                    'categoria': 'MO',
+                    'tp_desp': '1',
+                    'referencia': 'TRANSPORTE',
+                    'nf': '',
+                    'vr_unit': f"{vr_unit_float:.2f}",          # Valor unitário da planilha
+                    'dias': dias_int,                           # Número de dias
+                    'valor': f"{valor_total:.2f}",             # TOTAL = vr_unit * dias
+                    'dt_vencto': data_rel,  # dt_vencto = data
+                    'dados_bancarios': dados_bancarios,
+                    'observacao': f"IMPORTADO TRANSPORTE - {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}",
+                    'forma_pagamento': 'PIX'  # Padrão
+                }
+                
+                # Adicionar registro de transporte
+                self.sistema.dados_para_incluir.append(registro_transporte)
+                registros_processados += 1
+                
+                print(f"✅ Registro de TRANSPORTE criado para {nome_limpo}")
+                
+                # CORREÇÃO: Criar registro de CAFÉ manualmente (replicando a lógica existente)
+                try:
+                    # Buscar valor do café nas configurações (igual ao método adicionar_dados)
+                    from src.configuracoes_sistema import GerenciadorConfiguracoes
+                    config = GerenciadorConfiguracoes.carregar_configuracoes()
+                    
+                    if config and 'cafe' in config and 'valor_atual' in config['cafe']:
+                        vr_unit_cafe = float(config['cafe']['valor_atual'])
+                    else:
+                        vr_unit_cafe = 4.0  # Valor padrão caso não encontre configuração
+                        
+                    valor_cafe_total = vr_unit_cafe * dias_int
+                    
+                    # Criar dados do lançamento do CAFÉ (copiando estrutura do transporte)
+                    dados_cafe = registro_transporte.copy()
+                    dados_cafe.update({
+                        'referencia': 'CAFÉ',
+                        'vr_unit': f"{vr_unit_cafe:.2f}",
+                        'valor': f"{valor_cafe_total:.2f}",
+                        'observacao': f"IMPORTADO CAFÉ (AUTO) - {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
+                    })
+                    
+                    self.sistema.dados_para_incluir.append(dados_cafe)
+                    print(f"✅ Registro de CAFÉ criado para {nome_limpo} - {dias_int} dias × R$ {vr_unit_cafe:.2f} = R$ {valor_cafe_total:.2f}")
+                    
+                except Exception as e:
+                    print(f"⚠️ Erro ao criar CAFÉ para {nome_limpo}: {str(e)}")
+                    # Continuar processamento mesmo se café falhar
+                
+                # IMPORTANTE: Agora tanto TRANSPORTE quanto CAFÉ são criados na importação
+                
+            except Exception as e:
+                erro_msg = f"Linha {idx+1}: Erro ao processar - {str(e)}"
+                erros.append(erro_msg)
+                print(f"❌ {erro_msg}")
+                continue
+        
+        # Mostrar erros se houver
+        if erros:
+            print(f"\n⚠️ Encontrados {len(erros)} erros:")
+            for erro in erros[:10]:  # Mostrar apenas os primeiros 10
+                print(f"  - {erro}")
+            if len(erros) > 10:
+                print(f"  - ... e mais {len(erros) - 10} erros")
+        
+        print(f"✅ Processamento concluído: {registros_processados} registros de transporte criados")
+        return registros_processados
+
+    def extrair_valor_coluna_transporte(self, row, letra_coluna, indice):
+        """
+        Extrai valor de uma coluna específica por letra (B, C, D, E) ou índice
+        """
+        try:
+            # Primeiro tentar por letra da coluna se o DataFrame tem colunas nomeadas assim
+            if hasattr(row, 'index') and letra_coluna in row.index:
+                valor = row[letra_coluna]
+            # Tentar por índice numérico
+            elif hasattr(row, 'iloc') and len(row) > indice:
+                valor = row.iloc[indice]
+            # Se row for uma Series com índices numéricos
+            elif len(row) > indice:
+                valor = row.iloc[indice] if hasattr(row, 'iloc') else row[indice]
+            else:
+                return None
+            
+            # Tratar valores NaN ou vazios
+            if pd.isna(valor) or valor == '':
+                return None
+                
+            return valor
+            
+        except Exception as e:
+            print(f"Erro ao extrair coluna {letra_coluna} (índice {indice}): {str(e)}")
+            return None
+
+    def calcular_data_referencia_transporte(self):
+        """
+        Calcula a data de referência baseada na regra: dia 5 ou 20
+        """
+        hoje = datetime.now()
+        
+        if 6 <= hoje.day <= 20:
+            # Se estivermos entre dia 6 e 20, a referência é dia 20 do mesmo mês
+            data_rel = hoje.replace(day=20)
+        else:
+            if hoje.day > 20:
+                # Se estivermos após dia 20, a referência é dia 5 do próximo mês
+                proximo_mes = (hoje.replace(day=1) + relativedelta(months=1))
+                data_rel = proximo_mes.replace(day=5)
+            else:
+                # Se estivermos antes do dia 6, a referência é dia 5 do mesmo mês
+                data_rel = hoje.replace(day=5)
+        
+        return data_rel.strftime('%d/%m/%Y')
+
+    def obter_valor_cafe_configurado(self):
+        """Busca o valor do café nas configurações do sistema"""
+        try:
+            # Método 1: Tentar buscar nas configurações
+            from src.configuracoes_sistema import GerenciadorConfiguracoes
+            config = GerenciadorConfiguracoes.carregar_configuracoes()
+            
+            if config and 'cafe' in config and 'valor_atual' in config['cafe']:
+                valor_cafe = float(config['cafe']['valor_atual'])
+                print(f"📋 Valor do café encontrado nas configurações: R$ {valor_cafe:.2f}")
+                return valor_cafe
+                
+        except Exception as e:
+            print(f"⚠️ Erro ao buscar configuração de café: {str(e)}")
+        
+        # Método 2: Tentar buscar no sistema principal
+        try:
+            if hasattr(self.sistema, 'gestao_taxas') and hasattr(self.sistema.gestao_taxas, 'configuracoes'):
+                config = self.sistema.gestao_taxas.configuracoes
+                if config and 'cafe' in config:
+                    valor_cafe = float(config['cafe'].get('valor_atual', 4.0))
+                    print(f"📋 Valor do café encontrado no sistema: R$ {valor_cafe:.2f}")
+                    return valor_cafe
+        except Exception as e:
+            print(f"⚠️ Erro ao buscar no sistema: {str(e)}")
+        
+        # Valor padrão
+        valor_padrao = 4.0
+        print(f"📋 Usando valor padrão do café: R$ {valor_padrao:.2f}")
+        return valor_padrao
+
+
+    def buscar_dados_bancarios_funcionario(self, cpf):
+        """
+        Busca dados bancários do funcionário na base de fornecedores
+        """
+        try:
+            # Usar a função existente do sistema
+            if hasattr(self.sistema, 'buscar_fornecedor_completo'):
+                fornecedor = self.sistema.buscar_fornecedor_completo(cpf)
+                if fornecedor:
+                    # Preferir PIX se disponível
+                    if fornecedor.get('chave_pix'):
+                        return f"PIX: {fornecedor['chave_pix']}"
+                    else:
+                        # Montar dados bancários para TED
+                        partes = []
+                        if fornecedor.get('banco'): partes.append(str(fornecedor['banco']))
+                        if fornecedor.get('op'): partes.append(str(fornecedor['op']))
+                        if fornecedor.get('agencia'): partes.append(str(fornecedor['agencia']))
+                        if fornecedor.get('conta'): partes.append(str(fornecedor['conta']))
+                        partes.append(cpf)  # Sempre adicionar CPF
+                        
+                        return ' - '.join(partes) if partes else 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+            
+            return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+            
+        except Exception as e:
+            print(f"Erro ao buscar dados bancários para {cpf}: {str(e)}")
+            return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
 
 class GestorTaxasAdministracao:
     def __init__(self, sistema_principal):
