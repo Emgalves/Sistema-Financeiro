@@ -57,6 +57,16 @@ def main():
         "--hidden-import=src.despesas_rateadas",
         "--hidden-import=src.gestao_medicoes",
         "--hidden-import=src.controle_pagamentos_taxas",
+        "--hidden-import=src.controle_pagamentos",
+        "--hidden-import=src.relatorio_tipo_despesa",
+        "--hidden-import=src.verificador_sistema",
+        "--hidden-import=src.gestao_taxas",
+        "--hidden-import=src.pagamentos_eventos",
+        "--hidden-import=src.relatorio_categoria",
+        "--hidden-import=src.relatorio_fornecedores",
+        "--hidden-import=src.relatorio_contratos_medicoes",
+        "--hidden-import=src.corrigir_imports_sistema",
+        "--hidden-import=src.finalizacao_quinzena",
         "--hidden-import=src.correcao_monetaria",
         "--hidden-import=src.configuracoes_sistema",
         "--hidden-import=src.version_control",
@@ -64,13 +74,13 @@ def main():
     ]
     
     # Adicionar ícone se existir
-    if os.path.exists("logo.png"):
-        # Tentar converter para ICO
+    if os.path.exists("logo1.png"):
+        # Tentar converter para ICO# Adicionar ícone se existir
         try:
             from PIL import Image
-            img = Image.open("logo.png")
-            img.save("logo.ico")
-            cmd.insert(-1, "--icon=logo.ico")
+            img = Image.open("logo1.png")
+            img.save("logo1.ico")
+            cmd.insert(-1, "--icon=logo1.ico")
             print("Icone convertido e adicionado")
         except:
             print("Nao foi possivel converter icone")
