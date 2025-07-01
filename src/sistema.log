@@ -395,3 +395,51 @@
 2025-06-17 17:52:35,174 - INFO - Configurações importadas com sucesso via src.config
 2025-06-17 17:52:35,178 - INFO - Configurações importadas com sucesso
 2025-06-17 17:52:35,179 - INFO - Configurações do sistema importadas com sucesso
+2025-07-01 15:46:32,695 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-01 15:46:33,948 - INFO - Sistema principal inicializado com sucesso
+2025-07-01 15:46:36,685 - INFO - Abrindo sistema de entrada de dados
+2025-07-01 15:46:44,151 - INFO - Configurações importadas com sucesso via src.config
+2025-07-01 15:46:44,156 - INFO - Configurações importadas com sucesso
+2025-07-01 15:46:44,160 - INFO - Configurações do sistema importadas com sucesso
+2025-07-01 16:07:44,805 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-01 16:07:45,180 - INFO - Sistema principal inicializado com sucesso
+2025-07-01 16:07:46,942 - INFO - Abrindo sistema de entrada de dados
+2025-07-01 16:07:49,101 - INFO - Configurações importadas com sucesso via src.config
+2025-07-01 16:07:49,105 - INFO - Configurações importadas com sucesso
+2025-07-01 16:07:49,111 - INFO - Configurações do sistema importadas com sucesso
+2025-07-01 16:08:16,149 - INFO - Saída confirmada, finalizando sistema
+2025-07-01 16:11:32,470 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-01 16:11:32,945 - INFO - Sistema principal inicializado com sucesso
+2025-07-01 16:11:45,266 - INFO - Abrindo sistema de entrada de dados
+2025-07-01 16:11:47,329 - INFO - Configurações importadas com sucesso via src.config
+2025-07-01 16:11:47,333 - INFO - Configurações importadas com sucesso
+2025-07-01 16:11:47,334 - INFO - Configurações do sistema importadas com sucesso
+2025-07-01 16:18:12,565 - INFO - Saída confirmada, finalizando sistema
+2025-07-01 16:18:30,292 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-01 16:18:30,649 - INFO - Sistema principal inicializado com sucesso
+2025-07-01 16:18:42,014 - INFO - Abrindo sistema de entrada de dados
+2025-07-01 16:18:44,026 - INFO - Configurações importadas com sucesso via src.config
+2025-07-01 16:18:44,030 - INFO - Configurações importadas com sucesso
+2025-07-01 16:18:44,031 - INFO - Configurações do sistema importadas com sucesso
+2025-07-01 16:24:21,328 - INFO - Saída confirmada, finalizando sistema
+2025-07-01 16:29:09,307 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-01 16:29:09,639 - INFO - Sistema principal inicializado com sucesso
+2025-07-01 16:29:11,486 - INFO - Abrindo sistema de entrada de dados
+2025-07-01 16:29:14,082 - INFO - Configurações importadas com sucesso via src.config
+2025-07-01 16:29:14,086 - INFO - Configurações importadas com sucesso
+2025-07-01 16:29:14,087 - INFO - Configurações do sistema importadas com sucesso
+2025-07-01 16:32:44,913 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-01 16:32:45,249 - INFO - Sistema principal inicializado com sucesso
+2025-07-01 16:32:46,579 - INFO - Abrindo sistema de entrada de dados
+2025-07-01 16:32:48,780 - INFO - Configurações importadas com sucesso via src.config
+2025-07-01 16:32:48,784 - INFO - Configurações importadas com sucesso
+2025-07-01 16:32:48,785 - INFO - Configurações do sistema importadas com sucesso
+2025-07-01 16:43:15,205 - INFO - Saída confirmada, finalizando sistema
+2025-07-01 17:01:02,069 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-01 17:01:02,409 - INFO - Sistema principal inicializado com sucesso
+2025-07-01 17:01:10,311 - INFO - Executando ação: Gerar relatório
+2025-07-01 17:01:10,312 - INFO - Tentando abrir sistema de relatórios
+2025-07-01 17:01:10,322 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-01 17:01:10,338 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-01 17:04:35,083 - INFO - Saída confirmada, finalizando sistema
+2025-07-01 17:04:35,132 - INFO - Ação concluída: Gerar relatório

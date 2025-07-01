@@ -35,3 +35,19 @@ Obtendo número do relatório para data 2025-06-20
 2025-07-01 09:53:22,199 - INFO - Detalhes adicionados com sucesso
 2025-07-01 09:54:22,664 - INFO - Saída confirmada, finalizando sistema
 2025-07-01 09:54:22,717 - INFO - Ação concluída: Gerar relatório
+2025-07-01 17:01:49,057 - INFO - 
+Obtendo número do relatório para data 2025-06-05
+2025-07-01 17:01:49,060 - INFO - Número do relatório calculado: 27
+2025-07-01 17:01:49,060 - INFO - Calculando acumulado para data 2025-06-05
+2025-07-01 17:01:49,062 - INFO - Acumulado - registros após filtrar excluídos: 1329
+2025-07-01 17:01:49,074 - INFO - Valor acumulado calculado (apenas ativos): 3,100,960.13
+2025-07-01 17:01:49,074 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-01 17:01:49,075 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-01 17:01:49,076 - INFO - Logo carregada com sucesso!
+2025-07-01 17:01:49,076 - INFO - Criando cabeçalho COM logo
+2025-07-01 17:01:49,078 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-01 17:01:49,078 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-01 17:01:49,085 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-01 17:01:49,280 - INFO - Detalhes adicionados com sucesso
+2025-07-01 17:04:35,083 - INFO - Saída confirmada, finalizando sistema
+2025-07-01 17:04:35,132 - INFO - Ação concluída: Gerar relatório
