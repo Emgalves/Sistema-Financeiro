@@ -1,0 +1,37 @@
+2025-07-01 09:41:12,290 - INFO - Iniciando RelatorioUI
+2025-07-01 09:41:13,257 - INFO - Iniciando configuração da interface
+2025-07-01 09:41:13,321 - INFO - Interface configurada com sucesso
+2025-07-01 09:41:48,635 - INFO - Iniciando geração de relatório para arquivo: H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-07-01 09:41:48,637 - INFO - Incluir excluídos: False
+2025-07-01 09:41:49,418 - INFO - 
+Obtendo número do relatório para data 2025-06-20 00:00:00
+2025-07-01 09:41:49,420 - INFO - Número do relatório calculado: 7
+2025-07-01 09:41:49,420 - INFO - Calculando acumulado para data 2025-06-20 00:00:00
+2025-07-01 09:41:49,422 - INFO - Acumulado - registros após filtrar excluídos: 173
+2025-07-01 09:41:49,441 - INFO - Valor acumulado calculado (apenas ativos): 732,546.80
+2025-07-01 09:41:49,443 - INFO - Número do relatório: 7
+2025-07-01 09:41:49,444 - INFO - Valor acumulado calculado: 732,546.80
+2025-07-01 09:41:49,445 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-01 09:41:49,447 - INFO - Tentando carregar logo: logo1.png
+2025-07-01 09:41:49,448 - INFO - Logo carregada com sucesso!
+2025-07-01 09:41:49,448 - INFO - Criando cabeçalho COM logo
+2025-07-01 09:41:49,452 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-01 09:41:49,454 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-01 09:41:49,462 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-01 09:41:49,482 - INFO - Detalhes adicionados com sucesso
+2025-07-01 09:53:22,173 - INFO - 
+Obtendo número do relatório para data 2025-06-20
+2025-07-01 09:53:22,174 - INFO - Número do relatório calculado: 7
+2025-07-01 09:53:22,174 - INFO - Calculando acumulado para data 2025-06-20
+2025-07-01 09:53:22,175 - INFO - Acumulado - registros após filtrar excluídos: 173
+2025-07-01 09:53:22,184 - INFO - Valor acumulado calculado (apenas ativos): 732,546.80
+2025-07-01 09:53:22,184 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-01 09:53:22,184 - INFO - Tentando carregar logo: C:\Users\Obras\AppData\Local\Temp\_MEI149842\src\logo1.png
+2025-07-01 09:53:22,184 - INFO - Logo carregada com sucesso!
+2025-07-01 09:53:22,185 - INFO - Criando cabeçalho COM logo
+2025-07-01 09:53:22,186 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-01 09:53:22,186 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-01 09:53:22,191 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-01 09:53:22,199 - INFO - Detalhes adicionados com sucesso
+2025-07-01 09:54:22,664 - INFO - Saída confirmada, finalizando sistema
+2025-07-01 09:54:22,717 - INFO - Ação concluída: Gerar relatório
