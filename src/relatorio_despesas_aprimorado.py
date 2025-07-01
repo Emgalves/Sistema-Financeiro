@@ -952,10 +952,11 @@ class RelatorioHandler:
             (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] == 1) & 
             (df['REFERÊNCIA'] == 'DIÁRIA')
-        ].sort_values(
-            by=['TP_DESP', 'DT_VENCTO', 'VALOR'], 
-            ascending=[True, False, False]
-        )
+        ]
+        # .sort_values(
+        #     by=['TP_DESP', 'DT_VENCTO', 'VALOR'], 
+        #     ascending=[True, False, False]
+        # )
         
         df_tp_desp_1 = df[
             (df['DATA_REL'] == data_rel) & 
