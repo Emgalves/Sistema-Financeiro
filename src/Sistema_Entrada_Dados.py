@@ -4430,83 +4430,392 @@ class SistemaEntradaDados:
             # Desmarcar flag de processamento
             self._is_saving = False
 
-    def auto_salvar_dados(self):
-        """Salva automaticamente os dados em arquivo temporário"""
-        try:
-            if self.dados_para_incluir:
-                temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
-                backup_data = {
-                    'cliente': self.cliente_atual,
-                    'data_sessao': datetime.now().isoformat(),
-                    'lancamentos': self.dados_para_incluir
-                }
-                
-                with open(temp_file, 'w', encoding='utf-8') as f:
-                    import json
-                    json.dump(backup_data, f, ensure_ascii=False, indent=2)
-                
-                print(f"Auto-salvamento realizado: {len(self.dados_para_incluir)} itens")
-        except Exception as e:
-            print(f"Erro no auto-salvamento: {str(e)}")
-
-    def verificar_dados_nao_salvos(self):
-        """Verifica se existem dados não salvos de sessões anteriores"""
-        try:
-            temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
-            
-            if os.path.exists(temp_file):
-                with open(temp_file, 'r', encoding='utf-8') as f:
-                    import json
-                    backup_data = json.load(f)
-                
-                # Verificar se os dados são recentes (últimas 24 horas)
-                data_backup = datetime.fromisoformat(backup_data['data_sessao'])
-                if (datetime.now() - data_backup).days < 1:
-                    
-                    if custom_messagebox("yesno", 
-                        "Recuperação de Dados",
-                        f"Encontrados {len(backup_data['lancamentos'])} lançamentos não salvos "
-                        f"do cliente {backup_data['cliente']} em {data_backup.strftime('%d/%m/%Y %H:%M')}.\n\n"
-                        "Deseja recuperar esses dados?"):
-                        
-                        self.dados_para_incluir = backup_data['lancamentos']
-                        self.cliente_atual = backup_data['cliente']
-                        
-                        # Atualizar interface
-                        if self.cliente_atual:
-                            self.cliente_combobox.set(self.cliente_atual)
-                            self.selecionar_cliente(None)
-                        
-                        self.visualizar_lancamentos()
-                        return True
-                
-                # Remover backup antigo
-                os.remove(temp_file)
-                
-        except Exception as e:
-            print(f"Erro na verificação de recuperação: {str(e)}")
-        
-        return False
-
     def configurar_auto_salvamento(self):
-        """Configura o auto-salvamento automático"""
+        """Configura o auto-salvamento automático - MÉTODO NECESSÁRIO"""
         def executar_auto_salvamento():
-            self.auto_salvar_dados()
-            # Reagendar para 2 minutos
-            self.root.after(120000, executar_auto_salvamento)  # 120000ms = 2 minutos
+            try:
+                self.auto_salvar_dados()
+                # Reagendar para 2 minutos (120000ms)
+                self.root.after(120000, executar_auto_salvamento)
+            except Exception as e:
+                print(f"❌ Erro no auto-salvamento automático: {str(e)}")
+                # Reagendar mesmo em caso de erro
+                self.root.after(120000, executar_auto_salvamento)
         
         # Iniciar o timer após 2 minutos
         self.root.after(120000, executar_auto_salvamento)
+        print("🔄 Auto-salvamento configurado (a cada 2 minutos)")
+
+    def auto_salvar_dados(self):
+        """Salva automaticamente os dados em arquivo temporário - VERSÃO GOOGLE DRIVE"""
+        try:
+            if self.dados_para_incluir:
+                # Preparar dados do backup
+                backup_data = {
+                    'cliente': self.cliente_atual,
+                    'data_sessao': datetime.now().isoformat(),
+                    'lancamentos': self.dados_para_incluir,
+                    'total_lancamentos': len(self.dados_para_incluir),
+                    'estacao': os.environ.get('COMPUTERNAME', 'Desconhecido'),
+                    'usuario': os.environ.get('USERNAME', 'Desconhecido'),
+                    'versao_backup': '2.0'  # Identificar nova versão
+                }
+                
+                backup_salvo = False
+                
+                # PRIORIDADE 1: Tentar salvar no Google Drive
+                try:
+                    # Criar pasta de backups no Google Drive se não existir
+                    pasta_backup = PASTA_CLIENTES / "Backups_Sistema"
+                    os.makedirs(pasta_backup, exist_ok=True)
+                    
+                    # Nome do arquivo com timestamp
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    nome_arquivo = f"backup_{self.cliente_atual}_{timestamp}.json"
+                    arquivo_backup = pasta_backup / nome_arquivo
+                    
+                    with open(arquivo_backup, 'w', encoding='utf-8') as f:
+                        json.dump(backup_data, f, ensure_ascii=False, indent=2)
+                    
+                    print(f"✅ Backup salvo no Google Drive: {arquivo_backup}")
+                    backup_salvo = True
+                    
+                    # Manter apenas os últimos 5 backups por cliente para não acumular
+                    self.limpar_backups_antigos(pasta_backup, self.cliente_atual)
+                    
+                except Exception as e:
+                    print(f"⚠️ Erro ao salvar backup no Google Drive: {str(e)}")
+                
+                # FALLBACK 1: Desktop local (compatibilidade)
+                if not backup_salvo:
+                    try:
+                        desktop_local = os.path.join(os.path.expanduser("~"), "Desktop")
+                        if os.path.exists(desktop_local) and os.access(desktop_local, os.W_OK):
+                            arquivo_local = os.path.join(desktop_local, "backup_lancamentos.json")
+                            
+                            with open(arquivo_local, 'w', encoding='utf-8') as f:
+                                json.dump(backup_data, f, ensure_ascii=False, indent=2)
+                            
+                            print(f"✅ Backup salvo no Desktop local: {arquivo_local}")
+                            backup_salvo = True
+                            
+                    except Exception as e:
+                        print(f"⚠️ Erro ao salvar backup no Desktop: {str(e)}")
+                
+                # FALLBACK 2: Pasta temporária do sistema
+                if not backup_salvo:
+                    try:
+                        import tempfile
+                        arquivo_temp = os.path.join(tempfile.gettempdir(), "backup_lancamentos.json")
+                        
+                        with open(arquivo_temp, 'w', encoding='utf-8') as f:
+                            json.dump(backup_data, f, ensure_ascii=False, indent=2)
+                        
+                        print(f"✅ Backup salvo na pasta temporária: {arquivo_temp}")
+                        backup_salvo = True
+                        
+                    except Exception as e:
+                        print(f"⚠️ Erro ao salvar backup na pasta temp: {str(e)}")
+                
+                if backup_salvo:
+                    print(f"🔄 Auto-salvamento realizado: {len(self.dados_para_incluir)} itens")
+                else:
+                    print("❌ ERRO: Não foi possível salvar backup em nenhum local!")
+                    
+        except Exception as e:
+            print(f"❌ Erro geral no auto-salvamento: {str(e)}")
+
+    def limpar_backups_antigos(self, pasta_backup, cliente):
+        """Remove backups antigos mantendo apenas os últimos 5"""
+        try:
+            # Buscar todos os backups do cliente
+            pattern = f"backup_{cliente}_*.json"
+            backups = list(pasta_backup.glob(pattern))
+            
+            # Ordenar por data de modificação (mais recente primeiro)
+            backups.sort(key=lambda x: x.stat().st_mtime, reverse=True)
+            
+            # Remover backups excedentes (manter apenas os 5 mais recentes)
+            for backup_antigo in backups[5:]:
+                try:
+                    backup_antigo.unlink()
+                    print(f"🗑️ Backup antigo removido: {backup_antigo.name}")
+                except Exception as e:
+                    print(f"⚠️ Erro ao remover backup antigo {backup_antigo}: {str(e)}")
+                    
+        except Exception as e:
+            print(f"⚠️ Erro ao limpar backups antigos: {str(e)}")
+
+    def verificar_dados_nao_salvos(self):
+        """Verifica se existem dados não salvos de sessões anteriores - VERSÃO MELHORADA"""
+        try:
+            backups_encontrados = []
+            
+            # BUSCA 1: Google Drive (prioridade)
+            try:
+                pasta_backup = PASTA_CLIENTES / "Backups_Sistema"
+                if pasta_backup.exists():
+                    # Buscar backups recentes (últimas 24 horas)
+                    agora = datetime.now()
+                    limite_tempo = agora - relativedelta(hours=24)
+                    
+                    for arquivo_backup in pasta_backup.glob("backup_*.json"):
+                        try:
+                            # Verificar se é recente
+                            data_modificacao = datetime.fromtimestamp(arquivo_backup.stat().st_mtime)
+                            if data_modificacao >= limite_tempo:
+                                
+                                with open(arquivo_backup, 'r', encoding='utf-8') as f:
+                                    backup_data = json.load(f)
+                                
+                                # Verificar se tem dados válidos
+                                if (backup_data.get('lancamentos') and 
+                                    len(backup_data['lancamentos']) > 0):
+                                    
+                                    backup_info = {
+                                        'arquivo': arquivo_backup,
+                                        'data': backup_data,
+                                        'origem': 'Google Drive'
+                                    }
+                                    backups_encontrados.append(backup_info)
+                                    
+                        except Exception as e:
+                            print(f"Erro ao processar backup {arquivo_backup}: {str(e)}")
+                            continue
+            except Exception as e:
+                print(f"Erro ao buscar backups no Google Drive: {str(e)}")
+            
+            # BUSCA 2: Desktop local (fallback)
+            if not backups_encontrados:
+                try:
+                    temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
+                    
+                    if os.path.exists(temp_file):
+                        data_modificacao = datetime.fromtimestamp(os.path.getmtime(temp_file))
+                        if (datetime.now() - data_modificacao).days < 1:
+                            
+                            with open(temp_file, 'r', encoding='utf-8') as f:
+                                backup_data = json.load(f)
+                            
+                            if backup_data.get('lancamentos'):
+                                backup_info = {
+                                    'arquivo': temp_file,
+                                    'data': backup_data,
+                                    'origem': 'Desktop Local'
+                                }
+                                backups_encontrados.append(backup_info)
+                                
+                except Exception as e:
+                    print(f"Erro ao buscar backup no Desktop: {str(e)}")
+            
+            # BUSCA 3: Pasta temporária (último recurso)
+            if not backups_encontrados:
+                try:
+                    import tempfile
+                    temp_file = os.path.join(tempfile.gettempdir(), "backup_lancamentos.json")
+                    
+                    if os.path.exists(temp_file):
+                        data_modificacao = datetime.fromtimestamp(os.path.getmtime(temp_file))
+                        if (datetime.now() - data_modificacao).days < 1:
+                            
+                            with open(temp_file, 'r', encoding='utf-8') as f:
+                                backup_data = json.load(f)
+                            
+                            if backup_data.get('lancamentos'):
+                                backup_info = {
+                                    'arquivo': temp_file,
+                                    'data': backup_data,
+                                    'origem': 'Pasta Temporária'
+                                }
+                                backups_encontrados.append(backup_info)
+                                
+                except Exception as e:
+                    print(f"Erro ao buscar backup na pasta temp: {str(e)}")
+            
+            # Processar backups encontrados
+            if backups_encontrados:
+                # Ordenar por data (mais recente primeiro)
+                backups_encontrados.sort(
+                    key=lambda x: datetime.fromisoformat(x['data']['data_sessao']), 
+                    reverse=True
+                )
+                
+                # Usar o backup mais recente
+                backup_mais_recente = backups_encontrados[0]
+                backup_data = backup_mais_recente['data']
+                data_backup = datetime.fromisoformat(backup_data['data_sessao'])
+                origem = backup_mais_recente['origem']
+                
+                # Informações adicionais
+                estacao = backup_data.get('estacao', 'Desconhecida')
+                usuario = backup_data.get('usuario', 'Desconhecido')
+                total_lancamentos = backup_data.get('total_lancamentos', len(backup_data['lancamentos']))
+                
+                # Perguntar ao usuário
+                mensagem_recuperacao = (
+                    f"🔄 RECUPERAÇÃO DE DADOS DISPONÍVEL\n\n"
+                    f"📋 Cliente: {backup_data['cliente']}\n"
+                    f"📊 Lançamentos: {total_lancamentos}\n"
+                    f"📅 Data/Hora: {data_backup.strftime('%d/%m/%Y às %H:%M:%S')}\n"
+                    f"💾 Origem: {origem}\n"
+                    f"🖥️ Estação: {estacao}\n"
+                    f"👤 Usuário: {usuario}\n\n"
+                    f"Deseja recuperar estes dados?"
+                )
+                
+                if custom_messagebox("yesno", "Recuperação de Dados", mensagem_recuperacao):
+                    
+                    # Recuperar dados
+                    self.dados_para_incluir = backup_data['lancamentos']
+                    self.cliente_atual = backup_data['cliente']
+                    
+                    # Atualizar interface
+                    if self.cliente_atual:
+                        self.cliente_combobox.set(self.cliente_atual)
+                        self.selecionar_cliente(None)
+                    
+                    # Mostrar visualizador
+                    self.visualizar_lancamentos()
+                    
+                    # Remover backup após recuperação bem-sucedida
+                    try:
+                        if origem == 'Google Drive':
+                            backup_mais_recente['arquivo'].unlink()
+                            print(f"✅ Backup removido após recuperação: {backup_mais_recente['arquivo']}")
+                        else:
+                            os.remove(backup_mais_recente['arquivo'])
+                            print(f"✅ Backup removido após recuperação: {backup_mais_recente['arquivo']}")
+                    except Exception as e:
+                        print(f"⚠️ Erro ao remover backup: {str(e)}")
+                    
+                    custom_messagebox("info", "Recuperação Realizada", 
+                                    f"✅ Dados recuperados com sucesso!\n\n"
+                                    f"📊 {total_lancamentos} lançamentos carregados\n"
+                                    f"💾 Origem: {origem}")
+                    
+                    return True
+                else:
+                    # Usuário recusou recuperação - perguntar se quer remover backup
+                    if custom_messagebox("yesno", "Remover Backup", 
+                                        "Deseja remover este backup para não ser perguntado novamente?"):
+                        try:
+                            if origem == 'Google Drive':
+                                backup_mais_recente['arquivo'].unlink()
+                            else:
+                                os.remove(backup_mais_recente['arquivo'])
+                            print(f"🗑️ Backup removido por solicitação do usuário")
+                        except Exception as e:
+                            print(f"⚠️ Erro ao remover backup: {str(e)}")
+            
+            return False
+            
+        except Exception as e:
+            print(f"❌ Erro na verificação de recuperação: {str(e)}")
+            return False
 
     def limpar_backup(self):
-        """Remove arquivo de backup após salvamento bem-sucedido"""
+        """Remove arquivo de backup após salvamento bem-sucedido - VERSÃO MELHORADA"""
         try:
-            temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
-            if os.path.exists(temp_file):
-                os.remove(temp_file)
-                print("Backup limpo após salvamento bem-sucedido")
+            backups_removidos = 0
+            
+            # LIMPAR 1: Google Drive
+            try:
+                pasta_backup = PASTA_CLIENTES / "Backups_Sistema"
+                if pasta_backup.exists() and self.cliente_atual:
+                    # Buscar backups do cliente atual
+                    pattern = f"backup_{self.cliente_atual}_*.json"
+                    for backup_file in pasta_backup.glob(pattern):
+                        try:
+                            backup_file.unlink()
+                            backups_removidos += 1
+                            print(f"🗑️ Backup removido do Google Drive: {backup_file.name}")
+                        except Exception as e:
+                            print(f"⚠️ Erro ao remover backup {backup_file}: {str(e)}")
+            except Exception as e:
+                print(f"⚠️ Erro ao limpar backups do Google Drive: {str(e)}")
+            
+            # LIMPAR 2: Desktop local
+            try:
+                temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+                    backups_removidos += 1
+                    print("🗑️ Backup removido do Desktop local")
+            except Exception as e:
+                print(f"⚠️ Erro ao remover backup do Desktop: {str(e)}")
+            
+            # LIMPAR 3: Pasta temporária
+            try:
+                import tempfile
+                temp_file = os.path.join(tempfile.gettempdir(), "backup_lancamentos.json")
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+                    backups_removidos += 1
+                    print("🗑️ Backup removido da pasta temporária")
+            except Exception as e:
+                print(f"⚠️ Erro ao remover backup da pasta temp: {str(e)}")
+            
+            if backups_removidos > 0:
+                print(f"✅ Total de backups limpos: {backups_removidos}")
+            else:
+                print("ℹ️ Nenhum backup encontrado para limpeza")
+                
         except Exception as e:
-            print(f"Erro ao limpar backup: {str(e)}")
+            print(f"❌ Erro ao limpar backup: {str(e)}")
+
+    # MÉTODO ADICIONAL: Visualizar backups disponíveis (para debug/administração)
+    def listar_backups_disponiveis(self):
+        """Lista todos os backups disponíveis (método de administração)"""
+        try:
+            print("\n📋 LISTAGEM DE BACKUPS DISPONÍVEIS")
+            print("=" * 50)
+            
+            total_backups = 0
+            
+            # Listar Google Drive
+            try:
+                pasta_backup = PASTA_CLIENTES / "Backups_Sistema"
+                if pasta_backup.exists():
+                    print(f"\n💾 Google Drive ({pasta_backup}):")
+                    for arquivo_backup in pasta_backup.glob("backup_*.json"):
+                        try:
+                            data_mod = datetime.fromtimestamp(arquivo_backup.stat().st_mtime)
+                            tamanho = arquivo_backup.stat().st_size
+                            print(f"  📄 {arquivo_backup.name}")
+                            print(f"      📅 {data_mod.strftime('%d/%m/%Y %H:%M:%S')}")
+                            print(f"      📏 {tamanho:,} bytes")
+                            total_backups += 1
+                        except Exception as e:
+                            print(f"  ❌ Erro ao ler {arquivo_backup}: {str(e)}")
+                else:
+                    print("\n💾 Google Drive: Pasta não encontrada")
+            except Exception as e:
+                print(f"\n💾 Google Drive: Erro ao acessar - {str(e)}")
+            
+            # Listar Desktop
+            try:
+                temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
+                if os.path.exists(temp_file):
+                    print(f"\n🖥️ Desktop Local:")
+                    data_mod = datetime.fromtimestamp(os.path.getmtime(temp_file))
+                    tamanho = os.path.getsize(temp_file)
+                    print(f"  📄 backup_lancamentos.json")
+                    print(f"      📅 {data_mod.strftime('%d/%m/%Y %H:%M:%S')}")
+                    print(f"      📏 {tamanho:,} bytes")
+                    total_backups += 1
+                else:
+                    print("\n🖥️ Desktop Local: Nenhum backup encontrado")
+            except Exception as e:
+                print(f"\n🖥️ Desktop Local: Erro ao acessar - {str(e)}")
+            
+            print(f"\n📊 TOTAL DE BACKUPS: {total_backups}")
+            print("=" * 50)
+            
+            return total_backups
+            
+        except Exception as e:
+            print(f"❌ Erro ao listar backups: {str(e)}")
+            return 0
 
 
     def abrir_correcao_monetaria(self):
@@ -8226,7 +8535,7 @@ class ImportadorRH:
                     'dias': dias_int,                           # Número de dias
                     'valor': f"{valor_total:.2f}",             # TOTAL = vr_unit * dias
                     'dt_vencto': data_rel,  # dt_vencto = data
-                    'dados_bancarios': dados_bancarios,
+                    'dados_bancarios': '',
                     'observacao': f"IMPORTADO TRANSPORTE - {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}",
                     'forma_pagamento': 'PIX'  # Padrão
                 }
