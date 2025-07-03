@@ -8,9 +8,10 @@ import platform
 import subprocess
 import tkinter as tk
 import numpy as np
+import tempfile
 from tkinter import Tk
 from openpyxl import load_workbook
-from tkinter import ttk, messagebox, filedialog, StringVar, Toplevel, BooleanVar
+from tkinter import ttk, messagebox, filedialog, StringVar, Toplevel, BooleanVar, Scrollbar, Text
 from tkcalendar import Calendar
 from openpyxl.styles import Alignment, Font
 from openpyxl.utils import get_column_letter
@@ -61,7 +62,28 @@ status_label = None
 root = None
 handler = None
 
-
+def aplicar_configuracoes_externas():
+    """Aplica configurações passadas por arquivo externo"""
+    try:
+        import sys
+        import json
+        
+        # Verificar se foi passado arquivo de configuração
+        if '--config' in sys.argv:
+            config_index = sys.argv.index('--config')
+            if config_index + 1 < len(sys.argv):
+                config_file = sys.argv[config_index + 1]
+                
+                # Carregar configurações
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                
+                return config
+                
+    except Exception as e:
+        print(f"Erro ao carregar configurações: {str(e)}")
+    
+    return None
 
 class RelatorioUI:
     def __init__(self, parent):
@@ -115,8 +137,13 @@ class RelatorioUI:
         ttk.Button(frame_arquivo, text="Escolher arquivo", 
                   command=self.selecionar_arquivo_local).pack(pady=5, fill='x')
         ttk.Label(frame_arquivo, textvariable=self.arquivo_selecionado).pack(pady=5)
-        ttk.Button(frame_arquivo, text="Gerar Relatório Individual",
-                  command=self.gerar_relatorio).pack(pady=5, fill='x')
+        button_frame = ttk.Frame(frame_arquivo)
+        button_frame.pack(pady=5, fill='x')
+
+        ttk.Button(button_frame, text="Gerar com Preview",
+                command=self.gerar_relatorio).pack(side='left', padx=(0, 5), fill='x', expand=True)
+        ttk.Button(button_frame, text="Gerar Direto",
+                command=self.gerar_relatorio_sem_preview).pack(side='left', padx=(5, 0), fill='x', expand=True)
 
         # Relatório em Lote
         frame_lote = ttk.LabelFrame(main_frame, text="Relatório em Lote")
@@ -207,7 +234,87 @@ class RelatorioUI:
         ).pack(anchor='w')
 
     def gerar_relatorio(self):
-        """Versão modificada do método gerar_relatorio"""
+        """Versão modificada do método gerar_relatorio com preview"""
+        try:
+            if not self.arquivo_path:
+                logger.warning("Tentativa de gerar relatório sem arquivo selecionado")
+                self.status_label.config(text="Selecione um arquivo Excel!")
+                return
+
+            logger.info(f"Iniciando geração de relatório para arquivo: {self.arquivo_path}")
+            data_rel = datetime.strptime(self.data_selecionada.get(), '%d/%m/%Y')
+            
+            # CORREÇÃO: Verificar se deve incluir excluídos
+            incluir_excluidos = hasattr(self, 'incluir_excluidos') and self.incluir_excluidos.get()
+            logger.info(f"Incluir excluídos: {incluir_excluidos}")
+                
+            # CORREÇÃO: Carregar dados passando o parâmetro incluir_excluidos
+            df = self.handler.carregar_dados_excel(self.arquivo_path, incluir_excluidos)
+            
+            # CORREÇÃO: Processar dados passando o parâmetro incluir_excluidos
+            df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.handler.processar_dados(
+                df, data_rel, incluir_excluidos
+            )
+                
+            # CORREÇÃO: Processar lançamentos futuros passando o parâmetro incluir_excluidos
+            df_futuro = None
+            if self.incluir_futuros.get():
+                df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
+                    
+            # Processar workbook
+            workbook = load_workbook(self.arquivo_path, data_only=True)
+            ws_resumo = workbook['RESUMO']
+            nome_cliente = ws_resumo['A3'].value
+                
+            # CORREÇÃO: Obter número do relatório e valor acumulado passando o parâmetro incluir_excluidos
+            numero_relatorio = self.handler.obter_numero_relatorio(ws_resumo, data_rel)
+            valor_acumulado = self.handler.calcular_acumulado_dados(df, data_rel, incluir_excluidos)
+            
+            logger.info(f"Número do relatório: {numero_relatorio}")
+            logger.info(f"Valor acumulado calculado: {valor_acumulado:,.2f}")
+                
+            dados_completos = {
+                'df_filtrado': df_filtrado,
+                'df_diaria': df_diaria,
+                'df_tp_desp_1': df_tp_desp_1,
+                'df_tp_desp_2': df_tp_desp_2,
+                'df_futuro': df_futuro,
+                'df_original': df,
+                'incluir_futuros': self.incluir_futuros.get(),
+                'incluir_excluidos': incluir_excluidos,
+                'data_relatorio': data_rel,
+                'nome_cliente': nome_cliente,
+                'endereco_cliente': ws_resumo['A4'].value,
+                'numero_relatorio': numero_relatorio,
+                'acumulado': valor_acumulado
+            }
+            
+            logger.debug("Verificando dados antes de mostrar preview:")
+            logger.debug(f"dados_completos['acumulado']: {dados_completos['acumulado']}")
+            logger.debug(f"Tipo do acumulado: {type(dados_completos['acumulado'])}")
+            
+            # NOVO: Mostrar preview antes de gerar o PDF final
+            visualizador = VisualizadorRelatorio(self.root)
+            
+            # Passar referência ao arquivo_path para o visualizador
+            visualizador.arquivo_path = self.arquivo_path
+            
+            preview_window = visualizador.mostrar_preview(dados_completos)
+            
+            # Aguardar fechamento da janela de preview
+            # O usuário pode escolher entre:
+            # 1. Gerar PDF temporário (botão "Gerar PDF Temporário")
+            # 2. Gerar e salvar PDF final (botão "Gerar e Salvar PDF")
+            # 3. Cancelar (botão "Cancelar" ou fechar janela)
+            
+            self.status_label.config(text=f"Preview do relatório exibido para {nome_cliente}")
+            
+        except Exception as e:
+            logger.error(f"Erro ao gerar relatório: {str(e)}", exc_info=True)
+            self.status_label.config(text=f"Erro: {str(e)}")
+
+    def gerar_relatorio_sem_preview(self):
+        """Método original sem preview - para casos especiais"""
         try:
             if not self.arquivo_path:
                 logger.warning("Tentativa de gerar relatório sem arquivo selecionado")
@@ -901,7 +1008,7 @@ class RelatorioHandler:
             raise Exception(f"Erro ao carregar arquivo Excel: {str(e)}")
 
     def processar_dados(self, df, data_relatorio, incluir_excluidos=False):
-        """Versão modificada que considera status de exclusão"""
+        """Versão modificada que considera status de exclusão e mantém ordem original para TP_DESP=5"""
         # Converter data para datetime usando formato explícito
         try:
             data_rel = pd.to_datetime(data_relatorio)
@@ -918,6 +1025,10 @@ class RelatorioHandler:
             print(f"Processando dados - registros após filtrar excluídos: {len(df)}")
         else:
             print(f"Processando dados - incluindo todos os registros: {len(df)}")
+        
+        # Adicionar coluna de índice original para manter ordem de entrada
+        df = df.reset_index(drop=True)
+        df['ordem_original'] = df.index
         
         # Converter corretamente a coluna DT_VENCTO para datetime para ordenação
         if 'DT_VENCTO' in df.columns:
@@ -943,40 +1054,62 @@ class RelatorioHandler:
         df_filtrado = df[
             (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] != 1)
-        ].sort_values(
-            by=['TP_DESP', 'DT_VENCTO_SORT', 'VALOR'], 
-            ascending=[True, True, False]
-        )
+        ].copy()  # IMPORTANTE: usar .copy() para evitar warnings
         
+        # NOVA LÓGICA: Separar TP_DESP == 5 dos demais para ordenação diferente
+        df_tp5 = df_filtrado[df_filtrado['TP_DESP'] == 5].copy()
+        df_outros = df_filtrado[df_filtrado['TP_DESP'] != 5].copy()
+        
+        # Ordenar apenas os outros tipos (não o tipo 5)
+        if not df_outros.empty:
+            df_outros = df_outros.sort_values(
+                by=['TP_DESP', 'DT_VENCTO_SORT', 'VALOR'], 
+                ascending=[True, True, False]
+            )
+        
+        # Para TP_DESP == 5, manter ordem original de entrada
+        if not df_tp5.empty:
+            df_tp5 = df_tp5.sort_values('ordem_original')
+        
+        # Combinar os DataFrames: primeiro os outros tipos ordenados, depois o tipo 5 na ordem original
+        if not df_outros.empty and not df_tp5.empty:
+            df_filtrado = pd.concat([df_outros, df_tp5], ignore_index=True)
+        elif not df_outros.empty:
+            df_filtrado = df_outros
+        elif not df_tp5.empty:
+            df_filtrado = df_tp5
+        else:
+            df_filtrado = pd.DataFrame()  # Vazio se nenhum dos dois tiver dados
+        
+        # Processar os outros DataFrames normalmente
         df_diaria = df[
             (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] == 1) & 
             (df['REFERÊNCIA'] == 'DIÁRIA')
-        ]
-        # .sort_values(
-        #     by=['TP_DESP', 'DT_VENCTO', 'VALOR'], 
-        #     ascending=[True, False, False]
-        # )
+        ].copy()
         
         df_tp_desp_1 = df[
             (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] == 1) & 
             (df['REFERÊNCIA'].isin(['SALÁRIO', 'TRANSPORTE', 'CAFÉ']))
-        ]
+        ].copy()
 
         df_tp_desp_2 = df[
             (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] == 1) & 
             (df['REFERÊNCIA'].isin(['FÉRIAS', 'RESCISÃO', '13º SALÁRIO']))
-        ]
+        ].copy()
         
         # Substituir DT_VENCTO pela versão formatada uniformemente antes de retornar
         if 'DT_VENCTO_DISPLAY' in df_filtrado.columns:
             df_filtrado['DT_VENCTO'] = df_filtrado['DT_VENCTO_DISPLAY']
             
-        # Remover as colunas temporárias
-        if 'DT_VENCTO_SORT' in df_filtrado.columns:
-            df_filtrado = df_filtrado.drop(columns=['DT_VENCTO_SORT', 'DT_VENCTO_DISPLAY'])
+        # CORREÇÃO: Remover apenas as colunas temporárias, mantendo TP_DESP e outras essenciais
+        colunas_temporarias = ['DT_VENCTO_SORT', 'DT_VENCTO_DISPLAY', 'ordem_original']
+        for df_temp in [df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2]:
+            for col in colunas_temporarias:
+                if col in df_temp.columns:
+                    df_temp.drop(columns=[col], inplace=True)
         
         return df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2
 
@@ -2160,14 +2293,431 @@ class RelatorioLancamentosPendentes:
             import traceback
             traceback.print_exc()
             return False
-   
+
+class VisualizadorRelatorio:
+    def __init__(self, parent):
+        self.parent = parent
+        self.dados_preview = None
+        self.elementos_preview = None
+        
+    def formatar_valor(self, valor):
+        """Formata valor para o padrão brasileiro"""
+        try:
+            if pd.isna(valor) or valor == "":
+                return "0,00"
+            if isinstance(valor, str):
+                valor = valor.replace('R$', '').replace(' ', '')
+                if ',' in valor and '.' not in valor:
+                    valor = valor.replace(',', '.')
+                elif ',' in valor and '.' in valor:
+                    valor = valor.replace('.', '').replace(',', '.')
+                valor = float(valor)
+            return f"{float(valor):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        except:
+            return "0,00"
+    
+    def gerar_preview_textual(self, dados):
+        """Gera um preview textual do relatório"""
+        preview_text = []
+        
+        # Cabeçalho
+        preview_text.append("=" * 80)
+        preview_text.append("PREVIEW DO RELATÓRIO DE DESPESAS")
+        preview_text.append("=" * 80)
+        preview_text.append("")
+        
+        # Informações do cliente
+        preview_text.append(f"CLIENTE: {dados.get('nome_cliente', 'N/A')}")
+        preview_text.append(f"ENDEREÇO: {dados.get('endereco_cliente', 'N/A')}")
+        
+        # Informações do relatório
+        data_formatada = dados.get('data_relatorio')
+        if hasattr(data_formatada, 'strftime'):
+            data_formatada = data_formatada.strftime('%d/%m/%Y')
+        preview_text.append(f"RELATÓRIO Nº: {dados.get('numero_relatorio', 'N/A')}")
+        preview_text.append(f"DATA: {data_formatada}")
+        preview_text.append("")
+        
+        # Resumo das despesas
+        preview_text.append("-" * 50)
+        preview_text.append("RESUMO DAS DESPESAS")
+        preview_text.append("-" * 50)
+        
+        # Calcular totais por tipo
+        tipos_despesas = {
+            1: "DESPESAS COM COLABORADORES",
+            2: "TRANSF. PROGR. - MATERIAIS, LOCAÇÕES E PREST.SERVIÇOS", 
+            3: "BOLETOS - MATERIAIS, PREST. SERVIÇOS, IMPOSTOS, ETC.",
+            4: "RESSARCIMENTOS E RESTITUIÇÕES",
+            5: "DESPESAS PAGAS PELO CLIENTE",
+            6: "PAGAMENTOS CAIXA DE OBRA",
+            7: "ADMINISTRAÇÃO DA OBRA"
+        }
+        
+        subtotais = {}
+        
+        # Verificar se os DataFrames existem e têm dados
+        df_tp_desp_1 = dados.get('df_tp_desp_1', pd.DataFrame())
+        df_tp_desp_2 = dados.get('df_tp_desp_2', pd.DataFrame())
+        df_diaria = dados.get('df_diaria', pd.DataFrame())
+        df_filtrado = dados.get('df_filtrado', pd.DataFrame())
+        
+        for tipo, descricao in tipos_despesas.items():
+            valor = 0
+            if tipo == 1:
+                # Somar todas as despesas de colaboradores
+                valor1 = 0
+                valor2 = 0
+                valor3 = 0
+                
+                if not df_tp_desp_1.empty and 'VALOR' in df_tp_desp_1.columns:
+                    try:
+                        valor1 = pd.to_numeric(df_tp_desp_1['VALOR'], errors='coerce').fillna(0).sum()
+                    except:
+                        valor1 = 0
+                        
+                if not df_tp_desp_2.empty and 'VALOR' in df_tp_desp_2.columns:
+                    try:
+                        valor2 = pd.to_numeric(df_tp_desp_2['VALOR'], errors='coerce').fillna(0).sum()
+                    except:
+                        valor2 = 0
+                        
+                if not df_diaria.empty and 'VALOR' in df_diaria.columns:
+                    try:
+                        valor3 = pd.to_numeric(df_diaria['VALOR'], errors='coerce').fillna(0).sum()
+                    except:
+                        valor3 = 0
+                        
+                valor = valor1 + valor2 + valor3
+            else:
+                # Verificar se df_filtrado tem dados e a coluna TP_DESP existe
+                if not df_filtrado.empty and 'TP_DESP' in df_filtrado.columns and 'VALOR' in df_filtrado.columns:
+                    try:
+                        df_tipo = df_filtrado[df_filtrado['TP_DESP'] == tipo]
+                        if not df_tipo.empty:
+                            valor = pd.to_numeric(df_tipo['VALOR'], errors='coerce').fillna(0).sum()
+                    except Exception as e:
+                        print(f"Erro ao processar tipo {tipo}: {str(e)}")
+                        valor = 0
+            
+            subtotais[tipo] = valor
+            if valor > 0:  # Só mostra se tiver valor
+                preview_text.append(f"{tipo}) {descricao}: R$ {self.formatar_valor(valor)}")
+        
+        preview_text.append("")
+        
+        # Totais consolidados
+        despesas_a_pagar = sum(subtotais.get(tp, 0) for tp in [1, 2, 3, 4, 7])
+        despesas_pagas_cliente = sum(subtotais.get(tp, 0) for tp in [5])
+        despesas_pagas_caixa = sum(subtotais.get(tp, 0) for tp in [6])
+        total_quinzena = sum(subtotais.values())
+        acumulado = dados.get('acumulado', 0)
+        total_obra = total_quinzena + acumulado
+        
+        preview_text.append(f"DESPESAS A PAGAR: R$ {self.formatar_valor(despesas_a_pagar)}")
+        preview_text.append(f"DESPESAS PAGAS PELO CLIENTE: R$ {self.formatar_valor(despesas_pagas_cliente)}")
+        preview_text.append(f"COMPLEMENTO DE CAIXA: R$ {self.formatar_valor(despesas_pagas_caixa)}")
+        preview_text.append("")
+        preview_text.append(f"TOTAL DA QUINZENA: R$ {self.formatar_valor(total_quinzena)}")
+        preview_text.append(f"TOTAL ACUMULADO RELATÓRIO Nº {dados.get('numero_relatorio', 1) - 1}: R$ {self.formatar_valor(acumulado)}")
+        preview_text.append(f"TOTAL DA OBRA: R$ {self.formatar_valor(total_obra)}")
+        preview_text.append("")
+        
+        # Detalhes das despesas
+        preview_text.append("-" * 50)
+        preview_text.append("DETALHES DAS DESPESAS")
+        preview_text.append("-" * 50)
+        
+        # Colaboradores - Salários, Transporte, Café
+        if not df_tp_desp_1.empty:
+            preview_text.append("")
+            preview_text.append("1) DESPESAS COM COLABORADORES - SALÁRIO/ADIANTAMENTO, TRANSPORTE E CAFÉ")
+            preview_text.append("Nome".ljust(25) + "Referência".ljust(15) + "Valor".rjust(15))
+            preview_text.append("-" * 55)
+            
+            for _, row in df_tp_desp_1.iterrows():
+                nome = str(row.get('NOME', ''))[:24]
+                valor_num = pd.to_numeric(row.get('VALOR', 0), errors='coerce')
+                if pd.isna(valor_num):
+                    valor_num = 0
+                valor = f"R$ {self.formatar_valor(valor_num)}"
+                referencia = str(row.get('REFERÊNCIA', ''))[:14]
+                preview_text.append(f"{nome.ljust(25)} {referencia.ljust(15)} {valor.rjust(15)}")
+        
+        # Colaboradores - 13º, Férias, Rescisão
+        if not df_tp_desp_2.empty:
+            preview_text.append("")
+            preview_text.append("1) DESPESAS COM COLABORADORES - 13º SALÁRIO, FÉRIAS E RESCISÃO")
+            preview_text.append("Nome".ljust(25) + "Referência".ljust(15) + "Valor".rjust(15))
+            preview_text.append("-" * 55)
+            
+            for _, row in df_tp_desp_2.iterrows():
+                nome = str(row.get('NOME', ''))[:24]
+                valor_num = pd.to_numeric(row.get('VALOR', 0), errors='coerce')
+                if pd.isna(valor_num):
+                    valor_num = 0
+                valor = f"R$ {self.formatar_valor(valor_num)}"
+                referencia = str(row.get('REFERÊNCIA', ''))[:14]
+                preview_text.append(f"{nome.ljust(25)} {referencia.ljust(15)} {valor.rjust(15)}")
+        
+        # Diaristas
+        if not df_diaria.empty:
+            preview_text.append("")
+            preview_text.append("1) DESPESAS COM COLABORADORES - DIÁRIAS")
+            preview_text.append("Nome".ljust(25) + "Dias".ljust(8) + "Valor".rjust(15))
+            preview_text.append("-" * 48)
+            
+            for _, row in df_diaria.iterrows():
+                nome = str(row.get('NOME', ''))[:24]
+                valor_num = pd.to_numeric(row.get('VALOR', 0), errors='coerce')
+                if pd.isna(valor_num):
+                    valor_num = 0
+                valor = f"R$ {self.formatar_valor(valor_num)}"
+                dias = str(row.get('DIAS', ''))[:7]
+                preview_text.append(f"{nome.ljust(25)} {dias.ljust(8)} {valor.rjust(15)}")
+        
+        # Outras despesas (tipos 2-7)
+        if not df_filtrado.empty and 'TP_DESP' in df_filtrado.columns:
+            for tipo in range(2, 8):
+                try:
+                    df_tipo = df_filtrado[df_filtrado['TP_DESP'] == tipo]
+                    if not df_tipo.empty:
+                        preview_text.append("")
+                        preview_text.append(f"{tipos_despesas[tipo]}")
+                        
+                        # Verificar se é tipo 5 (ordem especial)
+                        if tipo == 5:
+                            preview_text.append("(Mantida ordem de entrada dos dados)")
+                            
+                        preview_text.append("Nome".ljust(25) + "Referência".ljust(30) + "Valor".rjust(15))
+                        preview_text.append("-" * 70)
+                        
+                        for _, row in df_tipo.iterrows():
+                            nome = str(row.get('NOME', ''))[:24]
+                            referencia = str(row.get('REFERÊNCIA', ''))[:29]
+                            valor_num = pd.to_numeric(row.get('VALOR', 0), errors='coerce')
+                            if pd.isna(valor_num):
+                                valor_num = 0
+                            valor = f"R$ {self.formatar_valor(valor_num)}"
+                            preview_text.append(f"{nome.ljust(25)} {referencia.ljust(30)} {valor.rjust(15)}")
+                except Exception as e:
+                    print(f"Erro ao processar tipo {tipo} no preview: {str(e)}")
+                    continue
+        
+        # Lançamentos futuros
+        df_futuro = dados.get('df_futuro')
+        if dados.get('incluir_futuros') and df_futuro is not None and not df_futuro.empty:
+            preview_text.append("")
+            preview_text.append("-" * 50)
+            preview_text.append("LANÇAMENTOS FUTUROS")
+            preview_text.append("-" * 50)
+            
+            try:
+                for periodo in ["Próximos 30 dias", "31 a 60 dias", "Após 60 dias"]:
+                    if 'periodo' in df_futuro.columns:
+                        df_periodo = df_futuro[df_futuro['periodo'] == periodo]
+                        if not df_periodo.empty:
+                            preview_text.append(f"\n{periodo}:")
+                            for _, row in df_periodo.iterrows():
+                                nome = str(row.get('NOME', ''))[:24]
+                                referencia = str(row.get('REFERÊNCIA', ''))[:29]
+                                valor_num = pd.to_numeric(row.get('VALOR', 0), errors='coerce')
+                                if pd.isna(valor_num):
+                                    valor_num = 0
+                                valor = f"R$ {self.formatar_valor(valor_num)}"
+                                preview_text.append(f"  {nome.ljust(25)} {referencia.ljust(30)} {valor.rjust(15)}")
+            except Exception as e:
+                preview_text.append(f"Erro ao processar lançamentos futuros: {str(e)}")
+        
+        return "\n".join(preview_text)
+    
+    def mostrar_preview(self, dados):
+        """Mostra a janela de preview do relatório"""
+        self.dados_preview = dados
+        
+        # Criar janela de preview
+        preview_window = Toplevel(self.parent)
+        preview_window.title("Preview do Relatório")
+        preview_window.geometry("900x700")
+        preview_window.transient(self.parent)
+        
+        # Frame principal
+        main_frame = ttk.Frame(preview_window)
+        main_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Label de título
+        title_label = ttk.Label(main_frame, text="Preview do Relatório", 
+                               font=('Helvetica', 14, 'bold'))
+        title_label.pack(pady=(0, 10))
+        
+        # Frame para o texto com scrollbar
+        text_frame = ttk.Frame(main_frame)
+        text_frame.pack(fill='both', expand=True)
+        
+        # Área de texto com scrollbar
+        text_widget = Text(text_frame, wrap='none', font=('Courier', 9))
+        scrollbar_v = Scrollbar(text_frame, orient='vertical', command=text_widget.yview)
+        scrollbar_h = Scrollbar(text_frame, orient='horizontal', command=text_widget.xview)
+        
+        text_widget.configure(yscrollcommand=scrollbar_v.set, xscrollcommand=scrollbar_h.set)
+        
+        # Layout dos widgets
+        text_widget.grid(row=0, column=0, sticky='nsew')
+        scrollbar_v.grid(row=0, column=1, sticky='ns')
+        scrollbar_h.grid(row=1, column=0, sticky='ew')
+        
+        text_frame.grid_rowconfigure(0, weight=1)
+        text_frame.grid_columnconfigure(0, weight=1)
+        
+        # Gerar e inserir o preview textual
+        try:
+            preview_text = self.gerar_preview_textual(dados)
+            text_widget.insert('1.0', preview_text)
+        except Exception as e:
+            error_text = f"Erro ao gerar preview: {str(e)}\n\nDados disponíveis:\n"
+            for key, value in dados.items():
+                if isinstance(value, pd.DataFrame):
+                    error_text += f"{key}: DataFrame com {len(value)} linhas\n"
+                    if not value.empty:
+                        error_text += f"  Colunas: {list(value.columns)}\n"
+                else:
+                    error_text += f"{key}: {type(value).__name__}\n"
+            text_widget.insert('1.0', error_text)
+        
+        text_widget.configure(state='disabled')  # Somente leitura
+        
+        # Frame para botões
+        button_frame = ttk.Frame(main_frame)
+        button_frame.pack(fill='x', pady=(10, 0))
+        
+        # Botões
+        ttk.Button(button_frame, text="Gerar PDF Temporário", 
+                  command=lambda: self.gerar_pdf_temporario(dados)).pack(side='left', padx=(0, 10))
+        
+        ttk.Button(button_frame, text="Gerar e Salvar PDF", 
+                  command=lambda: self.confirmar_geracao(preview_window, dados)).pack(side='left', padx=(0, 10))
+        
+        ttk.Button(button_frame, text="Cancelar", 
+                  command=preview_window.destroy).pack(side='right')
+        
+        # Centralizar janela
+        preview_window.transient(self.parent)
+        preview_window.grab_set()
+        
+        return preview_window
+    
+    def gerar_pdf_temporario(self, dados):
+        """Gera um PDF temporário para visualização"""
+        try:
+            # Criar arquivo temporário
+            temp_file = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+            temp_path = temp_file.name
+            temp_file.close()
+            
+            # Usar o handler existente para gerar o PDF
+            from relatorio_despesas_aprimorado import RelatorioHandler  # Importar da forma correta
+            handler = RelatorioHandler()
+            handler.gerar_relatorio_pdf(dados, temp_path, "")
+            
+            # Abrir o PDF temporário
+            self.abrir_arquivo(temp_path)
+            
+            # Agendar remoção do arquivo temporário após alguns segundos
+            self.parent.after(10000, lambda: self.remover_arquivo_temporario(temp_path))
+            
+        except Exception as e:
+            print(f"Erro ao gerar PDF temporário: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    def abrir_arquivo(self, caminho):
+        """Abre arquivo com o programa padrão do sistema"""
+        try:
+            if platform.system() == 'Darwin':       # macOS
+                subprocess.run(['open', caminho])
+            elif platform.system() == 'Windows':    # Windows
+                os.startfile(caminho)
+            else:                                   # Linux
+                subprocess.run(['xdg-open', caminho])
+        except Exception as e:
+            print(f"Erro ao abrir arquivo: {str(e)}")
+    
+    def remover_arquivo_temporario(self, caminho):
+        """Remove arquivo temporário"""
+        try:
+            if os.path.exists(caminho):
+                os.unlink(caminho)
+        except Exception as e:
+            print(f"Erro ao remover arquivo temporário: {str(e)}")
+    
+    def confirmar_geracao(self, preview_window, dados):
+        """Confirma a geração do PDF final"""
+        try:
+            preview_window.destroy()
+            
+            # Gerar nome do arquivo
+            data_formatada = dados['data_relatorio'].strftime('%d-%m-%Y')
+            nome_cliente = dados['nome_cliente']
+            nome_arquivo = f"REL - {nome_cliente} - {data_formatada}.pdf"
+            
+            # CORREÇÃO: Adicionar sufixo se incluir excluídos
+            if dados.get('incluir_excluidos', False):
+                nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
+                
+            # Obter caminho do arquivo original para determinar onde salvar
+            arquivo_original = getattr(self.parent, 'arquivo_path', '')
+            if arquivo_original:
+                caminho_output = os.path.join(os.path.dirname(arquivo_original), nome_arquivo)
+            else:
+                # Fallback: usar diretório atual
+                caminho_output = nome_arquivo
+            
+            # Gerar o PDF com os dados completos
+            from relatorio_despesas_aprimorado import RelatorioHandler
+            handler = RelatorioHandler()
+            handler.gerar_relatorio_pdf(dados, caminho_output, arquivo_original)
+            
+            # Mostrar mensagem de sucesso
+            messagebox.showinfo(
+                "Sucesso", 
+                f"Relatório gerado com sucesso!\nSalvo em: {caminho_output}"
+            )
+            
+            # Abrir o arquivo gerado
+            self.abrir_arquivo(caminho_output)
+            
+            return True
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar PDF: {str(e)}")
+            print(f"Erro ao gerar PDF: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return False   
 
 def main():
-    try:
-        app = RelatorioUI(None)
-        app.root.mainloop()
-    except Exception as e:
-        print(f"Erro durante a execução: {str(e)}")
-
-if __name__ == "__main__":
-    main()
+    # Tentar carregar configurações externas
+    config_externa = aplicar_configuracoes_externas()
+    
+    app = RelatorioUI(None)
+    
+    # Se há configurações externas, aplicar
+    if config_externa:
+        try:
+            app.data_selecionada.set(config_externa['data'])
+            app.incluir_futuros.set(config_externa['incluir_futuros'])
+            app.incluir_excluidos.set(config_externa['incluir_excluidos'])
+            
+            if config_externa['arquivo']:
+                app.arquivo_path = config_externa['arquivo']
+                app.arquivo_selecionado.set(os.path.basename(config_externa['arquivo']))
+            
+            if config_externa['arquivos_lote']:
+                app.arquivos_lote = config_externa['arquivos_lote']
+                
+            print("Configurações externas aplicadas com sucesso!")
+            
+        except Exception as e:
+            print(f"Erro ao aplicar configurações externas: {str(e)}")
+    
+    app.root.mainloop()
