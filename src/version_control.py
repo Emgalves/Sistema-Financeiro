@@ -10,13 +10,11 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 3,
-    "patch": 2,
-    "release_date": "13/06/2025",
+    "patch": 3,
+    "release_date": "01/07/2025",
     "changes": [
-        "Inclusão de Visualizador de Lançamentos de Fornecedor",
-        "Adicão de funcionalidade para cadastro de fornecedor PF sem CPF",
-        "Melhoria no Relatório de Fornecedores que está mostrando quais clientes adquiriram de um dado fornecedor",
-        "Inclusão de Correção Monetária para contratos de administração, dependendo de teste para ser totalmente implementada"
+        "Inclusão de Importação de TRANSPORTE e CAFÉ",
+        "Exclusão do ordenamento dos pagamentos de Diaristas para ser pela entrada e não por valor pago"
     ]
 }
 
