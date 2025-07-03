@@ -443,3 +443,82 @@
 2025-07-01 17:01:10,338 - INFO - Módulo carregado com sucesso: src.relatorios_interface
 2025-07-01 17:04:35,083 - INFO - Saída confirmada, finalizando sistema
 2025-07-01 17:04:35,132 - INFO - Ação concluída: Gerar relatório
+2025-07-02 10:25:07,209 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 10:25:08,155 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 10:26:25,948 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 11:03:48,995 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 11:03:49,311 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 11:04:09,288 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 11:23:25,799 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 11:23:28,960 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 11:23:37,314 - INFO - Abrindo sistema de entrada de dados
+2025-07-02 11:23:45,229 - INFO - Configurações importadas com sucesso via src.config
+2025-07-02 11:23:45,233 - INFO - Configurações importadas com sucesso
+2025-07-02 11:23:45,234 - INFO - Configurações do sistema importadas com sucesso
+2025-07-02 11:23:46,892 - ERROR - Erro ao abrir sistema de entrada de dados: 'SistemaEntradaDados' object has no attribute 'configurar_auto_salvamento'
+2025-07-02 11:23:59,505 - INFO - Abrindo sistema de entrada de dados
+2025-07-02 11:24:00,071 - ERROR - Erro ao abrir sistema de entrada de dados: 'SistemaEntradaDados' object has no attribute 'configurar_auto_salvamento'
+2025-07-02 11:24:08,137 - INFO - Executando ação: Gerar relatório
+2025-07-02 11:24:08,138 - INFO - Tentando abrir sistema de relatórios
+2025-07-02 11:24:08,140 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-02 11:24:08,150 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-02 11:25:01,976 - INFO - Abrindo sistema de entrada de dados
+2025-07-02 11:25:02,662 - ERROR - Erro ao abrir sistema de entrada de dados: 'SistemaEntradaDados' object has no attribute 'configurar_auto_salvamento'
+2025-07-02 12:02:19,689 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 12:02:20,580 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 12:02:33,527 - INFO - Abrindo sistema de entrada de dados
+2025-07-02 12:02:40,308 - INFO - Configurações importadas com sucesso via src.config
+2025-07-02 12:02:40,312 - INFO - Configurações importadas com sucesso
+2025-07-02 12:02:40,313 - INFO - Configurações do sistema importadas com sucesso
+2025-07-02 12:07:54,323 - INFO - Abrindo sistema de entrada de dados
+2025-07-02 12:12:31,080 - INFO - Abrindo sistema de entrada de dados
+2025-07-02 12:27:29,175 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 12:27:29,445 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 12:27:35,555 - INFO - Abrindo sistema de entrada de dados
+2025-07-02 12:27:36,921 - INFO - Configurações importadas com sucesso via src.config
+2025-07-02 12:27:36,923 - INFO - Configurações importadas com sucesso
+2025-07-02 12:27:36,924 - INFO - Configurações do sistema importadas com sucesso
+2025-07-02 13:10:18,470 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 13:10:34,132 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 13:10:34,427 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 13:10:56,335 - INFO - Abrindo sistema de entrada de dados
+2025-07-02 13:10:57,843 - INFO - Configurações importadas com sucesso via src.config
+2025-07-02 13:10:57,847 - INFO - Configurações importadas com sucesso
+2025-07-02 13:10:57,847 - INFO - Configurações do sistema importadas com sucesso
+2025-07-02 13:14:51,563 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 13:19:15,784 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 13:19:16,067 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 13:19:18,152 - INFO - Abrindo sistema de entrada de dados
+2025-07-02 13:19:20,271 - INFO - Configurações importadas com sucesso via src.config
+2025-07-02 13:19:20,275 - INFO - Configurações importadas com sucesso
+2025-07-02 13:19:20,276 - INFO - Configurações do sistema importadas com sucesso
+2025-07-02 13:42:31,115 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 13:42:31,443 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 13:42:33,010 - INFO - Executando ação: Gerar relatório
+2025-07-02 13:42:33,011 - INFO - Tentando abrir sistema de relatórios
+2025-07-02 13:42:33,023 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-02 13:42:33,039 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-02 13:45:54,520 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 13:45:54,565 - INFO - Ação concluída: Gerar relatório
+2025-07-02 13:52:07,079 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 13:52:07,350 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 13:52:08,947 - INFO - Executando ação: Gerar relatório
+2025-07-02 13:52:08,948 - INFO - Tentando abrir sistema de relatórios
+2025-07-02 13:52:08,963 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-02 13:52:08,976 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-02 13:53:15,321 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 13:53:15,375 - INFO - Ação concluída: Gerar relatório
+2025-07-02 16:13:29,609 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 16:13:29,874 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 16:13:31,538 - INFO - Executando ação: Gerar relatório
+2025-07-02 16:13:31,540 - INFO - Tentando abrir sistema de relatórios
+2025-07-02 16:13:31,550 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-02 16:13:31,565 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-02 16:14:05,020 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 16:14:05,072 - INFO - Ação concluída: Gerar relatório
+2025-07-02 17:08:57,369 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-02 17:08:57,690 - INFO - Sistema principal inicializado com sucesso
+2025-07-02 17:09:00,932 - INFO - Executando ação: Gerar relatório
+2025-07-02 17:09:00,933 - INFO - Tentando abrir sistema de relatórios
+2025-07-02 17:09:00,947 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-02 17:09:01,018 - INFO - Módulo carregado com sucesso: src.relatorios_interface
