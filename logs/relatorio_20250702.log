@@ -1,0 +1,338 @@
+2025-07-02 13:43:11,099 - INFO - 
+Obtendo número do relatório para data 2025-07-05
+2025-07-02 13:43:11,101 - INFO - Número do relatório calculado: 29
+2025-07-02 13:43:11,101 - INFO - Calculando acumulado para data 2025-07-05
+2025-07-02 13:43:11,104 - INFO - Acumulado - registros após filtrar excluídos: 1329
+2025-07-02 13:43:11,114 - INFO - Valor acumulado calculado (apenas ativos): 3,871,156.75
+2025-07-02 13:43:11,115 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 13:43:11,115 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 13:43:11,117 - INFO - Logo carregada com sucesso!
+2025-07-02 13:43:11,118 - INFO - Criando cabeçalho COM logo
+2025-07-02 13:43:11,120 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 13:43:11,120 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 13:43:11,130 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 13:43:11,313 - INFO - Detalhes adicionados com sucesso
+2025-07-02 13:45:54,520 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 13:45:54,565 - INFO - Ação concluída: Gerar relatório
+2025-07-02 13:52:32,573 - INFO - 
+Obtendo número do relatório para data 2025-07-05
+2025-07-02 13:52:32,575 - INFO - Número do relatório calculado: 23
+2025-07-02 13:52:32,575 - INFO - Calculando acumulado para data 2025-07-05
+2025-07-02 13:52:32,578 - INFO - Acumulado - registros após filtrar excluídos: 1002
+2025-07-02 13:52:32,585 - INFO - Valor acumulado calculado (apenas ativos): 1,658,002.86
+2025-07-02 13:52:32,586 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 13:52:32,587 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 13:52:32,588 - INFO - Logo carregada com sucesso!
+2025-07-02 13:52:32,588 - INFO - Criando cabeçalho COM logo
+2025-07-02 13:52:32,591 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 13:52:32,591 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 13:52:32,604 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 13:52:32,757 - INFO - Detalhes adicionados com sucesso
+2025-07-02 13:53:15,321 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 13:53:15,375 - INFO - Ação concluída: Gerar relatório
+2025-07-02 13:53:30,259 - INFO - Iniciando RelatorioUI
+2025-07-02 13:53:30,389 - INFO - Iniciando configuração da interface
+2025-07-02 13:55:48,798 - INFO - Iniciando RelatorioUI
+2025-07-02 13:55:48,925 - INFO - Iniciando configuração da interface
+2025-07-02 13:55:48,983 - INFO - Interface configurada com sucesso
+2025-07-02 13:56:17,304 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/RHAUFED RODRIGUES DOS SANTOS.xlsx
+2025-07-02 13:56:17,306 - INFO - Incluir excluídos: False
+2025-07-02 13:56:18,194 - INFO - 
+Obtendo número do relatório para data 2025-07-02 00:00:00
+2025-07-02 13:56:18,195 - WARNING - Data 2025-07-02 não encontrada na sequência. Último número calculado: 27
+2025-07-02 13:56:18,195 - INFO - Calculando acumulado para data 2025-07-02 00:00:00
+2025-07-02 13:56:18,197 - INFO - Acumulado - registros após filtrar excluídos: 793
+2025-07-02 13:56:18,204 - INFO - Valor acumulado calculado (apenas ativos): 1,387,424.75
+2025-07-02 13:56:18,218 - ERROR - Erro ao gerar relatório: 'TP_DESP'
+Traceback (most recent call last):
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorio_despesas_aprimorado.py", line 263, in gerar_relatorio_com_preview
+    preview_window = visualizador.mostrar_preview(dados_completos)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorio_despesas_aprimorado.py", line 2365, in mostrar_preview
+    preview_text = self.gerar_preview_textual(dados)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorio_despesas_aprimorado.py", line 2227, in gerar_preview_textual
+    df_tipo = dados['df_filtrado'][dados['df_filtrado']['TP_DESP'] == tipo]
+                                   ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Obras\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\frame.py", line 4102, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Obras\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexes\range.py", line 417, in get_loc
+    raise KeyError(key)
+KeyError: 'TP_DESP'
+2025-07-02 16:08:54,388 - INFO - Iniciando RelatorioUI
+2025-07-02 16:08:54,605 - INFO - Iniciando configuração da interface
+2025-07-02 16:08:54,677 - INFO - Interface configurada com sucesso
+2025-07-02 16:09:10,229 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/JOSE PAULO DE SOUZA PEIXE.xlsx
+2025-07-02 16:09:10,232 - INFO - Incluir excluídos: False
+2025-07-02 16:09:11,343 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-02 16:09:11,344 - INFO - Número do relatório calculado: 23
+2025-07-02 16:09:11,345 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-02 16:09:11,347 - INFO - Acumulado - registros após filtrar excluídos: 1002
+2025-07-02 16:09:11,357 - INFO - Valor acumulado calculado (apenas ativos): 1,658,002.86
+2025-07-02 16:09:11,358 - INFO - Número do relatório: 23
+2025-07-02 16:09:11,358 - INFO - Valor acumulado calculado: 1,658,002.86
+2025-07-02 16:09:54,574 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 16:09:54,575 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 16:09:54,576 - INFO - Logo carregada com sucesso!
+2025-07-02 16:09:54,577 - INFO - Criando cabeçalho COM logo
+2025-07-02 16:09:54,579 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 16:09:54,579 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 16:09:54,589 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 16:09:54,765 - INFO - Detalhes adicionados com sucesso
+2025-07-02 16:13:49,516 - INFO - 
+Obtendo número do relatório para data 2025-07-05
+2025-07-02 16:13:49,517 - INFO - Número do relatório calculado: 21
+2025-07-02 16:13:49,518 - INFO - Calculando acumulado para data 2025-07-05
+2025-07-02 16:13:49,520 - INFO - Acumulado - registros após filtrar excluídos: 782
+2025-07-02 16:13:49,526 - INFO - Valor acumulado calculado (apenas ativos): 2,199,915.92
+2025-07-02 16:13:49,527 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 16:13:49,528 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 16:13:49,529 - INFO - Logo carregada com sucesso!
+2025-07-02 16:13:49,529 - INFO - Criando cabeçalho COM logo
+2025-07-02 16:13:49,532 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 16:13:49,532 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 16:13:49,540 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 16:13:49,680 - INFO - Detalhes adicionados com sucesso
+2025-07-02 16:14:05,020 - INFO - Saída confirmada, finalizando sistema
+2025-07-02 16:14:05,072 - INFO - Ação concluída: Gerar relatório
+2025-07-02 16:21:02,730 - INFO - Iniciando RelatorioUI
+2025-07-02 16:21:02,892 - INFO - Iniciando configuração da interface
+2025-07-02 16:26:10,405 - INFO - Iniciando RelatorioUI
+2025-07-02 16:26:10,574 - INFO - Iniciando configuração da interface
+2025-07-02 16:26:10,638 - INFO - Interface configurada com sucesso
+2025-07-02 16:26:39,633 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/MARCIA UBERENICE NOGUEIRA.xlsx
+2025-07-02 16:26:39,636 - INFO - Incluir excluídos: False
+2025-07-02 16:26:39,921 - INFO - 
+Obtendo número do relatório para data 2025-07-02 00:00:00
+2025-07-02 16:26:39,922 - WARNING - Data 2025-07-02 não encontrada na sequência. Último número calculado: 2
+2025-07-02 16:26:39,922 - INFO - Calculando acumulado para data 2025-07-02 00:00:00
+2025-07-02 16:26:39,924 - INFO - Acumulado - registros após filtrar excluídos: 32
+2025-07-02 16:26:39,931 - INFO - Valor acumulado calculado (apenas ativos): 44,918.30
+2025-07-02 16:26:39,931 - INFO - Número do relatório: 2
+2025-07-02 16:26:39,931 - INFO - Valor acumulado calculado: 44,918.30
+2025-07-02 16:26:44,236 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 16:26:44,236 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 16:26:44,237 - INFO - Logo carregada com sucesso!
+2025-07-02 16:26:44,238 - INFO - Criando cabeçalho COM logo
+2025-07-02 16:26:44,240 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 16:26:44,240 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 16:26:44,241 - ERROR - Erro na geração do relatório: 'TP_DESP'
+Traceback (most recent call last):
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorio_despesas_aprimorado.py", line 1894, in gerar_relatorio_pdf
+    tabela_subtotais, tabela_totais = self.criar_resumo_despesas(dados_pdf)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorio_despesas_aprimorado.py", line 1546, in criar_resumo_despesas
+    df_tipo = dados['df_filtrado'][dados['df_filtrado']['TP_DESP'] == tipo]
+                                   ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Obras\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\frame.py", line 4102, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Obras\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexes\range.py", line 417, in get_loc
+    raise KeyError(key)
+KeyError: 'TP_DESP'
+2025-07-02 16:27:05,963 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 16:27:05,964 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 16:27:05,965 - INFO - Logo carregada com sucesso!
+2025-07-02 16:27:05,965 - INFO - Criando cabeçalho COM logo
+2025-07-02 16:27:05,967 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 16:27:05,967 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 16:27:05,968 - ERROR - Erro na geração do relatório: 'TP_DESP'
+Traceback (most recent call last):
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorio_despesas_aprimorado.py", line 1894, in gerar_relatorio_pdf
+    tabela_subtotais, tabela_totais = self.criar_resumo_despesas(dados_pdf)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorio_despesas_aprimorado.py", line 1546, in criar_resumo_despesas
+    df_tipo = dados['df_filtrado'][dados['df_filtrado']['TP_DESP'] == tipo]
+                                   ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\Obras\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\frame.py", line 4102, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Obras\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexes\range.py", line 417, in get_loc
+    raise KeyError(key)
+KeyError: 'TP_DESP'
+2025-07-02 16:27:25,993 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/MARCIA UBERENICE NOGUEIRA.xlsx
+2025-07-02 16:27:25,994 - INFO - Incluir excluídos: False
+2025-07-02 16:27:26,267 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-02 16:27:26,269 - INFO - Número do relatório calculado: 2
+2025-07-02 16:27:26,269 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-02 16:27:26,274 - INFO - Acumulado - registros após filtrar excluídos: 32
+2025-07-02 16:27:26,283 - INFO - Valor acumulado calculado (apenas ativos): 44,918.30
+2025-07-02 16:27:26,284 - INFO - Número do relatório: 2
+2025-07-02 16:27:26,284 - INFO - Valor acumulado calculado: 44,918.30
+2025-07-02 16:27:29,906 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 16:27:29,907 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 16:27:29,907 - INFO - Logo carregada com sucesso!
+2025-07-02 16:27:29,909 - INFO - Criando cabeçalho COM logo
+2025-07-02 16:27:29,910 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 16:27:29,911 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 16:27:29,918 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 16:27:29,960 - INFO - Detalhes adicionados com sucesso
+2025-07-02 17:09:42,313 - INFO - Iniciando RelatorioUI
+2025-07-02 17:09:42,320 - INFO - Iniciando configuração da interface
+2025-07-02 17:09:42,339 - INFO - Interface configurada com sucesso
+2025-07-02 17:09:42,350 - INFO - Configurações transferidas com sucesso
+2025-07-02 17:19:09,645 - INFO - Iniciando RelatorioUI
+2025-07-02 17:19:09,648 - INFO - Iniciando configuração da interface
+2025-07-02 17:19:09,668 - INFO - Interface configurada com sucesso
+2025-07-02 17:19:09,676 - INFO - Configurações transferidas com sucesso
+2025-07-02 17:46:37,899 - INFO - Iniciando RelatorioUI
+2025-07-02 17:46:37,941 - INFO - Iniciando configuração da interface
+2025-07-02 17:46:37,963 - INFO - Interface configurada com sucesso
+2025-07-02 17:46:37,964 - INFO - Configurações transferidas com sucesso
+2025-07-02 17:59:34,641 - INFO - Iniciando relatório de despesas - versão estável
+2025-07-02 17:59:34,800 - INFO - Iniciando RelatorioUI
+2025-07-02 17:59:34,801 - INFO - Iniciando configuração da interface
+2025-07-02 17:59:34,853 - INFO - Interface configurada com sucesso
+2025-07-02 17:59:43,210 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 17:59:43,212 - INFO - Incluir excluídos: False
+2025-07-02 17:59:43,637 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-02 17:59:43,638 - INFO - Número do relatório calculado: 10
+2025-07-02 17:59:43,638 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-02 17:59:43,640 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-02 17:59:43,648 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-02 17:59:43,648 - INFO - Número do relatório: 10
+2025-07-02 17:59:43,648 - INFO - Valor acumulado calculado: 426,376.12
+2025-07-02 17:59:46,414 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 17:59:46,415 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 17:59:46,415 - INFO - Logo carregada com sucesso!
+2025-07-02 17:59:46,416 - INFO - Criando cabeçalho COM logo
+2025-07-02 17:59:46,418 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 17:59:46,418 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 17:59:46,428 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 17:59:46,527 - INFO - Detalhes adicionados com sucesso
+2025-07-02 18:17:24,558 - INFO - Iniciando relatório de despesas - v2
+2025-07-02 18:17:41,744 - INFO - Iniciando RelatorioUI
+2025-07-02 18:17:41,924 - INFO - Iniciando configuração da interface
+2025-07-02 18:17:41,988 - INFO - Interface configurada com sucesso
+2025-07-02 18:18:51,180 - INFO - Iniciando relatório de despesas - v2
+2025-07-02 18:19:10,770 - INFO - 
+Obtendo número do relatório para data 2025-07-05
+2025-07-02 18:19:10,771 - INFO - Número do relatório calculado: 10
+2025-07-02 18:19:10,771 - INFO - Calculando acumulado para data 2025-07-05
+2025-07-02 18:19:10,774 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-02 18:19:10,785 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-02 18:19:10,788 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 18:19:10,789 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 18:19:10,789 - INFO - Logo carregada com sucesso!
+2025-07-02 18:19:10,790 - INFO - Criando cabeçalho COM logo
+2025-07-02 18:19:10,792 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 18:19:10,793 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 18:19:10,804 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 18:19:10,892 - INFO - Detalhes adicionados com sucesso
+2025-07-02 18:20:49,048 - INFO - Iniciando relatório de despesas - v2
+2025-07-02 18:21:10,257 - INFO - Iniciando relatório de despesas - v2
+2025-07-02 18:21:19,268 - INFO - Iniciando RelatorioUI
+2025-07-02 18:21:19,416 - INFO - Iniciando configuração da interface
+2025-07-02 18:21:19,472 - INFO - Interface configurada com sucesso
+2025-07-02 19:22:59,741 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:22:59,743 - ERROR - Erro: 'SistemaRelatorios' object has no attribute 'abrir_interface_com_dados_transferidos'
+Traceback (most recent call last):
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py", line 1238, in iniciar_relatorio_despesas
+    self.abrir_interface_com_dados_transferidos(classe_relatorio)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SistemaRelatorios' object has no attribute 'abrir_interface_com_dados_transferidos'
+2025-07-02 19:24:34,684 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:24:34,685 - ERROR - Erro ao abrir interface com dados: 'SistemaRelatorios' object has no attribute 'coletar_configuracoes_completas'
+2025-07-02 19:25:29,886 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:25:29,887 - ERROR - Erro ao abrir interface com dados: 'SistemaRelatorios' object has no attribute 'gerar_resumo_configuracoes'
+2025-07-02 19:26:43,053 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:26:48,042 - ERROR - Erro ao abrir interface com dados: 'SistemaRelatorios' object has no attribute 'executar_interface_com_configuracoes'
+2025-07-02 19:28:25,740 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:28:31,220 - INFO - Iniciando RelatorioUI
+2025-07-02 19:28:31,399 - INFO - Iniciando configuração da interface
+2025-07-02 19:28:31,455 - INFO - Interface configurada com sucesso
+2025-07-02 19:29:02,327 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:29:11,083 - INFO - Iniciando RelatorioUI
+2025-07-02 19:29:11,227 - INFO - Iniciando configuração da interface
+2025-07-02 19:29:11,286 - INFO - Interface configurada com sucesso
+2025-07-02 19:32:24,929 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:32:42,756 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:42:17,689 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:42:20,175 - INFO - Iniciando RelatorioUI
+2025-07-02 19:42:20,176 - INFO - Iniciando configuração da interface
+2025-07-02 19:42:20,209 - INFO - Interface configurada com sucesso
+2025-07-02 19:42:20,212 - INFO - Configurações aplicadas na interface integrada
+2025-07-02 19:42:25,235 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 19:42:25,238 - INFO - Incluir excluídos: False
+2025-07-02 19:42:25,622 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-02 19:42:25,627 - INFO - Número do relatório calculado: 10
+2025-07-02 19:42:25,627 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-02 19:42:25,630 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-02 19:42:25,644 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-02 19:42:25,645 - INFO - Número do relatório: 10
+2025-07-02 19:42:25,648 - INFO - Valor acumulado calculado: 426,376.12
+2025-07-02 19:42:27,646 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 19:42:27,647 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 19:42:27,648 - INFO - Logo carregada com sucesso!
+2025-07-02 19:42:27,648 - INFO - Criando cabeçalho COM logo
+2025-07-02 19:42:27,650 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 19:42:27,651 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 19:42:27,660 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 19:42:27,762 - INFO - Detalhes adicionados com sucesso
+2025-07-02 19:43:19,475 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:43:25,329 - INFO - 
+Obtendo número do relatório para data 2025-07-05
+2025-07-02 19:43:25,330 - INFO - Número do relatório calculado: 10
+2025-07-02 19:43:25,330 - INFO - Calculando acumulado para data 2025-07-05
+2025-07-02 19:43:25,332 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-02 19:43:25,340 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-02 19:43:25,344 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 19:43:25,345 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 19:43:25,346 - INFO - Logo carregada com sucesso!
+2025-07-02 19:43:25,346 - INFO - Criando cabeçalho COM logo
+2025-07-02 19:43:25,348 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 19:43:25,348 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 19:43:25,358 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 19:43:25,426 - INFO - Detalhes adicionados com sucesso
+2025-07-02 20:23:34,886 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 20:23:34,888 - INFO - Data calculada automaticamente: 05/07/2025
+2025-07-02 20:23:36,888 - INFO - Iniciando RelatorioUI
+2025-07-02 20:23:36,890 - INFO - Iniciando configuração da interface
+2025-07-02 20:23:36,921 - INFO - Interface configurada com sucesso
+2025-07-02 20:23:36,932 - INFO - Configurações aplicadas na interface integrada
+2025-07-02 20:23:41,815 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/GILMAR ALMEIDA PORTUGAL.xlsx
+2025-07-02 20:23:41,817 - INFO - Incluir excluídos: False
+2025-07-02 20:23:42,989 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-02 20:23:42,990 - INFO - Número do relatório calculado: 29
+2025-07-02 20:23:42,991 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-02 20:23:42,994 - INFO - Acumulado - registros após filtrar excluídos: 1329
+2025-07-02 20:23:43,003 - INFO - Valor acumulado calculado (apenas ativos): 3,871,156.75
+2025-07-02 20:23:43,003 - INFO - Número do relatório: 29
+2025-07-02 20:23:43,004 - INFO - Valor acumulado calculado: 3,871,156.75
+2025-07-02 20:23:45,475 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 20:23:45,476 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 20:23:45,477 - INFO - Logo carregada com sucesso!
+2025-07-02 20:23:45,477 - INFO - Criando cabeçalho COM logo
+2025-07-02 20:23:45,479 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 20:23:45,480 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 20:23:45,491 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 20:23:45,670 - INFO - Detalhes adicionados com sucesso
+2025-07-02 20:29:50,282 - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 20:29:53,366 - INFO - Iniciando RelatorioUI
+2025-07-02 20:29:53,368 - INFO - Iniciando configuração da interface
+2025-07-02 20:29:53,401 - INFO - Interface configurada com sucesso
+2025-07-02 20:29:53,411 - INFO - Configurações aplicadas na interface integrada
+2025-07-02 20:29:58,619 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/RHAUFED RODRIGUES DOS SANTOS.xlsx
+2025-07-02 20:29:58,622 - INFO - Incluir excluídos: False
+2025-07-02 20:29:59,434 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-02 20:29:59,436 - INFO - Número do relatório calculado: 27
+2025-07-02 20:29:59,436 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-02 20:29:59,438 - INFO - Acumulado - registros após filtrar excluídos: 793
+2025-07-02 20:29:59,448 - INFO - Valor acumulado calculado (apenas ativos): 1,387,424.75
+2025-07-02 20:29:59,449 - INFO - Número do relatório: 27
+2025-07-02 20:29:59,450 - INFO - Valor acumulado calculado: 1,387,424.75
+2025-07-02 20:30:03,390 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-07-02 20:30:03,391 - INFO - Tentando carregar logo: c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-07-02 20:30:03,391 - INFO - Logo carregada com sucesso!
+2025-07-02 20:30:03,392 - INFO - Criando cabeçalho COM logo
+2025-07-02 20:30:03,394 - INFO - Informações do cliente adicionadas com sucesso
+2025-07-02 20:30:03,395 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-07-02 20:30:03,401 - INFO - Iniciando adição de detalhes ao relatório
+2025-07-02 20:30:03,529 - INFO - Detalhes adicionados com sucesso

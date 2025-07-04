@@ -1,0 +1,560 @@
+2025-07-02 11:23:45,227 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 11:24:08,139 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-07-02 11:24:08,139 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-07-02 11:24:08,144 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 11:24:08,145 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 11:24:08,147 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 11:24:08,148 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 11:24:08,212 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 11:24:08,312 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'CNPJ', 'Administradores', '%']
+2025-07-02 11:24:08,314 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: CNPJ
+2025-07-02 11:24:08,329 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 11:24:08,331 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 10
+2025-07-02 11:24:08,333 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 11 clientes
+2025-07-02 11:24:08,370 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 11:24:08,384 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'CNPJ', 'Administradores', '%']
+2025-07-02 11:24:08,386 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: CNPJ
+2025-07-02 11:24:08,389 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 11:24:08,390 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 10
+2025-07-02 11:24:08,390 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 11 itens
+2025-07-02 12:02:40,306 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 12:13:32,225 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:32,243 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:33,218 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:33,219 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:34,189 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:34,190 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:35,156 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:35,156 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:36,171 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:36,172 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:37,169 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:37,170 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:38,174 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:38,174 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:39,146 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:39,147 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:40,118 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:40,119 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:41,113 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:41,114 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:13:42,097 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:13:42,098 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:27:36,920 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 12:34:38,298 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:38,298 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:39,198 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:39,198 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:40,131 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:40,131 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:41,048 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:41,048 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:42,097 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:42,097 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:43,064 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:43,064 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:44,031 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:44,031 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:44,981 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:44,981 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:45,948 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:45,948 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:46,897 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:46,898 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 12:34:47,831 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 12:34:47,831 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:10:57,842 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 13:11:42,687 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: FRANCISCO JOSE TOLENTINO BRANDAO, Registros: 22
+2025-07-02 13:11:42,689 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-07-02 13:11:42,690 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 22
+2025-07-02 13:11:42,691 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FRANCISCO JOSE TOLENTINO BRANDAO.xlsx
+2025-07-02 13:11:45,414 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos com sucesso - Cliente: FRANCISCO JOSE TOLENTINO BRANDAO, Registros: 22
+2025-07-02 13:19:20,267 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 13:19:37,550 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:37,550 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:38,467 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:38,467 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:39,381 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:39,381 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:40,282 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:40,282 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:41,167 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:41,167 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:42,144 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:42,144 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:43,048 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:43,048 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:43,965 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:43,965 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:44,881 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:44,881 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:45,814 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:45,814 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:19:46,747 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-07-02 13:19:46,747 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-07-02 13:20:09,226 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: FRANCISCO JOSE TOLENTINO BRANDAO, Registros: 22
+2025-07-02 13:20:09,226 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-07-02 13:20:09,226 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 22
+2025-07-02 13:20:09,226 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FRANCISCO JOSE TOLENTINO BRANDAO.xlsx
+2025-07-02 13:20:09,381 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ADAILSON SILVA NOVAIS - TRANSPORTE - 51.90 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,397 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ADAILSON SILVA NOVAIS - CAFÉ - 6.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,407 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ADEILTON ALVES DA CONCEIÇÃO - TRANSPORTE - 1152.80 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,414 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ADEILTON ALVES DA CONCEIÇÃO - CAFÉ - 132.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,424 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ADRIEN FELIPE NERES RODRIGUES - TRANSPORTE - 1130.80 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,424 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ADRIEN FELIPE NERES RODRIGUES - CAFÉ - 132.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,438 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ANTONIO TRINDADE FERNANDES - TRANSPORTE - 816.50 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,451 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: ANTONIO TRINDADE FERNANDES - CAFÉ - 138.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,458 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: DORGIVAL PORTACIO DOS SANTOS - TRANSPORTE - 752.40 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,465 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: DORGIVAL PORTACIO DOS SANTOS - CAFÉ - 108.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,476 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: JOSE DO CARMO ROSA - TRANSPORTE - 936.10 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,484 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: JOSE DO CARMO ROSA - CAFÉ - 138.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,497 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: MARCO ANTONIO DE OLIVEIRA - TRANSPORTE - 1091.20 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,507 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: MARCO ANTONIO DE OLIVEIRA - CAFÉ - 132.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,510 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: MARCOS VINICIUS BISPO CORREIA - TRANSPORTE - 703.80 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,523 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: MARCOS VINICIUS BISPO CORREIA - CAFÉ - 138.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,531 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: MATEUS HENRIQUE RODRIGUES - TRANSPORTE - 1130.80 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,539 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: MATEUS HENRIQUE RODRIGUES - CAFÉ - 132.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,547 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: OSMAR GERALDO DA SILVA - TRANSPORTE - 354.75 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,556 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: OSMAR GERALDO DA SILVA - CAFÉ - 66.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,563 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: RONEY GIL NUNES - TRANSPORTE - 936.10 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,574 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: RONEY GIL NUNES - CAFÉ - 138.00 - NF:  - Vencto: 05/07/2025
+2025-07-02 13:20:09,578 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 22 possíveis lançamentos duplicados
+2025-07-02 13:20:16,590 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-07-02 13:42:33,019 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 13:42:33,020 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-07-02 13:42:33,022 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-07-02 13:42:33,036 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 13:42:33,037 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 13:42:33,037 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 13:42:33,038 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 13:42:33,126 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 13:42:33,222 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 13:42:33,223 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 13:42:33,234 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 13:42:33,235 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 13:42:33,236 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 13:42:33,265 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 13:42:33,282 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 13:42:33,283 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 13:42:33,287 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 13:42:33,288 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 13:42:33,288 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 13:52:08,954 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 13:52:08,958 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-07-02 13:52:08,960 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-07-02 13:52:08,974 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 13:52:08,975 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 13:52:08,975 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 13:52:08,976 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 13:52:09,084 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 13:52:09,160 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 13:52:09,161 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 13:52:09,165 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 13:52:09,166 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 13:52:09,166 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 13:52:09,197 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 13:52:09,212 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 13:52:09,212 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 13:52:09,215 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 13:52:09,216 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 13:52:09,216 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 16:13:31,545 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 16:13:31,548 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-07-02 16:13:31,549 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-07-02 16:13:31,562 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 16:13:31,562 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 16:13:31,563 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 16:13:31,564 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 16:13:31,668 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 16:13:31,750 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 16:13:31,750 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 16:13:31,753 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 16:13:31,753 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 16:13:31,754 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 16:13:31,788 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 16:13:31,805 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 16:13:31,805 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 16:13:31,807 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 16:13:31,808 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 16:13:31,808 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 17:09:00,940 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 17:09:00,944 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-07-02 17:09:00,945 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-07-02 17:09:01,017 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 17:09:01,017 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 17:09:01,018 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 17:09:01,018 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 17:09:01,144 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:09:01,229 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:09:01,230 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:09:01,240 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:09:01,241 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:09:01,242 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 17:09:01,272 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:09:01,294 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:09:01,295 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:09:01,297 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:09:01,298 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:09:01,298 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 17:09:32,533 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/EDUARDO MORENO MARQUES.xlsx
+2025-07-02 17:09:42,350 - sistema_relatorios - relatorios_interface - INFO - Configurações transferidas com sucesso
+2025-07-02 17:18:46,559 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 17:18:46,560 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 17:18:46,560 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 17:18:46,561 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 17:18:46,561 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 17:18:49,249 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:18:49,324 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:18:49,325 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:18:49,335 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:18:49,336 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:18:49,337 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 17:18:49,371 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:18:49,388 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:18:49,388 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:18:49,390 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:18:49,391 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:18:49,392 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 17:19:03,640 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/EDUARDO MORENO MARQUES.xlsx
+2025-07-02 17:19:09,676 - sistema_relatorios - relatorios_interface - INFO - Configurações transferidas com sucesso
+2025-07-02 17:29:27,306 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 17:29:27,307 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 17:29:27,308 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 17:29:27,308 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 17:29:27,309 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 17:29:30,053 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:29:30,123 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:29:30,123 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:29:30,136 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:29:30,136 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:29:30,138 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 17:45:15,620 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 17:45:15,621 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 17:45:15,622 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 17:45:15,623 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 17:45:15,623 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 17:45:17,574 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:45:17,629 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:45:17,633 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:45:17,637 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:45:17,660 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:45:17,683 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 17:45:17,746 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:45:17,771 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:45:17,771 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:45:17,773 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:45:17,774 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:45:17,774 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 17:45:48,824 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 17:45:48,825 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 17:45:48,826 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 17:45:48,826 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 17:45:48,827 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 17:45:50,661 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:45:50,714 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:45:50,714 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:45:50,716 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:45:50,718 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:45:50,719 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 17:45:50,754 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:45:50,767 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:45:50,769 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:45:50,771 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:45:50,772 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:45:50,773 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 17:46:11,738 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 17:46:11,739 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 17:46:11,740 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 17:46:11,741 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 17:46:11,741 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 17:46:13,585 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:46:13,629 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:46:13,629 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:46:13,631 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:46:13,632 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:46:13,632 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 17:46:13,665 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:46:13,681 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:46:13,681 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:46:13,683 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:46:13,685 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:46:13,686 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 17:46:32,708 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 17:46:37,964 - sistema_relatorios - relatorios_interface - INFO - Configurações transferidas com sucesso
+2025-07-02 17:59:09,374 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 17:59:09,375 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 17:59:09,376 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 17:59:09,376 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 17:59:09,377 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 17:59:12,687 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:59:12,776 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:59:12,777 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:59:12,792 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:59:12,793 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:59:12,794 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 17:59:12,857 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 17:59:12,871 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 17:59:12,872 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 17:59:12,875 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 17:59:12,877 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 17:59:12,878 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 17:59:30,779 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 17:59:34,641 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão estável
+2025-07-02 18:17:06,134 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 18:17:06,136 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 18:17:06,137 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 18:17:06,137 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 18:17:06,138 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 18:17:08,976 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 18:17:09,039 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 18:17:09,040 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 18:17:09,050 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 18:17:09,051 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 18:17:09,052 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 18:17:09,089 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 18:17:09,106 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 18:17:09,106 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 18:17:09,108 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 18:17:09,109 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 18:17:09,109 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 18:17:19,346 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 18:17:24,558 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - v2
+2025-07-02 18:18:51,180 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - v2
+2025-07-02 18:20:31,542 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 18:20:31,545 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 18:20:31,546 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 18:20:31,546 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 18:20:31,547 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 18:20:33,733 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 18:20:33,781 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 18:20:33,782 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 18:20:33,785 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 18:20:33,786 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 18:20:33,787 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 18:20:33,818 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 18:20:33,832 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 18:20:33,832 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 18:20:33,834 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 18:20:33,836 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 18:20:33,837 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 18:20:44,900 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/CLEVER LUIZ SALVADOR.xlsx
+2025-07-02 18:20:49,048 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - v2
+2025-07-02 18:21:10,257 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - v2
+2025-07-02 18:49:23,214 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 18:49:23,216 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 18:49:23,216 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 18:49:23,216 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 18:49:23,217 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 18:49:48,250 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 18:49:48,251 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 18:49:48,251 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 18:49:48,252 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 18:49:48,252 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 19:22:43,081 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 19:22:43,082 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 19:22:43,083 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 19:22:43,083 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 19:22:43,084 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 19:22:45,923 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:22:45,985 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:22:45,987 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:22:46,000 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:22:46,001 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:22:46,005 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 19:22:46,042 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:22:46,056 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:22:46,057 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:22:46,058 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:22:46,059 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:22:46,059 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 19:22:56,868 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 19:22:59,741 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:22:59,743 - sistema_relatorios - relatorios_interface - ERROR - Erro: 'SistemaRelatorios' object has no attribute 'abrir_interface_com_dados_transferidos'
+Traceback (most recent call last):
+  File "c:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py", line 1238, in iniciar_relatorio_despesas
+    self.abrir_interface_com_dados_transferidos(classe_relatorio)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SistemaRelatorios' object has no attribute 'abrir_interface_com_dados_transferidos'
+2025-07-02 19:24:17,472 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 19:24:17,473 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 19:24:17,474 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 19:24:17,475 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 19:24:17,475 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 19:24:19,455 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:24:19,506 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:24:19,506 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:24:19,508 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:24:19,509 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:24:19,510 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 19:24:19,544 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:24:19,561 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:24:19,561 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:24:19,563 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:24:19,564 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:24:19,565 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 19:24:32,189 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 19:24:34,684 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:24:34,685 - sistema_relatorios - relatorios_interface - ERROR - Erro ao abrir interface com dados: 'SistemaRelatorios' object has no attribute 'coletar_configuracoes_completas'
+2025-07-02 19:25:15,789 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 19:25:15,790 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 19:25:15,790 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 19:25:15,791 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 19:25:15,791 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 19:25:17,679 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:25:17,728 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:25:17,729 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:25:17,731 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:25:17,733 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:25:17,734 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 19:25:17,773 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:25:17,793 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:25:17,793 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:25:17,795 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:25:17,796 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:25:17,796 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 19:25:27,342 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 19:25:29,886 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:25:29,887 - sistema_relatorios - relatorios_interface - ERROR - Erro ao abrir interface com dados: 'SistemaRelatorios' object has no attribute 'gerar_resumo_configuracoes'
+2025-07-02 19:26:26,433 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 19:26:26,434 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 19:26:26,435 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 19:26:26,435 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 19:26:26,436 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 19:26:28,388 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:26:28,433 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:26:28,434 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:26:28,436 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:26:28,437 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:26:28,438 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 19:26:28,473 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:26:28,487 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:26:28,487 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:26:28,489 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:26:28,490 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:26:28,490 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 19:26:40,374 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 19:26:43,053 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:26:48,042 - sistema_relatorios - relatorios_interface - ERROR - Erro ao abrir interface com dados: 'SistemaRelatorios' object has no attribute 'executar_interface_com_configuracoes'
+2025-07-02 19:28:01,060 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 19:28:01,061 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 19:28:01,061 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 19:28:01,062 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 19:28:01,062 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 19:28:03,099 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:28:03,144 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:28:03,144 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:28:03,146 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:28:03,147 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:28:03,148 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 19:28:03,186 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:28:03,206 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:28:03,207 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:28:03,208 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:28:03,209 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:28:03,209 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 19:28:18,174 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 19:28:25,740 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:29:02,327 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:32:04,826 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 19:32:04,827 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 19:32:04,827 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 19:32:04,828 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 19:32:04,828 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 19:32:06,793 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:32:06,844 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:32:06,844 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:32:06,848 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:32:06,849 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:32:06,849 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 19:32:06,885 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:32:06,903 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:32:06,904 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:32:06,906 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:32:06,907 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:32:06,907 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 19:32:18,968 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 19:32:24,929 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:32:42,756 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:40:50,317 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 19:40:50,318 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 19:40:50,319 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 19:40:50,319 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 19:40:50,320 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 19:40:52,780 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:40:52,856 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:40:52,857 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:40:52,872 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:40:52,873 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:40:52,875 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 19:40:52,915 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 19:40:52,932 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 19:40:52,933 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 19:40:52,934 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 19:40:52,935 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 19:40:52,936 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 19:42:14,384 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-02 19:42:17,689 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 19:42:20,212 - sistema_relatorios - relatorios_interface - INFO - Configurações aplicadas na interface integrada
+2025-07-02 19:43:19,475 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 20:11:54,137 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 20:11:54,138 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 20:11:54,139 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 20:11:54,139 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 20:11:54,140 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 20:11:56,549 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 20:11:56,620 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 20:11:56,621 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 20:11:56,635 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 20:11:56,636 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 20:11:56,637 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 20:11:56,673 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 20:11:56,689 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 20:11:56,690 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 20:11:56,692 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 20:11:56,692 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 20:11:56,693 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 20:23:03,098 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 20:23:03,099 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 20:23:03,100 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 20:23:03,100 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 20:23:03,101 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 20:23:05,330 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 20:23:05,392 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 20:23:05,392 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 20:23:05,396 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 20:23:05,397 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 20:23:05,398 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 20:23:05,434 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 20:23:05,451 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 20:23:05,452 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 20:23:05,454 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 20:23:05,454 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 20:23:05,455 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 20:23:31,182 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/GILMAR ALMEIDA PORTUGAL.xlsx
+2025-07-02 20:23:34,886 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 20:23:34,888 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/07/2025
+2025-07-02 20:23:36,932 - sistema_relatorios - relatorios_interface - INFO - Configurações aplicadas na interface integrada
+2025-07-02 20:29:19,837 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-02 20:29:19,838 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-02 20:29:19,839 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-02 20:29:19,840 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-02 20:29:19,840 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-02 20:29:21,967 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 20:29:22,021 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 20:29:22,022 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 20:29:22,026 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 20:29:22,027 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 20:29:22,028 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-02 20:29:22,063 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-02 20:29:22,081 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-02 20:29:22,082 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-02 20:29:22,083 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-02 20:29:22,084 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-02 20:29:22,085 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-02 20:29:23,408 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/07/2025
+2025-07-02 20:29:23,409 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/07/2025
+2025-07-02 20:29:24,844 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/07/2025
+2025-07-02 20:29:24,845 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/07/2025
+2025-07-02 20:29:42,292 - sistema_relatorios - relatorios_interface - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/RHAUFED RODRIGUES DOS SANTOS.xlsx
+2025-07-02 20:29:50,282 - sistema_relatorios - relatorios_interface - INFO - Iniciando relatório de despesas - versão final
+2025-07-02 20:29:53,411 - sistema_relatorios - relatorios_interface - INFO - Configurações aplicadas na interface integrada

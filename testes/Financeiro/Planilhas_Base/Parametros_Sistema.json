@@ -1,0 +1,400 @@
+{
+    "cafe": {
+        "valor_atual": 6.0,
+        "historico": [
+            {
+                "valor": 4.0,
+                "data_inicio": "01/01/2024",
+                "data_fim": "01/04/2025"
+            },
+            {
+                "valor": 6.0,
+                "data_inicio": "01/04/2025",
+                "data_fim": null
+            }
+        ]
+    },
+    "bancos": {
+        "lista": [
+            "BANCO DO BRASIL",
+            "BRADESCO",
+            "C6 BANK",
+            "CAIXA",
+            "INTER",
+            "ITAU",
+            "NUBANK",
+            "PICPAY",
+            "SANTANDER",
+            "STONE"
+        ],
+        "historico_alteracoes": []
+    },
+    "categorias": {
+        "lista": [
+            "ADM",
+            "DIV",
+            "LOC",
+            "MAT",
+            "MO",
+            "SERV",
+            "TP"
+        ],
+        "historico_alteracoes": []
+    },
+    "indices_correcao": {
+        "indice_padrao": "IGPM",
+        "indices_disponiveis": {
+            "IGPM": {
+                "nome_completo": "Índice Geral de Preços do Mercado",
+                "historico": [
+                    {
+                        "periodo": "12/2023",
+                        "valor": 0.74,
+                        "data_inclusao": "2025-06-13T11:30:40.995386",
+                        "data_atualizacao": "2025-06-13T11:30:40.995386"
+                    },
+                    {
+                        "periodo": "01/2024",
+                        "valor": 0.07,
+                        "data_inclusao": "2025-06-13T11:30:52.984330",
+                        "data_atualizacao": "2025-06-13T11:30:52.984330"
+                    },
+                    {
+                        "periodo": "02/2024",
+                        "valor": -0.52,
+                        "data_inclusao": "2025-06-13T11:31:04.560198",
+                        "data_atualizacao": "2025-06-13T11:31:04.560198"
+                    },
+                    {
+                        "periodo": "03/2024",
+                        "valor": -0.47,
+                        "data_inclusao": "2025-06-13T11:31:24.895945",
+                        "data_atualizacao": "2025-06-13T11:31:24.895945"
+                    },
+                    {
+                        "periodo": "04/2024",
+                        "valor": 0.31,
+                        "data_inclusao": "2025-06-13T11:31:32.359853",
+                        "data_atualizacao": "2025-06-13T11:31:32.359853"
+                    },
+                    {
+                        "periodo": "05/2024",
+                        "valor": 0.89,
+                        "data_inclusao": "2025-06-13T11:31:40.632069",
+                        "data_atualizacao": "2025-06-13T11:31:40.632069"
+                    },
+                    {
+                        "periodo": "06/2024",
+                        "valor": 0.81,
+                        "data_inclusao": "2025-06-13T11:31:50.207630",
+                        "data_atualizacao": "2025-06-13T11:31:50.207630"
+                    },
+                    {
+                        "periodo": "07/2024",
+                        "valor": 0.61,
+                        "data_inclusao": "2025-06-13T11:32:04.903447",
+                        "data_atualizacao": "2025-06-13T11:32:04.903447"
+                    },
+                    {
+                        "periodo": "08/2024",
+                        "valor": 0.29,
+                        "data_inclusao": "2025-06-13T11:32:14.703326",
+                        "data_atualizacao": "2025-06-13T11:32:14.703326"
+                    },
+                    {
+                        "periodo": "09/2024",
+                        "valor": 0.62,
+                        "data_inclusao": "2025-06-13T11:32:21.632031",
+                        "data_atualizacao": "2025-06-13T11:32:21.632031"
+                    },
+                    {
+                        "periodo": "10/2024",
+                        "valor": 1.52,
+                        "data_inclusao": "2025-06-13T11:32:28.743742",
+                        "data_atualizacao": "2025-06-13T11:32:28.743742"
+                    },
+                    {
+                        "periodo": "11/2024",
+                        "valor": 1.3,
+                        "data_inclusao": "2025-06-13T11:32:40.023576",
+                        "data_atualizacao": "2025-06-13T11:32:40.023576"
+                    },
+                    {
+                        "periodo": "12/2024",
+                        "valor": 0.94,
+                        "data_inclusao": "2025-06-13T11:32:46.374933",
+                        "data_atualizacao": "2025-06-13T11:32:46.374933"
+                    },
+                    {
+                        "periodo": "01/2025",
+                        "valor": 0.27,
+                        "data_inclusao": "2025-06-13T11:33:19.110527",
+                        "data_atualizacao": "2025-06-13T11:33:19.110527"
+                    },
+                    {
+                        "periodo": "02/2025",
+                        "valor": 1.06,
+                        "data_inclusao": "2025-06-13T11:33:26.230438",
+                        "data_atualizacao": "2025-06-13T11:33:26.230438"
+                    },
+                    {
+                        "periodo": "03/2025",
+                        "valor": -0.34,
+                        "data_inclusao": "2025-06-13T11:33:32.998211",
+                        "data_atualizacao": "2025-06-13T11:33:32.998211"
+                    },
+                    {
+                        "periodo": "04/2025",
+                        "valor": 0.24,
+                        "data_inclusao": "2025-06-13T11:33:40.742257",
+                        "data_atualizacao": "2025-06-13T11:33:40.742257"
+                    },
+                    {
+                        "periodo": "05/2025",
+                        "valor": -0.49,
+                        "data_inclusao": "2025-06-13T11:33:49.518148",
+                        "data_atualizacao": "2025-06-13T11:33:49.518148"
+                    }
+                ]
+            },
+            "IPCA": {
+                "nome_completo": "Índice Nacional de Preços ao Consumidor Amplo",
+                "historico": [
+                    {
+                        "periodo": "12/2023",
+                        "valor": 0.56,
+                        "data_inclusao": "2025-06-13T11:37:23.516094",
+                        "data_atualizacao": "2025-06-13T11:37:23.516094"
+                    },
+                    {
+                        "periodo": "01/2024",
+                        "valor": 0.42,
+                        "data_inclusao": "2025-06-13T11:37:31.819600",
+                        "data_atualizacao": "2025-06-13T11:37:31.819600"
+                    },
+                    {
+                        "periodo": "02/2024",
+                        "valor": 0.83,
+                        "data_inclusao": "2025-06-13T11:37:38.139310",
+                        "data_atualizacao": "2025-06-13T11:37:38.139310"
+                    },
+                    {
+                        "periodo": "03/2024",
+                        "valor": 0.16,
+                        "data_inclusao": "2025-06-13T11:37:44.028142",
+                        "data_atualizacao": "2025-06-13T11:37:44.028142"
+                    },
+                    {
+                        "periodo": "04/2024",
+                        "valor": 0.38,
+                        "data_inclusao": "2025-06-13T11:37:52.563209",
+                        "data_atualizacao": "2025-06-13T11:37:52.563209"
+                    },
+                    {
+                        "periodo": "05/2024",
+                        "valor": 0.46,
+                        "data_inclusao": "2025-06-13T11:38:07.498946",
+                        "data_atualizacao": "2025-06-13T11:38:07.498946"
+                    },
+                    {
+                        "periodo": "06/2024",
+                        "valor": 0.21,
+                        "data_inclusao": "2025-06-13T11:38:14.075054",
+                        "data_atualizacao": "2025-06-13T11:38:14.075054"
+                    },
+                    {
+                        "periodo": "07/2024",
+                        "valor": 0.38,
+                        "data_inclusao": "2025-06-13T11:38:20.106790",
+                        "data_atualizacao": "2025-06-13T11:38:20.106790"
+                    },
+                    {
+                        "periodo": "08/2024",
+                        "valor": -0.02,
+                        "data_inclusao": "2025-06-13T11:38:26.330712",
+                        "data_atualizacao": "2025-06-13T11:38:26.330712"
+                    },
+                    {
+                        "periodo": "09/2024",
+                        "valor": 0.44,
+                        "data_inclusao": "2025-06-13T11:38:31.515596",
+                        "data_atualizacao": "2025-06-13T11:38:31.515596"
+                    },
+                    {
+                        "periodo": "10/2024",
+                        "valor": 0.56,
+                        "data_inclusao": "2025-06-13T11:38:36.658583",
+                        "data_atualizacao": "2025-06-13T11:38:36.658583"
+                    },
+                    {
+                        "periodo": "11/2024",
+                        "valor": 0.39,
+                        "data_inclusao": "2025-06-13T11:38:42.058516",
+                        "data_atualizacao": "2025-06-13T11:38:42.058516"
+                    },
+                    {
+                        "periodo": "12/2024",
+                        "valor": 0.52,
+                        "data_inclusao": "2025-06-13T11:38:49.042430",
+                        "data_atualizacao": "2025-06-13T11:38:49.042430"
+                    },
+                    {
+                        "periodo": "01/2025",
+                        "valor": 0.16,
+                        "data_inclusao": "2025-06-13T11:38:58.299110",
+                        "data_atualizacao": "2025-06-13T11:38:58.299110"
+                    },
+                    {
+                        "periodo": "02/2025",
+                        "valor": 1.31,
+                        "data_inclusao": "2025-06-13T11:39:05.186229",
+                        "data_atualizacao": "2025-06-13T11:39:05.186229"
+                    },
+                    {
+                        "periodo": "03/2025",
+                        "valor": 0.56,
+                        "data_inclusao": "2025-06-13T11:39:10.970158",
+                        "data_atualizacao": "2025-06-13T11:39:10.970158"
+                    },
+                    {
+                        "periodo": "04/2025",
+                        "valor": 0.43,
+                        "data_inclusao": "2025-06-13T11:39:17.426926",
+                        "data_atualizacao": "2025-06-13T11:39:17.426926"
+                    },
+                    {
+                        "periodo": "05/2025",
+                        "valor": 0.26,
+                        "data_inclusao": "2025-06-13T11:39:24.545975",
+                        "data_atualizacao": "2025-06-13T11:39:24.545975"
+                    }
+                ]
+            },
+            "INPC": {
+                "nome_completo": "Índice Nacional de Preços ao Consumidor",
+                "historico": [
+                    {
+                        "periodo": "12/2023",
+                        "valor": 0.31,
+                        "data_inclusao": "2025-06-13T11:43:00.047316",
+                        "data_atualizacao": "2025-06-13T11:43:00.048323"
+                    },
+                    {
+                        "periodo": "01/2024",
+                        "valor": 0.27,
+                        "data_inclusao": "2025-06-13T11:43:06.959214",
+                        "data_atualizacao": "2025-06-13T11:43:06.959214"
+                    },
+                    {
+                        "periodo": "02/2024",
+                        "valor": 0.13,
+                        "data_inclusao": "2025-06-13T11:43:13.351148",
+                        "data_atualizacao": "2025-06-13T11:43:13.351148"
+                    },
+                    {
+                        "periodo": "03/2024",
+                        "valor": 0.28,
+                        "data_inclusao": "2025-06-13T11:43:20.311063",
+                        "data_atualizacao": "2025-06-13T11:43:20.311063"
+                    },
+                    {
+                        "periodo": "04/2024",
+                        "valor": 0.52,
+                        "data_inclusao": "2025-06-13T11:43:27.982951",
+                        "data_atualizacao": "2025-06-13T11:43:27.982951"
+                    },
+                    {
+                        "periodo": "05/2024",
+                        "valor": 0.86,
+                        "data_inclusao": "2025-06-13T11:43:34.751470",
+                        "data_atualizacao": "2025-06-13T11:43:34.751470"
+                    },
+                    {
+                        "periodo": "06/2024",
+                        "valor": 0.71,
+                        "data_inclusao": "2025-06-13T11:43:42.151083",
+                        "data_atualizacao": "2025-06-13T11:43:42.151083"
+                    },
+                    {
+                        "periodo": "07/2024",
+                        "valor": 0.72,
+                        "data_inclusao": "2025-06-13T11:45:49.357211",
+                        "data_atualizacao": "2025-06-13T11:45:49.357211"
+                    },
+                    {
+                        "periodo": "08/2024",
+                        "valor": 0.7,
+                        "data_inclusao": "2025-06-13T11:45:55.629133",
+                        "data_atualizacao": "2025-06-13T11:45:55.629133"
+                    },
+                    {
+                        "periodo": "09/2024",
+                        "valor": 0.58,
+                        "data_inclusao": "2025-06-13T11:46:01.909054",
+                        "data_atualizacao": "2025-06-13T11:46:01.909054"
+                    },
+                    {
+                        "periodo": "10/2024",
+                        "valor": 0.68,
+                        "data_inclusao": "2025-06-13T11:46:15.237255",
+                        "data_atualizacao": "2025-06-13T11:46:15.237255"
+                    },
+                    {
+                        "periodo": "11/2024",
+                        "valor": 0.4,
+                        "data_inclusao": "2025-06-13T11:46:22.140805",
+                        "data_atualizacao": "2025-06-13T11:46:22.140805"
+                    },
+                    {
+                        "periodo": "12/2024",
+                        "valor": 0.5,
+                        "data_inclusao": "2025-06-13T11:46:27.356739",
+                        "data_atualizacao": "2025-06-13T11:46:27.356739"
+                    },
+                    {
+                        "periodo": "01/2025",
+                        "valor": 0.83,
+                        "data_inclusao": "2025-06-13T11:46:32.604811",
+                        "data_atualizacao": "2025-06-13T11:46:32.604811"
+                    },
+                    {
+                        "periodo": "02/2025",
+                        "valor": 0.4,
+                        "data_inclusao": "2025-06-13T11:46:37.685226",
+                        "data_atualizacao": "2025-06-13T11:46:37.685226"
+                    },
+                    {
+                        "periodo": "03/2025",
+                        "valor": 0.39,
+                        "data_inclusao": "2025-06-13T11:46:43.364541",
+                        "data_atualizacao": "2025-06-13T11:46:43.364541"
+                    },
+                    {
+                        "periodo": "04/2025",
+                        "valor": 0.52,
+                        "data_inclusao": "2025-06-13T11:46:48.652475",
+                        "data_atualizacao": "2025-06-13T11:46:48.652475"
+                    },
+                    {
+                        "periodo": "05/2025",
+                        "valor": 0.58,
+                        "data_inclusao": "2025-06-13T11:46:56.284381",
+                        "data_atualizacao": "2025-06-13T11:46:56.284381"
+                    }
+                ]
+            }
+        }
+    },
+    "correcao_automatica": {
+        "ativa": true,
+        "dia_calculo": 15,
+        "meses_aplicacao": [
+            1,
+            4,
+            7,
+            10
+        ],
+        "avisar_antes_dias": 7,
+        "ultimo_processamento": null
+    }
+}
