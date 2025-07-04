@@ -130,7 +130,7 @@ try:
 except ImportError:
     logger.warning("Usando configuração de janela fallback")
     # Implementação básica caso o módulo não seja encontrado
-    def configurar_janela(janela, titulo, largura=700, altura=950):
+    def configurar_janela(janela, titulo, largura=700, altura=1000):
         """
         Configura o posicionamento e dimensionamento padrão de uma janela
         
@@ -187,7 +187,7 @@ class SistemaRelatorios:
             self.menu_principal = None
             
         # Configurar a janela
-        configurar_janela(self.root, "Sistema Integrado de Relatórios", 800, 950)
+        configurar_janela(self.root, "Sistema Integrado de Relatórios", 800, 1000)
         
         # Acompanhar quais módulos foram carregados
         self.modulos_carregados = {}
@@ -2201,129 +2201,129 @@ class SistemaRelatorios:
             logger.error(f"💥 ERRO outros relatórios: {str(e)}")
             messagebox.showerror("Erro", f"Erro: {str(e)}")
 
-    # def gerar_com_preview_otimizado(self, configuracoes):
-    #     """Gera dados e abre preview otimizado"""
-    #     try:
-    #         logger.info("=== GERAÇÃO COM PREVIEW OTIMIZADO ===")
+    def gerar_com_preview_otimizado(self, configuracoes):
+        """Gera dados e abre preview otimizado"""
+        try:
+            logger.info("=== GERAÇÃO COM PREVIEW OTIMIZADO ===")
             
-    #         # Criar e mostrar janela de progresso
-    #         progress_window = self.criar_janela_progresso_melhorada()
+            # Criar e mostrar janela de progresso
+            progress_window = self.criar_janela_progresso_melhorada()
             
-    #         def processar_dados_async():
-    #             """Processa dados em thread separada"""
-    #             try:
-    #                 # 1. Atualizar progresso
-    #                 self.atualizar_progresso_seguro(progress_window, "Importando módulo...", 10)
+            def processar_dados_async():
+                """Processa dados em thread separada"""
+                try:
+                    # 1. Atualizar progresso
+                    self.atualizar_progresso_seguro(progress_window, "Importando módulo...", 10)
                     
-    #                 # 2. Importar handler
-    #                 try:
-    #                     from src.relatorio_despesas_aprimorado import RelatorioHandler
-    #                     logger.info("Handler importado de src.relatorio_despesas_aprimorado")
-    #                 except ImportError:
-    #                     from relatorio_despesas_aprimorado import RelatorioHandler
-    #                     logger.info("Handler importado de relatorio_despesas_aprimorado")
+                    # 2. Importar handler
+                    try:
+                        from src.relatorio_despesas_aprimorado import RelatorioHandler
+                        logger.info("Handler importado de src.relatorio_despesas_aprimorado")
+                    except ImportError:
+                        from relatorio_despesas_aprimorado import RelatorioHandler
+                        logger.info("Handler importado de relatorio_despesas_aprimorado")
                     
-    #                 handler = RelatorioHandler()
+                    handler = RelatorioHandler()
                     
-    #                 # 3. Processar data
-    #                 self.atualizar_progresso_seguro(progress_window, "Processando data...", 20)
-    #                 data_relatorio = self.normalizar_data_relatorio(configuracoes['data'])
-    #                 logger.info(f"Data normalizada: {data_relatorio}")
+                    # 3. Processar data
+                    self.atualizar_progresso_seguro(progress_window, "Processando data...", 20)
+                    data_relatorio = self.normalizar_data_relatorio(configuracoes['data'])
+                    logger.info(f"Data normalizada: {data_relatorio}")
                     
-    #                 # 4. Carregar dados
-    #                 self.atualizar_progresso_seguro(progress_window, "Carregando dados do Excel...", 30)
-    #                 df = handler.carregar_dados_excel(
-    #                     configuracoes['arquivo'], 
-    #                     configuracoes['incluir_excluidos']
-    #                 )
-    #                 logger.info(f"Dados carregados: {len(df)} registros")
+                    # 4. Carregar dados
+                    self.atualizar_progresso_seguro(progress_window, "Carregando dados do Excel...", 30)
+                    df = handler.carregar_dados_excel(
+                        configuracoes['arquivo'], 
+                        configuracoes['incluir_excluidos']
+                    )
+                    logger.info(f"Dados carregados: {len(df)} registros")
                     
-    #                 # 5. Processar dados
-    #                 self.atualizar_progresso_seguro(progress_window, "Processando dados...", 50)
-    #                 df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = handler.processar_dados(
-    #                     df, data_relatorio, configuracoes['incluir_excluidos']
-    #                 )
+                    # 5. Processar dados
+                    self.atualizar_progresso_seguro(progress_window, "Processando dados...", 50)
+                    df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = handler.processar_dados(
+                        df, data_relatorio, configuracoes['incluir_excluidos']
+                    )
                     
-    #                 logger.info(f"Dados processados:")
-    #                 logger.info(f"  - df_filtrado: {len(df_filtrado)}")
-    #                 logger.info(f"  - df_diaria: {len(df_diaria)}")
-    #                 logger.info(f"  - df_tp_desp_1: {len(df_tp_desp_1)}")
-    #                 logger.info(f"  - df_tp_desp_2: {len(df_tp_desp_2)}")
+                    logger.info(f"Dados processados:")
+                    logger.info(f"  - df_filtrado: {len(df_filtrado)}")
+                    logger.info(f"  - df_diaria: {len(df_diaria)}")
+                    logger.info(f"  - df_tp_desp_1: {len(df_tp_desp_1)}")
+                    logger.info(f"  - df_tp_desp_2: {len(df_tp_desp_2)}")
                     
-    #                 # 6. Processar lançamentos futuros
-    #                 self.atualizar_progresso_seguro(progress_window, "Processando lançamentos futuros...", 70)
-    #                 df_futuro = None
-    #                 if configuracoes['incluir_futuros']:
-    #                     if hasattr(handler, 'processar_lancamentos_futuros'):
-    #                         df_futuro = handler.processar_lancamentos_futuros(
-    #                             df, data_relatorio, configuracoes['incluir_excluidos']
-    #                         )
-    #                         logger.info(f"Lançamentos futuros: {len(df_futuro) if df_futuro is not None else 0}")
+                    # 6. Processar lançamentos futuros
+                    self.atualizar_progresso_seguro(progress_window, "Processando lançamentos futuros...", 70)
+                    df_futuro = None
+                    if configuracoes['incluir_futuros']:
+                        if hasattr(handler, 'processar_lancamentos_futuros'):
+                            df_futuro = handler.processar_lancamentos_futuros(
+                                df, data_relatorio, configuracoes['incluir_excluidos']
+                            )
+                            logger.info(f"Lançamentos futuros: {len(df_futuro) if df_futuro is not None else 0}")
+                  
+                    # 7. Obter dados do cliente
+                    self.atualizar_progresso_seguro(progress_window, "Obtendo dados do cliente...", 85)
+                    from openpyxl import load_workbook
+                    workbook = load_workbook(configuracoes['arquivo'], data_only=True)
+                    ws_resumo = workbook['RESUMO']
+                    nome_cliente = ws_resumo['A3'].value
                     
-    #                 # 7. Obter dados do cliente
-    #                 self.atualizar_progresso_seguro(progress_window, "Obtendo dados do cliente...", 85)
-    #                 from openpyxl import load_workbook
-    #                 workbook = load_workbook(configuracoes['arquivo'], data_only=True)
-    #                 ws_resumo = workbook['RESUMO']
-    #                 nome_cliente = ws_resumo['A3'].value
+                    # 8. Calcular valores
+                    numero_relatorio = handler.obter_numero_relatorio(ws_resumo, data_relatorio)
+                    valor_acumulado = handler.calcular_acumulado_dados(
+                        df, data_relatorio, configuracoes['incluir_excluidos']
+                    )
+                  
+                    logger.info(f"Cliente: {nome_cliente}")
+                    logger.info(f"Número relatório: {numero_relatorio}")
+                    logger.info(f"Valor acumulado: {valor_acumulado:,.2f}")
                     
-    #                 # 8. Calcular valores
-    #                 numero_relatorio = handler.obter_numero_relatorio(ws_resumo, data_relatorio)
-    #                 valor_acumulado = handler.calcular_acumulado_dados(
-    #                     df, data_relatorio, configuracoes['incluir_excluidos']
-    #                 )
+                    # 9. Montar dados completos
+                    dados_completos = {
+                        'df_filtrado': df_filtrado,
+                        'df_diaria': df_diaria,
+                        'df_tp_desp_1': df_tp_desp_1,
+                        'df_tp_desp_2': df_tp_desp_2,
+                        'df_futuro': df_futuro,
+                        'df_original': df,
+                        'incluir_futuros': configuracoes['incluir_futuros'],
+                        'incluir_excluidos': configuracoes['incluir_excluidos'],
+                        'data_relatorio': data_relatorio,
+                        'nome_cliente': nome_cliente,
+                        'endereco_cliente': ws_resumo['A4'].value,
+                        'numero_relatorio': numero_relatorio,
+                        'acumulado': valor_acumulado
+                    }
+                   
+                    # 10. Finalizar e abrir preview
+                    self.atualizar_progresso_seguro(progress_window, "Abrindo preview...", 100)
+                  
+                    # Fechar progresso após pequeno delay
+                    progress_window.after(500, progress_window.destroy)
                     
-    #                 logger.info(f"Cliente: {nome_cliente}")
-    #                 logger.info(f"Número relatório: {numero_relatorio}")
-    #                 logger.info(f"Valor acumulado: {valor_acumulado:,.2f}")
+                    # Abrir preview
+                    self.abrir_preview_final(dados_completos, configuracoes['arquivo'])
                     
-    #                 # 9. Montar dados completos
-    #                 dados_completos = {
-    #                     'df_filtrado': df_filtrado,
-    #                     'df_diaria': df_diaria,
-    #                     'df_tp_desp_1': df_tp_desp_1,
-    #                     'df_tp_desp_2': df_tp_desp_2,
-    #                     'df_futuro': df_futuro,
-    #                     'df_original': df,
-    #                     'incluir_futuros': configuracoes['incluir_futuros'],
-    #                     'incluir_excluidos': configuracoes['incluir_excluidos'],
-    #                     'data_relatorio': data_relatorio,
-    #                     'nome_cliente': nome_cliente,
-    #                     'endereco_cliente': ws_resumo['A4'].value,
-    #                     'numero_relatorio': numero_relatorio,
-    #                     'acumulado': valor_acumulado
-    #                 }
-                    
-    #                 # 10. Finalizar e abrir preview
-    #                 self.atualizar_progresso_seguro(progress_window, "Abrindo preview...", 100)
-                    
-    #                 # Fechar progresso após pequeno delay
-    #                 progress_window.after(500, progress_window.destroy)
-                    
-    #                 # Abrir preview
-    #                 self.abrir_preview_final(dados_completos, configuracoes['arquivo'])
-                    
-    #             except Exception as e:
-    #                 # Fechar progresso em caso de erro
-    #                 try:
-    #                     progress_window.destroy()
-    #                 except:
-    #                     pass
+                except Exception as e:
+                    # Fechar progresso em caso de erro
+                    try:
+                        progress_window.destroy()
+                    except:
+                        pass
                         
-    #                 logger.error(f"Erro no processamento assíncrono: {str(e)}", exc_info=True)
-    #                 messagebox.showerror("Erro", f"Erro ao processar dados: {str(e)}")
+                    logger.error(f"Erro no processamento assíncrono: {str(e)}", exc_info=True)
+                    messagebox.showerror("Erro", f"Erro ao processar dados: {str(e)}")
                     
-    #                 # Mostrar interface novamente em caso de erro
-    #                 self.root.deiconify()
+                    # Mostrar interface novamente em caso de erro
+                    self.root.deiconify()
             
-    #         # Iniciar processamento em thread
-    #         import threading
-    #         thread = threading.Thread(target=processar_dados_async, daemon=True)
-    #         thread.start()
+            # Iniciar processamento em thread
+            import threading
+            thread = threading.Thread(target=processar_dados_async, daemon=True)
+            thread.start()
             
-    #     except Exception as e:
-    #         logger.error(f"Erro na geração com preview: {str(e)}")
-    #         messagebox.showerror("Erro", f"Erro: {str(e)}")
+        except Exception as e:
+            logger.error(f"Erro na geração com preview: {str(e)}")
+            messagebox.showerror("Erro", f"Erro: {str(e)}")
 
     def normalizar_data_relatorio(self, data_input):
         """Normaliza data para comparação correta"""
