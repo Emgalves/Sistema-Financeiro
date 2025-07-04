@@ -52,6 +52,19 @@ logger = logging.getLogger(__name__)
 # Configuração inicial
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
+# VARIÁVEL GLOBAL PARA MENU PRINCIPAL
+_MENU_PRINCIPAL_GLOBAL = None
+
+def definir_menu_principal(menu):
+    """Define o menu principal globalmente"""
+    global _MENU_PRINCIPAL_GLOBAL
+    _MENU_PRINCIPAL_GLOBAL = menu
+    print(f"✅ Menu principal definido: {menu}")
+
+def obter_menu_principal():
+    """Obtém o menu principal global"""
+    global _MENU_PRINCIPAL_GLOBAL
+    return _MENU_PRINCIPAL_GLOBAL
 
 # Variáveis globais
 arquivo_path = None
@@ -234,7 +247,7 @@ class RelatorioUI:
         ).pack(anchor='w')
 
     def gerar_relatorio(self):
-        """Versão modificada do método gerar_relatorio com preview"""
+        """Versão corrigida do método gerar_relatorio com preview"""
         try:
             if not self.arquivo_path:
                 logger.warning("Tentativa de gerar relatório sem arquivo selecionado")
@@ -256,10 +269,15 @@ class RelatorioUI:
                 df, data_rel, incluir_excluidos
             )
                 
-            # CORREÇÃO: Processar lançamentos futuros passando o parâmetro incluir_excluidos
+            # CORREÇÃO: Processar lançamentos futuros - USAR O MÉTODO CORRETO
             df_futuro = None
             if self.incluir_futuros.get():
-                df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
+                # Verificar se o método existe antes de chamar
+                if hasattr(self.handler, 'processar_lancamentos_futuros'):
+                    df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
+                else:
+                    logger.warning("Método processar_lancamentos_futuros não encontrado, pulando lançamentos futuros")
+                    df_futuro = None
                     
             # Processar workbook
             workbook = load_workbook(self.arquivo_path, data_only=True)
@@ -301,12 +319,6 @@ class RelatorioUI:
             
             preview_window = visualizador.mostrar_preview(dados_completos)
             
-            # Aguardar fechamento da janela de preview
-            # O usuário pode escolher entre:
-            # 1. Gerar PDF temporário (botão "Gerar PDF Temporário")
-            # 2. Gerar e salvar PDF final (botão "Gerar e Salvar PDF")
-            # 3. Cancelar (botão "Cancelar" ou fechar janela)
-            
             self.status_label.config(text=f"Preview do relatório exibido para {nome_cliente}")
             
         except Exception as e:
@@ -314,7 +326,7 @@ class RelatorioUI:
             self.status_label.config(text=f"Erro: {str(e)}")
 
     def gerar_relatorio_sem_preview(self):
-        """Método original sem preview - para casos especiais"""
+        """Método corrigido sem preview - para casos especiais"""
         try:
             if not self.arquivo_path:
                 logger.warning("Tentativa de gerar relatório sem arquivo selecionado")
@@ -336,10 +348,15 @@ class RelatorioUI:
                 df, data_rel, incluir_excluidos
             )
                 
-            # CORREÇÃO: Processar lançamentos futuros passando o parâmetro incluir_excluidos
+            # CORREÇÃO: Processar lançamentos futuros - USAR O MÉTODO CORRETO
             df_futuro = None
             if self.incluir_futuros.get():
-                df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
+                # Verificar se o método existe antes de chamar
+                if hasattr(self.handler, 'processar_lancamentos_futuros'):
+                    df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
+                else:
+                    logger.warning("Método processar_lancamentos_futuros não encontrado, pulando lançamentos futuros")
+                    df_futuro = None
                     
             # Processar workbook
             workbook = load_workbook(self.arquivo_path, data_only=True)
@@ -393,9 +410,8 @@ class RelatorioUI:
             logger.error(f"Erro ao gerar relatório: {str(e)}", exc_info=True)
             self.status_label.config(text=f"Erro: {str(e)}")
 
-    # CORREÇÃO NO MÉTODO processar_lote da classe RelatorioUI
     def processar_lote(self, arquivos):
-        """Processa arquivos em lote"""
+        """Processa arquivos em lote - VERSÃO CORRIGIDA"""
         try:
             logger.info(f"Iniciando processamento em lote de {len(arquivos)} arquivos")
             
@@ -448,7 +464,12 @@ class RelatorioUI:
                         # CORREÇÃO: Processar lançamentos futuros
                         df_futuro = None
                         if self.incluir_futuros.get():
-                            df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
+                            # Verificar se o método existe antes de chamar
+                            if hasattr(self.handler, 'processar_lancamentos_futuros'):
+                                df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
+                            else:
+                                logger.warning("Método processar_lancamentos_futuros não encontrado")
+                                df_futuro = None
                         
                         # CORREÇÃO: Obter valor acumulado
                         numero_relatorio = self.handler.obter_numero_relatorio(ws_resumo, data_rel)
@@ -561,6 +582,77 @@ class RelatorioUI:
                   command=continuar).pack(pady=5, padx=10, fill='x')
         ttk.Button(btn_frame, text="Voltar ao Menu Principal", 
                   command=voltar_menu).pack(pady=5, padx=10, fill='x')          
+
+    def processar_lancamentos_futuros(self, df, data_relatorio, incluir_excluidos=False):
+        """Versão corrigida que considera status de exclusão"""
+        try:
+            # Converter a data do relatório para datetime usando formato explícito
+            try:
+                self.data_ref = pd.to_datetime(data_relatorio)
+            except:
+                self.data_ref = pd.to_datetime(data_relatorio, format='%d/%m/%Y')
+
+            # Converter a coluna DATA_REL para datetime
+            df = df.copy()
+            
+            # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
+            if not incluir_excluidos and 'STATUS' in df.columns:
+                df = df[df['STATUS'] != 'EXCLUIDO'].copy()
+                print(f"Lançamentos futuros - registros após filtrar excluídos: {len(df)}")
+            else:
+                print(f"Lançamentos futuros - incluindo todos os registros: {len(df)}")
+            
+            # Verificar se as colunas necessárias existem
+            if 'DATA_REL' not in df.columns:
+                logger.error("Coluna DATA_REL não encontrada no DataFrame")
+                return pd.DataFrame()
+            
+            if 'DT_VENCTO' not in df.columns:
+                logger.warning("Coluna DT_VENCTO não encontrada, usando DATA_REL como substituto")
+                df['DT_VENCTO'] = df['DATA_REL']
+            
+            # Converter colunas para datetime
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            df['DT_VENCTO'] = pd.to_datetime(df['DT_VENCTO'], format='%d/%m/%Y', errors='coerce')
+            
+            # Remover registros com datas inválidas
+            df = df.dropna(subset=['DATA_REL'])
+            
+            # Formatar a data de vencimento para DD/MM/AAAA
+            df['DT_VENCTO'] = df['DT_VENCTO'].dt.strftime('%d/%m/%Y').fillna('')
+
+            # Filtrar apenas lançamentos futuros baseado em DATA_REL
+            df_futuro = df[(df['DATA_REL'] > self.data_ref) & (df['TP_DESP'] != 1)].copy()
+
+            if df_futuro.empty:
+                logger.info("Nenhum lançamento futuro encontrado")
+                return df_futuro
+
+            # Ordenar por data de vencimento
+            df_futuro = df_futuro.sort_values('DATA_REL')
+
+            # Agrupar por período baseado na DATA_REL
+            def classificar_periodo(data_rel):
+                """Classifica o período baseado na diferença de dias"""
+                try:
+                    diff_days = (data_rel - self.data_ref).days
+                    if diff_days <= 30:
+                        return "Próximos 30 dias"
+                    elif diff_days <= 60:
+                        return "31 a 60 dias"
+                    else:
+                        return "Após 60 dias"
+                except:
+                    return "Após 60 dias"
+
+            df_futuro['periodo'] = df_futuro['DATA_REL'].apply(classificar_periodo)
+
+            logger.info(f"Processados {len(df_futuro)} lançamentos futuros")
+            return df_futuro
+            
+        except Exception as e:
+            logger.error(f"Erro ao processar lançamentos futuros: {str(e)}", exc_info=True)
+            return pd.DataFrame()
 
     def adicionar_botao_pendentes(self):
         """
@@ -1008,7 +1100,7 @@ class RelatorioHandler:
             raise Exception(f"Erro ao carregar arquivo Excel: {str(e)}")
 
     def processar_dados(self, df, data_relatorio, incluir_excluidos=False):
-        """Versão modificada que considera status de exclusão e mantém ordem original para TP_DESP=5"""
+        """Versão corrigida que preserva todas as colunas essenciais"""
         # Converter data para datetime usando formato explícito
         try:
             data_rel = pd.to_datetime(data_relatorio)
@@ -1018,6 +1110,9 @@ class RelatorioHandler:
         
         # Criar cópia do DataFrame para não modificar o original
         df = df.copy()
+        
+        # Log para debug
+        logger.debug(f"Colunas do DataFrame original: {df.columns.tolist()}")
         
         # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
         if not incluir_excluidos and 'STATUS' in df.columns:
@@ -1050,11 +1145,21 @@ class RelatorioHandler:
             df['DADOS_BANCARIOS_ORIGINAL'] = df['DADOS_BANCARIOS']
             df.loc[df['TP_DESP'].isin([3, 5]), 'DADOS_BANCARIOS'] = ''
 
+        # VERIFICAÇÃO CRÍTICA: Garantir que TP_DESP existe
+        if 'TP_DESP' not in df.columns:
+            logger.error("ERRO CRÍTICO: Coluna TP_DESP não encontrada no DataFrame!")
+            logger.error(f"Colunas disponíveis: {df.columns.tolist()}")
+            raise ValueError("Coluna TP_DESP não encontrada no DataFrame")
+
         # Filtrar dados (considerando a opção de incluir excluídos)
         df_filtrado = df[
             (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] != 1)
         ].copy()  # IMPORTANTE: usar .copy() para evitar warnings
+        
+        # Log para debug
+        logger.debug(f"df_filtrado criado com {len(df_filtrado)} registros")
+        logger.debug(f"Colunas do df_filtrado: {df_filtrado.columns.tolist()}")
         
         # NOVA LÓGICA: Separar TP_DESP == 5 dos demais para ordenação diferente
         df_tp5 = df_filtrado[df_filtrado['TP_DESP'] == 5].copy()
@@ -1104,55 +1209,47 @@ class RelatorioHandler:
         if 'DT_VENCTO_DISPLAY' in df_filtrado.columns:
             df_filtrado['DT_VENCTO'] = df_filtrado['DT_VENCTO_DISPLAY']
             
-        # CORREÇÃO: Remover apenas as colunas temporárias, mantendo TP_DESP e outras essenciais
-        colunas_temporarias = ['DT_VENCTO_SORT', 'DT_VENCTO_DISPLAY', 'ordem_original']
+        # CORREÇÃO CRÍTICA: Preservar colunas essenciais
+        colunas_essenciais = [
+            'TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR', 'DATA_REL', 'DT_VENCTO',
+            'DADOS_BANCARIOS', 'DIAS', 'VR_UNIT', 'NF', 'STATUS'
+        ]
+        
+        # Remover apenas as colunas temporárias, preservando as essenciais
+        colunas_temporarias = ['DT_VENCTO_SORT', 'DT_VENCTO_DISPLAY', 'ordem_original', 'DADOS_BANCARIOS_ORIGINAL']
+        
         for df_temp in [df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2]:
-            for col in colunas_temporarias:
-                if col in df_temp.columns:
-                    df_temp.drop(columns=[col], inplace=True)
+            # Verificar se o DataFrame não está vazio
+            if df_temp.empty:
+                continue
+                
+            # Log das colunas antes da limpeza
+            logger.debug(f"DataFrame com {len(df_temp)} registros - Colunas antes da limpeza: {df_temp.columns.tolist()}")
+            
+            # Remover apenas colunas temporárias que existem
+            colunas_para_remover = [col for col in colunas_temporarias if col in df_temp.columns]
+            
+            if colunas_para_remover:
+                df_temp.drop(columns=colunas_para_remover, inplace=True)
+                logger.debug(f"Colunas removidas: {colunas_para_remover}")
+            
+            # Verificar se TP_DESP ainda existe após limpeza
+            if 'TP_DESP' not in df_temp.columns and not df_temp.empty:
+                logger.error(f"ERRO: TP_DESP foi removida inadvertidamente do DataFrame com {len(df_temp)} registros!")
+                logger.error(f"Colunas após limpeza: {df_temp.columns.tolist()}")
+            else:
+                logger.debug(f"TP_DESP preservada - Colunas após limpeza: {df_temp.columns.tolist()}")
+        
+        # Verificação final
+        logger.info(f"df_filtrado final: {len(df_filtrado)} registros")
+        if not df_filtrado.empty:
+            logger.info(f"Colunas finais do df_filtrado: {df_filtrado.columns.tolist()}")
+            if 'TP_DESP' in df_filtrado.columns:
+                logger.info(f"Tipos de despesa únicos: {df_filtrado['TP_DESP'].unique()}")
+            else:
+                logger.error("ERRO FINAL: TP_DESP não está presente no df_filtrado!")
         
         return df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2
-
-    def processar_lancamentos_futuros(self, df, data_relatorio, incluir_excluidos=False):
-        """Versão modificada que considera status de exclusão"""
-        # Converter a data do relatório para datetime usando formato explícito
-        try:
-            self.data_ref = pd.to_datetime(data_relatorio)
-        except:
-            self.data_ref = pd.to_datetime(data_relatorio, format='%d/%m/%Y')
-
-        # Converter a coluna DATA_REL para datetime
-        df = df.copy()
-        
-        # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
-        if not incluir_excluidos and 'STATUS' in df.columns:
-            df = df[df['STATUS'] != 'EXCLUIDO'].copy()
-            print(f"Lançamentos futuros - registros após filtrar excluídos: {len(df)}")
-        else:
-            print(f"Lançamentos futuros - incluindo todos os registros: {len(df)}")
-        
-        df['DATA_REL'] = pd.to_datetime(df['DATA_REL'])
-        df['DT_VENCTO'] = pd.to_datetime(df['DT_VENCTO'], format='%d/%m/%Y', errors='coerce')
-        
-        # Formatar a data de vencimento para DD/MM/AAAA
-        df['DT_VENCTO'] = df['DT_VENCTO'].dt.strftime('%d/%m/%Y')
-
-        # Filtrar apenas lançamentos futuros baseado em DATA_REL
-        df_futuro = df[(df['DATA_REL'] > self.data_ref) & (df['TP_DESP'] != 1)].copy()
-
-        # Ordenar por data de vencimento
-        df_futuro = df_futuro.sort_values('DT_VENCTO')
-
-        # Agrupar por período baseado na DATA_REL
-        df_futuro['periodo'] = df_futuro['DATA_REL'].apply(
-            lambda x: next(
-                (nome for nome, func in self.tipos_despesas_futuras.items() 
-                if func(x)),
-                "Após 60 dias"
-            )
-        )
-
-        return df_futuro
     
     def adicionar_lancamentos_futuros(self, elementos, dados):
         """Adiciona a seção de lançamentos futuros ao relatório"""
@@ -1547,25 +1644,109 @@ class RelatorioHandler:
         return tabela
 
     def criar_resumo_despesas(self, dados):
-        """Cria o resumo das despesas para o relatório"""
+        """Cria o resumo das despesas para o relatório - VERSÃO CORRIGIDA"""
         logger.debug("\nIniciando criar_resumo_despesas")
         logger.debug(f"Dados recebidos - acumulado: {dados.get('acumulado')}")
         
+        # VERIFICAÇÃO CRÍTICA DOS DADOS
+        df_filtrado = dados.get('df_filtrado', pd.DataFrame())
+        df_tp_desp_1 = dados.get('df_tp_desp_1', pd.DataFrame())
+        df_tp_desp_2 = dados.get('df_tp_desp_2', pd.DataFrame())
+        df_diaria = dados.get('df_diaria', pd.DataFrame())
+        
+        logger.debug(f"df_filtrado: {len(df_filtrado)} registros")
+        logger.debug(f"df_tp_desp_1: {len(df_tp_desp_1)} registros")
+        logger.debug(f"df_tp_desp_2: {len(df_tp_desp_2)} registros")
+        logger.debug(f"df_diaria: {len(df_diaria)} registros")
+        
+        # Verificar se df_filtrado tem a coluna TP_DESP
+        if not df_filtrado.empty:
+            logger.debug(f"Colunas do df_filtrado: {df_filtrado.columns.tolist()}")
+            if 'TP_DESP' not in df_filtrado.columns:
+                logger.error("ERRO CRÍTICO: df_filtrado não contém a coluna TP_DESP!")
+                # Tentar recuperar dos dados originais se possível
+                df_original = dados.get('df_original', pd.DataFrame())
+                if not df_original.empty and 'TP_DESP' in df_original.columns:
+                    logger.warning("Tentando recriar df_filtrado dos dados originais...")
+                    data_relatorio = dados.get('data_relatorio')
+                    if data_relatorio:
+                        data_rel = pd.to_datetime(data_relatorio)
+                        df_filtrado = df_original[
+                            (df_original['DATA_REL'] == data_rel) & 
+                            (df_original['TP_DESP'] != 1)
+                        ].copy()
+                        logger.info(f"df_filtrado recriado com {len(df_filtrado)} registros")
+                    else:
+                        logger.error("Não foi possível recriar df_filtrado - data_relatorio não disponível")
+                        # Criar DataFrame vazio com colunas mínimas necessárias
+                        df_filtrado = pd.DataFrame(columns=['TP_DESP', 'VALOR'])
+                else:
+                    logger.error("Não foi possível recuperar df_filtrado")
+                    # Criar DataFrame vazio com colunas mínimas necessárias
+                    df_filtrado = pd.DataFrame(columns=['TP_DESP', 'VALOR'])
+        
         subtotais = {}
+        
         # Calcular subtotais por tipo de despesa
         for tipo, descricao in self.tipos_despesas.items():
             valor = 0
-            if tipo == 1:
-                # Somar todas as despesas de colaboradores (incluindo diárias, férias, rescisão, 13º)
-                # O cálculo permanece o mesmo, pois continuamos somando todos os valores tp_desp=1,
-                # apenas a apresentação visual é que mudou.
-                valor = (dados['df_tp_desp_1']['VALOR'].sum() +
-                    dados['df_tp_desp_2']['VALOR'].sum() +
-                    dados['df_diaria']['VALOR'].sum())
-            else:
-                # Somar outras despesas
-                df_tipo = dados['df_filtrado'][dados['df_filtrado']['TP_DESP'] == tipo]
-                valor = df_tipo['VALOR'].sum()
+            
+            try:
+                if tipo == 1:
+                    # Somar todas as despesas de colaboradores (incluindo diárias, férias, rescisão, 13º)
+                    valor1 = 0
+                    valor2 = 0
+                    valor3 = 0
+                    
+                    # TP_DESP_1 (Salário, Transporte, Café)
+                    if not df_tp_desp_1.empty and 'VALOR' in df_tp_desp_1.columns:
+                        try:
+                            valores_numericos = pd.to_numeric(df_tp_desp_1['VALOR'], errors='coerce').fillna(0)
+                            valor1 = valores_numericos.sum()
+                        except Exception as e:
+                            logger.warning(f"Erro ao somar df_tp_desp_1: {str(e)}")
+                            valor1 = 0
+                    
+                    # TP_DESP_2 (13º, Férias, Rescisão)
+                    if not df_tp_desp_2.empty and 'VALOR' in df_tp_desp_2.columns:
+                        try:
+                            valores_numericos = pd.to_numeric(df_tp_desp_2['VALOR'], errors='coerce').fillna(0)
+                            valor2 = valores_numericos.sum()
+                        except Exception as e:
+                            logger.warning(f"Erro ao somar df_tp_desp_2: {str(e)}")
+                            valor2 = 0
+                    
+                    # Diárias
+                    if not df_diaria.empty and 'VALOR' in df_diaria.columns:
+                        try:
+                            valores_numericos = pd.to_numeric(df_diaria['VALOR'], errors='coerce').fillna(0)
+                            valor3 = valores_numericos.sum()
+                        except Exception as e:
+                            logger.warning(f"Erro ao somar df_diaria: {str(e)}")
+                            valor3 = 0
+                    
+                    valor = valor1 + valor2 + valor3
+                    logger.debug(f"Tipo {tipo}: valor1={valor1}, valor2={valor2}, valor3={valor3}, total={valor}")
+                    
+                else:
+                    # Somar outras despesas usando df_filtrado
+                    if not df_filtrado.empty and 'TP_DESP' in df_filtrado.columns and 'VALOR' in df_filtrado.columns:
+                        try:
+                            df_tipo = df_filtrado[df_filtrado['TP_DESP'] == tipo]
+                            if not df_tipo.empty:
+                                valores_numericos = pd.to_numeric(df_tipo['VALOR'], errors='coerce').fillna(0)
+                                valor = valores_numericos.sum()
+                            logger.debug(f"Tipo {tipo}: {len(df_tipo)} registros, valor={valor}")
+                        except Exception as e:
+                            logger.error(f"Erro ao processar tipo {tipo}: {str(e)}")
+                            valor = 0
+                    else:
+                        logger.warning(f"df_filtrado vazio ou sem colunas necessárias para tipo {tipo}")
+                        valor = 0
+                        
+            except Exception as e:
+                logger.error(f"Erro geral ao calcular subtotal para tipo {tipo}: {str(e)}")
+                valor = 0
                 
             subtotais[tipo] = valor
 
@@ -1801,85 +1982,179 @@ class RelatorioHandler:
 
     
     def adicionar_detalhes(self, elementos, dados):
-        """Adiciona os detalhes das despesas ao relatório"""
+        """Adiciona os detalhes das despesas ao relatório - VERSÃO CORRIGIDA"""
         logger.info("Iniciando adição de detalhes ao relatório")
 
         elementos.append(Paragraph("DETALHES DAS DESPESAS", self.config.style_heading))
-    
+
+        # VERIFICAÇÃO CRÍTICA DOS DADOS
+        df_filtrado = dados.get('df_filtrado', pd.DataFrame())
+        df_tp_desp_1 = dados.get('df_tp_desp_1', pd.DataFrame())
+        df_tp_desp_2 = dados.get('df_tp_desp_2', pd.DataFrame())
+        df_diaria = dados.get('df_diaria', pd.DataFrame())
+        
+        logger.debug(f"=== VERIFICAÇÃO DE DADOS ===")
+        logger.debug(f"df_filtrado: {len(df_filtrado)} registros")
+        logger.debug(f"df_tp_desp_1: {len(df_tp_desp_1)} registros")
+        logger.debug(f"df_tp_desp_2: {len(df_tp_desp_2)} registros")
+        logger.debug(f"df_diaria: {len(df_diaria)} registros")
+        
+        if not df_filtrado.empty:
+            logger.debug(f"Colunas df_filtrado: {df_filtrado.columns.tolist()}")
+        else:
+            logger.warning("df_filtrado está vazio!")
+            
+        # RECUPERAR df_filtrado SE NECESSÁRIO
+        if df_filtrado.empty or 'TP_DESP' not in df_filtrado.columns:
+            logger.warning("df_filtrado vazio ou sem TP_DESP, tentando recuperar...")
+            
+            df_original = dados.get('df_original', pd.DataFrame())
+            data_relatorio = dados.get('data_relatorio')
+            incluir_excluidos = dados.get('incluir_excluidos', False)
+            
+            if not df_original.empty and data_relatorio:
+                try:
+                    data_rel = pd.to_datetime(data_relatorio)
+                    
+                    # Recriar df_filtrado dos dados originais
+                    df_temp = df_original.copy()
+                    
+                    # Filtrar excluídos se necessário
+                    if not incluir_excluidos and 'STATUS' in df_temp.columns:
+                        df_temp = df_temp[df_temp['STATUS'] != 'EXCLUIDO'].copy()
+                    
+                    # Filtrar para obter df_filtrado
+                    df_filtrado = df_temp[
+                        (df_temp['DATA_REL'] == data_rel) & 
+                        (df_temp['TP_DESP'] != 1)
+                    ].copy()
+                    
+                    logger.info(f"df_filtrado recuperado com {len(df_filtrado)} registros")
+                    
+                    # Atualizar dados para usar o df_filtrado recuperado
+                    dados['df_filtrado'] = df_filtrado
+                    
+                except Exception as e:
+                    logger.error(f"Erro ao recuperar df_filtrado: {str(e)}")
+                    # Criar DataFrame vazio com estrutura mínima
+                    df_filtrado = pd.DataFrame(columns=['TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR'])
+
         # 1. Despesas com Colaboradores - Funcionários (Salários, VT e VR)
-        if not dados['df_tp_desp_1'].empty:
+        if not df_tp_desp_1.empty:
             logger.debug("Processando despesas com colaboradores - funcionários")
             elementos.append(Paragraph("1) DESPESAS COM COLABORADORES - SALÁRIO/ADIANTAMENTO, TRANSPORTE E CAFÉ", 
                                 self.config.style_despesa))
-            df_consolidado = self.consolidar_despesas_colaboradores(dados['df_tp_desp_1'])
-            logger.debug(f"Total de funcionários processados: {len(df_consolidado)}")
+            
+            try:
+                df_consolidado = self.consolidar_despesas_colaboradores(df_tp_desp_1)
+                logger.debug(f"Total de funcionários processados: {len(df_consolidado)}")
 
-            tabela = self.criar_tabela_despesas(
-                df_consolidado,
-                ['NOME', 'SALÁRIO', 'DIAS', 
-                 'TRANSPORTE', 'CAFÉ', 'TOTAL', 'DADOS BANCÁRIOS'],
-                [220, 80, 40, 70, 70, 80, 210]
-            )
-            elementos.append(tabela)
-            elementos.append(Spacer(1, 12))
+                tabela = self.criar_tabela_despesas(
+                    df_consolidado,
+                    ['NOME', 'SALÁRIO', 'DIAS', 
+                    'TRANSPORTE', 'CAFÉ', 'TOTAL', 'DADOS BANCÁRIOS'],
+                    [220, 80, 40, 70, 70, 80, 210]
+                )
+                elementos.append(tabela)
+                elementos.append(Spacer(1, 12))
+            except Exception as e:
+                logger.error(f"Erro ao processar df_tp_desp_1: {str(e)}")
 
         # 2. Despesas com Colaboradores - Funcionários (13º, Férias e Rescisão)
-        if not dados['df_tp_desp_2'].empty:
-            logger.debug("Processando despesas com colaboradores - funcionários")
+        if not df_tp_desp_2.empty:
+            logger.debug("Processando despesas com colaboradores - 13º, férias, rescisão")
             elementos.append(Paragraph("1) DESPESAS COM COLABORADORES - 13º SALÁRIO, FÉRIAS E RESCISÃO", 
                                 self.config.style_despesa))
-            df_consolidado1 = self.consolidar_despesas_colaboradores1(dados['df_tp_desp_2'])
-            logger.debug(f"Total de funcionários processados: {len(df_consolidado1)}")
+            
+            try:
+                df_consolidado1 = self.consolidar_despesas_colaboradores1(df_tp_desp_2)
+                logger.debug(f"Total de funcionários processados: {len(df_consolidado1)}")
 
-            tabela = self.criar_tabela_despesas(
-                df_consolidado1,
-                ['NOME', '13º SALÁRIO', 'FÉRIAS', 'RESCISÃO',  
-                 'TOTAL', 'DADOS BANCÁRIOS'],
-                [240, 70, 70, 70, 70, 240]
-            )
-            elementos.append(tabela)
-            elementos.append(Spacer(1, 12))
+                tabela = self.criar_tabela_despesas(
+                    df_consolidado1,
+                    ['NOME', '13º SALÁRIO', 'FÉRIAS', 'RESCISÃO',  
+                    'TOTAL', 'DADOS BANCÁRIOS'],
+                    [240, 70, 70, 70, 70, 240]
+                )
+                elementos.append(tabela)
+                elementos.append(Spacer(1, 12))
+            except Exception as e:
+                logger.error(f"Erro ao processar df_tp_desp_2: {str(e)}")
         
         # 3. Despesas com Colaboradores - Diaristas
-        if not dados['df_diaria'].empty:
+        if not df_diaria.empty:
             logger.debug("Processando despesas com colaboradores - diaristas")
 
             elementos.append(Paragraph("1) DESPESAS COM COLABORADORES - DIÁRIAS", 
                                 self.config.style_despesa))
-            # Renomear colunas para corresponder ao formato esperado
-            df_diaria_formatado = dados['df_diaria'].copy()
-            df_diaria_formatado = df_diaria_formatado.rename(columns={
-                'VR_UNIT': 'DIÁRIA',
-                'VALOR': 'TOTAL',
-                'DADOS_BANCARIOS': 'DADOS BANCÁRIOS'
-            })
-            tabela = self.criar_tabela_despesas(
-                df_diaria_formatado,
-                ['NOME', 'DIÁRIA', 'DIAS', 'TOTAL', 'DADOS BANCÁRIOS'],
-                [284, 80, 50, 90, 280]
-            )
-            elementos.append(tabela)
-            elementos.append(Spacer(1, 12))
-    
-        # 4. Outras despesas
-        for tipo in range(2, 8):
-            df_tipo = dados['df_filtrado'][dados['df_filtrado']['TP_DESP'] == tipo]
-            if not df_tipo.empty:
-                logger.debug(f"Processando despesas tipo {tipo}")
-                elementos.append(Paragraph(self.tipos_despesas[tipo], 
-                                    self.config.style_despesa))
+            
+            try:
                 # Renomear colunas para corresponder ao formato esperado
-                df_tipo = df_tipo.rename(columns={
-                    'DT_VENCTO': 'VENCIMENTO',
+                df_diaria_formatado = df_diaria.copy()
+                df_diaria_formatado = df_diaria_formatado.rename(columns={
+                    'VR_UNIT': 'DIÁRIA',
+                    'VALOR': 'TOTAL',
                     'DADOS_BANCARIOS': 'DADOS BANCÁRIOS'
                 })
                 tabela = self.criar_tabela_despesas(
-                    df_tipo,
-                    ['NOME', 'VENCIMENTO', 'REFERÊNCIA', 'VALOR', 'DADOS BANCÁRIOS'],
-                    [220, 70, 250, 80, 170]
+                    df_diaria_formatado,
+                    ['NOME', 'DIÁRIA', 'DIAS', 'TOTAL', 'DADOS BANCÁRIOS'],
+                    [284, 80, 50, 90, 280]
                 )
                 elementos.append(tabela)
-                elementos.append(Spacer(1, 16))
+                elementos.append(Spacer(1, 12))
+            except Exception as e:
+                logger.error(f"Erro ao processar df_diaria: {str(e)}")
+
+        # 4. Outras despesas - COM VERIFICAÇÃO ROBUSTA
+        for tipo in range(2, 8):
+            try:
+                # Verificar se df_filtrado tem dados e as colunas necessárias
+                if df_filtrado.empty:
+                    logger.debug(f"Pulando tipo {tipo} - df_filtrado está vazio")
+                    continue
+                    
+                if 'TP_DESP' not in df_filtrado.columns:
+                    logger.warning(f"Pulando tipo {tipo} - coluna TP_DESP não encontrada")
+                    continue
+                    
+                df_tipo = df_filtrado[df_filtrado['TP_DESP'] == tipo]
+                
+                if not df_tipo.empty:
+                    logger.debug(f"Processando despesas tipo {tipo} - {len(df_tipo)} registros")
+                    elementos.append(Paragraph(self.tipos_despesas[tipo], 
+                                        self.config.style_despesa))
+                    
+                    # Renomear colunas para corresponder ao formato esperado
+                    df_tipo = df_tipo.rename(columns={
+                        'DT_VENCTO': 'VENCIMENTO',
+                        'DADOS_BANCARIOS': 'DADOS BANCÁRIOS'
+                    })
+                    
+                    # Verificar se as colunas necessárias existem
+                    colunas_necessarias = ['NOME', 'VENCIMENTO', 'REFERÊNCIA', 'VALOR', 'DADOS BANCÁRIOS']
+                    colunas_faltantes = [col for col in colunas_necessarias if col not in df_tipo.columns]
+                    
+                    if colunas_faltantes:
+                        logger.warning(f"Tipo {tipo}: Colunas faltantes: {colunas_faltantes}")
+                        # Adicionar colunas faltantes com valores vazios
+                        for col in colunas_faltantes:
+                            df_tipo[col] = ''
+                    
+                    tabela = self.criar_tabela_despesas(
+                        df_tipo,
+                        ['NOME', 'VENCIMENTO', 'REFERÊNCIA', 'VALOR', 'DADOS BANCÁRIOS'],
+                        [220, 70, 250, 80, 170]
+                    )
+                    elementos.append(tabela)
+                    elementos.append(Spacer(1, 16))
+                else:
+                    logger.debug(f"Tipo {tipo}: Nenhum registro encontrado")
+                    
+            except Exception as e:
+                logger.error(f"Erro ao processar tipo {tipo}: {str(e)}", exc_info=True)
+                continue
+                
         logger.info("Detalhes adicionados com sucesso")
 
     def gerar_relatorio_pdf(self, dados, caminho_output, arquivo_excel):
@@ -1974,6 +2249,184 @@ class RelatorioHandler:
             logger.error(f"Erro na geração do relatório: {str(e)}", exc_info=True)
             raise
  
+    def validar_integridade_dados(self, df, local="DataFrame"):
+        """
+        Valida a integridade dos dados essenciais
+        
+        Args:
+            df: DataFrame a ser validado
+            local: String descritiva do local onde o DataFrame está sendo validado
+        
+        Returns:
+            bool: True se os dados são válidos, False caso contrário
+        """
+        try:
+            logger.debug(f"Validando integridade de dados em: {local}")
+            
+            # Verificar se o DataFrame não está vazio
+            if df.empty:
+                logger.warning(f"{local}: DataFrame está vazio")
+                return True  # DataFrame vazio é tecnicamente válido
+            
+            # Verificar colunas essenciais
+            colunas_essenciais = ['TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR', 'DATA_REL']
+            colunas_faltantes = [col for col in colunas_essenciais if col not in df.columns]
+            
+            if colunas_faltantes:
+                logger.error(f"{local}: Colunas essenciais ausentes: {colunas_faltantes}")
+                logger.error(f"{local}: Colunas disponíveis: {df.columns.tolist()}")
+                return False
+            
+            # Verificar tipos de dados
+            if df['TP_DESP'].dtype not in ['int64', 'float64', 'object']:
+                logger.warning(f"{local}: Tipo de dado inesperado para TP_DESP: {df['TP_DESP'].dtype}")
+            
+            # Verificar valores de TP_DESP
+            tipos_validos = list(range(1, 8))  # 1 a 7
+            tipos_encontrados = df['TP_DESP'].unique()
+            tipos_invalidos = [t for t in tipos_encontrados if t not in tipos_validos]
+            
+            if tipos_invalidos:
+                logger.warning(f"{local}: Tipos de despesa inválidos encontrados: {tipos_invalidos}")
+            
+            # Verificar se há valores nulos em colunas críticas
+            for col in ['TP_DESP', 'DATA_REL']:
+                nulos = df[col].isnull().sum()
+                if nulos > 0:
+                    logger.warning(f"{local}: {nulos} valores nulos encontrados na coluna {col}")
+            
+            logger.debug(f"{local}: Validação concluída - {len(df)} registros, {len(df.columns)} colunas")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Erro ao validar integridade de dados em {local}: {str(e)}")
+            return False
+
+    def carregar_dados_excel_com_validacao(self, arquivo_excel, incluir_excluidos=False):
+        """Versão do carregar_dados_excel com validação robusta"""
+        try:
+            logger.info(f"Carregando dados de: {arquivo_excel}")
+            
+            # Carregar dados
+            df = pd.read_excel(arquivo_excel, sheet_name='Dados')
+            df = df.fillna("")
+            
+            logger.info(f"Dados carregados: {len(df)} registros, {len(df.columns)} colunas")
+            logger.debug(f"Colunas carregadas: {df.columns.tolist()}")
+            
+            # Verificar colunas necessárias
+            colunas_necessarias = {'DATA_REL', 'TP_DESP', 'REFERÊNCIA', 'DT_VENCTO', 'VALOR', 'NF'}
+            colunas_faltantes = colunas_necessarias - set(df.columns)
+            
+            if colunas_faltantes:
+                raise ValueError(f"Colunas necessárias ausentes: {colunas_faltantes}")
+            
+            # Adicionar coluna STATUS se não existir
+            if 'STATUS' not in df.columns:
+                df['STATUS'] = 'ATIVO'
+                logger.info("Coluna STATUS adicionada com valor padrão 'ATIVO'")
+            
+            # Validar integridade inicial
+            if not self.validar_integridade_dados(df, "Dados carregados"):
+                raise ValueError("Falha na validação de integridade dos dados carregados")
+            
+            # Filtrar excluídos se necessário
+            if not incluir_excluidos:
+                df_original_size = len(df)
+                df = df[df['STATUS'] != 'EXCLUIDO'].copy()
+                registros_excluidos = df_original_size - len(df)
+                if registros_excluidos > 0:
+                    logger.info(f"Filtrados {registros_excluidos} registros excluídos")
+                print(f"Registros após filtrar excluídos: {len(df)}")
+            else:
+                print(f"Incluindo todos os registros (incluindo excluídos): {len(df)}")
+            
+            # Validar após filtragem
+            if not self.validar_integridade_dados(df, "Dados após filtragem"):
+                raise ValueError("Falha na validação após filtragem de excluídos")
+            
+            # Converter NF para string antes de processar
+            df['NF'] = df['NF'].astype(str)
+            
+            # Concatenar NF com REFERÊNCIA apenas para TP_DESP != 1
+            mascara = (df['TP_DESP'] != 1) & (df['NF'].notna()) & (df['NF'].str.strip() != '') & (df['NF'] != 'nan')
+            df.loc[mascara, 'REFERÊNCIA'] = df[mascara].apply(
+                lambda row: f"{row['REFERÊNCIA']} (NF: {row['NF'].strip()})", 
+                axis=1
+            )
+            
+            # Validação final
+            if not self.validar_integridade_dados(df, "Dados finais"):
+                raise ValueError("Falha na validação final dos dados")
+            
+            logger.info(f"Dados carregados e validados com sucesso: {len(df)} registros")
+            return df
+            
+        except Exception as e:
+            logger.error(f"Erro ao carregar arquivo Excel: {str(e)}", exc_info=True)
+            raise Exception(f"Erro ao carregar arquivo Excel: {str(e)}")
+
+    def gerar_relatorio_pdf_com_validacao(self, dados, caminho_output, arquivo_excel):
+        """Versão do gerar_relatorio_pdf com validação de dados"""
+        try:
+            logger.info("=== INICIANDO GERAÇÃO DE PDF COM VALIDAÇÃO ===")
+            
+            # Validar dados de entrada
+            df_filtrado = dados.get('df_filtrado', pd.DataFrame())
+            df_tp_desp_1 = dados.get('df_tp_desp_1', pd.DataFrame())
+            df_tp_desp_2 = dados.get('df_tp_desp_2', pd.DataFrame())
+            df_diaria = dados.get('df_diaria', pd.DataFrame())
+            
+            # Validar cada DataFrame
+            dataframes_para_validar = [
+                (df_filtrado, "df_filtrado"),
+                (df_tp_desp_1, "df_tp_desp_1"),
+                (df_tp_desp_2, "df_tp_desp_2"),
+                (df_diaria, "df_diaria")
+            ]
+            
+            for df, nome in dataframes_para_validar:
+                if not df.empty:
+                    if not self.validar_integridade_dados(df, nome):
+                        logger.error(f"Falha na validação de {nome}")
+                        raise ValueError(f"Dados inválidos em {nome}")
+            
+            # Verificar dados obrigatórios
+            campos_obrigatorios = ['nome_cliente', 'data_relatorio', 'numero_relatorio', 'acumulado']
+            campos_faltantes = [campo for campo in campos_obrigatorios if campo not in dados]
+            
+            if campos_faltantes:
+                logger.error(f"Campos obrigatórios ausentes: {campos_faltantes}")
+                raise ValueError(f"Campos obrigatórios ausentes: {campos_faltantes}")
+            
+            # Chamar o método original de geração de PDF
+            self.gerar_relatorio_pdf_original(dados, caminho_output, arquivo_excel)
+            
+            logger.info("=== PDF GERADO COM SUCESSO ===")
+            
+        except Exception as e:
+            logger.error(f"Erro na geração de PDF com validação: {str(e)}", exc_info=True)
+            raise
+
+    # Método para aplicar as correções na classe RelatorioHandler
+    def aplicar_correcoes_relatorio_handler(handler_instance):
+        """
+        Aplica as correções na instância do RelatorioHandler
+        """
+        # Backup dos métodos originais
+        handler_instance.carregar_dados_excel_original = handler_instance.carregar_dados_excel
+        handler_instance.processar_dados_original = handler_instance.processar_dados
+        handler_instance.criar_resumo_despesas_original = handler_instance.criar_resumo_despesas
+        handler_instance.gerar_relatorio_pdf_original = handler_instance.gerar_relatorio_pdf
+        
+        # Adicionar novos métodos
+        handler_instance.validar_integridade_dados = validar_integridade_dados.__get__(handler_instance)
+        handler_instance.carregar_dados_excel = carregar_dados_excel_com_validacao.__get__(handler_instance)
+        # handler_instance.processar_dados = processar_dados_corrigido.__get__(handler_instance) 
+        # handler_instance.criar_resumo_despesas = criar_resumo_despesas_corrigido.__get__(handler_instance)
+        handler_instance.gerar_relatorio_pdf = gerar_relatorio_pdf_com_validacao.__get__(handler_instance)
+        
+        logger.info("Correções aplicadas ao RelatorioHandler")
         
 class RelatorioLancamentosPendentes:
     def __init__(self):
@@ -2538,7 +2991,7 @@ class VisualizadorRelatorio:
         # Criar janela de preview
         preview_window = Toplevel(self.parent)
         preview_window.title("Preview do Relatório")
-        preview_window.geometry("900x700")
+        preview_window.geometry("900x1000")
         preview_window.transient(self.parent)
         
         # Frame principal
@@ -2651,8 +3104,9 @@ class VisualizadorRelatorio:
             print(f"Erro ao remover arquivo temporário: {str(e)}")
     
     def confirmar_geracao(self, preview_window, dados):
-        """Confirma a geração do PDF final"""
+        """Confirma a geração do PDF final - VERSÃO COM BUSCA ROBUSTA DO MENU"""
         try:
+            # Fechar janela de preview
             preview_window.destroy()
             
             # Gerar nome do arquivo
@@ -2660,19 +3114,17 @@ class VisualizadorRelatorio:
             nome_cliente = dados['nome_cliente']
             nome_arquivo = f"REL - {nome_cliente} - {data_formatada}.pdf"
             
-            # CORREÇÃO: Adicionar sufixo se incluir excluídos
             if dados.get('incluir_excluidos', False):
                 nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
                 
-            # Obter caminho do arquivo original para determinar onde salvar
-            arquivo_original = getattr(self.parent, 'arquivo_path', '')
+            # Obter caminho do arquivo
+            arquivo_original = getattr(self, 'arquivo_path', '')
             if arquivo_original:
                 caminho_output = os.path.join(os.path.dirname(arquivo_original), nome_arquivo)
             else:
-                # Fallback: usar diretório atual
                 caminho_output = nome_arquivo
             
-            # Gerar o PDF com os dados completos
+            # Gerar o PDF
             from relatorio_despesas_aprimorado import RelatorioHandler
             handler = RelatorioHandler()
             handler.gerar_relatorio_pdf(dados, caminho_output, arquivo_original)
@@ -2680,19 +3132,42 @@ class VisualizadorRelatorio:
             # Mostrar mensagem de sucesso
             messagebox.showinfo(
                 "Sucesso", 
-                f"Relatório gerado com sucesso!\nSalvo em: {caminho_output}"
+                f"Relatório gerado com sucesso!\n\n"
+                f"Cliente: {nome_cliente}\n"
+                f"Arquivo: {nome_arquivo}\n\n"
+                f"A interface será fechada e você retornará ao menu."
             )
             
             # Abrir o arquivo gerado
             self.abrir_arquivo(caminho_output)
+            
+            try:
+                
+                # Fechar janela atual
+                self.parent.destroy()
+                
+                # Encontrar e executar sistema principal
+                possible_paths = [
+                    "relatorios_interface.py",
+                    "src/relatorios_interface.py"
+                ]
+                
+                for path in possible_paths:
+                    if os.path.exists(path):
+                        subprocess.Popen([sys.executable, path])
+                        break
+                else:
+                    print("⚠️ Sistema principal não encontrado")
+                    
+            except Exception as e:
+                print(f"Erro: {str(e)}")
+                self.parent.destroy()
             
             return True
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao gerar PDF: {str(e)}")
             print(f"Erro ao gerar PDF: {str(e)}")
-            import traceback
-            traceback.print_exc()
             return False   
 
 def main():
