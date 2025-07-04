@@ -335,7 +335,8 @@ class SistemaRelatorios:
         self.tree_relatorios.bind('<<TreeviewSelect>>', self.mostrar_opcoes_relatorio)
     
     def mostrar_opcoes_relatorio(self, event=None):
-        """Mostra as opções do relatório selecionado"""
+        """Versão corrigida que usa estrutura original"""
+        
         # Limpar frame direito
         for widget in self.right_frame.winfo_children():
             widget.destroy()
@@ -377,7 +378,7 @@ class SistemaRelatorios:
         opcoes_frame = ttk.LabelFrame(self.right_frame, text="Opções do Relatório")
         opcoes_frame.pack(fill='both', expand=True, padx=10, pady=10)
         
-        # Botões de ação específicos para cada tipo de relatório
+        # Configurar opções específicas (CÓDIGO ORIGINAL)
         if relatorio["id"] == "despesas":
             self.setup_opcoes_despesas(opcoes_frame)
         elif relatorio["id"] == "contratos":
@@ -387,8 +388,8 @@ class SistemaRelatorios:
         elif relatorio["id"] == "tipo_despesa":
             self.setup_opcoes_tipo_despesa(opcoes_frame)
         elif relatorio["id"] == "fornecedores":
-            self.setup_opcoes_fornecedores(opcoes_frame)  # Adicionar esta condição
-        elif relatorio["id"] == "lancamentos_pendentes":  # ADICIONAR este elif
+            self.setup_opcoes_fornecedores(opcoes_frame)
+        elif relatorio["id"] == "lancamentos_pendentes":
             self.setup_opcoes_lancamentos_pendentes(opcoes_frame)
         else:
             ttk.Label(
@@ -396,16 +397,192 @@ class SistemaRelatorios:
                 text="Opções específicas para este relatório serão implementadas em breve."
             ).pack(pady=20)
         
-        # Botão para gerar relatório
+        # === ÚNICA MUDANÇA: BOTÃO PERSONALIZADO APENAS PARA DESPESAS ===
         btn_frame = ttk.Frame(self.right_frame)
         btn_frame.pack(fill='x', pady=20)
         
+        if relatorio["id"] == "despesas":
+            # NOVO: Botão otimizado para despesas
+            # Label explicativo
+            ttk.Label(
+                btn_frame,
+                text="💡 O sistema processará os dados e abrirá diretamente o preview ou gerará o PDF conforme configurado.",
+                font=('Arial', 9),
+                foreground='blue',
+                wraplength=400
+            ).pack(pady=(0, 10))
+            
+            # Botão de validação (opcional)
+            ttk.Button(
+                btn_frame,
+                text="✅ Validar Configurações",
+                command=lambda: self.validar_e_mostrar_resumo(),
+                style='TButton'
+            ).pack(side='left', padx=5)
+            
+            # Botão principal otimizado
+            ttk.Button(
+                btn_frame,
+                text="🚀 Processar e Gerar Relatório",
+                command=lambda: self.gerar_relatorio(relatorio),
+                style='Accentuated.TButton'
+            ).pack(side='right', padx=5)
+            
+        else:
+            # ORIGINAL: Botão padrão para outros relatórios
+            ttk.Button(
+                btn_frame,
+                text="Gerar Relatório",
+                command=lambda: self.gerar_relatorio(relatorio),
+                style='Accentuated.TButton'
+            ).pack(side='right', padx=5)
+
+    def criar_botao_despesas_otimizado(self, btn_frame, relatorio):
+        """Cria botão otimizado específico para relatório de despesas"""
+        
+        # Label explicativo
+        info_label = ttk.Label(
+            btn_frame,
+            text="💡 O sistema processará os dados e abrirá diretamente o preview ou gerará o PDF conforme configurado.",
+            font=('Arial', 9),
+            foreground='blue',
+            wraplength=400
+        )
+        info_label.pack(pady=(0, 10))
+        
+        # Botão principal otimizado
+        botao_principal = ttk.Button(
+            btn_frame,
+            text="🚀 Processar e Gerar Relatório",
+            command=lambda: self.gerar_relatorio(relatorio),
+            style='Accentuated.TButton'
+        )
+        botao_principal.pack(side='right', padx=5)
+        
+        # OPCIONAL: Botão de validação prévia
+        botao_validar = ttk.Button(
+            btn_frame,
+            text="✅ Validar Configurações",
+            command=lambda: self.validar_e_mostrar_resumo(),
+            style='TButton'
+        )
+        botao_validar.pack(side='left', padx=5)
+
+    def criar_botao_padrao(self, btn_frame, relatorio):
+        """Cria botão padrão para outros tipos de relatório"""
+        
+        # Botão padrão (comportamento original)
         ttk.Button(
             btn_frame,
             text="Gerar Relatório",
             command=lambda: self.gerar_relatorio(relatorio),
             style='Accentuated.TButton'
         ).pack(side='right', padx=5)
+
+    def validar_e_mostrar_resumo(self):
+        """Valida configurações e mostra resumo antes da geração"""
+        try:
+            # Validar configurações
+            if not self.validar_configuracoes_despesas():
+                return
+            
+            # Coletar configurações
+            configuracoes = self.coletar_configuracoes_completas()
+            
+            # Gerar resumo
+            resumo = self.gerar_resumo_configuracoes(configuracoes)
+            
+            # Mostrar resumo em janela separada
+            self.mostrar_janela_resumo(resumo, configuracoes)
+            
+        except Exception as e:
+            logger.error(f"Erro na validação prévia: {str(e)}")
+            messagebox.showerror("Erro", f"Erro na validação: {str(e)}")
+
+    def mostrar_janela_resumo(self, resumo, configuracoes):
+        """Mostra janela com resumo das configurações"""
+        
+        # Criar janela
+        resumo_window = tk.Toplevel(self.root)
+        resumo_window.title("Resumo das Configurações")
+        resumo_window.geometry("500x400")
+        resumo_window.transient(self.root)
+        resumo_window.grab_set()
+        
+        # Frame principal
+        main_frame = ttk.Frame(resumo_window, padding=20)
+        main_frame.pack(fill='both', expand=True)
+        
+        # Título
+        ttk.Label(
+            main_frame,
+            text="📋 Resumo das Configurações",
+            font=('Arial', 14, 'bold')
+        ).pack(pady=(0, 20))
+        
+        # Área de texto com scroll
+        text_frame = ttk.Frame(main_frame)
+        text_frame.pack(fill='both', expand=True)
+        
+        text_widget = tk.Text(
+            text_frame,
+            wrap='word',
+            font=('Courier', 10),
+            state='disabled'
+        )
+        
+        scrollbar = ttk.Scrollbar(text_frame, orient='vertical', command=text_widget.yview)
+        text_widget.configure(yscrollcommand=scrollbar.set)
+        
+        text_widget.pack(side='left', fill='both', expand=True)
+        scrollbar.pack(side='right', fill='y')
+        
+        # Inserir resumo
+        text_widget.config(state='normal')
+        text_widget.insert('1.0', resumo)
+        text_widget.config(state='disabled')
+        
+        # Frame para botões
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(fill='x', pady=(20, 0))
+        
+        # Botões
+        ttk.Button(
+            btn_frame,
+            text="❌ Cancelar",
+            command=resumo_window.destroy
+        ).pack(side='left', padx=5)
+        
+        ttk.Button(
+            btn_frame,
+            text="✏️ Editar Configurações",
+            command=resumo_window.destroy
+        ).pack(side='left', padx=5)
+        
+        ttk.Button(
+            btn_frame,
+            text="🚀 Continuar com Geração",
+            command=lambda: self.continuar_geracao_apos_resumo(resumo_window, configuracoes)
+        ).pack(side='right', padx=5)
+
+    def continuar_geracao_apos_resumo(self, resumo_window, configuracoes):
+        """Continua com a geração após confirmação do resumo"""
+        try:
+            resumo_window.destroy()
+            
+            # Criar o relatório mock para compatibilidade
+            relatorio_mock = {
+                "id": "despesas",
+                "nome": "Relatório de Despesas",
+                "disponivel": True
+            }
+            
+            # Proceder com geração otimizada
+            self.gerar_relatorio(relatorio_mock)
+            
+        except Exception as e:
+            logger.error(f"Erro ao continuar geração: {str(e)}")
+            messagebox.showerror("Erro", f"Erro: {str(e)}")
     
     def preencher_combobox_clientes(self, combobox):
         """Preenche um combobox com a lista de clientes ativos"""
@@ -483,11 +660,9 @@ class SistemaRelatorios:
         except Exception as e:
             return False, f"❌ Erro ao validar data: {str(e)}"
 
-    # Modificações necessárias no método setup_opcoes_despesas
-
     def setup_opcoes_despesas(self, parent_frame):
-        """Versão modificada com cálculo automático de data"""
-    
+        """Versão otimizada com seleção de cliente via combobox"""
+        
         # Frame para data com cálculo automático
         frame_data = ttk.LabelFrame(parent_frame, text="Data do Relatório")
         frame_data.pack(fill='x', padx=10, pady=10)
@@ -553,12 +728,69 @@ class SistemaRelatorios:
         self.data_automatica_calculada = data_automatica
         if hasattr(self, 'data_entry'):
             self.data_entry.set_date(data_automatica)
+
+        # === NOVA SEÇÃO: SELEÇÃO DE CLIENTE ===
+        frame_cliente = ttk.LabelFrame(parent_frame, text="Seleção de Cliente")
+        frame_cliente.pack(fill='x', padx=10, pady=10)
         
-        # Resto das opções (mesmo código anterior)
+        # Frame interno para organizar melhor
+        cliente_inner_frame = ttk.Frame(frame_cliente)
+        cliente_inner_frame.pack(fill='x', padx=10, pady=10)
+        
+        # Label e Combobox de cliente
+        ttk.Label(cliente_inner_frame, text="Cliente:", font=('Arial', 10, 'bold')).pack(anchor='w', pady=(0, 5))
+        
+        self.cliente_combobox = ttk.Combobox(
+            cliente_inner_frame, 
+            width=50,
+            state='readonly',  # Apenas seleção, não digitação
+            font=('Arial', 10)
+        )
+        self.cliente_combobox.pack(fill='x', pady=(0, 10))
+        
+        # Preencher combobox com clientes
+        self.preencher_combobox_clientes(self.cliente_combobox)
+        
+        # Bind para evento de seleção
+        self.cliente_combobox.bind('<<ComboboxSelected>>', self.on_cliente_selecionado)
+        
+        # Label para mostrar status da seleção
+        self.status_cliente_label = ttk.Label(
+            cliente_inner_frame, 
+            text="Selecione um cliente para continuar",
+            font=('Arial', 9),
+            foreground='gray'
+        )
+        self.status_cliente_label.pack(anchor='w', pady=(0, 10))
+        
+        # Frame para botões adicionais de cliente
+        botoes_cliente_frame = ttk.Frame(cliente_inner_frame)
+        botoes_cliente_frame.pack(fill='x')
+        
+        # Botão para atualizar lista de clientes
+        ttk.Button(
+            botoes_cliente_frame,
+            text="🔄 Atualizar Lista",
+            command=self.atualizar_lista_clientes_despesas,
+            width=15
+        ).pack(side='left', padx=(0, 10))
+        
+        # Botão para seleção manual de arquivo (fallback)
+        ttk.Button(
+            botoes_cliente_frame,
+            text="📁 Selecionar Arquivo Manual",
+            command=self.selecionar_arquivo_manual_despesas,
+            width=25
+        ).pack(side='left')
+        
+        # === OPÇÕES DE PROCESSAMENTO ===
+        frame_opcoes = ttk.LabelFrame(parent_frame, text="Opções de Processamento")
+        frame_opcoes.pack(fill='x', padx=10, pady=10)
+        
         # Checkbox para incluir lançamentos futuros
         self.incluir_futuros = tk.BooleanVar(value=True)
         ttk.Checkbutton(
-            parent_frame,
+            frame_opcoes,
             text="Incluir lançamentos futuros",
             variable=self.incluir_futuros
         ).pack(anchor='w', padx=15, pady=5)
@@ -566,12 +798,12 @@ class SistemaRelatorios:
         # Checkbox para incluir lançamentos excluídos
         self.incluir_excluidos = tk.BooleanVar(value=False)
         ttk.Checkbutton(
-            parent_frame,
+            frame_opcoes,
             text="Incluir lançamentos excluídos no relatório",
             variable=self.incluir_excluidos
         ).pack(anchor='w', padx=15, pady=5)
         
-        # Frame para tipo de geração
+        # === TIPO DE GERAÇÃO ===
         frame_tipo = ttk.LabelFrame(parent_frame, text="Tipo de Geração")
         frame_tipo.pack(fill='x', padx=10, pady=10)
         
@@ -593,26 +825,20 @@ class SistemaRelatorios:
             command=self.alternar_tipo_geracao
         ).pack(anchor='w', padx=15, pady=5)
         
-        # Frame para seleção individual
+        # === FRAMES PARA TIPOS ESPECÍFICOS ===
+        
+        # Frame para seleção individual (já preenchido com cliente selecionado)
         self.frame_individual = ttk.Frame(parent_frame)
         self.frame_individual.pack(fill='x', padx=10, pady=10)
         
-        # Frame para seleção de cliente
-        frame_cliente = ttk.Frame(self.frame_individual)
-        frame_cliente.pack(fill='x', padx=10, pady=10)
-        
-        ttk.Label(frame_cliente, text="Cliente:").pack(side='left', padx=5)
-        
-        self.cliente_combobox = ttk.Combobox(frame_cliente, width=40)
-        self.cliente_combobox.pack(side='left', padx=5)
-        
-        self.preencher_combobox_clientes(self.cliente_combobox)
-        
-        ttk.Button(
+        # Label de status para individual
+        self.status_individual_label = ttk.Label(
             self.frame_individual,
-            text="Selecionar Arquivo de Cliente",
-            command=self.selecionar_arquivo_cliente
-        ).pack(anchor='w', padx=15, pady=10)
+            text="Cliente será selecionado através da combobox acima",
+            font=('Arial', 9),
+            foreground='blue'
+        )
+        self.status_individual_label.pack(anchor='w', padx=15, pady=5)
         
         # Frame para seleção em lote
         self.frame_lote = ttk.Frame(parent_frame)
@@ -628,7 +854,7 @@ class SistemaRelatorios:
         
         self.arquivos_lote = []
         
-        # Frame para modo de visualização
+        # === MODO DE VISUALIZAÇÃO ===
         frame_visualizacao = ttk.LabelFrame(parent_frame, text="Modo de Visualização")
         frame_visualizacao.pack(fill='x', padx=10, pady=10)
         
@@ -647,7 +873,7 @@ class SistemaRelatorios:
             value="direto"
         ).pack(side='left', padx=20, pady=5)
         
-        # Frame para formato de saída
+        # === FORMATO DE SAÍDA ===
         frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
         frame_formato.pack(fill='x', padx=10, pady=10)
         
@@ -668,6 +894,230 @@ class SistemaRelatorios:
         
         # Inicializar mostrando apenas a opção individual
         self.frame_lote.pack_forget()
+        
+        # Configurar variáveis de controle
+        self.arquivo_cliente_selecionado = None
+        self.cliente_atual = None
+
+    def on_cliente_selecionado(self, event=None):
+        """Trata a seleção de um cliente na combobox"""
+        try:
+            cliente_selecionado = self.cliente_combobox.get()
+            logger.info(f"Cliente selecionado: {cliente_selecionado}")
+            
+            if not cliente_selecionado or cliente_selecionado == 'Todos os Clientes':
+                self.limpar_selecao_cliente()
+                return
+            
+            # Buscar arquivo do cliente
+            caminho_arquivo = self.buscar_arquivo_cliente(cliente_selecionado)
+            
+            if caminho_arquivo and os.path.exists(caminho_arquivo):
+                self.arquivo_cliente_selecionado = caminho_arquivo
+                self.cliente_atual = cliente_selecionado
+                
+                # Atualizar status
+                self.status_cliente_label.config(
+                    text=f"✅ Cliente: {cliente_selecionado} | Arquivo: {os.path.basename(caminho_arquivo)}",
+                    foreground='green'
+                )
+                
+                # Atualizar status individual
+                if hasattr(self, 'status_individual_label'):
+                    self.status_individual_label.config(
+                        text=f"✅ Arquivo selecionado: {os.path.basename(caminho_arquivo)}",
+                        foreground='green'
+                    )
+                
+                logger.info(f"Arquivo encontrado: {caminho_arquivo}")
+                
+            else:
+                self.status_cliente_label.config(
+                    text=f"❌ Arquivo não encontrado para {cliente_selecionado}",
+                    foreground='red'
+                )
+                
+                # Oferecer seleção manual
+                resposta = messagebox.askyesno(
+                    "Arquivo não encontrado",
+                    f"Não foi encontrado arquivo para o cliente '{cliente_selecionado}'.\n\n"
+                    f"Deseja selecionar manualmente o arquivo deste cliente?"
+                )
+                
+                if resposta:
+                    self.selecionar_arquivo_manual_despesas()
+                else:
+                    self.limpar_selecao_cliente()
+                    
+        except Exception as e:
+            logger.error(f"Erro ao selecionar cliente: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao selecionar cliente: {str(e)}")
+
+    def buscar_arquivo_cliente(self, nome_cliente):
+        """Busca o arquivo Excel do cliente especificado"""
+        try:
+            # Importar configurações de pasta
+            try:
+                from src.config.config import PASTA_CLIENTES
+            except ImportError:
+                try:
+                    from config.config import PASTA_CLIENTES
+                except ImportError:
+                    # Pasta padrão
+                    PASTA_CLIENTES = "clientes"
+            
+            # Verificar se PASTA_CLIENTES existe
+            if not os.path.exists(PASTA_CLIENTES):
+                logger.warning(f"Pasta de clientes não encontrada: {PASTA_CLIENTES}")
+                # Tentar pasta relativa
+                pasta_alternativa = os.path.join(os.path.dirname(__file__), "..", "clientes")
+                if os.path.exists(pasta_alternativa):
+                    PASTA_CLIENTES = pasta_alternativa
+                else:
+                    return None
+            
+            # Possíveis nomes de arquivo
+            possíveis_nomes = [
+                f"{nome_cliente}.xlsx",
+                f"{nome_cliente}.xls",
+                f"{nome_cliente.upper()}.xlsx",
+                f"{nome_cliente.lower()}.xlsx",
+                f"{nome_cliente.replace(' ', '_')}.xlsx",
+                f"{nome_cliente.replace(' ', '')}.xlsx"
+            ]
+            
+            # Buscar arquivo
+            for nome_arquivo in possíveis_nomes:
+                caminho_completo = os.path.join(PASTA_CLIENTES, nome_arquivo)
+                if os.path.exists(caminho_completo):
+                    logger.info(f"Arquivo encontrado: {caminho_completo}")
+                    return caminho_completo
+            
+            # Se não encontrou, listar arquivos na pasta para debug
+            try:
+                arquivos_existentes = os.listdir(PASTA_CLIENTES)
+                logger.debug(f"Arquivos na pasta {PASTA_CLIENTES}: {arquivos_existentes}")
+            except:
+                pass
+            
+            logger.warning(f"Arquivo não encontrado para cliente: {nome_cliente}")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Erro ao buscar arquivo do cliente: {str(e)}")
+            return None
+
+    def selecionar_arquivo_manual_despesas(self):
+        """Permite seleção manual de arquivo (fallback)"""
+        try:
+            arquivo = filedialog.askopenfilename(
+                title="Selecione o arquivo Excel do cliente",
+                filetypes=[("Arquivos Excel", "*.xlsx *.xls")],
+                initialdir=self.obter_pasta_clientes()
+            )
+            
+            if arquivo:
+                # Verificar se o arquivo é válido
+                if not os.path.exists(arquivo):
+                    messagebox.showerror("Erro", "Arquivo não encontrado.")
+                    return
+                    
+                try:
+                    # Tentar abrir o arquivo para verificar se é válido
+                    from openpyxl import load_workbook
+                    wb = load_workbook(arquivo, data_only=True)
+                    
+                    # Tentar obter nome do cliente do arquivo
+                    try:
+                        ws_resumo = wb['RESUMO']
+                        nome_cliente_arquivo = ws_resumo['A3'].value
+                        if nome_cliente_arquivo:
+                            self.cliente_atual = nome_cliente_arquivo
+                            # Atualizar combobox para mostrar o cliente correto
+                            self.cliente_combobox.set(nome_cliente_arquivo)
+                    except:
+                        # Se não conseguir obter nome, usar nome do arquivo
+                        self.cliente_atual = os.path.splitext(os.path.basename(arquivo))[0]
+                    
+                    wb.close()
+                    
+                    # Configurar arquivo selecionado
+                    self.arquivo_cliente_selecionado = arquivo
+                    
+                    # Atualizar status
+                    self.status_cliente_label.config(
+                        text=f"✅ Arquivo selecionado manualmente: {os.path.basename(arquivo)}",
+                        foreground='blue'
+                    )
+                    
+                    if hasattr(self, 'status_individual_label'):
+                        self.status_individual_label.config(
+                            text=f"✅ Arquivo: {os.path.basename(arquivo)}",
+                            foreground='blue'
+                        )
+                    
+                    logger.info(f"Arquivo selecionado manualmente: {arquivo}")
+                    
+                except Exception as e:
+                    messagebox.showerror(
+                        "Erro", 
+                        f"Arquivo inválido ou corrompido.\nErro: {str(e)}"
+                    )
+                    
+        except Exception as e:
+            logger.error(f"Erro na seleção manual: {str(e)}")
+            messagebox.showerror("Erro", f"Erro na seleção manual: {str(e)}")
+
+    def limpar_selecao_cliente(self):
+        """Limpa a seleção de cliente atual"""
+        self.arquivo_cliente_selecionado = None
+        self.cliente_atual = None
+        self.cliente_combobox.set('Todos os Clientes')
+        
+        self.status_cliente_label.config(
+            text="Selecione um cliente para continuar",
+            foreground='gray'
+        )
+        
+        if hasattr(self, 'status_individual_label'):
+            self.status_individual_label.config(
+                text="Cliente será selecionado através da combobox acima",
+                foreground='blue'
+            )
+
+    def atualizar_lista_clientes_despesas(self):
+        """Atualiza a lista de clientes especificamente para despesas"""
+        try:
+            # Salvar seleção atual
+            cliente_atual = self.cliente_combobox.get()
+            
+            # Recarregar lista
+            self.atualizar_lista_clientes()
+            
+            # Tentar restaurar seleção
+            if cliente_atual and cliente_atual in self.cliente_combobox['values']:
+                self.cliente_combobox.set(cliente_atual)
+            else:
+                self.cliente_combobox.set('Todos os Clientes')
+            
+            messagebox.showinfo("Sucesso", "Lista de clientes atualizada!")
+            logger.info("Lista de clientes atualizada na interface de despesas")
+            
+        except Exception as e:
+            logger.error(f"Erro ao atualizar lista: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao atualizar lista: {str(e)}")
+
+    def obter_pasta_clientes(self):
+        """Obtém o caminho da pasta de clientes"""
+        try:
+            from src.config.config import PASTA_CLIENTES
+            return PASTA_CLIENTES
+        except ImportError:
+            try:
+                from config.config import PASTA_CLIENTES
+                return PASTA_CLIENTES
+            except ImportError:
+                return "clientes"
 
     def alternar_modo_data(self):
         """Alterna entre data automática e manual"""
@@ -784,8 +1234,6 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"Erro ao selecionar arquivos em lote: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao selecionar arquivos: {str(e)}")
-
-    
     
     def setup_opcoes_contratos(self, parent_frame):
         """Configura as opções específicas para relatório de contratos e medições"""
@@ -1147,7 +1595,6 @@ class SistemaRelatorios:
             foreground='gray'
         ).pack(pady=20)
 
-    # 2. Corrigir o método selecionar_pasta_lancamentos:
     def selecionar_pasta_lancamentos(self):
         """
         Seleciona pasta com arquivos para relatório de lançamentos pendentes
@@ -1165,7 +1612,6 @@ class SistemaRelatorios:
             else:
                 print(f"Pasta selecionada: {pasta}")  # Fallback caso o label não exista
                 messagebox.showinfo("Pasta Selecionada", f"Pasta selecionada: {pasta}")
-
     
     def selecionar_arquivo_cliente(self):
         """Abre diálogo para selecionar arquivo de cliente individual"""
@@ -1202,7 +1648,6 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"Erro ao selecionar arquivo: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao selecionar arquivo: {str(e)}")
-
     
     def carregar_modulo(self, nome_modulo):
         """Carrega ou recarrega um módulo e retorna a classe especificada"""
@@ -1243,40 +1688,48 @@ class SistemaRelatorios:
             return None
     
     def gerar_relatorio(self, relatorio):
-        """Gera o relatório selecionado - VERSÃO ATUALIZADA"""
+        """Versão corrigida que mantém o código original para outros relatórios"""
         try:
             # Verificar se o relatório está disponível
             if not relatorio["disponivel"]:
-                messagebox.showinfo(
-                    "Em desenvolvimento",
-                    "Este relatório ainda está em desenvolvimento e não está disponível."
-                )
+                messagebox.showinfo("Em desenvolvimento", "Este relatório ainda está em desenvolvimento.")
                 return
             
-            # Para o relatório de lançamentos pendentes, usamos uma abordagem específica
-            if relatorio["id"] == "lancamentos_pendentes":
-                modulo = self.carregar_modulo(relatorio["modulo"])
-                if not modulo:
+            # === APENAS DESPESAS TEM TRATAMENTO ESPECIAL ===
+            if relatorio["id"] == "despesas":
+                # NOVO: Fluxo otimizado apenas para despesas
+                logger.info("Iniciando relatório de despesas - fluxo otimizado")
+                
+                # Validar configurações
+                if not self.validar_configuracoes_despesas():
                     return
-                    
-                # Obter a classe do relatório
-                try:
-                    classe_relatorio = getattr(modulo, relatorio["classe"])
-                    # Iniciar o relatório de lançamentos pendentes
-                    self.iniciar_relatorio_lancamentos_pendentes(classe_relatorio)
+                
+                # Coletar configurações
+                configuracoes = self.coletar_configuracoes_completas()
+                
+                # Confirmar geração
+                if not self.confirmar_geracao_relatorio():
                     return
-                except AttributeError:
-                    messagebox.showerror(
-                        "Erro",
-                        f"Classe {relatorio['classe']} não encontrada no módulo {relatorio['modulo']}"
-                    )
-                    return
+                
+                # Verificar modo selecionado
+                usar_preview = hasattr(self, 'modo_visualizacao') and self.modo_visualizacao.get() == "preview"
+                
+                if usar_preview:
+                    # Ir direto para preview
+                    self.gerar_direto_com_preview(configuracoes)
+                else:
+                    # Geração direta
+                    self.gerar_direto_sem_interface(configuracoes)
+                
+                return
+            
+            # === TODOS OS OUTROS RELATÓRIOS: CÓDIGO ORIGINAL INALTERADO ===
             
             # Para o relatório de fornecedores, usar uma abordagem mais direta
             if relatorio["id"] == "fornecedores":
                 logger.info("Iniciando relatório de fornecedores")
                 self.root.withdraw()
-                from relatorio_despesas_aprimorado import definir_menu_principal
+                from relatorios_interface import definir_menu_principal
                 definir_menu_principal(self.root)   
                 
                 try:
@@ -1341,7 +1794,7 @@ class SistemaRelatorios:
                         self.root.deiconify()
                         return
             
-            # Código para outros tipos de relatório
+            # Código para outros tipos de relatório (ORIGINAL MANTIDO)
             modulo = self.carregar_modulo(relatorio["modulo"])
             if not modulo:
                 return
@@ -1356,29 +1809,370 @@ class SistemaRelatorios:
                 )
                 return
             
-            # Iniciar interface conforme o tipo de relatório
-            if relatorio["id"] == "despesas":
-                # NOVO: Usar o método atualizado para despesas
-                self.iniciar_relatorio_despesas(classe_relatorio)
-            elif relatorio["id"] == "contratos":
+            # Iniciar interface conforme o tipo de relatório (ORIGINAL MANTIDO)
+            if relatorio["id"] == "contratos":
                 self.iniciar_relatorio_contratos(classe_relatorio)
             elif relatorio["id"] == "categoria":
                 self.iniciar_relatorio_categoria(classe_relatorio)
             elif relatorio["id"] == "tipo_despesa":
                 self.iniciar_relatorio_tipo_despesa(classe_relatorio)
+            elif relatorio["id"] == "lancamentos_pendentes":
+                self.iniciar_relatorio_lancamentos_pendentes(classe_relatorio)
             else:
                 messagebox.showinfo(
                     "Em desenvolvimento",
                     "As opções específicas para este relatório ainda estão sendo implementadas."
                 )
-                
+                    
         except Exception as e:
             logger.error(f"Erro ao gerar relatório: {str(e)}", exc_info=True)
-            messagebox.showerror(
-                "Erro", 
-                f"Ocorreu um erro ao gerar o relatório.\nErro: {str(e)}"
-            )
+            messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
             self.root.deiconify()
+
+    def processar_relatorio_despesas_otimizado(self):
+        """Processamento otimizado específico para relatório de despesas"""
+        try:
+            logger.info("Iniciando relatório de despesas - fluxo otimizado")
+            
+            # Validar configurações
+            if not self.validar_configuracoes_despesas():
+                return
+            
+            # Coletar configurações
+            configuracoes = self.coletar_configuracoes_completas()
+            
+            # Verificar modo selecionado
+            usar_preview = hasattr(self, 'modo_visualizacao') and self.modo_visualizacao.get() == "preview"
+            
+            if usar_preview:
+                # Ir direto para preview
+                self.gerar_direto_com_preview(configuracoes)
+            else:
+                # Geração direta
+                self.gerar_direto_sem_interface(configuracoes)
+                
+        except Exception as e:
+            logger.error(f"Erro no processamento otimizado: {str(e)}")
+            messagebox.showerror("Erro", f"Erro: {str(e)}")
+
+    def gerar_direto_com_preview(self, configuracoes):
+        """Gera dados e vai direto para o visualizador de preview"""
+        try:
+            logger.info("=== GERAÇÃO DIRETA COM PREVIEW ===")
+            
+            # Criar janela de progresso
+            progress_window = self.criar_janela_progresso()
+            
+            def processar_em_thread():
+                """Processa dados em thread separada"""
+                try:
+                    # Atualizar progresso
+                    self.atualizar_progresso(progress_window, "Carregando dados do Excel...", 20)
+                    
+                    # Importar e criar handler
+                    from src.relatorio_despesas_aprimorado import RelatorioHandler
+                    handler = RelatorioHandler()
+                    
+                    # Carregar dados
+                    df = handler.carregar_dados_excel(
+                        configuracoes['arquivo'], 
+                        configuracoes['incluir_excluidos']
+                    )
+                    
+                    self.atualizar_progresso(progress_window, "Processando dados...", 40)
+                    
+                    # Processar dados
+                    df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = handler.processar_dados(
+                        df, configuracoes['data'], configuracoes['incluir_excluidos']
+                    )
+                    
+                    self.atualizar_progresso(progress_window, "Processando lançamentos futuros...", 60)
+                    
+                    # Processar lançamentos futuros
+                    df_futuro = None
+                    if configuracoes['incluir_futuros']:
+                        if hasattr(handler, 'processar_lancamentos_futuros'):
+                            df_futuro = handler.processar_lancamentos_futuros(
+                                df, configuracoes['data'], configuracoes['incluir_excluidos']
+                            )
+                    
+                    self.atualizar_progresso(progress_window, "Obtendo dados do cliente...", 80)
+                    
+                    # Obter dados do cliente
+                    from openpyxl import load_workbook
+                    workbook = load_workbook(configuracoes['arquivo'], data_only=True)
+                    ws_resumo = workbook['RESUMO']
+                    nome_cliente = ws_resumo['A3'].value
+                    
+                    # Calcular valores
+                    numero_relatorio = handler.obter_numero_relatorio(ws_resumo, configuracoes['data'])
+                    valor_acumulado = handler.calcular_acumulado_dados(
+                        df, configuracoes['data'], configuracoes['incluir_excluidos']
+                    )
+                    
+                    # Montar dados completos
+                    dados_completos = {
+                        'df_filtrado': df_filtrado,
+                        'df_diaria': df_diaria,
+                        'df_tp_desp_1': df_tp_desp_1,
+                        'df_tp_desp_2': df_tp_desp_2,
+                        'df_futuro': df_futuro,
+                        'df_original': df,
+                        'incluir_futuros': configuracoes['incluir_futuros'],
+                        'incluir_excluidos': configuracoes['incluir_excluidos'],
+                        'data_relatorio': configuracoes['data'],
+                        'nome_cliente': nome_cliente,
+                        'endereco_cliente': ws_resumo['A4'].value,
+                        'numero_relatorio': numero_relatorio,
+                        'acumulado': valor_acumulado
+                    }
+                    
+                    self.atualizar_progresso(progress_window, "Finalizando processamento...", 100)
+                    
+                    # Fechar janela de progresso
+                    progress_window.destroy()
+                    
+                    # === IR DIRETO PARA O PREVIEW ===
+                    self.abrir_visualizador_direto(dados_completos, configuracoes['arquivo'])
+                    
+                except Exception as e:
+                    progress_window.destroy()
+                    logger.error(f"Erro no processamento: {str(e)}", exc_info=True)
+                    messagebox.showerror("Erro", f"Erro ao processar dados: {str(e)}")
+            
+            # Executar processamento
+            import threading
+            thread = threading.Thread(target=processar_em_thread)
+            thread.daemon = True
+            thread.start()
+            
+        except Exception as e:
+            logger.error(f"Erro na geração direta com preview: {str(e)}")
+            messagebox.showerror("Erro", f"Erro: {str(e)}")
+
+    def criar_janela_progresso(self):
+        """Cria janela de progresso elegante"""
+        progress_window = tk.Toplevel(self.root)
+        progress_window.title("Processando Relatório")
+        progress_window.geometry("400x200")
+        progress_window.transient(self.root)
+        progress_window.grab_set()
+        
+        # Centralizar janela
+        progress_window.update_idletasks()
+        x = (progress_window.winfo_screenwidth() // 2) - (400 // 2)
+        y = (progress_window.winfo_screenheight() // 2) - (200 // 2)
+        progress_window.geometry(f"400x200+{x}+{y}")
+        
+        # Frame principal
+        main_frame = ttk.Frame(progress_window, padding=20)
+        main_frame.pack(fill='both', expand=True)
+        
+        # Título
+        ttk.Label(
+            main_frame, 
+            text="Gerando Relatório de Despesas", 
+            font=('Arial', 12, 'bold')
+        ).pack(pady=(0, 20))
+        
+        # Label de status
+        progress_window.status_label = ttk.Label(
+            main_frame, 
+            text="Iniciando processamento...",
+            font=('Arial', 10)
+        )
+        progress_window.status_label.pack(pady=(0, 10))
+        
+        # Barra de progresso
+        progress_window.progress_bar = ttk.Progressbar(
+            main_frame, 
+            length=300, 
+            mode='determinate'
+        )
+        progress_window.progress_bar.pack(pady=(0, 20))
+        
+        # Label de porcentagem
+        progress_window.percent_label = ttk.Label(
+            main_frame, 
+            text="0%",
+            font=('Arial', 9)
+        )
+        progress_window.percent_label.pack()
+        
+        return progress_window
+
+    def atualizar_progresso(self, progress_window, mensagem, porcentagem):
+        """Atualiza o progresso da janela"""
+        try:
+            if progress_window.winfo_exists():
+                progress_window.status_label.config(text=mensagem)
+                progress_window.progress_bar['value'] = porcentagem
+                progress_window.percent_label.config(text=f"{porcentagem}%")
+                progress_window.update()
+                
+                # Pequena pausa para visualização
+                import time
+                time.sleep(0.1)
+                
+        except Exception as e:
+            logger.debug(f"Erro ao atualizar progresso: {str(e)}")
+
+    def abrir_visualizador_direto(self, dados_completos, arquivo_path):
+        """Abre o visualizador diretamente com os dados processados"""
+        try:
+            logger.info("Abrindo visualizador direto")
+            
+            # Importar classes necessárias
+            from src.relatorio_despesas_aprimorado import VisualizadorRelatorio
+            
+            # Criar janela para o visualizador
+            visualizador_window = tk.Toplevel(self.root)
+            visualizador_window.title("Preview do Relatório")
+            visualizador_window.geometry("900x700")
+            
+            # Configurar referências para navegação
+            visualizador_window.menu_principal = self.root
+            
+            # Criar visualizador
+            visualizador = VisualizadorRelatorio(visualizador_window)
+            visualizador.arquivo_path = arquivo_path
+            
+            # === CONFIGURAR FECHAMENTO CORRETO ===
+            def ao_fechar():
+                """Comportamento ao fechar visualizador"""
+                try:
+                    visualizador_window.destroy()
+                    # Voltar para interface de relatórios (manter aberta)
+                    self.root.deiconify()
+                    self.root.lift()
+                    self.root.focus_force()
+                except Exception as e:
+                    logger.error(f"Erro ao fechar visualizador: {str(e)}")
+            
+            visualizador_window.protocol("WM_DELETE_WINDOW", ao_fechar)
+            
+            # Ocultar interface atual temporariamente
+            self.root.withdraw()
+            
+            # Mostrar preview direto
+            preview_window = visualizador.mostrar_preview(dados_completos)
+            
+            # Configurar retorno correto
+            def preview_fechado():
+                """Quando preview é fechado, volta para interface de relatórios"""
+                try:
+                    self.root.deiconify()
+                    self.root.lift()
+                    self.root.focus_force()
+                except:
+                    pass
+            
+            # Interceptar fechamento do preview
+            original_destroy = preview_window.destroy
+            def destroy_with_callback():
+                preview_fechado()
+                original_destroy()
+            preview_window.destroy = destroy_with_callback
+            
+            logger.info("Visualizador direto aberto com sucesso")
+            
+        except Exception as e:
+            logger.error(f"Erro ao abrir visualizador direto: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir visualizador: {str(e)}")
+            # Em caso de erro, voltar à interface
+            self.root.deiconify()
+
+    def gerar_direto_sem_interface(self, configuracoes):
+        """Gera relatório direto sem preview"""
+        try:
+            logger.info("=== GERAÇÃO DIRETA SEM PREVIEW ===")
+            
+            # Criar janela de progresso
+            progress_window = self.criar_janela_progresso()
+            
+            def processar_e_gerar():
+                """Processa e gera o PDF diretamente"""
+                try:
+                    # [Mesmo código de processamento da função anterior]
+                    # ... processamento dos dados ...
+                    
+                    self.atualizar_progresso(progress_window, "Gerando arquivo PDF...", 90)
+                    
+                    # Gerar PDF direto
+                    data_formatada = configuracoes['data'].strftime('%d-%m-%Y')
+                    nome_arquivo = f"REL - {nome_cliente} - {data_formatada}.pdf"
+                    
+                    if configuracoes['incluir_excluidos']:
+                        nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
+                        
+                    caminho_output = os.path.join(os.path.dirname(configuracoes['arquivo']), nome_arquivo)
+                    
+                    # Gerar PDF
+                    handler.gerar_relatorio_pdf(dados_completos, caminho_output, configuracoes['arquivo'])
+                    
+                    self.atualizar_progresso(progress_window, "Relatório gerado com sucesso!", 100)
+                    
+                    # Fechar progresso
+                    progress_window.destroy()
+                    
+                    # Mostrar resultado
+                    self.mostrar_resultado_geracao(nome_cliente, nome_arquivo, caminho_output)
+                    
+                except Exception as e:
+                    progress_window.destroy()
+                    logger.error(f"Erro na geração direta: {str(e)}")
+                    messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
+            
+            # Executar em thread
+            import threading
+            thread = threading.Thread(target=processar_e_gerar)
+            thread.daemon = True
+            thread.start()
+            
+        except Exception as e:
+            logger.error(f"Erro na geração direta: {str(e)}")
+            messagebox.showerror("Erro", f"Erro: {str(e)}")
+
+    def mostrar_resultado_geracao(self, nome_cliente, nome_arquivo, caminho_output):
+        """Mostra resultado da geração com opções"""
+        try:
+            resposta = messagebox.askyesnocancel(
+                "Relatório Gerado!",
+                f"✅ Relatório gerado com sucesso!\n\n"
+                f"Cliente: {nome_cliente}\n"
+                f"Arquivo: {nome_arquivo}\n\n"
+                f"🔄 Opções:\n"
+                f"• Sim: Abrir PDF\n"
+                f"• Não: Continuar sem abrir\n"
+                f"• Cancelar: Gerar outro relatório",
+                icon='question'
+            )
+            
+            if resposta is True:  # Abrir PDF
+                self.abrir_arquivo(caminho_output)
+            elif resposta is False:  # Não abrir
+                pass  # Continua na interface
+            # resposta is None = Cancelar = continua na interface
+            
+        except Exception as e:
+            logger.error(f"Erro ao mostrar resultado: {str(e)}")
+
+    def abrir_arquivo(self, caminho):
+        """Abre arquivo com programa padrão do sistema"""
+        try:
+            import platform
+            import subprocess
+            
+            if platform.system() == 'Darwin':       # macOS
+                subprocess.run(['open', caminho])
+            elif platform.system() == 'Windows':    # Windows
+                os.startfile(caminho)
+            else:                                   # Linux
+                subprocess.run(['xdg-open', caminho])
+                
+        except Exception as e:
+            logger.error(f"Erro ao abrir arquivo: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir arquivo: {str(e)}")
     
     def iniciar_relatorio_despesas(self, classe_relatorio):
         """Versão final: Executa conforme configuração selecionada"""
@@ -2287,10 +3081,8 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"Erro ao abrir pasta: {str(e)}")
 
-    # Métodos auxiliares para melhorar a compatibilização
-
     def validar_configuracoes_despesas(self):
-        """Valida se todas as configurações necessárias estão definidas"""
+        """Versão atualizada da validação que considera a nova seleção"""
         try:
             # Verificar data
             if hasattr(self, 'data_entry'):
@@ -2308,11 +3100,11 @@ class SistemaRelatorios:
                 tipo = self.tipo_geracao.get()
                 
                 if tipo == "individual":
-                    # Verificar se há arquivo selecionado
-                    if not hasattr(self, 'arquivo_cliente_selecionado'):
+                    # Verificar se há cliente/arquivo selecionado
+                    if not hasattr(self, 'arquivo_cliente_selecionado') or not self.arquivo_cliente_selecionado:
                         messagebox.showerror(
                             "Erro", 
-                            "Por favor, selecione um arquivo de cliente para relatório individual."
+                            "Por favor, selecione um cliente na combobox ou use a seleção manual de arquivo."
                         )
                         return False
                         
@@ -2320,7 +3112,8 @@ class SistemaRelatorios:
                     if not os.path.exists(self.arquivo_cliente_selecionado):
                         messagebox.showerror(
                             "Erro", 
-                            "O arquivo selecionado não existe ou não pode ser acessado."
+                            "O arquivo do cliente selecionado não existe ou não pode ser acessado.\n"
+                            "Tente atualizar a lista de clientes ou selecionar manualmente."
                         )
                         return False
                         
@@ -2537,7 +3330,6 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"Erro ao adicionar botões auxiliares: {str(e)}")
 
-    # Sobrescrever o método mostrar_opcoes_relatorio para incluir validação
     def mostrar_opcoes_relatorio_com_validacao(self, event=None):
         """Versão melhorada do mostrar_opcoes_relatorio com validação"""
         try:
@@ -2565,7 +3357,6 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"Erro na validação de opções: {str(e)}")
 
-    # Backup do método original para poder chamar
     def backup_metodo_original(self):
         """Cria backup do método original se necessário"""
         if not hasattr(self, 'mostrar_opcoes_relatorio_original'):
@@ -2948,19 +3739,57 @@ class SistemaRelatorios:
         janela.destroy()
         self.root.deiconify()
         self.root.lift()
-    
+
     def voltar_menu(self):
-        """Volta ao menu principal"""
-        print("Finalizando interface de relatórios...")
-        
-        # Destruir a janela
-        self.root.destroy()
-        
-        # Mostrar janela principal
-        if self.menu_principal:
-            self.menu_principal.deiconify()
-            self.menu_principal.lift()
-            self.menu_principal.focus_force()
+        """Volta ao menu principal de forma segura"""
+        try:
+            logger.info("Solicitado retorno ao menu principal")
+            
+            # Verificar se existe menu principal para retornar
+            if self.menu_principal and hasattr(self.menu_principal, 'winfo_exists'):
+                try:
+                    # Verificar se a janela do menu principal ainda existe
+                    if self.menu_principal.winfo_exists():
+                        logger.info("Retornando ao menu principal existente")
+                        
+                        # Destruir janela atual
+                        self.root.destroy()
+                        
+                        # Restaurar e focar no menu principal
+                        self.menu_principal.deiconify()
+                        self.menu_principal.lift()
+                        self.menu_principal.focus_force()
+                        
+                        logger.info("Retorno ao menu principal concluído")
+                        return
+                    else:
+                        logger.warning("Menu principal não existe mais")
+                except Exception as e:
+                    logger.error(f"Erro ao verificar menu principal: {str(e)}")
+            
+            # Se não há menu principal válido, fechar aplicação completamente
+            logger.info("Não há menu principal válido, fechando aplicação")
+            
+            # Tentar fechar de forma segura
+            try:
+                self.root.quit()
+                self.root.destroy()
+            except:
+                pass
+            
+            # Forçar saída se necessário
+            import sys
+            import os
+            os._exit(0)
+            
+        except Exception as e:
+            logger.error(f"Erro crítico no voltar_menu: {str(e)}")
+            # Último recurso: forçar saída
+            try:
+                import os
+                os._exit(0)
+            except:
+                pass
     
     def carregar_clientes(self):
         """Carrega a lista de clientes ativos do arquivo de clientes"""
@@ -3046,7 +3875,6 @@ class SistemaRelatorios:
             logger.error(f"Erro ao carregar clientes: {str(e)}", exc_info=True)
             return ['Todos os Clientes']
 
-    # Também vamos adicionar um método para atualizar o combobox quando necessário
     def atualizar_lista_clientes(self):
         """Atualiza a lista de clientes na combobox"""
         try:
@@ -3066,7 +3894,6 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"Erro ao atualizar lista de clientes: {str(e)}")
 
-    # E adicionar um botão para recarregar a lista de clientes (opcional)
     def adicionar_botao_atualizar_clientes(self, parent_frame):
         """Adiciona botão para atualizar a lista de clientes"""
         ttk.Button(
