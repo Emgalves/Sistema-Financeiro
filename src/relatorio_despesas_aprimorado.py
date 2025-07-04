@@ -123,7 +123,7 @@ class RelatorioUI:
         logger.info("Iniciando configuração da interface")
 
         self.root.title("Gerador de Relatório de Despesas")
-        self.root.geometry("500x500")
+        self.root.geometry("850x1100")
         self.root.update_idletasks()
 
 
@@ -555,9 +555,10 @@ class RelatorioUI:
 
 
     def criar_dialog_relatorio_gerado(self, nome_cliente, data_formatada):
+        """VERSÃO CORRIGIDA do diálogo pós-geração"""
         dialog = Toplevel(self.root)
         dialog.title("Relatório Gerado")
-        dialog.geometry("300x300")
+        dialog.geometry("350x200")
         dialog.transient(self.root)
         dialog.grab_set()
         
@@ -566,22 +567,65 @@ class RelatorioUI:
         ttk.Label(dialog, text=msg, font=('Helvetica', 10, 'bold')).pack(pady=10)
         
         def continuar():
+            """Continua na interface atual"""
             dialog.destroy()
             
         def voltar_menu():
-            dialog.destroy()
-            self.root.destroy()
-            if self.menu_principal:
-                self.menu_principal.deiconify()
-                self.menu_principal.lift()
+            """Volta ao menu principal de forma robusta"""
+            try:
+                dialog.destroy()
+                self.root.destroy()
+                
+                # Buscar menu principal usando as múltiplas estratégias
+                menu_encontrado = False
+                
+                # Estratégia 1: Referência direta
+                if hasattr(self, 'menu_principal') and self.menu_principal:
+                    if hasattr(self.menu_principal, 'winfo_exists') and self.menu_principal.winfo_exists():
+                        self.menu_principal.deiconify()
+                        self.menu_principal.lift()
+                        self.menu_principal.focus_force()
+                        menu_encontrado = True
+                
+                # Estratégia 2: Variável global
+                if not menu_encontrado:
+                    menu_global = obter_menu_principal()
+                    if menu_global and hasattr(menu_global, 'winfo_exists') and menu_global.winfo_exists():
+                        menu_global.deiconify()
+                        menu_global.lift()
+                        menu_global.focus_force()
+                        menu_encontrado = True
+                
+                # Estratégia 3: Executar sistema principal
+                if not menu_encontrado:
+                    import subprocess
+                    import sys
+                    
+                    possible_paths = [
+                        "sistema_principal.py",
+                        "src/sistema_principal.py"
+                    ]
+                    
+                    for path in possible_paths:
+                        if os.path.exists(path):
+                            subprocess.Popen([sys.executable, path])
+                            break
+                            
+            except Exception as e:
+                logger.error(f"Erro ao voltar ao menu: {str(e)}")
+                try:
+                    dialog.destroy()
+                    self.root.destroy()
+                except:
+                    pass
         
         btn_frame = ttk.Frame(dialog)
-        btn_frame.pack(fill='x', pady=10)
+        btn_frame.pack(fill='x', pady=20)
         
         ttk.Button(btn_frame, text="Gerar Outro Relatório", 
-                  command=continuar).pack(pady=5, padx=10, fill='x')
+                command=continuar).pack(pady=5, padx=10, fill='x')
         ttk.Button(btn_frame, text="Voltar ao Menu Principal", 
-                  command=voltar_menu).pack(pady=5, padx=10, fill='x')          
+                command=voltar_menu).pack(pady=5, padx=10, fill='x')     
 
     def processar_lancamentos_futuros(self, df, data_relatorio, incluir_excluidos=False):
         """Versão corrigida que considera status de exclusão"""
@@ -2985,7 +3029,7 @@ class VisualizadorRelatorio:
         return "\n".join(preview_text)
     
     def mostrar_preview(self, dados):
-        """Mostra a janela de preview do relatório"""
+        """Mostra a janela de preview do relatório - VERSÃO CORRIGIDA"""
         self.dados_preview = dados
         
         # Criar janela de preview
@@ -3000,7 +3044,7 @@ class VisualizadorRelatorio:
         
         # Label de título
         title_label = ttk.Label(main_frame, text="Preview do Relatório", 
-                               font=('Helvetica', 14, 'bold'))
+                            font=('Helvetica', 14, 'bold'))
         title_label.pack(pady=(0, 10))
         
         # Frame para o texto com scrollbar
@@ -3043,21 +3087,89 @@ class VisualizadorRelatorio:
         button_frame = ttk.Frame(main_frame)
         button_frame.pack(fill='x', pady=(10, 0))
         
-        # Botões
+        # CORREÇÃO: Função para cancelar e voltar ao menu
+        def cancelar_e_voltar():
+            """Cancela o preview e volta ao menu principal"""
+            try:
+                # Fechar janela de preview
+                preview_window.destroy()
+                
+                # Fechar interface atual
+                self.parent.destroy()
+                
+                # Buscar e mostrar menu principal
+                menu_principal = self.obter_menu_principal()
+                if menu_principal:
+                    menu_principal.deiconify()
+                    menu_principal.lift()
+                    menu_principal.focus_force()
+                    logger.info("Cancelado preview - retornando ao menu principal")
+                else:
+                    logger.warning("Menu principal não encontrado após cancelar preview")
+                    
+            except Exception as e:
+                logger.error(f"Erro ao cancelar e voltar: {str(e)}")
+                try:
+                    preview_window.destroy()
+                    self.parent.destroy()
+                except:
+                    pass
+        
+        # Função para continuar editando
+        def continuar_editando():
+            """Fecha apenas o preview mas mantém a interface atual"""
+            preview_window.destroy()
+            # Mantém a interface atual aberta para mais modificações
+        
+        # Botões CORRIGIDOS
         ttk.Button(button_frame, text="Gerar PDF Temporário", 
-                  command=lambda: self.gerar_pdf_temporario(dados)).pack(side='left', padx=(0, 10))
+                command=lambda: self.gerar_pdf_temporario(dados)).pack(side='left', padx=(0, 10))
         
         ttk.Button(button_frame, text="Gerar e Salvar PDF", 
-                  command=lambda: self.confirmar_geracao(preview_window, dados)).pack(side='left', padx=(0, 10))
+                command=lambda: self.confirmar_geracao(preview_window, dados)).pack(side='left', padx=(0, 10))
         
-        ttk.Button(button_frame, text="Cancelar", 
-                  command=preview_window.destroy).pack(side='right')
+        # NOVO: Botão para continuar editando
+        ttk.Button(button_frame, text="Continuar Editando", 
+                command=continuar_editando).pack(side='left', padx=(0, 10))
+        
+        # CORRIGIDO: Botão cancelar agora volta ao menu
+        ttk.Button(button_frame, text="Cancelar e Voltar ao Menu", 
+                command=cancelar_e_voltar).pack(side='right')
+        
+        # CORREÇÃO: Configurar fechamento da janela (X) para também voltar ao menu
+        preview_window.protocol("WM_DELETE_WINDOW", cancelar_e_voltar)
         
         # Centralizar janela
         preview_window.transient(self.parent)
         preview_window.grab_set()
         
         return preview_window
+
+    def obter_menu_principal(self):
+        """Obtém referência ao menu principal de forma robusta"""
+        try:
+            # Primeiro: tentar usar a referência direta da interface
+            if hasattr(self.parent, 'menu_principal') and self.parent.menu_principal:
+                return self.parent.menu_principal
+            
+            # Segundo: tentar usar a variável global
+            menu_global = obter_menu_principal()
+            if menu_global:
+                return menu_global
+            
+            # Terceiro: procurar na hierarquia de janelas
+            current = self.parent
+            while current:
+                if hasattr(current, 'menu_principal') and current.menu_principal:
+                    return current.menu_principal
+                current = getattr(current, 'master', None)
+            
+            logger.warning("Menu principal não encontrado")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Erro ao obter menu principal: {str(e)}")
+            return None
     
     def gerar_pdf_temporario(self, dados):
         """Gera um PDF temporário para visualização"""
@@ -3104,7 +3216,7 @@ class VisualizadorRelatorio:
             print(f"Erro ao remover arquivo temporário: {str(e)}")
     
     def confirmar_geracao(self, preview_window, dados):
-        """Confirma a geração do PDF final - VERSÃO COM BUSCA ROBUSTA DO MENU"""
+        """Confirma a geração do PDF final - VERSÃO MELHORADA"""
         try:
             # Fechar janela de preview
             preview_window.destroy()
@@ -3124,51 +3236,94 @@ class VisualizadorRelatorio:
             else:
                 caminho_output = nome_arquivo
             
+            # Mostrar mensagem de processamento
+            progress_msg = messagebox.showinfo(
+                "Processando", 
+                "Gerando relatório PDF...\nPor favor, aguarde.",
+                icon='info'
+            )
+            
+            # Atualizar interface
+            self.parent.update()
+            
             # Gerar o PDF
             from relatorio_despesas_aprimorado import RelatorioHandler
             handler = RelatorioHandler()
             handler.gerar_relatorio_pdf(dados, caminho_output, arquivo_original)
             
-            # Mostrar mensagem de sucesso
-            messagebox.showinfo(
-                "Sucesso", 
+            # Mostrar mensagem de sucesso COM OPÇÕES
+            resposta = messagebox.askyesnocancel(
+                "Relatório Gerado com Sucesso!", 
                 f"Relatório gerado com sucesso!\n\n"
                 f"Cliente: {nome_cliente}\n"
                 f"Arquivo: {nome_arquivo}\n\n"
-                f"A interface será fechada e você retornará ao menu."
+                f"Sim: Abrir o PDF e voltar ao menu\n"
+                f"Não: Apenas voltar ao menu\n"
+                f"Cancelar: Gerar outro relatório",
+                icon='question'
             )
             
-            # Abrir o arquivo gerado
-            self.abrir_arquivo(caminho_output)
-            
-            try:
+            # Processar resposta
+            if resposta is True:  # Sim - Abrir PDF e voltar
+                self.abrir_arquivo(caminho_output)
+                self.voltar_ao_menu_principal()
                 
-                # Fechar janela atual
-                self.parent.destroy()
+            elif resposta is False:  # Não - Apenas voltar
+                self.voltar_ao_menu_principal()
                 
-                # Encontrar e executar sistema principal
-                possible_paths = [
-                    "relatorios_interface.py",
-                    "src/relatorios_interface.py"
-                ]
-                
-                for path in possible_paths:
-                    if os.path.exists(path):
-                        subprocess.Popen([sys.executable, path])
-                        break
-                else:
-                    print("⚠️ Sistema principal não encontrado")
-                    
-            except Exception as e:
-                print(f"Erro: {str(e)}")
-                self.parent.destroy()
+            else:  # Cancelar - Manter interface para gerar outro
+                # Não faz nada, mantém interface aberta
+                pass
             
             return True
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao gerar PDF: {str(e)}")
-            print(f"Erro ao gerar PDF: {str(e)}")
-            return False   
+            logger.error(f"Erro ao gerar PDF: {str(e)}")
+            return False 
+
+    def voltar_ao_menu_principal(self):
+        """Método unificado para voltar ao menu principal"""
+        try:
+            # Fechar interface atual
+            self.parent.destroy()
+            
+            # Buscar menu principal
+            menu_principal = self.obter_menu_principal()
+            
+            if menu_principal and hasattr(menu_principal, 'winfo_exists'):
+                if menu_principal.winfo_exists():
+                    menu_principal.deiconify()
+                    menu_principal.lift()
+                    menu_principal.focus_force()
+                    logger.info("Retornado ao menu principal com sucesso")
+                    return
+            
+            # Se não encontrou menu, tentar executar sistema principal
+            logger.warning("Menu principal não encontrado, tentando executar sistema principal")
+            
+            possible_paths = [
+                "sistema_principal.py",
+                "src/sistema_principal.py"
+            ]
+            
+            for path in possible_paths:
+                if os.path.exists(path):
+                    subprocess.Popen([sys.executable, path])
+                    logger.info(f"Sistema principal executado: {path}")
+                    return
+            
+            logger.error("Sistema principal não encontrado")
+            
+        except Exception as e:
+            logger.error(f"Erro ao voltar ao menu principal: {str(e)}")
+            try:
+                self.parent.destroy()
+            except:
+                pass 
+
+    obter_menu_principal = obter_menu_principal
+    voltar_ao_menu_principal = voltar_ao_menu_principal
 
 def main():
     # Tentar carregar configurações externas
