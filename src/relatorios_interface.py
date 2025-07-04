@@ -8,6 +8,9 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
 
+# from correcoes_emergenciais import aplicar_todas_correcoes 
+# aplicar_todas_correcoes()
+
 # Adicionar diretório raiz ao path ANTES de qualquer importação
 def add_project_root():
     import sys
@@ -1273,6 +1276,8 @@ class SistemaRelatorios:
             if relatorio["id"] == "fornecedores":
                 logger.info("Iniciando relatório de fornecedores")
                 self.root.withdraw()
+                from relatorio_despesas_aprimorado import definir_menu_principal
+                definir_menu_principal(self.root)   
                 
                 try:
                     # Importação direta
@@ -1426,7 +1431,7 @@ class SistemaRelatorios:
             messagebox.showerror("Erro", f"Erro: {str(e)}")
 
     def usar_interface_integrada(self, classe_relatorio, configuracoes):
-        """Usa interface integrada - sempre funciona"""
+        """Usa interface integrada - VERSÃO COM REFERÊNCIAS CORRETAS"""
         try:
             self.root.withdraw()
             
@@ -1436,6 +1441,18 @@ class SistemaRelatorios:
             # Criar nova janela
             nova_root = tk.Tk()
             app = RelatorioUI(nova_root)
+            
+            # ===== CONFIGURAR REFERÊNCIAS AO MENU PRINCIPAL (CRÍTICO) =====
+            app.menu_principal = self.root  # Referência na instância
+            nova_root.menu_principal = self.root  # Referência na janela
+            
+            # Configurar também no handler se existir
+            if hasattr(app, 'handler'):
+                app.handler.menu_principal = self.root
+            
+            print(f"✅ Referências configuradas:")
+            print(f"   app.menu_principal = {self.root}")
+            print(f"   nova_root.menu_principal = {self.root}")
             
             # Aplicar configurações
             try:
@@ -1455,10 +1472,14 @@ class SistemaRelatorios:
             except Exception as e:
                 logger.warning(f"Erro ao aplicar configurações: {str(e)}")
             
-            # Configurar fechamento
+            # Configurar fechamento CORRETO
             def ao_fechar():
+                print("🔄 Fechando interface e retornando ao menu...")
                 nova_root.destroy()
                 self.root.deiconify()
+                self.root.lift()
+                self.root.focus_force()
+                print("✅ Retornado ao menu principal")
             
             nova_root.protocol("WM_DELETE_WINDOW", ao_fechar)
             
@@ -1471,6 +1492,7 @@ class SistemaRelatorios:
                 "Interface carregada com suas configurações!\n\n" +
                 "✅ Configurações aplicadas\n" +
                 "✅ Arquivo selecionado\n" +
+                "✅ Menu principal vinculado\n" +
                 "✅ Pronto para usar"
             )
             
