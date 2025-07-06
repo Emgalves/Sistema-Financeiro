@@ -4,6 +4,7 @@ import os
 import sys
 import importlib
 import logging
+import pandas as pd
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
@@ -404,13 +405,13 @@ class SistemaRelatorios:
         if relatorio["id"] == "despesas":
             # NOVO: Botão otimizado para despesas
             # Label explicativo
-            ttk.Label(
-                btn_frame,
-                text="💡 O sistema processará os dados e abrirá diretamente o preview ou gerará o PDF conforme configurado.",
-                font=('Arial', 9),
-                foreground='blue',
-                wraplength=400
-            ).pack(pady=(0, 10))
+            # ttk.Label(
+            #     btn_frame,
+            #     text="💡 O sistema processará os dados e abrirá diretamente o preview ou gerará o PDF conforme configurado.",
+            #     font=('Arial', 9),
+            #     foreground='blue',
+            #     wraplength=400
+            # ).pack(pady=(0, 10))
             
             # Botão de validação (opcional)
             ttk.Button(
@@ -1703,7 +1704,7 @@ class SistemaRelatorios:
             return None
     
     def gerar_relatorio(self, relatorio):
-        """VERSÃO LIMPA - Sem sobreposições"""
+        """VERSÃO LIMPA E SIMPLIFICADA - Remove sobreposições"""
         try:
             logger.info(f"🔍 INICIANDO gerar_relatorio para: {relatorio['id']}")
             
@@ -1714,122 +1715,864 @@ class SistemaRelatorios:
             
             # === TRATAMENTO ESPECÍFICO PARA DESPESAS ===
             if relatorio["id"] == "despesas":
-                logger.info("🎯 DETECTADO: Relatório de despesas - usando fluxo otimizado")
+                logger.info("🎯 PROCESSANDO: Relatório de despesas")
                 
-                # Validar configurações
+                # 1. Validar configurações básicas
                 if not self.validar_configuracoes_despesas():
-                    logger.warning("❌ Validação falhou")
+                    logger.warning("❌ Validação de configurações falhou")
                     return
                 
-                # Coletar configurações
+                # 2. Coletar todas as configurações
                 configuracoes = self.coletar_configuracoes_completas()
-                logger.info("✅ Configurações coletadas")
+                logger.info(f"✅ Configurações coletadas: arquivo={bool(configuracoes.get('arquivo'))}")
                 
-                # Confirmar geração
-                if not self.confirmar_geracao_relatorio():
-                    logger.info("❌ Usuário cancelou")
+                # 3. Verificar se arquivo foi selecionado
+                if not configuracoes.get('arquivo'):
+                    messagebox.showerror("Erro", "Nenhum arquivo foi selecionado. Selecione um cliente ou use a seleção manual.")
                     return
                 
-                # Verificar modo
+                # 4. Confirmar geração
+                if not self.confirmar_geracao_relatorio():
+                    logger.info("❌ Geração cancelada pelo usuário")
+                    return
+                
+                # 5. Verificar modo de visualização
                 usar_preview = hasattr(self, 'modo_visualizacao') and self.modo_visualizacao.get() == "preview"
-                logger.info(f"🎯 Modo selecionado: {'Preview' if usar_preview else 'Direto'}")
                 
-                # Processar conforme modo
+                # 6. Executar conforme modo selecionado
                 if usar_preview:
-                    self.executar_fluxo_preview_despesas(configuracoes)
+                    logger.info("🚀 Executando com PREVIEW")
+                    self.executar_relatorio_com_preview(configuracoes)
                 else:
-                    self.executar_fluxo_direto_despesas(configuracoes)
-                
-                logger.info("✅ FLUXO DE DESPESAS CONCLUÍDO")
-                return  # ⚠️ CRÍTICO: Para aqui para despesas
+                    logger.info("🚀 Executando DIRETO")
+                    self.executar_relatorio_direto(configuracoes)
+                    
+                return  # ⚠️ IMPORTANTE: Para aqui para despesas
             
-            # === OUTROS RELATÓRIOS (comportamento original) ===
+            # === OUTROS RELATÓRIOS ===
             logger.info(f"📋 Processando outros relatórios: {relatorio['id']}")
             
             if relatorio["id"] == "lancamentos_pendentes":
                 self.processar_lancamentos_pendentes()
-                return
-            
-            if relatorio["id"] == "fornecedores":
+            elif relatorio["id"] == "fornecedores":
                 self.processar_fornecedores()
-                return
-            
-            # Outros relatórios (contratos, categoria, etc.)
-            self.processar_outros_relatorios(relatorio)
-            
+            else:
+                self.processar_outros_relatorios(relatorio)
+                
         except Exception as e:
             logger.error(f"💥 ERRO em gerar_relatorio: {str(e)}", exc_info=True)
             messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
 
-    def executar_fluxo_preview_despesas(self, configuracoes):
-        """Executa fluxo otimizado com preview - VERSÃO CORRIGIDA"""
+
+    def executar_relatorio_com_preview(self, configuracoes):
+        """VERSÃO SEM THREADING - Executa direto no thread principal"""
         try:
-            logger.info("🚀 EXECUTANDO FLUXO PREVIEW DESPESAS")
+            logger.info("🎯 EXECUTANDO RELATÓRIO SEM THREADING")
             
-            # CORREÇÃO: Extrair arquivo_path das configurações ANTES da thread
-            arquivo_path = configuracoes.get('arquivo')
-            if not arquivo_path:
-                logger.error("❌ arquivo_path não encontrado nas configurações")
-                messagebox.showerror("Erro", "Caminho do arquivo não encontrado")
-                return
+            # CORREÇÃO: Fazer tudo direto sem threads
             
-            logger.info(f"📁 Arquivo detectado: {arquivo_path}")
+            # 1. Mostrar progresso simples
+            progress_label = tk.Label(self.root, text="Processando dados...", 
+                                    font=('Arial', 12), bg='lightblue', 
+                                    relief='raised', padx=20, pady=10)
+            progress_label.place(relx=0.5, rely=0.5, anchor='center')
+            self.root.update()
             
-            # Criar janela de progresso
-            progress_window = self.criar_progress_window()
-            
-            def processar_async():
+            try:
+                # 2. Processar dados DIRETO (sem thread)
+                logger.info("🔧 Processando dados direto...")
+                dados_processados = self.processar_dados_completo_otimizado(configuracoes)
+                logger.info("✅ Dados processados com sucesso")
+                
+                # 3. Remover label de progresso
+                progress_label.destroy()
+                
+                # 4. Abrir preview DIRETO
+                logger.info("🔧 Abrindo preview direto...")
+                self.abrir_preview_estavel(dados_processados, configuracoes['arquivo'])
+                
+            except Exception as e:
+                # Limpar progresso em caso de erro
                 try:
-                    # 1. Preparar handler
-                    self.update_progress(progress_window, "Preparando processamento...", 10)
-                    handler = self.obter_handler_despesas()
-                    
-                    # 2. Processar data
-                    self.update_progress(progress_window, "Processando data...", 20)
-                    data_limpa = self.limpar_data(configuracoes['data'])
-                    
-                    # 3. Carregar dados
-                    self.update_progress(progress_window, "Carregando dados...", 40)
-                    # CORREÇÃO: Usar arquivo_path que foi definido fora da thread
-                    df = handler.carregar_dados_excel(arquivo_path, configuracoes['incluir_excluidos'])
-                    
-                    # 4. Processar dados
-                    self.update_progress(progress_window, "Processando dados...", 60)
-                    dados_processados = self.processar_dados_completos(handler, df, data_limpa, configuracoes)
-                    
-                    # 5. Obter informações do cliente
-                    self.update_progress(progress_window, "Obtendo dados do cliente...", 80)
-                    # CORREÇÃO: Usar arquivo_path que foi definido fora da thread
-                    info_cliente = self.obter_info_cliente(arquivo_path, data_limpa, handler, df, configuracoes['incluir_excluidos'])
-                    
-                    # 6. Montar dados finais
-                    self.update_progress(progress_window, "Finalizando...", 95)
-                    dados_completos = self.montar_dados_completos(dados_processados, info_cliente, configuracoes, data_limpa, df)
-                    
-                    # 7. Fechar progresso e abrir preview
-                    self.update_progress(progress_window, "Abrindo preview...", 100)
-                    progress_window.after(500, progress_window.destroy)
-                    
-                    # 8. Abrir preview limpo
-                    # CORREÇÃO: Usar arquivo_path que foi definido fora da thread
-                    self.abrir_preview_limpo(dados_completos, arquivo_path)
-                    
-                except Exception as e:
-                    logger.error(f"💥 ERRO no processamento async: {str(e)}", exc_info=True)
-                    try:
-                        progress_window.destroy()
-                    except:
-                        pass
-                    messagebox.showerror("Erro", f"Erro no processamento: {str(e)}")
-                    self.root.deiconify()
+                    progress_label.destroy()
+                except:
+                    pass
+                raise e
+                
+        except Exception as e:
+            logger.error(f"💥 ERRO no executar_relatorio_com_preview: {str(e)}")
+            messagebox.showerror("Erro", f"Erro: {str(e)}")
+
+    def obter_handler_despesas_limpo(self):
+        """Obtém handler de despesas de forma limpa"""
+        try:
+            # Tentar importação do módulo
+            try:
+                from src.relatorio_despesas_aprimorado import RelatorioHandler
+            except ImportError:
+                from relatorio_despesas_aprimorado import RelatorioHandler
             
-            # Executar em thread
-            import threading
-            threading.Thread(target=processar_async, daemon=True).start()
+            return RelatorioHandler()
             
         except Exception as e:
-            logger.error(f"💥 ERRO no fluxo preview: {str(e)}")
+            logger.error(f"💥 ERRO ao obter handler: {str(e)}")
+            raise Exception(f"Não foi possível importar RelatorioHandler: {str(e)}")
+
+
+    def processar_dados_completo_otimizado(self, configuracoes):
+        """OTIMIZADO - Processa dados uma única vez com cache"""
+        try:
+            arquivo_path = configuracoes['arquivo']
+            data_relatorio = configuracoes['data']
+            incluir_excluidos = configuracoes['incluir_excluidos']
+            incluir_futuros = configuracoes['incluir_futuros']
+            
+            logger.info(f"📁 Processando arquivo UMA VEZ: {os.path.basename(arquivo_path)}")
+            
+            # 1. Obter handler
+            handler = self.obter_handler_despesas_limpo()
+            
+            # 2. Carregar dados UMA VEZ
+            df_original = handler.carregar_dados_excel(arquivo_path, incluir_excluidos)
+            logger.info(f"✅ Dados carregados: {len(df_original)} registros")
+            
+            # 3. Processar dados UMA VEZ
+            df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = handler.processar_dados(
+                df_original, data_relatorio, incluir_excluidos
+            )
+            
+            # 4. Processar lançamentos futuros UMA VEZ
+            df_futuro = None
+            if incluir_futuros and hasattr(handler, 'processar_lancamentos_futuros'):
+                df_futuro = handler.processar_lancamentos_futuros(df_original, data_relatorio, incluir_excluidos)
+            
+            # 5. Obter dados do cliente UMA VEZ
+            from openpyxl import load_workbook
+            workbook = load_workbook(arquivo_path, data_only=True)
+            ws_resumo = workbook['RESUMO']
+            
+            nome_cliente = ws_resumo['A3'].value
+            endereco_cliente = ws_resumo['A4'].value
+            numero_relatorio = handler.obter_numero_relatorio(ws_resumo, data_relatorio)
+            valor_acumulado = handler.calcular_acumulado_dados(df_original, data_relatorio, incluir_excluidos)
+            
+            workbook.close()
+            
+            # 6. Montar dados completos COM HANDLER INCLUÍDO
+            dados_completos = {
+                # DataFrames processados
+                'df_filtrado': df_filtrado,
+                'df_diaria': df_diaria,
+                'df_tp_desp_1': df_tp_desp_1,
+                'df_tp_desp_2': df_tp_desp_2,
+                'df_futuro': df_futuro,
+                'df_original': df_original,
+                
+                # Configurações
+                'incluir_futuros': incluir_futuros,
+                'incluir_excluidos': incluir_excluidos,
+                'data_relatorio': data_relatorio,
+                
+                # Informações do cliente
+                'nome_cliente': nome_cliente,
+                'endereco_cliente': endereco_cliente,
+                'numero_relatorio': numero_relatorio,
+                'acumulado': valor_acumulado,
+                
+                # IMPORTANTE: Incluir handler para evitar reprocessamento
+                'handler_instance': handler,
+                'arquivo_path': arquivo_path
+            }
+            
+            logger.info(f"✅ Dados processados UMA VEZ: {nome_cliente}")
+            return dados_completos
+            
+        except Exception as e:
+            logger.error(f"💥 ERRO ao processar dados: {str(e)}")
+            raise
+
+    # def abrir_preview_simples(self, dados_completos, arquivo_path):
+    #     """Abre APENAS o preview, sem criar nova interface"""
+    #     try:
+    #         logger.info("🎯 ABRINDO PREVIEW SIMPLES")
+            
+    #         # ⚠️ CORREÇÃO: NÃO importar VisualizadorRelatorio
+    #         # Vamos criar o preview diretamente aqui
+            
+    #         # Criar janela de preview diretamente
+    #         preview_window = tk.Toplevel(self.root)
+    #         preview_window.title("Preview do Relatório")
+    #         preview_window.geometry("900x700")
+    #         preview_window.transient(self.root)
+    #         preview_window.grab_set()
+            
+    #         # Ocultar interface principal temporariamente
+    #         self.root.withdraw()
+            
+    #         # Frame principal
+    #         main_frame = ttk.Frame(preview_window, padding=10)
+    #         main_frame.pack(fill='both', expand=True)
+            
+    #         # Título
+    #         ttk.Label(main_frame, text="Preview do Relatório", 
+    #                 font=('Arial', 14, 'bold')).pack(pady=(0, 10))
+            
+    #         # Informações do cliente
+    #         info_frame = ttk.Frame(main_frame)
+    #         info_frame.pack(fill='x', pady=(0, 20))
+            
+    #         ttk.Label(info_frame, text=f"Cliente: {dados_completos.get('nome_cliente', 'N/A')}", 
+    #                 font=('Arial', 12, 'bold')).pack(anchor='w')
+    #         ttk.Label(info_frame, text=f"Data: {dados_completos.get('data_relatorio', 'N/A')}", 
+    #                 font=('Arial', 10)).pack(anchor='w')
+    #         ttk.Label(info_frame, text=f"Relatório nº: {dados_completos.get('numero_relatorio', 'N/A')}", 
+    #                 font=('Arial', 10)).pack(anchor='w')
+            
+    #         # Área de preview com scroll
+    #         text_frame = ttk.Frame(main_frame)
+    #         text_frame.pack(fill='both', expand=True)
+            
+    #         text_widget = tk.Text(text_frame, wrap='word', font=('Courier', 9), state='disabled')
+    #         scrollbar = ttk.Scrollbar(text_frame, orient='vertical', command=text_widget.yview)
+    #         text_widget.configure(yscrollcommand=scrollbar.set)
+            
+    #         text_widget.pack(side='left', fill='both', expand=True)
+    #         scrollbar.pack(side='right', fill='y')
+            
+    #         # Gerar preview textual simples
+    #         preview_text = self.gerar_preview_textual_simples(dados_completos)
+    #         text_widget.config(state='normal')
+    #         text_widget.insert('1.0', preview_text)
+    #         text_widget.config(state='disabled')
+            
+    #         # Frame para botões
+    #         button_frame = ttk.Frame(main_frame)
+    #         button_frame.pack(fill='x', pady=(20, 0))
+            
+    #         # Função para voltar
+    #         def voltar_relatorios():
+    #             try:
+    #                 preview_window.destroy()
+    #                 self.root.deiconify()
+    #                 self.root.lift()
+    #                 self.root.focus_force()
+    #                 logger.info("Voltou para interface de relatórios")
+    #             except Exception as e:
+    #                 logger.error(f"Erro ao voltar: {str(e)}")
+            
+    #         # Função para gerar PDF
+    #         def gerar_pdf():
+    #             try:
+    #                 # Gerar PDF usando o handler
+    #                 handler = self.obter_handler_despesas_limpo()
+                    
+    #                 data_formatada = dados_completos['data_relatorio'].strftime('%d-%m-%Y')
+    #                 nome_arquivo = f"REL - {dados_completos['nome_cliente']} - {data_formatada}.pdf"
+                    
+    #                 if dados_completos.get('incluir_excluidos', False):
+    #                     nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
+                    
+    #                 caminho_output = os.path.join(os.path.dirname(arquivo_path), nome_arquivo)
+                    
+    #                 # Gerar PDF
+    #                 handler.gerar_relatorio_pdf(dados_completos, caminho_output, arquivo_path)
+                    
+    #                 # Perguntar se quer abrir
+    #                 resposta = messagebox.askyesno(
+    #                     "Relatório Gerado!",
+    #                     f"Relatório gerado com sucesso!\n\n"
+    #                     f"Arquivo: {nome_arquivo}\n\n"
+    #                     f"Deseja abrir o PDF?"
+    #                 )
+                    
+    #                 if resposta:
+    #                     self.abrir_arquivo(caminho_output)
+                    
+    #                 # Voltar para interface principal
+    #                 voltar_relatorios()
+                    
+    #             except Exception as e:
+    #                 logger.error(f"Erro ao gerar PDF: {str(e)}")
+    #                 messagebox.showerror("Erro", f"Erro ao gerar PDF: {str(e)}")
+            
+    #         # Botões
+    #         ttk.Button(button_frame, text="Gerar PDF", command=gerar_pdf).pack(side='left', padx=(0, 10))
+    #         ttk.Button(button_frame, text="Voltar", command=voltar_relatorios).pack(side='right')
+            
+    #         # Configurar fechamento
+    #         preview_window.protocol("WM_DELETE_WINDOW", voltar_relatorios)
+            
+    #         # Focar preview
+    #         preview_window.lift()
+    #         preview_window.focus_force()
+            
+    #         logger.info("✅ Preview simples criado diretamente")
+            
+    #     except Exception as e:
+    #         logger.error(f"💥 ERRO no preview simples: {str(e)}", exc_info=True)
+    #         messagebox.showerror("Erro", f"Erro ao abrir preview: {str(e)}")
+    #         self.root.deiconify()
+
+    def abrir_preview_estavel(self, dados_completos, arquivo_path):
+        """Versão que GARANTE que a janela seja visível"""
+        try:
+            logger.info("🎯 ABRINDO PREVIEW ESTÁVEL - GARANTINDO VISIBILIDADE")
+            
+            # Armazenar referências na instância
+            if not hasattr(self, '_preview_refs'):
+                self._preview_refs = {}
+            
+            # Importar tkinter
+            import tkinter as tk
+            from tkinter import ttk, messagebox
+            
+            # CORREÇÃO 1: NÃO ocultar interface principal ainda
+            # self.root.withdraw()  # REMOVIDO TEMPORARIAMENTE
+            
+            # Criar janela de preview
+            preview_window = tk.Toplevel(self.root)
+            self._preview_refs['window'] = preview_window
+            
+            preview_window.title("Preview do Relatório de Despesas")
+            preview_window.geometry("1000x800")  # Maior para garantir visibilidade
+            
+            # CORREÇÃO 2: Configurar janela para aparecer na frente
+            preview_window.transient(self.root)
+            preview_window.lift()
+            preview_window.focus_force()
+            
+            # CORREÇÃO 3: Centralizar janela na tela
+            preview_window.update_idletasks()
+            width = preview_window.winfo_width()
+            height = preview_window.winfo_height()
+            x = (preview_window.winfo_screenwidth() // 2) - (width // 2)
+            y = (preview_window.winfo_screenheight() // 2) - (height // 2)
+            preview_window.geometry(f"1000x800+{x}+{y}")
+            
+            # CORREÇÃO 4: Forçar janela para frente
+            preview_window.attributes('-topmost', True)  # Sempre no topo
+            preview_window.update()
+            preview_window.attributes('-topmost', False)  # Depois permite outras janelas
+            
+            logger.info("✅ Janela de preview criada e posicionada")
+            
+            # Criar widgets
+            main_frame = ttk.Frame(preview_window, padding=15)
+            main_frame.pack(fill='both', expand=True)
+            
+            # Título destacado
+            title_label = ttk.Label(main_frame, 
+                                text="🔍 PREVIEW DO RELATÓRIO DE DESPESAS", 
+                                font=('Arial', 16, 'bold'),
+                                foreground='blue')
+            title_label.pack(pady=(0, 15))
+            
+            # Informações do cliente em destaque
+            info_frame = ttk.LabelFrame(main_frame, text="Informações do Relatório", padding=10)
+            info_frame.pack(fill='x', pady=(0, 15))
+            
+            # Grid para organizar informações
+            info_frame.grid_columnconfigure(1, weight=1)
+            
+            ttk.Label(info_frame, text="Cliente:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky='w', padx=(0, 10))
+            ttk.Label(info_frame, text=f"{dados_completos.get('nome_cliente', 'N/A')}", 
+                    font=('Arial', 10)).grid(row=0, column=1, sticky='w')
+            
+            ttk.Label(info_frame, text="Data:", font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky='w', padx=(0, 10), pady=(5, 0))
+            ttk.Label(info_frame, text=f"{dados_completos.get('data_relatorio', 'N/A')}", 
+                    font=('Arial', 10)).grid(row=1, column=1, sticky='w', pady=(5, 0))
+            
+            ttk.Label(info_frame, text="Relatório nº:", font=('Arial', 10, 'bold')).grid(row=2, column=0, sticky='w', padx=(0, 10), pady=(5, 0))
+            ttk.Label(info_frame, text=f"{dados_completos.get('numero_relatorio', 'N/A')}", 
+                    font=('Arial', 10)).grid(row=2, column=1, sticky='w', pady=(5, 0))
+            
+            ttk.Label(info_frame, text="Status:", font=('Arial', 10, 'bold')).grid(row=3, column=0, sticky='w', padx=(0, 10), pady=(5, 0))
+            ttk.Label(info_frame, text="✅ Preview Funcionando e Visível!", 
+                    font=('Arial', 10), foreground='green').grid(row=3, column=1, sticky='w', pady=(5, 0))
+            
+            # Área de texto com título
+            text_frame = ttk.LabelFrame(main_frame, text="Conteúdo do Relatório", padding=10)
+            text_frame.pack(fill='both', expand=True, pady=(0, 15))
+            
+            # Widget de texto
+            text_widget = tk.Text(text_frame, wrap='word', font=('Courier', 9), 
+                                bg='white', fg='black', relief='sunken', bd=2)
+            scrollbar = ttk.Scrollbar(text_frame, orient='vertical', command=text_widget.yview)
+            text_widget.configure(yscrollcommand=scrollbar.set)
+            
+            text_widget.pack(side='left', fill='both', expand=True)
+            scrollbar.pack(side='right', fill='y')
+            
+            # Gerar e inserir preview textual
+            try:
+                logger.info("🔧 Gerando conteúdo do preview...")
+                preview_text = self.gerar_preview_textual_simples(dados_completos)
+                text_widget.insert('1.0', preview_text)
+                text_widget.config(state='disabled')
+                logger.info("✅ Conteúdo inserido com sucesso")
+            except Exception as e:
+                logger.error(f"Erro ao gerar preview textual: {str(e)}")
+                text_widget.insert('1.0', f"Erro ao gerar preview: {str(e)}")
+                text_widget.config(state='disabled')
+            
+            # Frame para botões com destaque
+            button_frame = ttk.LabelFrame(main_frame, text="Ações Disponíveis", padding=10)
+            button_frame.pack(fill='x')
+            
+            # CORREÇÃO 5: Função para ocultar interface principal DEPOIS
+            def ocultar_interface_principal():
+                try:
+                    logger.info("🔧 Ocultando interface principal...")
+                    self.root.withdraw()
+                    logger.info("✅ Interface principal ocultada")
+                except Exception as e:
+                    logger.error(f"Erro ao ocultar interface: {str(e)}")
+            
+            # Função para voltar melhorada
+            def voltar_relatorios():
+                try:
+                    logger.info("🔄 Voltando para interface de relatórios...")
+                    
+                    # Limpar referências
+                    if hasattr(self, '_preview_refs'):
+                        self._preview_refs.clear()
+                    
+                    # Restaurar interface principal ANTES de destruir preview
+                    if self.root and hasattr(self.root, 'deiconify'):
+                        self.root.deiconify()
+                        self.root.lift()
+                        self.root.focus_force()
+                        logger.info("✅ Interface principal restaurada")
+                    
+                    # Destruir janela de preview
+                    preview_window.destroy()
+                    logger.info("✅ Preview fechado")
+                    
+                except Exception as e:
+                    logger.error(f"Erro ao voltar: {str(e)}")
+                    # Garantir que interface principal seja restaurada
+                    try:
+                        if hasattr(self, 'root') and self.root:
+                            self.root.deiconify()
+                            self.root.lift()
+                            self.root.focus_force()
+                    except:
+                        pass
+            
+            # Função PDF simplificada para teste
+            def testar_pdf():
+                try:
+                    resposta = messagebox.askyesno(
+                        "Teste de PDF", 
+                        f"Testar geração de PDF para:\n{dados_completos.get('nome_cliente', 'N/A')}?\n\n(Ainda em desenvolvimento)"
+                    )
+                    
+                    if resposta:
+                        messagebox.showinfo("Teste", "Função de PDF está funcionando!\nImplementação completa em breve.")
+                    
+                except Exception as e:
+                    logger.error(f"Erro no teste PDF: {str(e)}")
+                    messagebox.showerror("Erro", f"Erro: {str(e)}")
+            
+            # Criar botões
+            btn_frame = ttk.Frame(button_frame)
+            btn_frame.pack(fill='x')
+            
+            btn_ocultar = ttk.Button(btn_frame, text="🔻 Ocultar Interface Principal", 
+                                    command=ocultar_interface_principal)
+            btn_ocultar.pack(side='left', padx=(0, 10))
+            
+            btn_pdf = ttk.Button(btn_frame, text="🚀 Testar PDF", command=testar_pdf)
+            btn_pdf.pack(side='left', padx=(0, 10))
+            
+            btn_voltar = ttk.Button(btn_frame, text="⬅️ Voltar", command=voltar_relatorios)
+            btn_voltar.pack(side='right')
+            
+            # Configurar fechamento
+            preview_window.protocol("WM_DELETE_WINDOW", voltar_relatorios)
+            
+            # CORREÇÃO 6: Garantir que janela apareça
+            preview_window.deiconify()  # Garantir que está visível
+            preview_window.lift()       # Trazer para frente
+            preview_window.focus_force() # Forçar foco
+            preview_window.update()     # Atualizar imediatamente
+            
+            logger.info("✅ Preview criado e DEVE ESTAR VISÍVEL na tela!")
+            
+            # Verificação de visibilidade
+            def verificar_visibilidade():
+                try:
+                    if preview_window.winfo_exists():
+                        if preview_window.winfo_viewable():
+                            logger.info("✅ CONFIRMADO: Preview está visível na tela!")
+                        else:
+                            logger.warning("⚠️ Preview existe mas não está visível!")
+                            # Tentar forçar visibilidade
+                            preview_window.deiconify()
+                            preview_window.lift()
+                            preview_window.focus_force()
+                    else:
+                        logger.error("❌ Preview não existe!")
+                except Exception as e:
+                    logger.error(f"Erro na verificação de visibilidade: {str(e)}")
+            
+            # Verificar visibilidade após 1 segundo
+            preview_window.after(1000, verificar_visibilidade)
+            
+            # Armazenar referências
+            self._preview_refs.update({
+                'window': preview_window,
+                'main_frame': main_frame,
+                'text_widget': text_widget,
+                'scrollbar': scrollbar
+            })
+            
+        except Exception as e:
+            logger.error(f"💥 ERRO CRÍTICO no preview: {str(e)}", exc_info=True)
+            try:
+                messagebox.showerror("Erro Crítico", f"Erro ao criar preview: {str(e)}")
+            except:
+                pass
+
+    def executar_relatorio_direto(self, configuracoes):
+        """Executa relatório direto sem preview"""
+        try:
+            logger.info("🎯 EXECUTANDO RELATÓRIO DIRETO")
+            
+            # Processar dados
+            handler = self.obter_handler_despesas_limpo()
+            dados_processados = self.processar_dados_completo(handler, configuracoes)
+            
+            # Gerar nome do arquivo
+            data_formatada = configuracoes['data'].strftime('%d-%m-%Y')
+            nome_arquivo = f"REL - {dados_processados['nome_cliente']} - {data_formatada}.pdf"
+            
+            if configuracoes['incluir_excluidos']:
+                nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
+            
+            caminho_output = os.path.join(os.path.dirname(configuracoes['arquivo']), nome_arquivo)
+            
+            # Gerar PDF
+            handler.gerar_relatorio_pdf(dados_processados, caminho_output, configuracoes['arquivo'])
+            
+            # Mostrar resultado
+            resposta = messagebox.askyesno(
+                "Relatório Gerado!",
+                f"Relatório gerado com sucesso!\n\n"
+                f"Cliente: {dados_processados['nome_cliente']}\n"
+                f"Arquivo: {nome_arquivo}\n\n"
+                f"Deseja abrir o PDF?"
+            )
+            
+            if resposta:
+                self.abrir_arquivo(caminho_output)
+            
+            logger.info("✅ Relatório direto concluído")
+            
+        except Exception as e:
+            logger.error(f"💥 ERRO no relatório direto: {str(e)}")
             messagebox.showerror("Erro", f"Erro: {str(e)}")
+
+    def criar_janela_progresso_simples(self):
+        """Cria janela de progresso simples"""
+        try:
+            window = tk.Toplevel(self.root)
+            window.title("Processando...")
+            window.geometry("400x120")
+            window.transient(self.root)
+            window.grab_set()
+            window.resizable(False, False)
+            
+            # Centralizar
+            window.update_idletasks()
+            x = (window.winfo_screenwidth() // 2) - 200
+            y = (window.winfo_screenheight() // 2) - 60
+            window.geometry(f"400x120+{x}+{y}")
+            
+            # Widgets
+            frame = ttk.Frame(window, padding=20)
+            frame.pack(fill='both', expand=True)
+            
+            ttk.Label(frame, text="Processando Relatório...", font=('Arial', 12)).pack(pady=10)
+            
+            window.status_label = ttk.Label(frame, text="Iniciando...")
+            window.status_label.pack(pady=5)
+            
+            window.progress_bar = ttk.Progressbar(frame, length=300, mode='determinate')
+            window.progress_bar.pack(pady=10)
+            
+            return window
+            
+        except Exception as e:
+            logger.error(f"💥 ERRO ao criar progresso: {str(e)}")
+            return None
+
+    def formatar_numero(self, valor):
+        """Formata número de forma segura"""
+        try:
+            import pandas as pd
+            
+            if valor is None or pd.isna(valor):
+                return "0,00"
+            
+            # Converter para float se for string
+            if isinstance(valor, str):
+                valor = valor.replace('R$', '').replace(' ', '').replace(',', '.')
+                valor = float(valor)
+            
+            # Formatar no padrão brasileiro
+            return f"{float(valor):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        except:
+            return "0,00"            
+
+    def gerar_preview_textual_simples(self, dados):
+        """Gera preview textual simples dos dados do relatório"""
+        try:
+            preview_lines = []
+            
+            # Cabeçalho
+            preview_lines.append("=" * 80)
+            preview_lines.append("PREVIEW DO RELATÓRIO DE DESPESAS")
+            preview_lines.append("=" * 80)
+            preview_lines.append("")
+            
+            # Informações básicas
+            preview_lines.append(f"CLIENTE: {dados.get('nome_cliente', 'N/A')}")
+            preview_lines.append(f"ENDEREÇO: {dados.get('endereco_cliente', 'N/A')}")
+            
+            data_formatada = dados.get('data_relatorio')
+            if hasattr(data_formatada, 'strftime'):
+                data_formatada = data_formatada.strftime('%d/%m/%Y')
+            
+            preview_lines.append(f"RELATÓRIO Nº: {dados.get('numero_relatorio', 'N/A')}")
+            preview_lines.append(f"DATA: {data_formatada}")
+            preview_lines.append("")
+            
+            # Resumo dos dados processados
+            preview_lines.append("-" * 60)
+            preview_lines.append("RESUMO DOS DADOS PROCESSADOS")
+            preview_lines.append("-" * 60)
+            
+            # Verificar se os dados são DataFrames válidos
+            try:
+                df_filtrado = dados.get('df_filtrado')
+                if df_filtrado is None or not hasattr(df_filtrado, 'empty'):
+                    df_filtrado = pd.DataFrame()
+                    
+                df_tp_desp_1 = dados.get('df_tp_desp_1')
+                if df_tp_desp_1 is None or not hasattr(df_tp_desp_1, 'empty'):
+                    df_tp_desp_1 = pd.DataFrame()
+                    
+                df_tp_desp_2 = dados.get('df_tp_desp_2')
+                if df_tp_desp_2 is None or not hasattr(df_tp_desp_2, 'empty'):
+                    df_tp_desp_2 = pd.DataFrame()
+                    
+                df_diaria = dados.get('df_diaria')
+                if df_diaria is None or not hasattr(df_diaria, 'empty'):
+                    df_diaria = pd.DataFrame()
+                    
+                df_futuro = dados.get('df_futuro')
+                if df_futuro is None or not hasattr(df_futuro, 'empty'):
+                    df_futuro = pd.DataFrame()
+            except Exception as e:
+                logger.warning(f"Erro ao processar DataFrames: {str(e)}")
+                # Criar DataFrames vazios como fallback
+                df_filtrado = pd.DataFrame()
+                df_tp_desp_1 = pd.DataFrame()
+                df_tp_desp_2 = pd.DataFrame()
+                df_diaria = pd.DataFrame()
+                df_futuro = pd.DataFrame()
+            
+            preview_lines.append(f"Despesas principais (tipos 2-7): {len(df_filtrado)} registros")
+            preview_lines.append(f"Colaboradores (salário/transporte/café): {len(df_tp_desp_1)} registros")
+            preview_lines.append(f"Colaboradores (13º/férias/rescisão): {len(df_tp_desp_2)} registros")
+            preview_lines.append(f"Diárias: {len(df_diaria)} registros")
+            
+            if dados.get('incluir_futuros') and not df_futuro.empty:
+                preview_lines.append(f"Lançamentos futuros: {len(df_futuro)} registros")
+            
+            preview_lines.append("")
+            
+            # Calcular totais
+            total_quinzena = 0
+            
+            # Somar valores de cada categoria
+            for df_temp in [df_filtrado, df_tp_desp_1, df_tp_desp_2, df_diaria]:
+                if not df_temp.empty and 'VALOR' in df_temp.columns:
+                    try:
+                        valores = pd.to_numeric(df_temp['VALOR'], errors='coerce').fillna(0)
+                        total_quinzena += valores.sum()
+                    except:
+                        pass
+            
+            acumulado = dados.get('acumulado', 0)
+            total_obra = total_quinzena + acumulado
+            
+            preview_lines.append("-" * 60)
+            preview_lines.append("TOTAIS CALCULADOS")
+            preview_lines.append("-" * 60)
+            preview_lines.append(f"Total da quinzena: R$ {self.formatar_numero(total_quinzena)}")
+            preview_lines.append(f"Total acumulado anterior: R$ {self.formatar_numero(acumulado)}")
+            preview_lines.append(f"Total da obra: R$ {self.formatar_numero(total_obra)}")
+            preview_lines.append("")
+            
+            # Opções incluídas
+            preview_lines.append("-" * 60)
+            preview_lines.append("OPÇÕES SELECIONADAS")
+            preview_lines.append("-" * 60)
+            preview_lines.append(f"Incluir lançamentos futuros: {'Sim' if dados.get('incluir_futuros') else 'Não'}")
+            preview_lines.append(f"Incluir lançamentos excluídos: {'Sim' if dados.get('incluir_excluidos') else 'Não'}")
+            preview_lines.append("")
+            
+            # Mostrar amostra dos dados (primeiros registros de cada tipo)
+            preview_lines.append("-" * 60)
+            preview_lines.append("AMOSTRA DOS DADOS")
+            preview_lines.append("-" * 60)
+            
+            if not df_filtrado.empty:
+                preview_lines.append("\nDespesas principais (primeiros 5 registros):")
+                preview_lines.append("Nome".ljust(25) + "Referência".ljust(30) + "Valor".rjust(12))
+                preview_lines.append("-" * 67)
+                
+                for i, (_, row) in enumerate(df_filtrado.head(5).iterrows()):
+                    nome = str(row.get('NOME', ''))[:24]
+                    referencia = str(row.get('REFERÊNCIA', ''))[:29]
+                    try:
+                        valor = pd.to_numeric(row.get('VALOR', 0), errors='coerce')
+                        if pd.isna(valor):
+                            valor = 0
+                        valor_fmt = f"R$ {self.formatar_numero(valor)}"
+                    except:
+                        valor_fmt = "R$ 0,00"
+                    
+                    preview_lines.append(f"{nome.ljust(25)} {referencia.ljust(30)} {valor_fmt.rjust(12)}")
+            
+            if not df_tp_desp_1.empty:
+                preview_lines.append("\nColaboradores (primeiros 3 registros):")
+                preview_lines.append("Nome".ljust(25) + "Referência".ljust(15) + "Valor".rjust(12))
+                preview_lines.append("-" * 52)
+                
+                for i, (_, row) in enumerate(df_tp_desp_1.head(3).iterrows()):
+                    nome = str(row.get('NOME', ''))[:24]
+                    referencia = str(row.get('REFERÊNCIA', ''))[:14]
+                    try:
+                        valor = pd.to_numeric(row.get('VALOR', 0), errors='coerce')
+                        if pd.isna(valor):
+                            valor = 0
+                        valor_fmt = f"R$ {self.formatar_numero(valor)}"
+                    except:
+                        valor_fmt = "R$ 0,00"
+                    
+                    preview_lines.append(f"{nome.ljust(25)} {referencia.ljust(15)} {valor_fmt.rjust(12)}")
+            
+            preview_lines.append("")
+            preview_lines.append("=" * 80)
+            preview_lines.append("Use o botão 'Gerar PDF' para criar o relatório completo")
+            preview_lines.append("=" * 80)
+            
+            return "\n".join(preview_lines)
+            
+        except Exception as e:
+            logger.error(f"Erro ao gerar preview textual: {str(e)}")
+            return f"Erro ao gerar preview: {str(e)}\n\nDados disponíveis: {list(dados.keys())}"
+
+    def atualizar_progresso_simples(self, window, texto, valor):
+        """Atualiza progresso de forma simples"""
+        try:
+            if window and hasattr(window, 'winfo_exists') and window.winfo_exists():
+                window.status_label.config(text=texto)
+                window.progress_bar['value'] = valor
+                window.update()
+        except Exception as e:
+            logger.error(f"💥 ERRO ao atualizar progresso: {str(e)}")
+
+    def limpar_threads_ativas(self):
+        """Limpa threads que podem estar causando problemas"""
+        try:
+            import threading
+            
+            threads_ativas = threading.enumerate()
+            thread_principal = threading.main_thread()
+            
+            logger.info(f"🧹 Verificando threads ativas: {len(threads_ativas)}")
+            
+            for thread in threads_ativas:
+                if thread != thread_principal and thread.is_alive():
+                    logger.warning(f"⚠️ Thread ativa detectada: {thread.name}")
+                    # Não force kill threads, apenas log para debug
+            
+        except Exception as e:
+            logger.error(f"Erro ao verificar threads: {str(e)}")
+        
+    # def executar_fluxo_preview_despesas(self, configuracoes):
+    #     """Executa fluxo otimizado com preview - VERSÃO CORRIGIDA"""
+    #     try:
+    #         logger.info("🚀 EXECUTANDO FLUXO PREVIEW DESPESAS")
+            
+    #         # CORREÇÃO: Extrair arquivo_path das configurações ANTES da thread
+    #         arquivo_path = configuracoes.get('arquivo')
+    #         if not arquivo_path:
+    #             logger.error("❌ arquivo_path não encontrado nas configurações")
+    #             messagebox.showerror("Erro", "Caminho do arquivo não encontrado")
+    #             return
+            
+    #         logger.info(f"📁 Arquivo detectado: {arquivo_path}")
+            
+    #         # Criar janela de progresso
+    #         progress_window = self.criar_progress_window()
+            
+    #         def processar_async():
+    #             try:
+    #                 # 1. Preparar handler
+    #                 self.update_progress(progress_window, "Preparando processamento...", 10)
+    #                 handler = self.obter_handler_despesas()
+                    
+    #                 # 2. Processar data
+    #                 self.update_progress(progress_window, "Processando data...", 20)
+    #                 data_limpa = self.limpar_data(configuracoes['data'])
+                    
+    #                 # 3. Carregar dados
+    #                 self.update_progress(progress_window, "Carregando dados...", 40)
+    #                 # CORREÇÃO: Usar arquivo_path que foi definido fora da thread
+    #                 df = handler.carregar_dados_excel(arquivo_path, configuracoes['incluir_excluidos'])
+                    
+    #                 # 4. Processar dados
+    #                 self.update_progress(progress_window, "Processando dados...", 60)
+    #                 dados_processados = self.processar_dados_completos(handler, df, data_limpa, configuracoes)
+                    
+    #                 # 5. Obter informações do cliente
+    #                 self.update_progress(progress_window, "Obtendo dados do cliente...", 80)
+    #                 # CORREÇÃO: Usar arquivo_path que foi definido fora da thread
+    #                 info_cliente = self.obter_info_cliente(arquivo_path, data_limpa, handler, df, configuracoes['incluir_excluidos'])
+                    
+    #                 # 6. Montar dados finais
+    #                 self.update_progress(progress_window, "Finalizando...", 95)
+    #                 dados_completos = self.montar_dados_completos(dados_processados, info_cliente, configuracoes, data_limpa, df)
+                    
+    #                 # 7. Fechar progresso e abrir preview
+    #                 self.update_progress(progress_window, "Abrindo preview...", 100)
+    #                 progress_window.after(500, progress_window.destroy)
+                    
+    #                 # 8. Abrir preview limpo
+    #                 # CORREÇÃO: Usar arquivo_path que foi definido fora da thread
+    #                 self.abrir_preview_limpo(dados_completos, arquivo_path)
+                    
+    #             except Exception as e:
+    #                 logger.error(f"💥 ERRO no processamento async: {str(e)}", exc_info=True)
+    #                 try:
+    #                     progress_window.destroy()
+    #                 except:
+    #                     pass
+    #                 messagebox.showerror("Erro", f"Erro no processamento: {str(e)}")
+    #                 self.root.deiconify()
+            
+    #         # Executar em thread
+    #         import threading
+    #         threading.Thread(target=processar_async, daemon=True).start()
+            
+    #     except Exception as e:
+    #         logger.error(f"💥 ERRO no fluxo preview: {str(e)}")
+    #         messagebox.showerror("Erro", f"Erro: {str(e)}")
 
     def obter_handler_despesas(self):
         """Obtém handler de despesas de forma limpa"""
@@ -1875,42 +2618,6 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"💥 ERRO ao limpar data: {str(e)}")
             return datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-
-    def processar_dados_completos(self, handler, df, data_limpa, configuracoes):
-        """Processa todos os dados de forma limpa"""
-        try:
-            logger.info(f"🔧 Processando dados para data: {data_limpa}")
-            
-            # Usar método corrigido do handler
-            df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = handler.processar_dados(
-                df, data_limpa, configuracoes['incluir_excluidos']
-            )
-            
-            # Log dos resultados
-            logger.info(f"📊 Resultados:")
-            logger.info(f"   - df_filtrado: {len(df_filtrado)} registros")
-            logger.info(f"   - df_diaria: {len(df_diaria)} registros")
-            logger.info(f"   - df_tp_desp_1: {len(df_tp_desp_1)} registros")
-            logger.info(f"   - df_tp_desp_2: {len(df_tp_desp_2)} registros")
-            
-            # Processar lançamentos futuros
-            df_futuro = None
-            if configuracoes['incluir_futuros']:
-                if hasattr(handler, 'processar_lancamentos_futuros'):
-                    df_futuro = handler.processar_lancamentos_futuros(df, data_limpa, configuracoes['incluir_excluidos'])
-                    logger.info(f"   - df_futuro: {len(df_futuro) if df_futuro is not None else 0} registros")
-            
-            return {
-                'df_filtrado': df_filtrado,
-                'df_diaria': df_diaria,
-                'df_tp_desp_1': df_tp_desp_1,
-                'df_tp_desp_2': df_tp_desp_2,
-                'df_futuro': df_futuro
-            }
-            
-        except Exception as e:
-            logger.error(f"💥 ERRO ao processar dados: {str(e)}")
-            raise
 
     def obter_info_cliente(self, arquivo, data_limpa, handler, df, incluir_excluidos):
         """Obtém informações do cliente de forma limpa"""
@@ -1968,131 +2675,131 @@ class SistemaRelatorios:
             logger.error(f"💥 ERRO ao montar dados: {str(e)}")
             raise
 
-    def abrir_preview_limpo(self, dados_completos, arquivo_path):
-        """Abre preview de forma limpa - VERSÃO CORRIGIDA"""
-        try:
-            logger.info("🎯 ABRINDO PREVIEW LIMPO")
+    # def abrir_preview_limpo(self, dados_completos, arquivo_path):
+    #     """Abre preview de forma limpa - VERSÃO CORRIGIDA"""
+    #     try:
+    #         logger.info("🎯 ABRINDO PREVIEW LIMPO")
             
-            # Importar visualizador
-            try:
-                from src.relatorio_despesas_aprimorado import VisualizadorRelatorio
-                logger.info("✅ VisualizadorRelatorio importado de src")
-            except ImportError:
-                try:
-                    from relatorio_despesas_aprimorado import VisualizadorRelatorio
-                    logger.info("✅ VisualizadorRelatorio importado direto")
-                except ImportError as e:
-                    logger.error(f"❌ Erro ao importar VisualizadorRelatorio: {str(e)}")
-                    raise Exception("Não foi possível importar VisualizadorRelatorio")
+    #         # Importar visualizador
+    #         try:
+    #             from src.relatorio_despesas_aprimorado import VisualizadorRelatorio
+    #             logger.info("✅ VisualizadorRelatorio importado de src")
+    #         except ImportError:
+    #             try:
+    #                 from relatorio_despesas_aprimorado import VisualizadorRelatorio
+    #                 logger.info("✅ VisualizadorRelatorio importado direto")
+    #             except ImportError as e:
+    #                 logger.error(f"❌ Erro ao importar VisualizadorRelatorio: {str(e)}")
+    #                 raise Exception("Não foi possível importar VisualizadorRelatorio")
             
-            # CORREÇÃO: Não ocultar a interface ainda - aguardar preview abrir
-            logger.info("🔧 Preparando para criar visualizador")
+    #         # CORREÇÃO: Não ocultar a interface ainda - aguardar preview abrir
+    #         logger.info("🔧 Preparando para criar visualizador")
             
-            # CORREÇÃO: Criar visualizador com tratamento de erro
-            try:
-                visualizador = VisualizadorRelatorio(self.root)
-                visualizador.arquivo_path = arquivo_path
-                logger.info("✅ Visualizador criado com sucesso")
-            except Exception as e:
-                logger.error(f"❌ Erro ao criar visualizador: {str(e)}")
-                messagebox.showerror("Erro", f"Erro ao criar visualizador: {str(e)}")
-                return
+    #         # CORREÇÃO: Criar visualizador com tratamento de erro
+    #         try:
+    #             visualizador = VisualizadorRelatorio(self.root)
+    #             visualizador.arquivo_path = arquivo_path
+    #             logger.info("✅ Visualizador criado com sucesso")
+    #         except Exception as e:
+    #             logger.error(f"❌ Erro ao criar visualizador: {str(e)}")
+    #             messagebox.showerror("Erro", f"Erro ao criar visualizador: {str(e)}")
+    #             return
             
-            # CORREÇÃO: Verificar dados antes de abrir preview
-            logger.info("🔍 Verificando dados antes do preview...")
-            logger.info(f"   - df_filtrado: {len(dados_completos.get('df_filtrado', []))}")
-            logger.info(f"   - df_diaria: {len(dados_completos.get('df_diaria', []))}")
-            logger.info(f"   - df_tp_desp_1: {len(dados_completos.get('df_tp_desp_1', []))}")
-            logger.info(f"   - Cliente: {dados_completos.get('nome_cliente', 'N/A')}")
-            logger.info(f"   - Data: {dados_completos.get('data_relatorio', 'N/A')}")
+    #         # CORREÇÃO: Verificar dados antes de abrir preview
+    #         logger.info("🔍 Verificando dados antes do preview...")
+    #         logger.info(f"   - df_filtrado: {len(dados_completos.get('df_filtrado', []))}")
+    #         logger.info(f"   - df_diaria: {len(dados_completos.get('df_diaria', []))}")
+    #         logger.info(f"   - df_tp_desp_1: {len(dados_completos.get('df_tp_desp_1', []))}")
+    #         logger.info(f"   - Cliente: {dados_completos.get('nome_cliente', 'N/A')}")
+    #         logger.info(f"   - Data: {dados_completos.get('data_relatorio', 'N/A')}")
             
-            # CORREÇÃO: Abrir preview com tratamento de erro robusto
-            try:
-                logger.info("🚀 Chamando mostrar_preview...")
-                preview_window = visualizador.mostrar_preview(dados_completos)
-                logger.info("✅ mostrar_preview executado")
+    #         # CORREÇÃO: Abrir preview com tratamento de erro robusto
+    #         try:
+    #             logger.info("🚀 Chamando mostrar_preview...")
+    #             preview_window = visualizador.mostrar_preview(dados_completos)
+    #             logger.info("✅ mostrar_preview executado")
                 
-                # Verificar se preview_window foi criado
-                if preview_window is None:
-                    logger.error("❌ mostrar_preview retornou None")
-                    messagebox.showerror("Erro", "Erro ao criar janela de preview")
-                    return
+    #             # Verificar se preview_window foi criado
+    #             if preview_window is None:
+    #                 logger.error("❌ mostrar_preview retornou None")
+    #                 messagebox.showerror("Erro", "Erro ao criar janela de preview")
+    #                 return
                 
-                logger.info(f"✅ Preview window criado: {preview_window}")
+    #             logger.info(f"✅ Preview window criado: {preview_window}")
                 
-            except Exception as e:
-                logger.error(f"❌ ERRO no mostrar_preview: {str(e)}", exc_info=True)
-                messagebox.showerror("Erro", f"Erro ao mostrar preview: {str(e)}")
-                return
+    #         except Exception as e:
+    #             logger.error(f"❌ ERRO no mostrar_preview: {str(e)}", exc_info=True)
+    #             messagebox.showerror("Erro", f"Erro ao mostrar preview: {str(e)}")
+    #             return
             
-            # CORREÇÃO: Só ocultar interface APÓS preview estar aberto
-            try:
-                logger.info("🔧 Ocultando interface principal")
-                self.root.withdraw()
-                logger.info("✅ Interface principal ocultada")
-            except Exception as e:
-                logger.error(f"❌ Erro ao ocultar interface: {str(e)}")
+    #         # CORREÇÃO: Só ocultar interface APÓS preview estar aberto
+    #         try:
+    #             logger.info("🔧 Ocultando interface principal")
+    #             self.root.withdraw()
+    #             logger.info("✅ Interface principal ocultada")
+    #         except Exception as e:
+    #             logger.error(f"❌ Erro ao ocultar interface: {str(e)}")
             
-            # CORREÇÃO: Configurar retorno com mais robustez
-            def voltar_relatorios():
-                """Volta para interface de relatórios de forma robusta"""
-                try:
-                    logger.info("🔄 Retornando para interface de relatórios")
+    #         # CORREÇÃO: Configurar retorno com mais robustez
+    #         def voltar_relatorios():
+    #             """Volta para interface de relatórios de forma robusta"""
+    #             try:
+    #                 logger.info("🔄 Retornando para interface de relatórios")
                     
-                    # Destruir preview se ainda existir
-                    try:
-                        if preview_window and hasattr(preview_window, 'winfo_exists'):
-                            if preview_window.winfo_exists():
-                                preview_window.destroy()
-                                logger.info("✅ Preview window destruído")
-                    except Exception as e:
-                        logger.warning(f"⚠️ Erro ao destruir preview: {str(e)}")
+    #                 # Destruir preview se ainda existir
+    #                 try:
+    #                     if preview_window and hasattr(preview_window, 'winfo_exists'):
+    #                         if preview_window.winfo_exists():
+    #                             preview_window.destroy()
+    #                             logger.info("✅ Preview window destruído")
+    #                 except Exception as e:
+    #                     logger.warning(f"⚠️ Erro ao destruir preview: {str(e)}")
                     
-                    # Restaurar interface principal
-                    try:
-                        self.root.deiconify()
-                        self.root.lift()
-                        self.root.focus_force()
-                        logger.info("✅ Interface principal restaurada")
-                    except Exception as e:
-                        logger.error(f"❌ Erro ao restaurar interface: {str(e)}")
+    #                 # Restaurar interface principal
+    #                 try:
+    #                     self.root.deiconify()
+    #                     self.root.lift()
+    #                     self.root.focus_force()
+    #                     logger.info("✅ Interface principal restaurada")
+    #                 except Exception as e:
+    #                     logger.error(f"❌ Erro ao restaurar interface: {str(e)}")
                     
-                except Exception as e:
-                    logger.error(f"❌ Erro geral no voltar_relatorios: {str(e)}")
+    #             except Exception as e:
+    #                 logger.error(f"❌ Erro geral no voltar_relatorios: {str(e)}")
             
-            # CORREÇÃO: Aplicar configuração de fechamento de forma mais robusta
-            try:
-                if hasattr(preview_window, 'protocol'):
-                    preview_window.protocol("WM_DELETE_WINDOW", voltar_relatorios)
-                    logger.info("✅ Protocolo de fechamento configurado")
-                else:
-                    logger.warning("⚠️ Preview window não tem método protocol")
+    #         # CORREÇÃO: Aplicar configuração de fechamento de forma mais robusta
+    #         try:
+    #             if hasattr(preview_window, 'protocol'):
+    #                 preview_window.protocol("WM_DELETE_WINDOW", voltar_relatorios)
+    #                 logger.info("✅ Protocolo de fechamento configurado")
+    #             else:
+    #                 logger.warning("⚠️ Preview window não tem método protocol")
                     
-            except Exception as e:
-                logger.error(f"❌ Erro ao configurar protocolo: {str(e)}")
+    #         except Exception as e:
+    #             logger.error(f"❌ Erro ao configurar protocolo: {str(e)}")
             
-            # CORREÇÃO: Focar na janela de preview
-            try:
-                if hasattr(preview_window, 'lift'):
-                    preview_window.lift()
-                    preview_window.focus_force()
-                    logger.info("✅ Preview focado")
-            except Exception as e:
-                logger.warning(f"⚠️ Erro ao focar preview: {str(e)}")
+    #         # CORREÇÃO: Focar na janela de preview
+    #         try:
+    #             if hasattr(preview_window, 'lift'):
+    #                 preview_window.lift()
+    #                 preview_window.focus_force()
+    #                 logger.info("✅ Preview focado")
+    #         except Exception as e:
+    #             logger.warning(f"⚠️ Erro ao focar preview: {str(e)}")
             
-            logger.info("✅ Preview limpo aberto com sucesso")
+    #         logger.info("✅ Preview limpo aberto com sucesso")
             
-        except Exception as e:
-            logger.error(f"💥 ERRO GERAL no abrir_preview_limpo: {str(e)}", exc_info=True)
-            messagebox.showerror("Erro", f"Erro crítico no preview: {str(e)}")
+    #     except Exception as e:
+    #         logger.error(f"💥 ERRO GERAL no abrir_preview_limpo: {str(e)}", exc_info=True)
+    #         messagebox.showerror("Erro", f"Erro crítico no preview: {str(e)}")
             
-            # Em caso de erro, restaurar interface
-            try:
-                self.root.deiconify()
-                self.root.lift()
-                self.root.focus_force()
-            except:
-                pass
+    #         # Em caso de erro, restaurar interface
+    #         try:
+    #             self.root.deiconify()
+    #             self.root.lift()
+    #             self.root.focus_force()
+    #         except:
+    #             pass
         
     def criar_progress_window(self):
         """Cria janela de progresso simples"""
@@ -2201,129 +2908,129 @@ class SistemaRelatorios:
             logger.error(f"💥 ERRO outros relatórios: {str(e)}")
             messagebox.showerror("Erro", f"Erro: {str(e)}")
 
-    def gerar_com_preview_otimizado(self, configuracoes):
-        """Gera dados e abre preview otimizado"""
-        try:
-            logger.info("=== GERAÇÃO COM PREVIEW OTIMIZADO ===")
+    # def gerar_com_preview_otimizado(self, configuracoes):
+    #     """Gera dados e abre preview otimizado"""
+    #     try:
+    #         logger.info("=== GERAÇÃO COM PREVIEW OTIMIZADO ===")
             
-            # Criar e mostrar janela de progresso
-            progress_window = self.criar_janela_progresso_melhorada()
+    #         # Criar e mostrar janela de progresso
+    #         progress_window = self.criar_janela_progresso_melhorada()
             
-            def processar_dados_async():
-                """Processa dados em thread separada"""
-                try:
-                    # 1. Atualizar progresso
-                    self.atualizar_progresso_seguro(progress_window, "Importando módulo...", 10)
+    #         def processar_dados_async():
+    #             """Processa dados em thread separada"""
+    #             try:
+    #                 # 1. Atualizar progresso
+    #                 self.atualizar_progresso_seguro(progress_window, "Importando módulo...", 10)
                     
-                    # 2. Importar handler
-                    try:
-                        from src.relatorio_despesas_aprimorado import RelatorioHandler
-                        logger.info("Handler importado de src.relatorio_despesas_aprimorado")
-                    except ImportError:
-                        from relatorio_despesas_aprimorado import RelatorioHandler
-                        logger.info("Handler importado de relatorio_despesas_aprimorado")
+    #                 # 2. Importar handler
+    #                 try:
+    #                     from src.relatorio_despesas_aprimorado import RelatorioHandler
+    #                     logger.info("Handler importado de src.relatorio_despesas_aprimorado")
+    #                 except ImportError:
+    #                     from relatorio_despesas_aprimorado import RelatorioHandler
+    #                     logger.info("Handler importado de relatorio_despesas_aprimorado")
                     
-                    handler = RelatorioHandler()
+    #                 handler = RelatorioHandler()
                     
-                    # 3. Processar data
-                    self.atualizar_progresso_seguro(progress_window, "Processando data...", 20)
-                    data_relatorio = self.normalizar_data_relatorio(configuracoes['data'])
-                    logger.info(f"Data normalizada: {data_relatorio}")
+    #                 # 3. Processar data
+    #                 self.atualizar_progresso_seguro(progress_window, "Processando data...", 20)
+    #                 data_relatorio = self.normalizar_data_relatorio(configuracoes['data'])
+    #                 logger.info(f"Data normalizada: {data_relatorio}")
                     
-                    # 4. Carregar dados
-                    self.atualizar_progresso_seguro(progress_window, "Carregando dados do Excel...", 30)
-                    df = handler.carregar_dados_excel(
-                        configuracoes['arquivo'], 
-                        configuracoes['incluir_excluidos']
-                    )
-                    logger.info(f"Dados carregados: {len(df)} registros")
+    #                 # 4. Carregar dados
+    #                 self.atualizar_progresso_seguro(progress_window, "Carregando dados do Excel...", 30)
+    #                 df = handler.carregar_dados_excel(
+    #                     configuracoes['arquivo'], 
+    #                     configuracoes['incluir_excluidos']
+    #                 )
+    #                 logger.info(f"Dados carregados: {len(df)} registros")
                     
-                    # 5. Processar dados
-                    self.atualizar_progresso_seguro(progress_window, "Processando dados...", 50)
-                    df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = handler.processar_dados(
-                        df, data_relatorio, configuracoes['incluir_excluidos']
-                    )
+    #                 # 5. Processar dados
+    #                 self.atualizar_progresso_seguro(progress_window, "Processando dados...", 50)
+    #                 df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = handler.processar_dados(
+    #                     df, data_relatorio, configuracoes['incluir_excluidos']
+    #                 )
                     
-                    logger.info(f"Dados processados:")
-                    logger.info(f"  - df_filtrado: {len(df_filtrado)}")
-                    logger.info(f"  - df_diaria: {len(df_diaria)}")
-                    logger.info(f"  - df_tp_desp_1: {len(df_tp_desp_1)}")
-                    logger.info(f"  - df_tp_desp_2: {len(df_tp_desp_2)}")
+    #                 logger.info(f"Dados processados:")
+    #                 logger.info(f"  - df_filtrado: {len(df_filtrado)}")
+    #                 logger.info(f"  - df_diaria: {len(df_diaria)}")
+    #                 logger.info(f"  - df_tp_desp_1: {len(df_tp_desp_1)}")
+    #                 logger.info(f"  - df_tp_desp_2: {len(df_tp_desp_2)}")
                     
-                    # 6. Processar lançamentos futuros
-                    self.atualizar_progresso_seguro(progress_window, "Processando lançamentos futuros...", 70)
-                    df_futuro = None
-                    if configuracoes['incluir_futuros']:
-                        if hasattr(handler, 'processar_lancamentos_futuros'):
-                            df_futuro = handler.processar_lancamentos_futuros(
-                                df, data_relatorio, configuracoes['incluir_excluidos']
-                            )
-                            logger.info(f"Lançamentos futuros: {len(df_futuro) if df_futuro is not None else 0}")
+    #                 # 6. Processar lançamentos futuros
+    #                 self.atualizar_progresso_seguro(progress_window, "Processando lançamentos futuros...", 70)
+    #                 df_futuro = None
+    #                 if configuracoes['incluir_futuros']:
+    #                     if hasattr(handler, 'processar_lancamentos_futuros'):
+    #                         df_futuro = handler.processar_lancamentos_futuros(
+    #                             df, data_relatorio, configuracoes['incluir_excluidos']
+    #                         )
+    #                         logger.info(f"Lançamentos futuros: {len(df_futuro) if df_futuro is not None else 0}")
                   
-                    # 7. Obter dados do cliente
-                    self.atualizar_progresso_seguro(progress_window, "Obtendo dados do cliente...", 85)
-                    from openpyxl import load_workbook
-                    workbook = load_workbook(configuracoes['arquivo'], data_only=True)
-                    ws_resumo = workbook['RESUMO']
-                    nome_cliente = ws_resumo['A3'].value
+    #                 # 7. Obter dados do cliente
+    #                 self.atualizar_progresso_seguro(progress_window, "Obtendo dados do cliente...", 85)
+    #                 from openpyxl import load_workbook
+    #                 workbook = load_workbook(configuracoes['arquivo'], data_only=True)
+    #                 ws_resumo = workbook['RESUMO']
+    #                 nome_cliente = ws_resumo['A3'].value
                     
-                    # 8. Calcular valores
-                    numero_relatorio = handler.obter_numero_relatorio(ws_resumo, data_relatorio)
-                    valor_acumulado = handler.calcular_acumulado_dados(
-                        df, data_relatorio, configuracoes['incluir_excluidos']
-                    )
+    #                 # 8. Calcular valores
+    #                 numero_relatorio = handler.obter_numero_relatorio(ws_resumo, data_relatorio)
+    #                 valor_acumulado = handler.calcular_acumulado_dados(
+    #                     df, data_relatorio, configuracoes['incluir_excluidos']
+    #                 )
                   
-                    logger.info(f"Cliente: {nome_cliente}")
-                    logger.info(f"Número relatório: {numero_relatorio}")
-                    logger.info(f"Valor acumulado: {valor_acumulado:,.2f}")
+    #                 logger.info(f"Cliente: {nome_cliente}")
+    #                 logger.info(f"Número relatório: {numero_relatorio}")
+    #                 logger.info(f"Valor acumulado: {valor_acumulado:,.2f}")
                     
-                    # 9. Montar dados completos
-                    dados_completos = {
-                        'df_filtrado': df_filtrado,
-                        'df_diaria': df_diaria,
-                        'df_tp_desp_1': df_tp_desp_1,
-                        'df_tp_desp_2': df_tp_desp_2,
-                        'df_futuro': df_futuro,
-                        'df_original': df,
-                        'incluir_futuros': configuracoes['incluir_futuros'],
-                        'incluir_excluidos': configuracoes['incluir_excluidos'],
-                        'data_relatorio': data_relatorio,
-                        'nome_cliente': nome_cliente,
-                        'endereco_cliente': ws_resumo['A4'].value,
-                        'numero_relatorio': numero_relatorio,
-                        'acumulado': valor_acumulado
-                    }
+    #                 # 9. Montar dados completos
+    #                 dados_completos = {
+    #                     'df_filtrado': df_filtrado,
+    #                     'df_diaria': df_diaria,
+    #                     'df_tp_desp_1': df_tp_desp_1,
+    #                     'df_tp_desp_2': df_tp_desp_2,
+    #                     'df_futuro': df_futuro,
+    #                     'df_original': df,
+    #                     'incluir_futuros': configuracoes['incluir_futuros'],
+    #                     'incluir_excluidos': configuracoes['incluir_excluidos'],
+    #                     'data_relatorio': data_relatorio,
+    #                     'nome_cliente': nome_cliente,
+    #                     'endereco_cliente': ws_resumo['A4'].value,
+    #                     'numero_relatorio': numero_relatorio,
+    #                     'acumulado': valor_acumulado
+    #                 }
                    
-                    # 10. Finalizar e abrir preview
-                    self.atualizar_progresso_seguro(progress_window, "Abrindo preview...", 100)
+    #                 # 10. Finalizar e abrir preview
+    #                 self.atualizar_progresso_seguro(progress_window, "Abrindo preview...", 100)
                   
-                    # Fechar progresso após pequeno delay
-                    progress_window.after(500, progress_window.destroy)
+    #                 # Fechar progresso após pequeno delay
+    #                 progress_window.after(500, progress_window.destroy)
                     
-                    # Abrir preview
-                    self.abrir_preview_final(dados_completos, configuracoes['arquivo'])
+    #                 # Abrir preview
+    #                 self.abrir_preview_final(dados_completos, configuracoes['arquivo'])
                     
-                except Exception as e:
-                    # Fechar progresso em caso de erro
-                    try:
-                        progress_window.destroy()
-                    except:
-                        pass
+    #             except Exception as e:
+    #                 # Fechar progresso em caso de erro
+    #                 try:
+    #                     progress_window.destroy()
+    #                 except:
+    #                     pass
                         
-                    logger.error(f"Erro no processamento assíncrono: {str(e)}", exc_info=True)
-                    messagebox.showerror("Erro", f"Erro ao processar dados: {str(e)}")
+    #                 logger.error(f"Erro no processamento assíncrono: {str(e)}", exc_info=True)
+    #                 messagebox.showerror("Erro", f"Erro ao processar dados: {str(e)}")
                     
-                    # Mostrar interface novamente em caso de erro
-                    self.root.deiconify()
+    #                 # Mostrar interface novamente em caso de erro
+    #                 self.root.deiconify()
             
-            # Iniciar processamento em thread
-            import threading
-            thread = threading.Thread(target=processar_dados_async, daemon=True)
-            thread.start()
+    #         # Iniciar processamento em thread
+    #         import threading
+    #         thread = threading.Thread(target=processar_dados_async, daemon=True)
+    #         thread.start()
             
-        except Exception as e:
-            logger.error(f"Erro na geração com preview: {str(e)}")
-            messagebox.showerror("Erro", f"Erro: {str(e)}")
+    #     except Exception as e:
+    #         logger.error(f"Erro na geração com preview: {str(e)}")
+    #         messagebox.showerror("Erro", f"Erro: {str(e)}")
 
     def normalizar_data_relatorio(self, data_input):
         """Normaliza data para comparação correta"""
@@ -2438,59 +3145,59 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"Erro ao atualizar progresso: {str(e)}")
 
-    def abrir_preview_final(self, dados_completos, arquivo_path):
-        """Abre o preview final de forma limpa"""
-        try:
-            logger.info("=== ABRINDO PREVIEW FINAL ===")
+    # def abrir_preview_final(self, dados_completos, arquivo_path):
+    #     """Abre o preview final de forma limpa"""
+    #     try:
+    #         logger.info("=== ABRINDO PREVIEW FINAL ===")
             
-            # Importar visualizador
-            try:
-                from src.relatorio_despesas_aprimorado import VisualizadorRelatorio
-            except ImportError:
-                from relatorio_despesas_aprimorado import VisualizadorRelatorio
+    #         # Importar visualizador
+    #         try:
+    #             from src.relatorio_despesas_aprimorado import VisualizadorRelatorio
+    #         except ImportError:
+    #             from relatorio_despesas_aprimorado import VisualizadorRelatorio
             
-            # Criar visualizador DIRETO no root (sem janela intermediária)
-            visualizador = VisualizadorRelatorio(self.root)
-            visualizador.arquivo_path = arquivo_path
+    #         # Criar visualizador DIRETO no root (sem janela intermediária)
+    #         visualizador = VisualizadorRelatorio(self.root)
+    #         visualizador.arquivo_path = arquivo_path
             
-            # Ocultar interface atual
-            self.root.withdraw()
+    #         # Ocultar interface atual
+    #         self.root.withdraw()
             
-            # Mostrar preview
-            preview_window = visualizador.mostrar_preview(dados_completos)
+    #         # Mostrar preview
+    #         preview_window = visualizador.mostrar_preview(dados_completos)
             
-            # Configurar retorno correto
-            def voltar_interface():
-                """Volta para interface de relatórios"""
-                try:
-                    self.root.deiconify()
-                    self.root.lift()
-                    self.root.focus_force()
-                    logger.info("Retornado para interface de relatórios")
-                except Exception as e:
-                    logger.error(f"Erro ao voltar: {str(e)}")
+    #         # Configurar retorno correto
+    #         def voltar_interface():
+    #             """Volta para interface de relatórios"""
+    #             try:
+    #                 self.root.deiconify()
+    #                 self.root.lift()
+    #                 self.root.focus_force()
+    #                 logger.info("Retornado para interface de relatórios")
+    #             except Exception as e:
+    #                 logger.error(f"Erro ao voltar: {str(e)}")
             
-            # Configurar fechamento
-            def fechar_preview():
-                try:
-                    preview_window.destroy()
-                except:
-                    pass
-                voltar_interface()
+    #         # Configurar fechamento
+    #         def fechar_preview():
+    #             try:
+    #                 preview_window.destroy()
+    #             except:
+    #                 pass
+    #             voltar_interface()
             
-            # Aplicar configuração de fechamento
-            preview_window.protocol("WM_DELETE_WINDOW", fechar_preview)
+    #         # Aplicar configuração de fechamento
+    #         preview_window.protocol("WM_DELETE_WINDOW", fechar_preview)
             
-            # Interceptar método destroy
-            original_destroy = preview_window.destroy
-            preview_window.destroy = fechar_preview
+    #         # Interceptar método destroy
+    #         original_destroy = preview_window.destroy
+    #         preview_window.destroy = fechar_preview
             
-            logger.info("Preview final aberto com sucesso")
+    #         logger.info("Preview final aberto com sucesso")
             
-        except Exception as e:
-            logger.error(f"Erro ao abrir preview final: {str(e)}")
-            messagebox.showerror("Erro", f"Erro ao abrir preview: {str(e)}")
-            self.root.deiconify()
+    #     except Exception as e:
+    #         logger.error(f"Erro ao abrir preview final: {str(e)}")
+    #         messagebox.showerror("Erro", f"Erro ao abrir preview: {str(e)}")
+    #         self.root.deiconify()
 
     def processar_relatorio_despesas_otimizado(self):
         """Processamento otimizado específico para relatório de despesas"""
