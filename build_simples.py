@@ -54,6 +54,7 @@ def main():
         "--hidden-import=src.Sistema_Entrada_Dados",
         "--hidden-import=src.relatorios_interface",
         "--hidden-import=src.relatorio_despesas_aprimorado",
+        "--hidden-import=src.relatorio_despesas_service",
         "--hidden-import=src.despesas_rateadas",
         "--hidden-import=src.gestao_medicoes",
         "--hidden-import=src.controle_pagamentos_taxas",
