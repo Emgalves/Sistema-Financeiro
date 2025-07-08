@@ -741,3 +741,293 @@
 2025-07-04 16:33:45,496 - INFO - Tentando abrir sistema de relatórios
 2025-07-04 16:33:45,507 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
 2025-07-04 16:33:45,773 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 17:18:46,468 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 17:18:46,991 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 17:18:48,888 - INFO - Executando ação: Gerar relatório
+2025-07-04 17:18:48,889 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 17:18:48,924 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 17:18:49,111 - WARNING - Falha na estratégia 1: expected an indented block after function definition on line 2232 (relatorios_interface.py, line 2233)
+2025-07-04 17:18:49,112 - INFO - Tentativa 2: Carregando sistema de relatórios simples
+2025-07-04 17:18:51,565 - INFO - Módulo fallback carregado: src.relatorio_despesas_aprimorado
+2025-07-04 17:37:25,978 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 17:37:26,152 - INFO - Ação concluída: Gerar relatório
+2025-07-04 17:37:33,834 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 17:37:34,178 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 17:37:35,635 - INFO - Executando ação: Gerar relatório
+2025-07-04 17:37:35,636 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 17:37:35,644 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 17:37:35,815 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 17:37:58,562 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 17:37:58,612 - INFO - Ação concluída: Gerar relatório
+2025-07-04 17:39:14,072 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 17:39:14,453 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 17:39:15,730 - INFO - Executando ação: Gerar relatório
+2025-07-04 17:39:15,731 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 17:39:15,741 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 17:39:15,966 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 17:44:48,510 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 17:44:48,572 - INFO - Ação concluída: Gerar relatório
+2025-07-04 17:45:02,974 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 17:45:03,273 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 17:45:05,182 - INFO - Executando ação: Gerar relatório
+2025-07-04 17:45:05,183 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 17:45:05,191 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 17:45:05,383 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 18:13:52,771 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 18:13:53,573 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 18:13:55,458 - INFO - Executando ação: Gerar relatório
+2025-07-04 18:13:55,460 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 18:13:55,474 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 18:13:55,768 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 18:41:01,965 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 18:41:02,374 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 18:41:03,851 - INFO - Executando ação: Gerar relatório
+2025-07-04 18:41:03,851 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 18:41:03,876 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 18:41:04,073 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 18:47:52,586 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 18:47:54,052 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 18:48:50,383 - INFO - Executando ação: Gerar relatório
+2025-07-04 18:48:50,383 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 18:48:50,407 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 18:48:50,619 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 18:51:04,290 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 18:51:04,991 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 18:51:06,524 - INFO - Executando ação: Gerar relatório
+2025-07-04 18:51:06,524 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 18:51:06,552 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 18:51:06,840 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 19:03:53,040 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 19:03:53,631 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 19:04:10,924 - INFO - Executando ação: Gerar relatório
+2025-07-04 19:04:10,924 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 19:04:10,950 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 19:04:11,154 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 19:06:57,776 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 19:06:57,836 - INFO - Ação concluída: Gerar relatório
+2025-07-04 19:29:14,001 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 19:29:14,294 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 19:29:16,127 - INFO - Executando ação: Gerar relatório
+2025-07-04 19:29:16,127 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 19:29:16,145 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 19:29:16,339 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 19:29:46,356 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 19:29:46,411 - INFO - Ação concluída: Gerar relatório
+2025-07-04 19:36:57,670 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 19:36:58,030 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 19:37:00,006 - INFO - Executando ação: Gerar relatório
+2025-07-04 19:37:00,006 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 19:37:00,024 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 19:37:00,232 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 19:45:03,736 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 19:45:03,811 - INFO - Ação concluída: Gerar relatório
+2025-07-04 19:45:16,158 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 19:45:16,552 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 19:45:18,179 - INFO - Executando ação: Gerar relatório
+2025-07-04 19:45:18,179 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 19:45:18,189 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 19:45:18,393 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 19:46:51,668 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 19:46:51,721 - INFO - Ação concluída: Gerar relatório
+2025-07-04 19:47:02,481 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 19:47:02,781 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 19:47:04,350 - INFO - Executando ação: Gerar relatório
+2025-07-04 19:47:04,350 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 19:47:04,362 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 19:47:04,544 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 19:52:06,028 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 19:52:06,542 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 19:52:08,348 - INFO - Executando ação: Gerar relatório
+2025-07-04 19:52:08,348 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 19:52:08,377 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 19:52:08,637 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 19:58:21,817 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 19:58:22,431 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 19:58:25,195 - INFO - Executando ação: Gerar relatório
+2025-07-04 19:58:25,195 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 19:58:25,221 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 19:58:25,531 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 20:07:22,587 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 20:07:23,300 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 20:07:34,126 - INFO - Executando ação: Gerar relatório
+2025-07-04 20:07:34,142 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 20:07:34,232 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 20:07:34,668 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 20:14:20,684 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-04 20:14:21,059 - INFO - Sistema principal inicializado com sucesso
+2025-07-04 20:14:22,561 - INFO - Executando ação: Gerar relatório
+2025-07-04 20:14:22,561 - INFO - Tentando abrir sistema de relatórios
+2025-07-04 20:14:22,577 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-04 20:14:22,827 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-04 20:19:20,656 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 20:19:20,720 - INFO - Ação concluída: Gerar relatório
+2025-07-06 11:41:40,347 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-06 11:41:41,277 - INFO - Sistema principal inicializado com sucesso
+2025-07-06 11:41:42,949 - INFO - Executando ação: Gerar relatório
+2025-07-06 11:41:42,949 - INFO - Tentando abrir sistema de relatórios
+2025-07-06 11:41:42,971 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-06 11:41:42,998 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-06 11:44:35,786 - INFO - Saída confirmada, finalizando sistema
+2025-07-06 11:44:35,831 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:14:00,435 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:14:01,572 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:14:04,377 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:14:04,377 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:14:04,393 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:14:04,698 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:15:43,080 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:15:43,126 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:18:50,912 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:18:51,220 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:18:53,975 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:18:53,975 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:18:53,988 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:18:54,198 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:18:55,966 - WARNING - Falha na estratégia 1: 'SistemaRelatorios' object has no attribute 'atualizar_lista_clientes'
+2025-07-08 14:18:55,981 - INFO - Tentativa 2: Carregando sistema de relatórios simples
+2025-07-08 14:18:55,981 - INFO - Cache limpo (fallback): relatorio_despesas_aprimorado
+2025-07-08 14:18:55,981 - INFO - Módulo fallback carregado: src.relatorio_despesas_aprimorado
+2025-07-08 14:19:15,355 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:19:15,408 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:20:14,938 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:20:15,159 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:20:16,533 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:20:16,533 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:20:16,559 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:20:16,766 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:20:36,547 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:20:36,585 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:24:23,436 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:24:23,721 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:24:25,190 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:24:25,190 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:24:25,199 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:24:25,411 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:25:05,546 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:25:05,589 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:26:44,360 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:26:44,606 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:26:46,134 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:26:46,134 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:26:46,156 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:26:46,359 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:28:15,098 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:28:15,150 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:31:58,609 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:31:58,851 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:32:01,302 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:32:01,302 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:32:01,322 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:32:01,520 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:32:53,622 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:32:53,666 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:34:12,596 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:34:12,982 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:34:14,605 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:34:14,605 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:34:14,617 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:34:14,819 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:34:53,742 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:34:53,784 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:38:04,622 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:38:04,882 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:38:06,222 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:38:06,222 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:38:06,238 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:38:06,435 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:39:03,203 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:39:03,240 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:39:58,320 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:39:58,564 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:40:01,466 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:40:01,466 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:40:01,475 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:40:01,665 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:40:55,241 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:40:55,295 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:45:12,526 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:45:12,760 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:45:14,148 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:45:14,148 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:45:14,168 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:45:14,346 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:46:02,931 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:46:02,976 - INFO - Ação concluída: Gerar relatório
+2025-07-08 14:55:16,332 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 14:55:16,598 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 14:55:18,037 - INFO - Executando ação: Gerar relatório
+2025-07-08 14:55:18,037 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 14:55:18,050 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 14:55:18,223 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 14:55:57,145 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 14:55:57,186 - INFO - Ação concluída: Gerar relatório
+2025-07-08 15:02:04,864 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 15:02:05,131 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 15:02:06,410 - INFO - Executando ação: Gerar relatório
+2025-07-08 15:02:06,410 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 15:02:06,421 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 15:02:06,587 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 15:02:40,229 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 15:02:40,265 - INFO - Ação concluída: Gerar relatório
+2025-07-08 15:08:46,511 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 15:08:46,775 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 15:08:48,242 - INFO - Executando ação: Gerar relatório
+2025-07-08 15:08:48,242 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 15:08:48,264 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 15:08:48,415 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 15:09:38,463 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 15:09:38,501 - INFO - Ação concluída: Gerar relatório
+2025-07-08 15:11:33,070 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 15:11:33,317 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 15:11:35,697 - INFO - Executando ação: Gerar relatório
+2025-07-08 15:11:35,697 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 15:11:35,721 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 15:11:35,880 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 15:12:13,130 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 15:12:13,175 - INFO - Ação concluída: Gerar relatório
+2025-07-08 15:20:41,422 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 15:20:41,743 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 15:20:43,108 - INFO - Executando ação: Gerar relatório
+2025-07-08 15:20:43,108 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 15:20:43,130 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 15:20:43,244 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 15:21:18,115 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 15:21:18,152 - INFO - Ação concluída: Gerar relatório
+2025-07-08 17:47:20,040 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 17:47:20,427 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 17:47:22,044 - INFO - Executando ação: Gerar relatório
+2025-07-08 17:47:22,044 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 17:47:22,054 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 17:47:22,218 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 17:48:13,274 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 17:48:13,336 - INFO - Ação concluída: Gerar relatório
+2025-07-08 17:49:15,547 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 17:49:15,832 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 17:49:17,330 - INFO - Executando ação: Gerar relatório
+2025-07-08 17:49:17,331 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 17:49:17,338 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 17:49:17,474 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 18:05:49,190 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 18:05:49,245 - INFO - Ação concluída: Gerar relatório
+2025-07-08 18:07:12,102 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 18:07:12,410 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 18:07:13,717 - INFO - Executando ação: Gerar relatório
+2025-07-08 18:07:13,719 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 18:07:13,726 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 18:07:13,867 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 18:08:46,756 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 18:08:46,806 - INFO - Ação concluída: Gerar relatório
+2025-07-08 18:18:53,873 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 18:18:54,166 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 18:18:56,221 - INFO - Executando ação: Gerar relatório
+2025-07-08 18:18:56,222 - INFO - Tentando abrir sistema de relatórios
+2025-07-08 18:18:56,230 - INFO - Tentativa 1: Carregando sistema integrado de relatórios
+2025-07-08 18:18:56,275 - INFO - Módulo carregado com sucesso: src.relatorios_interface
+2025-07-08 18:19:32,844 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 18:19:32,900 - INFO - Ação concluída: Gerar relatório
+2025-07-08 19:14:13,748 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 19:14:14,425 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 19:14:23,521 - INFO - Saída confirmada, finalizando sistema
+2025-07-08 19:50:23,781 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-08 19:50:25,538 - INFO - Sistema principal inicializado com sucesso
+2025-07-08 19:50:31,056 - INFO - Saída confirmada, finalizando sistema

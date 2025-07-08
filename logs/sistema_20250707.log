@@ -1,0 +1,538 @@
+2025-07-07 16:30:03,324 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 16:30:03,325 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 16:30:03,326 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 16:30:03,327 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 16:30:03,327 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 16:53:05,693 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 16:53:05,694 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 16:53:05,694 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 16:53:05,695 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 16:53:05,695 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 16:53:12,395 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 16:53:12,491 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 16:53:12,492 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 16:53:12,509 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 16:53:12,513 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 16:53:12,515 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 16:53:12,557 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 16:53:12,570 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 16:53:12,571 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 16:53:12,575 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 16:53:12,576 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 16:53:12,577 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 16:53:13,900 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 16:53:13,902 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 16:53:18,178 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 16:53:24,411 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: CLEVER LUIZ SALVADOR
+2025-07-07 16:53:24,414 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:53:24,424 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:53:26,866 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 16:53:26,867 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 16:53:26,868 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 16:53:26,869 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-07-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 16:53:26,870 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:53:26,872 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:53:26,873 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 16:53:26,873 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:53:28,922 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 16:53:28,927 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 16:53:28,938 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 16:53:29,358 - sistema_relatorios - relatorios_interface - ERROR - 💥 ERRO no executar_com_preview_limpo: 'RelatorioHandler' object has no attribute 'processar_lancamentos_futuros'
+2025-07-07 16:56:26,080 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-07-07 16:56:26,081 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-07-07 16:56:36,587 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 16:56:36,589 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 16:56:36,589 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 16:56:36,590 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 16:56:36,590 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 16:56:38,761 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 16:56:38,812 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 16:56:38,813 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 16:56:38,816 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 16:56:38,817 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 16:56:38,817 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 16:56:38,851 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 16:56:38,871 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 16:56:38,873 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 16:56:38,875 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 16:56:38,876 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 16:56:38,877 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 16:56:40,484 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 16:56:40,486 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 16:56:43,296 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 16:56:49,649 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: CLEVER LUIZ SALVADOR
+2025-07-07 16:56:49,650 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:56:49,660 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:56:51,496 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-07-07 16:56:51,497 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-07-07 16:57:51,506 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 16:57:51,507 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 16:57:51,508 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 16:57:51,508 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 16:57:51,509 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 16:57:53,393 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 16:57:53,442 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 16:57:53,443 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 16:57:53,446 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 16:57:53,447 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 16:57:53,448 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 16:57:53,487 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 16:57:53,506 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 16:57:53,507 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 16:57:53,511 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 16:57:53,515 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 16:57:53,517 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 16:57:55,867 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 16:57:55,869 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 16:57:58,711 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 16:58:03,761 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 16:58:03,763 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 16:58:03,773 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 16:58:05,983 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-07-07 16:58:05,984 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-07-07 16:58:35,516 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 16:58:35,517 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 16:58:35,518 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 16:58:35,519 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 16:58:35,519 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 16:58:37,259 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 16:58:37,302 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 16:58:37,303 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 16:58:37,306 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 16:58:37,307 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 16:58:37,308 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 16:58:37,340 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 16:58:37,356 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 16:58:37,357 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 16:58:37,358 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 16:58:37,359 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 16:58:37,359 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 16:58:38,763 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 16:58:38,764 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 16:58:41,335 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 16:58:47,752 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: CLEVER LUIZ SALVADOR
+2025-07-07 16:58:47,754 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:58:47,762 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:58:56,614 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 16:58:56,615 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 16:58:56,616 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 16:58:56,617 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-07-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 16:58:56,618 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:58:56,619 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:58:56,620 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 16:58:56,621 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: CLEVER LUIZ SALVADOR.xlsx
+2025-07-07 16:58:58,862 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 16:58:58,863 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 16:58:58,874 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 16:58:59,969 - sistema_relatorios - relatorios_interface - INFO - ✅ Dados processados pelo serviço
+2025-07-07 16:58:59,973 - sistema_relatorios - relatorios_interface - INFO - 🔧 Abrindo preview com dados do serviço...
+2025-07-07 16:58:59,974 - sistema_relatorios - relatorios_interface - INFO - 🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO
+2025-07-07 16:59:00,112 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview aberto com dados do serviço
+2025-07-07 17:10:36,531 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 17:10:36,533 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 17:10:36,533 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 17:10:36,533 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 17:10:36,534 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 17:10:41,567 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:10:41,796 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:10:41,797 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:10:41,843 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:10:41,846 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:10:41,850 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 17:10:42,276 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:10:42,291 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:10:42,292 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:10:42,296 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:10:42,297 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:10:42,298 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 17:10:44,279 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:10:44,280 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:10:48,870 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 17:10:54,479 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 17:10:54,481 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:10:54,489 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:10:55,894 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 17:10:55,898 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 17:10:55,900 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 17:10:55,901 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-07-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 17:10:55,903 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:10:55,908 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:10:55,935 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 17:10:55,938 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:10:58,119 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 17:10:58,123 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 17:10:58,172 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 17:10:58,542 - sistema_relatorios - relatorios_interface - ERROR - 💥 ERRO no executar_com_preview_limpo: 'RelatorioHandler' object has no attribute 'processar_lancamentos_futuros'
+2025-07-07 17:11:08,286 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 17:11:08,287 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 17:11:08,288 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 17:11:08,289 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-07-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 17:11:08,290 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:11:08,291 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:11:08,295 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 17:11:08,297 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:11:10,067 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 17:11:10,070 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 17:11:10,074 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 17:11:10,461 - sistema_relatorios - relatorios_interface - INFO - ✅ Dados processados pelo serviço
+2025-07-07 17:11:10,465 - sistema_relatorios - relatorios_interface - INFO - 🔧 Abrindo preview com dados do serviço...
+2025-07-07 17:11:10,466 - sistema_relatorios - relatorios_interface - INFO - 🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA
+2025-07-07 17:11:10,476 - sistema_relatorios - relatorios_interface - INFO - ✅ Importado de src.relatorio_despesas_aprimorado
+2025-07-07 17:11:10,625 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview aberto com VisualizadorRelatorio original
+2025-07-07 17:18:16,863 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 17:18:16,864 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 17:18:16,864 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 17:18:16,865 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 17:18:16,865 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 17:18:19,412 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:18:19,501 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:18:19,502 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:18:19,517 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:18:19,519 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:18:19,520 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 17:18:19,564 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:18:19,580 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:18:19,581 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:18:19,585 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:18:19,586 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:18:19,587 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 17:18:21,418 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:18:21,419 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:18:24,546 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 17:18:30,179 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 17:18:30,180 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:18:30,190 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:18:35,801 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 17:18:35,802 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 17:18:35,803 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 17:18:35,804 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-07-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 17:18:35,805 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:18:35,806 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:18:35,807 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 17:18:35,809 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:18:37,665 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 17:18:37,666 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 17:18:37,680 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 17:18:38,100 - sistema_relatorios - relatorios_interface - INFO - ✅ Dados processados pelo serviço
+2025-07-07 17:18:38,105 - sistema_relatorios - relatorios_interface - INFO - 🔧 Abrindo preview com dados do serviço...
+2025-07-07 17:18:38,107 - sistema_relatorios - relatorios_interface - INFO - 🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA
+2025-07-07 17:18:38,115 - sistema_relatorios - relatorios_interface - INFO - ✅ Importado de src.relatorio_despesas_aprimorado
+2025-07-07 17:18:38,135 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW ALTERNATIVO
+2025-07-07 17:18:38,391 - sistema_relatorios - relatorios_interface - ERROR - 💥 ERRO no preview alternativo: 'SistemaRelatorios' object has no attribute '_gerar_conteudo_preview_alternativo'
+2025-07-07 17:39:16,785 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 17:39:16,787 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 17:39:16,788 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 17:39:16,788 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 17:39:16,788 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 17:39:20,082 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:39:20,198 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:39:20,199 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:39:20,238 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:39:20,239 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:39:20,241 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 17:39:20,300 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:39:20,317 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:39:20,321 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:39:20,326 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:39:20,335 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:39:20,337 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 17:39:22,015 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:39:22,016 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:39:25,210 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 17:39:29,476 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 17:39:29,478 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:39:29,486 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:39:34,067 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 17:39:34,067 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 17:39:34,068 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 17:39:34,069 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-07-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 17:39:34,070 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:39:34,071 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:39:34,072 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 17:39:34,074 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:39:40,148 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 17:39:40,150 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 17:39:40,161 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 17:39:40,571 - sistema_relatorios - relatorios_interface - INFO - ✅ Dados processados pelo serviço
+2025-07-07 17:39:40,576 - sistema_relatorios - relatorios_interface - INFO - 🔧 Abrindo preview com dados do serviço...
+2025-07-07 17:39:40,576 - sistema_relatorios - relatorios_interface - INFO - 🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA
+2025-07-07 17:39:40,581 - sistema_relatorios - relatorios_interface - INFO - ✅ Importado de src.relatorio_despesas_aprimorado
+2025-07-07 17:39:40,603 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW ALTERNATIVO
+2025-07-07 17:39:40,881 - sistema_relatorios - relatorios_interface - ERROR - Erro ao gerar conteúdo: 'SistemaRelatorios' object has no attribute '_formatar_numero_preview'
+2025-07-07 17:39:40,998 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview alternativo criado com sucesso
+2025-07-07 17:39:41,000 - sistema_relatorios - relatorios_interface - ERROR - ❌ Erro com VisualizadorRelatorio: name 'visualizador' is not defined
+2025-07-07 17:39:41,000 - sistema_relatorios - relatorios_interface - INFO - 🔄 Tentando preview alternativo...
+2025-07-07 17:39:41,018 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW ALTERNATIVO
+2025-07-07 17:39:41,118 - sistema_relatorios - relatorios_interface - ERROR - Erro ao gerar conteúdo: 'SistemaRelatorios' object has no attribute '_formatar_numero_preview'
+2025-07-07 17:39:41,189 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview alternativo criado com sucesso
+2025-07-07 17:40:02,098 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-07-07 17:40:02,099 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-07-07 17:40:40,444 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 17:40:40,445 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 17:40:40,446 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 17:40:40,447 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 17:40:40,448 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 17:40:42,340 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:40:42,385 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:40:42,386 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:40:42,388 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:40:42,390 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:40:42,391 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 17:40:42,426 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:40:42,441 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:40:42,442 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:40:42,445 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:40:42,446 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:40:42,446 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 17:40:49,374 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:40:49,375 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:40:52,122 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 17:40:56,995 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 17:40:56,996 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:40:57,005 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:40:59,577 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 17:40:59,578 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 17:40:59,579 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 17:40:59,580 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-07-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 17:40:59,580 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:40:59,581 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:40:59,582 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 17:40:59,583 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:41:01,106 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 17:41:01,111 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 17:41:01,121 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 17:41:01,487 - sistema_relatorios - relatorios_interface - INFO - ✅ Dados processados pelo serviço
+2025-07-07 17:41:01,492 - sistema_relatorios - relatorios_interface - INFO - 🔧 Abrindo preview com dados do serviço...
+2025-07-07 17:41:01,495 - sistema_relatorios - relatorios_interface - INFO - 🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA
+2025-07-07 17:41:01,500 - sistema_relatorios - relatorios_interface - INFO - ✅ Importado de src.relatorio_despesas_aprimorado
+2025-07-07 17:41:01,519 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW ALTERNATIVO
+2025-07-07 17:41:01,704 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview alternativo criado com sucesso
+2025-07-07 17:41:01,746 - sistema_relatorios - relatorios_interface - ERROR - ❌ Erro com VisualizadorRelatorio: name 'visualizador' is not defined
+2025-07-07 17:41:01,748 - sistema_relatorios - relatorios_interface - INFO - 🔄 Tentando preview alternativo...
+2025-07-07 17:41:01,760 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW ALTERNATIVO
+2025-07-07 17:41:01,895 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview alternativo criado com sucesso
+2025-07-07 17:41:38,089 - sistema_relatorios - relatorios_interface - INFO - 🔧 Gerando PDF através do serviço...
+2025-07-07 17:42:20,521 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-07-07 17:42:20,522 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-07-07 17:59:20,437 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 17:59:20,438 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 17:59:20,439 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 17:59:20,439 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 17:59:20,440 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 17:59:25,285 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:59:25,371 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:59:25,372 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:59:25,390 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:59:25,392 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:59:25,396 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 17:59:25,435 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 17:59:25,450 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 17:59:25,451 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 17:59:25,453 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 17:59:25,454 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 17:59:25,455 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 17:59:26,721 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:59:26,723 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 17:59:29,901 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 17:59:37,671 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 17:59:37,671 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:59:37,683 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:59:41,301 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 17:59:41,302 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 17:59:41,303 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 17:59:41,303 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-06-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 17:59:41,304 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:59:41,306 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:59:41,306 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 17:59:41,307 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 17:59:43,021 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 17:59:43,022 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 17:59:43,063 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 17:59:43,066 - sistema_relatorios - relatorios_interface - ERROR - 💥 ERRO no executar_com_preview_limpo: name 'logger' is not defined
+2025-07-07 17:59:55,228 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-07-07 17:59:55,229 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-07-07 18:02:41,212 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 18:02:41,214 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 18:02:41,214 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 18:02:41,215 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 18:02:41,215 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 18:02:44,368 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 18:02:44,426 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 18:02:44,427 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 18:02:44,438 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 18:02:44,439 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 18:02:44,440 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 18:02:44,479 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 18:02:44,493 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 18:02:44,495 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 18:02:44,498 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 18:02:44,499 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 18:02:44,499 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 18:02:46,343 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 18:02:46,345 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 18:02:49,483 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 18:02:56,148 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 18:02:56,149 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:02:56,159 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:02:59,802 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 18:02:59,804 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 18:02:59,804 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 18:02:59,805 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-06-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 18:02:59,806 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:02:59,807 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:02:59,808 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 18:02:59,809 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:03:01,667 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 18:03:01,668 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 18:03:01,696 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 18:03:01,935 - sistema_relatorios - relatorios_interface - ERROR - 💥 ERRO no executar_com_preview_limpo: 'RelatorioHandler' object has no attribute 'processar_lancamentos_futuros'
+2025-07-07 18:05:04,148 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-07-07 18:05:04,148 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-07-07 18:08:37,057 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 18:08:37,058 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 18:08:37,058 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 18:08:37,058 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 18:08:37,059 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 18:08:39,298 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 18:08:39,353 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 18:08:39,355 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 18:08:39,364 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 18:08:39,365 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 18:08:39,366 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 18:08:39,404 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 18:08:39,420 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 18:08:39,422 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 18:08:39,425 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 18:08:39,426 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 18:08:39,427 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 18:08:42,267 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 18:08:42,268 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 18:08:44,846 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 18:08:50,385 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 18:08:50,386 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:08:50,395 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:08:52,230 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 18:08:52,231 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 18:08:52,232 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 18:08:52,233 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-06-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 18:08:52,234 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:08:52,235 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:08:52,237 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 18:08:52,239 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:08:54,059 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 18:08:54,062 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 18:08:54,070 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 18:08:54,468 - sistema_relatorios - relatorios_interface - INFO - ✅ Dados processados pelo serviço
+2025-07-07 18:08:54,472 - sistema_relatorios - relatorios_interface - INFO - 🔧 Abrindo preview com dados do serviço...
+2025-07-07 18:08:54,473 - sistema_relatorios - relatorios_interface - INFO - 🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA
+2025-07-07 18:08:54,482 - sistema_relatorios - relatorios_interface - INFO - ✅ Importado de src.relatorio_despesas_aprimorado
+2025-07-07 18:08:54,500 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW COM PDF TEMPORÁRIO
+2025-07-07 18:08:55,082 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview com PDF temporário criado
+2025-07-07 18:08:55,083 - sistema_relatorios - relatorios_interface - ERROR - ❌ Erro com VisualizadorRelatorio: name 'visualizador' is not defined
+2025-07-07 18:08:55,083 - sistema_relatorios - relatorios_interface - INFO - 🔄 Tentando preview alternativo...
+2025-07-07 18:08:55,099 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW COM PDF TEMPORÁRIO
+2025-07-07 18:08:55,216 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview com PDF temporário criado
+2025-07-07 18:08:55,796 - sistema_relatorios - relatorios_interface - INFO - ✅ PDF temporário: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_180855.pdf
+2025-07-07 18:08:55,982 - sistema_relatorios - relatorios_interface - INFO - ✅ PDF temporário: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_180855.pdf
+2025-07-07 18:09:01,879 - sistema_relatorios - relatorios_interface - INFO - 📖 Abrindo PDF temporário: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_180855.pdf
+2025-07-07 18:17:30,710 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário removido: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_180855.pdf
+2025-07-07 18:17:38,560 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-07-07 18:17:38,561 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-07-07 18:20:38,525 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 18:20:38,526 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 18:20:38,527 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 18:20:38,527 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 18:20:38,528 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 18:20:40,901 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 18:20:40,974 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 18:20:40,975 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 18:20:40,990 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 18:20:40,991 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 18:20:40,992 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 18:20:41,034 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 18:20:41,049 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 18:20:41,050 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 18:20:41,052 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 18:20:41,053 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 18:20:41,054 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 18:20:42,291 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 18:20:42,293 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 18:20:45,375 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 18:20:54,897 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 18:20:54,897 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:20:54,906 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:20:57,182 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 18:20:57,183 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 18:20:57,184 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 18:20:57,185 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-06-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 18:20:57,186 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:20:57,187 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:20:57,189 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 18:20:57,190 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:20:58,919 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 18:20:58,920 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 18:20:58,936 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 18:20:59,353 - sistema_relatorios - relatorios_interface - INFO - ✅ Dados processados pelo serviço
+2025-07-07 18:20:59,357 - sistema_relatorios - relatorios_interface - INFO - 🔧 Abrindo preview com dados do serviço...
+2025-07-07 18:20:59,358 - sistema_relatorios - relatorios_interface - INFO - 🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA
+2025-07-07 18:20:59,366 - sistema_relatorios - relatorios_interface - INFO - ✅ Importado de src.relatorio_despesas_aprimorado
+2025-07-07 18:20:59,391 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW COM PDF TEMPORÁRIO
+2025-07-07 18:21:00,005 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview com PDF temporário criado
+2025-07-07 18:21:00,035 - sistema_relatorios - relatorios_interface - ERROR - ❌ Erro com VisualizadorRelatorio: name 'visualizador' is not defined
+2025-07-07 18:21:00,086 - sistema_relatorios - relatorios_interface - INFO - 🔄 Tentando preview alternativo...
+2025-07-07 18:21:00,118 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW COM PDF TEMPORÁRIO
+2025-07-07 18:21:00,253 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview com PDF temporário criado
+2025-07-07 18:21:00,909 - sistema_relatorios - relatorios_interface - INFO - ✅ PDF temporário: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_182100.pdf
+2025-07-07 18:21:01,167 - sistema_relatorios - relatorios_interface - INFO - ✅ PDF temporário: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_182100.pdf
+2025-07-07 18:21:13,208 - sistema_relatorios - relatorios_interface - INFO - 📖 Abrindo PDF temporário: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_182100.pdf
+2025-07-07 18:22:46,895 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário removido: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_182100.pdf
+2025-07-07 18:22:55,374 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-07-07 18:22:55,375 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-07-07 18:32:24,444 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-07-07 18:32:24,445 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-07-07 18:32:24,445 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-07-07 18:32:24,446 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-07-07 18:32:24,446 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-07-07 18:32:27,190 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 18:32:27,285 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 18:32:27,292 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 18:32:27,311 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 18:32:27,312 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 18:32:27,314 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-07-07 18:32:27,361 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-07-07 18:32:27,385 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-07-07 18:32:27,392 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-07-07 18:32:27,394 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-07-07 18:32:27,396 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-07-07 18:32:27,397 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 15 itens
+2025-07-07 18:32:28,932 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 18:32:28,934 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/07/2025
+2025-07-07 18:32:32,183 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-07-07 18:32:40,096 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-07-07 18:32:40,098 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:32:40,108 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:32:41,966 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-07 18:32:41,967 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-07 18:32:41,968 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-07-07 18:32:41,969 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-06-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-07 18:32:41,970 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:32:41,971 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:32:41,972 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-07-07 18:32:41,974 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-07 18:32:43,879 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-07-07 18:32:43,880 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO
+2025-07-07 18:32:43,894 - sistema_relatorios - relatorios_interface - INFO - 🔧 Delegando processamento para RelatoriosDespesasService...
+2025-07-07 18:32:44,325 - sistema_relatorios - relatorios_interface - INFO - ✅ Dados processados pelo serviço
+2025-07-07 18:32:44,329 - sistema_relatorios - relatorios_interface - INFO - 🔧 Abrindo preview com dados do serviço...
+2025-07-07 18:32:44,330 - sistema_relatorios - relatorios_interface - INFO - 🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA
+2025-07-07 18:32:44,338 - sistema_relatorios - relatorios_interface - INFO - ✅ Importado de src.relatorio_despesas_aprimorado
+2025-07-07 18:32:44,383 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW COM PDF TEMPORÁRIO
+2025-07-07 18:32:44,968 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview com PDF temporário criado
+2025-07-07 18:32:44,974 - sistema_relatorios - relatorios_interface - ERROR - ❌ Erro com VisualizadorRelatorio: name 'visualizador' is not defined
+2025-07-07 18:32:44,976 - sistema_relatorios - relatorios_interface - INFO - 🔄 Tentando preview alternativo...
+2025-07-07 18:32:45,011 - sistema_relatorios - relatorios_interface - INFO - 🔧 CRIANDO PREVIEW COM PDF TEMPORÁRIO
+2025-07-07 18:32:45,158 - sistema_relatorios - relatorios_interface - INFO - ✅ Preview com PDF temporário criado
+2025-07-07 18:32:45,712 - sistema_relatorios - relatorios_interface - INFO - ✅ PDF temporário: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_183245.pdf
+2025-07-07 18:32:45,955 - sistema_relatorios - relatorios_interface - INFO - ✅ PDF temporário: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_183245.pdf
+2025-07-07 18:32:47,947 - sistema_relatorios - relatorios_interface - INFO - 📖 Abrindo PDF temporário: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_183245.pdf
+2025-07-07 18:33:54,110 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário removido: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250707_183245.pdf

@@ -580,3 +580,462 @@ Obtendo número do relatório para data 2025-07-05 00:00:00
 2025-07-04 16:34:01,116 - INFO - ✅ Protocolo de fechamento configurado
 2025-07-04 16:34:01,123 - INFO - ✅ Preview focado
 2025-07-04 16:34:01,124 - INFO - ✅ Preview limpo aberto com sucesso
+2025-07-04 17:18:51,565 - INFO - Módulo fallback carregado: src.relatorio_despesas_aprimorado
+2025-07-04 17:18:51,590 - INFO - Iniciando RelatorioUI
+2025-07-04 17:18:51,663 - INFO - Iniciando configuração da interface
+2025-07-04 17:18:51,731 - INFO - Interface configurada com sucesso
+2025-07-04 17:37:25,978 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 17:37:26,152 - INFO - Ação concluída: Gerar relatório
+2025-07-04 17:39:30,466 - INFO - 📁 Processando arquivo: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-04 17:39:30,469 - INFO - 📅 Data: 2025-07-05 00:00:00
+2025-07-04 17:39:30,657 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 17:39:30,657 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 17:39:30,658 - INFO - Total de registros originais: 251
+2025-07-04 17:39:30,659 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 17:39:30,677 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 17:39:30,678 - INFO - Data procurada: 2025-07-05
+2025-07-04 17:39:30,689 - INFO - Resultados do processamento:
+2025-07-04 17:39:30,690 - INFO -   - df_filtrado: 14 registros
+2025-07-04 17:39:30,690 - INFO -   - df_diaria: 4 registros
+2025-07-04 17:39:30,691 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 17:39:30,692 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 17:39:30,885 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 17:39:30,887 - INFO - Número do relatório calculado: 10
+2025-07-04 17:39:30,887 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 17:39:30,889 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 17:39:30,905 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 17:39:30,906 - INFO - ✅ Dados processados: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 17:39:30,910 - INFO - 🎯 ABRINDO PREVIEW SIMPLES
+2025-07-04 17:39:30,979 - ERROR - 💥 ERRO no preview simples: 'SistemaRelatorios' object has no attribute 'gerar_preview_textual_simples'
+Traceback (most recent call last):
+  File "C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py", line 1931, in abrir_preview_simples
+    preview_text = self.gerar_preview_textual_simples(dados_completos)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'SistemaRelatorios' object has no attribute 'gerar_preview_textual_simples'
+2025-07-04 17:44:45,234 - INFO - Solicitado retorno ao menu principal
+2025-07-04 17:44:45,239 - INFO - Retornando ao menu principal existente
+2025-07-04 17:44:45,321 - INFO - Retorno ao menu principal concluído
+2025-07-04 17:44:48,510 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 17:44:48,572 - INFO - Ação concluída: Gerar relatório
+2025-07-04 17:45:17,303 - INFO - 📁 Processando arquivo: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-04 17:45:17,303 - INFO - 📅 Data: 2025-07-05 00:00:00
+2025-07-04 17:45:17,451 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 17:45:17,451 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 17:45:17,453 - INFO - Total de registros originais: 251
+2025-07-04 17:45:17,454 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 17:45:17,460 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 17:45:17,461 - INFO - Data procurada: 2025-07-05
+2025-07-04 17:45:17,472 - INFO - Resultados do processamento:
+2025-07-04 17:45:17,472 - INFO -   - df_filtrado: 14 registros
+2025-07-04 17:45:17,473 - INFO -   - df_diaria: 4 registros
+2025-07-04 17:45:17,473 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 17:45:17,473 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 17:45:17,697 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 17:45:17,698 - INFO - Número do relatório calculado: 10
+2025-07-04 17:45:17,698 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 17:45:17,701 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 17:45:17,710 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 17:45:17,710 - INFO - ✅ Dados processados: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 17:45:17,716 - INFO - 🎯 ABRINDO PREVIEW SIMPLES
+2025-07-04 17:45:17,773 - ERROR - Erro ao gerar preview textual: name 'pd' is not defined
+2025-07-04 17:45:17,789 - INFO - ✅ Preview simples criado diretamente
+2025-07-04 18:15:24,668 - INFO - ✅ Dados carregados: 251 registros
+2025-07-04 18:15:24,672 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 18:15:24,672 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 18:15:24,673 - INFO - Total de registros originais: 251
+2025-07-04 18:15:24,674 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 18:15:24,696 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 18:15:24,697 - INFO - Data procurada: 2025-07-05
+2025-07-04 18:15:24,713 - INFO - Resultados do processamento:
+2025-07-04 18:15:24,713 - INFO -   - df_filtrado: 14 registros
+2025-07-04 18:15:24,719 - INFO -   - df_diaria: 4 registros
+2025-07-04 18:15:24,720 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 18:15:24,720 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 18:15:24,916 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 18:15:24,917 - INFO - Número do relatório calculado: 10
+2025-07-04 18:15:24,917 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 18:15:24,919 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 18:15:24,931 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 18:15:24,931 - INFO - ✅ Dados processados UMA VEZ: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 18:15:24,935 - INFO - 🎯 ABRINDO PREVIEW COM DADOS PRONTOS
+2025-07-04 18:15:24,999 - ERROR - Erro ao gerar preview textual: 'NoneType' object has no attribute 'empty'
+2025-07-04 18:15:25,019 - INFO - ✅ Preview com dados prontos criado
+2025-07-04 18:41:23,121 - INFO - 📁 Processando arquivo: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-04 18:41:23,121 - INFO - 📅 Data: 2025-07-05 00:00:00
+2025-07-04 18:41:23,308 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 18:41:23,308 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 18:41:23,311 - INFO - Total de registros originais: 251
+2025-07-04 18:41:23,318 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 18:41:23,338 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 18:41:23,338 - INFO - Data procurada: 2025-07-05
+2025-07-04 18:41:23,350 - INFO - Resultados do processamento:
+2025-07-04 18:41:23,350 - INFO -   - df_filtrado: 14 registros
+2025-07-04 18:41:23,351 - INFO -   - df_diaria: 4 registros
+2025-07-04 18:41:23,351 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 18:41:23,351 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 18:41:23,537 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 18:41:23,537 - INFO - Número do relatório calculado: 10
+2025-07-04 18:41:23,537 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 18:41:23,537 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 18:41:23,537 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 18:41:23,537 - INFO - ✅ Dados processados: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 18:41:23,554 - INFO - 🎯 ABRINDO PREVIEW SIMPLES
+2025-07-04 18:41:23,596 - ERROR - Erro ao gerar preview textual: 'SistemaRelatorios' object has no attribute 'formatar_numero'
+2025-07-04 18:41:23,616 - INFO - ✅ Preview simples criado diretamente
+2025-07-04 18:49:10,884 - INFO - 📁 Processando arquivo: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-04 18:49:10,884 - INFO - 📅 Data: 2025-07-05 00:00:00
+2025-07-04 18:49:11,070 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 18:49:11,071 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 18:49:11,072 - INFO - Total de registros originais: 251
+2025-07-04 18:49:11,073 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 18:49:11,106 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 18:49:11,107 - INFO - Data procurada: 2025-07-05
+2025-07-04 18:49:11,111 - INFO - Resultados do processamento:
+2025-07-04 18:49:11,111 - INFO -   - df_filtrado: 14 registros
+2025-07-04 18:49:11,111 - INFO -   - df_diaria: 4 registros
+2025-07-04 18:49:11,111 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 18:49:11,118 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 18:49:11,298 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 18:49:11,298 - INFO - Número do relatório calculado: 10
+2025-07-04 18:49:11,298 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 18:49:11,298 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 18:49:11,316 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 18:49:11,317 - INFO - ✅ Dados processados: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 18:49:11,321 - INFO - 🎯 ABRINDO PREVIEW SIMPLES
+2025-07-04 18:49:11,372 - ERROR - Erro ao gerar preview textual: 'SistemaRelatorios' object has no attribute 'formatar_numero'
+2025-07-04 18:49:11,394 - INFO - ✅ Preview simples criado diretamente
+2025-07-04 18:51:22,026 - INFO - 📁 Processando arquivo: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-04 18:51:22,026 - INFO - 📅 Data: 2025-07-05 00:00:00
+2025-07-04 18:51:22,258 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 18:51:22,258 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 18:51:22,258 - INFO - Total de registros originais: 251
+2025-07-04 18:51:22,258 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 18:51:22,276 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 18:51:22,276 - INFO - Data procurada: 2025-07-05
+2025-07-04 18:51:22,286 - INFO - Resultados do processamento:
+2025-07-04 18:51:22,286 - INFO -   - df_filtrado: 14 registros
+2025-07-04 18:51:22,287 - INFO -   - df_diaria: 4 registros
+2025-07-04 18:51:22,287 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 18:51:22,288 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 18:51:22,462 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 18:51:22,462 - INFO - Número do relatório calculado: 10
+2025-07-04 18:51:22,462 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 18:51:22,478 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 18:51:22,478 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 18:51:22,478 - INFO - ✅ Dados processados: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 18:51:22,492 - INFO - 🎯 ABRINDO PREVIEW SIMPLES
+2025-07-04 18:51:22,554 - INFO - ✅ Preview simples criado diretamente
+2025-07-04 19:47:15,278 - INFO - ✅ Dados carregados: 251 registros
+2025-07-04 19:47:15,281 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 19:47:15,281 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 19:47:15,282 - INFO - Total de registros originais: 251
+2025-07-04 19:47:15,284 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 19:47:15,296 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 19:47:15,296 - INFO - Data procurada: 2025-07-05
+2025-07-04 19:47:15,312 - INFO - Resultados do processamento:
+2025-07-04 19:47:15,312 - INFO -   - df_filtrado: 14 registros
+2025-07-04 19:47:15,312 - INFO -   - df_diaria: 4 registros
+2025-07-04 19:47:15,312 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 19:47:15,312 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 19:47:15,493 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 19:47:15,493 - INFO - Número do relatório calculado: 10
+2025-07-04 19:47:15,493 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 19:47:15,493 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 19:47:15,509 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 19:47:15,509 - INFO - ✅ Dados processados UMA VEZ: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 19:47:15,522 - INFO - 🎯 ABRINDO PREVIEW COM DADOS PRONTOS - VERSÃO FINAL
+2025-07-04 19:47:15,523 - INFO - === DEBUG DOS DADOS RECEBIDOS ===
+2025-07-04 19:47:15,525 - INFO -   df_filtrado: DataFrame com 14 registros
+2025-07-04 19:47:15,525 - INFO -   df_diaria: DataFrame com 4 registros
+2025-07-04 19:47:15,525 - INFO -   df_tp_desp_1: DataFrame com 12 registros
+2025-07-04 19:47:15,525 - INFO -   df_tp_desp_2: DataFrame com 0 registros
+2025-07-04 19:47:15,529 - WARNING -   df_futuro: None (PROBLEMA!)
+2025-07-04 19:47:15,532 - INFO -   df_original: DataFrame com 251 registros
+2025-07-04 19:47:15,534 - INFO -   incluir_futuros: <class 'bool'>
+2025-07-04 19:47:15,534 - INFO -   incluir_excluidos: <class 'bool'>
+2025-07-04 19:47:15,535 - INFO -   data_relatorio: <class 'datetime.datetime'>
+2025-07-04 19:47:15,535 - INFO -   nome_cliente: <class 'str'>
+2025-07-04 19:47:15,535 - INFO -   endereco_cliente: <class 'str'>
+2025-07-04 19:47:15,537 - INFO -   numero_relatorio: <class 'int'>
+2025-07-04 19:47:15,538 - INFO -   acumulado: <class 'float'>
+2025-07-04 19:47:15,538 - INFO -   handler_instance: <class 'src.relatorio_despesas_aprimorado.RelatorioHandler'>
+2025-07-04 19:47:15,539 - INFO -   arquivo_path: <class 'str'>
+2025-07-04 19:47:15,539 - INFO - === FIM DEBUG ===
+2025-07-04 19:47:15,619 - INFO - ✅ Preview com dados prontos criado - VERSÃO FINAL
+2025-07-04 19:52:19,282 - INFO - ✅ Dados carregados: 251 registros
+2025-07-04 19:52:19,286 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 19:52:19,287 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 19:52:19,288 - INFO - Total de registros originais: 251
+2025-07-04 19:52:19,289 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 19:52:19,307 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 19:52:19,310 - INFO - Data procurada: 2025-07-05
+2025-07-04 19:52:19,324 - INFO - Resultados do processamento:
+2025-07-04 19:52:19,324 - INFO -   - df_filtrado: 14 registros
+2025-07-04 19:52:19,326 - INFO -   - df_diaria: 4 registros
+2025-07-04 19:52:19,327 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 19:52:19,327 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 19:52:19,504 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 19:52:19,504 - INFO - Número do relatório calculado: 10
+2025-07-04 19:52:19,504 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 19:52:19,504 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 19:52:19,504 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 19:52:19,504 - INFO - ✅ Dados processados UMA VEZ: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 19:52:19,526 - INFO - 🎯 ABRINDO PREVIEW COM DADOS PRONTOS - VERSÃO ULTRA ROBUSTA
+2025-07-04 19:52:19,531 - INFO - === DEBUG DOS DADOS RECEBIDOS ===
+2025-07-04 19:52:19,532 - INFO -   df_filtrado: DataFrame com 14 registros
+2025-07-04 19:52:19,533 - INFO -   df_diaria: DataFrame com 4 registros
+2025-07-04 19:52:19,534 - INFO -   df_tp_desp_1: DataFrame com 12 registros
+2025-07-04 19:52:19,535 - INFO -   df_tp_desp_2: DataFrame com 0 registros
+2025-07-04 19:52:19,536 - WARNING -   df_futuro: None (PROBLEMA!)
+2025-07-04 19:52:19,536 - INFO -   df_original: DataFrame com 251 registros
+2025-07-04 19:52:19,540 - INFO -   incluir_futuros: <class 'bool'>
+2025-07-04 19:52:19,540 - INFO -   incluir_excluidos: <class 'bool'>
+2025-07-04 19:52:19,545 - INFO -   data_relatorio: <class 'datetime.datetime'>
+2025-07-04 19:52:19,549 - INFO -   nome_cliente: <class 'str'>
+2025-07-04 19:52:19,550 - INFO -   endereco_cliente: <class 'str'>
+2025-07-04 19:52:19,551 - INFO -   numero_relatorio: <class 'int'>
+2025-07-04 19:52:19,551 - INFO -   acumulado: <class 'float'>
+2025-07-04 19:52:19,552 - INFO -   handler_instance: <class 'src.relatorio_despesas_aprimorado.RelatorioHandler'>
+2025-07-04 19:52:19,553 - INFO -   arquivo_path: <class 'str'>
+2025-07-04 19:52:19,554 - INFO - === FIM DEBUG ===
+2025-07-04 19:52:19,554 - INFO - ✅ TESTE 1: self.root existe
+2025-07-04 19:52:19,560 - INFO - ✅ TESTE 2: tkinter importado
+2025-07-04 19:52:19,564 - INFO - 🔧 TESTE 3: Criando janela de preview...
+2025-07-04 19:52:19,577 - INFO - ✅ TESTE 3a: Toplevel criado
+2025-07-04 19:52:19,588 - INFO - ✅ TESTE 3b: Título definido
+2025-07-04 19:52:19,590 - INFO - ✅ TESTE 3c: Geometria definida
+2025-07-04 19:52:19,617 - INFO - ✅ TESTE 3d: Transient configurado
+2025-07-04 19:52:19,630 - INFO - ✅ TESTE 3e: Grab_set configurado
+2025-07-04 19:52:19,636 - INFO - 🔧 TESTE 4: Ocultando interface principal...
+2025-07-04 19:52:19,643 - INFO - ✅ TESTE 4: Interface principal ocultada
+2025-07-04 19:52:19,654 - INFO - 🔧 TESTE 5: Criando widgets básicos...
+2025-07-04 19:52:19,656 - INFO - ✅ TESTE 5a: Frame principal criado
+2025-07-04 19:52:19,660 - INFO - ✅ TESTE 5b: Título criado
+2025-07-04 19:52:19,672 - INFO - ✅ TESTE 5c: Informações do cliente criadas
+2025-07-04 19:52:19,675 - INFO - 🔧 TESTE 6: Criando área de texto...
+2025-07-04 19:52:19,688 - INFO - ✅ TESTE 6: Área de texto criada
+2025-07-04 19:52:19,690 - INFO - 🔧 TESTE 7: Gerando preview textual...
+2025-07-04 19:52:19,702 - INFO - ✅ TESTE 7a: Preview textual gerado
+2025-07-04 19:52:19,722 - INFO - ✅ TESTE 7b: Texto inserido no widget
+2025-07-04 19:52:19,722 - INFO - 🔧 TESTE 8: Criando botões...
+2025-07-04 19:52:19,737 - INFO - ✅ TESTE 8: Botões criados
+2025-07-04 19:52:19,737 - INFO - 🔧 TESTE 9: Configurando fechamento...
+2025-07-04 19:52:19,742 - INFO - ✅ TESTE 9: Protocolo de fechamento configurado
+2025-07-04 19:52:19,745 - INFO - 🔧 TESTE 10: Focando janela...
+2025-07-04 19:52:19,749 - INFO - ✅ TESTE 10: Janela focada
+2025-07-04 19:52:19,750 - INFO - ✅ Preview com dados prontos criado - VERSÃO ULTRA ROBUSTA COMPLETA
+2025-07-04 19:52:19,751 - INFO - ✅ TESTE FINAL: Janela de preview existe e está funcional
+2025-07-04 19:58:36,039 - INFO - ✅ Dados carregados: 251 registros
+2025-07-04 19:58:36,057 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 19:58:36,058 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 19:58:36,060 - INFO - Total de registros originais: 251
+2025-07-04 19:58:36,061 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 19:58:36,077 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 19:58:36,080 - INFO - Data procurada: 2025-07-05
+2025-07-04 19:58:36,092 - INFO - Resultados do processamento:
+2025-07-04 19:58:36,092 - INFO -   - df_filtrado: 14 registros
+2025-07-04 19:58:36,092 - INFO -   - df_diaria: 4 registros
+2025-07-04 19:58:36,093 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 19:58:36,094 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 19:58:36,283 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 19:58:36,283 - INFO - Número do relatório calculado: 10
+2025-07-04 19:58:36,283 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 19:58:36,283 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 19:58:36,305 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 19:58:36,307 - INFO - ✅ Dados processados UMA VEZ: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 19:58:36,735 - INFO - 🎯 ABRINDO PREVIEW THREAD-SAFE
+2025-07-04 19:58:36,735 - INFO - ✅ Executando no thread principal do Tkinter
+2025-07-04 19:58:36,772 - INFO - ✅ Preview thread-safe criado e funcional
+2025-07-04 19:58:37,787 - INFO - ✅ Janela preview ainda existe após 1 segundo
+2025-07-04 20:07:46,574 - INFO - ✅ Dados carregados: 251 registros
+2025-07-04 20:07:46,579 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 20:07:46,579 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 20:07:46,580 - INFO - Total de registros originais: 251
+2025-07-04 20:07:46,583 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 20:07:46,602 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 20:07:46,604 - INFO - Data procurada: 2025-07-05
+2025-07-04 20:07:46,616 - INFO - Resultados do processamento:
+2025-07-04 20:07:46,616 - INFO -   - df_filtrado: 14 registros
+2025-07-04 20:07:46,617 - INFO -   - df_diaria: 4 registros
+2025-07-04 20:07:46,618 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 20:07:46,619 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 20:07:46,810 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 20:07:46,810 - INFO - Número do relatório calculado: 10
+2025-07-04 20:07:46,810 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 20:07:46,810 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 20:07:46,810 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 20:07:46,810 - INFO - ✅ Dados processados UMA VEZ: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 20:07:46,810 - INFO - ✅ Dados processados com sucesso
+2025-07-04 20:07:46,831 - INFO - 🔧 Abrindo preview direto...
+2025-07-04 20:07:46,834 - INFO - 🎯 ABRINDO PREVIEW ESTÁVEL
+2025-07-04 20:07:46,858 - INFO - 🔧 Gerando texto do preview...
+2025-07-04 20:07:46,864 - INFO - ✅ Texto inserido com sucesso
+2025-07-04 20:07:46,876 - INFO - ✅ Preview estável criado com referências mantidas
+2025-07-04 20:07:48,888 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:07:50,889 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:07:52,898 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:07:54,906 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:07:56,909 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:07:58,922 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:00,923 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:02,923 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:04,932 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:06,947 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:08,958 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:10,958 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:12,965 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:14,967 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:16,981 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:18,994 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:20,997 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:23,013 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:25,028 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:27,043 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:29,057 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:31,063 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:33,072 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:35,079 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:37,083 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:39,095 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:41,100 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:43,106 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:45,113 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:47,120 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:49,127 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:51,135 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:53,142 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:55,148 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:57,150 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:08:59,152 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:01,158 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:03,159 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:05,161 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:07,171 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:09,179 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:11,180 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:13,190 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:15,197 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:17,205 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:19,212 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:21,227 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:23,347 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:25,357 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:27,361 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:29,369 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:31,378 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:33,393 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:35,404 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:37,413 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:39,414 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:41,418 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:43,426 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:45,431 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:47,438 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:49,445 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:51,446 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:53,462 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:55,462 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:57,464 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:09:59,476 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:01,490 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:03,494 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:05,503 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:07,509 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:09,519 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:11,525 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:13,531 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:15,545 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:17,563 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:19,566 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:21,579 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:23,597 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:25,615 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:27,629 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:29,645 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:31,661 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:10:33,680 - INFO - ✅ Preview ainda ativo
+2025-07-04 20:14:34,780 - INFO - ✅ Dados carregados: 251 registros
+2025-07-04 20:14:34,782 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 20:14:34,782 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 20:14:34,784 - INFO - Total de registros originais: 251
+2025-07-04 20:14:34,785 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 20:14:34,800 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 20:14:34,802 - INFO - Data procurada: 2025-07-05
+2025-07-04 20:14:34,814 - INFO - Resultados do processamento:
+2025-07-04 20:14:34,814 - INFO -   - df_filtrado: 14 registros
+2025-07-04 20:14:34,815 - INFO -   - df_diaria: 4 registros
+2025-07-04 20:14:34,815 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 20:14:34,816 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 20:14:35,038 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 20:14:35,053 - INFO - Número do relatório calculado: 10
+2025-07-04 20:14:35,053 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 20:14:35,053 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 20:14:35,053 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 20:14:35,053 - INFO - ✅ Dados processados UMA VEZ: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 20:14:35,053 - INFO - ✅ Dados processados com sucesso
+2025-07-04 20:14:35,076 - INFO - 🔧 Abrindo preview direto...
+2025-07-04 20:14:35,078 - INFO - 🎯 ABRINDO PREVIEW ESTÁVEL - GARANTINDO VISIBILIDADE
+2025-07-04 20:14:35,140 - INFO - ✅ Janela de preview criada e posicionada
+2025-07-04 20:14:35,212 - INFO - 🔧 Gerando conteúdo do preview...
+2025-07-04 20:14:35,231 - INFO - ✅ Conteúdo inserido com sucesso
+2025-07-04 20:14:35,328 - INFO - ✅ Preview criado e DEVE ESTAR VISÍVEL na tela!
+2025-07-04 20:14:36,343 - INFO - ✅ CONFIRMADO: Preview está visível na tela!
+2025-07-04 20:15:15,190 - INFO - 🔄 Voltando para interface de relatórios...
+2025-07-04 20:15:15,190 - INFO - ✅ Interface principal restaurada
+2025-07-04 20:15:15,214 - INFO - ✅ Preview fechado
+2025-07-04 20:16:23,891 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-07-04 20:16:23,891 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-07-04 20:16:23,891 - INFO - Data final obtida: 2025-07-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-07-04 20:16:23,891 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-04 20:16:23,906 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-04 20:16:23,906 - INFO - ✅ Configurações coletadas: arquivo=True
+2025-07-04 20:16:25,307 - INFO - 🚀 Executando com PREVIEW
+2025-07-04 20:16:25,334 - INFO - 🎯 EXECUTANDO RELATÓRIO SEM THREADING
+2025-07-04 20:16:25,340 - INFO - 🔧 Processando dados direto...
+2025-07-04 20:16:25,376 - INFO - 📁 Processando arquivo UMA VEZ: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-07-04 20:16:25,557 - INFO - ✅ Dados carregados: 251 registros
+2025-07-04 20:16:25,557 - INFO - Data de referência para processamento: 2025-07-05 00:00:00
+2025-07-04 20:16:25,557 - INFO - Tipo da data de referência: <class 'pandas._libs.tslibs.timestamps.Timestamp'>
+2025-07-04 20:16:25,569 - INFO - Total de registros originais: 251
+2025-07-04 20:16:25,572 - INFO - Processando dados - registros após filtrar excluídos: 251
+2025-07-04 20:16:25,579 - INFO - Datas únicas disponíveis no arquivo: [datetime.date(2025, 2, 20), datetime.date(2025, 3, 5), datetime.date(2025, 3, 20), datetime.date(2025, 4, 5), datetime.date(2025, 4, 20), datetime.date(2025, 5, 5), datetime.date(2025, 5, 20), datetime.date(2025, 6, 5), datetime.date(2025, 6, 20), datetime.date(2025, 7, 5)]
+2025-07-04 20:16:25,579 - INFO - Data procurada: 2025-07-05
+2025-07-04 20:16:25,581 - INFO - Resultados do processamento:
+2025-07-04 20:16:25,581 - INFO -   - df_filtrado: 14 registros
+2025-07-04 20:16:25,581 - INFO -   - df_diaria: 4 registros
+2025-07-04 20:16:25,581 - INFO -   - df_tp_desp_1: 12 registros
+2025-07-04 20:16:25,581 - INFO -   - df_tp_desp_2: 0 registros
+2025-07-04 20:16:25,802 - INFO - 
+Obtendo número do relatório para data 2025-07-05 00:00:00
+2025-07-04 20:16:25,802 - INFO - Número do relatório calculado: 10
+2025-07-04 20:16:25,802 - INFO - Calculando acumulado para data 2025-07-05 00:00:00
+2025-07-04 20:16:25,802 - INFO - Acumulado - registros após filtrar excluídos: 251
+2025-07-04 20:16:25,802 - INFO - Valor acumulado calculado (apenas ativos): 426,376.12
+2025-07-04 20:16:25,802 - INFO - ✅ Dados processados UMA VEZ: ANA AUGUSTA PIRES COUTINHO
+2025-07-04 20:16:25,802 - INFO - ✅ Dados processados com sucesso
+2025-07-04 20:16:25,817 - INFO - 🔧 Abrindo preview direto...
+2025-07-04 20:16:25,818 - INFO - 🎯 ABRINDO PREVIEW ESTÁVEL - GARANTINDO VISIBILIDADE
+2025-07-04 20:16:25,862 - INFO - ✅ Janela de preview criada e posicionada
+2025-07-04 20:16:25,882 - INFO - 🔧 Gerando conteúdo do preview...
+2025-07-04 20:16:25,888 - INFO - ✅ Conteúdo inserido com sucesso
+2025-07-04 20:16:25,961 - INFO - ✅ Preview criado e DEVE ESTAR VISÍVEL na tela!
+2025-07-04 20:16:26,975 - INFO - ✅ CONFIRMADO: Preview está visível na tela!
+2025-07-04 20:19:13,161 - INFO - 🔄 Voltando para interface de relatórios...
+2025-07-04 20:19:13,161 - INFO - ✅ Interface principal restaurada
+2025-07-04 20:19:13,194 - INFO - ✅ Preview fechado
+2025-07-04 20:19:14,604 - INFO - Solicitado retorno ao menu principal
+2025-07-04 20:19:14,604 - INFO - Retornando ao menu principal existente
+2025-07-04 20:19:14,709 - INFO - Retorno ao menu principal concluído
+2025-07-04 20:19:20,656 - INFO - Saída confirmada, finalizando sistema
+2025-07-04 20:19:20,720 - INFO - Ação concluída: Gerar relatório
