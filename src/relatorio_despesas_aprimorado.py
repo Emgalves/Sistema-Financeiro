@@ -1143,254 +1143,254 @@ class RelatorioHandler:
         except Exception as e:
             raise Exception(f"Erro ao carregar arquivo Excel: {str(e)}")
 
-    # def processar_dados(self, df, data_relatorio, incluir_excluidos=False):
-    #     """Versão corrigida que preserva todas as colunas essenciais"""
-    #     # Converter data para datetime usando formato explícito
-    #     try:
-    #         data_rel = pd.to_datetime(data_relatorio)
-    #     except:
-    #         # Se falhar, tenta converter assumindo formato brasileiro
-    #         data_rel = pd.to_datetime(data_relatorio, format='%d/%m/%Y')
-        
-    #     # Criar cópia do DataFrame para não modificar o original
-    #     df = df.copy()
-        
-    #     # Log para debug
-    #     logger.debug(f"Colunas do DataFrame original: {df.columns.tolist()}")
-        
-    #     # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
-    #     if not incluir_excluidos and 'STATUS' in df.columns:
-    #         df = df[df['STATUS'] != 'EXCLUIDO'].copy()
-    #         print(f"Processando dados - registros após filtrar excluídos: {len(df)}")
-    #     else:
-    #         print(f"Processando dados - incluindo todos os registros: {len(df)}")
-        
-    #     # Adicionar coluna de índice original para manter ordem de entrada
-    #     df = df.reset_index(drop=True)
-    #     df['ordem_original'] = df.index
-        
-    #     # Converter corretamente a coluna DT_VENCTO para datetime para ordenação
-    #     if 'DT_VENCTO' in df.columns:
-    #         try:
-    #             df['DT_VENCTO_SORT'] = pd.to_datetime(df['DT_VENCTO'], 
-    #                                                 format='mixed', 
-    #                                                 errors='coerce', 
-    #                                                 dayfirst=True)
-                
-    #             df['DT_VENCTO_DISPLAY'] = df['DT_VENCTO_SORT'].dt.strftime('%d/%m/%Y')
-                
-    #         except Exception as e:
-    #             print(f"Erro ao converter DT_VENCTO: {str(e)}")
-    #             df['DT_VENCTO_SORT'] = pd.to_datetime('2000-01-01')
-    #             df['DT_VENCTO_DISPLAY'] = df['DT_VENCTO']
-        
-    #     # Aplicar a restrição de dados bancários para tp_desp 3 e 5
-    #     if 'DADOS_BANCARIOS' in df.columns:
-    #         df['DADOS_BANCARIOS_ORIGINAL'] = df['DADOS_BANCARIOS']
-    #         df.loc[df['TP_DESP'].isin([3, 5]), 'DADOS_BANCARIOS'] = ''
-
-    #     # VERIFICAÇÃO CRÍTICA: Garantir que TP_DESP existe
-    #     if 'TP_DESP' not in df.columns:
-    #         logger.error("ERRO CRÍTICO: Coluna TP_DESP não encontrada no DataFrame!")
-    #         logger.error(f"Colunas disponíveis: {df.columns.tolist()}")
-    #         raise ValueError("Coluna TP_DESP não encontrada no DataFrame")
-
-    #     # Filtrar dados (considerando a opção de incluir excluídos)
-    #     df_filtrado = df[
-    #         (df['DATA_REL'] == data_rel) & 
-    #         (df['TP_DESP'] != 1)
-    #     ].copy()  # IMPORTANTE: usar .copy() para evitar warnings
-        
-    #     # Log para debug
-    #     logger.debug(f"df_filtrado criado com {len(df_filtrado)} registros")
-    #     logger.debug(f"Colunas do df_filtrado: {df_filtrado.columns.tolist()}")
-        
-    #     # NOVA LÓGICA: Separar TP_DESP == 5 dos demais para ordenação diferente
-    #     df_tp5 = df_filtrado[df_filtrado['TP_DESP'] == 5].copy()
-    #     df_outros = df_filtrado[df_filtrado['TP_DESP'] != 5].copy()
-        
-    #     # Ordenar apenas os outros tipos (não o tipo 5)
-    #     if not df_outros.empty:
-    #         df_outros = df_outros.sort_values(
-    #             by=['TP_DESP', 'DT_VENCTO_SORT', 'VALOR'], 
-    #             ascending=[True, True, False]
-    #         )
-        
-    #     # Para TP_DESP == 5, manter ordem original de entrada
-    #     if not df_tp5.empty:
-    #         df_tp5 = df_tp5.sort_values('ordem_original')
-        
-    #     # Combinar os DataFrames: primeiro os outros tipos ordenados, depois o tipo 5 na ordem original
-    #     if not df_outros.empty and not df_tp5.empty:
-    #         df_filtrado = pd.concat([df_outros, df_tp5], ignore_index=True)
-    #     elif not df_outros.empty:
-    #         df_filtrado = df_outros
-    #     elif not df_tp5.empty:
-    #         df_filtrado = df_tp5
-    #     else:
-    #         df_filtrado = pd.DataFrame()  # Vazio se nenhum dos dois tiver dados
-        
-    #     # Processar os outros DataFrames normalmente
-    #     df_diaria = df[
-    #         (df['DATA_REL'] == data_rel) & 
-    #         (df['TP_DESP'] == 1) & 
-    #         (df['REFERÊNCIA'] == 'DIÁRIA')
-    #     ].copy()
-        
-    #     df_tp_desp_1 = df[
-    #         (df['DATA_REL'] == data_rel) & 
-    #         (df['TP_DESP'] == 1) & 
-    #         (df['REFERÊNCIA'].isin(['SALÁRIO', 'TRANSPORTE', 'CAFÉ']))
-    #     ].copy()
-
-    #     df_tp_desp_2 = df[
-    #         (df['DATA_REL'] == data_rel) & 
-    #         (df['TP_DESP'] == 1) & 
-    #         (df['REFERÊNCIA'].isin(['FÉRIAS', 'RESCISÃO', '13º SALÁRIO']))
-    #     ].copy()
-        
-    #     # Substituir DT_VENCTO pela versão formatada uniformemente antes de retornar
-    #     if 'DT_VENCTO_DISPLAY' in df_filtrado.columns:
-    #         df_filtrado['DT_VENCTO'] = df_filtrado['DT_VENCTO_DISPLAY']
-            
-    #     # CORREÇÃO CRÍTICA: Preservar colunas essenciais
-    #     colunas_essenciais = [
-    #         'TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR', 'DATA_REL', 'DT_VENCTO',
-    #         'DADOS_BANCARIOS', 'DIAS', 'VR_UNIT', 'NF', 'STATUS'
-    #     ]
-        
-    #     # Remover apenas as colunas temporárias, preservando as essenciais
-    #     colunas_temporarias = ['DT_VENCTO_SORT', 'DT_VENCTO_DISPLAY', 'ordem_original', 'DADOS_BANCARIOS_ORIGINAL']
-        
-    #     for df_temp in [df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2]:
-    #         # Verificar se o DataFrame não está vazio
-    #         if df_temp.empty:
-    #             continue
-                
-    #         # Log das colunas antes da limpeza
-    #         logger.debug(f"DataFrame com {len(df_temp)} registros - Colunas antes da limpeza: {df_temp.columns.tolist()}")
-            
-    #         # Remover apenas colunas temporárias que existem
-    #         colunas_para_remover = [col for col in colunas_temporarias if col in df_temp.columns]
-            
-    #         if colunas_para_remover:
-    #             df_temp.drop(columns=colunas_para_remover, inplace=True)
-    #             logger.debug(f"Colunas removidas: {colunas_para_remover}")
-            
-    #         # Verificar se TP_DESP ainda existe após limpeza
-    #         if 'TP_DESP' not in df_temp.columns and not df_temp.empty:
-    #             logger.error(f"ERRO: TP_DESP foi removida inadvertidamente do DataFrame com {len(df_temp)} registros!")
-    #             logger.error(f"Colunas após limpeza: {df_temp.columns.tolist()}")
-    #         else:
-    #             logger.debug(f"TP_DESP preservada - Colunas após limpeza: {df_temp.columns.tolist()}")
-        
-    #     # Verificação final
-    #     logger.info(f"df_filtrado final: {len(df_filtrado)} registros")
-    #     if not df_filtrado.empty:
-    #         logger.info(f"Colunas finais do df_filtrado: {df_filtrado.columns.tolist()}")
-    #         if 'TP_DESP' in df_filtrado.columns:
-    #             logger.info(f"Tipos de despesa únicos: {df_filtrado['TP_DESP'].unique()}")
-    #         else:
-    #             logger.error("ERRO FINAL: TP_DESP não está presente no df_filtrado!")
-        
-    #     return df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2
-    
     def processar_dados(self, df, data_relatorio, incluir_excluidos=False):
-        """Versão corrigida do processar_dados com debug melhorado"""
-        
-        # CORREÇÃO: Garantir formato correto da data
-        from datetime import datetime, date
-        import pandas as pd
-        
-        if isinstance(data_relatorio, str):
+        """Versão corrigida que preserva todas as colunas essenciais"""
+        # Converter data para datetime usando formato explícito
+        try:
             data_rel = pd.to_datetime(data_relatorio)
-        elif isinstance(data_relatorio, date) and not isinstance(data_relatorio, datetime):
-            data_rel = pd.to_datetime(datetime.combine(data_relatorio, datetime.min.time()))
-        else:
-            data_rel = pd.to_datetime(data_relatorio)
+        except:
+            # Se falhar, tenta converter assumindo formato brasileiro
+            data_rel = pd.to_datetime(data_relatorio, format='%d/%m/%Y')
         
-        logger.info(f"Data de referência para processamento: {data_rel}")
-        logger.info(f"Tipo da data de referência: {type(data_rel)}")
-        
-        # Criar cópia do DataFrame
+        # Criar cópia do DataFrame para não modificar o original
         df = df.copy()
         
         # Log para debug
         logger.debug(f"Colunas do DataFrame original: {df.columns.tolist()}")
-        logger.info(f"Total de registros originais: {len(df)}")
         
-        # Filtrar excluídos se necessário
+        # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
         if not incluir_excluidos and 'STATUS' in df.columns:
             df = df[df['STATUS'] != 'EXCLUIDO'].copy()
-            logger.info(f"Processando dados - registros após filtrar excluídos: {len(df)}")
+            print(f"Processando dados - registros após filtrar excluídos: {len(df)}")
         else:
-            logger.info(f"Processando dados - incluindo todos os registros: {len(df)}")
+            print(f"Processando dados - incluindo todos os registros: {len(df)}")
         
-        # CORREÇÃO: Converter DATA_REL para datetime ANTES de comparar
-        df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+        # Adicionar coluna de índice original para manter ordem de entrada
+        df = df.reset_index(drop=True)
+        df['ordem_original'] = df.index
         
-        # Remover registros com datas inválidas
-        registros_antes = len(df)
-        df = df.dropna(subset=['DATA_REL'])
-        registros_depois = len(df)
+        # Converter corretamente a coluna DT_VENCTO para datetime para ordenação
+        if 'DT_VENCTO' in df.columns:
+            try:
+                df['DT_VENCTO_SORT'] = pd.to_datetime(df['DT_VENCTO'], 
+                                                    format='mixed', 
+                                                    errors='coerce', 
+                                                    dayfirst=True)
+                
+                df['DT_VENCTO_DISPLAY'] = df['DT_VENCTO_SORT'].dt.strftime('%d/%m/%Y')
+                
+            except Exception as e:
+                print(f"Erro ao converter DT_VENCTO: {str(e)}")
+                df['DT_VENCTO_SORT'] = pd.to_datetime('2000-01-01')
+                df['DT_VENCTO_DISPLAY'] = df['DT_VENCTO']
         
-        if registros_antes != registros_depois:
-            logger.warning(f"Removidos {registros_antes - registros_depois} registros com DATA_REL inválida")
-        
-        # DEBUG: Mostrar datas únicas disponíveis
-        datas_unicas = sorted(df['DATA_REL'].dt.date.unique())
-        logger.info(f"Datas únicas disponíveis no arquivo: {datas_unicas}")
-        
-        # DEBUG: Verificar se a data procurada existe
-        data_procurada = data_rel.date()
-        logger.info(f"Data procurada: {data_procurada}")
-        
-        if data_procurada not in datas_unicas:
-            logger.warning(f"Data {data_procurada} não encontrada no arquivo!")
-            logger.info("Datas próximas disponíveis:")
-            for data_disp in datas_unicas:
-                diff = abs((data_disp - data_procurada).days)
-                logger.info(f"  {data_disp} (diferença: {diff} dias)")
-        
-        # Aplicar filtros
+        # Aplicar a restrição de dados bancários para tp_desp 3 e 5
+        if 'DADOS_BANCARIOS' in df.columns:
+            df['DADOS_BANCARIOS_ORIGINAL'] = df['DADOS_BANCARIOS']
+            df.loc[df['TP_DESP'].isin([3, 5]), 'DADOS_BANCARIOS'] = ''
+
+        # VERIFICAÇÃO CRÍTICA: Garantir que TP_DESP existe
+        if 'TP_DESP' not in df.columns:
+            logger.error("ERRO CRÍTICO: Coluna TP_DESP não encontrada no DataFrame!")
+            logger.error(f"Colunas disponíveis: {df.columns.tolist()}")
+            raise ValueError("Coluna TP_DESP não encontrada no DataFrame")
+
+        # Filtrar dados (considerando a opção de incluir excluídos)
         df_filtrado = df[
-            (df['DATA_REL'].dt.date == data_rel.date()) & 
+            (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] != 1)
-        ].copy()
+        ].copy()  # IMPORTANTE: usar .copy() para evitar warnings
         
+        # Log para debug
+        logger.debug(f"df_filtrado criado com {len(df_filtrado)} registros")
+        logger.debug(f"Colunas do df_filtrado: {df_filtrado.columns.tolist()}")
+        
+        # NOVA LÓGICA: Separar TP_DESP == 5 dos demais para ordenação diferente
+        df_tp5 = df_filtrado[df_filtrado['TP_DESP'] == 5].copy()
+        df_outros = df_filtrado[df_filtrado['TP_DESP'] != 5].copy()
+        
+        # Ordenar apenas os outros tipos (não o tipo 5)
+        if not df_outros.empty:
+            df_outros = df_outros.sort_values(
+                by=['TP_DESP', 'DT_VENCTO_SORT', 'VALOR'], 
+                ascending=[True, True, False]
+            )
+        
+        # Para TP_DESP == 5, manter ordem original de entrada
+        if not df_tp5.empty:
+            df_tp5 = df_tp5.sort_values('ordem_original')
+        
+        # Combinar os DataFrames: primeiro os outros tipos ordenados, depois o tipo 5 na ordem original
+        if not df_outros.empty and not df_tp5.empty:
+            df_filtrado = pd.concat([df_outros, df_tp5], ignore_index=True)
+        elif not df_outros.empty:
+            df_filtrado = df_outros
+        elif not df_tp5.empty:
+            df_filtrado = df_tp5
+        else:
+            df_filtrado = pd.DataFrame()  # Vazio se nenhum dos dois tiver dados
+        
+        # Processar os outros DataFrames normalmente
         df_diaria = df[
-            (df['DATA_REL'].dt.date == data_rel.date()) & 
+            (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] == 1) & 
             (df['REFERÊNCIA'] == 'DIÁRIA')
         ].copy()
         
         df_tp_desp_1 = df[
-            (df['DATA_REL'].dt.date == data_rel.date()) & 
+            (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] == 1) & 
             (df['REFERÊNCIA'].isin(['SALÁRIO', 'TRANSPORTE', 'CAFÉ']))
         ].copy()
 
         df_tp_desp_2 = df[
-            (df['DATA_REL'].dt.date == data_rel.date()) & 
+            (df['DATA_REL'] == data_rel) & 
             (df['TP_DESP'] == 1) & 
             (df['REFERÊNCIA'].isin(['FÉRIAS', 'RESCISÃO', '13º SALÁRIO']))
         ].copy()
         
-        # Log dos resultados
-        logger.info(f"Resultados do processamento:")
-        logger.info(f"  - df_filtrado: {len(df_filtrado)} registros")
-        logger.info(f"  - df_diaria: {len(df_diaria)} registros")
-        logger.info(f"  - df_tp_desp_1: {len(df_tp_desp_1)} registros")
-        logger.info(f"  - df_tp_desp_2: {len(df_tp_desp_2)} registros")
+        # Substituir DT_VENCTO pela versão formatada uniformemente antes de retornar
+        if 'DT_VENCTO_DISPLAY' in df_filtrado.columns:
+            df_filtrado['DT_VENCTO'] = df_filtrado['DT_VENCTO_DISPLAY']
+            
+        # CORREÇÃO CRÍTICA: Preservar colunas essenciais
+        colunas_essenciais = [
+            'TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR', 'DATA_REL', 'DT_VENCTO',
+            'DADOS_BANCARIOS', 'DIAS', 'VR_UNIT', 'NF', 'STATUS'
+        ]
         
-        # DEBUG: Se não encontrou nada, mostrar amostra dos dados
-        if len(df_filtrado) == 0 and len(df_diaria) == 0 and len(df_tp_desp_1) == 0 and len(df_tp_desp_2) == 0:
-            logger.warning("NENHUM DADO ENCONTRADO! Mostrando amostra dos dados:")
-            amostra = df.head(10)[['DATA_REL', 'TP_DESP', 'REFERÊNCIA', 'VALOR']].copy()
-            amostra['DATA_REL_DATE'] = amostra['DATA_REL'].dt.date
-            logger.info(f"Amostra dos dados:\n{amostra}")
+        # Remover apenas as colunas temporárias, preservando as essenciais
+        colunas_temporarias = ['DT_VENCTO_SORT', 'DT_VENCTO_DISPLAY', 'ordem_original', 'DADOS_BANCARIOS_ORIGINAL']
+        
+        for df_temp in [df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2]:
+            # Verificar se o DataFrame não está vazio
+            if df_temp.empty:
+                continue
+                
+            # Log das colunas antes da limpeza
+            logger.debug(f"DataFrame com {len(df_temp)} registros - Colunas antes da limpeza: {df_temp.columns.tolist()}")
+            
+            # Remover apenas colunas temporárias que existem
+            colunas_para_remover = [col for col in colunas_temporarias if col in df_temp.columns]
+            
+            if colunas_para_remover:
+                df_temp.drop(columns=colunas_para_remover, inplace=True)
+                logger.debug(f"Colunas removidas: {colunas_para_remover}")
+            
+            # Verificar se TP_DESP ainda existe após limpeza
+            if 'TP_DESP' not in df_temp.columns and not df_temp.empty:
+                logger.error(f"ERRO: TP_DESP foi removida inadvertidamente do DataFrame com {len(df_temp)} registros!")
+                logger.error(f"Colunas após limpeza: {df_temp.columns.tolist()}")
+            else:
+                logger.debug(f"TP_DESP preservada - Colunas após limpeza: {df_temp.columns.tolist()}")
+        
+        # Verificação final
+        logger.info(f"df_filtrado final: {len(df_filtrado)} registros")
+        if not df_filtrado.empty:
+            logger.info(f"Colunas finais do df_filtrado: {df_filtrado.columns.tolist()}")
+            if 'TP_DESP' in df_filtrado.columns:
+                logger.info(f"Tipos de despesa únicos: {df_filtrado['TP_DESP'].unique()}")
+            else:
+                logger.error("ERRO FINAL: TP_DESP não está presente no df_filtrado!")
         
         return df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2
+    
+    # def processar_dados(self, df, data_relatorio, incluir_excluidos=False):
+    #     """Versão corrigida do processar_dados com debug melhorado"""
+        
+    #     # CORREÇÃO: Garantir formato correto da data
+    #     from datetime import datetime, date
+    #     import pandas as pd
+        
+    #     if isinstance(data_relatorio, str):
+    #         data_rel = pd.to_datetime(data_relatorio)
+    #     elif isinstance(data_relatorio, date) and not isinstance(data_relatorio, datetime):
+    #         data_rel = pd.to_datetime(datetime.combine(data_relatorio, datetime.min.time()))
+    #     else:
+    #         data_rel = pd.to_datetime(data_relatorio)
+        
+    #     logger.info(f"Data de referência para processamento: {data_rel}")
+    #     logger.info(f"Tipo da data de referência: {type(data_rel)}")
+        
+    #     # Criar cópia do DataFrame
+    #     df = df.copy()
+        
+    #     # Log para debug
+    #     logger.debug(f"Colunas do DataFrame original: {df.columns.tolist()}")
+    #     logger.info(f"Total de registros originais: {len(df)}")
+        
+    #     # Filtrar excluídos se necessário
+    #     if not incluir_excluidos and 'STATUS' in df.columns:
+    #         df = df[df['STATUS'] != 'EXCLUIDO'].copy()
+    #         logger.info(f"Processando dados - registros após filtrar excluídos: {len(df)}")
+    #     else:
+    #         logger.info(f"Processando dados - incluindo todos os registros: {len(df)}")
+        
+    #     # CORREÇÃO: Converter DATA_REL para datetime ANTES de comparar
+    #     df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+        
+    #     # Remover registros com datas inválidas
+    #     registros_antes = len(df)
+    #     df = df.dropna(subset=['DATA_REL'])
+    #     registros_depois = len(df)
+        
+    #     if registros_antes != registros_depois:
+    #         logger.warning(f"Removidos {registros_antes - registros_depois} registros com DATA_REL inválida")
+        
+    #     # DEBUG: Mostrar datas únicas disponíveis
+    #     datas_unicas = sorted(df['DATA_REL'].dt.date.unique())
+    #     logger.info(f"Datas únicas disponíveis no arquivo: {datas_unicas}")
+        
+    #     # DEBUG: Verificar se a data procurada existe
+    #     data_procurada = data_rel.date()
+    #     logger.info(f"Data procurada: {data_procurada}")
+        
+    #     if data_procurada not in datas_unicas:
+    #         logger.warning(f"Data {data_procurada} não encontrada no arquivo!")
+    #         logger.info("Datas próximas disponíveis:")
+    #         for data_disp in datas_unicas:
+    #             diff = abs((data_disp - data_procurada).days)
+    #             logger.info(f"  {data_disp} (diferença: {diff} dias)")
+        
+    #     # Aplicar filtros
+    #     df_filtrado = df[
+    #         (df['DATA_REL'].dt.date == data_rel.date()) & 
+    #         (df['TP_DESP'] != 1)
+    #     ].copy()
+        
+    #     df_diaria = df[
+    #         (df['DATA_REL'].dt.date == data_rel.date()) & 
+    #         (df['TP_DESP'] == 1) & 
+    #         (df['REFERÊNCIA'] == 'DIÁRIA')
+    #     ].copy()
+        
+    #     df_tp_desp_1 = df[
+    #         (df['DATA_REL'].dt.date == data_rel.date()) & 
+    #         (df['TP_DESP'] == 1) & 
+    #         (df['REFERÊNCIA'].isin(['SALÁRIO', 'TRANSPORTE', 'CAFÉ']))
+    #     ].copy()
+
+    #     df_tp_desp_2 = df[
+    #         (df['DATA_REL'].dt.date == data_rel.date()) & 
+    #         (df['TP_DESP'] == 1) & 
+    #         (df['REFERÊNCIA'].isin(['FÉRIAS', 'RESCISÃO', '13º SALÁRIO']))
+    #     ].copy()
+        
+    #     # Log dos resultados
+    #     logger.info(f"Resultados do processamento:")
+    #     logger.info(f"  - df_filtrado: {len(df_filtrado)} registros")
+    #     logger.info(f"  - df_diaria: {len(df_diaria)} registros")
+    #     logger.info(f"  - df_tp_desp_1: {len(df_tp_desp_1)} registros")
+    #     logger.info(f"  - df_tp_desp_2: {len(df_tp_desp_2)} registros")
+        
+    #     # DEBUG: Se não encontrou nada, mostrar amostra dos dados
+    #     if len(df_filtrado) == 0 and len(df_diaria) == 0 and len(df_tp_desp_1) == 0 and len(df_tp_desp_2) == 0:
+    #         logger.warning("NENHUM DADO ENCONTRADO! Mostrando amostra dos dados:")
+    #         amostra = df.head(10)[['DATA_REL', 'TP_DESP', 'REFERÊNCIA', 'VALOR']].copy()
+    #         amostra['DATA_REL_DATE'] = amostra['DATA_REL'].dt.date
+    #         logger.info(f"Amostra dos dados:\n{amostra}")
+        
+    #     return df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2
     
     def adicionar_lancamentos_futuros(self, elementos, dados):
         """Adiciona a seção de lançamentos futuros ao relatório"""
