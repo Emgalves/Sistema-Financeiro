@@ -11,10 +11,12 @@ VERSION_INFO = {
     "major": 1,
     "minor": 3,
     "patch": 3,
-    "release_date": "01/07/2025",
+    "release_date": "09/07/2025",
     "changes": [
-        "Inclusão de Importação de TRANSPORTE e CAFÉ",
-        "Exclusão do ordenamento dos pagamentos de Diaristas para ser pela entrada e não por valor pago"
+        "Inclusão de importação de planilha com dados de TRANSPORTE e CAFÉ",
+        "Alteração do Relatório de Despesas para incluir o PDF Temporário",
+        "Exclusão do ordenamento dos pagamentos de Diaristas para ser pela entrada e não por valor pago",
+        "Exclusão do ordenamento dos pagamentos das despesas pagas pelo Cliente para ser pela entrada e não por data de vencimento"
     ]
 }
 
