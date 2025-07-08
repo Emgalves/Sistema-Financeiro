@@ -407,9 +407,12 @@ class SistemaPrincipal:
 
     @log_action("Gerar relatório")
     def abrir_relatorios(self):
-        """Abre o sistema integrado de relatórios com fallback robusto"""
+        """Abre o sistema integrado de relatórios - VERSÃO COM DIAGNÓSTICO"""
         try:
-            simple_logger.info("Tentando abrir sistema de relatórios")
+            simple_logger.info("=== INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===")
+            
+            # === DIAGNÓSTICO INICIAL ===
+            self.diagnosticar_sistema_relatorios()
             
             # Primeiro, verificar se o sistema de logging está funcionando
             try:
@@ -420,193 +423,521 @@ class SistemaPrincipal:
             except:
                 pass  # Se falhar, continuar com simple_logger
             
-            # Estratégia 1: Tentar carregar o sistema integrado de relatórios
+            # === ESTRATÉGIA 1: BUSCA INTELIGENTE ===
             try:
-                simple_logger.info("Tentativa 1: Carregando sistema integrado de relatórios")
+                simple_logger.info("🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS")
                 
-                # Limpar cache do módulo
-                module_names = [
-                    'src.relatorios_interface',
-                    'relatorios_interface'
+                # Obter diretório base do sistema
+                import os
+                from pathlib import Path
+                
+                if getattr(sys, 'frozen', False):
+                    # Se for executável PyInstaller
+                    base_dir = Path(sys._MEIPASS)
+                    simple_logger.info(f"📦 Executável PyInstaller detectado: {base_dir}")
+                else:
+                    # Se for execução normal
+                    base_dir = Path(__file__).resolve().parent
+                    simple_logger.info(f"🐍 Execução Python normal: {base_dir}")
+                
+                # Buscar arquivo relatorios_interface.py
+                arquivos_encontrados = []
+                for caminho_busca in [base_dir, base_dir.parent, base_dir / "src"]:
+                    arquivo_relatorios = caminho_busca / "relatorios_interface.py"
+                    if arquivo_relatorios.exists():
+                        arquivos_encontrados.append(str(arquivo_relatorios))
+                        simple_logger.info(f"✅ ENCONTRADO: {arquivo_relatorios}")
+                    else:
+                        simple_logger.info(f"❌ NÃO ENCONTRADO: {arquivo_relatorios}")
+                
+                if not arquivos_encontrados:
+                    simple_logger.error("❌ ARQUIVO relatorios_interface.py NÃO ENCONTRADO EM LUGAR NENHUM!")
+                    raise Exception("Arquivo relatorios_interface.py não encontrado no sistema")
+                
+                # === ESTRATÉGIA 2: ADICIONAR PATHS E TENTAR IMPORTAR ===
+                simple_logger.info("🔄 Configurando paths do sistema...")
+                
+                # Adicionar todos os paths relevantes
+                paths_para_adicionar = [
+                    str(base_dir),
+                    str(base_dir / "src"),
+                    str(base_dir.parent),
+                    str(base_dir.parent / "src")
                 ]
                 
-                for module_name in module_names:
+                for path in paths_para_adicionar:
+                    if os.path.exists(path) and path not in sys.path:
+                        sys.path.insert(0, path)
+                        simple_logger.info(f"➕ Path adicionado: {path}")
+                
+                # Limpar cache de módulos relacionados
+                modulos_relacionados = [
+                    'relatorios_interface',
+                    'src.relatorios_interface', 
+                    'relatorio_despesas_service',
+                    'src.relatorio_despesas_service',
+                    'relatorio_despesas_aprimorado',
+                    'src.relatorio_despesas_aprimorado'
+                ]
+                
+                for module_name in modulos_relacionados:
                     if module_name in sys.modules:
                         del sys.modules[module_name]
-                        simple_logger.info(f"Cache limpo: {module_name}")
+                        simple_logger.info(f"🗑️ Cache limpo: {module_name}")
                 
-                # Tentar importar
-                modulo = None
-                for module_name in module_names:
-                    try:
-                        modulo = importlib.import_module(module_name)
-                        simple_logger.info(f"Módulo carregado com sucesso: {module_name}")
-                        break
-                    except ImportError as e:
-                        simple_logger.warning(f"Falha ao importar {module_name}: {str(e)}")
-                        continue
+                # Invalidar caches do Python
+                importlib.invalidate_caches()
+                simple_logger.info("🔄 Cache do importlib invalidado")
                 
-                if modulo and hasattr(modulo, 'SistemaRelatorios'):
-                    # Sucesso - abrir sistema integrado
-                    self.root.withdraw()
-                    app = modulo.SistemaRelatorios(parent=self.root)
-                    app.root.protocol("WM_DELETE_WINDOW", 
-                        lambda: self.finalizar_sistema(app.root))
-                    app.root.lift()
-                    app.root.focus_force()
-                    app.run()
-                    return
-                else:
-                    simple_logger.warning("Módulo carregado mas classe SistemaRelatorios não encontrada")
-                    
-            except Exception as e:
-                simple_logger.warning(f"Falha na estratégia 1: {str(e)}")
-            
-            # Estratégia 2: Fallback para o sistema de relatórios simples
-            try:
-                simple_logger.info("Tentativa 2: Carregando sistema de relatórios simples")
-                
-                # Limpar cache
-                fallback_modules = [
-                    'src.relatorio_despesas_aprimorado',
-                    'relatorio_despesas_aprimorado'
+                # === ESTRATÉGIA 3: TENTATIVA DE IMPORTAÇÃO ===
+                modulo_sistema = None
+                caminhos_tentativa = [
+                    'relatorios_interface',           # Primeiro sem src
+                    'src.relatorios_interface'        # Depois com src
                 ]
                 
-                for module_name in fallback_modules:
-                    if module_name in sys.modules:
-                        del sys.modules[module_name]
-                        simple_logger.info(f"Cache limpo (fallback): {module_name}")
-                
-                # Tentar importar módulo fallback
-                modulo_fallback = None
-                for module_name in fallback_modules:
+                for caminho in caminhos_tentativa:
                     try:
-                        modulo_fallback = importlib.import_module(module_name)
-                        simple_logger.info(f"Módulo fallback carregado: {module_name}")
-                        break
-                    except ImportError as e:
-                        simple_logger.warning(f"Falha ao importar fallback {module_name}: {str(e)}")
-                        continue
-                
-                if modulo_fallback and hasattr(modulo_fallback, 'RelatorioUI'):
-                    # Sucesso com fallback
-                    self.root.withdraw()
-                    relatorio_window = tk.Toplevel(self.root)
-                    app = modulo_fallback.RelatorioUI(relatorio_window)
-                    app.menu_principal = self.root
-                    relatorio_window.protocol("WM_DELETE_WINDOW", 
-                        lambda: self.finalizar_sistema(relatorio_window))
-                    relatorio_window.lift()
-                    relatorio_window.focus_force()
-                    relatorio_window.mainloop()
-                    return
-                else:
-                    simple_logger.warning("Módulo fallback carregado mas classe RelatorioUI não encontrada")
-                    
-            except Exception as e:
-                simple_logger.warning(f"Falha na estratégia 2: {str(e)}")
-            
-            # Estratégia 3: Última tentativa - busca mais ampla
-            try:
-                simple_logger.info("Tentativa 3: Busca ampla por módulos de relatório")
-                
-                # Lista de possíveis módulos e classes
-                possibilidades = [
-                    ('src.relatorio_despesas_aprimorado', 'RelatorioHandler'),
-                    ('relatorio_despesas_aprimorado', 'RelatorioHandler'),
-                    ('src.relatorio_despesas_aprimorado', 'SistemaRelatorios'),
-                    ('relatorio_despesas_aprimorado', 'SistemaRelatorios'),
-                ]
-                
-                for module_name, class_name in possibilidades:
-                    try:
-                        # Limpar cache
-                        if module_name in sys.modules:
-                            del sys.modules[module_name]
+                        simple_logger.info(f"🎯 Tentando importar: {caminho}")
+                        modulo_sistema = importlib.import_module(caminho)
+                        simple_logger.info(f"✅ SUCESSO! Módulo {caminho} importado!")
                         
-                        modulo = importlib.import_module(module_name)
-                        if hasattr(modulo, class_name):
-                            simple_logger.info(f"Encontrado: {module_name}.{class_name}")
+                        # Verificar se tem a classe necessária
+                        if hasattr(modulo_sistema, 'SistemaRelatorios'):
+                            simple_logger.info(f"✅ Classe SistemaRelatorios encontrada em {caminho}")
+                            break
+                        else:
+                            simple_logger.warning(f"⚠️ Módulo {caminho} importado mas sem classe SistemaRelatorios")
+                            # Listar classes disponíveis
+                            classes = [name for name in dir(modulo_sistema) if not name.startswith('_') and name[0].isupper()]
+                            simple_logger.info(f"Classes disponíveis: {classes}")
+                            modulo_sistema = None  # Resetar para continuar tentando
                             
-                            self.root.withdraw()
-                            
-                            # Tentar instanciar
-                            if class_name == 'RelatorioHandler':
-                                # Para handlers, criar janela wrapper
-                                relatorio_window = tk.Toplevel(self.root)
-                                relatorio_window.title("Sistema de Relatórios")
-                                relatorio_window.geometry("800x600")
-                                
-                                handler = getattr(modulo, class_name)()
-                                
-                                # Criar interface simples
-                                ttk.Label(relatorio_window, 
-                                        text="Sistema de Relatórios", 
-                                        font=('Arial', 16, 'bold')).pack(pady=20)
-                                
-                                ttk.Button(relatorio_window, 
-                                        text="Gerar Relatório de Despesas",
-                                        command=lambda: self.gerar_relatorio_simples(handler)).pack(pady=10)
-                                
-                                ttk.Button(relatorio_window, 
-                                        text="Voltar ao Menu Principal",
-                                        command=lambda: self.finalizar_sistema(relatorio_window)).pack(pady=10)
-                                
-                                relatorio_window.protocol("WM_DELETE_WINDOW", 
-                                    lambda: self.finalizar_sistema(relatorio_window))
-                                relatorio_window.lift()
-                                relatorio_window.focus_force()
-                                relatorio_window.mainloop()
-                                return
-                            else:
-                                # Para outras classes, tentar instanciar normalmente
-                                app = getattr(modulo, class_name)(parent=self.root)
-                                app.root.protocol("WM_DELETE_WINDOW", 
-                                    lambda: self.finalizar_sistema(app.root))
-                                app.root.lift()
-                                app.root.focus_force()
-                                if hasattr(app, 'run'):
-                                    app.run()
-                                else:
-                                    app.root.mainloop()
-                                return
-                                
+                    except ImportError as e:
+                        simple_logger.warning(f"❌ Falha ao importar {caminho}: {str(e)}")
+                        continue
                     except Exception as e:
-                        simple_logger.warning(f"Falha com {module_name}.{class_name}: {str(e)}")
+                        simple_logger.error(f"💥 Erro inesperado ao importar {caminho}: {str(e)}")
                         continue
                 
-                # Se chegou aqui, nenhuma estratégia funcionou
-                raise Exception("Nenhum módulo de relatórios pôde ser carregado")
+                # === ESTRATÉGIA 4: SE ENCONTROU O MÓDULO, INICIALIZAR ===
+                if modulo_sistema and hasattr(modulo_sistema, 'SistemaRelatorios'):
+                    simple_logger.info("🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS")
+                    
+                    # Ocultar janela principal
+                    self.root.withdraw()
+                    
+                    try:
+                        # Criar instância do sistema integrado
+                        app = modulo_sistema.SistemaRelatorios(parent=self.root)
+                        
+                        # Configurar referência ao menu principal
+                        app.menu_principal = self.root
+                        
+                        # Configurar comportamento de fechamento
+                        def fechar_sistema():
+                            try:
+                                app.root.destroy()
+                            except:
+                                pass
+                            self.finalizar_sistema_relatorios()
+                        
+                        app.root.protocol("WM_DELETE_WINDOW", fechar_sistema)
+                        
+                        # Garantir visibilidade
+                        app.root.lift()
+                        app.root.focus_force()
+                        
+                        # Executar sistema integrado
+                        simple_logger.info("🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!")
+                        
+                        # Usar run() se disponível, senão mainloop()
+                        if hasattr(app, 'run'):
+                            app.run()
+                        else:
+                            app.root.mainloop()
+                        
+                        return  # SUCESSO - sair aqui
+                        
+                    except Exception as e:
+                        simple_logger.error(f"💥 Erro ao inicializar SistemaRelatorios: {str(e)}")
+                        import traceback
+                        traceback.print_exc()
+                        # Restaurar janela principal em caso de erro
+                        self.root.deiconify()
+                        raise e
                 
+                else:
+                    # Se não encontrou o sistema integrado
+                    erro_detalhado = "MÓDULO NÃO ENCONTRADO OU SEM CLASSE CORRETA:\n"
+                    erro_detalhado += f"- Arquivos encontrados: {len(arquivos_encontrados)}\n"
+                    erro_detalhado += f"- Paths no sys.path: {len([p for p in sys.path if 'src' in p])}\n"
+                    erro_detalhado += f"- Módulo carregado: {modulo_sistema is not None}\n"
+                    
+                    if modulo_sistema:
+                        classes = [name for name in dir(modulo_sistema) if not name.startswith('_')]
+                        erro_detalhado += f"- Classes disponíveis: {classes[:10]}..."  # Primeiras 10
+                    
+                    simple_logger.error(erro_detalhado)
+                    raise Exception(f"Sistema integrado não pôde ser inicializado:\n{erro_detalhado}")
+                    
             except Exception as e:
-                simple_logger.error(f"Falha na estratégia 3: {str(e)}")
-                raise
+                simple_logger.error(f"💥 ERRO na busca inteligente: {str(e)}")
+                
+                # === OFERECER OPÇÕES AO USUÁRIO ===
+                resposta = messagebox.askyesnocancel(
+                    "Sistema de Relatórios - Diagnóstico", 
+                    f"❌ O sistema integrado de relatórios não pôde ser carregado.\n\n"
+                    f"🔍 DIAGNÓSTICO DETALHADO:\n"
+                    f"• Arquivos encontrados: {len(getattr(self, '_arquivos_diagnostico', []))}\n"
+                    f"• Erro principal: {str(e)[:100]}...\n\n"
+                    f"🔄 OPÇÕES:\n"
+                    f"• SIM: Ver diagnóstico completo e tentar correção\n"
+                    f"• NÃO: Usar sistema básico de despesas\n"
+                    f"• CANCELAR: Voltar ao menu principal"
+                )
+                
+                if resposta is True:  # SIM - Diagnóstico completo
+                    self.mostrar_diagnostico_completo(e)
+                    
+                elif resposta is False:  # NÃO - Sistema básico
+                    try:
+                        simple_logger.info("⚠️ Carregando sistema básico de despesas...")
+                        self.abrir_sistema_basico_despesas()
+                        return
+                    except Exception as fallback_error:
+                        simple_logger.error(f"Erro no sistema básico: {fallback_error}")
+                        messagebox.showerror("Erro", f"Erro no sistema básico: {fallback_error}")
+                
+                # Se chegou aqui (CANCELAR ou erro), restaurar interface
+                self.root.deiconify()
                 
         except Exception as e:
-            simple_logger.error(f"Erro ao abrir sistema de relatórios: {str(e)}")
+            simple_logger.error(f"💥 ERRO CRÍTICO no sistema de relatórios: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            
             messagebox.showerror(
-                "Erro", 
-                f"Não foi possível abrir o sistema de relatórios.\n\n"
+                "Erro Crítico", 
+                f"Erro crítico no sistema de relatórios.\n\n"
                 f"Erro: {str(e)}\n\n"
-                f"Verifique se todos os arquivos estão presentes e tente novamente."
+                f"O sistema será retornado ao menu principal."
             )
             self.root.deiconify()
 
-    def gerar_relatorio_simples(self, handler):
-        """Método auxiliar para gerar relatório com handler simples"""
+    def diagnosticar_sistema_relatorios(self):
+        """Realiza diagnóstico detalhado do sistema de relatórios"""
         try:
-            arquivo = filedialog.askopenfilename(
-                title="Selecione o arquivo Excel",
-                filetypes=[("Arquivos Excel", "*.xlsx *.xls")]
-            )
-            if arquivo:
-                handler.gerar_relatorio_direto(
-                    arquivo_path=arquivo,
-                    data_relatorio=datetime.now(),
-                    incluir_futuros=True
-                )
+            simple_logger.info("🔍 INICIANDO DIAGNÓSTICO DO SISTEMA")
+            
+            import os
+            from pathlib import Path
+            
+            # Obter informações do ambiente
+            if getattr(sys, 'frozen', False):
+                base_dir = Path(sys._MEIPASS)
+                tipo_exec = "PyInstaller"
+            else:
+                base_dir = Path(__file__).resolve().parent
+                tipo_exec = "Python Normal"
+            
+            simple_logger.info(f"📍 Tipo de execução: {tipo_exec}")
+            simple_logger.info(f"📁 Diretório base: {base_dir}")
+            
+            # Buscar arquivos relevantes
+            arquivos_encontrados = []
+            diretorios_busca = [
+                base_dir,
+                base_dir.parent, 
+                base_dir / "src",
+                base_dir.parent / "src"
+            ]
+            
+            for diretorio in diretorios_busca:
+                if diretorio.exists():
+                    simple_logger.info(f"📂 Verificando: {diretorio}")
+                    
+                    # Buscar arquivos Python relevantes
+                    for arquivo in ['relatorios_interface.py', 'relatorio_despesas_service.py', 'relatorio_despesas_aprimorado.py']:
+                        caminho_arquivo = diretorio / arquivo
+                        if caminho_arquivo.exists():
+                            arquivos_encontrados.append(str(caminho_arquivo))
+                            simple_logger.info(f"  ✅ {arquivo}")
+                        else:
+                            simple_logger.info(f"  ❌ {arquivo}")
+                else:
+                    simple_logger.info(f"📂 NÃO EXISTE: {diretorio}")
+            
+            # Salvar para uso posterior
+            self._arquivos_diagnostico = arquivos_encontrados
+            
+            simple_logger.info(f"📊 RESUMO: {len(arquivos_encontrados)} arquivos relevantes encontrados")
+            
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
+            simple_logger.error(f"Erro no diagnóstico: {str(e)}")
+
+    def mostrar_diagnostico_completo(self, erro_original):
+        """Mostra janela com diagnóstico completo"""
+        try:
+            import tkinter as tk
+            from tkinter import ttk, scrolledtext
+            
+            # Criar janela de diagnóstico
+            diag_window = tk.Toplevel(self.root)
+            diag_window.title("Diagnóstico Completo - Sistema de Relatórios")
+            diag_window.geometry("800x600")
+            diag_window.transient(self.root)
+            
+            # Frame principal
+            main_frame = ttk.Frame(diag_window, padding=10)
+            main_frame.pack(fill='both', expand=True)
+            
+            # Título
+            ttk.Label(main_frame, text="🔍 Diagnóstico Completo do Sistema", 
+                     font=('Arial', 14, 'bold')).pack(pady=(0, 10))
+            
+            # Área de texto com scroll para o diagnóstico
+            text_area = scrolledtext.ScrolledText(main_frame, wrap=tk.WORD, height=25)
+            text_area.pack(fill='both', expand=True, pady=(0, 10))
+            
+            # Gerar relatório de diagnóstico
+            diagnostico = self.gerar_relatorio_diagnostico(erro_original)
+            text_area.insert('1.0', diagnostico)
+            text_area.config(state='disabled')
+            
+            # Botões
+            btn_frame = ttk.Frame(main_frame)
+            btn_frame.pack(fill='x')
+            
+            ttk.Button(btn_frame, text="Tentar Correção Automática", 
+                      command=lambda: self.tentar_correcao_automatica(diag_window)).pack(side='left', padx=5)
+            ttk.Button(btn_frame, text="Copiar Diagnóstico", 
+                      command=lambda: self.copiar_diagnostico(diagnostico)).pack(side='left', padx=5)
+            ttk.Button(btn_frame, text="Fechar", 
+                      command=diag_window.destroy).pack(side='right', padx=5)
+            
+        except Exception as e:
+            simple_logger.error(f"Erro ao mostrar diagnóstico: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao mostrar diagnóstico: {str(e)}")
+
+    def gerar_relatorio_diagnostico(self, erro_original):
+        """Gera relatório detalhado de diagnóstico"""
+        try:
+            import platform
+            from pathlib import Path
+            
+            relatorio = []
+            relatorio.append("=" * 80)
+            relatorio.append("DIAGNÓSTICO COMPLETO - SISTEMA DE RELATÓRIOS")
+            relatorio.append("=" * 80)
+            relatorio.append("")
+            
+            # Informações do sistema
+            relatorio.append("🖥️ INFORMAÇÕES DO SISTEMA:")
+            relatorio.append(f"   Sistema Operacional: {platform.system()} {platform.release()}")
+            relatorio.append(f"   Python: {platform.python_version()}")
+            relatorio.append(f"   Arquitetura: {platform.architecture()[0]}")
+            relatorio.append(f"   Executável PyInstaller: {'Sim' if getattr(sys, 'frozen', False) else 'Não'}")
+            relatorio.append("")
+            
+            # Diretórios e paths
+            relatorio.append("📁 DIRETÓRIOS E PATHS:")
+            if getattr(sys, 'frozen', False):
+                relatorio.append(f"   Diretório base (PyInstaller): {sys._MEIPASS}")
+            relatorio.append(f"   Diretório do script: {Path(__file__).resolve().parent}")
+            relatorio.append(f"   Diretório de trabalho: {Path.cwd()}")
+            relatorio.append("")
+            
+            relatorio.append("   Paths no sys.path:")
+            for i, path in enumerate(sys.path[:10]):  # Primeiros 10
+                relatorio.append(f"   [{i+1:2d}] {path}")
+            if len(sys.path) > 10:
+                relatorio.append(f"   ... e mais {len(sys.path) - 10} paths")
+            relatorio.append("")
+            
+            # Arquivos encontrados
+            relatorio.append("📄 ARQUIVOS RELEVANTES ENCONTRADOS:")
+            arquivos = getattr(self, '_arquivos_diagnostico', [])
+            if arquivos:
+                for arquivo in arquivos:
+                    relatorio.append(f"   ✅ {arquivo}")
+            else:
+                relatorio.append("   ❌ Nenhum arquivo relevante encontrado!")
+            relatorio.append("")
+            
+            # Módulos no cache
+            relatorio.append("🗃️ MÓDULOS RELACIONADOS NO CACHE:")
+            modulos_relacionados = [name for name in sys.modules.keys() 
+                                   if any(termo in name.lower() for termo in ['relatorio', 'interface', 'despesa'])]
+            if modulos_relacionados:
+                for modulo in sorted(modulos_relacionados):
+                    relatorio.append(f"   📦 {modulo}")
+            else:
+                relatorio.append("   📦 Nenhum módulo relacionado no cache")
+            relatorio.append("")
+            
+            # Erro original
+            relatorio.append("💥 ERRO ORIGINAL:")
+            relatorio.append(f"   {str(erro_original)}")
+            relatorio.append("")
+            
+            # Recomendações
+            relatorio.append("🔧 RECOMENDAÇÕES:")
+            relatorio.append("   1. Verificar se o arquivo relatorios_interface.py existe no projeto")
+            relatorio.append("   2. Verificar se a estrutura de diretórios está correta")
+            relatorio.append("   3. Se for executável, recompilar com todos os arquivos")
+            relatorio.append("   4. Tentar a correção automática abaixo")
+            relatorio.append("")
+            
+            relatorio.append("=" * 80)
+            
+            return "\n".join(relatorio)
+            
+        except Exception as e:
+            return f"Erro ao gerar diagnóstico: {str(e)}"
+
+    def tentar_correcao_automatica(self, diag_window):
+        """Tenta correção automática do problema"""
+        try:
+            simple_logger.info("🔧 Tentando correção automática...")
+            
+            # Fechar janela de diagnóstico
+            diag_window.destroy()
+            
+            # Tentar diferentes estratégias de correção
+            
+            # Estratégia 1: Busca mais ampla por arquivos
+            import os
+            from pathlib import Path
+            
+            # Buscar em todo o diretório do executável
+            if getattr(sys, 'frozen', False):
+                base_search = Path(sys._MEIPASS)
+            else:
+                base_search = Path(__file__).resolve().parent.parent
+            
+            # Busca recursiva
+            arquivos_encontrados = list(base_search.rglob("relatorios_interface.py"))
+            
+            if arquivos_encontrados:
+                arquivo_encontrado = arquivos_encontrados[0]
+                diretorio_arquivo = arquivo_encontrado.parent
+                
+                # Adicionar diretório ao path
+                if str(diretorio_arquivo) not in sys.path:
+                    sys.path.insert(0, str(diretorio_arquivo))
+                
+                # Tentar importar novamente
+                try:
+                    if 'relatorios_interface' in sys.modules:
+                        del sys.modules['relatorios_interface']
+                    
+                    modulo = importlib.import_module('relatorios_interface')
+                    
+                    if hasattr(modulo, 'SistemaRelatorios'):
+                        messagebox.showinfo("Sucesso", f"Correção automática bem-sucedida!\nArquivo encontrado em: {arquivo_encontrado}")
+                        
+                        # Tentar abrir o sistema
+                        self.root.withdraw()
+                        app = modulo.SistemaRelatorios(parent=self.root)
+                        app.menu_principal = self.root
+                        app.root.protocol("WM_DELETE_WINDOW", 
+                            lambda: self.finalizar_sistema(app.root))
+                        app.root.lift()
+                        app.root.focus_force()
+                        if hasattr(app, 'run'):
+                            app.run()
+                        else:
+                            app.root.mainloop()
+                        return
+                    
+                except Exception as e:
+                    simple_logger.error(f"Erro na correção automática: {str(e)}")
+            
+            # Se chegou aqui, correção falhou
+            messagebox.showerror(
+                "Correção Falhou", 
+                "A correção automática não foi bem-sucedida.\n\n"
+                "Recomendações:\n"
+                "1. Verificar se todos os arquivos estão presentes\n"
+                "2. Recompilar o executável se necessário\n"
+                "3. Usar o sistema básico de despesas temporariamente"
+            )
+            
+            self.root.deiconify()
+            
+        except Exception as e:
+            simple_logger.error(f"Erro na correção automática: {str(e)}")
+            messagebox.showerror("Erro", f"Erro na correção automática: {str(e)}")
+            self.root.deiconify()
+
+    def copiar_diagnostico(self, diagnostico):
+        """Copia o diagnóstico para a área de transferência"""
+        try:
+            self.root.clipboard_clear()
+            self.root.clipboard_append(diagnostico)
+            messagebox.showinfo("Copiado", "Diagnóstico copiado para a área de transferência!")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao copiar: {str(e)}")
+
+    # Manter os métodos auxiliares existentes...
+    def abrir_sistema_basico_despesas(self):
+        """Sistema básico de despesas como último recurso"""
+        try:
+            simple_logger.info("🔧 Carregando sistema básico de despesas...")
+            
+            # Tentar carregar RelatorioUI do módulo de despesas
+            modulos_despesas = [
+                'relatorio_despesas_aprimorado',
+                'src.relatorio_despesas_aprimorado'
+            ]
+            
+            for modulo_nome in modulos_despesas:
+                try:
+                    # Limpar cache
+                    if modulo_nome in sys.modules:
+                        del sys.modules[modulo_nome]
+                    
+                    modulo_despesas = importlib.import_module(modulo_nome)
+                    
+                    if hasattr(modulo_despesas, 'RelatorioUI'):
+                        self.root.withdraw()
+                        despesas_window = tk.Toplevel(self.root)
+                        app = modulo_despesas.RelatorioUI(despesas_window)
+                        app.menu_principal = self.root
+                        despesas_window.protocol("WM_DELETE_WINDOW", 
+                            lambda: self.finalizar_sistema(despesas_window))
+                        despesas_window.lift()
+                        despesas_window.focus_force()
+                        despesas_window.mainloop()
+                        return
+                        
+                except Exception as e:
+                    simple_logger.warning(f"Falha ao carregar {modulo_nome}: {str(e)}")
+                    continue
+            
+            # Se chegou aqui, nem o sistema básico funcionou
+            raise Exception("Nem o sistema básico de despesas pôde ser carregado")
+            
+        except Exception as e:
+            simple_logger.error(f"Erro no sistema básico: {str(e)}")
+            messagebox.showerror("Erro", f"Erro no sistema básico: {str(e)}")
+            self.root.deiconify()
+
+    def finalizar_sistema_relatorios(self):
+        """Método específico para finalizar sistema de relatórios"""
+        try:
+            simple_logger.info("🔄 Finalizando sistema de relatórios e retornando ao menu")
+            self.root.deiconify()
+            self.root.lift()
+            self.root.focus_force()
+        except Exception as e:
+            simple_logger.error(f"Erro ao finalizar sistema de relatórios: {str(e)}")
+            # Forçar exibição do menu principal
+            try:
+                self.root.deiconify()
+            except:
+                pass
 
     def abrir_despesas_rateadas(self):
         """Abre o sistema de despesas rateadas"""
