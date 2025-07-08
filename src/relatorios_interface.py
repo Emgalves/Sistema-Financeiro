@@ -326,14 +326,14 @@ class SistemaRelatorios:
             messagebox.showerror("Erro", f"Erro no processamento: {str(e)}")
 
     def _executar_com_preview_limpo(self, configuracoes):
-        """Execução com preview - DELEGAÇÃO para serviço"""
+        """Execução com preview DIRETO - pula interface e abre PDF temporário"""
         try:
-            logger.info("🎯 EXECUTANDO COM PREVIEW - DELEGAÇÃO PARA SERVIÇO")
+            logger.info("🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO")
             
             # 1. Mostrar progresso simples
             progress_label = tk.Label(
                 self.root, 
-                text="Processando dados através do serviço...", 
+                text="Gerando PDF temporário para análise...", 
                 font=('Arial', 12), 
                 bg='lightblue', 
                 relief='raised', 
@@ -344,29 +344,179 @@ class SistemaRelatorios:
             self.root.update()
             
             try:
-                # 2. DELEGAR processamento para o serviço
-                logger.info("🔧 Delegando processamento para RelatoriosDespesasService...")
+                # 2. PROCESSAR dados através do serviço
                 dados_processados = self.despesas_service.processar_para_preview(configuracoes)
-                logger.info("✅ Dados processados pelo serviço")
                 
-                # 3. Remover progresso
+                # 3. GERAR PDF temporário através do serviço
+                pdf_temp_path = self.despesas_service.gerar_pdf_temporario(
+                    dados_processados, 
+                    configuracoes['arquivo']
+                )
+                
+                # 4. Remover progresso
                 progress_label.destroy()
                 
-                # 4. DELEGAR preview para método limpo
-                logger.info("🔧 Abrindo preview com dados do serviço...")
-                self._mostrar_preview_limpo(dados_processados, configuracoes)
+                # 5. ABRIR PDF temporário automaticamente
+                self.abrir_arquivo(pdf_temp_path)
+                
+                # 6. MOSTRAR janela de decisão
+                self._mostrar_janela_decisao_pdf(dados_processados, configuracoes, pdf_temp_path)
                 
             except Exception as e:
-                # Limpar progresso em caso de erro
                 try:
                     progress_label.destroy()
                 except:
                     pass
                 raise e
-                
+                    
         except Exception as e:
-            logger.error(f"💥 ERRO no executar_com_preview_limpo: {str(e)}")
+            logger.error(f"💥 ERRO no preview direto: {str(e)}")
             messagebox.showerror("Erro", f"Erro: {str(e)}")
+
+    def _mostrar_janela_decisao_pdf(self, dados_processados, configuracoes, pdf_temp_path):
+        """Janela simples de decisão após abrir PDF temporário - VERSÃO OTIMIZADA"""
+        try:
+            # Criar janela de decisão
+            decisao_window = tk.Toplevel(self.root)
+            decisao_window.title("🔍 Análise do Relatório - Escolha uma Ação")
+            decisao_window.geometry("550x350")
+            decisao_window.transient(self.root)
+            decisao_window.grab_set()
+            
+            # Posicionamento estratégico no canto superior direito
+            decisao_window.update_idletasks()
+            screen_width = decisao_window.winfo_screenwidth()
+            x = screen_width - 570
+            y = 50
+            decisao_window.geometry(f"550x350+{x}+{y}")
+            
+            # Garantir visibilidade
+            decisao_window.attributes('-topmost', True)
+            decisao_window.lift()
+            decisao_window.focus_force()
+            
+            # Reforçar após delay
+            def reativar_janela():
+                try:
+                    decisao_window.lift()
+                    decisao_window.focus_force()
+                    decisao_window.bell()  # Som de notificação
+                    # Remover topmost após 3s para não incomodar
+                    decisao_window.after(3000, lambda: decisao_window.attributes('-topmost', False))
+                except:
+                    pass
+            
+            decisao_window.after(1200, reativar_janela)
+            
+            # Frame principal
+            main_frame = ttk.Frame(decisao_window, padding=20)
+            main_frame.pack(fill='both', expand=True)
+            
+            # Título
+            ttk.Label(
+                main_frame, 
+                text="📄 PDF Temporário Aberto para Análise", 
+                font=('Arial', 14, 'bold'),
+                foreground='darkgreen'
+            ).pack(pady=(0, 20))
+            
+            # Informações
+            info_text = f"""
+    Cliente: {dados_processados.get('nome_cliente', 'N/A')}
+    Data: {dados_processados.get('data_relatorio', 'N/A')}
+    Relatório nº: {dados_processados.get('numero_relatorio', 'N/A')}
+
+    O PDF temporário foi aberto para sua análise.
+    Após revisar o conteúdo, escolha uma das opções abaixo:
+            """
+            
+            ttk.Label(main_frame, text=info_text, font=('Arial', 10)).pack(pady=(0, 30))
+            
+            # Frame para botões
+            btn_frame = ttk.Frame(main_frame)
+            btn_frame.pack(fill='x', pady=20)
+            
+            # Função para gerar PDF definitivo
+            def gerar_definitivo():
+                try:
+                    decisao_window.destroy()
+                    
+                    # Mostrar progresso
+                    progress_window = self.criar_progress_window()
+                    self.atualizar_progresso_seguro(progress_window, "Gerando PDF definitivo...", 50)
+                    
+                    # Gerar PDF definitivo
+                    caminho_final, nome_arquivo = self.despesas_service.gerar_pdf_definitivo(
+                        dados_processados, 
+                        configuracoes['arquivo']
+                    )
+                    
+                    progress_window.destroy()
+                    
+                    # Limpar PDF temporário
+                    self._limpar_pdf_temporario(pdf_temp_path)
+                    
+                    # Mostrar resultado
+                    resposta = messagebox.askyesno(
+                        "PDF Definitivo Gerado!",
+                        f"✅ PDF definitivo gerado com sucesso!\n\n"
+                        f"Cliente: {dados_processados['nome_cliente']}\n"
+                        f"Arquivo: {nome_arquivo}\n\n"
+                        f"Deseja abrir o PDF definitivo?"
+                    )
+                    
+                    if resposta:
+                        self.abrir_arquivo(caminho_final)
+                    
+                except Exception as e:
+                    logger.error(f"Erro ao gerar PDF definitivo: {str(e)}")
+                    messagebox.showerror("Erro", f"Erro: {str(e)}")
+            
+            # Função para voltar ao menu
+            def voltar_menu():
+                try:
+                    # Limpar PDF temporário
+                    self._limpar_pdf_temporario(pdf_temp_path)
+                    
+                    decisao_window.destroy()
+                    # Manter na interface atual para novo relatório
+                    
+                except Exception as e:
+                    logger.error(f"Erro ao voltar: {str(e)}")
+            
+            # Botões
+            ttk.Button(
+                btn_frame,
+                text="🚀 Gerar PDF Definitivo",
+                command=gerar_definitivo,
+                style='Accentuated.TButton'
+            ).pack(side='left', padx=(0, 20), fill='x', expand=True)
+            
+            ttk.Button(
+                btn_frame,
+                text="⬅️ Voltar ao Menu Anterior",
+                command=voltar_menu
+            ).pack(side='right', fill='x', expand=True)
+            
+            # Configurar fechamento
+            decisao_window.protocol("WM_DELETE_WINDOW", voltar_menu)
+            
+            logger.info("✅ Janela de decisão criada")
+            
+        except Exception as e:
+            logger.error(f"💥 ERRO na janela de decisão: {str(e)}")
+            self._limpar_pdf_temporario(pdf_temp_path)
+            messagebox.showerror("Erro", f"Erro: {str(e)}")
+
+    def _limpar_pdf_temporario(self, pdf_path):
+        """Limpa PDF temporário de forma segura"""
+        try:
+            if pdf_path and os.path.exists(pdf_path):
+                # Aguardar um pouco para garantir que o PDF não está sendo usado
+                self.root.after(2000, lambda: self.limpar_arquivo_temporario(pdf_path))
+                logger.info(f"🗑️ PDF temporário agendado para remoção: {os.path.basename(pdf_path)}")
+        except Exception as e:
+            logger.warning(f"Aviso ao limpar PDF temporário: {str(e)}")
 
     def _executar_direto_limpo(self, configuracoes):
         """Execução direta - DELEGAÇÃO para serviço"""
@@ -408,81 +558,81 @@ class SistemaRelatorios:
             logger.error(f"💥 ERRO no executar_direto_limpo: {str(e)}")
             messagebox.showerror("Erro", f"Erro: {str(e)}")
 
-    def _mostrar_preview_limpo(self, dados_processados, configuracoes):
-        """Preview limpo CORRIGIDO - cria janela própria se necessário"""
-        try:
-            logger.info("🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA")
+    # def _mostrar_preview_limpo(self, dados_processados, configuracoes):
+    #     """Preview limpo CORRIGIDO - cria janela própria se necessário"""
+    #     try:
+    #         logger.info("🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA")
             
-            # TENTATIVA 1: Usar VisualizadorRelatorio original
-            try:
-                # Importar visualizador original
-                try:
-                    from src.relatorio_despesas_aprimorado import VisualizadorRelatorio
-                    logger.info("✅ Importado de src.relatorio_despesas_aprimorado")
-                except ImportError:
-                    from relatorio_despesas_aprimorado import VisualizadorRelatorio
-                    logger.info("✅ Importado de relatorio_despesas_aprimorado")
+    #         # TENTATIVA 1: Usar VisualizadorRelatorio original
+    #         try:
+    #             # Importar visualizador original
+    #             try:
+    #                 from src.relatorio_despesas_aprimorado import VisualizadorRelatorio
+    #                 logger.info("✅ Importado de src.relatorio_despesas_aprimorado")
+    #             except ImportError:
+    #                 from relatorio_despesas_aprimorado import VisualizadorRelatorio
+    #                 logger.info("✅ Importado de relatorio_despesas_aprimorado")
                 
-                # Ocultar interface atual
-                self.root.withdraw()
+    #             # Ocultar interface atual
+    #             self.root.withdraw()
                 
-                # Criar visualizador
-                # visualizador = VisualizadorRelatorio(self.root)
-                self._criar_preview_alternativo(dados_processados, configuracoes)
-                # visualizador.arquivo_path = configuracoes['arquivo']
+    #             # Criar visualizador
+    #             # visualizador = VisualizadorRelatorio(self.root)
+    #             self._criar_preview_alternativo(dados_processados, configuracoes)
+    #             # visualizador.arquivo_path = configuracoes['arquivo']
                 
-                # Configurar callback de retorno ANTES de mostrar preview
-                def voltar_interface():
-                    """Volta para interface de relatórios"""
-                    try:
-                        self.root.deiconify()
-                        self.root.lift()
-                        self.root.focus_force()
-                        logger.info("Retornado para interface de relatórios")
-                    except Exception as e:
-                        logger.error(f"Erro ao voltar: {str(e)}")
+    #             # Configurar callback de retorno ANTES de mostrar preview
+    #             def voltar_interface():
+    #                 """Volta para interface de relatórios"""
+    #                 try:
+    #                     self.root.deiconify()
+    #                     self.root.lift()
+    #                     self.root.focus_force()
+    #                     logger.info("Retornado para interface de relatórios")
+    #                 except Exception as e:
+    #                     logger.error(f"Erro ao voltar: {str(e)}")
                 
-                # IMPORTANTE: Configurar referência ao menu principal
-                visualizador.menu_principal = self.root
+    #             # IMPORTANTE: Configurar referência ao menu principal
+    #             visualizador.menu_principal = self.root
                 
-                # Mostrar preview
-                preview_window = visualizador.mostrar_preview(dados_processados)
+    #             # Mostrar preview
+    #             preview_window = visualizador.mostrar_preview(dados_processados)
                 
-                # Verificar se preview foi criado
-                if preview_window is None:
-                    logger.error("❌ VisualizadorRelatorio retornou None")
-                    raise Exception("Preview window não foi criada")
+    #             # Verificar se preview foi criado
+    #             if preview_window is None:
+    #                 logger.error("❌ VisualizadorRelatorio retornou None")
+    #                 raise Exception("Preview window não foi criada")
                 
-                # Configurar fechamento personalizado
-                def fechar_preview():
-                    try:
-                        if hasattr(preview_window, 'destroy'):
-                            preview_window.destroy()
-                    except:
-                        pass
-                    voltar_interface()
+    #             # Configurar fechamento personalizado
+    #             def fechar_preview():
+    #                 try:
+    #                     if hasattr(preview_window, 'destroy'):
+    #                         preview_window.destroy()
+    #                 except:
+    #                     pass
+    #                 voltar_interface()
                 
-                # Aplicar configuração
-                if hasattr(preview_window, 'protocol'):
-                    preview_window.protocol("WM_DELETE_WINDOW", fechar_preview)
+    #             # Aplicar configuração
+    #             if hasattr(preview_window, 'protocol'):
+    #                 preview_window.protocol("WM_DELETE_WINDOW", fechar_preview)
                 
-                logger.info("✅ Preview aberto com VisualizadorRelatorio original")
-                return
+    #             logger.info("✅ Preview aberto com VisualizadorRelatorio original")
+    #             return
                 
-            except Exception as e:
-                logger.error(f"❌ Erro com VisualizadorRelatorio: {str(e)}")
-                logger.info("🔄 Tentando preview alternativo...")
+    #         except Exception as e:
+    #             logger.error(f"❌ Erro com VisualizadorRelatorio: {str(e)}")
+    #             logger.info("🔄 Tentando preview alternativo...")
                 
-                # Restaurar interface em caso de erro
-                self.root.deiconify()
+    #             # Restaurar interface em caso de erro
+    #             self.root.deiconify()
             
-            # TENTATIVA 2: Preview alternativo simples
-            self._criar_preview_alternativo(dados_processados, configuracoes)
+    #         # TENTATIVA 2: Preview alternativo simples
+    #         self._criar_preview_alternativo(dados_processados, configuracoes)
             
-        except Exception as e:
-            logger.error(f"💥 ERRO GERAL no preview: {str(e)}", exc_info=True)
-            messagebox.showerror("Erro", f"Erro ao abrir preview: {str(e)}")
-            self.root.deiconify()
+    #     except Exception as e:
+    #         logger.error(f"💥 ERRO GERAL no preview: {str(e)}", exc_info=True)
+    #         messagebox.showerror("Erro", f"Erro ao abrir preview: {str(e)}")
+    #         self.root.deiconify()
 
     def _mostrar_resultado_geracao_limpo(self, nome_cliente, nome_arquivo, caminho_final):
         """Mostra resultado da geração de forma limpa"""
