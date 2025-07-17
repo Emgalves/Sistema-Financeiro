@@ -4232,7 +4232,9 @@ class SistemaEntradaDados:
         return False
 
     def enviar_dados(self):
-        """Salva os dados na planilha existente do cliente"""
+        """
+        Versão melhorada que verifica e recalcula taxas após inserção
+        """
         logger = system_logger.get_logger()
         logger.info(f"Iniciando envio de dados - Cliente: {self.cliente_atual}, Registros: {len(self.dados_para_incluir) if self.dados_para_incluir else 0}")
         
@@ -4417,6 +4419,36 @@ class SistemaEntradaDados:
                 except Exception as e:
                     logger.error(f"Erro ao salvar arquivo: {str(e)}")
                     custom_messagebox("error", "Erro", f"Erro ao salvar arquivo: {str(e)}")
+
+                try:
+                    # Após salvar os dados com sucesso, verificar se precisa recalcular taxas
+                    if hasattr(self, 'gestor_taxas') and self.dados_para_incluir:
+                        # Obter datas únicas dos lançamentos inseridos
+                        datas_inseridas = set()
+                        for lancamento in self.dados_para_incluir:
+                            try:
+                                data_rel = datetime.strptime(lancamento['data'], '%d/%m/%Y').date()
+                                datas_inseridas.add(data_rel)
+                            except:
+                                continue
+                        
+                        # Verificar cada data para necessidade de recálculo
+                        for data_rel in datas_inseridas:
+                            print(f"DEBUG: Verificando necessidade de recálculo para {data_rel}")
+                            
+                            precisa_recalcular, motivo = self.gestor_taxas.verificar_necessidade_recalculo(data_rel)
+                            
+                            if precisa_recalcular:
+                                print(f"DEBUG: Recalculando taxas para {data_rel}: {motivo}")
+                                resultado = self.gestor_taxas.recalcular_taxas_afetadas(data_rel, mostrar_detalhes=False)
+                                
+                                if resultado["sucesso"] and "taxas recalculadas" in resultado["mensagem"]:
+                                    logger.info(f"Taxas recalculadas para {data_rel}: {resultado['mensagem']}")
+                            else:
+                                print(f"DEBUG: Não precisa recalcular para {data_rel}: {motivo}")
+                except Exception as e:
+                    logger.error(f"Erro durante envio: {str(e)}")
+                    custom_messagebox("error", "Erro", f"Erro durante envio: {str(e)}")
             
             except Exception as e:
                 logger.error(f"Erro ao processar dados: {str(e)}", exc_info=True)
@@ -4430,6 +4462,295 @@ class SistemaEntradaDados:
             # Desmarcar flag de processamento
             self._is_saving = False
 
+    def verificar_consistencia_taxas(sistema, data_referencia=None):
+        """
+        Função utilitária para verificar consistência das taxas de administração
+        """
+        if not sistema.cliente_atual:
+            return "Nenhum cliente selecionado"
+        
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{sistema.cliente_atual}.xlsx"
+            
+            if not os.path.exists(arquivo_cliente):
+                return "Arquivo do cliente não encontrado"
+            
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = df.fillna("")
+            
+            # Se não especificou data, usar todas as datas com taxas
+            if data_referencia is None:
+                df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+                datas_com_taxas = set()
+                
+                # Identificar datas que têm taxas
+                for _, row in df.iterrows():
+                    ref = str(row.get('REFERÊNCIA', '')).upper()
+                    if any(termo in ref for termo in ['TAXA', 'ADM', 'ADMINISTRAÇÃO']):
+                        datas_com_taxas.add(row['DATA_REL'].date())
+                
+                if not datas_com_taxas:
+                    return "Nenhuma taxa de administração encontrada"
+                
+                # Verificar cada data
+                relatorio = []
+                gestor = GestorTaxasAdministracao(sistema)
+                
+                for data in sorted(datas_com_taxas):
+                    precisa, motivo = gestor.verificar_necessidade_recalculo(data)
+                    status = "❌ INCONSISTENTE" if precisa else "✅ OK"
+                    relatorio.append(f"{data.strftime('%d/%m/%Y')}: {status} - {motivo}")
+                
+                return "\n".join(relatorio)
+            
+            else:
+                # Verificar data específica
+                gestor = GestorTaxasAdministracao(sistema)
+                precisa, motivo = gestor.verificar_necessidade_recalculo(data_referencia)
+                return f"Data {data_referencia}: {'❌ INCONSISTENTE' if precisa else '✅ OK'} - {motivo}"
+                
+        except Exception as e:
+            return f"Erro na verificação: {str(e)}"
+
+    # INTEGRAÇÃO COM O MENU - ADICIONAR ESTAS OPÇÕES
+
+    def adicionar_opcoes_menu_taxas(sistema):
+        """
+        Adiciona opções relacionadas a taxas no menu do sistema
+        """
+        # Adicionar no frame de botões de taxas e processamento
+        frame_taxas = sistema.aba_fornecedor  # Assumindo que existe
+        
+        # Botão para verificar consistência
+        ttk.Button(
+            frame_taxas, 
+            text="🔍 Verificar Taxas",
+            command=lambda: verificar_e_mostrar_consistencia(sistema),
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+        
+        # Botão para recálculo forçado
+        ttk.Button(
+            frame_taxas, 
+            text="🔄 Recalcular Taxas",
+            command=lambda: recalcular_taxas_manual(sistema),
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
+    def verificar_e_mostrar_consistencia(sistema):
+        """
+        Verifica e mostra consistência das taxas em interface gráfica
+        """
+        if not sistema.cliente_atual:
+            custom_messagebox("error", "Erro", "Selecione um cliente primeiro!")
+            return
+        
+        try:
+            relatorio = verificar_consistencia_taxas(sistema)
+            
+            # Criar janela para mostrar o relatório
+            janela = tk.Toplevel(sistema.root)
+            janela.title(f"Verificação de Taxas - {sistema.cliente_atual}")
+            janela.geometry("600x400")
+            
+            frame = ttk.Frame(janela, padding="15")
+            frame.pack(fill='both', expand=True)
+            
+            ttk.Label(frame, text="📊 Verificação de Consistência das Taxas", 
+                    font=('Arial', 14, 'bold')).pack(pady=(0, 15))
+            
+            # Área de texto com scroll
+            text_frame = ttk.Frame(frame)
+            text_frame.pack(fill='both', expand=True)
+            
+            text_widget = tk.Text(text_frame, wrap=tk.WORD, font=('Consolas', 10))
+            scrollbar = ttk.Scrollbar(text_frame, orient='vertical', command=text_widget.yview)
+            text_widget.configure(yscrollcommand=scrollbar.set)
+            
+            text_widget.pack(side='left', fill='both', expand=True)
+            scrollbar.pack(side='right', fill='y')
+            
+            text_widget.insert(tk.END, relatorio)
+            text_widget.config(state='disabled')
+            
+            # Botões
+            botoes_frame = ttk.Frame(frame)
+            botoes_frame.pack(fill='x', pady=(15, 0))
+            
+            ttk.Button(botoes_frame, text="Fechar", 
+                    command=janela.destroy).pack(side='right')
+            
+            if "❌ INCONSISTENTE" in relatorio:
+                ttk.Button(botoes_frame, text="🔄 Recalcular Todas", 
+                        command=lambda: recalcular_todas_taxas(sistema, janela)).pack(side='right', padx=(0, 10))
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro na verificação: {str(e)}")
+
+    def recalcular_taxas_manual(sistema):
+        """
+        Interface para recálculo manual de taxas
+        """
+        if not sistema.cliente_atual:
+            custom_messagebox("error", "Erro", "Selecione um cliente primeiro!")
+            return
+        
+        # Solicitar data ao usuário
+        janela = tk.Toplevel(sistema.root)
+        janela.title("Recalcular Taxas")
+        janela.geometry("400x200")
+        
+        frame = ttk.Frame(janela, padding="20")
+        frame.pack(fill='both', expand=True)
+        
+        ttk.Label(frame, text="Selecione a data para recalcular as taxas:", 
+                font=('Arial', 11)).pack(pady=(0, 15))
+        
+        data_entry = DateEntry(frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        data_entry.pack(pady=10)
+        
+        def executar_recalculo():
+            try:
+                data_selecionada = data_entry.get_date()
+                gestor = GestorTaxasAdministracao(sistema)
+                resultado = gestor.recalcular_taxas_afetadas(data_selecionada, mostrar_detalhes=True)
+                
+                if resultado["sucesso"]:
+                    janela.destroy()
+                
+            except Exception as e:
+                custom_messagebox("error", "Erro", f"Erro no recálculo: {str(e)}")
+        
+        botoes_frame = ttk.Frame(frame)
+        botoes_frame.pack(fill='x', pady=(15, 0))
+        
+        ttk.Button(botoes_frame, text="Recalcular", 
+                command=executar_recalculo).pack(side='left')
+        ttk.Button(botoes_frame, text="Cancelar", 
+                command=janela.destroy).pack(side='left', padx=(10, 0))
+
+    # def recalcular_todas_taxas(sistema, janela_pai):
+    #     """
+    #     Recalcula todas as taxas inconsistentes
+    #     """
+    #     try:
+    #         arquivo_cliente = PASTA_CLIENTES / f"{sistema.cliente_atual}.xlsx"
+    #         df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            
+    #         # Encontrar todas as datas com taxas
+    #         df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+    #         datas_com_taxas = set()
+            
+    #         for _, row in df.iterrows():
+    #             ref = str(row.get('REFERÊNCIA', '')).upper()
+    #             if any(termo in ref for termo in ['TAXA', 'ADM', 'ADMINISTRAÇÃO']):
+    #                 datas_com_taxas.add(row['DATA_REL'].date())
+            
+    #         if not datas_com_taxas:
+    #             custom_messagebox("info", "Info", "Nenhuma taxa encontrada para recalcular")
+    #             return
+            
+    #         gestor = GestorTaxasAdministracao(sistema)
+    #         recalculadas = 0
+            
+    #         for data in datas_com_taxas:
+    #             precisa, _ = gestor.verificar_necessidade_recalculo(data)
+    #             if precisa:
+    #                 resultado = gestor.recalcular_taxas_afetadas(data, mostrar_detalhes=False)
+    #                 if resultado["sucesso"]:
+    #                     recalculadas += 1
+            
+    #         custom_messagebox("info", "Sucesso", 
+    #                         f"Recálculo concluído!\n\n"
+    #                         f"✅ Datas processadas: {len(datas_com_taxas)}\n"
+    #                         f"🔄 Taxas recalculadas: {recalculadas}")
+            
+    #         janela_pai.destroy()
+            
+    #     except Exception as e:
+    #         custom_messagebox("error", "Erro", f"Erro no recálculo em lote: {str(e)}")[7]
+                
+    #             # Atualizar status na planilha
+    #             self.atualizar_status_lancamento(id_lancamento, 'EXCLUIDO')
+
+    #             # SEMPRE recalcular taxas após exclusão (exceto se o próprio item excluído for uma taxa)
+    #             if not eh_taxa:
+    #                 print(f"DEBUG: Recalculando taxas após exclusão de lançamento não-taxa")
+    #                 data_para_recalculo = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
+    #                 resultado_recalculo = self.gestor_taxas.recalcular_taxas_afetadas(
+    #                     data_para_recalculo, mostrar_detalhes=False
+    #                 )
+    #             else:
+    #                 print(f"DEBUG: Taxa excluída - não recalculando para evitar inconsistências")
+    #                 resultado_recalculo = {"sucesso": True, "mensagem": "Taxa excluída"}
+                
+    #             # Recarregar lista
+    #             self.carregar_lancamentos()
+                
+    #             # Mostrar resultado
+    #             if eh_taxa:
+    #                 mensagem = "Taxa de administração excluída com sucesso!"
+    #             else:
+    #                 mensagem = "Lançamento excluído com sucesso!"
+                    
+    #                 if resultado_recalculo["sucesso"]:
+    #                     if "taxas recalculadas" in resultado_recalculo["mensagem"]:
+    #                         mensagem += f"\n\n✅ {resultado_recalculo['mensagem']}"
+    #                         if 'nova_base' in resultado_recalculo:
+    #                             mensagem += f"\n📊 Nova base: R$ {resultado_recalculo.get('nova_base', 0):,.2f}"
+    #                         if 'novo_valor_total' in resultado_recalculo:
+    #                             mensagem += f"\n💰 Novo valor da taxa: R$ {resultado_recalculo.get('novo_valor_total', 0):,.2f}"
+    #                     elif "Nenhuma taxa encontrada" in resultado_recalculo["mensagem"]:
+    #                         mensagem += f"\n\nℹ️ Nenhuma taxa de administração encontrada para recalcular."
+    #                     else:
+    #                         mensagem += f"\n\n{resultado_recalculo['mensagem']}"
+    #                 else:
+    #                     mensagem += f"\n\n⚠️ AVISO: {resultado_recalculo['mensagem']}"
+                
+    #             custom_messagebox("info", "Sucesso", mensagem)
+                
+    #         except Exception as e:
+    #             import traceback
+    #             print(f"DEBUG: Erro ao excluir: {traceback.format_exc()}")
+    #             custom_messagebox("error", "Erro", f"Erro ao excluir lançamento: {str(e)}")
+
+        # def restaurar_lancamento(self):
+        #     """
+        #     Versão melhorada que sempre recalcula taxas
+        #     """
+        #     item_selecionado = self.tree_lancamentos.selection()
+        #     if not item_selecionado:
+        #         custom_messagebox("warning", "Aviso", "Selecione um lançamento para restaurar")
+        #         return
+            
+        #     valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+        #     if valores[6] != 'EXCLUIDO':  # Status
+        #         custom_messagebox("info", "Informação", "Este lançamento já está ativo")
+        #         return
+            
+        #     nome_lancamento = valores[2]
+        #     referencia = valores[3]
+        #     valor = valores[4]
+        #     data_lancamento = valores[0]
+            
+        #     # Verificar se é uma taxa
+        #     eh_taxa = any(termo in str(referencia).upper() for termo in 
+        #                 ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO'])
+            
+        #     if eh_taxa:
+        #         if not custom_messagebox("yesno", "Confirmação - Restaurar Taxa", 
+        #                             f"Você está restaurando uma TAXA DE ADMINISTRAÇÃO:\n\n"
+        #                             f"📋 {referencia}\n"
+        #                             f"💰 {valor}\n"
+        #                             f"📅 {data_lancamento}\n\n"
+        #                             f"⚠️ ATENÇÃO: Isso pode causar duplicação de taxas!\n"
+        #                             f"Recomendamos verificar se não há outras taxas ativas para esta data.\n\n"
+        #                             f"Deseja realmente continuar?"):
+        #             return
+            
+        #     try:
+        #         id_lancamento = valores
+    
     def configurar_auto_salvamento(self):
         """Configura o auto-salvamento automático - MÉTODO NECESSÁRIO"""
         def executar_auto_salvamento():
@@ -8705,115 +9026,253 @@ class ImportadorRH:
 class GestorTaxasAdministracao:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
+        self.percentual_padrao = 5.0  # Percentual padrão se não estiver configurado
         
-    def recalcular_taxas_afetadas(self, data_referencia, cliente=None):
-        """Recalcula taxas afetadas por exclusões/alterações"""
+    def recalcular_taxas_afetadas(self, data_referencia, cliente=None, mostrar_detalhes=True):
+        """
+        Recalcula taxas afetadas por exclusões/alterações com melhor tratamento de erros
+        """
         try:
             if not cliente:
                 cliente = self.sistema.cliente_atual
                 
             arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
             
-            # Carregar dados
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-            df = df.fillna("")
+            if not os.path.exists(arquivo_cliente):
+                return {"sucesso": False, "mensagem": "Arquivo do cliente não encontrado"}
             
-            # Identificar taxas existentes para a data
-            taxas_existentes = self.identificar_lancamentos_taxa_admin(
-                df[df['DATA_REL'] == pd.to_datetime(data_referencia)]
-            )
+            print(f"DEBUG: Recalculando taxas para {cliente} em {data_referencia}")
+            
+            # Carregar dados com tratamento de erro
+            try:
+                df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+                df = df.fillna("")
+                
+                # Garantir que a coluna STATUS existe
+                if 'STATUS' not in df.columns:
+                    df['STATUS'] = 'ATIVO'
+                df['STATUS'] = df['STATUS'].replace('', 'ATIVO').fillna('ATIVO')
+                
+            except Exception as e:
+                return {"sucesso": False, "mensagem": f"Erro ao carregar dados: {str(e)}"}
+            
+            # Converter data de referência para o mesmo formato da planilha
+            if isinstance(data_referencia, str):
+                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
+            else:
+                data_ref_dt = pd.to_datetime(data_referencia)
+            
+            print(f"DEBUG: Data de referência convertida: {data_ref_dt}")
+            
+            # Filtrar dados para a quinzena específica
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            df_quinzena = df[df['DATA_REL'].dt.date == data_ref_dt.date()].copy()
+            
+            print(f"DEBUG: Encontrados {len(df_quinzena)} lançamentos para a data")
+            
+            # Identificar taxas existentes
+            taxas_existentes = self.identificar_lancamentos_taxa_admin(df_quinzena)
+            print(f"DEBUG: Encontradas {len(taxas_existentes)} taxas existentes")
             
             if taxas_existentes.empty:
+                print("DEBUG: Nenhuma taxa encontrada para recalcular")
+                if mostrar_detalhes:
+                    custom_messagebox("info", "Recálculo de Taxas", 
+                                    "Nenhuma taxa de administração encontrada para esta data.")
                 return {"sucesso": True, "mensagem": "Nenhuma taxa encontrada para recalcular"}
             
-            # Calcular nova base (sem excluídos)
-            nova_base = self.calcular_base_calculo_taxa(df, data_referencia, incluir_excluidos=False)
+            # Calcular nova base (APENAS lançamentos ATIVOS, excluindo taxas)
+            nova_base = self.calcular_base_calculo_taxa(df, data_ref_dt.date(), incluir_excluidos=False)
+            print(f"DEBUG: Nova base calculada: R$ {nova_base:,.2f}")
             
-            # Buscar percentual da taxa no cadastro do cliente
+            # Buscar percentual da taxa
             percentual_taxa = self.obter_percentual_taxa_cliente(cliente)
-            
             if percentual_taxa is None:
-                return {"sucesso": False, "mensagem": "Percentual de taxa não configurado para o cliente"}
+                percentual_taxa = self.percentual_padrao
+                print(f"DEBUG: Usando percentual padrão: {percentual_taxa}%")
+            else:
+                print(f"DEBUG: Percentual encontrado: {percentual_taxa}%")
             
             # Calcular novo valor da taxa
             novo_valor_taxa = nova_base * (percentual_taxa / 100)
+            print(f"DEBUG: Novo valor da taxa: R$ {novo_valor_taxa:,.2f}")
             
-            # Atualizar na planilha
+            # Se a nova base é zero, marcar taxas como excluídas
+            if nova_base <= 0:
+                print("DEBUG: Base zerada - marcando taxas como excluídas")
+                resultado = self.excluir_taxas_base_zerada(arquivo_cliente, taxas_existentes)
+                if mostrar_detalhes:
+                    custom_messagebox("info", "Taxas Recalculadas", 
+                                    "Base de cálculo zerada. Taxas de administração foram excluídas.")
+                return resultado
+            
+            # Atualizar taxas na planilha
             resultado = self.atualizar_taxas_na_planilha(
-                arquivo_cliente, taxas_existentes, novo_valor_taxa, nova_base
+                arquivo_cliente, taxas_existentes, novo_valor_taxa, nova_base, percentual_taxa
             )
+            
+            if mostrar_detalhes and resultado["sucesso"]:
+                custom_messagebox("info", "Taxas Recalculadas", 
+                                f"✅ Taxas recalculadas com sucesso!\n\n"
+                                f"📊 Nova base: R$ {nova_base:,.2f}\n"
+                                f"📈 Percentual: {percentual_taxa}%\n"
+                                f"💰 Novo valor: R$ {novo_valor_taxa:,.2f}\n"
+                                f"🔢 Taxas atualizadas: {len(taxas_existentes)}")
             
             return resultado
             
         except Exception as e:
-            return {"sucesso": False, "mensagem": f"Erro ao recalcular taxas: {str(e)}"}
+            import traceback
+            print(f"DEBUG: Erro no recálculo: {traceback.format_exc()}")
+            erro_msg = f"Erro ao recalcular taxas: {str(e)}"
+            if mostrar_detalhes:
+                custom_messagebox("error", "Erro", erro_msg)
+            return {"sucesso": False, "mensagem": erro_msg}
     
     def identificar_lancamentos_taxa_admin(self, df):
-        """Identifica lançamentos de taxa de administração"""
-        # Padrões comuns para identificar taxas de administração
+        """
+        Identifica lançamentos de taxa de administração com padrões mais amplos
+        """
+        if df.empty:
+            return pd.DataFrame()
+            
+        # Padrões expandidos para identificar taxas
         padroes_taxa = [
             'TAXA DE ADMINISTRAÇÃO',
+            'TAXA DE ADMINISTRACAO',
             'ADM',
             'ADMINISTRAÇÃO', 
+            'ADMINISTRACAO',
             'TAXA ADM',
             'TX ADM',
-            'PERCENTUAL ADM'
+            'PERCENTUAL ADM',
+            'PERCENT ADM',
+            'ADMIN',
+            'ADMINISTRACAO',
+            'GESTAO',
+            'GESTÃO'
         ]
         
-        mask_taxa = df['REFERÊNCIA'].str.contains('|'.join(padroes_taxa), case=False, na=False)
-        return df[mask_taxa].copy()
+        # Converter para string e tratar NaN
+        df['REFERÊNCIA'] = df['REFERÊNCIA'].astype(str).fillna('')
+        
+        # Criar máscara para identificar taxas
+        mask_taxa = df['REFERÊNCIA'].str.upper().str.contains(
+            '|'.join(padroes_taxa), 
+            case=False, 
+            na=False,
+            regex=True
+        )
+        
+        taxas = df[mask_taxa].copy()
+        print(f"DEBUG: Padrões de taxa encontrados: {taxas['REFERÊNCIA'].tolist()}")
+        
+        return taxas
 
     def calcular_base_calculo_taxa(self, df, data_relatorio, incluir_excluidos=False):
-        """Calcula a base para cálculo da taxa de administração"""
-        # Filtrar dados para a quinzena
-        df_quinzena = df[df['DATA_REL'] == pd.to_datetime(data_relatorio)].copy()
-        
-        # Se não incluir excluídos, filtrar apenas ativos
-        if not incluir_excluidos:
-            df_quinzena = df_quinzena[df_quinzena.get('STATUS', 'ATIVO') != 'EXCLUIDO']
-        
-        # Excluir as próprias taxas do cálculo para evitar recursão
-        df_base = df_quinzena[~df_quinzena['REFERÊNCIA'].str.contains(
-            'TAXA|ADM|ADMINISTRAÇÃO', case=False, na=False
-        )].copy()
-        
-        # Converter valores para numérico
-        df_base['VALOR_NUM'] = pd.to_numeric(
-            df_base['VALOR'].astype(str).str.replace('R$', '').str.replace(',', '.'),
-            errors='coerce'
-        ).fillna(0)
-        
-        return df_base['VALOR_NUM'].sum()
-    
-    def obter_percentual_taxa_cliente(self, cliente):
-        """Obtém o percentual de taxa configurado para o cliente"""
+        """
+        Calcula a base para cálculo da taxa de administração com melhor tratamento
+        """
         try:
-            wb_clientes = load_workbook(ARQUIVO_CLIENTES)
-            ws = wb_clientes['Clientes']
+            print(f"DEBUG: Calculando base para {data_relatorio}, incluir_excluidos={incluir_excluidos}")
             
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0] == cliente:  # Nome do cliente
-                    # CORREÇÃO: Verificar se existe coluna de taxa (assumindo coluna 5 ou 6)
-                    if len(row) > 6 and row[6]:  # Coluna 6 (índice 6)
-                        return float(row[6])
-                    elif len(row) > 5 and row[5]:  # Coluna 5 (índice 5) 
-                        return float(row[5])
+            # Converter data para o mesmo formato
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            data_target = pd.to_datetime(data_relatorio)
             
-            return None
+            # Filtrar dados para a quinzena específica
+            df_quinzena = df[df['DATA_REL'].dt.date == data_target.date()].copy()
+            print(f"DEBUG: Lançamentos na quinzena: {len(df_quinzena)}")
+            
+            # Filtrar por status se necessário
+            if not incluir_excluidos:
+                df_quinzena = df_quinzena[
+                    (df_quinzena.get('STATUS', 'ATIVO') != 'EXCLUIDO') &
+                    (df_quinzena.get('STATUS', 'ATIVO') != '')
+                ]
+                print(f"DEBUG: Lançamentos ativos: {len(df_quinzena)}")
+            
+            # Excluir as próprias taxas do cálculo (CRÍTICO para evitar recursão)
+            padroes_exclusao = [
+                'TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 
+                'GESTAO', 'GESTÃO', 'ADMIN', 'PERCENT'
+            ]
+            
+            # Criar máscara para excluir taxas
+            mask_nao_taxa = True
+            for padrao in padroes_exclusao:
+                mask_nao_taxa = mask_nao_taxa & ~df_quinzena['REFERÊNCIA'].astype(str).str.upper().str.contains(
+                    padrao, case=False, na=False
+                )
+            
+            df_base = df_quinzena[mask_nao_taxa].copy()
+            print(f"DEBUG: Lançamentos para base (sem taxas): {len(df_base)}")
+            
+            if df_base.empty:
+                print("DEBUG: Nenhum lançamento válido para base")
+                return 0.0
+            
+            # Converter valores para numérico com tratamento robusto
+            def converter_valor(valor):
+                try:
+                    if pd.isna(valor) or valor == '':
+                        return 0.0
+                    
+                    # Se já for numérico
+                    if isinstance(valor, (int, float)):
+                        return float(valor)
+                    
+                    # Se for string, limpar e converter
+                    valor_str = str(valor).replace('R$', '').replace(' ', '').strip()
+                    if not valor_str:
+                        return 0.0
+                        
+                    # Substituir vírgula por ponto se necessário
+                    if ',' in valor_str and '.' not in valor_str:
+                        valor_str = valor_str.replace(',', '.')
+                    elif ',' in valor_str and '.' in valor_str:
+                        # Formato brasileiro: 1.234,56
+                        partes = valor_str.split(',')
+                        if len(partes) == 2:
+                            parte_inteira = partes[0].replace('.', '')
+                            parte_decimal = partes[1]
+                            valor_str = f"{parte_inteira}.{parte_decimal}"
+                    
+                    return float(valor_str)
+                    
+                except (ValueError, TypeError, AttributeError):
+                    print(f"DEBUG: Erro ao converter valor: {valor}")
+                    return 0.0
+            
+            df_base['VALOR_NUM'] = df_base['VALOR'].apply(converter_valor)
+            
+            total_base = df_base['VALOR_NUM'].sum()
+            print(f"DEBUG: Total da base calculado: R$ {total_base:,.2f}")
+            
+            # Debug dos valores individuais
+            if len(df_base) <= 10:  # Só mostrar se for pouco dados
+                for idx, row in df_base.iterrows():
+                    print(f"DEBUG: {row['REFERÊNCIA']}: R$ {row['VALOR_NUM']:,.2f}")
+            
+            return total_base
             
         except Exception as e:
-            print(f"Erro ao obter percentual da taxa: {str(e)}")
-            return None
+            print(f"DEBUG: Erro ao calcular base: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return 0.0
     
-    def atualizar_taxas_na_planilha(self, arquivo_cliente, taxas_existentes, novo_valor, nova_base):
-        """Atualiza os valores das taxas na planilha"""
+    def excluir_taxas_base_zerada(self, arquivo_cliente, taxas_existentes):
+        """
+        Marca taxas como excluídas quando a base for zerada
+        """
         try:
             wb = load_workbook(arquivo_cliente)
             ws = wb['Dados']
             
-            taxas_atualizadas = []
+            taxas_excluidas = []
+            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
             
-            # Procurar e atualizar cada taxa
             for _, taxa in taxas_existentes.iterrows():
                 id_taxa = taxa.get('ID_LANCAMENTO')
                 if pd.isna(id_taxa):
@@ -8821,29 +9280,19 @@ class GestorTaxasAdministracao:
                 
                 # Encontrar linha na planilha
                 for row_num in range(2, ws.max_row + 1):
-                    if ws.cell(row=row_num, column=15).value == id_taxa:  # Coluna ID_LANCAMENTO
-                        valor_antigo = ws.cell(row=row_num, column=9).value  # VALOR
+                    if ws.cell(row=row_num, column=15).value == id_taxa:
+                        # Marcar como excluído
+                        ws.cell(row=row_num, column=14, value='EXCLUIDO')  # STATUS
                         
-                        # Calcular valor proporcional se houver múltiplas taxas
-                        if len(taxas_existentes) > 1:
-                            proporcao = float(valor_antigo) / taxas_existentes['VALOR'].astype(float).sum()
-                            valor_proporcional = novo_valor * proporcao
-                        else:
-                            valor_proporcional = novo_valor
+                        # Atualizar histórico
+                        historico_atual = ws.cell(row=row_num, column=16).value or ""
+                        novo_historico = f"{historico_atual} | EXCLUÍDA (BASE ZERADA) EM: {timestamp}" if historico_atual else f"EXCLUÍDA (BASE ZERADA) EM: {timestamp}"
+                        ws.cell(row=row_num, column=16, value=novo_historico)
                         
-                        # Atualizar valor
-                        ws.cell(row=row_num, column=9, value=float(valor_proporcional))
-                        
-                        # Atualizar observação com histórico
-                        obs_atual = ws.cell(row=row_num, column=13).value or ""
-                        timestamp = datetime.now().strftime('%d/%m/%Y %H:%M')
-                        nova_obs = f"{obs_atual} - RECALCULADA EM {timestamp} (Base: R$ {nova_base:,.2f})"
-                        ws.cell(row=row_num, column=13, value=nova_obs)
-                        
-                        taxas_atualizadas.append({
+                        taxas_excluidas.append({
                             'id': id_taxa,
-                            'valor_antigo': valor_antigo,
-                            'valor_novo': valor_proporcional
+                            'referencia': taxa.get('REFERÊNCIA', ''),
+                            'valor': taxa.get('VALOR', 0)
                         })
                         break
             
@@ -8851,14 +9300,379 @@ class GestorTaxasAdministracao:
             
             return {
                 "sucesso": True,
-                "mensagem": f"Taxas recalculadas: {len(taxas_atualizadas)} itens atualizados",
-                "detalhes": taxas_atualizadas,
-                "nova_base": nova_base,
-                "novo_valor_total": novo_valor
+                "mensagem": f"Taxas excluídas por base zerada: {len(taxas_excluidas)} itens",
+                "detalhes": taxas_excluidas,
+                "nova_base": 0,
+                "novo_valor_total": 0
             }
             
         except Exception as e:
-            return {"sucesso": False, "mensagem": f"Erro ao atualizar planilha: {str(e)}"}
+            return {"sucesso": False, "mensagem": f"Erro ao excluir taxas: {str(e)}"}
+    
+    def atualizar_taxas_na_planilha(self, arquivo_cliente, taxas_existentes, novo_valor, nova_base, percentual):
+        """
+        Atualiza os valores das taxas EXISTENTES na planilha com histórico detalhado
+        
+        IMPORTANTE: Este método ATUALIZA taxas já lançadas, não cria novas!
+        Quando uma taxa já foi lançada e a base muda, ajustamos o valor da taxa existente.
+        """
+        try:
+            wb = load_workbook(arquivo_cliente)
+            ws = wb['Dados']
+            
+            taxas_atualizadas = []
+            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            
+            print(f"DEBUG: Atualizando {len(taxas_existentes)} taxas já lançadas")
+            print(f"DEBUG: Novo valor total a distribuir: R$ {novo_valor:,.2f}")
+            
+            # Se há múltiplas taxas, distribuir proporcionalmente
+            if len(taxas_existentes) > 1:
+                print(f"DEBUG: Distribuindo entre {len(taxas_existentes)} taxas existentes")
+                
+                # Calcular total atual das taxas ATIVAS para proporção
+                total_atual = 0
+                taxas_ativas = []
+                
+                for _, taxa in taxas_existentes.iterrows():
+                    status = taxa.get('STATUS', 'ATIVO')
+                    if status != 'EXCLUIDO':
+                        try:
+                            valor_atual = float(str(taxa.get('VALOR', 0)).replace(',', '.'))
+                            total_atual += valor_atual
+                            taxas_ativas.append((taxa, valor_atual))
+                        except:
+                            taxas_ativas.append((taxa, 0))
+                
+                if total_atual == 0:
+                    # Se total atual é zero, dividir igualmente entre taxas ativas
+                    valor_por_taxa = novo_valor / len(taxas_ativas) if taxas_ativas else 0
+                    proporcoes = [valor_por_taxa] * len(taxas_ativas)
+                    print(f"DEBUG: Divisão igual: R$ {valor_por_taxa:,.2f} por taxa")
+                else:
+                    # Calcular proporcionalmente ao valor atual
+                    proporcoes = []
+                    for taxa, valor_atual in taxas_ativas:
+                        proporcao = (valor_atual / total_atual) * novo_valor
+                        proporcoes.append(proporcao)
+                        print(f"DEBUG: Taxa {taxa.get('ID_LANCAMENTO')}: R$ {valor_atual:,.2f} → R$ {proporcao:,.2f}")
+                
+                # Usar apenas taxas ativas para atualização
+                taxas_para_processar = [(taxa, prop) for (taxa, _), prop in zip(taxas_ativas, proporcoes)]
+            else:
+                # Apenas uma taxa - usar valor total
+                taxa_unica = taxas_existentes.iloc[0]
+                if taxa_unica.get('STATUS', 'ATIVO') != 'EXCLUIDO':
+                    taxas_para_processar = [(taxa_unica, novo_valor)]
+                    print(f"DEBUG: Taxa única: R$ {novo_valor:,.2f}")
+                else:
+                    taxas_para_processar = []
+                    print(f"DEBUG: Taxa única está excluída, não atualizando")
+            
+            # Atualizar cada taxa EXISTENTE na planilha
+            for taxa, valor_novo in taxas_para_processar:
+                id_taxa = taxa.get('ID_LANCAMENTO')
+                if pd.isna(id_taxa):
+                    print(f"DEBUG: Taxa sem ID, pulando")
+                    continue
+                
+                print(f"DEBUG: Procurando taxa ID {id_taxa} na planilha")
+                
+                # Encontrar linha na planilha pelo ID
+                linha_encontrada = False
+                for row_num in range(2, ws.max_row + 1):
+                    id_na_planilha = ws.cell(row=row_num, column=15).value  # ID_LANCAMENTO
+                    
+                    if id_na_planilha == id_taxa:
+                        linha_encontrada = True
+                        valor_antigo = ws.cell(row=row_num, column=9).value or 0  # VALOR
+                        
+                        print(f"DEBUG: Encontrada linha {row_num}, atualizando valor: R$ {valor_antigo:,.2f} → R$ {valor_novo:,.2f}")
+                        
+                        # ATUALIZAR O VALOR DA TAXA EXISTENTE
+                        ws.cell(row=row_num, column=9, value=round(valor_novo, 2))
+                        
+                        # Se for tipo 1 (com dias), atualizar valor unitário também
+                        tp_desp = ws.cell(row=row_num, column=2).value
+                        if tp_desp == 1:
+                            dias = ws.cell(row=row_num, column=8).value or 1
+                            if dias > 0:
+                                vr_unit_novo = round(valor_novo / dias, 2)
+                                ws.cell(row=row_num, column=7, value=vr_unit_novo)
+                                print(f"DEBUG: Valor unitário atualizado: R$ {vr_unit_novo:,.2f}")
+                        
+                        # Garantir que status seja ATIVO (caso tenha sido excluído por engano)
+                        status_atual = ws.cell(row=row_num, column=14).value
+                        if status_atual != 'ATIVO':
+                            ws.cell(row=row_num, column=14, value='ATIVO')
+                            print(f"DEBUG: Status corrigido de {status_atual} para ATIVO")
+                        
+                        # Atualizar observação com informações detalhadas do recálculo
+                        obs_atual = ws.cell(row=row_num, column=13).value or ""
+                        # Limpar observações de recálculos anteriores para evitar texto muito longo
+                        if "RECALC:" in obs_atual:
+                            obs_base = obs_atual.split(" - RECALC:")[0]
+                        else:
+                            obs_base = obs_atual
+                        
+                        nova_obs = f"{obs_base} - TAXA ADM {percentual}% - BASE: R$ {nova_base:,.2f} - RECALC: {timestamp}".strip()
+                        ws.cell(row=row_num, column=13, value=nova_obs)
+                        
+                        # Atualizar histórico de alterações
+                        historico_atual = ws.cell(row=row_num, column=16).value or ""
+                        acao = f"RECALC AUTO: R$ {valor_antigo:,.2f} → R$ {valor_novo:,.2f} (Base: R$ {nova_base:,.2f}) - {timestamp}"
+                        
+                        if historico_atual:
+                            # Limitar histórico para não ficar muito longo (manter últimas 5 ações)
+                            historico_partes = historico_atual.split(' | ')
+                            if len(historico_partes) >= 5:
+                                historico_partes = historico_partes[-4:]  # Manter últimas 4
+                            novo_historico = ' | '.join(historico_partes) + ' | ' + acao
+                        else:
+                            novo_historico = acao
+                        
+                        ws.cell(row=row_num, column=16, value=novo_historico)
+                        
+                        taxas_atualizadas.append({
+                            'id': id_taxa,
+                            'linha': row_num,
+                            'referencia': taxa.get('REFERÊNCIA', ''),
+                            'valor_antigo': valor_antigo,
+                            'valor_novo': valor_novo,
+                            'diferenca': valor_novo - float(valor_antigo),
+                        })
+                        
+                        print(f"✅ Taxa ID {id_taxa} atualizada com sucesso na linha {row_num}")
+                        break
+                
+                if not linha_encontrada:
+                    print(f"❌ ERRO: Taxa ID {id_taxa} não encontrada na planilha!")
+                    # Isso é um problema - taxa existe no DataFrame mas não na planilha
+                    # Pode indicar inconsistência nos dados
+            
+            # Salvar alterações na planilha
+            wb.save(arquivo_cliente)
+            print(f"✅ Planilha salva com {len(taxas_atualizadas)} taxas atualizadas")
+            
+            return {
+                "sucesso": True,
+                "mensagem": f"Taxas EXISTENTES recalculadas: {len(taxas_atualizadas)} itens atualizados",
+                "detalhes": taxas_atualizadas,
+                "nova_base": nova_base,
+                "novo_valor_total": novo_valor,
+                "percentual": percentual,
+                "observacao": "ATUALIZAÇÃO de taxas já lançadas, não criação de novas taxas"
+            }
+            
+        except Exception as e:
+            import traceback
+            print(f"DEBUG: Erro ao atualizar taxas existentes: {traceback.format_exc()}")
+            return {"sucesso": False, "mensagem": f"Erro ao atualizar taxas na planilha: {str(e)}"}
+
+    def criar_nova_taxa_se_necessario(self, data_referencia, cliente=None):
+        """
+        MÉTODO SEPARADO: Cria nova taxa apenas quando não existe nenhuma para a data
+        
+        Este método deve ser usado apenas quando:
+        1. Não existe nenhuma taxa para a data/quinzena
+        2. O usuário está finalizando a quinzena pela primeira vez
+        
+        NÃO usar este método quando já existem taxas lançadas!
+        """
+        try:
+            if not cliente:
+                cliente = self.sistema.cliente_atual
+                
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            
+            # Verificar se já existem taxas para esta data
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            if isinstance(data_referencia, str):
+                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
+            else:
+                data_ref_dt = pd.to_datetime(data_referencia)
+            
+            df_data = df[df['DATA_REL'].dt.date == data_ref_dt.date()]
+            taxas_existentes = self.identificar_lancamentos_taxa_admin(df_data)
+            
+            if not taxas_existentes.empty:
+                return {
+                    "sucesso": False, 
+                    "mensagem": f"Já existem {len(taxas_existentes)} taxa(s) para esta data. Use o recálculo ao invés de criar nova."
+                }
+            
+            # Calcular base e valor da nova taxa
+            base_calculo = self.calcular_base_calculo_taxa(df, data_ref_dt.date(), incluir_excluidos=False)
+            
+            if base_calculo <= 0:
+                return {
+                    "sucesso": False,
+                    "mensagem": "Base de cálculo zerada. Não é possível criar taxa de administração."
+                }
+            
+            percentual = self.obter_percentual_taxa_cliente(cliente) or self.percentual_padrao
+            valor_taxa = base_calculo * (percentual / 100)
+            
+            # Aqui você implementaria a lógica para criar um novo lançamento de taxa
+            # (Similar ao que já existe no sistema para criar lançamentos normais)
+            
+            return {
+                "sucesso": True,
+                "mensagem": f"Nova taxa criada: R$ {valor_taxa:,.2f} ({percentual}% de R$ {base_calculo:,.2f})",
+                "valor_taxa": valor_taxa,
+                "base_calculo": base_calculo,
+                "percentual": percentual
+            }
+            
+        except Exception as e:
+            return {"sucesso": False, "mensagem": f"Erro ao criar nova taxa: {str(e)}"}
+
+    def distinguir_cenarios_taxa(self, data_referencia, cliente=None):
+        """
+        MÉTODO UTILITÁRIO: Distingue entre diferentes cenários de taxa
+        
+        Retorna:
+        - "sem_taxa": Não há taxa para esta data (primeira finalização)
+        - "taxa_existente": Há taxa que pode ser recalculada
+        - "taxa_excluida": Há taxa mas está excluída
+        - "multiplas_taxas": Há múltiplas taxas (situação complexa)
+        """
+        try:
+            if not cliente:
+                cliente = self.sistema.cliente_atual
+                
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            if isinstance(data_referencia, str):
+                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
+            else:
+                data_ref_dt = pd.to_datetime(data_referencia)
+            
+            df_data = df[df['DATA_REL'].dt.date == data_ref_dt.date()]
+            taxas_todas = self.identificar_lancamentos_taxa_admin(df_data)
+            
+            if taxas_todas.empty:
+                return "sem_taxa", "Nenhuma taxa encontrada para esta data"
+            
+            # Adicionar coluna STATUS se não existir
+            if 'STATUS' not in taxas_todas.columns:
+                taxas_todas['STATUS'] = 'ATIVO'
+            
+            taxas_ativas = taxas_todas[taxas_todas['STATUS'] != 'EXCLUIDO']
+            taxas_excluidas = taxas_todas[taxas_todas['STATUS'] == 'EXCLUIDO']
+            
+            if len(taxas_ativas) > 1:
+                return "multiplas_taxas", f"{len(taxas_ativas)} taxas ativas encontradas"
+            elif len(taxas_ativas) == 1:
+                return "taxa_existente", f"1 taxa ativa encontrada (ID: {taxas_ativas.iloc[0].get('ID_LANCAMENTO', 'N/A')})"
+            elif len(taxas_excluidas) > 0:
+                return "taxa_excluida", f"{len(taxas_excluidas)} taxa(s) excluída(s) encontrada(s)"
+            else:
+                return "sem_taxa", "Nenhuma taxa ativa encontrada"
+                
+        except Exception as e:
+            return "erro", f"Erro ao analisar cenário: {str(e)}"
+
+    def obter_percentual_taxa_cliente(self, cliente):
+        """
+        Obtém o percentual de taxa com fallback melhorado
+        """
+        try:
+            if not os.path.exists(ARQUIVO_CLIENTES):
+                print(f"DEBUG: Arquivo de clientes não encontrado: {ARQUIVO_CLIENTES}")
+                return None
+                
+            wb_clientes = load_workbook(ARQUIVO_CLIENTES)
+            ws = wb_clientes['Clientes']
+            
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0] == cliente:
+                    # Tentar diferentes colunas onde pode estar o percentual
+                    for col_idx in range(4, min(len(row), 10)):  # Colunas 4 a 9
+                        if row[col_idx] is not None:
+                            try:
+                                percentual = float(row[col_idx])
+                                if 0 < percentual <= 100:  # Validar se é um percentual razoável
+                                    print(f"DEBUG: Percentual encontrado na coluna {col_idx}: {percentual}%")
+                                    wb_clientes.close()
+                                    return percentual
+                            except (ValueError, TypeError):
+                                continue
+                    
+                    # Se chegou aqui, não encontrou percentual válido
+                    print(f"DEBUG: Cliente {cliente} encontrado mas sem percentual válido")
+                    break
+            
+            wb_clientes.close()
+            print(f"DEBUG: Cliente {cliente} não encontrado ou sem percentual configurado")
+            return None
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao obter percentual da taxa: {str(e)}")
+            return None
+
+    def verificar_necessidade_recalculo(self, data_referencia, cliente=None):
+        """
+        Verifica se há necessidade de recálculo de taxas para uma data específica
+        """
+        try:
+            if not cliente:
+                cliente = self.sistema.cliente_atual
+                
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            
+            if not os.path.exists(arquivo_cliente):
+                return False, "Arquivo do cliente não encontrado"
+            
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = df.fillna("")
+            
+            # Converter data
+            if isinstance(data_referencia, str):
+                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
+            else:
+                data_ref_dt = pd.to_datetime(data_referencia)
+            
+            # Filtrar para a quinzena
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            df_quinzena = df[df['DATA_REL'].dt.date == data_ref_dt.date()].copy()
+            
+            # Verificar se há taxas
+            taxas_existentes = self.identificar_lancamentos_taxa_admin(df_quinzena)
+            
+            if taxas_existentes.empty:
+                return False, "Nenhuma taxa encontrada para esta data"
+            
+            # Calcular base atual
+            base_atual = self.calcular_base_calculo_taxa(df, data_ref_dt.date(), incluir_excluidos=False)
+            
+            # Verificar se há inconsistência
+            percentual = self.obter_percentual_taxa_cliente(cliente) or self.percentual_padrao
+            valor_esperado = base_atual * (percentual / 100)
+            
+            valor_atual_taxas = 0
+            for _, taxa in taxas_existentes.iterrows():
+                if taxa.get('STATUS', 'ATIVO') != 'EXCLUIDO':
+                    try:
+                        valor_atual_taxas += float(str(taxa.get('VALOR', 0)).replace(',', '.'))
+                    except:
+                        pass
+            
+            diferenca = abs(valor_esperado - valor_atual_taxas)
+            tolerancia = max(0.01, valor_esperado * 0.001)  # 0.1% ou R$ 0,01
+            
+            if diferenca > tolerancia:
+                return True, f"Inconsistência detectada: esperado R$ {valor_esperado:,.2f}, atual R$ {valor_atual_taxas:,.2f}"
+            
+            return False, "Taxas estão consistentes"
+            
+        except Exception as e:
+            return False, f"Erro na verificação: {str(e)}"
+
 
 class GerenciadorLancamentos:
     def __init__(self, sistema_principal):
@@ -9325,48 +10139,89 @@ class GerenciadorLancamentos:
             custom_messagebox("error", "Erro", f"Erro ao editar lançamento: {str(e)}")
     
     def excluir_lancamento(self):
-        """Marca lançamento como excluído"""
+        """
+        Versão melhorada que sempre recalcula taxas
+        """
         item_selecionado = self.tree_lancamentos.selection()
         if not item_selecionado:
             custom_messagebox("warning", "Aviso", "Selecione um lançamento para excluir")
             return
         
-        if not custom_messagebox("yesno", "Confirmação", 
-                                "Deseja realmente excluir este lançamento?\n\n"
-                                "ATENÇÃO: As taxas de administração serão recalculadas automaticamente."):
-            return
+        valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+        nome_lancamento = valores[2]  # Nome
+        referencia = valores[3]      # Referência
+        valor = valores[4]           # Valor
+        data_lancamento = valores[0] # Data
+        
+        # Verificar se é uma taxa de administração
+        eh_taxa = any(termo in str(referencia).upper() for termo in 
+                     ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO'])
+        
+        if eh_taxa:
+            if not custom_messagebox("yesno", "Confirmação - Taxa de Administração", 
+                                   f"Você está excluindo uma TAXA DE ADMINISTRAÇÃO:\n\n"
+                                   f"📋 {referencia}\n"
+                                   f"💰 {valor}\n"
+                                   f"📅 {data_lancamento}\n\n"
+                                   f"⚠️ ATENÇÃO: A exclusão de uma taxa pode afetar os cálculos!\n\n"
+                                   f"Deseja realmente continuar?"):
+                return
+        else:
+            if not custom_messagebox("yesno", "Confirmação", 
+                                   f"Deseja realmente excluir este lançamento?\n\n"
+                                   f"👤 {nome_lancamento}\n"
+                                   f"📋 {referencia}\n"
+                                   f"💰 {valor}\n"
+                                   f"📅 {data_lancamento}\n\n"
+                                   f"🔄 As taxas de administração serão recalculadas automaticamente."):
+                return
         
         try:
-            valores = self.tree_lancamentos.item(item_selecionado[0])['values']
             id_lancamento = valores[7]
-            data_lancamento = valores[0]  # Data do lançamento
             
             # Atualizar status na planilha
-            self.atualizar_status_lancamento(id_lancamento, 'EXCLUIDO')
+            self.atualizar_status_lancamento(id_lancamento, 'ATIVO')
 
-            # Recalcular taxas para a data do lançamento
-            resultado_recalculo = self.gestor_taxas.recalcular_taxas_afetadas(
-                datetime.strptime(data_lancamento, '%d/%m/%Y').date()
-            )
+            # SEMPRE recalcular taxas após restauração (exceto se o próprio item for uma taxa)
+            if not eh_taxa:
+                print(f"DEBUG: Recalculando taxas após restauração de lançamento não-taxa")
+                data_para_recalculo = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
+                resultado_recalculo = self.gestor_taxas.recalcular_taxas_afetadas(
+                    data_para_recalculo, mostrar_detalhes=False
+                )
+            else:
+                print(f"DEBUG: Taxa restaurada - verificando necessidade de ajustes")
+                # Para taxas, só informar que foi restaurada
+                resultado_recalculo = {"sucesso": True, "mensagem": "Taxa restaurada"}
             
             # Recarregar lista
             self.carregar_lancamentos()
             
             # Mostrar resultado
-            mensagem = "Lançamento excluído com sucesso!"
-            if resultado_recalculo["sucesso"]:
-                if "taxas recalculadas" in resultado_recalculo["mensagem"]:
-                    mensagem += f"\n\n{resultado_recalculo['mensagem']}"
-                    mensagem += f"\nNova base de cálculo: R$ {resultado_recalculo.get('nova_base', 0):,.2f}"
-                else:
-                    mensagem += f"\n{resultado_recalculo['mensagem']}"
+            if eh_taxa:
+                mensagem = "Taxa de administração restaurada com sucesso!"
+                mensagem += "\n\n⚠️ IMPORTANTE: Verifique se não há duplicação de taxas para esta data."
             else:
-                mensagem += f"\n\nAVISO: {resultado_recalculo['mensagem']}"
+                mensagem = "Lançamento restaurado com sucesso!"
+                
+                if resultado_recalculo["sucesso"]:
+                    if "taxas recalculadas" in resultado_recalculo["mensagem"]:
+                        mensagem += f"\n\n✅ {resultado_recalculo['mensagem']}"
+                        if 'nova_base' in resultado_recalculo:
+                            mensagem += f"\n📊 Nova base: R$ {resultado_recalculo.get('nova_base', 0):,.2f}"
+                        if 'novo_valor_total' in resultado_recalculo:
+                            mensagem += f"\n💰 Novo valor da taxa: R$ {resultado_recalculo.get('novo_valor_total', 0):,.2f}"
+                    else:
+                        mensagem += f"\n\n{resultado_recalculo['mensagem']}"
+                else:
+                    mensagem += f"\n\n⚠️ AVISO: {resultado_recalculo['mensagem']}"
             
             custom_messagebox("info", "Sucesso", mensagem)
             
         except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao excluir lançamento: {str(e)}")
+            import traceback
+            print(f"DEBUG: Erro ao restaurar: {traceback.format_exc()}")
+            custom_messagebox("error", "Erro", f"Erro ao restaurar lançamento: {str(e)}")
     
     def restaurar_lancamento(self):
         """Restaura lançamento excluído"""
