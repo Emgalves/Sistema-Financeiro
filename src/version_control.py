@@ -10,13 +10,11 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 3,
-    "patch": 3,
-    "release_date": "09/07/2025",
+    "patch": 4,
+    "release_date": "22/07/2025",
     "changes": [
-        "Inclusão de importação de planilha com dados de TRANSPORTE e CAFÉ",
-        "Alteração do Relatório de Despesas para incluir o PDF Temporário",
-        "Exclusão do ordenamento dos pagamentos de Diaristas para ser pela entrada e não por valor pago",
-        "Exclusão do ordenamento dos pagamentos das despesas pagas pelo Cliente para ser pela entrada e não por data de vencimento"
+        "Adição de funcionalidade para recálculo de taxa de administração por percentual, sempre que houver inclusão, alteração ou exclusão de lançamento",
+        "Melhoria na funcionalidade que detecta duplicidade de lançamento"
     ]
 }
 
