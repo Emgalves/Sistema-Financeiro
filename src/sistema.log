@@ -1031,3 +1031,96 @@
 2025-07-08 19:50:23,781 - INFO - === Iniciando Sistema de Gestão Financeira ===
 2025-07-08 19:50:25,538 - INFO - Sistema principal inicializado com sucesso
 2025-07-08 19:50:31,056 - INFO - Saída confirmada, finalizando sistema
+2025-07-17 16:37:04,580 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 16:37:04,862 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 16:37:06,445 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 16:37:08,628 - INFO - Configurações importadas com sucesso via src.config
+2025-07-17 16:37:08,632 - INFO - Configurações importadas com sucesso
+2025-07-17 16:37:08,633 - INFO - Configurações do sistema importadas com sucesso
+2025-07-17 16:50:47,442 - INFO - Saída confirmada, finalizando sistema
+2025-07-17 17:17:12,272 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 17:17:12,656 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 17:17:14,159 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 17:17:16,787 - INFO - Configurações importadas com sucesso via src.config
+2025-07-17 17:17:16,792 - INFO - Configurações importadas com sucesso
+2025-07-17 17:17:16,794 - INFO - Configurações do sistema importadas com sucesso
+2025-07-17 17:22:46,361 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 17:22:46,670 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 17:22:48,227 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 17:22:49,709 - INFO - Configurações importadas com sucesso via src.config
+2025-07-17 17:22:49,713 - INFO - Configurações importadas com sucesso
+2025-07-17 17:22:49,714 - INFO - Configurações do sistema importadas com sucesso
+2025-07-17 17:28:51,294 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 17:34:00,537 - INFO - Saída confirmada, finalizando sistema
+2025-07-17 17:55:33,819 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 17:55:34,275 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 17:55:35,818 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 17:55:39,783 - INFO - Configurações importadas com sucesso via src.config
+2025-07-17 17:55:39,791 - INFO - Configurações importadas com sucesso
+2025-07-17 17:55:39,792 - INFO - Configurações do sistema importadas com sucesso
+2025-07-17 18:08:08,381 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 18:08:09,041 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 18:08:11,360 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 18:08:12,132 - ERROR - Erro ao abrir sistema de entrada de dados: unindent does not match any outer indentation level (Sistema_Entrada_Dados.py, line 4178)
+2025-07-17 18:08:18,338 - INFO - Saída confirmada, finalizando sistema
+2025-07-17 18:08:51,054 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 18:08:51,297 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 18:08:52,648 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 18:08:55,099 - INFO - Configurações importadas com sucesso via src.config
+2025-07-17 18:08:55,103 - INFO - Configurações importadas com sucesso
+2025-07-17 18:08:55,108 - INFO - Configurações do sistema importadas com sucesso
+2025-07-17 18:11:50,550 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 18:11:50,886 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 18:11:53,285 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 18:11:55,714 - INFO - Configurações importadas com sucesso via src.config
+2025-07-17 18:11:55,719 - INFO - Configurações importadas com sucesso
+2025-07-17 18:11:55,720 - INFO - Configurações do sistema importadas com sucesso
+2025-07-17 18:25:01,015 - INFO - Saída confirmada, finalizando sistema
+2025-07-17 18:56:56,405 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 18:56:56,821 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 18:56:58,852 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 18:57:01,709 - INFO - Configurações importadas com sucesso via src.config
+2025-07-17 18:57:01,713 - INFO - Configurações importadas com sucesso
+2025-07-17 18:57:01,716 - INFO - Configurações do sistema importadas com sucesso
+2025-07-17 19:01:43,431 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 19:01:43,712 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 19:02:23,231 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 19:02:24,848 - INFO - Configurações importadas com sucesso via src.config
+2025-07-17 19:02:24,852 - INFO - Configurações importadas com sucesso
+2025-07-17 19:02:24,853 - INFO - Configurações do sistema importadas com sucesso
+2025-07-17 19:05:23,365 - INFO - Saída confirmada, finalizando sistema
+2025-07-17 19:15:53,713 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-17 19:15:54,110 - INFO - Sistema principal inicializado com sucesso
+2025-07-17 19:17:09,028 - INFO - Abrindo sistema de entrada de dados
+2025-07-17 19:17:11,563 - INFO - Configurações importadas com sucesso via src.config
+2025-07-17 19:17:11,568 - INFO - Configurações importadas com sucesso
+2025-07-17 19:17:11,575 - INFO - Configurações do sistema importadas com sucesso
+2025-07-18 10:32:18,252 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-18 10:32:19,279 - INFO - Sistema principal inicializado com sucesso
+2025-07-18 10:33:18,910 - INFO - Abrindo sistema de entrada de dados
+2025-07-18 10:33:23,561 - INFO - Configurações importadas com sucesso via src.config
+2025-07-18 10:33:23,565 - INFO - Configurações importadas com sucesso
+2025-07-18 10:33:23,565 - INFO - Configurações do sistema importadas com sucesso
+2025-07-18 10:57:11,592 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-18 10:57:11,970 - INFO - Sistema principal inicializado com sucesso
+2025-07-18 10:57:14,002 - INFO - Abrindo sistema de entrada de dados
+2025-07-18 10:57:14,758 - ERROR - Erro ao abrir sistema de entrada de dados: unexpected indent (Sistema_Entrada_Dados.py, line 4255)
+2025-07-18 11:06:49,917 - INFO - Saída confirmada, finalizando sistema
+2025-07-18 11:07:09,398 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-18 11:07:09,688 - INFO - Sistema principal inicializado com sucesso
+2025-07-18 11:09:08,176 - INFO - Abrindo sistema de entrada de dados
+2025-07-18 11:09:09,259 - ERROR - Erro ao abrir sistema de entrada de dados: expected 'except' or 'finally' block (Sistema_Entrada_Dados.py, line 4474)
+2025-07-18 11:09:15,231 - INFO - Saída confirmada, finalizando sistema
+2025-07-18 11:47:16,614 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-18 11:47:16,949 - INFO - Sistema principal inicializado com sucesso
+2025-07-18 11:47:18,515 - INFO - Abrindo sistema de entrada de dados
+2025-07-18 11:47:21,364 - INFO - Configurações importadas com sucesso via src.config
+2025-07-18 11:47:21,369 - INFO - Configurações importadas com sucesso
+2025-07-18 11:47:21,369 - INFO - Configurações do sistema importadas com sucesso
+2025-07-18 12:20:11,545 - INFO - Saída confirmada, finalizando sistema
+2025-07-22 09:58:11,015 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-22 09:58:13,474 - INFO - Sistema principal inicializado com sucesso
+2025-07-22 09:58:17,091 - INFO - Abrindo sistema de entrada de dados
+2025-07-22 09:58:25,625 - INFO - Configurações importadas com sucesso via src.config
+2025-07-22 09:58:25,631 - INFO - Configurações importadas com sucesso
+2025-07-22 09:58:25,631 - INFO - Configurações do sistema importadas com sucesso
