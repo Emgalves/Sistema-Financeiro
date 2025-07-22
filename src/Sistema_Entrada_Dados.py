@@ -438,7 +438,6 @@ class VisualizadorLancamentos:
             print(f"Erro ao atualizar lançamento: {str(e)}")
             return False
 
-
     def remover_lancamento(self):
         item_selecionado = self.tree.selection()
         if not item_selecionado:
@@ -496,8 +495,6 @@ class VisualizadorLancamentos:
             custom_messagebox("error", "Erro", f"Erro ao salvar dados: {str(e)}")
             print(f"Erro detalhado ao salvar: {str(e)}")  # Log para debug
 
-        
-
     def atualizar_resumo(self):
         items = self.tree.get_children()
         total_lancamentos = len(items)
@@ -505,7 +502,6 @@ class VisualizadorLancamentos:
         
         self.lbl_total_lancamentos.config(text=f"Total de Lançamentos: {total_lancamentos}")
         self.lbl_valor_total.config(text=f"Valor Total: R$ {valor_total:,.2f}")
-
 
     def get_dados_atualizados(self):
         """Retorna todos os dados atualizados"""
@@ -4178,60 +4174,94 @@ class SistemaEntradaDados:
     def verificar_duplicidade_antes_salvar(self, sheet, dados):
         """
         Verifica se um lançamento similar já existe na planilha usando critérios mais precisos
-        incluindo número da nota fiscal e data de vencimento.
+        MELHORADO: Com logs detalhados e verificação mais robusta
         """
         logger = system_logger.get_logger()
-        logger.debug(f"Verificando duplicidade para: {dados['nome']} - {dados['referencia']} - Valor: {dados['valor']}")
         
-        for row in sheet.iter_rows(min_row=2, values_only=True):
-            # Pular linhas vazias
-            if not row[0]:
-                continue
-
-            # Verificar status - pular se excluído (coluna 14 = índice 13)
-            status = row[13] if len(row) > 13 else 'ATIVO'
-            if status == 'EXCLUIDO':
-                continue
-                
-            # Verificar se os critérios principais correspondem
+        try:
+            # Normalizar dados para comparação
+            nome_novo = str(dados['nome']).strip().upper()
+            referencia_nova = str(dados['referencia']).strip().upper()
+            nf_nova = str(dados.get('nf', '')).strip().upper()
+            dt_vencto_nova = str(dados['dt_vencto']).strip()
+            
             try:
-                valor_planilha = float(str(row[8]).replace(',', '.'))
                 valor_novo = float(str(dados['valor']).replace(',', '.'))
-                diferenca_valor = abs(valor_planilha - valor_novo)
+            except (ValueError, TypeError):
+                logger.error(f"Erro ao converter valor para verificação: {dados['valor']}")
+                return False
+            
+            logger.debug(f"Verificando duplicidade: {nome_novo} - {referencia_nova} - R$ {valor_novo:.2f}")
+            
+            duplicatas_encontradas = 0
+            
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                # Pular linhas vazias
+                if not row[0]:
+                    continue
+
+                # Verificar status - pular se excluído (coluna 14 = índice 13)
+                status = row[13] if len(row) > 13 else 'ATIVO'
+                if status == 'EXCLUIDO':
+                    continue
+                    
+                # Normalizar dados da planilha para comparação
+                nome_planilha = str(row[3] or '').strip().upper()  # NOME
+                referencia_planilha = str(row[4] or '').strip().upper()  # REFERÊNCIA
+                nf_planilha = str(row[5] or '').strip().upper()  # NF
                 
-                if (row[3] == dados['nome'] and                  # Nome do fornecedor
-                    row[4] == dados['referencia'] and            # Referência
-                    row[5] == dados['nf'] and                    # Nota Fiscal
-                    row[9] == dados['dt_vencto'] and             # Data de vencimento
-                    diferenca_valor < 0.01):                     # Valor com tolerância
+                # Comparar datas de vencimento
+                dt_vencto_planilha = ""
+                if row[9]:  # DT_VENCTO
+                    if isinstance(row[9], datetime):
+                        dt_vencto_planilha = row[9].strftime('%d/%m/%Y')
+                    else:
+                        dt_vencto_planilha = str(row[9]).strip()
+                
+                # Comparar valores com tolerância
+                try:
+                    valor_planilha = float(str(row[8] or 0).replace(',', '.'))  # VALOR
+                    diferenca_valor = abs(valor_planilha - valor_novo)
+                except (ValueError, TypeError):
+                    continue  # Pular se não conseguir converter valor
+                
+                # CRITÉRIOS DE DUPLICIDADE (todos devem ser verdadeiros)
+                criterios_duplicidade = [
+                    nome_planilha == nome_novo,                    # Nome idêntico
+                    referencia_planilha == referencia_nova,       # Referência idêntica
+                    diferenca_valor < 0.01,                       # Valor idêntico (tolerância de 1 centavo)
+                    dt_vencto_planilha == dt_vencto_nova,         # Data de vencimento idêntica
+                ]
+                
+                # Se NF estiver preenchida em ambos, deve ser igual
+                if nf_nova and nf_planilha:
+                    criterios_duplicidade.append(nf_planilha == nf_nova)
+                
+                # Se TODOS os critérios forem verdadeiros, é duplicata
+                if all(criterios_duplicidade):
+                    duplicatas_encontradas += 1
+                    logger.warning(f"DUPLICATA #{duplicatas_encontradas} encontrada:")
+                    logger.warning(f"  Nome: {nome_novo}")
+                    logger.warning(f"  Referência: {referencia_nova}")
+                    logger.warning(f"  Valor: R$ {valor_novo:.2f} (planilha: R$ {valor_planilha:.2f})")
+                    logger.warning(f"  Vencimento: {dt_vencto_nova}")
+                    if nf_nova:
+                        logger.warning(f"  NF: {nf_nova}")
                     
-                    # Critérios adicionais para distinguir lançamentos legítimos repetidos
-                    nf_corresponde = True
-                    dt_vencto_corresponde = True
-                    
-                    # Verificar NF se estiver presente no lançamento e na planilha
-                    if 'nf' in dados and dados['nf'] and row[5]:
-                        nf_corresponde = (str(dados['nf']).strip().upper() == str(row[5]).strip().upper())
-                    
-                    # Verificar data de vencimento
-                    if 'dt_vencto' in dados and row[9]:
-                        # Normalizar formato de data para comparação
-                        if isinstance(row[9], datetime):
-                            data_planilha = row[9].strftime('%d/%m/%Y')
-                        else:
-                            data_planilha = str(row[9])
-                        
-                        dt_vencto_corresponde = (str(dados['dt_vencto']).strip() == data_planilha.strip())
-                    
-                    # Se todos os critérios correspondem, consideramos um potencial duplicado
-                    if nf_corresponde and dt_vencto_corresponde:
-                        logger.warning(f"Duplicata detectada: {dados['nome']} - {dados['referencia']} - {dados['valor']} - NF: {dados.get('nf', 'N/A')} - Vencto: {dados.get('dt_vencto', 'N/A')}")
-                        return True
-            except Exception as e:
-                logger.error(f"Erro ao verificar duplicidade: {str(e)}")
-                # Continuar verificando outras linhas em caso de erro
+                    return True  # Encontrou duplicata
+            
+            logger.debug(f"Nenhuma duplicata encontrada para: {nome_novo} - {referencia_nova}")
+            return False  # Não encontrou duplicata
+            
+        except Exception as e:
+            logger.error(f"Erro ao processar dados: {str(e)}", exc_info=True)
+            custom_messagebox("error", "Erro", f"Erro ao processar dados: {str(e)}")
+            return False
         
-        return False
+        finally:
+            # Desmarcar flag de processamento se existir
+            if hasattr(self, '_is_saving'):
+                self._is_saving = False
 
     def enviar_dados(self):
         """
@@ -4289,169 +4319,191 @@ class SistemaEntradaDados:
             arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
             logger.info(f"Salvando em: {arquivo_cliente}")
             
-            # Abrir workbook, verificar duplicidade e salvar os dados
             try:
-                # Testar se o arquivo pode ser aberto para escrita
-                with open(arquivo_cliente, 'a+b') as test_file:
-                    pass  # Só tentamos abrir e fechar para testar acesso
-            except PermissionError:
-                logger.error(f"Permissão negada ao abrir arquivo: {arquivo_cliente}")
-                custom_messagebox("error", 
-                    "Erro", 
-                    f"A planilha '{self.cliente_atual}.xlsx' está aberta!\n\n"
-                    "Por favor:\n"
-                    "1. Feche a planilha\n"
-                    "2. Clique em OK\n"
-                    "3. Tente enviar novamente"
-                )
-                self._is_saving = False
-                return
-            except Exception as e:
-                logger.error(f"Erro ao verificar acesso ao arquivo: {str(e)}")
-                self.custom_messagebox("error","Erro", f"Erro ao verificar acesso ao arquivo: {str(e)}")
-                self._is_saving = False
-                return
-            
-            # Agora tente abrir com openpyxl
-            try:
-                workbook = load_workbook(arquivo_cliente)
-                sheet = workbook["Dados"]
-                
-                # Verificar duplicatas antes de salvar
-                lancamentos_duplicados = []
-                for dados in dados_para_processar:
-                    if self.verificar_duplicidade_antes_salvar(sheet, dados):
-                        lancamentos_duplicados.append(dados)
-
-                # Inicializar variável para controle do fluxo
-                continuar_operacao = True  # Por padrão, permite continuar
-
-                if lancamentos_duplicados:
-                    logger.warning(f"Detectados {len(lancamentos_duplicados)} possíveis lançamentos duplicados")
-                    
-                    # Criar mensagem com os duplicados
-                    msg_duplicados = f"Foram detectados {len(lancamentos_duplicados)} possíveis lançamentos duplicados:\n\n"
-                    for i, dados in enumerate(lancamentos_duplicados[:8], 1):  # Mostrar no máximo 3
-                        msg_duplicados += f"{i}. {dados['nome']} - {dados['referencia']} - R$ {dados['valor']}\n"
-                    
-                    if len(lancamentos_duplicados) > 8:
-                        msg_duplicados += f"... e mais {len(lancamentos_duplicados) - 8} lançamentos.\n"
-                    
-                    msg_duplicados += "\nDeseja continuar mesmo assim?"
-                    
-                    # Usar messagebox simples em vez de janela complexa
-                    if not custom_messagebox("yesno", "Duplicatas Detectadas", msg_duplicados):
-                        logger.info("Operação cancelada pelo usuário devido a duplicatas")
-                        return
-                    
-                    logger.info("Usuário optou por continuar apesar das duplicatas")
-
-                if sheet.tables:
-                    table_name = list(sheet.tables.keys())[0]
-                    sheet.tables.pop(table_name)
-                    
-                # Processar registros
-                for dados in dados_para_processar:
-                    proxima_linha = sheet.max_row + 1
-                    
-                    # Converter e salvar data de referência
-                    data_rel = datetime.strptime(dados['data'], '%d/%m/%Y')
-                    data_cell = sheet.cell(row=proxima_linha, column=1, value=data_rel)
-                    data_cell.number_format = 'DD/MM/YYYY'
-
-                    # Converter tipo de despesa para número
-                    tp_desp_cell = sheet.cell(row=proxima_linha, column=2, value=int(dados['tp_desp']))
-                    tp_desp_cell.number_format = '0'
-
-                    sheet.cell(row=proxima_linha, column=3, value=dados['cnpj_cpf'])
-                    sheet.cell(row=proxima_linha, column=4, value=dados['nome'])
-                    sheet.cell(row=proxima_linha, column=5, value=dados['referencia'])
-                    sheet.cell(row=proxima_linha, column=6, value=dados['nf'])
-
-                    # No método enviar_dados
-                    vr_unit = float(dados['vr_unit'].replace(',', '.'))
-                    vr_unit_cell = sheet.cell(row=proxima_linha, column=7, value=vr_unit)
-                    aplicar_formatacao_celula(vr_unit_cell)
-
-                    sheet.cell(row=proxima_linha, column=8, value=int(dados.get('dias', 1)))
-
-                    valor = float(dados['valor'].replace(',', '.'))
-                    valor_cell = sheet.cell(row=proxima_linha, column=9, value=valor)
-                    aplicar_formatacao_celula(valor_cell)
-
-                    dt_vencto = datetime.strptime(dados['dt_vencto'], '%d/%m/%Y')
-                    dt_vencto_cell = sheet.cell(row=proxima_linha, column=10, value=dt_vencto)
-                    dt_vencto_cell.number_format = 'DD/MM/YYYY'
-
-                    sheet.cell(row=proxima_linha, column=11, value=dados['categoria'])
-                    sheet.cell(row=proxima_linha, column=12, value=dados['dados_bancarios'])
-                    sheet.cell(row=proxima_linha, column=13, value=dados['observacao'])
-                    
-                    # Adicionar as novas colunas
-                    sheet.cell(row=proxima_linha, column=14, value='ATIVO')  # STATUS
-                    sheet.cell(row=proxima_linha, column=15, value=int(proxima_linha - 1))  # ID_LANCAMENTO
-
-                # Salvar o arquivo com tratamento de erro aprimorado
+                # Abrir workbook e verificar duplicidade ANTES de salvar
                 try:
-                    # Tente salvar com tratamento explícito para PermissionError
-                    workbook.save(arquivo_cliente)
-                    custom_messagebox("info", "Sucesso", "Dados salvos com sucesso!")
+                    workbook = load_workbook(arquivo_cliente)
+                    sheet = workbook["Dados"]
                     
-                    self.limpar_backup()  # Limpar backup após sucesso
+                    # CORREÇÃO: Verificar duplicatas ANTES de processar qualquer registro
+                    lancamentos_duplicados = []
+                    lancamentos_validos = []
+                    
+                    for dados in dados_para_processar:
+                        if self.verificar_duplicidade_antes_salvar(sheet, dados):
+                            lancamentos_duplicados.append(dados)
+                            logger.warning(f"Duplicata detectada: {dados['nome']} - {dados['referencia']} - R$ {dados['valor']}")
+                        else:
+                            lancamentos_validos.append(dados)
 
-                    # Após salvar com sucesso
-                    logger.info(f"Dados salvos com sucesso - Cliente: {self.cliente_atual}, Registros: {len(dados_para_processar)}")
-                    
-                    # Limpar dados após salvar com sucesso
-                    self.dados_para_incluir.clear()
-                    if hasattr(self, 'visualizador') and self.visualizador:
-                        self.visualizador.janela.destroy()
-                        self.visualizador = None
-                    
-                except PermissionError:
-                    logger.error("Permissão negada ao salvar arquivo - provável arquivo aberto")
-                    custom_messagebox("error", 
-                        "Erro", 
-                        f"Não foi possível salvar! A planilha '{self.cliente_atual}.xlsx' está aberta.\n\n"
-                        "Por favor:\n"
-                        "1. Feche a planilha\n"
-                        "2. Clique em OK\n"
-                        "3. Tente enviar novamente"
-                    )
-                except Exception as e:
-                    logger.error(f"Erro ao salvar arquivo: {str(e)}")
-                    custom_messagebox("error", "Erro", f"Erro ao salvar arquivo: {str(e)}")
-
-                try:
-                    # Após salvar os dados com sucesso, verificar se precisa recalcular taxas
-                    if hasattr(self, 'gestor_taxas') and self.dados_para_incluir:
-                        # Obter datas únicas dos lançamentos inseridos
-                        datas_inseridas = set()
-                        for lancamento in self.dados_para_incluir:
-                            try:
-                                data_rel = datetime.strptime(lancamento['data'], '%d/%m/%Y').date()
-                                datas_inseridas.add(data_rel)
-                            except:
-                                continue
+                    # Se há duplicatas, perguntar ao usuário ANTES de salvar qualquer coisa
+                    if lancamentos_duplicados:
+                        logger.warning(f"Detectados {len(lancamentos_duplicados)} possíveis lançamentos duplicados")
                         
-                        # Verificar cada data para necessidade de recálculo
-                        for data_rel in datas_inseridas:
-                            print(f"DEBUG: Verificando necessidade de recálculo para {data_rel}")
+                        # Criar mensagem detalhada
+                        msg_duplicados = f"⚠️ DUPLICATAS DETECTADAS!\n\n"
+                        msg_duplicados += f"Foram encontrados {len(lancamentos_duplicados)} possíveis lançamentos duplicados:\n\n"
+                        
+                        for i, dados in enumerate(lancamentos_duplicados[:5], 1):  # Mostrar no máximo 5
+                            msg_duplicados += f"{i}. {dados['nome']}\n"
+                            msg_duplicados += f"   📋 {dados['referencia']}\n"
+                            msg_duplicados += f"   💰 R$ {dados['valor']}\n"
+                            msg_duplicados += f"   📅 Vencimento: {dados['dt_vencto']}\n"
+                            if dados.get('nf'):
+                                msg_duplicados += f"   🧾 NF: {dados['nf']}\n"
+                            msg_duplicados += "\n"
+                        
+                        if len(lancamentos_duplicados) > 5:
+                            msg_duplicados += f"... e mais {len(lancamentos_duplicados) - 5} duplicatas.\n\n"
+                        
+                        msg_duplicados += f"📊 Resumo:\n"
+                        msg_duplicados += f"• Lançamentos únicos: {len(lancamentos_validos)}\n"
+                        msg_duplicados += f"• Possíveis duplicatas: {len(lancamentos_duplicados)}\n\n"
+                        msg_duplicados += "Deseja continuar salvando APENAS os lançamentos únicos?"
+                        
+                        # Dar opções ao usuário
+                        resposta = custom_messagebox("yesno", "⚠️ Duplicatas Detectadas", msg_duplicados)
+                        
+                        if not resposta:
+                            logger.info("Operação cancelada pelo usuário devido a duplicatas")
+                            workbook.close()
+                            return
+                        
+                        # Se usuário escolheu continuar, usar apenas os lançamentos válidos
+                        dados_para_processar = lancamentos_validos
+                        logger.info(f"Usuário optou por continuar. Processando {len(dados_para_processar)} lançamentos únicos")
+                        
+                        if not dados_para_processar:
+                            custom_messagebox("info", "Nenhum Lançamento", 
+                                            "Todos os lançamentos são duplicatas. Nenhum dado foi salvo.")
+                            workbook.close()
+                            return
+
+                    # AGORA processar apenas os lançamentos válidos (não duplicados)
+                    if sheet.tables:
+                        table_name = list(sheet.tables.keys())[0]
+                        sheet.tables.pop(table_name)
+                        
+                    # Processar registros válidos
+                    registros_salvos = 0
+                    for dados in dados_para_processar:
+                        try:
+                            proxima_linha = sheet.max_row + 1
                             
-                            precisa_recalcular, motivo = self.gestor_taxas.verificar_necessidade_recalculo(data_rel)
+                            # Converter e salvar data de referência
+                            data_rel = datetime.strptime(dados['data'], '%d/%m/%Y')
+                            data_cell = sheet.cell(row=proxima_linha, column=1, value=data_rel)
+                            data_cell.number_format = 'DD/MM/YYYY'
+
+                            # Converter tipo de despesa para número
+                            tp_desp_cell = sheet.cell(row=proxima_linha, column=2, value=int(dados['tp_desp']))
+                            tp_desp_cell.number_format = '0'
+
+                            sheet.cell(row=proxima_linha, column=3, value=dados['cnpj_cpf'])
+                            sheet.cell(row=proxima_linha, column=4, value=dados['nome'])
+                            sheet.cell(row=proxima_linha, column=5, value=dados['referencia'])
+                            sheet.cell(row=proxima_linha, column=6, value=dados['nf'])
+
+                            # Valores numéricos
+                            vr_unit = float(dados['vr_unit'].replace(',', '.'))
+                            vr_unit_cell = sheet.cell(row=proxima_linha, column=7, value=vr_unit)
+                            aplicar_formatacao_celula(vr_unit_cell)
+
+                            sheet.cell(row=proxima_linha, column=8, value=int(dados.get('dias', 1)))
+
+                            valor = float(dados['valor'].replace(',', '.'))
+                            valor_cell = sheet.cell(row=proxima_linha, column=9, value=valor)
+                            aplicar_formatacao_celula(valor_cell)
+
+                            dt_vencto = datetime.strptime(dados['dt_vencto'], '%d/%m/%Y')
+                            dt_vencto_cell = sheet.cell(row=proxima_linha, column=10, value=dt_vencto)
+                            dt_vencto_cell.number_format = 'DD/MM/YYYY'
+
+                            sheet.cell(row=proxima_linha, column=11, value=dados['categoria'])
+                            sheet.cell(row=proxima_linha, column=12, value=dados['dados_bancarios'])
+                            sheet.cell(row=proxima_linha, column=13, value=dados['observacao'])
                             
-                            if precisa_recalcular:
-                                print(f"DEBUG: Recalculando taxas para {data_rel}: {motivo}")
-                                resultado = self.gestor_taxas.recalcular_taxas_afetadas(data_rel, mostrar_detalhes=False)
+                            # Adicionar as novas colunas
+                            sheet.cell(row=proxima_linha, column=14, value='ATIVO')  # STATUS
+                            sheet.cell(row=proxima_linha, column=15, value=int(proxima_linha - 1))  # ID_LANCAMENTO
+                            
+                            registros_salvos += 1
+                            
+                        except Exception as e:
+                            logger.error(f"Erro ao processar registro {dados['nome']}: {str(e)}")
+                            continue
+
+                    # Salvar o arquivo
+                    try:
+                        workbook.save(arquivo_cliente)
+                        
+                        # Mensagem de sucesso diferenciada
+                        if lancamentos_duplicados:
+                            mensagem_sucesso = f"✅ Dados salvos com sucesso!\n\n"
+                            mensagem_sucesso += f"📊 Resumo da operação:\n"
+                            mensagem_sucesso += f"• Lançamentos salvos: {registros_salvos}\n"
+                            mensagem_sucesso += f"• Duplicatas ignoradas: {len(lancamentos_duplicados)}\n\n"
+                            mensagem_sucesso += f"🛡️ Sistema de verificação de duplicatas ativo!"
+                            custom_messagebox("info", "Sucesso com Filtro", mensagem_sucesso)
+                        else:
+                            custom_messagebox("info", "Sucesso", f"Dados salvos com sucesso! {registros_salvos} lançamentos processados.")
+                        
+                        self.limpar_backup()  # Limpar backup após sucesso
+
+                        # Limpar dados após salvar com sucesso
+                        self.dados_para_incluir.clear()
+                        if hasattr(self, 'visualizador') and self.visualizador:
+                            self.visualizador.janela.destroy()
+                            self.visualizador = None
+                        
+                    except PermissionError:
+                        logger.error("Permissão negada ao salvar arquivo - provável arquivo aberto")
+                        custom_messagebox("error", 
+                            "Erro", 
+                            f"Não foi possível salvar! A planilha '{self.cliente_atual}.xlsx' está aberta.\n\n"
+                            "Por favor:\n"
+                            "1. Feche a planilha\n"
+                            "2. Clique em OK\n"
+                            "3. Tente enviar novamente"
+                        )
+                    except Exception as e:
+                        logger.error(f"Erro ao salvar arquivo: {str(e)}")
+                        custom_messagebox("error", "Erro", f"Erro ao salvar arquivo: {str(e)}")
+
+                    # Após salvar os dados com sucesso, verificar se precisa recalcular taxas
+                    try:
+                        if hasattr(self, 'gestor_taxas') and self.dados_para_incluir:
+                            # Obter datas únicas dos lançamentos inseridos
+                            datas_inseridas = set()
+                            for lancamento in self.dados_para_incluir:
+                                try:
+                                    data_rel = datetime.strptime(lancamento['data'], '%d/%m/%Y').date()
+                                    datas_inseridas.add(data_rel)
+                                except:
+                                    continue
+                            
+                            # Verificar cada data para necessidade de recálculo
+                            for data_rel in datas_inseridas:
+                                print(f"DEBUG: Verificando necessidade de recálculo para {data_rel}")
                                 
-                                if resultado["sucesso"] and "taxas recalculadas" in resultado["mensagem"]:
-                                    logger.info(f"Taxas recalculadas para {data_rel}: {resultado['mensagem']}")
-                            else:
-                                print(f"DEBUG: Não precisa recalcular para {data_rel}: {motivo}")
+                                precisa_recalcular, motivo = self.gestor_taxas.verificar_necessidade_recalculo(data_rel)
+                                
+                                if precisa_recalcular:
+                                    print(f"DEBUG: Recalculando taxas para {data_rel}: {motivo}")
+                                    resultado = self.gestor_taxas.recalcular_taxas_afetadas(data_rel, mostrar_detalhes=False)
+                                    
+                                    if resultado["sucesso"] and "taxas recalculadas" in resultado["mensagem"]:
+                                        logger.info(f"Taxas recalculadas para {data_rel}: {resultado['mensagem']}")
+                                else:
+                                    print(f"DEBUG: Não precisa recalcular para {data_rel}: {motivo}")
+                                    
+                    except Exception as e:
+                        logger.error(f"Erro ao recalcular taxas: {str(e)}")
+                        
                 except Exception as e:
-                    logger.error(f"Erro durante envio: {str(e)}")
-                    custom_messagebox("error", "Erro", f"Erro durante envio: {str(e)}")
-            
+                    logger.error(f"Erro ao abrir arquivo: {str(e)}", exc_info=True)
+                    custom_messagebox("error", "Erro", f"Erro ao abrir arquivo: {str(e)}")
+                    
             except Exception as e:
                 logger.error(f"Erro ao processar dados: {str(e)}", exc_info=True)
                 custom_messagebox("error", "Erro", f"Erro ao processar dados: {str(e)}")
@@ -4461,8 +4513,13 @@ class SistemaEntradaDados:
             custom_messagebox("error", "Erro", f"Erro ao enviar dados: {str(e)}")
             
         finally:
-            # Desmarcar flag de processamento
-            self._is_saving = False
+            # Reabilitar botão e desmarcar flag de processamento
+            if btn_enviar:
+                btn_enviar.config(state='normal')
+            
+            # Desmarcar flag de processamento se existir
+            if hasattr(self, '_is_saving'):
+                self._is_saving = False
 
     def verificar_consistencia_taxas(sistema, data_referencia=None):
         """
@@ -5194,8 +5251,6 @@ class EditorCliente:
                 
             except Exception as e:
                 custom_messagebox("error", "Erro", f"Erro ao remover taxa: {str(e)}")
-
-
 
 class GestaoContratos:
     def __init__(self, parent):
@@ -6813,8 +6868,7 @@ class GestaoContratos:
                 
             except Exception as e:
                 custom_messagebox("error", "Erro", f"Erro ao excluir contrato: {str(e)})")
-
-            
+        
 class GestaoTaxasFixas:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
@@ -6898,7 +6952,6 @@ class GestaoTaxasFixas:
         ws.cell(row=proxima_linha, column=28, value=dados['data_rel'])
         ws.cell(row=proxima_linha, column=29, value=dados['valor'])
         ws.cell(row=proxima_linha, column=30, value='LANÇADO')
-
 
 class GestaoAdministradores:
     def __init__(self, parent):
@@ -7066,8 +7119,6 @@ class GestaoAdministradores:
     def get_administradores(self):
         """Retorna a lista de administradores configurados"""
         return self.administradores.copy()        
-
-
 
 class GestorParcelas:
     def __init__(self, parent):
@@ -7841,7 +7892,6 @@ class GestorParcelas:
         """Inicia a execução do sistema"""
         self.root.mainloop()
 
-   
 class ImportadorRH:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
@@ -9684,7 +9734,6 @@ class GestorTaxasAdministracao:
         except Exception as e:
             return False, f"Erro na verificação: {str(e)}"
 
-
 class GerenciadorLancamentos:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
@@ -10834,7 +10883,6 @@ class GerenciadorLancamentos:
             return f"{valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
         except:
             return str(valor)
-
 
 class EditorLancamentoCompleto:
     def __init__(self, parent, lancamento, callback_salvar):
