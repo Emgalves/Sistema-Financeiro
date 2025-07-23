@@ -9998,240 +9998,63 @@ class GestorTaxasAdministracao:
             return {"sucesso": False, "mensagem": erro_msg}
 
 
-    def verificar_necessidade_recalculo_apos_nova_despesa(self, data_lancamento):
+    def verificar_necessidade_recalculo(self, data_referencia, cliente=None):
         """
-        Verifica se precisa recalcular taxas após adicionar nova despesa
-        Trabalha especificamente com as datas 5 e 20 de cada mês
+        Verifica se há necessidade de recálculo de taxas para uma data específica
         """
         try:
-            print(f"DEBUG: Verificando necessidade de recálculo para nova despesa em {data_lancamento}")
-            
-            # Converter data para objeto date se necessário
-            if isinstance(data_lancamento, str):
-                data_obj = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
-            else:
-                data_obj = data_lancamento
-            
-            # Determinar a data de taxa correspondente (5 ou 20)
-            data_taxa = self.obter_data_taxa_correspondente(data_obj)
-            print(f"DEBUG: Data da taxa correspondente: {data_taxa}")
-            
-            gestor = GestorTaxasAdministracao(self)
-            precisa, motivo = gestor.verificar_necessidade_recalculo(data_taxa)
-            
-            if precisa:
-                print(f"DEBUG: Recálculo necessário: {motivo}")
+            if not cliente:
+                cliente = self.sistema.cliente_atual
                 
-                # Perguntar ao usuário se quer recalcular
-                if custom_messagebox("yesno", "Recálculo de Taxa", 
-                                f"Nova despesa adicionada em {data_obj.strftime('%d/%m/%Y')}.\n"
-                                f"Data da taxa correspondente: {data_taxa.strftime('%d/%m/%Y')}\n\n"
-                                f"Detectado: {motivo}\n\n"
-                                f"Deseja recalcular a taxa de administração automaticamente?"):
-                    
-                    resultado = gestor.recalcular_taxas_afetadas(
-                        data_taxa,  # Usar a data da taxa, não a data do lançamento
-                        cliente=self.cliente_atual,
-                        mostrar_detalhes=True
-                    )
-                    
-                    return resultado
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            
+            if not os.path.exists(arquivo_cliente):
+                return False, "Arquivo do cliente não encontrado"
+            
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = df.fillna("")
+            
+            # Converter data
+            if isinstance(data_referencia, str):
+                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
             else:
-                print(f"DEBUG: Recálculo não necessário: {motivo}")
-                
-            return {"sucesso": True, "mensagem": "Nenhum recálculo necessário"}
+                data_ref_dt = pd.to_datetime(data_referencia)
+            
+            # Filtrar para a quinzena
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            df_quinzena = df[df['DATA_REL'].dt.date == data_ref_dt.date()].copy()
+            
+            # Verificar se há taxas
+            taxas_existentes = self.identificar_lancamentos_taxa_admin(df_quinzena)
+            
+            if taxas_existentes.empty:
+                return False, "Nenhuma taxa encontrada para esta data"
+            
+            # Calcular base atual
+            base_atual = self.calcular_base_calculo_taxa(df, data_ref_dt.date(), incluir_excluidos=False)
+            
+            # Verificar se há inconsistência
+            percentual = self.obter_percentual_taxa_cliente(cliente) or self.percentual_padrao
+            valor_esperado = base_atual * (percentual / 100)
+            
+            valor_atual_taxas = 0
+            for _, taxa in taxas_existentes.iterrows():
+                if taxa.get('STATUS', 'ATIVO') != 'EXCLUIDO':
+                    try:
+                        valor_atual_taxas += float(str(taxa.get('VALOR', 0)).replace(',', '.'))
+                    except:
+                        pass
+            
+            diferenca = abs(valor_esperado - valor_atual_taxas)
+            tolerancia = max(0.01, valor_esperado * 0.001)  # 0.1% ou R$ 0,01
+            
+            if diferenca > tolerancia:
+                return True, f"Inconsistência detectada: esperado R$ {valor_esperado:,.2f}, atual R$ {valor_atual_taxas:,.2f}"
+            
+            return False, "Taxas estão consistentes"
             
         except Exception as e:
-            print(f"DEBUG: Erro na verificação pós-despesa: {str(e)}")
-            return {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
-
-
-    def obter_data_taxa_correspondente(self, data_lancamento):
-        """
-        Determina a data da taxa baseado na regra:
-        - Do dia 21 ao dia 5 (do mês seguinte): corresponde ao dia 5
-        - Do dia 6 ao dia 20: corresponde ao dia 20
-        """
-        try:
-            dia = data_lancamento.day
-            mes = data_lancamento.month
-            ano = data_lancamento.year
-            
-            # Regra correta: 
-            # - Do dia 21 ao dia 5 (próximo mês): taxa do dia 5
-            # - Do dia 6 ao dia 20: taxa do dia 20
-            
-            if dia >= 21 or dia <= 5:
-                # Período que vai para o dia 5
-                if dia >= 21:
-                    # Dias 21-31: vai para o dia 5 do mês seguinte
-                    if mes == 12:
-                        data_taxa = date(ano + 1, 1, 5)
-                    else:
-                        data_taxa = date(ano, mes + 1, 5)
-                    periodo = f"final do mês (dia {dia}) -> dia 5 do mês seguinte"
-                else:
-                    # Dias 1-5: taxa do próprio dia 5
-                    data_taxa = date(ano, mes, 5)
-                    periodo = f"início do mês (dia {dia}) -> dia 5 do mesmo mês"
-            else:
-                # Dias 6-20: taxa do dia 20 do mesmo mês
-                data_taxa = date(ano, mes, 20)
-                periodo = f"meio do mês (dia {dia}) -> dia 20 do mesmo mês"
-            
-            print(f"DEBUG: Lançamento {data_lancamento.strftime('%d/%m/%Y')} -> {periodo} -> Taxa {data_taxa.strftime('%d/%m/%Y')}")
-            
-            return data_taxa
-            
-        except Exception as e:
-            print(f"DEBUG: Erro ao determinar data da taxa: {str(e)}")
-            # Em caso de erro, retorna a própria data
-            return data_lancamento
-
-
-    def recalcular_taxas_manual(self):
-        """
-        Interface para recálculo manual de taxas - VERSÃO ATUALIZADA
-        Pré-seleciona datas 5 ou 20 baseado na data atual
-        """
-        if not self.cliente_atual:
-            custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
-            return
-        
-        print("DEBUG: Abrindo interface de recálculo manual...")
-        
-        # Solicitar data ao usuário
-        janela = tk.Toplevel(self.root)
-        janela.title("Recalcular Taxas")
-        janela.geometry("500x300")
-        janela.grab_set()  # Modal
-        janela.transient(self.root)
-        
-        frame = ttk.Frame(janela, padding="20")
-        frame.pack(fill='both', expand=True)
-        
-        ttk.Label(frame, text="Recálculo de Taxa de Administração", 
-                font=('Arial', 12, 'bold')).pack(pady=(0, 15))
-        
-        ttk.Label(frame, text="Selecione a data da taxa (sempre dia 5 ou 20):", 
-                font=('Arial', 10)).pack(pady=(0, 10))
-        
-        # Frame para seleção de data
-        data_frame = ttk.Frame(frame)
-        data_frame.pack(pady=10)
-        
-        # Determinar data padrão baseada na data atual
-        hoje = datetime.now().date()
-        data_taxa_sugerida = self.obter_data_taxa_correspondente(hoje)
-        
-        # Usar DateEntry se disponível, senão usar Entry simples
-        try:
-            from tkcalendar import DateEntry
-            data_entry = DateEntry(
-                data_frame, 
-                width=12, 
-                date_pattern='dd/mm/yyyy', 
-                locale='pt_BR'
-            )
-            data_entry.set_date(data_taxa_sugerida)
-            data_entry.pack(pady=5)
-            get_data = lambda: data_entry.get_date()
-            
-            # Adicionar botões de atalho para datas comuns
-            atalhos_frame = ttk.Frame(data_frame)
-            atalhos_frame.pack(pady=10)
-            
-            def set_data_5_atual():
-                # Dia 5 do mês atual
-                nova_data = date(hoje.year, hoje.month, 5)
-                data_entry.set_date(nova_data)
-            
-            def set_data_20_atual():
-                # Dia 20 do mês atual
-                nova_data = date(hoje.year, hoje.month, 20)
-                data_entry.set_date(nova_data)
-                
-            def set_data_5_proximo():
-                # Dia 5 do próximo mês
-                if hoje.month == 12:
-                    nova_data = date(hoje.year + 1, 1, 5)
-                else:
-                    nova_data = date(hoje.year, hoje.month + 1, 5)
-                data_entry.set_date(nova_data)
-            
-            ttk.Button(atalhos_frame, text="Dia 5 atual", 
-                    command=set_data_5_atual, width=12).pack(side='left', padx=3)
-            ttk.Button(atalhos_frame, text="Dia 20 atual", 
-                    command=set_data_20_atual, width=12).pack(side='left', padx=3)
-            ttk.Button(atalhos_frame, text="Dia 5 próximo", 
-                    command=set_data_5_proximo, width=12).pack(side='left', padx=3)
-            
-        except ImportError:
-            # Fallback para Entry simples
-            ttk.Label(data_frame, text="Formato: DD/MM/AAAA").pack()
-            data_entry = ttk.Entry(data_frame, width=15)
-            data_entry.pack(pady=5)
-            data_entry.insert(0, data_taxa_sugerida.strftime('%d/%m/%Y'))
-            
-            def get_data():
-                return datetime.strptime(data_entry.get(), '%d/%m/%Y').date()
-        
-        # Informações sobre o sistema
-        info_frame = ttk.LabelFrame(frame, text="ℹ️ Informações", padding="10")
-        info_frame.pack(fill='x', pady=10)
-        
-        ttk.Label(info_frame, 
-                text="• O sistema trabalha apenas com taxas nos dias 5 e 20\n"
-                    "• Dias 21 ao 5 (próximo mês) → Taxa do dia 5\n"
-                    "• Dias 6 ao 20 → Taxa do dia 20\n"
-                    f"• Data sugerida: {data_taxa_sugerida.strftime('%d/%m/%Y')}", 
-                font=('Arial', 9),
-                justify='left').pack(anchor='w')
-        
-        def executar_recalculo():
-            try:
-                data_selecionada = get_data()
-                
-                # Validar se é dia 5 ou 20
-                if data_selecionada.day not in [5, 20]:
-                    if custom_messagebox("yesno", "Data Inválida", 
-                                    f"A data selecionada ({data_selecionada.strftime('%d/%m/%Y')}) não é dia 5 nem 20.\n\n"
-                                    f"O sistema trabalha apenas com taxas nos dias 5 e 20.\n\n"
-                                    f"Deseja ajustar automaticamente para o dia {self.obter_data_taxa_correspondente(data_selecionada).strftime('%d/%m/%Y')}?"):
-                        data_selecionada = self.obter_data_taxa_correspondente(data_selecionada)
-                    else:
-                        return
-                
-                print(f"DEBUG: Recalculando taxas para data: {data_selecionada}")
-                
-                gestor = GestorTaxasAdministracao(self)
-                resultado = gestor.recalcular_taxas_afetadas(
-                    data_selecionada, 
-                    cliente=self.cliente_atual,
-                    mostrar_detalhes=True
-                )
-                
-                print(f"DEBUG: Resultado do recálculo: {resultado}")
-                
-                if resultado["sucesso"]:
-                    # Recarregar a lista de lançamentos se estiver disponível
-                    if hasattr(self, 'aba_lancamentos') and hasattr(self.aba_lancamentos, 'carregar_lancamentos'):
-                        self.aba_lancamentos.carregar_lancamentos()
-                    
-                    janela.destroy()
-                
-            except Exception as e:
-                import traceback
-                print(f"DEBUG: Erro no recálculo: {traceback.format_exc()}")
-                custom_messagebox("error", "Erro", f"Erro no recálculo: {str(e)}")
-        
-        botoes_frame = ttk.Frame(frame)
-        botoes_frame.pack(fill='x', pady=(15, 0))
-        
-        ttk.Button(botoes_frame, text="🔄 Recalcular", 
-                command=executar_recalculo).pack(side='left')
-        ttk.Button(botoes_frame, text="Cancelar", 
-                command=janela.destroy).pack(side='left', padx=(10, 0))
+            return False, f"Erro na verificação: {str(e)}"
 
 class GerenciadorLancamentos:
     def __init__(self, sistema_principal):
