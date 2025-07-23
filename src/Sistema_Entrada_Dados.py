@@ -2077,6 +2077,23 @@ class SistemaEntradaDados:
             style='Medium.TButton'
         ).pack(side='left', padx=5)
 
+        frame_botoes_verificacao = ttk.Frame(frame_taxas)
+        frame_botoes_verificacao.pack(fill='x', padx=5, pady=(0, 8))
+
+        ttk.Button(
+            frame_botoes_verificacao, 
+            text="🔍 Verificar Taxas",
+            command=lambda: self.verificar_e_mostrar_consistencia(),
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
+        ttk.Button(
+            frame_botoes_verificacao, 
+            text="🔄 Recalcular Taxa",
+            command=lambda: self.recalcular_taxas_manual(),
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
         # Separador para dividir visualmente as seções
         ttk.Separator(self.aba_fornecedor, orient='horizontal').pack(fill='x', padx=10, pady=5)
 
@@ -2096,10 +2113,6 @@ class SistemaEntradaDados:
             style='Medium.TButton'
         ).pack(side='left', padx=5)
 
-        # ttk.Button(frame_botoes_fornecedor, 
-        #         text="Enviar Registros", 
-        #         command=self.enviar_dados,
-        #         style='Medium.TButton').pack(side='left', padx=5)
         ttk.Button(
             frame_botoes_fornecedor, 
             text="Importar Folha RH", 
@@ -4265,20 +4278,16 @@ class SistemaEntradaDados:
 
     def enviar_dados(self):
         """
-        Versão melhorada que verifica e recalcula taxas após inserção
+        Versão corrigida que SEMPRE verifica necessidade de recálculo após inserção
         """
         logger = system_logger.get_logger()
         logger.info(f"Iniciando envio de dados - Cliente: {self.cliente_atual}, Registros: {len(self.dados_para_incluir) if self.dados_para_incluir else 0}")
         
-        # Desabilitar botão para evitar múltiplos cliques - CORRIGIDO
+        # Desabilitar botão para evitar múltiplos cliques
         btn_enviar = None
-        
-        # Buscar o botão "Enviar" em todas as abas do notebook
         for aba in [self.aba_dados, self.aba_fornecedor]:
             for child in aba.winfo_children():
-                # Verificar se é um frame 
                 if isinstance(child, ttk.Frame):
-                    # Procurar o botão dentro deste frame
                     for widget in child.winfo_children():
                         if isinstance(widget, ttk.Button) and widget['text'] == "Enviar":
                             btn_enviar = widget
@@ -4303,10 +4312,21 @@ class SistemaEntradaDados:
                 dados_para_processar = self.dados_para_incluir.copy()
                     
             if not dados_para_processar:
-                custom_messagebox("warning",  "Aviso", "Não há dados para enviar!")
+                custom_messagebox("warning", "Aviso", "Não há dados para enviar!")
                 return
 
             logger.info(f"Total de registros a processar: {len(dados_para_processar)}")
+
+            # ===== NOVO: Capturar datas afetadas ANTES da inserção =====
+            datas_afetadas = set()
+            for lancamento in dados_para_processar:
+                try:
+                    data_rel = datetime.strptime(lancamento['data'], '%d/%m/%Y').date()
+                    datas_afetadas.add(data_rel)
+                except:
+                    continue
+            
+            logger.info(f"Datas que serão afetadas pela inserção: {[d.strftime('%d/%m/%Y') for d in datas_afetadas]}")
 
             # Adicionar identificadores únicos para cada lançamento
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -4320,194 +4340,202 @@ class SistemaEntradaDados:
             logger.info(f"Salvando em: {arquivo_cliente}")
             
             try:
+                # ===== CORREÇÃO: Verificar e corrigir IDs ANTES de inserir novos dados =====
+                self.verificar_e_corrigir_ids_antes_insercao(arquivo_cliente)
+                
                 # Abrir workbook e verificar duplicidade ANTES de salvar
+                workbook = load_workbook(arquivo_cliente)
+                sheet = workbook["Dados"]
+                
+                # Verificar duplicatas ANTES de processar qualquer registro
+                lancamentos_duplicados = []
+                lancamentos_validos = []
+                
+                for dados in dados_para_processar:
+                    if self.verificar_duplicidade_antes_salvar(sheet, dados):
+                        lancamentos_duplicados.append(dados)
+                        logger.warning(f"Duplicata detectada: {dados['nome']} - {dados['referencia']} - R$ {dados['valor']}")
+                    else:
+                        lancamentos_validos.append(dados)
+
+                # Se há duplicatas, perguntar ao usuário ANTES de salvar qualquer coisa
+                if lancamentos_duplicados:
+                    logger.warning(f"Detectados {len(lancamentos_duplicados)} possíveis lançamentos duplicados")
+                    
+                    msg_duplicados = f"⚠️ DUPLICATAS DETECTADAS!\n\n"
+                    msg_duplicados += f"Foram encontrados {len(lancamentos_duplicados)} possíveis lançamentos duplicados:\n\n"
+                    
+                    for i, dados in enumerate(lancamentos_duplicados[:5], 1):
+                        msg_duplicados += f"{i}. {dados['nome']}\n"
+                        msg_duplicados += f"   📋 {dados['referencia']}\n"
+                        msg_duplicados += f"   💰 R$ {dados['valor']}\n"
+                        msg_duplicados += f"   📅 Vencimento: {dados['dt_vencto']}\n"
+                        if dados.get('nf'):
+                            msg_duplicados += f"   🧾 NF: {dados['nf']}\n"
+                        msg_duplicados += "\n"
+                    
+                    if len(lancamentos_duplicados) > 5:
+                        msg_duplicados += f"... e mais {len(lancamentos_duplicados) - 5} duplicatas.\n\n"
+                    
+                    msg_duplicados += f"📊 Resumo:\n"
+                    msg_duplicados += f"• Lançamentos únicos: {len(lancamentos_validos)}\n"
+                    msg_duplicados += f"• Possíveis duplicatas: {len(lancamentos_duplicados)}\n\n"
+                    msg_duplicados += "Deseja continuar salvando APENAS os lançamentos únicos?"
+                    
+                    resposta = custom_messagebox("yesno", "⚠️ Duplicatas Detectadas", msg_duplicados)
+                    
+                    if not resposta:
+                        logger.info("Operação cancelada pelo usuário devido a duplicatas")
+                        workbook.close()
+                        return
+                    
+                    # Se usuário escolheu continuar, usar apenas os lançamentos válidos
+                    dados_para_processar = lancamentos_validos
+                    logger.info(f"Usuário optou por continuar. Processando {len(dados_para_processar)} lançamentos únicos")
+                    
+                    if not dados_para_processar:
+                        custom_messagebox("info", "Nenhum Lançamento", 
+                                        "Todos os lançamentos são duplicatas. Nenhum dado foi salvo.")
+                        workbook.close()
+                        return
+
+                # Remover tabelas existentes para evitar conflitos
+                if sheet.tables:
+                    table_name = list(sheet.tables.keys())[0]
+                    sheet.tables.pop(table_name)
+                    
+                # Processar registros válidos
+                registros_salvos = 0
+                for dados in dados_para_processar:
+                    try:
+                        proxima_linha = sheet.max_row + 1
+                        
+                        # Converter e salvar data de referência
+                        data_rel = datetime.strptime(dados['data'], '%d/%m/%Y')
+                        data_cell = sheet.cell(row=proxima_linha, column=1, value=data_rel)
+                        data_cell.number_format = 'DD/MM/YYYY'
+
+                        # Converter tipo de despesa para número
+                        tp_desp_cell = sheet.cell(row=proxima_linha, column=2, value=int(dados['tp_desp']))
+                        tp_desp_cell.number_format = '0'
+
+                        sheet.cell(row=proxima_linha, column=3, value=dados['cnpj_cpf'])
+                        sheet.cell(row=proxima_linha, column=4, value=dados['nome'])
+                        sheet.cell(row=proxima_linha, column=5, value=dados['referencia'])
+                        sheet.cell(row=proxima_linha, column=6, value=dados['nf'])
+
+                        # Valores numéricos
+                        vr_unit = float(dados['vr_unit'].replace(',', '.'))
+                        vr_unit_cell = sheet.cell(row=proxima_linha, column=7, value=vr_unit)
+                        aplicar_formatacao_celula(vr_unit_cell)
+
+                        sheet.cell(row=proxima_linha, column=8, value=int(dados.get('dias', 1)))
+
+                        valor = float(dados['valor'].replace(',', '.'))
+                        valor_cell = sheet.cell(row=proxima_linha, column=9, value=valor)
+                        aplicar_formatacao_celula(valor_cell)
+
+                        dt_vencto = datetime.strptime(dados['dt_vencto'], '%d/%m/%Y')
+                        dt_vencto_cell = sheet.cell(row=proxima_linha, column=10, value=dt_vencto)
+                        dt_vencto_cell.number_format = 'DD/MM/YYYY'
+
+                        sheet.cell(row=proxima_linha, column=11, value=dados['categoria'])
+                        sheet.cell(row=proxima_linha, column=12, value=dados['dados_bancarios'])
+                        sheet.cell(row=proxima_linha, column=13, value=dados['observacao'])
+                        
+                        # ===== CORREÇÃO: Gerar ID sequencial corretamente =====
+                        novo_id = self.obter_proximo_id_sequencial(sheet)
+                        sheet.cell(row=proxima_linha, column=14, value='ATIVO')  # STATUS
+                        sheet.cell(row=proxima_linha, column=15, value=novo_id)  # ID_LANCAMENTO sequencial
+                        
+                        logger.info(f"Lançamento inserido com ID {novo_id} na linha {proxima_linha}")
+                        
+                        registros_salvos += 1
+                        
+                    except Exception as e:
+                        logger.error(f"Erro ao processar registro {dados['nome']}: {str(e)}")
+                        continue
+
+                # Salvar o arquivo
                 try:
-                    workbook = load_workbook(arquivo_cliente)
-                    sheet = workbook["Dados"]
+                    workbook.save(arquivo_cliente)
                     
-                    # CORREÇÃO: Verificar duplicatas ANTES de processar qualquer registro
-                    lancamentos_duplicados = []
-                    lancamentos_validos = []
-                    
-                    for dados in dados_para_processar:
-                        if self.verificar_duplicidade_antes_salvar(sheet, dados):
-                            lancamentos_duplicados.append(dados)
-                            logger.warning(f"Duplicata detectada: {dados['nome']} - {dados['referencia']} - R$ {dados['valor']}")
-                        else:
-                            lancamentos_validos.append(dados)
-
-                    # Se há duplicatas, perguntar ao usuário ANTES de salvar qualquer coisa
-                    if lancamentos_duplicados:
-                        logger.warning(f"Detectados {len(lancamentos_duplicados)} possíveis lançamentos duplicados")
+                    # ===== CORREÇÃO PRINCIPAL: Sempre verificar recálculo após inserção =====
+                    if registros_salvos > 0:
+                        logger.info(f"Iniciando verificação de recálculo para {len(datas_afetadas)} datas")
                         
-                        # Criar mensagem detalhada
-                        msg_duplicados = f"⚠️ DUPLICATAS DETECTADAS!\n\n"
-                        msg_duplicados += f"Foram encontrados {len(lancamentos_duplicados)} possíveis lançamentos duplicados:\n\n"
+                        # Aguardar um pouco para garantir que o arquivo foi salvo
+                        import time
+                        time.sleep(0.5)
                         
-                        for i, dados in enumerate(lancamentos_duplicados[:5], 1):  # Mostrar no máximo 5
-                            msg_duplicados += f"{i}. {dados['nome']}\n"
-                            msg_duplicados += f"   📋 {dados['referencia']}\n"
-                            msg_duplicados += f"   💰 R$ {dados['valor']}\n"
-                            msg_duplicados += f"   📅 Vencimento: {dados['dt_vencto']}\n"
-                            if dados.get('nf'):
-                                msg_duplicados += f"   🧾 NF: {dados['nf']}\n"
-                            msg_duplicados += "\n"
-                        
-                        if len(lancamentos_duplicados) > 5:
-                            msg_duplicados += f"... e mais {len(lancamentos_duplicados) - 5} duplicatas.\n\n"
-                        
-                        msg_duplicados += f"📊 Resumo:\n"
-                        msg_duplicados += f"• Lançamentos únicos: {len(lancamentos_validos)}\n"
-                        msg_duplicados += f"• Possíveis duplicatas: {len(lancamentos_duplicados)}\n\n"
-                        msg_duplicados += "Deseja continuar salvando APENAS os lançamentos únicos?"
-                        
-                        # Dar opções ao usuário
-                        resposta = custom_messagebox("yesno", "⚠️ Duplicatas Detectadas", msg_duplicados)
-                        
-                        if not resposta:
-                            logger.info("Operação cancelada pelo usuário devido a duplicatas")
-                            workbook.close()
-                            return
-                        
-                        # Se usuário escolheu continuar, usar apenas os lançamentos válidos
-                        dados_para_processar = lancamentos_validos
-                        logger.info(f"Usuário optou por continuar. Processando {len(dados_para_processar)} lançamentos únicos")
-                        
-                        if not dados_para_processar:
-                            custom_messagebox("info", "Nenhum Lançamento", 
-                                            "Todos os lançamentos são duplicatas. Nenhum dado foi salvo.")
-                            workbook.close()
-                            return
-
-                    # AGORA processar apenas os lançamentos válidos (não duplicados)
-                    if sheet.tables:
-                        table_name = list(sheet.tables.keys())[0]
-                        sheet.tables.pop(table_name)
-                        
-                    # Processar registros válidos
-                    registros_salvos = 0
-                    for dados in dados_para_processar:
-                        try:
-                            proxima_linha = sheet.max_row + 1
-                            
-                            # Converter e salvar data de referência
-                            data_rel = datetime.strptime(dados['data'], '%d/%m/%Y')
-                            data_cell = sheet.cell(row=proxima_linha, column=1, value=data_rel)
-                            data_cell.number_format = 'DD/MM/YYYY'
-
-                            # Converter tipo de despesa para número
-                            tp_desp_cell = sheet.cell(row=proxima_linha, column=2, value=int(dados['tp_desp']))
-                            tp_desp_cell.number_format = '0'
-
-                            sheet.cell(row=proxima_linha, column=3, value=dados['cnpj_cpf'])
-                            sheet.cell(row=proxima_linha, column=4, value=dados['nome'])
-                            sheet.cell(row=proxima_linha, column=5, value=dados['referencia'])
-                            sheet.cell(row=proxima_linha, column=6, value=dados['nf'])
-
-                            # Valores numéricos
-                            vr_unit = float(dados['vr_unit'].replace(',', '.'))
-                            vr_unit_cell = sheet.cell(row=proxima_linha, column=7, value=vr_unit)
-                            aplicar_formatacao_celula(vr_unit_cell)
-
-                            sheet.cell(row=proxima_linha, column=8, value=int(dados.get('dias', 1)))
-
-                            valor = float(dados['valor'].replace(',', '.'))
-                            valor_cell = sheet.cell(row=proxima_linha, column=9, value=valor)
-                            aplicar_formatacao_celula(valor_cell)
-
-                            dt_vencto = datetime.strptime(dados['dt_vencto'], '%d/%m/%Y')
-                            dt_vencto_cell = sheet.cell(row=proxima_linha, column=10, value=dt_vencto)
-                            dt_vencto_cell.number_format = 'DD/MM/YYYY'
-
-                            sheet.cell(row=proxima_linha, column=11, value=dados['categoria'])
-                            sheet.cell(row=proxima_linha, column=12, value=dados['dados_bancarios'])
-                            sheet.cell(row=proxima_linha, column=13, value=dados['observacao'])
-                            
-                            # Adicionar as novas colunas
-                            sheet.cell(row=proxima_linha, column=14, value='ATIVO')  # STATUS
-                            sheet.cell(row=proxima_linha, column=15, value=int(proxima_linha - 1))  # ID_LANCAMENTO
-                            
-                            registros_salvos += 1
-                            
-                        except Exception as e:
-                            logger.error(f"Erro ao processar registro {dados['nome']}: {str(e)}")
-                            continue
-
-                    # Salvar o arquivo
-                    try:
-                        workbook.save(arquivo_cliente)
-                        
-                        # Mensagem de sucesso diferenciada
-                        if lancamentos_duplicados:
-                            mensagem_sucesso = f"✅ Dados salvos com sucesso!\n\n"
-                            mensagem_sucesso += f"📊 Resumo da operação:\n"
-                            mensagem_sucesso += f"• Lançamentos salvos: {registros_salvos}\n"
-                            mensagem_sucesso += f"• Duplicatas ignoradas: {len(lancamentos_duplicados)}\n\n"
-                            mensagem_sucesso += f"🛡️ Sistema de verificação de duplicatas ativo!"
-                            custom_messagebox("info", "Sucesso com Filtro", mensagem_sucesso)
-                        else:
-                            custom_messagebox("info", "Sucesso", f"Dados salvos com sucesso! {registros_salvos} lançamentos processados.")
-                        
-                        self.limpar_backup()  # Limpar backup após sucesso
-
-                        # Limpar dados após salvar com sucesso
-                        self.dados_para_incluir.clear()
-                        if hasattr(self, 'visualizador') and self.visualizador:
-                            self.visualizador.janela.destroy()
-                            self.visualizador = None
-                        
-                    except PermissionError:
-                        logger.error("Permissão negada ao salvar arquivo - provável arquivo aberto")
-                        custom_messagebox("error", 
-                            "Erro", 
-                            f"Não foi possível salvar! A planilha '{self.cliente_atual}.xlsx' está aberta.\n\n"
-                            "Por favor:\n"
-                            "1. Feche a planilha\n"
-                            "2. Clique em OK\n"
-                            "3. Tente enviar novamente"
-                        )
-                    except Exception as e:
-                        logger.error(f"Erro ao salvar arquivo: {str(e)}")
-                        custom_messagebox("error", "Erro", f"Erro ao salvar arquivo: {str(e)}")
-
-                    # Após salvar os dados com sucesso, verificar se precisa recalcular taxas
-                    try:
-                        if hasattr(self, 'gestor_taxas') and self.dados_para_incluir:
-                            # Obter datas únicas dos lançamentos inseridos
-                            datas_inseridas = set()
-                            for lancamento in self.dados_para_incluir:
-                                try:
-                                    data_rel = datetime.strptime(lancamento['data'], '%d/%m/%Y').date()
-                                    datas_inseridas.add(data_rel)
-                                except:
-                                    continue
-                            
-                            # Verificar cada data para necessidade de recálculo
-                            for data_rel in datas_inseridas:
-                                print(f"DEBUG: Verificando necessidade de recálculo para {data_rel}")
+                        # Para cada data afetada, verificar se precisa recalcular
+                        datas_recalculadas = []
+                        for data_rel in datas_afetadas:
+                            try:
+                                logger.info(f"Verificando necessidade de recálculo para {data_rel}")
                                 
-                                precisa_recalcular, motivo = self.gestor_taxas.verificar_necessidade_recalculo(data_rel)
+                                # Verificar se há taxas para esta data
+                                resultado_recalculo = self.gestor_taxas.recalcular_taxas_afetadas(
+                                    data_rel, 
+                                    cliente=self.cliente_atual, 
+                                    mostrar_detalhes=False
+                                )
                                 
-                                if precisa_recalcular:
-                                    print(f"DEBUG: Recalculando taxas para {data_rel}: {motivo}")
-                                    resultado = self.gestor_taxas.recalcular_taxas_afetadas(data_rel, mostrar_detalhes=False)
-                                    
-                                    if resultado["sucesso"] and "taxas recalculadas" in resultado["mensagem"]:
-                                        logger.info(f"Taxas recalculadas para {data_rel}: {resultado['mensagem']}")
+                                if resultado_recalculo["sucesso"]:
+                                    if "taxas recalculadas" in resultado_recalculo["mensagem"]:
+                                        datas_recalculadas.append(data_rel.strftime('%d/%m/%Y'))
+                                        logger.info(f"✅ Taxas recalculadas para {data_rel}: {resultado_recalculo['mensagem']}")
+                                    else:
+                                        logger.info(f"ℹ️ {data_rel}: {resultado_recalculo['mensagem']}")
                                 else:
-                                    print(f"DEBUG: Não precisa recalcular para {data_rel}: {motivo}")
+                                    logger.warning(f"⚠️ Erro no recálculo para {data_rel}: {resultado_recalculo['mensagem']}")
                                     
-                    except Exception as e:
-                        logger.error(f"Erro ao recalcular taxas: {str(e)}")
-                        
-                except Exception as e:
-                    logger.error(f"Erro ao abrir arquivo: {str(e)}", exc_info=True)
-                    custom_messagebox("error", "Erro", f"Erro ao abrir arquivo: {str(e)}")
+                            except Exception as e:
+                                logger.error(f"❌ Erro ao verificar recálculo para {data_rel}: {str(e)}")
+                                continue
                     
+                    # Mensagem de sucesso diferenciada
+                    if lancamentos_duplicados:
+                        mensagem_sucesso = f"✅ Dados salvos com sucesso!\n\n"
+                        mensagem_sucesso += f"📊 Resumo da operação:\n"
+                        mensagem_sucesso += f"• Lançamentos salvos: {registros_salvos}\n"
+                        mensagem_sucesso += f"• Duplicatas ignoradas: {len(lancamentos_duplicados)}\n\n"
+                        if datas_recalculadas:
+                            mensagem_sucesso += f"🔄 Taxas recalculadas para: {', '.join(datas_recalculadas)}\n\n"
+                        mensagem_sucesso += f"🛡️ Sistema de verificação ativo!"
+                        custom_messagebox("info", "Sucesso com Filtro", mensagem_sucesso)
+                    else:
+                        mensagem_sucesso = f"✅ Dados salvos com sucesso! {registros_salvos} lançamentos processados."
+                        if datas_recalculadas:
+                            mensagem_sucesso += f"\n\n🔄 Taxas recalculadas para: {', '.join(datas_recalculadas)}"
+                        custom_messagebox("info", "Sucesso", mensagem_sucesso)
+                    
+                    self.limpar_backup()  # Limpar backup após sucesso
+
+                    # Limpar dados após salvar com sucesso
+                    self.dados_para_incluir.clear()
+                    if hasattr(self, 'visualizador') and self.visualizador:
+                        self.visualizador.janela.destroy()
+                        self.visualizador = None
+                    
+                except PermissionError:
+                    logger.error("Permissão negada ao salvar arquivo - provável arquivo aberto")
+                    custom_messagebox("error", 
+                        "Erro", 
+                        f"Não foi possível salvar! A planilha '{self.cliente_atual}.xlsx' está aberta.\n\n"
+                        "Por favor:\n"
+                        "1. Feche a planilha\n"
+                        "2. Clique em OK\n"
+                        "3. Tente enviar novamente"
+                    )
+                except Exception as e:
+                    logger.error(f"Erro ao salvar arquivo: {str(e)}")
+                    custom_messagebox("error", "Erro", f"Erro ao salvar arquivo: {str(e)}")
+                            
             except Exception as e:
                 logger.error(f"Erro ao processar dados: {str(e)}", exc_info=True)
                 custom_messagebox("error", "Erro", f"Erro ao processar dados: {str(e)}")
-            
+                
         except Exception as e:
             logger.error(f"Erro geral no método enviar_dados: {str(e)}", exc_info=True)
             custom_messagebox("error", "Erro", f"Erro ao enviar dados: {str(e)}")
@@ -4517,19 +4545,104 @@ class SistemaEntradaDados:
             if btn_enviar:
                 btn_enviar.config(state='normal')
             
-            # Desmarcar flag de processamento se existir
             if hasattr(self, '_is_saving'):
                 self._is_saving = False
 
-    def verificar_consistencia_taxas(sistema, data_referencia=None):
+    def verificar_e_corrigir_ids_antes_insercao(self, arquivo_cliente):
         """
-        Função utilitária para verificar consistência das taxas de administração
+        Verifica e corrige IDs duplicados ANTES de inserir novos lançamentos
         """
-        if not sistema.cliente_atual:
+        try:
+            logger = system_logger.get_logger()
+            logger.info("Verificando integridade dos IDs antes da inserção")
+            
+            wb = load_workbook(arquivo_cliente)
+            ws = wb['Dados']
+            
+            # Verificar se coluna ID_LANCAMENTO existe
+            if ws.cell(row=1, column=15).value != 'ID_LANCAMENTO':
+                ws.cell(row=1, column=15, value='ID_LANCAMENTO')
+                logger.info("Coluna ID_LANCAMENTO criada")
+            
+            # Coletar todos os IDs existentes
+            ids_existentes = {}
+            linhas_com_id_invalido = []
+            
+            for row in range(2, ws.max_row + 1):
+                id_atual = ws.cell(row=row, column=15).value
+                
+                if id_atual is None or id_atual == '':
+                    linhas_com_id_invalido.append(row)
+                else:
+                    try:
+                        id_int = int(float(id_atual))
+                        if id_int in ids_existentes:
+                            # ID duplicado encontrado
+                            logger.warning(f"ID duplicado {id_int} nas linhas {ids_existentes[id_int]} e {row}")
+                            linhas_com_id_invalido.append(row)
+                        else:
+                            ids_existentes[id_int] = row
+                    except (ValueError, TypeError):
+                        logger.warning(f"ID inválido na linha {row}: {id_atual}")
+                        linhas_com_id_invalido.append(row)
+            
+            # Se há IDs inválidos, corrigir
+            if linhas_com_id_invalido:
+                logger.info(f"Corrigindo {len(linhas_com_id_invalido)} IDs inválidos/duplicados")
+                
+                # Encontrar próximo ID disponível
+                proximo_id = max(ids_existentes.keys()) + 1 if ids_existentes else 1
+                
+                for linha in linhas_com_id_invalido:
+                    ws.cell(row=linha, column=15, value=proximo_id)
+                    logger.info(f"ID {proximo_id} atribuído à linha {linha}")
+                    proximo_id += 1
+                
+                # Salvar correções
+                wb.save(arquivo_cliente)
+                logger.info("Correções de ID salvas com sucesso")
+            
+            wb.close()
+            
+        except Exception as e:
+            logger.error(f"Erro ao verificar IDs: {str(e)}")
+
+    # ===== MÉTODO AUXILIAR NOVO: Obter próximo ID sequencial =====
+    def obter_proximo_id_sequencial(self, worksheet):
+        """
+        Obtém o próximo ID sequencial disponível
+        """
+        try:
+            max_id = 0
+            
+            # Percorrer coluna 15 (ID_LANCAMENTO) para encontrar o maior ID
+            for row in range(2, worksheet.max_row + 1):
+                id_valor = worksheet.cell(row=row, column=15).value
+                if id_valor is not None:
+                    try:
+                        id_int = int(float(id_valor))
+                        if id_int > max_id:
+                            max_id = id_int
+                    except (ValueError, TypeError):
+                        continue
+            
+            return max_id + 1
+            
+        except Exception as e:
+            print(f"Erro ao obter próximo ID: {str(e)}")
+            # Fallback: usar número da linha como ID
+            return worksheet.max_row
+    
+    # ===== FUNÇÕES UTILITÁRIAS PARA VERIFICAÇÃO E RECÁLCULO =====
+    def verificar_consistencia_taxas(self, data_referencia=None):
+        """
+        Método para verificar consistência das taxas de administração
+        """
+        if not self.cliente_atual:
             return "Nenhum cliente selecionado"
         
         try:
-            arquivo_cliente = PASTA_CLIENTES / f"{sistema.cliente_atual}.xlsx"
+            arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
             
             if not os.path.exists(arquivo_cliente):
                 return "Arquivo do cliente não encontrado"
@@ -4545,72 +4658,75 @@ class SistemaEntradaDados:
                 # Identificar datas que têm taxas
                 for _, row in df.iterrows():
                     ref = str(row.get('REFERÊNCIA', '')).upper()
-                    if any(termo in ref for termo in ['TAXA', 'ADM', 'ADMINISTRAÇÃO']):
-                        datas_com_taxas.add(row['DATA_REL'].date())
+                    if any(termo in ref for termo in ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO']):
+                        if pd.notna(row['DATA_REL']):
+                            datas_com_taxas.add(row['DATA_REL'].date())
                 
                 if not datas_com_taxas:
                     return "Nenhuma taxa de administração encontrada"
                 
                 # Verificar cada data
                 relatorio = []
-                gestor = GestorTaxasAdministracao(sistema)
+                relatorio.append(f"Cliente: {self.cliente_atual}")
+                relatorio.append(f"Total de datas com taxas: {len(datas_com_taxas)}")
+                relatorio.append("-" * 50)
                 
-                for data in sorted(datas_com_taxas):
-                    precisa, motivo = gestor.verificar_necessidade_recalculo(data)
-                    status = "❌ INCONSISTENTE" if precisa else "✅ OK"
-                    relatorio.append(f"{data.strftime('%d/%m/%Y')}: {status} - {motivo}")
+                try:
+                    gestor = GestorTaxasAdministracao(self)
+                    for data in sorted(datas_com_taxas):
+                        try:
+                            precisa, motivo = gestor.verificar_necessidade_recalculo(data)
+                            status = "❌ INCONSISTENTE" if precisa else "✅ OK"
+                            relatorio.append(f"{data.strftime('%d/%m/%Y')}: {status} - {motivo}")
+                        except Exception as e:
+                            relatorio.append(f"{data.strftime('%d/%m/%Y')}: ⚠️ ERRO - {str(e)}")
+                except Exception as e:
+                    # Se não conseguir usar o gestor, fazer verificação básica
+                    for data in sorted(datas_com_taxas):
+                        relatorio.append(f"{data.strftime('%d/%m/%Y')}: ℹ️ DETECTADA - Possui taxa de administração")
+                    relatorio.append("")
+                    relatorio.append(f"⚠️ Erro no gestor de taxas: {str(e)}")
+                    relatorio.append("Verificação básica realizada.")
                 
                 return "\n".join(relatorio)
             
             else:
                 # Verificar data específica
-                gestor = GestorTaxasAdministracao(sistema)
-                precisa, motivo = gestor.verificar_necessidade_recalculo(data_referencia)
-                return f"Data {data_referencia}: {'❌ INCONSISTENTE' if precisa else '✅ OK'} - {motivo}"
+                try:
+                    gestor = GestorTaxasAdministracao(self)
+                    precisa, motivo = gestor.verificar_necessidade_recalculo(data_referencia)
+                    return f"Data {data_referencia}: {'❌ INCONSISTENTE' if precisa else '✅ OK'} - {motivo}"
+                except Exception as e:
+                    return f"Data {data_referencia}: ⚠️ ERRO - {str(e)}"
                 
         except Exception as e:
             return f"Erro na verificação: {str(e)}"
 
-    # INTEGRAÇÃO COM O MENU - ADICIONAR ESTAS OPÇÕES
 
-    def adicionar_opcoes_menu_taxas(sistema):
-        """
-        Adiciona opções relacionadas a taxas no menu do sistema
-        """
-        # Adicionar no frame de botões de taxas e processamento
-        frame_taxas = sistema.aba_fornecedor  # Assumindo que existe
-        
-        # Botão para verificar consistência
-        ttk.Button(
-            frame_taxas, 
-            text="🔍 Verificar Taxas",
-            command=lambda: verificar_e_mostrar_consistencia(sistema),
-            style='Medium.TButton'
-        ).pack(side='left', padx=5)
-        
-        # Botão para recálculo forçado
-        ttk.Button(
-            frame_taxas, 
-            text="🔄 Recalcular Taxas",
-            command=lambda: recalcular_taxas_manual(sistema),
-            style='Medium.TButton'
-        ).pack(side='left', padx=5)
-
-    def verificar_e_mostrar_consistencia(sistema):
+    def verificar_e_mostrar_consistencia(self):
         """
         Verifica e mostra consistência das taxas em interface gráfica
         """
-        if not sistema.cliente_atual:
-            custom_messagebox("error", "Erro", "Selecione um cliente primeiro!")
+        if not self.cliente_atual:
+            custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
             return
         
         try:
-            relatorio = verificar_consistencia_taxas(sistema)
+            print("DEBUG: Iniciando verificação de consistência das taxas...")
+            print(f"DEBUG: Cliente atual: {self.cliente_atual}")
+            
+            # Agora chama o método da própria classe
+            relatorio = self.verificar_consistencia_taxas()
+            print(f"DEBUG: Relatório gerado com sucesso")
             
             # Criar janela para mostrar o relatório
-            janela = tk.Toplevel(sistema.root)
-            janela.title(f"Verificação de Taxas - {sistema.cliente_atual}")
-            janela.geometry("600x400")
+            janela = tk.Toplevel(self.root)
+            janela.title(f"Verificação de Taxas - {self.cliente_atual}")
+            janela.geometry("700x500")
+            janela.grab_set()  # Modal
+            
+            # Centralizar janela
+            janela.transient(self.root)
             
             frame = ttk.Frame(janela, padding="15")
             frame.pack(fill='both', expand=True)
@@ -4641,23 +4757,30 @@ class SistemaEntradaDados:
             
             if "❌ INCONSISTENTE" in relatorio:
                 ttk.Button(botoes_frame, text="🔄 Recalcular Todas", 
-                        command=lambda: recalcular_todas_taxas(sistema, janela)).pack(side='right', padx=(0, 10))
+                        command=lambda: self.recalcular_todas_taxas(janela)).pack(side='right', padx=(0, 10))
             
         except Exception as e:
+            import traceback
+            print(f"DEBUG: Erro na verificação: {traceback.format_exc()}")
             custom_messagebox("error", "Erro", f"Erro na verificação: {str(e)}")
 
-    def recalcular_taxas_manual(sistema):
+
+    def recalcular_taxas_manual(self):
         """
         Interface para recálculo manual de taxas
         """
-        if not sistema.cliente_atual:
-            custom_messagebox("error", "Erro", "Selecione um cliente primeiro!")
+        if not self.cliente_atual:
+            custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
             return
         
+        print("DEBUG: Abrindo interface de recálculo manual...")
+        
         # Solicitar data ao usuário
-        janela = tk.Toplevel(sistema.root)
+        janela = tk.Toplevel(self.root)
         janela.title("Recalcular Taxas")
-        janela.geometry("400x200")
+        janela.geometry("450x250")
+        janela.grab_set()  # Modal
+        janela.transient(self.root)
         
         frame = ttk.Frame(janela, padding="20")
         frame.pack(fill='both', expand=True)
@@ -4665,29 +4788,228 @@ class SistemaEntradaDados:
         ttk.Label(frame, text="Selecione a data para recalcular as taxas:", 
                 font=('Arial', 11)).pack(pady=(0, 15))
         
-        data_entry = DateEntry(frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
-        data_entry.pack(pady=10)
+        # Usar DateEntry se disponível, senão usar Entry simples
+        try:
+            from tkcalendar import DateEntry
+            data_entry = DateEntry(frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+            data_entry.pack(pady=10)
+            get_data = lambda: data_entry.get_date()
+        except ImportError:
+            # Fallback para Entry simples
+            ttk.Label(frame, text="Formato: DD/MM/AAAA").pack()
+            data_entry = ttk.Entry(frame, width=15)
+            data_entry.pack(pady=10)
+            data_entry.insert(0, datetime.now().strftime('%d/%m/%Y'))
+            
+            def get_data():
+                return datetime.strptime(data_entry.get(), '%d/%m/%Y').date()
         
         def executar_recalculo():
             try:
-                data_selecionada = data_entry.get_date()
-                gestor = GestorTaxasAdministracao(sistema)
-                resultado = gestor.recalcular_taxas_afetadas(data_selecionada, mostrar_detalhes=True)
+                data_selecionada = get_data()
+                print(f"DEBUG: Recalculando taxas para data: {data_selecionada}")
+                
+                gestor = GestorTaxasAdministracao(self)
+                resultado = gestor.recalcular_taxas_afetadas(
+                    data_selecionada, 
+                    cliente=self.cliente_atual,
+                    mostrar_detalhes=True
+                )
+                
+                print(f"DEBUG: Resultado do recálculo: {resultado}")
                 
                 if resultado["sucesso"]:
+                    # Recarregar a lista de lançamentos se estiver disponível
+                    if hasattr(self, 'aba_lancamentos') and hasattr(self.aba_lancamentos, 'carregar_lancamentos'):
+                        self.aba_lancamentos.carregar_lancamentos()
+                    
                     janela.destroy()
                 
             except Exception as e:
+                import traceback
+                print(f"DEBUG: Erro no recálculo: {traceback.format_exc()}")
                 custom_messagebox("error", "Erro", f"Erro no recálculo: {str(e)}")
         
         botoes_frame = ttk.Frame(frame)
         botoes_frame.pack(fill='x', pady=(15, 0))
         
-        ttk.Button(botoes_frame, text="Recalcular", 
+        ttk.Button(botoes_frame, text="🔄 Recalcular", 
                 command=executar_recalculo).pack(side='left')
         ttk.Button(botoes_frame, text="Cancelar", 
                 command=janela.destroy).pack(side='left', padx=(10, 0))
-   
+
+
+    def recalcular_todas_taxas(self, janela_pai=None):
+        """
+        Recalcula todas as taxas inconsistentes
+        """
+        try:
+            print("DEBUG: Iniciando recálculo de todas as taxas...")
+            
+            if not custom_messagebox("yesno", "Confirmação", 
+                                "Deseja realmente recalcular TODAS as taxas inconsistentes?\n\n"
+                                "Esta operação pode demorar alguns minutos."):
+                return
+            
+            gestor = GestorTaxasAdministracao(self)
+            
+            # Buscar todas as datas com taxas
+            arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = df.fillna("")
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            datas_com_taxas = set()
+            for _, row in df.iterrows():
+                ref = str(row.get('REFERÊNCIA', '')).upper()
+                if any(termo in ref for termo in ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO']):
+                    if pd.notna(row['DATA_REL']):
+                        datas_com_taxas.add(row['DATA_REL'].date())
+            
+            contador_sucesso = 0
+            contador_erro = 0
+            
+            for data in sorted(datas_com_taxas):
+                print(f"DEBUG: Verificando data {data}")
+                try:
+                    precisa, motivo = gestor.verificar_necessidade_recalculo(data)
+                    
+                    if precisa:
+                        print(f"DEBUG: Recalculando para {data} - {motivo}")
+                        resultado = gestor.recalcular_taxas_afetadas(
+                            data, 
+                            cliente=self.cliente_atual,
+                            mostrar_detalhes=False
+                        )
+                        
+                        if resultado["sucesso"]:
+                            contador_sucesso += 1
+                        else:
+                            contador_erro += 1
+                            print(f"DEBUG: Erro ao recalcular {data}: {resultado['mensagem']}")
+                except Exception as e:
+                    contador_erro += 1
+                    print(f"DEBUG: Erro ao processar {data}: {str(e)}")
+            
+            # Recarregar lista se disponível
+            if hasattr(self, 'aba_lancamentos') and hasattr(self.aba_lancamentos, 'carregar_lancamentos'):
+                self.aba_lancamentos.carregar_lancamentos()
+            
+            mensagem = f"Recálculo concluído!\n\n"
+            mensagem += f"✅ Sucessos: {contador_sucesso}\n"
+            mensagem += f"❌ Erros: {contador_erro}"
+            
+            custom_messagebox("info", "Concluído", mensagem)
+            
+            if janela_pai:
+                janela_pai.destroy()
+            
+        except Exception as e:
+            import traceback
+            print(f"DEBUG: Erro no recálculo geral: {traceback.format_exc()}")
+            custom_messagebox("error", "Erro", f"Erro no recálculo: {str(e)}")
+
+
+    def verificar_necessidade_recalculo_apos_nova_despesa(self, data_lancamento):
+        """
+        Verifica se precisa recalcular taxas após adicionar nova despesa
+        CHAME ESTE MÉTODO APÓS ADICIONAR NOVA DESPESA
+        """
+        try:
+            print(f"DEBUG: Verificando necessidade de recálculo para nova despesa em {data_lancamento}")
+            
+            gestor = GestorTaxasAdministracao(self)
+            data_obj = datetime.strptime(data_lancamento, '%d/%m/%Y').date() if isinstance(data_lancamento, str) else data_lancamento
+            
+            precisa, motivo = gestor.verificar_necessidade_recalculo(data_obj)
+            
+            if precisa:
+                print(f"DEBUG: Recálculo necessário: {motivo}")
+                
+                # Perguntar ao usuário se quer recalcular
+                if custom_messagebox("yesno", "Recálculo de Taxa", 
+                                f"Nova despesa adicionada em {data_obj.strftime('%d/%m/%Y')}.\n\n"
+                                f"Detectado: {motivo}\n\n"
+                                f"Deseja recalcular a taxa de administração automaticamente?"):
+                    
+                    resultado = gestor.recalcular_taxas_afetadas(
+                        data_obj, 
+                        cliente=self.cliente_atual,
+                        mostrar_detalhes=True
+                    )
+                    
+                    return resultado
+            else:
+                print(f"DEBUG: Recálculo não necessário: {motivo}")
+                
+            return {"sucesso": True, "mensagem": "Nenhum recálculo necessário"}
+            
+        except Exception as e:
+            print(f"DEBUG: Erro na verificação pós-despesa: {str(e)}")
+            return {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
+
+
+    # ===== INTEGRAÇÃO COM A INTERFACE PRINCIPAL =====
+
+    def adicionar_botoes_taxas_ao_sistema(sistema):
+        """
+        Adiciona os botões de verificação e recálculo de taxas ao sistema principal
+        CHAME ESTA FUNÇÃO DURANTE A INICIALIZAÇÃO DO SISTEMA
+        """
+        print("DEBUG: Adicionando botões de taxas ao sistema...")
+        
+        # Tentar encontrar o frame onde estão os botões de lançamentos
+        # Adapte conforme a estrutura real do seu sistema
+        
+        try:
+            # Opção 1: Se existe um frame específico para botões de lançamentos
+            if hasattr(sistema, 'frame_botoes_lancamentos'):
+                frame_botoes = sistema.frame_botoes_lancamentos
+            
+            # Opção 2: Se está na aba de lançamentos
+            elif hasattr(sistema, 'aba_lancamentos') and hasattr(sistema.aba_lancamentos, 'frame_botoes'):
+                frame_botoes = sistema.aba_lancamentos.frame_botoes
+            
+            # Opção 3: Criar um novo frame na aba atual
+            else:
+                # Assumindo que existe uma aba principal onde adicionar
+                if hasattr(sistema, 'notebook'):
+                    aba_atual = sistema.notebook.select()
+                    frame_botoes = ttk.Frame(sistema.notebook.nametowidget(aba_atual))
+                    frame_botoes.pack(fill='x', padx=10, pady=5)
+                else:
+                    print("DEBUG: Não foi possível encontrar local para adicionar botões")
+                    return False
+            
+            # Criar frame específico para botões de taxas
+            frame_taxas = ttk.LabelFrame(frame_botoes, text="🏦 Taxas de Administração", padding="5")
+            frame_taxas.pack(fill='x', pady=(5, 0))
+            
+            # Botão para verificar consistência
+            btn_verificar = ttk.Button(
+                frame_taxas, 
+                text="🔍 Verificar Taxas",
+                command=lambda: verificar_e_mostrar_consistencia(sistema),
+                width=15
+            )
+            btn_verificar.pack(side='left', padx=5)
+            
+            # Botão para recálculo manual
+            btn_recalcular = ttk.Button(
+                frame_taxas, 
+                text="🔄 Recalcular Taxa",
+                command=lambda: recalcular_taxas_manual(sistema),
+                width=15
+            )
+            btn_recalcular.pack(side='left', padx=5)
+            
+            print("DEBUG: Botões de taxas adicionados com sucesso!")
+            return True
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao adicionar botões: {str(e)}")
+            return False
+
     def configurar_auto_salvamento(self):
         """Configura o auto-salvamento automático - MÉTODO NECESSÁRIO"""
         def executar_auto_salvamento():
@@ -9676,63 +9998,240 @@ class GestorTaxasAdministracao:
             return {"sucesso": False, "mensagem": erro_msg}
 
 
-    def verificar_necessidade_recalculo(self, data_referencia, cliente=None):
+    def verificar_necessidade_recalculo_apos_nova_despesa(self, data_lancamento):
         """
-        Verifica se há necessidade de recálculo de taxas para uma data específica
+        Verifica se precisa recalcular taxas após adicionar nova despesa
+        Trabalha especificamente com as datas 5 e 20 de cada mês
         """
         try:
-            if not cliente:
-                cliente = self.sistema.cliente_atual
-                
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            print(f"DEBUG: Verificando necessidade de recálculo para nova despesa em {data_lancamento}")
             
-            if not os.path.exists(arquivo_cliente):
-                return False, "Arquivo do cliente não encontrado"
-            
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-            df = df.fillna("")
-            
-            # Converter data
-            if isinstance(data_referencia, str):
-                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
+            # Converter data para objeto date se necessário
+            if isinstance(data_lancamento, str):
+                data_obj = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
             else:
-                data_ref_dt = pd.to_datetime(data_referencia)
+                data_obj = data_lancamento
             
-            # Filtrar para a quinzena
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
-            df_quinzena = df[df['DATA_REL'].dt.date == data_ref_dt.date()].copy()
+            # Determinar a data de taxa correspondente (5 ou 20)
+            data_taxa = self.obter_data_taxa_correspondente(data_obj)
+            print(f"DEBUG: Data da taxa correspondente: {data_taxa}")
             
-            # Verificar se há taxas
-            taxas_existentes = self.identificar_lancamentos_taxa_admin(df_quinzena)
+            gestor = GestorTaxasAdministracao(self)
+            precisa, motivo = gestor.verificar_necessidade_recalculo(data_taxa)
             
-            if taxas_existentes.empty:
-                return False, "Nenhuma taxa encontrada para esta data"
-            
-            # Calcular base atual
-            base_atual = self.calcular_base_calculo_taxa(df, data_ref_dt.date(), incluir_excluidos=False)
-            
-            # Verificar se há inconsistência
-            percentual = self.obter_percentual_taxa_cliente(cliente) or self.percentual_padrao
-            valor_esperado = base_atual * (percentual / 100)
-            
-            valor_atual_taxas = 0
-            for _, taxa in taxas_existentes.iterrows():
-                if taxa.get('STATUS', 'ATIVO') != 'EXCLUIDO':
-                    try:
-                        valor_atual_taxas += float(str(taxa.get('VALOR', 0)).replace(',', '.'))
-                    except:
-                        pass
-            
-            diferenca = abs(valor_esperado - valor_atual_taxas)
-            tolerancia = max(0.01, valor_esperado * 0.001)  # 0.1% ou R$ 0,01
-            
-            if diferenca > tolerancia:
-                return True, f"Inconsistência detectada: esperado R$ {valor_esperado:,.2f}, atual R$ {valor_atual_taxas:,.2f}"
-            
-            return False, "Taxas estão consistentes"
+            if precisa:
+                print(f"DEBUG: Recálculo necessário: {motivo}")
+                
+                # Perguntar ao usuário se quer recalcular
+                if custom_messagebox("yesno", "Recálculo de Taxa", 
+                                f"Nova despesa adicionada em {data_obj.strftime('%d/%m/%Y')}.\n"
+                                f"Data da taxa correspondente: {data_taxa.strftime('%d/%m/%Y')}\n\n"
+                                f"Detectado: {motivo}\n\n"
+                                f"Deseja recalcular a taxa de administração automaticamente?"):
+                    
+                    resultado = gestor.recalcular_taxas_afetadas(
+                        data_taxa,  # Usar a data da taxa, não a data do lançamento
+                        cliente=self.cliente_atual,
+                        mostrar_detalhes=True
+                    )
+                    
+                    return resultado
+            else:
+                print(f"DEBUG: Recálculo não necessário: {motivo}")
+                
+            return {"sucesso": True, "mensagem": "Nenhum recálculo necessário"}
             
         except Exception as e:
-            return False, f"Erro na verificação: {str(e)}"
+            print(f"DEBUG: Erro na verificação pós-despesa: {str(e)}")
+            return {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
+
+
+    def obter_data_taxa_correspondente(self, data_lancamento):
+        """
+        Determina a data da taxa baseado na regra:
+        - Do dia 21 ao dia 5 (do mês seguinte): corresponde ao dia 5
+        - Do dia 6 ao dia 20: corresponde ao dia 20
+        """
+        try:
+            dia = data_lancamento.day
+            mes = data_lancamento.month
+            ano = data_lancamento.year
+            
+            # Regra correta: 
+            # - Do dia 21 ao dia 5 (próximo mês): taxa do dia 5
+            # - Do dia 6 ao dia 20: taxa do dia 20
+            
+            if dia >= 21 or dia <= 5:
+                # Período que vai para o dia 5
+                if dia >= 21:
+                    # Dias 21-31: vai para o dia 5 do mês seguinte
+                    if mes == 12:
+                        data_taxa = date(ano + 1, 1, 5)
+                    else:
+                        data_taxa = date(ano, mes + 1, 5)
+                    periodo = f"final do mês (dia {dia}) -> dia 5 do mês seguinte"
+                else:
+                    # Dias 1-5: taxa do próprio dia 5
+                    data_taxa = date(ano, mes, 5)
+                    periodo = f"início do mês (dia {dia}) -> dia 5 do mesmo mês"
+            else:
+                # Dias 6-20: taxa do dia 20 do mesmo mês
+                data_taxa = date(ano, mes, 20)
+                periodo = f"meio do mês (dia {dia}) -> dia 20 do mesmo mês"
+            
+            print(f"DEBUG: Lançamento {data_lancamento.strftime('%d/%m/%Y')} -> {periodo} -> Taxa {data_taxa.strftime('%d/%m/%Y')}")
+            
+            return data_taxa
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao determinar data da taxa: {str(e)}")
+            # Em caso de erro, retorna a própria data
+            return data_lancamento
+
+
+    def recalcular_taxas_manual(self):
+        """
+        Interface para recálculo manual de taxas - VERSÃO ATUALIZADA
+        Pré-seleciona datas 5 ou 20 baseado na data atual
+        """
+        if not self.cliente_atual:
+            custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
+            return
+        
+        print("DEBUG: Abrindo interface de recálculo manual...")
+        
+        # Solicitar data ao usuário
+        janela = tk.Toplevel(self.root)
+        janela.title("Recalcular Taxas")
+        janela.geometry("500x300")
+        janela.grab_set()  # Modal
+        janela.transient(self.root)
+        
+        frame = ttk.Frame(janela, padding="20")
+        frame.pack(fill='both', expand=True)
+        
+        ttk.Label(frame, text="Recálculo de Taxa de Administração", 
+                font=('Arial', 12, 'bold')).pack(pady=(0, 15))
+        
+        ttk.Label(frame, text="Selecione a data da taxa (sempre dia 5 ou 20):", 
+                font=('Arial', 10)).pack(pady=(0, 10))
+        
+        # Frame para seleção de data
+        data_frame = ttk.Frame(frame)
+        data_frame.pack(pady=10)
+        
+        # Determinar data padrão baseada na data atual
+        hoje = datetime.now().date()
+        data_taxa_sugerida = self.obter_data_taxa_correspondente(hoje)
+        
+        # Usar DateEntry se disponível, senão usar Entry simples
+        try:
+            from tkcalendar import DateEntry
+            data_entry = DateEntry(
+                data_frame, 
+                width=12, 
+                date_pattern='dd/mm/yyyy', 
+                locale='pt_BR'
+            )
+            data_entry.set_date(data_taxa_sugerida)
+            data_entry.pack(pady=5)
+            get_data = lambda: data_entry.get_date()
+            
+            # Adicionar botões de atalho para datas comuns
+            atalhos_frame = ttk.Frame(data_frame)
+            atalhos_frame.pack(pady=10)
+            
+            def set_data_5_atual():
+                # Dia 5 do mês atual
+                nova_data = date(hoje.year, hoje.month, 5)
+                data_entry.set_date(nova_data)
+            
+            def set_data_20_atual():
+                # Dia 20 do mês atual
+                nova_data = date(hoje.year, hoje.month, 20)
+                data_entry.set_date(nova_data)
+                
+            def set_data_5_proximo():
+                # Dia 5 do próximo mês
+                if hoje.month == 12:
+                    nova_data = date(hoje.year + 1, 1, 5)
+                else:
+                    nova_data = date(hoje.year, hoje.month + 1, 5)
+                data_entry.set_date(nova_data)
+            
+            ttk.Button(atalhos_frame, text="Dia 5 atual", 
+                    command=set_data_5_atual, width=12).pack(side='left', padx=3)
+            ttk.Button(atalhos_frame, text="Dia 20 atual", 
+                    command=set_data_20_atual, width=12).pack(side='left', padx=3)
+            ttk.Button(atalhos_frame, text="Dia 5 próximo", 
+                    command=set_data_5_proximo, width=12).pack(side='left', padx=3)
+            
+        except ImportError:
+            # Fallback para Entry simples
+            ttk.Label(data_frame, text="Formato: DD/MM/AAAA").pack()
+            data_entry = ttk.Entry(data_frame, width=15)
+            data_entry.pack(pady=5)
+            data_entry.insert(0, data_taxa_sugerida.strftime('%d/%m/%Y'))
+            
+            def get_data():
+                return datetime.strptime(data_entry.get(), '%d/%m/%Y').date()
+        
+        # Informações sobre o sistema
+        info_frame = ttk.LabelFrame(frame, text="ℹ️ Informações", padding="10")
+        info_frame.pack(fill='x', pady=10)
+        
+        ttk.Label(info_frame, 
+                text="• O sistema trabalha apenas com taxas nos dias 5 e 20\n"
+                    "• Dias 21 ao 5 (próximo mês) → Taxa do dia 5\n"
+                    "• Dias 6 ao 20 → Taxa do dia 20\n"
+                    f"• Data sugerida: {data_taxa_sugerida.strftime('%d/%m/%Y')}", 
+                font=('Arial', 9),
+                justify='left').pack(anchor='w')
+        
+        def executar_recalculo():
+            try:
+                data_selecionada = get_data()
+                
+                # Validar se é dia 5 ou 20
+                if data_selecionada.day not in [5, 20]:
+                    if custom_messagebox("yesno", "Data Inválida", 
+                                    f"A data selecionada ({data_selecionada.strftime('%d/%m/%Y')}) não é dia 5 nem 20.\n\n"
+                                    f"O sistema trabalha apenas com taxas nos dias 5 e 20.\n\n"
+                                    f"Deseja ajustar automaticamente para o dia {self.obter_data_taxa_correspondente(data_selecionada).strftime('%d/%m/%Y')}?"):
+                        data_selecionada = self.obter_data_taxa_correspondente(data_selecionada)
+                    else:
+                        return
+                
+                print(f"DEBUG: Recalculando taxas para data: {data_selecionada}")
+                
+                gestor = GestorTaxasAdministracao(self)
+                resultado = gestor.recalcular_taxas_afetadas(
+                    data_selecionada, 
+                    cliente=self.cliente_atual,
+                    mostrar_detalhes=True
+                )
+                
+                print(f"DEBUG: Resultado do recálculo: {resultado}")
+                
+                if resultado["sucesso"]:
+                    # Recarregar a lista de lançamentos se estiver disponível
+                    if hasattr(self, 'aba_lancamentos') and hasattr(self.aba_lancamentos, 'carregar_lancamentos'):
+                        self.aba_lancamentos.carregar_lancamentos()
+                    
+                    janela.destroy()
+                
+            except Exception as e:
+                import traceback
+                print(f"DEBUG: Erro no recálculo: {traceback.format_exc()}")
+                custom_messagebox("error", "Erro", f"Erro no recálculo: {str(e)}")
+        
+        botoes_frame = ttk.Frame(frame)
+        botoes_frame.pack(fill='x', pady=(15, 0))
+        
+        ttk.Button(botoes_frame, text="🔄 Recalcular", 
+                command=executar_recalculo).pack(side='left')
+        ttk.Button(botoes_frame, text="Cancelar", 
+                command=janela.destroy).pack(side='left', padx=(10, 0))
 
 class GerenciadorLancamentos:
     def __init__(self, sistema_principal):
@@ -10353,7 +10852,8 @@ class GerenciadorLancamentos:
     
     def excluir_lancamento(self):
         """
-        Versão corrigida que realmente exclui (marca como EXCLUIDO)
+        Versão consolidada que sempre recalcula, independente da ordem de criação
+        Combina as melhorias das versões anteriores
         """
         item_selecionado = self.tree_lancamentos.selection()
         if not item_selecionado:
@@ -10400,21 +10900,23 @@ class GerenciadorLancamentos:
             
             print(f"DEBUG: Excluindo lançamento ID {id_lancamento}")
             
-            # CORREÇÃO: Atualizar status para EXCLUIDO (não ATIVO!)
+            # Atualizar status para EXCLUIDO
             self.atualizar_status_lancamento(id_lancamento, 'EXCLUIDO')
             print(f"DEBUG: Status atualizado para EXCLUIDO")
 
-            # SEMPRE recalcular taxas após exclusão (exceto se o próprio item for uma taxa)
-            if not eh_taxa:
-                print(f"DEBUG: Recalculando taxas após exclusão de lançamento não-taxa")
-                data_para_recalculo = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
-                resultado_recalculo = self.gestor_taxas.recalcular_taxas_afetadas(
-                    data_para_recalculo, mostrar_detalhes=False
-                )
-            else:
-                print(f"DEBUG: Taxa excluída - verificando necessidade de ajustes")
-                # Para taxas, só informar que foi excluída
-                resultado_recalculo = {"sucesso": True, "mensagem": "Taxa excluída"}
+            # ===== CORREÇÃO: SEMPRE recalcular taxas após exclusão =====
+            print(f"DEBUG: Iniciando verificação de recálculo para data {data_lancamento}")
+            data_para_recalculo = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
+            
+            # Aguardar um pouco para garantir que a exclusão foi salva
+            import time
+            time.sleep(0.5)
+            
+            resultado_recalculo = self.gestor_taxas.recalcular_taxas_afetadas(
+                data_para_recalculo, 
+                cliente=self.sistema.cliente_atual,
+                mostrar_detalhes=False
+            )
             
             # Recarregar lista
             self.carregar_lancamentos()
@@ -10447,7 +10949,9 @@ class GerenciadorLancamentos:
 
 
     def restaurar_lancamento(self):
-        """Restaura lançamento excluído"""
+        """
+        Restaura lançamento excluído com recálculo automático das taxas
+        """
         item_selecionado = self.tree_lancamentos.selection()
         if not item_selecionado:
             custom_messagebox("warning", "Aviso", "Selecione um lançamento para restaurar")
@@ -10465,15 +10969,29 @@ class GerenciadorLancamentos:
             custom_messagebox("info", "Informação", "Este lançamento já está ativo")
             return
         
+        # Verificar se é uma taxa de administração
+        eh_taxa = any(termo in str(referencia).upper() for termo in 
+                    ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO'])
+        
         # Confirmar restauração
-        if not custom_messagebox("yesno", "Confirmação", 
-                            f"Deseja realmente restaurar este lançamento?\n\n"
-                            f"👤 {nome_lancamento}\n"
-                            f"📋 {referencia}\n"
-                            f"💰 {valor}\n"
-                            f"📅 {data_lancamento}\n\n"
-                            f"🔄 As taxas de administração serão recalculadas automaticamente."):
-            return
+        if eh_taxa:
+            if not custom_messagebox("yesno", "Confirmação - Taxa de Administração", 
+                                f"Você está restaurando uma TAXA DE ADMINISTRAÇÃO:\n\n"
+                                f"📋 {referencia}\n"
+                                f"💰 {valor}\n"
+                                f"📅 {data_lancamento}\n\n"
+                                f"⚠️ ATENÇÃO: Verifique se não há duplicação de taxas!\n\n"
+                                f"Deseja realmente continuar?"):
+                return
+        else:
+            if not custom_messagebox("yesno", "Confirmação", 
+                                f"Deseja realmente restaurar este lançamento?\n\n"
+                                f"👤 {nome_lancamento}\n"
+                                f"📋 {referencia}\n"
+                                f"💰 {valor}\n"
+                                f"📅 {data_lancamento}\n\n"
+                                f"🔄 As taxas de administração serão recalculadas automaticamente."):
+                return
         
         try:
             id_lancamento = valores[7]
@@ -10484,19 +11002,19 @@ class GerenciadorLancamentos:
             self.atualizar_status_lancamento(id_lancamento, 'ATIVO')
             print(f"DEBUG: Status atualizado para ATIVO")
 
-            # Verificar se é uma taxa de administração
-            eh_taxa = any(termo in str(referencia).upper() for termo in 
-                        ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO'])
-
-            # Recalcular taxas (exceto se for uma taxa)
-            if not eh_taxa:
-                print(f"DEBUG: Recalculando taxas após restauração")
-                data_para_recalculo = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
-                resultado_recalculo = self.gestor_taxas.recalcular_taxas_afetadas(
-                    data_para_recalculo, mostrar_detalhes=False
-                )
-            else:
-                resultado_recalculo = {"sucesso": True, "mensagem": "Taxa restaurada"}
+            # ===== SEMPRE recalcular taxas após restauração =====
+            print(f"DEBUG: Iniciando verificação de recálculo para data {data_lancamento}")
+            data_para_recalculo = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
+            
+            # Aguardar um pouco para garantir que a restauração foi salva
+            import time
+            time.sleep(0.5)
+            
+            resultado_recalculo = self.gestor_taxas.recalcular_taxas_afetadas(
+                data_para_recalculo, 
+                cliente=self.sistema.cliente_atual,
+                mostrar_detalhes=False
+            )
             
             # Recarregar lista
             self.carregar_lancamentos()
@@ -10743,7 +11261,9 @@ class GerenciadorLancamentos:
         return df_base['VALOR_NUM'].sum()
 
     def salvar_edicao(self, id_lancamento, dados_editados):
-        """Salva as edições do lançamento"""
+        """
+        Versão corrigida que SEMPRE verifica recálculo após edição
+        """
         try:
             print(f"DEBUG: Tentando salvar ID {id_lancamento}")
             print(f"DEBUG: Dados editados: {dados_editados}")
@@ -10758,6 +11278,10 @@ class GerenciadorLancamentos:
                     
             # Encontrar linha do lançamento
             linha_encontrada = False
+            data_lancamento_editado = None
+            valor_anterior = None
+            valor_novo = None
+            
             for row in range(2, ws.max_row + 1):
                 id_na_planilha = ws.cell(row=row, column=15).value  # Coluna 15 = ID_LANCAMENTO
                 print(f"DEBUG: Linha {row}, ID na planilha: {id_na_planilha}")
@@ -10765,6 +11289,13 @@ class GerenciadorLancamentos:
                 if id_na_planilha == id_lancamento:  
                     print(f"DEBUG: Encontrou linha {row} para o ID {id_lancamento}")
                     linha_encontrada = True
+                    
+                    # ===== NOVO: Capturar valor anterior para verificar se mudou =====
+                    valor_anterior = ws.cell(row=row, column=9).value  # VALOR
+                    valor_novo = float(dados_editados['valor'])
+                    data_lancamento_editado = datetime.strptime(dados_editados['data'], '%d/%m/%Y').date()
+                    
+                    print(f"DEBUG: Valor anterior: {valor_anterior}, Valor novo: {valor_novo}")
                     
                     # Atualizar dados
                     ws.cell(row=row, column=1, value=datetime.strptime(dados_editados['data'], '%d/%m/%Y'))
@@ -10775,17 +11306,15 @@ class GerenciadorLancamentos:
                     ws.cell(row=row, column=6, value=dados_editados['nf'])
                     ws.cell(row=row, column=7, value=float(dados_editados['vr_unit']))
                     ws.cell(row=row, column=8, value=int(dados_editados['dias']))
-                    ws.cell(row=row, column=9, value=float(dados_editados['valor']))
+                    ws.cell(row=row, column=9, value=valor_novo)  # VALOR NOVO
                     ws.cell(row=row, column=10, value=datetime.strptime(dados_editados['dt_vencto'], '%d/%m/%Y'))
                     ws.cell(row=row, column=11, value=dados_editados['categoria'])
                     ws.cell(row=row, column=12, value=dados_editados['dados_bancarios'])
-                    
-                    # CORREÇÃO: Manter observação original, adicionar histórico na coluna correta
-                    ws.cell(row=row, column=13, value=dados_editados['observacao'])  # Observação original
+                    ws.cell(row=row, column=13, value=dados_editados['observacao'])
                     
                     # Adicionar timestamp de edição na coluna HISTORICO_ALTERACAO
                     timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-                    historico_atual = ws.cell(row=row, column=16).value or ""  # Coluna 16 = HISTORICO_ALTERACAO
+                    historico_atual = ws.cell(row=row, column=16).value or ""
                     
                     if historico_atual:
                         novo_historico = f"{historico_atual} | EDITADO EM: {timestamp}"
@@ -10803,6 +11332,30 @@ class GerenciadorLancamentos:
             
             wb.save(arquivo_cliente)
             print("DEBUG: Arquivo salvo com sucesso")
+            
+            # ===== CORREÇÃO PRINCIPAL: Verificar se precisa recalcular taxa =====
+            if data_lancamento_editado and valor_anterior is not None and valor_novo != float(valor_anterior):
+                print(f"DEBUG: Valor alterado de R$ {valor_anterior} para R$ {valor_novo}")
+                print(f"DEBUG: Verificando recálculo de taxa para {data_lancamento_editado}")
+                
+                try:
+                    # Aguardar um pouco para garantir que o arquivo foi salvo
+                    import time
+                    time.sleep(0.5)
+                    
+                    resultado_recalculo = self.gestor_taxas.recalcular_taxas_afetadas(
+                        data_lancamento_editado, 
+                        cliente=self.sistema.cliente_atual, 
+                        mostrar_detalhes=True  # Mostrar detalhes para edições manuais
+                    )
+                    
+                    if resultado_recalculo["sucesso"] and "taxas recalculadas" in resultado_recalculo["mensagem"]:
+                        print(f"DEBUG: ✅ Taxas recalculadas com sucesso")
+                    else:
+                        print(f"DEBUG: ℹ️ Recálculo: {resultado_recalculo['mensagem']}")
+                        
+                except Exception as e:
+                    print(f"DEBUG: ❌ Erro no recálculo: {str(e)}")
             
             # Recarregar lista
             self.carregar_lancamentos()
