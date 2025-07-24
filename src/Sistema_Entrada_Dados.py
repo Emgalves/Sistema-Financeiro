@@ -2190,7 +2190,7 @@ class SistemaEntradaDados:
         
         ttk.Label(frame_data_interno, text="Data do Relatório:", font=('Arial', 10)).pack(side='left', padx=5)
         
-        def calcular_data_rel():
+        def calcular_data_rel(self):
             hoje = datetime.now()
             if 6 <= hoje.day <= 20:
                 data_rel = hoje.replace(day=20)
@@ -2213,7 +2213,7 @@ class SistemaEntradaDados:
         self.data_rel_entry.pack(side='left', padx=5, pady=5)
         
         # Definir data de referência inicial
-        data_rel_inicial = calcular_data_rel()
+        data_rel_inicial = calcular_data_rel(self)
         self.data_rel_entry.set_date(data_rel_inicial)
         
         def validar_entrada_data(event=None):
@@ -4775,34 +4775,73 @@ class SistemaEntradaDados:
         
         print("DEBUG: Abrindo interface de recálculo manual...")
         
+        # Calcular a data sugerida baseada na regra dos dias 5 e 20
+        data_sugerida = self.calcular_data_rel()
+        
         # Solicitar data ao usuário
         janela = tk.Toplevel(self.root)
         janela.title("Recalcular Taxas")
-        janela.geometry("450x250")
+        janela.geometry("450x300")
         janela.grab_set()  # Modal
         janela.transient(self.root)
         
         frame = ttk.Frame(janela, padding="20")
         frame.pack(fill='both', expand=True)
         
-        ttk.Label(frame, text="Selecione a data para recalcular as taxas:", 
-                font=('Arial', 11)).pack(pady=(0, 15))
+        # Texto explicativo melhorado
+        ttk.Label(frame, text="Recálculo de Taxas de Administração", 
+                font=('Arial', 12, 'bold')).pack(pady=(0, 10))
+        
+        ttk.Label(frame, text="O sistema sugere automaticamente a data de acordo", 
+                font=('Arial', 9)).pack()
+        ttk.Label(frame, text="com a regra dos lançamentos (dias 5 e 20):", 
+                font=('Arial', 9)).pack(pady=(0, 15))
         
         # Usar DateEntry se disponível, senão usar Entry simples
         try:
             from tkcalendar import DateEntry
-            data_entry = DateEntry(frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+            data_entry = DateEntry(frame, width=12, date_pattern='dd/mm/yyyy', 
+                                locale='pt_BR', date=data_sugerida)
             data_entry.pack(pady=10)
             get_data = lambda: data_entry.get_date()
+            
+            # Adicionar botão para usar data sugerida
+            def usar_data_sugerida():
+                data_entry.set_date(data_sugerida)
+                
+            ttk.Button(frame, text="📅 Usar Data Sugerida", 
+                    command=usar_data_sugerida).pack(pady=5)
+            
         except ImportError:
             # Fallback para Entry simples
             ttk.Label(frame, text="Formato: DD/MM/AAAA").pack()
             data_entry = ttk.Entry(frame, width=15)
             data_entry.pack(pady=10)
-            data_entry.insert(0, datetime.now().strftime('%d/%m/%Y'))
+            # Inserir a data sugerida em vez da data atual
+            data_entry.insert(0, data_sugerida.strftime('%d/%m/%Y'))
             
             def get_data():
                 return datetime.strptime(data_entry.get(), '%d/%m/%Y').date()
+            
+            # Adicionar botão para restaurar data sugerida
+            def usar_data_sugerida():
+                data_entry.delete(0, tk.END)
+                data_entry.insert(0, data_sugerida.strftime('%d/%m/%Y'))
+                
+            ttk.Button(frame, text="📅 Restaurar Data Sugerida", 
+                    command=usar_data_sugerida).pack(pady=5)
+        
+        # Mostrar informação sobre a data sugerida
+        info_frame = ttk.Frame(frame)
+        info_frame.pack(fill='x', pady=10)
+        
+        data_hoje = datetime.now().strftime('%d/%m/%Y')
+        data_sug_formatada = data_sugerida.strftime('%d/%m/%Y')
+        
+        ttk.Label(info_frame, text=f"📍 Hoje: {data_hoje}", 
+                font=('Arial', 9)).pack()
+        ttk.Label(info_frame, text=f"💡 Data sugerida: {data_sug_formatada}", 
+                font=('Arial', 9, 'bold'), foreground='blue').pack()
         
         def executar_recalculo():
             try:
