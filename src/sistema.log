@@ -1124,3 +1124,138 @@
 2025-07-22 09:58:25,625 - INFO - Configurações importadas com sucesso via src.config
 2025-07-22 09:58:25,631 - INFO - Configurações importadas com sucesso
 2025-07-22 09:58:25,631 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 16:43:23,202 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 16:43:23,528 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 16:43:26,525 - INFO - Executando ação: Gerar relatório
+2025-07-24 16:43:26,526 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-07-24 16:43:26,526 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-07-24 16:43:26,527 - INFO - 📍 Tipo de execução: Python Normal
+2025-07-24 16:43:26,528 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-07-24 16:43:26,528 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-07-24 16:43:26,529 - INFO -   ✅ relatorios_interface.py
+2025-07-24 16:43:26,530 - INFO -   ✅ relatorio_despesas_service.py
+2025-07-24 16:43:26,532 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-07-24 16:43:26,533 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-07-24 16:43:26,534 - INFO -   ❌ relatorios_interface.py
+2025-07-24 16:43:26,534 - INFO -   ❌ relatorio_despesas_service.py
+2025-07-24 16:43:26,535 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-07-24 16:43:26,535 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-07-24 16:43:26,536 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-07-24 16:43:26,537 - INFO -   ✅ relatorios_interface.py
+2025-07-24 16:43:26,537 - INFO -   ✅ relatorio_despesas_service.py
+2025-07-24 16:43:26,538 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-07-24 16:43:26,538 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-07-24 16:43:26,544 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-07-24 16:43:26,546 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-07-24 16:43:26,546 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-07-24 16:43:26,547 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-07-24 16:43:26,549 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-07-24 16:43:26,549 - INFO - 🔄 Configurando paths do sistema...
+2025-07-24 16:43:26,629 - INFO - 🔄 Cache do importlib invalidado
+2025-07-24 16:43:26,629 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-07-24 16:43:27,328 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-07-24 16:43:27,329 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-07-24 16:43:27,329 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-07-24 16:43:29,222 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-07-24 16:58:32,627 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 16:58:33,555 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 16:58:33,559 - INFO - Configurações importadas com sucesso
+2025-07-24 16:58:33,560 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 17:50:25,706 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 17:50:27,740 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 17:50:30,408 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 17:50:46,194 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 17:50:46,198 - INFO - Configurações importadas com sucesso
+2025-07-24 17:50:46,199 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 18:01:48,237 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 18:01:48,591 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 18:02:33,640 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 18:02:36,669 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 18:02:36,673 - INFO - Configurações importadas com sucesso
+2025-07-24 18:02:36,674 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 18:04:35,524 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 18:04:35,825 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 18:05:13,934 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 18:05:16,397 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 18:05:16,402 - INFO - Configurações importadas com sucesso
+2025-07-24 18:05:16,402 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 18:15:13,020 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 18:15:13,377 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 18:15:15,159 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 18:15:18,038 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 18:15:18,046 - INFO - Configurações importadas com sucesso
+2025-07-24 18:15:18,047 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 18:21:36,882 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 18:21:37,237 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 18:21:39,019 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 18:21:42,137 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 18:21:42,142 - INFO - Configurações importadas com sucesso
+2025-07-24 18:21:42,142 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 18:32:01,230 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 18:32:01,603 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 18:32:04,165 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 18:32:05,372 - ERROR - Erro ao abrir sistema de entrada de dados: expected 'except' or 'finally' block (Sistema_Entrada_Dados.py, line 4817)
+2025-07-24 18:32:10,787 - INFO - Saída confirmada, finalizando sistema
+2025-07-24 18:34:42,284 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 18:34:42,596 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 18:34:44,170 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 18:34:46,921 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 18:34:46,927 - INFO - Configurações importadas com sucesso
+2025-07-24 18:34:46,928 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 18:42:44,095 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 18:42:44,454 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 18:42:46,621 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 18:42:51,079 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 18:42:51,088 - INFO - Configurações importadas com sucesso
+2025-07-24 18:42:51,089 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 19:01:12,749 - INFO - Executando ação: Gerar relatório
+2025-07-24 19:01:12,757 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-07-24 19:01:12,757 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-07-24 19:01:12,764 - INFO - 📍 Tipo de execução: Python Normal
+2025-07-24 19:01:12,764 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-07-24 19:01:12,765 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-07-24 19:01:12,769 - INFO -   ✅ relatorios_interface.py
+2025-07-24 19:01:12,770 - INFO -   ✅ relatorio_despesas_service.py
+2025-07-24 19:01:12,772 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-07-24 19:01:12,773 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-07-24 19:01:12,775 - INFO -   ❌ relatorios_interface.py
+2025-07-24 19:01:12,776 - INFO -   ❌ relatorio_despesas_service.py
+2025-07-24 19:01:12,777 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-07-24 19:01:12,778 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-07-24 19:01:12,779 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-07-24 19:01:12,780 - INFO -   ✅ relatorios_interface.py
+2025-07-24 19:01:12,781 - INFO -   ✅ relatorio_despesas_service.py
+2025-07-24 19:01:12,782 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-07-24 19:01:12,782 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-07-24 19:01:12,785 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-07-24 19:01:12,787 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-07-24 19:01:12,788 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-07-24 19:01:12,790 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-07-24 19:01:12,791 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-07-24 19:01:12,791 - INFO - 🔄 Configurando paths do sistema...
+2025-07-24 19:01:12,972 - INFO - 🔄 Cache do importlib invalidado
+2025-07-24 19:01:12,973 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-07-24 19:01:13,044 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-07-24 19:01:13,045 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-07-24 19:01:13,045 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-07-24 19:01:13,760 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-07-24 19:05:17,565 - INFO - Saída confirmada, finalizando sistema
+2025-07-24 19:05:17,870 - INFO - Forçando encerramento do programa...
+2025-07-24 19:12:43,123 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 19:12:43,504 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 19:12:45,714 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 19:12:49,140 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 19:12:49,145 - INFO - Configurações importadas com sucesso
+2025-07-24 19:12:49,146 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 19:45:16,416 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 19:45:16,785 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 19:45:18,299 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 19:45:24,354 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 19:45:24,358 - INFO - Configurações importadas com sucesso
+2025-07-24 19:45:24,359 - INFO - Configurações do sistema importadas com sucesso
+2025-07-24 20:18:22,090 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-07-24 20:18:22,639 - INFO - Sistema principal inicializado com sucesso
+2025-07-24 20:18:24,061 - INFO - Abrindo sistema de entrada de dados
+2025-07-24 20:18:26,601 - INFO - Configurações importadas com sucesso via src.config
+2025-07-24 20:18:26,606 - INFO - Configurações importadas com sucesso
+2025-07-24 20:18:26,608 - INFO - Configurações do sistema importadas com sucesso
