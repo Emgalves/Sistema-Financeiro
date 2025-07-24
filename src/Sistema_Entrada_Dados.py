@@ -2088,6 +2088,21 @@ class SistemaEntradaDados:
         ).pack(side='left', padx=5)
 
         ttk.Button(
+            frame_taxas, 
+            text="⚖️ Ajustar Quinzenas Pagas",
+            command=lambda: self.verificar_e_ajustar_diferancas_quinzenas_pagas(incluir_atual=False),
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+        
+        # Botão para verificar TODAS as inconsistências (incluindo atual)
+        ttk.Button(
+            frame_taxas, 
+            text="🔍 Verificar Todas Inconsistências",
+            command=lambda: self.verificar_e_ajustar_diferancas_quinzenas_pagas(incluir_atual=True),
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
+        ttk.Button(
             frame_botoes_verificacao, 
             text="🔄 Recalcular Taxa",
             command=lambda: self.recalcular_taxas_manual(),
@@ -2190,17 +2205,7 @@ class SistemaEntradaDados:
         
         ttk.Label(frame_data_interno, text="Data do Relatório:", font=('Arial', 10)).pack(side='left', padx=5)
         
-        def calcular_data_rel(self):
-            hoje = datetime.now()
-            if 6 <= hoje.day <= 20:
-                data_rel = hoje.replace(day=20)
-            else:
-                if hoje.day > 20:
-                    data_rel = (hoje + relativedelta(months=1)).replace(day=5)
-                else:
-                    data_rel = hoje.replace(day=5)
-            return data_rel
-
+        
         self.data_rel_entry = DateEntry(
             frame_data_interno,
             format='dd/mm/yyyy',
@@ -2213,7 +2218,7 @@ class SistemaEntradaDados:
         self.data_rel_entry.pack(side='left', padx=5, pady=5)
         
         # Definir data de referência inicial
-        data_rel_inicial = calcular_data_rel(self)
+        data_rel_inicial = self.calcular_data_rel()
         self.data_rel_entry.set_date(data_rel_inicial)
         
         def validar_entrada_data(event=None):
@@ -2424,6 +2429,19 @@ class SistemaEntradaDados:
                     font=('Arial', 11, 'bold'))
         adicionar_btn.configure(style='Destaque.TButton')
 
+    def calcular_data_rel(self):
+        """
+        Calcula a data de referência seguindo a regra dos dias 5 e 20
+        """
+        hoje = datetime.now()
+        if 6 <= hoje.day <= 20:
+            data_rel = hoje.replace(day=20)
+        else:
+            if hoje.day > 20:
+                data_rel = (hoje + relativedelta(months=1)).replace(day=5)
+            else:
+                data_rel = hoje.replace(day=5)
+        return data_rel
 
 
     def visualizar_lancamentos(self):
@@ -4634,6 +4652,484 @@ class SistemaEntradaDados:
             return worksheet.max_row
     
     # ===== FUNÇÕES UTILITÁRIAS PARA VERIFICAÇÃO E RECÁLCULO =====
+    def verificar_e_ajustar_diferancas_quinzenas_pagas(self, incluir_atual=False):
+        """
+        Verifica diferenças em quinzenas já pagas e registra ajustes na quinzena atual
+        
+        Args:
+            incluir_atual: Se True, inclui também a quinzena atual na verificação
+        """
+        if not self.cliente_atual:
+            custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
+            return
+        
+        try:
+            # Data da quinzena atual (em aberto)
+            data_quinzena_atual = self.data_rel_entry.get_date()
+            
+            # Buscar quinzenas que já foram pagas (anteriores à atual)
+            arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = df.fillna("")
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            # Identificar quinzenas com taxas anteriores à atual (com filtro melhorado)
+            quinzenas_com_taxas = set()
+            print(f"DEBUG: Data da quinzena atual: {data_quinzena_atual}")
+            
+            for _, row in df.iterrows():
+                # CORREÇÃO: Usar tp_desp == 7 ao invés de palavras na referência
+                tp_desp = row.get('TP_DESP', 0)
+                if tp_desp == 7:  # Tipo específico para taxas de administração
+                    if pd.notna(row['DATA_REL']):
+                        data_lancamento = row['DATA_REL'].date()
+                        ref = str(row.get('REFERÊNCIA', ''))
+                        print(f"DEBUG: Taxa encontrada (tp_desp=7) em {data_lancamento}, referência: {ref}")
+                        
+                        # Critério de inclusão baseado no parâmetro
+                        if incluir_atual:
+                            # Incluir todas as quinzenas
+                            quinzenas_com_taxas.add(data_lancamento)
+                            print(f"DEBUG: Quinzena {data_lancamento} adicionada (modo incluir_atual)")
+                        else:
+                            # Só incluir se for anterior à quinzena atual
+                            if data_lancamento < data_quinzena_atual:
+                                quinzenas_com_taxas.add(data_lancamento)
+                                print(f"DEBUG: Quinzena {data_lancamento} adicionada para verificação")
+                            else:
+                                print(f"DEBUG: Quinzena {data_lancamento} ignorada (não é anterior)")
+            
+            print(f"DEBUG: Total de quinzenas com taxas: {len(quinzenas_com_taxas)}")
+            
+            if not quinzenas_com_taxas:
+                if incluir_atual:
+                    custom_messagebox("info", "Verificação", "Nenhuma quinzena com taxas encontrada.")
+                else:
+                    custom_messagebox("info", "Verificação", 
+                                    f"Nenhuma quinzena anterior à {data_quinzena_atual.strftime('%d/%m/%Y')} com taxas encontrada.")
+                return
+            
+            # Função para converter valores brasileiros corretamente
+            def converter_valor_brasileiro(valor_str):
+                """Converte string de valor brasileiro para float"""
+                # Remove espaços
+                valor_limpo = valor_str.strip()
+                print(f"DEBUG Conversão: Entrada '{valor_str}' → Limpo '{valor_limpo}'")
+                
+                # CORREÇÃO: Detectar formato brasileiro vs americano
+                # Formato brasileiro: "8.221,44" (ponto = milhares, vírgula = decimal)
+                # Formato americano: "8,221.44" (vírgula = milhares, ponto = decimal)
+                
+                if '.' in valor_limpo and ',' in valor_limpo:
+                    # Tem ambos: determinar qual é qual pela posição
+                    pos_ponto = valor_limpo.rfind('.')
+                    pos_virgula = valor_limpo.rfind(',')
+                    
+                    if pos_virgula > pos_ponto:
+                        # Vírgula vem depois do ponto: formato brasileiro "8.221,44"
+                        valor_limpo = valor_limpo.replace('.', '').replace(',', '.')
+                        print(f"DEBUG Conversão: Formato brasileiro detectado → '{valor_limpo}'")
+                    else:
+                        # Ponto vem depois da vírgula: formato americano "8,221.44"
+                        valor_limpo = valor_limpo.replace(',', '')
+                        print(f"DEBUG Conversão: Formato americano detectado → '{valor_limpo}'")
+                
+                elif ',' in valor_limpo and '.' not in valor_limpo:
+                    # Só vírgula: assumir decimal brasileiro "221,44"
+                    valor_limpo = valor_limpo.replace(',', '.')
+                    print(f"DEBUG Conversão: Vírgula decimal brasileira → '{valor_limpo}'")
+                
+                elif '.' in valor_limpo and ',' not in valor_limpo:
+                    # Só ponto: determinar se é separador de milhares ou decimal
+                    partes = valor_limpo.split('.')
+                    if len(partes) == 2:
+                        # Se a parte decimal tem mais de 2 dígitos, é separador de milhares
+                        if len(partes[1]) > 2:
+                            # Separador de milhares: "8.221" → "8221"
+                            valor_limpo = valor_limpo.replace('.', '')
+                            print(f"DEBUG Conversão: Separador de milhares → '{valor_limpo}'")
+                        else:
+                            # Decimal: "8.22" → manter
+                            print(f"DEBUG Conversão: Decimal mantido → '{valor_limpo}'")
+                
+                resultado = float(valor_limpo)
+                print(f"DEBUG Conversão: Resultado final: {resultado}")
+                return resultado
+            
+            # Verificar cada quinzena anterior usando a mesma lógica do verificar_consistencia_taxas
+            gestor = GestorTaxasAdministracao(self)
+            diferencas_encontradas = []
+            
+            for data_quinzena in sorted(quinzenas_com_taxas):
+                try:
+                    print(f"DEBUG: Verificando quinzena {data_quinzena}")
+                    precisa, motivo = gestor.verificar_necessidade_recalculo(data_quinzena)
+                    
+                    print(f"DEBUG: Precisa recalculo: {precisa}, Motivo: {motivo}")
+                    
+                    if precisa:
+                        # Extrair valores do motivo usando regex mais robusta
+                        import re
+                        
+                        # Tentar diferentes padrões de extração - VERSÃO CORRIGIDA
+                        valores = []
+                        
+                        # Padrão 1: "esperado R$ X, atual R$ Y" - regex melhorada
+                        match1 = re.search(r'esperado R?\$?\s*([\d,.]+).*atual R?\$?\s*([\d,.]+)', motivo, re.IGNORECASE)
+                        if match1:
+                            # Limpar valores extraídos removendo vírgulas/pontos extras
+                            valor1_raw = match1.group(1).rstrip(',.')
+                            valor2_raw = match1.group(2).rstrip(',.')
+                            valores = [valor1_raw, valor2_raw]
+                        else:
+                            # Padrão 2: qualquer "R$ valor" - regex melhorada
+                            valores_raw = re.findall(r'R\$?\s*([\d,.]+)', motivo)
+                            # Limpar cada valor
+                            valores = [v.rstrip(',.') for v in valores_raw]
+                        
+                        print(f"DEBUG: Valores extraídos (limpos): {valores}")
+                        
+                        if len(valores) >= 2:
+                            try:
+                                # CORREÇÃO: Usar função de conversão brasileira
+                                valor_esperado = converter_valor_brasileiro(valores[0])
+                                valor_atual = converter_valor_brasileiro(valores[1])
+                                diferenca = valor_esperado - valor_atual
+                                
+                                print(f"DEBUG: Conversão corrigida - Esperado: {valor_esperado}, Atual: {valor_atual}, Diferença: {diferenca}")
+                                
+                                # Só considerar diferenças significativas (> R$ 0,01)
+                                if abs(diferenca) > 0.01:
+                                    diferencas_encontradas.append({
+                                        'data': data_quinzena,
+                                        'valor_esperado': valor_esperado,
+                                        'valor_atual': valor_atual,
+                                        'diferenca': diferenca,
+                                        'motivo': motivo
+                                    })
+                                    print(f"DEBUG: Diferença significativa encontrada: R$ {diferenca:.2f}")
+                                else:
+                                    print(f"DEBUG: Diferença desprezível: R$ {diferenca:.2f}")
+                                    
+                            except ValueError as ve:
+                                print(f"DEBUG: Erro ao converter valores: {ve}")
+                                print(f"DEBUG: Valores originais: {valores}")
+                                continue
+                        else:
+                            print(f"DEBUG: Não foi possível extrair valores suficientes do motivo")
+                            
+                except Exception as e:
+                    print(f"Erro ao verificar quinzena {data_quinzena}: {str(e)}")
+                    continue
+            
+            if not diferencas_encontradas:
+                if incluir_atual:
+                    custom_messagebox("info", "✅ Verificação Concluída", 
+                                    "Todas as quinzenas estão com taxas corretas!")
+                else:
+                    custom_messagebox("info", "✅ Verificação Concluída", 
+                                    "Todas as quinzenas anteriores estão com taxas corretas!")
+                return
+            
+            # Mostrar diferenças encontradas e perguntar sobre ajustes
+            self.mostrar_interface_ajustes(diferencas_encontradas, data_quinzena_atual)
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro na verificação: {str(e)}")
+
+    def mostrar_interface_ajustes(self, diferencas, data_quinzena_atual):
+        """
+        Mostra interface para revisar e aplicar ajustes
+        """
+        janela = tk.Toplevel(self.root)
+        janela.title(f"⚖️ Ajustes de Taxas - {self.cliente_atual}")
+        janela.geometry("800x600")
+        janela.grab_set()
+        janela.transient(self.root)
+        
+        # Centralizar janela
+        janela.update_idletasks()
+        x = (janela.winfo_screenwidth() // 2) - 400
+        y = (janela.winfo_screenheight() // 2) - 300
+        janela.geometry(f"800x600+{x}+{y}")
+        
+        frame = ttk.Frame(janela, padding="15")
+        frame.pack(fill='both', expand=True)
+        
+        # Cabeçalho
+        ttk.Label(frame, text="⚖️ Ajustes de Taxas para Quinzenas Já Pagas", 
+                font=('Arial', 14, 'bold')).pack(pady=(0, 10))
+        
+        ttk.Label(frame, text=f"📅 Ajustes serão registrados na quinzena atual: {data_quinzena_atual.strftime('%d/%m/%Y')}", 
+                font=('Arial', 10), foreground='blue').pack(pady=(0, 15))
+        
+        # Frame para lista de diferenças
+        lista_frame = ttk.LabelFrame(frame, text="Diferenças Encontradas:")
+        lista_frame.pack(fill='both', expand=True, pady=(0, 15))
+        
+        # Treeview para mostrar diferenças
+        tree_frame = ttk.Frame(lista_frame)
+        tree_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        tree = ttk.Treeview(tree_frame, columns=('Data', 'Esperado', 'Atual', 'Diferença', 'Ação'), 
+                        show='headings', height=10)
+        
+        # Configurar colunas
+        tree.heading('Data', text='Quinzena')
+        tree.heading('Esperado', text='Valor Esperado')
+        tree.heading('Atual', text='Valor Atual')
+        tree.heading('Diferença', text='Diferença')
+        tree.heading('Ação', text='Ajuste Necessário')
+        
+        tree.column('Data', width=100, anchor='center')
+        tree.column('Esperado', width=120, anchor='center')
+        tree.column('Atual', width=120, anchor='center')
+        tree.column('Diferença', width=120, anchor='center')
+        tree.column('Ação', width=200, anchor='center')
+        
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
+        tree.configure(yscrollcommand=scrollbar.set)
+        
+        tree.pack(side='left', fill='both', expand=True)
+        scrollbar.pack(side='right', fill='y')
+        
+        # Preencher dados
+        valor_total_ajustes = 0
+        for diferenca in diferencas:
+            data_str = diferenca['data'].strftime('%d/%m/%Y')
+            esperado_str = f"R$ {diferenca['valor_esperado']:,.2f}"
+            atual_str = f"R$ {diferenca['valor_atual']:,.2f}"
+            diferenca_valor = diferenca['diferenca']
+            diferenca_str = f"R$ {diferenca_valor:+,.2f}"
+            
+            if diferenca_valor > 0:
+                acao = f"Complementar +R$ {diferenca_valor:.2f}"
+                tag = 'positivo'
+            else:
+                acao = f"Estornar R$ {abs(diferenca_valor):.2f}"
+                tag = 'negativo'
+            
+            tree.insert('', 'end', values=(data_str, esperado_str, atual_str, diferenca_str, acao), 
+                    tags=(tag,))
+            valor_total_ajustes += diferenca_valor
+        
+        # Configurar cores
+        tree.tag_configure('positivo', background='#e8f5e8')
+        tree.tag_configure('negativo', background='#ffe8e8')
+        
+        # Resumo
+        resumo_frame = ttk.Frame(frame)
+        resumo_frame.pack(fill='x', pady=(0, 15))
+        
+        ttk.Label(resumo_frame, text=f"📊 Total de ajustes: {len(diferencas)} quinzenas", 
+                font=('Arial', 11)).pack(side='left')
+        
+        ajuste_total_texto = f"Ajuste líquido: R$ {valor_total_ajustes:+,.2f}"
+        cor_ajuste = 'green' if valor_total_ajustes >= 0 else 'red'
+        ttk.Label(resumo_frame, text=ajuste_total_texto, 
+                font=('Arial', 11, 'bold'), foreground=cor_ajuste).pack(side='right')
+        
+        # Explicação
+        explicacao_frame = ttk.LabelFrame(frame, text="ℹ️ Como Funciona:")
+        explicacao_frame.pack(fill='x', pady=(0, 15))
+        
+        explicacao_texto = (
+            "• Valores POSITIVOS: Faltou cobrança → será complementado na quinzena atual\n"
+            "• Valores NEGATIVOS: Cobrou a mais → será estornado na quinzena atual\n"
+            "• Os ajustes são registrados como lançamentos separados com histórico completo"
+        )
+        
+        ttk.Label(explicacao_frame, text=explicacao_texto, font=('Arial', 9), 
+                justify='left').pack(padx=10, pady=5)
+        
+        # Botões
+        botoes_frame = ttk.Frame(frame)
+        botoes_frame.pack(fill='x')
+        
+        def aplicar_ajustes():
+            if custom_messagebox("yesno", "Confirmar Ajustes", 
+                            f"Confirma a aplicação de {len(diferencas)} ajustes?\n\n"
+                            f"Ajuste líquido: R$ {valor_total_ajustes:+,.2f}\n\n"
+                            f"Os lançamentos serão criados na quinzena {data_quinzena_atual.strftime('%d/%m/%Y')}"):
+                
+                try:
+                    ajustes_aplicados = self.executar_ajustes_taxas(diferencas, data_quinzena_atual)
+                    
+                    if ajustes_aplicados:
+                        custom_messagebox("info", "✅ Ajustes Aplicados", 
+                                        f"Foram criados {ajustes_aplicados} lançamentos de ajuste!\n\n"
+                                        f"Verifique os lançamentos na quinzena atual.")
+                        janela.destroy()
+                        
+                        # Recarregar interface se disponível
+                        if hasattr(self, 'visualizar_lancamentos'):
+                            self.visualizar_lancamentos()
+                            
+                except Exception as e:
+                    custom_messagebox("error", "Erro", f"Erro ao aplicar ajustes: {str(e)}")
+        
+        def exportar_relatorio():
+            self.exportar_relatorio_ajustes(diferencas, data_quinzena_atual)
+        
+        ttk.Button(botoes_frame, text="📋 Exportar Relatório", 
+                command=exportar_relatorio).pack(side='left', padx=5)
+        ttk.Button(botoes_frame, text="❌ Cancelar", 
+                command=janela.destroy).pack(side='left', padx=5)
+        ttk.Button(botoes_frame, text="✅ Aplicar Ajustes", 
+                command=aplicar_ajustes).pack(side='right', padx=5)
+
+    def executar_ajustes_taxas(self, diferencas, data_quinzena_atual):
+        """
+        Executa os ajustes criando lançamentos na quinzena atual
+        """
+        try:
+            # Buscar dados do administrador da obra (para usar nos ajustes)
+            gestor = GestorTaxasAdministracao(self)
+            percentual_cliente = gestor.obter_percentual_taxa_cliente(self.cliente_atual)
+            
+            # Criar lançamentos de ajuste
+            lancamentos_ajuste = []
+            
+            for diferenca in diferencas:
+                data_origem = diferenca['data']
+                valor_diferenca = diferenca['diferenca']
+                
+                if abs(valor_diferenca) < 0.01:  # Ignorar diferenças muito pequenas
+                    continue
+                
+                # Determinar se é complemento ou estorno
+                if valor_diferenca > 0:
+                    referencia = f"COMPLEMENTO TAXA {data_origem.strftime('%m/%Y')}"
+                    observacao = f"Complemento taxa adm quinzena {data_origem.strftime('%d/%m/%Y')} - Diferença: +R$ {valor_diferenca:.2f}"
+                else:
+                    referencia = f"ESTORNO TAXA {data_origem.strftime('%m/%Y')}"
+                    observacao = f"Estorno taxa adm quinzena {data_origem.strftime('%d/%m/%Y')} - Diferença: R$ {valor_diferenca:.2f}"
+                    valor_diferenca = abs(valor_diferenca)  # Usar valor positivo para estorno
+                
+                # Buscar dados do administrador (assumindo que existe)
+                # Você pode adaptar isso conforme sua estrutura
+                dados_admin = self.buscar_dados_administrador_cliente(self.cliente_atual)
+                
+                if dados_admin:
+                    lancamento_ajuste = {
+                        'data': data_quinzena_atual.strftime('%d/%m/%Y'),
+                        'cnpj_cpf': dados_admin['cnpj_cpf'],
+                        'nome': dados_admin['nome'],
+                        'categoria': 'ADM',
+                        'tp_desp': '6',  # Tipo para taxas
+                        'referencia': referencia,
+                        'nf': '',
+                        'vr_unit': f"{valor_diferenca:.2f}",
+                        'dias': 1,
+                        'valor': f"{valor_diferenca:.2f}",
+                        'dt_vencto': data_quinzena_atual.strftime('%d/%m/%Y'),
+                        'dados_bancarios': dados_admin.get('dados_bancarios', ''),
+                        'observacao': observacao,
+                        'forma_pagamento': dados_admin.get('forma_pagamento', 'PIX')
+                    }
+                    
+                    lancamentos_ajuste.append(lancamento_ajuste)
+            
+            # Adicionar lançamentos à lista para enviar
+            if lancamentos_ajuste:
+                self.dados_para_incluir.extend(lancamentos_ajuste)
+                return len(lancamentos_ajuste)
+            
+            return 0
+            
+        except Exception as e:
+            raise Exception(f"Erro ao executar ajustes: {str(e)}")
+
+    def buscar_dados_administrador_cliente(self, cliente):
+        """
+        Busca dados do administrador da obra para usar nos ajustes
+        """
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            
+            # Verificar se existe aba de contratos
+            if 'Contratos_ADM' in pd.ExcelFile(arquivo_cliente).sheet_names:
+                df_contratos = pd.read_excel(arquivo_cliente, sheet_name='Contratos_ADM')
+                
+                # Buscar primeiro administrador ativo
+                for _, row in df_contratos.iterrows():
+                    if row.get('Status') == 'ATIVO' or pd.isna(row.get('Status')):
+                        return {
+                            'cnpj_cpf': row.get('CNPJ/CPF', ''),
+                            'nome': row.get('Nome/Razão Social', 'ADMINISTRADOR'),
+                            'dados_bancarios': 'PIX: (dados do administrador)',
+                            'forma_pagamento': 'PIX'
+                        }
+            
+            # Fallback: usar dados genéricos
+            return {
+                'cnpj_cpf': '00000000000',
+                'nome': 'ADMINISTRADOR DA OBRA',
+                'dados_bancarios': 'A DEFINIR',
+                'forma_pagamento': 'PIX'
+            }
+            
+        except Exception as e:
+            print(f"Erro ao buscar administrador: {str(e)}")
+            return None
+
+    def exportar_relatorio_ajustes(self, diferencas, data_quinzena_atual):
+        """
+        Exporta relatório detalhado dos ajustes
+        """
+        try:
+            from tkinter import filedialog
+            
+            # Nome sugerido para o arquivo
+            nome_sugerido = f"Relatorio_Ajustes_{self.cliente_atual}_{datetime.now().strftime('%Y%m%d')}.txt"
+            
+            # Solicitar local para salvar - CORREÇÃO: usar initialfile ao invés de initialname
+            arquivo_relatorio = filedialog.asksaveasfilename(
+                defaultextension=".txt",
+                filetypes=[("Arquivo de Texto", "*.txt"), ("Todos os Arquivos", "*.*")],
+                title="Salvar Relatório de Ajustes",
+                initialfile=nome_sugerido  # CORRIGIDO: era initialname
+            )
+            
+            if arquivo_relatorio:
+                with open(arquivo_relatorio, 'w', encoding='utf-8') as f:
+                    f.write("=" * 60 + "\n")
+                    f.write(f"RELATÓRIO DE AJUSTES DE TAXAS\n")
+                    f.write("=" * 60 + "\n")
+                    f.write(f"Cliente: {self.cliente_atual}\n")
+                    f.write(f"Data do Relatório: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
+                    f.write(f"Quinzena de Ajuste: {data_quinzena_atual.strftime('%d/%m/%Y')}\n")
+                    f.write("=" * 60 + "\n\n")
+                    
+                    valor_total = 0
+                    for i, diferenca in enumerate(diferencas, 1):
+                        f.write(f"{i}. QUINZENA: {diferenca['data'].strftime('%d/%m/%Y')}\n")
+                        f.write(f"   Valor Esperado: R$ {diferenca['valor_esperado']:,.2f}\n")
+                        f.write(f"   Valor Atual:    R$ {diferenca['valor_atual']:,.2f}\n")
+                        f.write(f"   Diferença:      R$ {diferenca['diferenca']:+,.2f}\n")
+                        f.write(f"   Motivo: {diferenca['motivo']}\n")
+                        f.write("-" * 40 + "\n")
+                        valor_total += diferenca['diferenca']
+                    
+                    f.write(f"\nRESUMO:\n")
+                    f.write(f"Total de Quinzenas: {len(diferencas)}\n")
+                    f.write(f"Ajuste Líquido: R$ {valor_total:+,.2f}\n")
+                    
+                    if valor_total > 0:
+                        f.write(f"Resultado: Cliente deve complementar R$ {valor_total:.2f}\n")
+                    elif valor_total < 0:
+                        f.write(f"Resultado: Estorno de R$ {abs(valor_total):.2f} para o cliente\n")
+                    else:
+                        f.write(f"Resultado: Valores estão balanceados\n")
+                
+                custom_messagebox("info", "Relatório Exportado", 
+                                f"Relatório salvo em:\n{arquivo_relatorio}")
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao exportar relatório: {str(e)}")
+
+
     def verificar_consistencia_taxas(self, data_referencia=None):
         """
         Método para verificar consistência das taxas de administração
@@ -4657,8 +5153,8 @@ class SistemaEntradaDados:
                 
                 # Identificar datas que têm taxas
                 for _, row in df.iterrows():
-                    ref = str(row.get('REFERÊNCIA', '')).upper()
-                    if any(termo in ref for termo in ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO']):
+                    tp_desp = row.get('TP_DESP', 0)
+                    if tp_desp == 7:  # Tipo específico para taxas de administração
                         if pd.notna(row['DATA_REL']):
                             datas_com_taxas.add(row['DATA_REL'].date())
                 
@@ -4701,8 +5197,7 @@ class SistemaEntradaDados:
                 
         except Exception as e:
             return f"Erro na verificação: {str(e)}"
-
-
+        
     def verificar_e_mostrar_consistencia(self):
         """
         Verifica e mostra consistência das taxas em interface gráfica
@@ -4764,7 +5259,6 @@ class SistemaEntradaDados:
             print(f"DEBUG: Erro na verificação: {traceback.format_exc()}")
             custom_messagebox("error", "Erro", f"Erro na verificação: {str(e)}")
 
-
     def recalcular_taxas_manual(self):
         """
         Interface para recálculo manual de taxas
@@ -4775,82 +5269,23 @@ class SistemaEntradaDados:
         
         print("DEBUG: Abrindo interface de recálculo manual...")
         
-        # Calcular a data sugerida baseada na regra dos dias 5 e 20
-        data_sugerida = self.calcular_data_rel()
+        # Usar a data que já está no calendário da interface (quinzena em aberto)
+        data_quinzena_aberta = self.data_rel_entry.get_date()
+        data_formatada = data_quinzena_aberta.strftime('%d/%m/%Y')
         
-        # Solicitar data ao usuário
-        janela = tk.Toplevel(self.root)
-        janela.title("Recalcular Taxas")
-        janela.geometry("450x300")
-        janela.grab_set()  # Modal
-        janela.transient(self.root)
-        
-        frame = ttk.Frame(janela, padding="20")
-        frame.pack(fill='both', expand=True)
-        
-        # Texto explicativo melhorado
-        ttk.Label(frame, text="Recálculo de Taxas de Administração", 
-                font=('Arial', 12, 'bold')).pack(pady=(0, 10))
-        
-        ttk.Label(frame, text="O sistema sugere automaticamente a data de acordo", 
-                font=('Arial', 9)).pack()
-        ttk.Label(frame, text="com a regra dos lançamentos (dias 5 e 20):", 
-                font=('Arial', 9)).pack(pady=(0, 15))
-        
-        # Usar DateEntry se disponível, senão usar Entry simples
-        try:
-            from tkcalendar import DateEntry
-            data_entry = DateEntry(frame, width=12, date_pattern='dd/mm/yyyy', 
-                                locale='pt_BR', date=data_sugerida)
-            data_entry.pack(pady=10)
-            get_data = lambda: data_entry.get_date()
+        # Perguntar diretamente se quer recalcular para a data da quinzena em aberto
+        if custom_messagebox("yesno", "Recalcular Taxas", 
+                            f"🔄 Recalcular taxas de administração?\n\n"
+                            f"📋 Cliente: {self.cliente_atual}\n"
+                            f"📅 Quinzena: {data_formatada}\n\n"
+                            f"Confirma o recálculo?"):
             
-            # Adicionar botão para usar data sugerida
-            def usar_data_sugerida():
-                data_entry.set_date(data_sugerida)
-                
-            ttk.Button(frame, text="📅 Usar Data Sugerida", 
-                    command=usar_data_sugerida).pack(pady=5)
-            
-        except ImportError:
-            # Fallback para Entry simples
-            ttk.Label(frame, text="Formato: DD/MM/AAAA").pack()
-            data_entry = ttk.Entry(frame, width=15)
-            data_entry.pack(pady=10)
-            # Inserir a data sugerida em vez da data atual
-            data_entry.insert(0, data_sugerida.strftime('%d/%m/%Y'))
-            
-            def get_data():
-                return datetime.strptime(data_entry.get(), '%d/%m/%Y').date()
-            
-            # Adicionar botão para restaurar data sugerida
-            def usar_data_sugerida():
-                data_entry.delete(0, tk.END)
-                data_entry.insert(0, data_sugerida.strftime('%d/%m/%Y'))
-                
-            ttk.Button(frame, text="📅 Restaurar Data Sugerida", 
-                    command=usar_data_sugerida).pack(pady=5)
-        
-        # Mostrar informação sobre a data sugerida
-        info_frame = ttk.Frame(frame)
-        info_frame.pack(fill='x', pady=10)
-        
-        data_hoje = datetime.now().strftime('%d/%m/%Y')
-        data_sug_formatada = data_sugerida.strftime('%d/%m/%Y')
-        
-        ttk.Label(info_frame, text=f"📍 Hoje: {data_hoje}", 
-                font=('Arial', 9)).pack()
-        ttk.Label(info_frame, text=f"💡 Data sugerida: {data_sug_formatada}", 
-                font=('Arial', 9, 'bold'), foreground='blue').pack()
-        
-        def executar_recalculo():
             try:
-                data_selecionada = get_data()
-                print(f"DEBUG: Recalculando taxas para data: {data_selecionada}")
+                print(f"DEBUG: Recalculando taxas para data: {data_quinzena_aberta}")
                 
                 gestor = GestorTaxasAdministracao(self)
                 resultado = gestor.recalcular_taxas_afetadas(
-                    data_selecionada, 
+                    data_quinzena_aberta, 
                     cliente=self.cliente_atual,
                     mostrar_detalhes=True
                 )
@@ -4862,20 +5297,16 @@ class SistemaEntradaDados:
                     if hasattr(self, 'aba_lancamentos') and hasattr(self.aba_lancamentos, 'carregar_lancamentos'):
                         self.aba_lancamentos.carregar_lancamentos()
                     
-                    janela.destroy()
+                    custom_messagebox("info", "Sucesso", f"✅ {resultado['mensagem']}")
+                else:
+                    custom_messagebox("error", "Erro", f"❌ {resultado['mensagem']}")
                 
             except Exception as e:
                 import traceback
                 print(f"DEBUG: Erro no recálculo: {traceback.format_exc()}")
                 custom_messagebox("error", "Erro", f"Erro no recálculo: {str(e)}")
-        
-        botoes_frame = ttk.Frame(frame)
-        botoes_frame.pack(fill='x', pady=(15, 0))
-        
-        ttk.Button(botoes_frame, text="🔄 Recalcular", 
-                command=executar_recalculo).pack(side='left')
-        ttk.Button(botoes_frame, text="Cancelar", 
-                command=janela.destroy).pack(side='left', padx=(10, 0))
+        else:
+            print("DEBUG: Recálculo cancelado pelo usuário")
 
 
     def recalcular_todas_taxas(self, janela_pai=None):
@@ -4900,8 +5331,8 @@ class SistemaEntradaDados:
             
             datas_com_taxas = set()
             for _, row in df.iterrows():
-                ref = str(row.get('REFERÊNCIA', '')).upper()
-                if any(termo in ref for termo in ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO']):
+                tp_desp = row.get('TP_DESP', 0)
+                if tp_desp == 7:  # Tipo específico para taxas de administração
                     if pd.notna(row['DATA_REL']):
                         datas_com_taxas.add(row['DATA_REL'].date())
             
@@ -4986,68 +5417,6 @@ class SistemaEntradaDados:
         except Exception as e:
             print(f"DEBUG: Erro na verificação pós-despesa: {str(e)}")
             return {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
-
-
-    # ===== INTEGRAÇÃO COM A INTERFACE PRINCIPAL =====
-
-    def adicionar_botoes_taxas_ao_sistema(sistema):
-        """
-        Adiciona os botões de verificação e recálculo de taxas ao sistema principal
-        CHAME ESTA FUNÇÃO DURANTE A INICIALIZAÇÃO DO SISTEMA
-        """
-        print("DEBUG: Adicionando botões de taxas ao sistema...")
-        
-        # Tentar encontrar o frame onde estão os botões de lançamentos
-        # Adapte conforme a estrutura real do seu sistema
-        
-        try:
-            # Opção 1: Se existe um frame específico para botões de lançamentos
-            if hasattr(sistema, 'frame_botoes_lancamentos'):
-                frame_botoes = sistema.frame_botoes_lancamentos
-            
-            # Opção 2: Se está na aba de lançamentos
-            elif hasattr(sistema, 'aba_lancamentos') and hasattr(sistema.aba_lancamentos, 'frame_botoes'):
-                frame_botoes = sistema.aba_lancamentos.frame_botoes
-            
-            # Opção 3: Criar um novo frame na aba atual
-            else:
-                # Assumindo que existe uma aba principal onde adicionar
-                if hasattr(sistema, 'notebook'):
-                    aba_atual = sistema.notebook.select()
-                    frame_botoes = ttk.Frame(sistema.notebook.nametowidget(aba_atual))
-                    frame_botoes.pack(fill='x', padx=10, pady=5)
-                else:
-                    print("DEBUG: Não foi possível encontrar local para adicionar botões")
-                    return False
-            
-            # Criar frame específico para botões de taxas
-            frame_taxas = ttk.LabelFrame(frame_botoes, text="🏦 Taxas de Administração", padding="5")
-            frame_taxas.pack(fill='x', pady=(5, 0))
-            
-            # Botão para verificar consistência
-            btn_verificar = ttk.Button(
-                frame_taxas, 
-                text="🔍 Verificar Taxas",
-                command=lambda: verificar_e_mostrar_consistencia(sistema),
-                width=15
-            )
-            btn_verificar.pack(side='left', padx=5)
-            
-            # Botão para recálculo manual
-            btn_recalcular = ttk.Button(
-                frame_taxas, 
-                text="🔄 Recalcular Taxa",
-                command=lambda: recalcular_taxas_manual(sistema),
-                width=15
-            )
-            btn_recalcular.pack(side='left', padx=5)
-            
-            print("DEBUG: Botões de taxas adicionados com sucesso!")
-            return True
-            
-        except Exception as e:
-            print(f"DEBUG: Erro ao adicionar botões: {str(e)}")
-            return False
 
     def configurar_auto_salvamento(self):
         """Configura o auto-salvamento automático - MÉTODO NECESSÁRIO"""
@@ -9427,36 +9796,13 @@ class GestorTaxasAdministracao:
         if df.empty:
             return pd.DataFrame()
             
-        # Padrões expandidos para identificar taxas
-        padroes_taxa = [
-            'TAXA DE ADMINISTRAÇÃO',
-            'TAXA DE ADMINISTRACAO',
-            'ADM',
-            'ADMINISTRAÇÃO', 
-            'ADMINISTRACAO',
-            'TAXA ADM',
-            'TX ADM',
-            'PERCENTUAL ADM',
-            'PERCENT ADM',
-            'ADMIN',
-            'ADMINISTRACAO',
-            'GESTAO',
-            'GESTÃO'
-        ]
-        
-        # Converter para string e tratar NaN
-        df['REFERÊNCIA'] = df['REFERÊNCIA'].astype(str).fillna('')
-        
-        # Criar máscara para identificar taxas
-        mask_taxa = df['REFERÊNCIA'].str.upper().str.contains(
-            '|'.join(padroes_taxa), 
-            case=False, 
-            na=False,
-            regex=True
-        )
-        
+        mask_taxa = df['TP_DESP'] == 7
+    
         taxas = df[mask_taxa].copy()
-        print(f"DEBUG: Padrões de taxa encontrados: {taxas['REFERÊNCIA'].tolist()}")
+        print(f"DEBUG: Taxas encontradas (tp_desp=7): {len(taxas)} registros")
+        
+        if not taxas.empty:
+            print(f"DEBUG: Referências das taxas: {taxas['REFERÊNCIA'].tolist()}")
         
         return taxas
 
@@ -9484,20 +9830,8 @@ class GestorTaxasAdministracao:
                 print(f"DEBUG: Lançamentos ativos: {len(df_quinzena)}")
             
             # Excluir as próprias taxas do cálculo (CRÍTICO para evitar recursão)
-            padroes_exclusao = [
-                'TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 
-                'GESTAO', 'GESTÃO', 'ADMIN', 'PERCENT'
-            ]
-            
-            # Criar máscara para excluir taxas
-            mask_nao_taxa = True
-            for padrao in padroes_exclusao:
-                mask_nao_taxa = mask_nao_taxa & ~df_quinzena['REFERÊNCIA'].astype(str).str.upper().str.contains(
-                    padrao, case=False, na=False
-                )
-            
-            df_base = df_quinzena[mask_nao_taxa].copy()
-            print(f"DEBUG: Lançamentos para base (sem taxas): {len(df_base)}")
+            df_base = df_quinzena[df_quinzena['TP_DESP'] != 7].copy()
+            print(f"DEBUG: Lançamentos para base (excluindo tp_desp=7): {len(df_base)}")
             
             if df_base.empty:
                 print("DEBUG: Nenhum lançamento válido para base")
@@ -10723,6 +11057,7 @@ class GerenciadorLancamentos:
             return
         
         valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+        tp_desp = valores[1]         # Tipo de despesa
         nome_lancamento = valores[2]  # Nome
         referencia = valores[3]      # Referência
         valor = valores[4]           # Valor
@@ -10735,8 +11070,7 @@ class GerenciadorLancamentos:
             return
         
         # Verificar se é uma taxa de administração
-        eh_taxa = any(termo in str(referencia).upper() for termo in 
-                    ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO'])
+        eh_taxa = (tp_desp == 7)
         
         if eh_taxa:
             if not custom_messagebox("yesno", "Confirmação - Taxa de Administração", 
@@ -10820,6 +11154,7 @@ class GerenciadorLancamentos:
             return
         
         valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+        tp_desp = valores[1]         # Tipo de despesa
         nome_lancamento = valores[2]  # Nome
         referencia = valores[3]      # Referência
         valor = valores[4]           # Valor
@@ -10832,8 +11167,7 @@ class GerenciadorLancamentos:
             return
         
         # Verificar se é uma taxa de administração
-        eh_taxa = any(termo in str(referencia).upper() for termo in 
-                    ['TAXA', 'ADM', 'ADMINISTRAÇÃO', 'ADMINISTRACAO', 'GESTAO', 'GESTÃO'])
+        eh_taxa = (tp_desp == 7)
         
         # Confirmar restauração
         if eh_taxa:
