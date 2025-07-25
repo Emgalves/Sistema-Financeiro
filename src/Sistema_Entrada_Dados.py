@@ -5017,7 +5017,7 @@ class SistemaEntradaDados:
                         'cnpj_cpf': dados_admin['cnpj_cpf'],
                         'nome': dados_admin['nome'],
                         'categoria': 'ADM',
-                        'tp_desp': '6',  # Tipo para taxas
+                        'tp_desp': '7',  # Tipo para taxas
                         'referencia': referencia,
                         'nf': '',
                         'vr_unit': f"{valor_diferenca:.2f}",
@@ -5044,35 +5044,96 @@ class SistemaEntradaDados:
     def buscar_dados_administrador_cliente(self, cliente):
         """
         Busca dados do administrador da obra para usar nos ajustes
+        Estrutura da planilha:
+        - Linha 1: Grupos (CONTRATOS, ADMINISTRADORES_CONTRATO)
+        - Linha 2: Cabeçalhos
+        - Linha 3+: Dados dos contratos
+        - Linha 4+: Dados dos administradores (colunas G, H, I)
         """
+        from src.config.utils import buscar_dados_bancarios_fornecedor
+        
         try:
             arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
             
             # Verificar se existe aba de contratos
             if 'Contratos_ADM' in pd.ExcelFile(arquivo_cliente).sheet_names:
-                df_contratos = pd.read_excel(arquivo_cliente, sheet_name='Contratos_ADM')
+                # Ler a planilha sem cabeçalho para ter controle total
+                df_raw = pd.read_excel(arquivo_cliente, sheet_name='Contratos_ADM', header=None)
                 
-                # Buscar primeiro administrador ativo
-                for _, row in df_contratos.iterrows():
-                    if row.get('Status') == 'ATIVO' or pd.isna(row.get('Status')):
-                        return {
-                            'cnpj_cpf': row.get('CNPJ/CPF', ''),
-                            'nome': row.get('Nome/Razão Social', 'ADMINISTRADOR'),
-                            'dados_bancarios': 'PIX: (dados do administrador)',
-                            'forma_pagamento': 'PIX'
-                        }
+                print(f"Dados brutos da planilha:")
+                print(f"Shape: {df_raw.shape}")
+                print(f"Primeiras 6 linhas:\n{df_raw.head(6)}")
+                
+                # Verificar se temos dados suficientes
+                if len(df_raw) < 4:
+                    print("Planilha não tem linhas suficientes")
+                    return self._dados_administrador_fallback()
+                
+                # Buscar dados dos administradores (linha 4 em diante, colunas G, H, I)
+                # Linha 4 = índice 3 (base 0)
+                # Coluna G = índice 6, H = índice 7, I = índice 8
+                
+                for i in range(3, len(df_raw)):  # Começar da linha 4 (índice 3)
+                    try:
+                        # Verificar se temos as colunas necessárias
+                        if len(df_raw.columns) < 9:  # Precisamos até a coluna I (índice 8)
+                            print(f"Planilha não tem colunas suficientes: {len(df_raw.columns)}")
+                            break
+                        
+                        # Extrair dados das colunas específicas
+                        num_contrato = str(df_raw.iloc[i, 6]).strip() if pd.notna(df_raw.iloc[i, 6]) else ""
+                        cnpj_cpf = str(df_raw.iloc[i, 7]).strip() if pd.notna(df_raw.iloc[i, 7]) else ""
+                        nome = str(df_raw.iloc[i, 8]).strip() if pd.notna(df_raw.iloc[i, 8]) else ""
+                        
+                        print(f"Linha {i+1}: Contrato='{num_contrato}', CNPJ='{cnpj_cpf}', Nome='{nome}'")
+                        
+                        # Verificar se temos dados válidos
+                        if cnpj_cpf and cnpj_cpf != 'nan' and nome and nome != 'nan':
+                            # Buscar dados bancários usando a função do utils
+                            dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_cpf, "PIX")
+                            
+                            # Se não encontrou dados válidos, usar padrão
+                            if not dados_bancarios or dados_bancarios in ['DADOS BANCÁRIOS NÃO CADASTRADOS', 'ERRO AO BUSCAR DADOS BANCÁRIOS']:
+                                dados_bancarios = 'PIX: (dados do administrador)'
+                            
+                            forma_pagamento = 'PIX'
+                            
+                            resultado = {
+                                'cnpj_cpf': cnpj_cpf,
+                                'nome': nome,
+                                'dados_bancarios': dados_bancarios,
+                                'forma_pagamento': forma_pagamento
+                            }
+                            
+                            print(f"✓ Dados do administrador encontrados: {resultado}")
+                            return resultado
+                            
+                    except Exception as e:
+                        print(f"Erro ao processar linha {i+1}: {str(e)}")
+                        continue
+                
+                print("Nenhum administrador com dados válidos encontrado na estrutura")
+            else:
+                print("Aba 'Contratos_ADM' não encontrada")
             
             # Fallback: usar dados genéricos
-            return {
-                'cnpj_cpf': '00000000000',
-                'nome': 'ADMINISTRADOR DA OBRA',
-                'dados_bancarios': 'A DEFINIR',
-                'forma_pagamento': 'PIX'
-            }
+            return self._dados_administrador_fallback()
             
         except Exception as e:
             print(f"Erro ao buscar administrador: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return None
+
+    def _dados_administrador_fallback(self):
+        """Dados genéricos quando não encontra administrador"""
+        print("Usando dados genéricos do administrador")
+        return {
+            'cnpj_cpf': '00000000000',
+            'nome': 'ADMINISTRADOR DA OBRA',
+            'dados_bancarios': 'A DEFINIR',
+            'forma_pagamento': 'PIX'
+        }
 
     def exportar_relatorio_ajustes(self, diferencas, data_quinzena_atual):
         """
