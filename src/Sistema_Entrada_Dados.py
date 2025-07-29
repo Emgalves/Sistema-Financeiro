@@ -2082,7 +2082,7 @@ class SistemaEntradaDados:
 
         ttk.Button(
             frame_botoes_verificacao, 
-            text="🔍 Verificar Taxas",
+            text="🔍 Verificar Todas as Taxas",
             command=lambda: self.verificar_e_mostrar_consistencia(),
             style='Medium.TButton'
         ).pack(side='left', padx=5)
@@ -2094,17 +2094,17 @@ class SistemaEntradaDados:
             style='Medium.TButton'
         ).pack(side='left', padx=5)
         
-        # Botão para verificar TODAS as inconsistências (incluindo atual)
-        ttk.Button(
-            frame_taxas, 
-            text="🔍 Verificar Todas Inconsistências",
-            command=lambda: self.verificar_e_ajustar_diferancas_quinzenas_pagas(incluir_atual=True),
-            style='Medium.TButton'
-        ).pack(side='left', padx=5)
+        # # Botão para verificar TODAS as inconsistências (incluindo atual)
+        # ttk.Button(
+        #     frame_taxas, 
+        #     text="🔍 Verificar Todas Inconsistências",
+        #     command=lambda: self.verificar_consistencia_taxas(),
+        #     style='Medium.TButton'
+        # ).pack(side='left', padx=5)
 
         ttk.Button(
             frame_botoes_verificacao, 
-            text="🔄 Recalcular Taxa",
+            text="🔄 Recalcular Taxa Atual",
             command=lambda: self.recalcular_taxas_manual(),
             style='Medium.TButton'
         ).pack(side='left', padx=5)
@@ -4832,152 +4832,295 @@ class SistemaEntradaDados:
                 return
             
             # Mostrar diferenças encontradas e perguntar sobre ajustes
-            self.mostrar_interface_ajustes(diferencas_encontradas, data_quinzena_atual)
+            self.mostrar_relatorio_historico_simples(diferencas_encontradas, data_quinzena_atual)
             
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro na verificação: {str(e)}")
 
-    def mostrar_interface_ajustes(self, diferencas, data_quinzena_atual):
+    def mostrar_relatorio_historico_simples(self, diferencas, data_quinzena_atual):
         """
-        Mostra interface para revisar e aplicar ajustes
+        Interface simples apenas para visualização de inconsistências históricas
         """
         janela = tk.Toplevel(self.root)
-        janela.title(f"⚖️ Ajustes de Taxas - {self.cliente_atual}")
-        janela.geometry("800x600")
+        janela.title(f"📊 Inconsistências Históricas - {self.cliente_atual}")
+        janela.geometry("800x500")
         janela.grab_set()
-        janela.transient(self.root)
-        
-        # Centralizar janela
-        janela.update_idletasks()
-        x = (janela.winfo_screenwidth() // 2) - 400
-        y = (janela.winfo_screenheight() // 2) - 300
-        janela.geometry(f"800x600+{x}+{y}")
         
         frame = ttk.Frame(janela, padding="15")
         frame.pack(fill='both', expand=True)
         
-        # Cabeçalho
-        ttk.Label(frame, text="⚖️ Ajustes de Taxas para Quinzenas Já Pagas", 
+        # Cabeçalho informativo
+        ttk.Label(frame, text="📊 Relatório de Inconsistências Históricas", 
                 font=('Arial', 14, 'bold')).pack(pady=(0, 10))
         
-        ttk.Label(frame, text=f"📅 Ajustes serão registrados na quinzena atual: {data_quinzena_atual.strftime('%d/%m/%Y')}", 
-                font=('Arial', 10), foreground='blue').pack(pady=(0, 15))
+        valor_total = sum(d['diferenca'] for d in diferencas)
         
-        # Frame para lista de diferenças
-        lista_frame = ttk.LabelFrame(frame, text="Diferenças Encontradas:")
+        # Status apenas informativo
+        status_frame = ttk.LabelFrame(frame, text="ℹ️ Resumo:")
+        status_frame.pack(fill='x', pady=(0, 15))
+        
+        status_texto = (
+            f"📋 {len(diferencas)} quinzena(s) com inconsistências detectadas\n"
+            f"💰 Diferença líquida histórica: R$ {valor_total:+,.2f}\n"
+            f"🔄 Com o novo sistema de recálculo, futuras quinzenas estarão sempre corretas"
+        )
+        
+        ttk.Label(status_frame, text=status_texto, font=('Arial', 10), 
+                justify='left').pack(padx=10, pady=8)
+        
+        # Lista simples das diferenças
+        lista_frame = ttk.LabelFrame(frame, text="📋 Detalhamento:")
         lista_frame.pack(fill='both', expand=True, pady=(0, 15))
         
-        # Treeview para mostrar diferenças
+        # Treeview simplificado
         tree_frame = ttk.Frame(lista_frame)
         tree_frame.pack(fill='both', expand=True, padx=10, pady=10)
         
-        tree = ttk.Treeview(tree_frame, columns=('Data', 'Esperado', 'Atual', 'Diferença', 'Ação'), 
-                        show='headings', height=10)
+        tree = ttk.Treeview(tree_frame, columns=('Data', 'Esperado', 'Atual', 'Diferença'), 
+                        show='headings', height=8)
         
-        # Configurar colunas
         tree.heading('Data', text='Quinzena')
         tree.heading('Esperado', text='Valor Esperado')
         tree.heading('Atual', text='Valor Atual')
         tree.heading('Diferença', text='Diferença')
-        tree.heading('Ação', text='Ajuste Necessário')
         
-        tree.column('Data', width=100, anchor='center')
-        tree.column('Esperado', width=120, anchor='center')
-        tree.column('Atual', width=120, anchor='center')
-        tree.column('Diferença', width=120, anchor='center')
-        tree.column('Ação', width=200, anchor='center')
+        tree.column('Data', width=120, anchor='center')
+        tree.column('Esperado', width=150, anchor='center')
+        tree.column('Atual', width=150, anchor='center')
+        tree.column('Diferença', width=150, anchor='center')
         
-        # Scrollbar
         scrollbar = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
         tree.configure(yscrollcommand=scrollbar.set)
-        
         tree.pack(side='left', fill='both', expand=True)
         scrollbar.pack(side='right', fill='y')
         
         # Preencher dados
-        valor_total_ajustes = 0
         for diferenca in diferencas:
             data_str = diferenca['data'].strftime('%d/%m/%Y')
             esperado_str = f"R$ {diferenca['valor_esperado']:,.2f}"
             atual_str = f"R$ {diferenca['valor_atual']:,.2f}"
-            diferenca_valor = diferenca['diferenca']
-            diferenca_str = f"R$ {diferenca_valor:+,.2f}"
+            diferenca_str = f"R$ {diferenca['diferenca']:+,.2f}"
             
-            if diferenca_valor > 0:
-                acao = f"Complementar +R$ {diferenca_valor:.2f}"
-                tag = 'positivo'
-            else:
-                acao = f"Estornar R$ {abs(diferenca_valor):.2f}"
-                tag = 'negativo'
-            
-            tree.insert('', 'end', values=(data_str, esperado_str, atual_str, diferenca_str, acao), 
-                    tags=(tag,))
-            valor_total_ajustes += diferenca_valor
+            tree.insert('', 'end', values=(data_str, esperado_str, atual_str, diferenca_str))
         
-        # Configurar cores
-        tree.tag_configure('positivo', background='#e8f5e8')
-        tree.tag_configure('negativo', background='#ffe8e8')
+        # Observação importante
+        obs_frame = ttk.LabelFrame(frame, text="💡 Observação:")
+        obs_frame.pack(fill='x', pady=(0, 15))
         
-        # Resumo
-        resumo_frame = ttk.Frame(frame)
-        resumo_frame.pack(fill='x', pady=(0, 15))
-        
-        ttk.Label(resumo_frame, text=f"📊 Total de ajustes: {len(diferencas)} quinzenas", 
-                font=('Arial', 11)).pack(side='left')
-        
-        ajuste_total_texto = f"Ajuste líquido: R$ {valor_total_ajustes:+,.2f}"
-        cor_ajuste = 'green' if valor_total_ajustes >= 0 else 'red'
-        ttk.Label(resumo_frame, text=ajuste_total_texto, 
-                font=('Arial', 11, 'bold'), foreground=cor_ajuste).pack(side='right')
-        
-        # Explicação
-        explicacao_frame = ttk.LabelFrame(frame, text="ℹ️ Como Funciona:")
-        explicacao_frame.pack(fill='x', pady=(0, 15))
-        
-        explicacao_texto = (
-            "• Valores POSITIVOS: Faltou cobrança → será complementado na quinzena atual\n"
-            "• Valores NEGATIVOS: Cobrou a mais → será estornado na quinzena atual\n"
-            "• Os ajustes são registrados como lançamentos separados com histórico completo"
+        obs_texto = (
+            "✅ Este é apenas um relatório informativo de inconsistências passadas\n"
+            "🔄 O sistema de recálculo automático já previne novos problemas\n"
+            "📋 Nenhuma ação é necessária - apenas para conhecimento histórico"
         )
         
-        ttk.Label(explicacao_frame, text=explicacao_texto, font=('Arial', 9), 
-                justify='left').pack(padx=10, pady=5)
+        ttk.Label(obs_frame, text=obs_texto, font=('Arial', 9), 
+                foreground='blue', justify='left').pack(padx=10, pady=5)
         
-        # Botões
+        # Botões simples
         botoes_frame = ttk.Frame(frame)
         botoes_frame.pack(fill='x')
         
-        def aplicar_ajustes():
-            if custom_messagebox("yesno", "Confirmar Ajustes", 
-                            f"Confirma a aplicação de {len(diferencas)} ajustes?\n\n"
-                            f"Ajuste líquido: R$ {valor_total_ajustes:+,.2f}\n\n"
-                            f"Os lançamentos serão criados na quinzena {data_quinzena_atual.strftime('%d/%m/%Y')}"):
-                
-                try:
-                    ajustes_aplicados = self.executar_ajustes_taxas(diferencas, data_quinzena_atual)
-                    
-                    if ajustes_aplicados:
-                        custom_messagebox("info", "✅ Ajustes Aplicados", 
-                                        f"Foram criados {ajustes_aplicados} lançamentos de ajuste!\n\n"
-                                        f"Verifique os lançamentos na quinzena atual.")
-                        janela.destroy()
-                        
-                        # Recarregar interface se disponível
-                        if hasattr(self, 'visualizar_lancamentos'):
-                            self.visualizar_lancamentos()
-                            
-                except Exception as e:
-                    custom_messagebox("error", "Erro", f"Erro ao aplicar ajustes: {str(e)}")
-        
         def exportar_relatorio():
-            self.exportar_relatorio_ajustes(diferencas, data_quinzena_atual)
+            self.exportar_relatorio_informativo(diferencas, valor_total)
         
         ttk.Button(botoes_frame, text="📋 Exportar Relatório", 
                 command=exportar_relatorio).pack(side='left', padx=5)
-        ttk.Button(botoes_frame, text="❌ Cancelar", 
-                command=janela.destroy).pack(side='left', padx=5)
-        ttk.Button(botoes_frame, text="✅ Aplicar Ajustes", 
-                command=aplicar_ajustes).pack(side='right', padx=5)
+        ttk.Button(botoes_frame, text="✅ Fechar", 
+                command=janela.destroy).pack(side='right', padx=5)
+
+    def exportar_relatorio_orientativo(self, diferencas, data_quinzena_atual, valor_total):
+        """
+        Exporta relatório orientativo detalhado
+        """
+        try:
+            from tkinter import filedialog
+            
+            # Nome sugerido para o arquivo
+            nome_sugerido = f"Relatorio_Ajustes_Orientativo_{self.cliente_atual}_{datetime.now().strftime('%Y%m%d')}.txt"
+            
+            # Solicitar local para salvar
+            arquivo_relatorio = filedialog.asksaveasfilename(
+                defaultextension=".txt",
+                filetypes=[("Arquivo de Texto", "*.txt"), ("Todos os Arquivos", "*.*")],
+                title="Salvar Relatório de Ajustes",
+                initialfile=nome_sugerido  # CORRIGIDO: era initialname
+            )
+            
+            with open(arquivo_path, 'w', encoding='utf-8') as f:
+                f.write("=" * 60 + "\n")
+                f.write("RELATÓRIO DE INCONSISTÊNCIAS HISTÓRICAS\n")
+                f.write("=" * 60 + "\n")
+                f.write(f"Cliente: {self.cliente_atual}\n")
+                f.write(f"Data: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
+                f.write("=" * 60 + "\n\n")
+                
+                f.write("OBSERVAÇÃO IMPORTANTE:\n")
+                f.write("Este relatório mostra inconsistências em períodos anteriores.\n")
+                f.write("Com o sistema de recálculo implementado, futuras quinzenas\n")
+                f.write("estarão sempre corretas automaticamente.\n\n")
+                
+                f.write("INCONSISTÊNCIAS DETECTADAS:\n")
+                f.write("-" * 40 + "\n")
+                
+                for i, diferenca in enumerate(diferencas, 1):
+                    f.write(f"{i}. Quinzena: {diferenca['data'].strftime('%d/%m/%Y')}\n")
+                    f.write(f"   Esperado: R$ {diferenca['valor_esperado']:,.2f}\n")
+                    f.write(f"   Atual:    R$ {diferenca['valor_atual']:,.2f}\n")
+                    f.write(f"   Diferença: R$ {diferenca['diferenca']:+,.2f}\n")
+                    f.write("-" * 30 + "\n")
+                
+                f.write(f"\nRESUMO:\n")
+                f.write(f"Total de inconsistências: {len(diferencas)}\n")
+                f.write(f"Diferença líquida: R$ {valor_total:+,.2f}\n")
+                f.write(f"\nStatus: Apenas informativo - nenhuma ação necessária\n")
+        
+            custom_messagebox("info", "✅ Relatório Exportado", 
+                            f"Relatório salvo em:\n{arquivo_relatorio}")
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao exportar relatório: {str(e)}")
+
+    # def mostrar_interface_ajustes(self, diferencas, data_quinzena_atual):
+    #     """
+    #     Mostra interface para revisar e aplicar ajustes
+    #     """
+    #     janela = tk.Toplevel(self.root)
+    #     janela.title(f"⚖️ Ajustes de Taxas - {self.cliente_atual}")
+    #     janela.geometry("800x600")
+    #     janela.grab_set()
+    #     janela.transient(self.root)
+        
+    #     # Centralizar janela
+    #     janela.update_idletasks()
+    #     x = (janela.winfo_screenwidth() // 2) - 400
+    #     y = (janela.winfo_screenheight() // 2) - 300
+    #     janela.geometry(f"800x600+{x}+{y}")
+        
+    #     frame = ttk.Frame(janela, padding="15")
+    #     frame.pack(fill='both', expand=True)
+        
+    #     # Cabeçalho
+    #     ttk.Label(frame, text="⚖️ Ajustes de Taxas para Quinzenas Já Pagas", 
+    #             font=('Arial', 14, 'bold')).pack(pady=(0, 10))
+        
+    #     ttk.Label(frame, text=f"📅 Ajustes serão registrados na quinzena atual: {data_quinzena_atual.strftime('%d/%m/%Y')}", 
+    #             font=('Arial', 10), foreground='blue').pack(pady=(0, 15))
+        
+    #     # Frame para lista de diferenças
+    #     lista_frame = ttk.LabelFrame(frame, text="Diferenças Encontradas:")
+    #     lista_frame.pack(fill='both', expand=True, pady=(0, 15))
+        
+    #     # Treeview para mostrar diferenças
+    #     tree_frame = ttk.Frame(lista_frame)
+    #     tree_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        
+    #     tree = ttk.Treeview(tree_frame, columns=('Data', 'Esperado', 'Atual', 'Diferença', 'Ação'), 
+    #                     show='headings', height=10)
+        
+    #     # Configurar colunas
+    #     tree.heading('Data', text='Quinzena')
+    #     tree.heading('Esperado', text='Valor Esperado')
+    #     tree.heading('Atual', text='Valor Atual')
+    #     tree.heading('Diferença', text='Diferença')
+    #     tree.heading('Ação', text='Ajuste Necessário')
+        
+    #     tree.column('Data', width=100, anchor='center')
+    #     tree.column('Esperado', width=120, anchor='center')
+    #     tree.column('Atual', width=120, anchor='center')
+    #     tree.column('Diferença', width=120, anchor='center')
+    #     tree.column('Ação', width=200, anchor='center')
+        
+    #     # Scrollbar
+    #     scrollbar = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
+    #     tree.configure(yscrollcommand=scrollbar.set)
+        
+    #     tree.pack(side='left', fill='both', expand=True)
+    #     scrollbar.pack(side='right', fill='y')
+        
+    #     # Preencher dados
+    #     valor_total_ajustes = 0
+    #     for diferenca in diferencas:
+    #         data_str = diferenca['data'].strftime('%d/%m/%Y')
+    #         esperado_str = f"R$ {diferenca['valor_esperado']:,.2f}"
+    #         atual_str = f"R$ {diferenca['valor_atual']:,.2f}"
+    #         diferenca_valor = diferenca['diferenca']
+    #         diferenca_str = f"R$ {diferenca_valor:+,.2f}"
+            
+    #         if diferenca_valor > 0:
+    #             acao = f"Complementar +R$ {diferenca_valor:.2f}"
+    #             tag = 'positivo'
+    #         else:
+    #             acao = f"Estornar R$ {abs(diferenca_valor):.2f}"
+    #             tag = 'negativo'
+            
+    #         tree.insert('', 'end', values=(data_str, esperado_str, atual_str, diferenca_str, acao), 
+    #                 tags=(tag,))
+    #         valor_total_ajustes += diferenca_valor
+        
+    #     # Configurar cores
+    #     tree.tag_configure('positivo', background='#e8f5e8')
+    #     tree.tag_configure('negativo', background='#ffe8e8')
+        
+    #     # Resumo
+    #     resumo_frame = ttk.Frame(frame)
+    #     resumo_frame.pack(fill='x', pady=(0, 15))
+        
+    #     ttk.Label(resumo_frame, text=f"📊 Total de ajustes: {len(diferencas)} quinzenas", 
+    #             font=('Arial', 11)).pack(side='left')
+        
+    #     ajuste_total_texto = f"Ajuste líquido: R$ {valor_total_ajustes:+,.2f}"
+    #     cor_ajuste = 'green' if valor_total_ajustes >= 0 else 'red'
+    #     ttk.Label(resumo_frame, text=ajuste_total_texto, 
+    #             font=('Arial', 11, 'bold'), foreground=cor_ajuste).pack(side='right')
+        
+    #     # Explicação
+    #     explicacao_frame = ttk.LabelFrame(frame, text="ℹ️ Como Funciona:")
+    #     explicacao_frame.pack(fill='x', pady=(0, 15))
+        
+    #     explicacao_texto = (
+    #         "• Valores POSITIVOS: Faltou cobrança → será complementado na quinzena atual\n"
+    #         "• Valores NEGATIVOS: Cobrou a mais → será estornado na quinzena atual\n"
+    #         "• Os ajustes são registrados como lançamentos separados com histórico completo"
+    #     )
+        
+    #     ttk.Label(explicacao_frame, text=explicacao_texto, font=('Arial', 9), 
+    #             justify='left').pack(padx=10, pady=5)
+        
+    #     # Botões
+    #     botoes_frame = ttk.Frame(frame)
+    #     botoes_frame.pack(fill='x')
+        
+    #     def aplicar_ajustes():
+    #         if custom_messagebox("yesno", "Confirmar Ajustes", 
+    #                         f"Confirma a aplicação de {len(diferencas)} ajustes?\n\n"
+    #                         f"Ajuste líquido: R$ {valor_total_ajustes:+,.2f}\n\n"
+    #                         f"Os lançamentos serão criados na quinzena {data_quinzena_atual.strftime('%d/%m/%Y')}"):
+                
+    #             try:
+    #                 ajustes_aplicados = self.executar_ajustes_taxas(diferencas, data_quinzena_atual)
+                    
+    #                 if ajustes_aplicados:
+    #                     custom_messagebox("info", "✅ Ajustes Aplicados", 
+    #                                     f"Foram criados {ajustes_aplicados} lançamentos de ajuste!\n\n"
+    #                                     f"Verifique os lançamentos na quinzena atual.")
+    #                     janela.destroy()
+                        
+    #                     # Recarregar interface se disponível
+    #                     if hasattr(self, 'visualizar_lancamentos'):
+    #                         self.visualizar_lancamentos()
+                            
+    #             except Exception as e:
+    #                 custom_messagebox("error", "Erro", f"Erro ao aplicar ajustes: {str(e)}")
+        
+    #     def exportar_relatorio():
+    #         self.exportar_relatorio_ajustes(diferencas, data_quinzena_atual)
+        
+    #     ttk.Button(botoes_frame, text="📋 Exportar Relatório", 
+    #             command=exportar_relatorio).pack(side='left', padx=5)
+    #     ttk.Button(botoes_frame, text="❌ Cancelar", 
+    #             command=janela.destroy).pack(side='left', padx=5)
+    #     ttk.Button(botoes_frame, text="✅ Aplicar Ajustes", 
+    #             command=aplicar_ajustes).pack(side='right', padx=5)
 
     def executar_ajustes_taxas(self, diferencas, data_quinzena_atual):
         """
@@ -5134,62 +5277,6 @@ class SistemaEntradaDados:
             'dados_bancarios': 'A DEFINIR',
             'forma_pagamento': 'PIX'
         }
-
-    def exportar_relatorio_ajustes(self, diferencas, data_quinzena_atual):
-        """
-        Exporta relatório detalhado dos ajustes
-        """
-        try:
-            from tkinter import filedialog
-            
-            # Nome sugerido para o arquivo
-            nome_sugerido = f"Relatorio_Ajustes_{self.cliente_atual}_{datetime.now().strftime('%Y%m%d')}.txt"
-            
-            # Solicitar local para salvar - CORREÇÃO: usar initialfile ao invés de initialname
-            arquivo_relatorio = filedialog.asksaveasfilename(
-                defaultextension=".txt",
-                filetypes=[("Arquivo de Texto", "*.txt"), ("Todos os Arquivos", "*.*")],
-                title="Salvar Relatório de Ajustes",
-                initialfile=nome_sugerido  # CORRIGIDO: era initialname
-            )
-            
-            if arquivo_relatorio:
-                with open(arquivo_relatorio, 'w', encoding='utf-8') as f:
-                    f.write("=" * 60 + "\n")
-                    f.write(f"RELATÓRIO DE AJUSTES DE TAXAS\n")
-                    f.write("=" * 60 + "\n")
-                    f.write(f"Cliente: {self.cliente_atual}\n")
-                    f.write(f"Data do Relatório: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
-                    f.write(f"Quinzena de Ajuste: {data_quinzena_atual.strftime('%d/%m/%Y')}\n")
-                    f.write("=" * 60 + "\n\n")
-                    
-                    valor_total = 0
-                    for i, diferenca in enumerate(diferencas, 1):
-                        f.write(f"{i}. QUINZENA: {diferenca['data'].strftime('%d/%m/%Y')}\n")
-                        f.write(f"   Valor Esperado: R$ {diferenca['valor_esperado']:,.2f}\n")
-                        f.write(f"   Valor Atual:    R$ {diferenca['valor_atual']:,.2f}\n")
-                        f.write(f"   Diferença:      R$ {diferenca['diferenca']:+,.2f}\n")
-                        f.write(f"   Motivo: {diferenca['motivo']}\n")
-                        f.write("-" * 40 + "\n")
-                        valor_total += diferenca['diferenca']
-                    
-                    f.write(f"\nRESUMO:\n")
-                    f.write(f"Total de Quinzenas: {len(diferencas)}\n")
-                    f.write(f"Ajuste Líquido: R$ {valor_total:+,.2f}\n")
-                    
-                    if valor_total > 0:
-                        f.write(f"Resultado: Cliente deve complementar R$ {valor_total:.2f}\n")
-                    elif valor_total < 0:
-                        f.write(f"Resultado: Estorno de R$ {abs(valor_total):.2f} para o cliente\n")
-                    else:
-                        f.write(f"Resultado: Valores estão balanceados\n")
-                
-                custom_messagebox("info", "Relatório Exportado", 
-                                f"Relatório salvo em:\n{arquivo_relatorio}")
-                
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao exportar relatório: {str(e)}")
-
 
     def verificar_consistencia_taxas(self, data_referencia=None):
         """
