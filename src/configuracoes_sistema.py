@@ -15,14 +15,21 @@ class GerenciadorConfiguracoes:
     
     # Definir o caminho do arquivo de configurações no mesmo local das planilhas base
     CONFIG_PATH = BASE_PATH / "parametros_sistema.json"
+    MATERIAIS_CONFIG_PATH = BASE_PATH / "parametros_materiais.json"
     
     # Cache de configurações para acesso rápido
     _config_cache = None
+    _materiais_cache = None
     
     @staticmethod
     def _atualizar_cache(config):
         """Atualiza o cache de configurações"""
         GerenciadorConfiguracoes._config_cache = config
+    
+    @staticmethod
+    def _atualizar_cache_materiais(config):
+        """Atualiza o cache de configurações de materiais"""
+        GerenciadorConfiguracoes._materiais_cache = config
     
     @staticmethod
     @log_action("Carregar configurações")
@@ -72,24 +79,87 @@ class GerenciadorConfiguracoes:
             return None
 
     @staticmethod
-    def _garantir_estrutura_completa(config):
-        """Garante que arquivos antigos tenham a estrutura completa"""
-        estrutura_padrao = GerenciadorConfiguracoes._obter_configuracoes_padrao_estaticas()
+    def carregar_configuracoes_materiais():
+        """Método estático para carregar configurações de materiais"""
+        # Verificar se há cache disponível
+        if GerenciadorConfiguracoes._materiais_cache is not None:
+            return GerenciadorConfiguracoes._materiais_cache
+            
+        config_path = GerenciadorConfiguracoes.MATERIAIS_CONFIG_PATH
         
-        # Adicionar seções faltantes
-        for secao, valores_padrao in estrutura_padrao.items():
-            if secao not in config:
-                config[secao] = valores_padrao
-                print(f"Adicionada seção faltante: {secao}")
-            elif isinstance(valores_padrao, dict):
-                # Verificar subseções
-                for subsecao, sub_valores in valores_padrao.items():
-                    if subsecao not in config[secao]:
-                        config[secao][subsecao] = sub_valores
-                        print(f"Adicionada subseção faltante: {secao}.{subsecao}")
+        if config_path.exists():
+            try:
+                with open(config_path, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+                
+                # Atualizar o cache
+                GerenciadorConfiguracoes._atualizar_cache_materiais(config)
+                return config
+            except Exception as e:
+                logger.error(f"Erro ao carregar configurações de materiais: {e}")
+                return None
         
-        return config
+        # Se o arquivo não existir, criar com configurações padrão
+        default_config = GerenciadorConfiguracoes._obter_configuracoes_materiais_padrao()
+        
+        try:
+            # Garantir que o diretório existe
+            config_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(default_config, f, indent=4, ensure_ascii=False)
+            
+            GerenciadorConfiguracoes._atualizar_cache_materiais(default_config)
+            return default_config
+        except Exception as e:
+            logger.error(f"Erro ao criar arquivo de configurações de materiais: {e}")
+            return None
 
+    @staticmethod
+    def _obter_configuracoes_materiais_padrao():
+        """Configurações padrão para materiais"""
+        return {
+            "categorias_materiais": {
+                "REVESTIMENTO": {
+                    "subcategorias": ["CERAMICA", "PORCELANATO", "PEDRA NATURAL", "MADEIRA", "VINILICO", "PAPEL PAREDE", "PASTILHA", "LAMINADO"],
+                    "cor": "#8B4513"
+                },
+                "ACABAMENTO": {
+                    "subcategorias": ["RODAPE", "MOLDURA", "SANCA", "BAGUETE", "PERFIL", "GUARNIÇÃO", "ALISAR", "ACABAMENTO"],
+                    "cor": "#4682B4"
+                },
+                "ILUMINACAO": {
+                    "subcategorias": ["LUMINARIA LED", "SPOT", "PENDENTE", "ARANDELA", "LUSTRE", "FITA LED", "LAMPADA", "DIMMER"],
+                    "cor": "#FFD700"
+                },
+                "HIDRAULICO": {
+                    "subcategorias": ["TORNEIRA", "CHUVEIRO", "VASO SANITARIO", "CUBA", "TANQUE", "TUBULACAO", "VALVULA", "REGISTRO"],
+                    "cor": "#0000FF"
+                },
+                "ELETRICO": {
+                    "subcategorias": ["TOMADA", "INTERRUPTOR", "DISJUNTOR", "QUADRO", "CABO", "ELETRODUTO", "CAIXA"],
+                    "cor": "#FF4500"
+                },
+                "OUTROS": {
+                    "subcategorias": ["DIVERSOS", "ACESSORIO", "FERRAMENTA", "CONSUMIVEL"],
+                    "cor": "#808080"
+                }
+            },
+            "ambientes": [
+                "INSTALAÇÃO DA OBRA", "SALA", "COZINHA", "BANHEIRO SUITE", "BANHEIRO SOCIAL", 
+                "QUARTO CASAL", "QUARTO SOLTEIRO", "QUARTO HOSPEDE",
+                "VARANDA", "GARAGEM", "AREA EXTERNA", "PISCINA", 
+                "SAUNA", "JARDIM", "ESCRITORIO", "LAVANDERIA",
+                "DESPENSA", "ADEGA", "CHURRASQUEIRA", "TODOS AMBIENTES"
+            ],
+            "status_instalacao": [
+                "PENDENTE", "EM INSTALACAO", "INSTALADO", "GARANTIA", "MANUTENCAO"
+            ],
+            "unidades": [
+                "PC", "M2", "MT", "KG", "LT", "CX", "UN", "PAR", "JG", "GL", "BD", "RL"
+            ]
+        }
+    
     @staticmethod
     def _obter_configuracoes_padrao_estaticas():
         """Configurações padrão para método estático"""
@@ -161,6 +231,7 @@ class GerenciadorConfiguracoes:
         
         # Usar o caminho da variável de classe 
         self.config_path = GerenciadorConfiguracoes.CONFIG_PATH
+        self.materiais_config_path = GerenciadorConfiguracoes.MATERIAIS_CONFIG_PATH
         
         # Carregar ou criar configurações iniciais
         self.carregar_configuracoes_locais()
@@ -176,6 +247,15 @@ class GerenciadorConfiguracoes:
         if self.config is None:
             self.config = self._obter_configuracoes_padrao_completas()
             self.salvar_configuracoes()
+
+    def carregar_configuracoes_materiais_locais(self):
+        """Carrega as configurações de materiais"""
+        self.materiais_config = GerenciadorConfiguracoes.carregar_configuracoes_materiais()
+        
+        # Se não foi possível carregar, criar configurações padrão
+        if self.materiais_config is None:
+            self.materiais_config = GerenciadorConfiguracoes._obter_configuracoes_materiais_padrao()
+            self.salvar_configuracoes_materiais()
 
     def _obter_configuracoes_padrao_completas(self):
         """Retorna configurações padrão completas incluindo correção monetária"""
@@ -246,6 +326,23 @@ class GerenciadorConfiguracoes:
             logger.error(f"Erro ao salvar configurações: {e}")
             messagebox.showerror("Erro", f"Não foi possível salvar as configurações: {e}")
 
+    def salvar_configuracoes_materiais(self):
+        """Salva as configurações de materiais no arquivo"""
+        try:
+            # Garantir que o diretório existe
+            self.materiais_config_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(self.materiais_config_path, 'w', encoding='utf-8') as f:
+                json.dump(self.materiais_config, f, indent=2, ensure_ascii=False)
+            
+            # Atualizar o cache ao salvar
+            GerenciadorConfiguracoes._atualizar_cache_materiais(self.materiais_config)
+            
+            print(f"Configurações de materiais salvas com sucesso em: {self.materiais_config_path}")
+        except Exception as e:
+            logger.error(f"Erro ao salvar configurações de materiais: {e}")
+            messagebox.showerror("Erro", f"Não foi possível salvar as configurações de materiais: {e}")
+
     def setup_gui(self):
         """Configura a interface gráfica"""
         # Notebook para diferentes seções
@@ -257,6 +354,7 @@ class GerenciadorConfiguracoes:
         self.setup_aba_bancos()
         self.setup_aba_categorias()
         self.setup_aba_indices_correcao()
+        self.setup_aba_materiais()
         
         # Botões globais
         frame_botoes = ttk.Frame(self.root)
@@ -573,6 +671,558 @@ class GerenciadorConfiguracoes:
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao salvar alterações: {str(e)}")
 
+    def setup_aba_materiais(self):
+        """Configura a aba de parâmetros de materiais"""
+        frame_materiais = ttk.Frame(self.notebook)
+        self.notebook.add(frame_materiais, text='Parâmetros de Materiais')
+        
+        # Criar notebook interno para as subseções de materiais
+        notebook_materiais = ttk.Notebook(frame_materiais)
+        notebook_materiais.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        # Sub-aba: Categorias de Materiais
+        self.setup_subaba_categorias_materiais(notebook_materiais)
+        
+        # Sub-aba: Ambientes
+        self.setup_subaba_ambientes(notebook_materiais)
+        
+        # Sub-aba: Status de Instalação
+        self.setup_subaba_status_instalacao(notebook_materiais)
+        
+        # Sub-aba: Unidades
+        self.setup_subaba_unidades(notebook_materiais)
+
+    def setup_subaba_categorias_materiais(self, parent_notebook):
+        """Configura a sub-aba de categorias de materiais"""
+        frame_cat_materiais = ttk.Frame(parent_notebook)
+        parent_notebook.add(frame_cat_materiais, text='Categorias de Materiais')
+        
+        # Frame principal dividido em duas colunas
+        main_frame = ttk.Frame(frame_cat_materiais)
+        main_frame.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        # Coluna esquerda - Lista de categorias
+        frame_esquerda = ttk.Frame(main_frame)
+        frame_esquerda.pack(side='left', fill='both', expand=True, padx=(0, 5))
+        
+        # Lista de categorias existentes
+        frame_lista_cat = ttk.LabelFrame(frame_esquerda, text="Categorias Existentes")
+        frame_lista_cat.pack(fill='both', expand=True)
+        
+        self.tree_cat_materiais = ttk.Treeview(frame_lista_cat, columns=('Categoria', 'Cor'), show='headings', height=15)
+        self.tree_cat_materiais.heading('Categoria', text='Categoria')
+        self.tree_cat_materiais.heading('Cor', text='Cor')
+        self.tree_cat_materiais.column('Categoria', width=200)
+        self.tree_cat_materiais.column('Cor', width=100)
+        
+        scrollbar_cat = ttk.Scrollbar(frame_lista_cat, orient='vertical', command=self.tree_cat_materiais.yview)
+        self.tree_cat_materiais.configure(yscrollcommand=scrollbar_cat.set)
+        
+        self.tree_cat_materiais.pack(side='left', fill='both', expand=True)
+        scrollbar_cat.pack(side='right', fill='y')
+        
+        # Bind para seleção
+        self.tree_cat_materiais.bind('<<TreeviewSelect>>', self.on_categoria_material_select)
+        
+        # Coluna direita - Detalhes e edição
+        frame_direita = ttk.Frame(main_frame)
+        frame_direita.pack(side='right', fill='y', padx=(5, 0))
+        
+        # Frame para nova categoria
+        frame_nova_cat = ttk.LabelFrame(frame_direita, text="Nova Categoria")
+        frame_nova_cat.pack(fill='x', pady=(0, 5))
+        
+        ttk.Label(frame_nova_cat, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        self.entry_nova_cat_material = ttk.Entry(frame_nova_cat, width=25)
+        self.entry_nova_cat_material.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Label(frame_nova_cat, text="Cor:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        frame_cor = ttk.Frame(frame_nova_cat)
+        frame_cor.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        
+        self.btn_escolher_cor = tk.Button(frame_cor, text="Escolher Cor", width=12, height=1)
+        self.btn_escolher_cor.pack(side='left')
+        self.btn_escolher_cor.bind('<Button-1>', self.escolher_cor_categoria)
+        
+        self.cor_selecionada = "#808080"  # Cor padrão
+        self.btn_escolher_cor.configure(bg=self.cor_selecionada)
+        
+        ttk.Button(frame_nova_cat, text="Adicionar Categoria",
+                  command=self.adicionar_categoria_material).grid(row=2, column=0, columnspan=2, pady=10)
+        
+        # Frame para editar categoria selecionada
+        frame_editar_cat = ttk.LabelFrame(frame_direita, text="Editar Categoria Selecionada")
+        frame_editar_cat.pack(fill='x', pady=(5, 5))
+        
+        ttk.Label(frame_editar_cat, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        self.entry_editar_cat_material = ttk.Entry(frame_editar_cat, width=25)
+        self.entry_editar_cat_material.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Label(frame_editar_cat, text="Cor:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        frame_cor_edit = ttk.Frame(frame_editar_cat)
+        frame_cor_edit.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        
+        self.btn_escolher_cor_edit = tk.Button(frame_cor_edit, text="Escolher Cor", width=12, height=1)
+        self.btn_escolher_cor_edit.pack(side='left')
+        self.btn_escolher_cor_edit.bind('<Button-1>', self.escolher_cor_categoria_edit)
+        
+        self.cor_edicao = "#808080"
+        
+        frame_botoes_cat = ttk.Frame(frame_editar_cat)
+        frame_botoes_cat.grid(row=2, column=0, columnspan=2, pady=10)
+        
+        ttk.Button(frame_botoes_cat, text="Salvar Alterações",
+                  command=self.salvar_categoria_material).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_cat, text="Remover Categoria",
+                  command=self.remover_categoria_material).pack(side='left', padx=5)
+        
+        # Frame para subcategorias
+        frame_subcategorias = ttk.LabelFrame(frame_direita, text="Subcategorias")
+        frame_subcategorias.pack(fill='both', expand=True, pady=(5, 0))
+        
+        self.listbox_subcategorias = tk.Listbox(frame_subcategorias, height=8)
+        scrollbar_sub = ttk.Scrollbar(frame_subcategorias, orient='vertical', command=self.listbox_subcategorias.yview)
+        self.listbox_subcategorias.configure(yscrollcommand=scrollbar_sub.set)
+        
+        self.listbox_subcategorias.pack(side='left', fill='both', expand=True, padx=(5, 0), pady=5)
+        scrollbar_sub.pack(side='right', fill='y', pady=5)
+        
+        # Frame para gerenciar subcategorias
+        frame_ger_sub = ttk.Frame(frame_subcategorias)
+        frame_ger_sub.pack(fill='x', padx=5, pady=5)
+        
+        self.entry_nova_subcategoria = ttk.Entry(frame_ger_sub, width=25)
+        self.entry_nova_subcategoria.pack(side='top', pady=(0, 5))
+        
+        frame_btn_sub = ttk.Frame(frame_ger_sub)
+        frame_btn_sub.pack(side='top')
+        
+        ttk.Button(frame_btn_sub, text="Adicionar",
+                  command=self.adicionar_subcategoria).pack(side='left', padx=2)
+        ttk.Button(frame_btn_sub, text="Remover",
+                  command=self.remover_subcategoria).pack(side='left', padx=2)
+        
+        self.atualizar_lista_categorias_materiais()
+
+    def setup_subaba_ambientes(self, parent_notebook):
+        """Configura a sub-aba de ambientes"""
+        frame_ambientes = ttk.Frame(parent_notebook)
+        parent_notebook.add(frame_ambientes, text='Ambientes')
+        
+        # Frame para adicionar novo ambiente
+        frame_novo_amb = ttk.LabelFrame(frame_ambientes, text="Adicionar Novo Ambiente")
+        frame_novo_amb.pack(fill='x', padx=5, pady=5)
+        
+        ttk.Label(frame_novo_amb, text="Nome do Ambiente:").grid(row=0, column=0, padx=5, pady=5)
+        self.entry_novo_ambiente = ttk.Entry(frame_novo_amb, width=30)
+        self.entry_novo_ambiente.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Button(frame_novo_amb, text="Adicionar",
+                  command=self.adicionar_ambiente).grid(row=1, column=0, columnspan=2, pady=10)
+        
+        # Lista de ambientes
+        frame_lista_amb = ttk.LabelFrame(frame_ambientes, text="Ambientes Cadastrados")
+        frame_lista_amb.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        self.listbox_ambientes = tk.Listbox(frame_lista_amb)
+        scrollbar_amb = ttk.Scrollbar(frame_lista_amb, orient='vertical', command=self.listbox_ambientes.yview)
+        self.listbox_ambientes.configure(yscrollcommand=scrollbar_amb.set)
+        
+        self.listbox_ambientes.pack(side='left', fill='both', expand=True, padx=5, pady=5)
+        scrollbar_amb.pack(side='right', fill='y', pady=5)
+        
+        ttk.Button(frame_lista_amb, text="Remover Selecionado",
+                  command=self.remover_ambiente).pack(pady=5)
+        
+        self.atualizar_lista_ambientes()
+
+    def setup_subaba_status_instalacao(self, parent_notebook):
+        """Configura a sub-aba de status de instalação"""
+        frame_status = ttk.Frame(parent_notebook)
+        parent_notebook.add(frame_status, text='Status de Instalação')
+        
+        # Frame para adicionar novo status
+        frame_novo_status = ttk.LabelFrame(frame_status, text="Adicionar Novo Status")
+        frame_novo_status.pack(fill='x', padx=5, pady=5)
+        
+        ttk.Label(frame_novo_status, text="Nome do Status:").grid(row=0, column=0, padx=5, pady=5)
+        self.entry_novo_status = ttk.Entry(frame_novo_status, width=30)
+        self.entry_novo_status.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Button(frame_novo_status, text="Adicionar",
+                  command=self.adicionar_status).grid(row=1, column=0, columnspan=2, pady=10)
+        
+        # Lista de status
+        frame_lista_status = ttk.LabelFrame(frame_status, text="Status Cadastrados")
+        frame_lista_status.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        self.listbox_status = tk.Listbox(frame_lista_status)
+        scrollbar_status = ttk.Scrollbar(frame_lista_status, orient='vertical', command=self.listbox_status.yview)
+        self.listbox_status.configure(yscrollcommand=scrollbar_status.set)
+        
+        self.listbox_status.pack(side='left', fill='both', expand=True, padx=5, pady=5)
+        scrollbar_status.pack(side='right', fill='y', pady=5)
+        
+        ttk.Button(frame_lista_status, text="Remover Selecionado",
+                  command=self.remover_status).pack(pady=5)
+        
+        self.atualizar_lista_status()
+
+    def setup_subaba_unidades(self, parent_notebook):
+        """Configura a sub-aba de unidades"""
+        frame_unidades = ttk.Frame(parent_notebook)
+        parent_notebook.add(frame_unidades, text='Unidades')
+        
+        # Frame para adicionar nova unidade
+        frame_nova_unidade = ttk.LabelFrame(frame_unidades, text="Adicionar Nova Unidade")
+        frame_nova_unidade.pack(fill='x', padx=5, pady=5)
+        
+        ttk.Label(frame_nova_unidade, text="Sigla da Unidade:").grid(row=0, column=0, padx=5, pady=5)
+        self.entry_nova_unidade = ttk.Entry(frame_nova_unidade, width=10)
+        self.entry_nova_unidade.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Button(frame_nova_unidade, text="Adicionar",
+                  command=self.adicionar_unidade).grid(row=1, column=0, columnspan=2, pady=10)
+        
+        # Lista de unidades
+        frame_lista_unidades = ttk.LabelFrame(frame_unidades, text="Unidades Cadastradas")
+        frame_lista_unidades.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        self.listbox_unidades = tk.Listbox(frame_lista_unidades)
+        scrollbar_unidades = ttk.Scrollbar(frame_lista_unidades, orient='vertical', command=self.listbox_unidades.yview)
+        self.listbox_unidades.configure(yscrollcommand=scrollbar_unidades.set)
+        
+        self.listbox_unidades.pack(side='left', fill='both', expand=True, padx=5, pady=5)
+        scrollbar_unidades.pack(side='right', fill='y', pady=5)
+        
+        ttk.Button(frame_lista_unidades, text="Remover Selecionada",
+                  command=self.remover_unidade).pack(pady=5)
+        
+        self.atualizar_lista_unidades()
+
+    # =================================
+    # MÉTODOS PARA CATEGORIAS DE MATERIAIS
+    # =================================
+    
+    def escolher_cor_categoria(self, event):
+        """Abre o seletor de cor para nova categoria"""
+        cor = colorchooser.askcolor(title="Escolher Cor da Categoria")[1]
+        if cor:
+            self.cor_selecionada = cor
+            self.btn_escolher_cor.configure(bg=cor)
+
+    def escolher_cor_categoria_edit(self, event):
+        """Abre o seletor de cor para edição de categoria"""
+        cor = colorchooser.askcolor(title="Escolher Cor da Categoria")[1]
+        if cor:
+            self.cor_edicao = cor
+            self.btn_escolher_cor_edit.configure(bg=cor)
+
+    def adicionar_categoria_material(self):
+        """Adiciona uma nova categoria de material"""
+        nome = self.entry_nova_cat_material.get().strip().upper()
+        if not nome:
+            messagebox.showerror("Erro", "Digite o nome da categoria!")
+            return
+        
+        if nome in self.materiais_config['categorias_materiais']:
+            messagebox.showerror("Erro", "Esta categoria já existe!")
+            return
+        
+        # Adicionar nova categoria
+        self.materiais_config['categorias_materiais'][nome] = {
+            'subcategorias': [],
+            'cor': self.cor_selecionada
+        }
+        
+        self.salvar_configuracoes_materiais()
+        self.atualizar_lista_categorias_materiais()
+        
+        # Limpar campos
+        self.entry_nova_cat_material.delete(0, tk.END)
+        self.cor_selecionada = "#808080"
+        self.btn_escolher_cor.configure(bg=self.cor_selecionada)
+        
+        messagebox.showinfo("Sucesso", "Categoria adicionada com sucesso!")
+
+    def on_categoria_material_select(self, event):
+        """Evento de seleção de categoria de material"""
+        selecionado = self.tree_cat_materiais.selection()
+        if not selecionado:
+            return
+        
+        categoria = self.tree_cat_materiais.item(selecionado)['values'][0]
+        
+        # Preencher campos de edição
+        self.entry_editar_cat_material.delete(0, tk.END)
+        self.entry_editar_cat_material.insert(0, categoria)
+        
+        # Definir cor de edição
+        self.cor_edicao = self.materiais_config['categorias_materiais'][categoria]['cor']
+        self.btn_escolher_cor_edit.configure(bg=self.cor_edicao)
+        
+        # Atualizar lista de subcategorias
+        self.atualizar_lista_subcategorias(categoria)
+
+    def salvar_categoria_material(self):
+        """Salva alterações na categoria selecionada"""
+        selecionado = self.tree_cat_materiais.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione uma categoria para editar!")
+            return
+        
+        categoria_antiga = self.tree_cat_materiais.item(selecionado)['values'][0]
+        categoria_nova = self.entry_editar_cat_material.get().strip().upper()
+        
+        if not categoria_nova:
+            messagebox.showerror("Erro", "Digite o nome da categoria!")
+            return
+        
+        # Se mudou o nome, verificar se o novo nome já existe
+        if categoria_nova != categoria_antiga and categoria_nova in self.materiais_config['categorias_materiais']:
+            messagebox.showerror("Erro", "Já existe uma categoria com este nome!")
+            return
+        
+        # Salvar dados da categoria
+        dados_categoria = self.materiais_config['categorias_materiais'][categoria_antiga].copy()
+        dados_categoria['cor'] = self.cor_edicao
+        
+        # Se mudou o nome, remover a antiga e adicionar a nova
+        if categoria_nova != categoria_antiga:
+            del self.materiais_config['categorias_materiais'][categoria_antiga]
+        
+        self.materiais_config['categorias_materiais'][categoria_nova] = dados_categoria
+        
+        self.salvar_configuracoes_materiais()
+        self.atualizar_lista_categorias_materiais()
+        
+        messagebox.showinfo("Sucesso", "Categoria atualizada com sucesso!")
+
+    def remover_categoria_material(self):
+        """Remove a categoria selecionada"""
+        selecionado = self.tree_cat_materiais.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione uma categoria para remover!")
+            return
+        
+        categoria = self.tree_cat_materiais.item(selecionado)['values'][0]
+        
+        if messagebox.askyesno("Confirmar", f"Deseja remover a categoria '{categoria}' e todas as suas subcategorias?"):
+            del self.materiais_config['categorias_materiais'][categoria]
+            self.salvar_configuracoes_materiais()
+            self.atualizar_lista_categorias_materiais()
+            
+            # Limpar campos de edição
+            self.entry_editar_cat_material.delete(0, tk.END)
+            self.listbox_subcategorias.delete(0, tk.END)
+            
+            messagebox.showinfo("Sucesso", "Categoria removida com sucesso!")
+
+    def adicionar_subcategoria(self):
+        """Adiciona uma subcategoria à categoria selecionada"""
+        selecionado = self.tree_cat_materiais.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione uma categoria primeiro!")
+            return
+        
+        categoria = self.tree_cat_materiais.item(selecionado)['values'][0]
+        subcategoria = self.entry_nova_subcategoria.get().strip().upper()
+        
+        if not subcategoria:
+            messagebox.showerror("Erro", "Digite o nome da subcategoria!")
+            return
+        
+        if subcategoria in self.materiais_config['categorias_materiais'][categoria]['subcategorias']:
+            messagebox.showerror("Erro", "Esta subcategoria já existe!")
+            return
+        
+        # Adicionar subcategoria
+        self.materiais_config['categorias_materiais'][categoria]['subcategorias'].append(subcategoria)
+        self.materiais_config['categorias_materiais'][categoria]['subcategorias'].sort()
+        
+        self.salvar_configuracoes_materiais()
+        self.atualizar_lista_subcategorias(categoria)
+        
+        # Limpar campo
+        self.entry_nova_subcategoria.delete(0, tk.END)
+        
+        messagebox.showinfo("Sucesso", "Subcategoria adicionada com sucesso!")
+
+    def remover_subcategoria(self):
+        """Remove a subcategoria selecionada"""
+        selecionado_cat = self.tree_cat_materiais.selection()
+        if not selecionado_cat:
+            messagebox.showwarning("Aviso", "Selecione uma categoria primeiro!")
+            return
+        
+        selecionado_sub = self.listbox_subcategorias.curselection()
+        if not selecionado_sub:
+            messagebox.showwarning("Aviso", "Selecione uma subcategoria para remover!")
+            return
+        
+        categoria = self.tree_cat_materiais.item(selecionado_cat)['values'][0]
+        subcategoria = self.listbox_subcategorias.get(selecionado_sub[0])
+        
+        if messagebox.askyesno("Confirmar", f"Deseja remover a subcategoria '{subcategoria}'?"):
+            self.materiais_config['categorias_materiais'][categoria]['subcategorias'].remove(subcategoria)
+            self.salvar_configuracoes_materiais()
+            self.atualizar_lista_subcategorias(categoria)
+            
+            messagebox.showinfo("Sucesso", "Subcategoria removida com sucesso!")
+
+    def atualizar_lista_categorias_materiais(self):
+        """Atualiza a exibição da lista de categorias de materiais"""
+        for item in self.tree_cat_materiais.get_children():
+            self.tree_cat_materiais.delete(item)
+        
+        for categoria, dados in sorted(self.materiais_config['categorias_materiais'].items()):
+            self.tree_cat_materiais.insert('', 'end', values=(categoria, dados['cor']))
+
+    def atualizar_lista_subcategorias(self, categoria):
+        """Atualiza a lista de subcategorias para a categoria selecionada"""
+        self.listbox_subcategorias.delete(0, tk.END)
+        
+        subcategorias = self.materiais_config['categorias_materiais'][categoria]['subcategorias']
+        for subcategoria in sorted(subcategorias):
+            self.listbox_subcategorias.insert(tk.END, subcategoria)
+
+    # =================================
+    # MÉTODOS PARA AMBIENTES
+    # =================================
+    
+    def adicionar_ambiente(self):
+        """Adiciona um novo ambiente"""
+        ambiente = self.entry_novo_ambiente.get().strip().upper()
+        if not ambiente:
+            messagebox.showerror("Erro", "Digite o nome do ambiente!")
+            return
+        
+        if ambiente in self.materiais_config['ambientes']:
+            messagebox.showerror("Erro", "Este ambiente já existe!")
+            return
+        
+        self.materiais_config['ambientes'].append(ambiente)
+        self.materiais_config['ambientes'].sort()
+        
+        self.salvar_configuracoes_materiais()
+        self.atualizar_lista_ambientes()
+        
+        self.entry_novo_ambiente.delete(0, tk.END)
+        messagebox.showinfo("Sucesso", "Ambiente adicionado com sucesso!")
+
+    def remover_ambiente(self):
+        """Remove o ambiente selecionado"""
+        selecionado = self.listbox_ambientes.curselection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um ambiente para remover!")
+            return
+        
+        ambiente = self.listbox_ambientes.get(selecionado[0])
+        
+        if messagebox.askyesno("Confirmar", f"Deseja remover o ambiente '{ambiente}'?"):
+            self.materiais_config['ambientes'].remove(ambiente)
+            self.salvar_configuracoes_materiais()
+            self.atualizar_lista_ambientes()
+            
+            messagebox.showinfo("Sucesso", "Ambiente removido com sucesso!")
+
+    def atualizar_lista_ambientes(self):
+        """Atualiza a exibição da lista de ambientes"""
+        self.listbox_ambientes.delete(0, tk.END)
+        for ambiente in sorted(self.materiais_config['ambientes']):
+            self.listbox_ambientes.insert(tk.END, ambiente)
+
+    # =================================
+    # MÉTODOS PARA STATUS DE INSTALAÇÃO
+    # =================================
+    
+    def adicionar_status(self):
+        """Adiciona um novo status de instalação"""
+        status = self.entry_novo_status.get().strip().upper()
+        if not status:
+            messagebox.showerror("Erro", "Digite o nome do status!")
+            return
+        
+        if status in self.materiais_config['status_instalacao']:
+            messagebox.showerror("Erro", "Este status já existe!")
+            return
+        
+        self.materiais_config['status_instalacao'].append(status)
+        self.materiais_config['status_instalacao'].sort()
+        
+        self.salvar_configuracoes_materiais()
+        self.atualizar_lista_status()
+        
+        self.entry_novo_status.delete(0, tk.END)
+        messagebox.showinfo("Sucesso", "Status adicionado com sucesso!")
+
+    def remover_status(self):
+        """Remove o status selecionado"""
+        selecionado = self.listbox_status.curselection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um status para remover!")
+            return
+        
+        status = self.listbox_status.get(selecionado[0])
+        
+        if messagebox.askyesno("Confirmar", f"Deseja remover o status '{status}'?"):
+            self.materiais_config['status_instalacao'].remove(status)
+            self.salvar_configuracoes_materiais()
+            self.atualizar_lista_status()
+            
+            messagebox.showinfo("Sucesso", "Status removido com sucesso!")
+
+    def atualizar_lista_status(self):
+        """Atualiza a exibição da lista de status"""
+        self.listbox_status.delete(0, tk.END)
+        for status in sorted(self.materiais_config['status_instalacao']):
+            self.listbox_status.insert(tk.END, status)
+
+    # =================================
+    # MÉTODOS PARA UNIDADES
+    # =================================
+    
+    def adicionar_unidade(self):
+        """Adiciona uma nova unidade"""
+        unidade = self.entry_nova_unidade.get().strip().upper()
+        if not unidade:
+            messagebox.showerror("Erro", "Digite a sigla da unidade!")
+            return
+        
+        if unidade in self.materiais_config['unidades']:
+            messagebox.showerror("Erro", "Esta unidade já existe!")
+            return
+        
+        self.materiais_config['unidades'].append(unidade)
+        self.materiais_config['unidades'].sort()
+        
+        self.salvar_configuracoes_materiais()
+        self.atualizar_lista_unidades()
+        
+        self.entry_nova_unidade.delete(0, tk.END)
+        messagebox.showinfo("Sucesso", "Unidade adicionada com sucesso!")
+
+    def remover_unidade(self):
+        """Remove a unidade selecionada"""
+        selecionado = self.listbox_unidades.curselection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione uma unidade para remover!")
+            return
+        
+        unidade = self.listbox_unidades.get(selecionado[0])
+        
+        if messagebox.askyesno("Confirmar", f"Deseja remover a unidade '{unidade}'?"):
+            self.materiais_config['unidades'].remove(unidade)
+            self.salvar_configuracoes_materiais()
+            self.atualizar_lista_unidades()
+            
+            messagebox.showinfo("Sucesso", "Unidade removida com sucesso!")
+
+    def atualizar_lista_unidades(self):
+        """Atualiza a exibição da lista de unidades"""
+        self.listbox_unidades.delete(0, tk.END)
+        for unidade in sorted(self.materiais_config['unidades']):
+            self.listbox_unidades.insert(tk.END, unidade)
 
     def voltar_menu_local(self):  
         if hasattr(self, 'menu_principal') and self.menu_principal is not None:
