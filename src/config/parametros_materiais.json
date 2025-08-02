@@ -1,0 +1,77 @@
+{
+  "categorias_materiais": {
+    "REVESTIMENTO": {
+      "subcategorias": ["CERAMICA", "PORCELANATO", "PEDRA NATURAL", "MADEIRA", "VINILICO", "PAPEL PAREDE", "PASTILHA", "LAMINADO"],
+      "cor": "#8B4513"
+    },
+    "ACABAMENTO": {
+      "subcategorias": ["RODAPE", "MOLDURA", "SANCA", "BAGUETE", "PERFIL", "GUARNIÇÃO", "ALISAR", "ACABAMENTO"],
+      "cor": "#4682B4"
+    },
+    "ILUMINACAO": {
+      "subcategorias": ["LUMINARIA LED", "SPOT", "PENDENTE", "ARANDELA", "LUSTRE", "FITA LED", "LAMPADA", "DIMMER"],
+      "cor": "#FFD700"
+    },
+    "HIDRAULICO": {
+      "subcategorias": ["TORNEIRA", "CHUVEIRO", "VASO SANITARIO", "CUBA", "TANQUE", "TUBULACAO", "VALVULA", "REGISTRO"],
+      "cor": "#0000FF"
+    },
+    "ELETRICO": {
+      "subcategorias": ["TOMADA", "INTERRUPTOR", "DISJUNTOR", "QUADRO", "CABO", "ELETRODUTO", "CAIXA"],
+      "cor": "#FF4500"
+    },
+    "PISCINA": {
+      "subcategorias": ["BOMBA", "FILTRO", "AQUECEDOR", "ILUMINACAO", "REVESTIMENTO", "CASCATA", "BORDA", "MOTOR"],
+      "cor": "#00CED1"
+    },
+    "SAUNA": {
+      "subcategorias": ["AQUECEDOR", "MADEIRA", "BANCO", "CONTROLE", "TERMOMETRO", "LAMPADA"],
+      "cor": "#8B4513"
+    },
+    "PORTAS_JANELAS": {
+      "subcategorias": ["PORTA", "JANELA", "FECHADURA", "DOBRADICA", "PUXADOR", "VIDRO", "ESQUADRIA"],
+      "cor": "#654321"
+    },
+    "FERRAGENS": {
+      "subcategorias": ["PARAFUSO", "PREGO", "BUCHA", "DOBRADIÇA", "FECHADURA", "TRINCO", "FERROLHO"],
+      "cor": "#696969"
+    },
+    "PINTURA": {
+      "subcategorias": ["TINTA", "VERNIZ", "PRIMER", "SELADOR", "MASSA", "LIXA", "PINCEL", "ROLO"],
+      "cor": "#FF69B4"
+    },
+    "MOBILIARIO": {
+      "subcategorias": ["ARMARIO", "BANCADA", "PRATELEIRA", "GAVETA", "PUXADOR", "CORREDIÇA"],
+      "cor": "#8B4513"
+    },
+    "PAISAGISMO": {
+      "subcategorias": ["PLANTA", "VASO", "TERRA", "ADUBO", "IRRIGACAO", "PEDRA DECORATIVA"],
+      "cor": "#228B22"
+    },
+    "SEGURANCA": {
+      "subcategorias": ["CAMERA", "ALARME", "SENSOR", "CERCA", "PORTAO", "INTERFONE"],
+      "cor": "#FF0000"
+    },
+    "AUTOMACAO": {
+      "subcategorias": ["CENTRAL", "MODULO", "SENSOR", "CONTROLE", "APP", "SMART"],
+      "cor": "#9370DB"
+    },
+    "OUTROS": {
+      "subcategorias": ["DIVERSOS", "ACESSORIO", "FERRAMENTA", "CONSUMIVEL"],
+      "cor": "#808080"
+    }
+  },
+  "ambientes": [
+    "SALA", "COZINHA", "BANHEIRO SUITE", "BANHEIRO SOCIAL", 
+    "QUARTO CASAL", "QUARTO SOLTEIRO", "QUARTO HOSPEDE",
+    "VARANDA", "GARAGEM", "AREA EXTERNA", "PISCINA", 
+    "SAUNA", "JARDIM", "ESCRITORIO", "LAVANDERIA",
+    "DESPENSA", "ADEGA", "CHURRASQUEIRA", "TODOS AMBIENTES"
+  ],
+  "status_instalacao": [
+    "PENDENTE", "EM INSTALACAO", "INSTALADO", "GARANTIA", "MANUTENCAO"
+  ],
+  "unidades": [
+    "PC", "M2", "MT", "KG", "LT", "CX", "UN", "PAR", "JG", "GL", "BD", "RL"
+  ]
+}
