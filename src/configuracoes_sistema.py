@@ -32,6 +32,29 @@ class GerenciadorConfiguracoes:
         GerenciadorConfiguracoes._materiais_cache = config
     
     @staticmethod
+    def _garantir_estrutura_completa(config):
+        """Garante que a estrutura de configurações está completa"""
+        estrutura_padrao = GerenciadorConfiguracoes._obter_configuracoes_padrao_estaticas()
+        
+        # Verificar e adicionar seções que podem estar faltando
+        for secao, valores in estrutura_padrao.items():
+            if secao not in config:
+                config[secao] = valores
+                logger.info(f"Seção '{secao}' adicionada às configurações")
+        
+        # Verificar estruturas específicas
+        if 'indices_correcao' in config:
+            if 'indices_disponiveis' not in config['indices_correcao']:
+                config['indices_correcao']['indices_disponiveis'] = estrutura_padrao['indices_correcao']['indices_disponiveis']
+        
+        if 'correcao_automatica' in config:
+            for chave, valor in estrutura_padrao['correcao_automatica'].items():
+                if chave not in config['correcao_automatica']:
+                    config['correcao_automatica'][chave] = valor
+        
+        return config
+    
+    @staticmethod
     @log_action("Carregar configurações")
     def carregar_configuracoes():
         """
@@ -236,6 +259,9 @@ class GerenciadorConfiguracoes:
         # Carregar ou criar configurações iniciais
         self.carregar_configuracoes_locais()
         
+        # IMPORTANTE: Carregar configurações de materiais
+        self.carregar_configuracoes_materiais_locais()
+        
         # Setup da interface
         self.setup_gui()
 
@@ -363,9 +389,9 @@ class GerenciadorConfiguracoes:
         ttk.Button(frame_botoes, text="Salvar Todas Alterações",
                   command=self.salvar_todas_alteracoes).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Voltar ao Menu Principal", 
-                  command=self.voltar_menu_local).pack(side='left', padx=5, expand=True)
-        ttk.Button(frame_botoes, text="Fechar",
-                  command=self.root.destroy).pack(side='right', padx=5)
+                  command=self.voltar_menu_local).pack(side='right', padx=5)
+        # ttk.Button(frame_botoes, text="Fechar",
+        #           command=self.root.quit).pack(side='right', padx=5)
 
     def setup_aba_cafe(self):
         """Configura a aba de valores do café"""
@@ -735,18 +761,7 @@ class GerenciadorConfiguracoes:
         ttk.Label(frame_nova_cat, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
         self.entry_nova_cat_material = ttk.Entry(frame_nova_cat, width=25)
         self.entry_nova_cat_material.grid(row=0, column=1, padx=5, pady=5)
-        
-        ttk.Label(frame_nova_cat, text="Cor:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
-        frame_cor = ttk.Frame(frame_nova_cat)
-        frame_cor.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        
-        self.btn_escolher_cor = tk.Button(frame_cor, text="Escolher Cor", width=12, height=1)
-        self.btn_escolher_cor.pack(side='left')
-        self.btn_escolher_cor.bind('<Button-1>', self.escolher_cor_categoria)
-        
-        self.cor_selecionada = "#808080"  # Cor padrão
-        self.btn_escolher_cor.configure(bg=self.cor_selecionada)
-        
+                
         ttk.Button(frame_nova_cat, text="Adicionar Categoria",
                   command=self.adicionar_categoria_material).grid(row=2, column=0, columnspan=2, pady=10)
         
@@ -757,17 +772,7 @@ class GerenciadorConfiguracoes:
         ttk.Label(frame_editar_cat, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
         self.entry_editar_cat_material = ttk.Entry(frame_editar_cat, width=25)
         self.entry_editar_cat_material.grid(row=0, column=1, padx=5, pady=5)
-        
-        ttk.Label(frame_editar_cat, text="Cor:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
-        frame_cor_edit = ttk.Frame(frame_editar_cat)
-        frame_cor_edit.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        
-        self.btn_escolher_cor_edit = tk.Button(frame_cor_edit, text="Escolher Cor", width=12, height=1)
-        self.btn_escolher_cor_edit.pack(side='left')
-        self.btn_escolher_cor_edit.bind('<Button-1>', self.escolher_cor_categoria_edit)
-        
-        self.cor_edicao = "#808080"
-        
+               
         frame_botoes_cat = ttk.Frame(frame_editar_cat)
         frame_botoes_cat.grid(row=2, column=0, columnspan=2, pady=10)
         
@@ -904,20 +909,6 @@ class GerenciadorConfiguracoes:
     # MÉTODOS PARA CATEGORIAS DE MATERIAIS
     # =================================
     
-    def escolher_cor_categoria(self, event):
-        """Abre o seletor de cor para nova categoria"""
-        cor = colorchooser.askcolor(title="Escolher Cor da Categoria")[1]
-        if cor:
-            self.cor_selecionada = cor
-            self.btn_escolher_cor.configure(bg=cor)
-
-    def escolher_cor_categoria_edit(self, event):
-        """Abre o seletor de cor para edição de categoria"""
-        cor = colorchooser.askcolor(title="Escolher Cor da Categoria")[1]
-        if cor:
-            self.cor_edicao = cor
-            self.btn_escolher_cor_edit.configure(bg=cor)
-
     def adicionar_categoria_material(self):
         """Adiciona uma nova categoria de material"""
         nome = self.entry_nova_cat_material.get().strip().upper()
@@ -931,8 +922,7 @@ class GerenciadorConfiguracoes:
         
         # Adicionar nova categoria
         self.materiais_config['categorias_materiais'][nome] = {
-            'subcategorias': [],
-            'cor': self.cor_selecionada
+            'subcategorias': []
         }
         
         self.salvar_configuracoes_materiais()
@@ -940,9 +930,7 @@ class GerenciadorConfiguracoes:
         
         # Limpar campos
         self.entry_nova_cat_material.delete(0, tk.END)
-        self.cor_selecionada = "#808080"
-        self.btn_escolher_cor.configure(bg=self.cor_selecionada)
-        
+               
         messagebox.showinfo("Sucesso", "Categoria adicionada com sucesso!")
 
     def on_categoria_material_select(self, event):
@@ -956,10 +944,6 @@ class GerenciadorConfiguracoes:
         # Preencher campos de edição
         self.entry_editar_cat_material.delete(0, tk.END)
         self.entry_editar_cat_material.insert(0, categoria)
-        
-        # Definir cor de edição
-        self.cor_edicao = self.materiais_config['categorias_materiais'][categoria]['cor']
-        self.btn_escolher_cor_edit.configure(bg=self.cor_edicao)
         
         # Atualizar lista de subcategorias
         self.atualizar_lista_subcategorias(categoria)
@@ -985,7 +969,6 @@ class GerenciadorConfiguracoes:
         
         # Salvar dados da categoria
         dados_categoria = self.materiais_config['categorias_materiais'][categoria_antiga].copy()
-        dados_categoria['cor'] = self.cor_edicao
         
         # Se mudou o nome, remover a antiga e adicionar a nova
         if categoria_nova != categoria_antiga:
@@ -1076,7 +1059,7 @@ class GerenciadorConfiguracoes:
             self.tree_cat_materiais.delete(item)
         
         for categoria, dados in sorted(self.materiais_config['categorias_materiais'].items()):
-            self.tree_cat_materiais.insert('', 'end', values=(categoria, dados['cor']))
+            self.tree_cat_materiais.insert('', 'end', values=(categoria))
 
     def atualizar_lista_subcategorias(self, categoria):
         """Atualiza a lista de subcategorias para a categoria selecionada"""
