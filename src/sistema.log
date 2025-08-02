@@ -1587,3 +1587,49 @@
 2025-08-01 21:55:24,969 - INFO - Configurações importadas com sucesso via src.config
 2025-08-01 21:55:24,971 - INFO - Configurações importadas com sucesso
 2025-08-01 21:55:24,971 - INFO - Configurações do sistema importadas com sucesso
+2025-08-02 09:34:18,149 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 09:34:18,603 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 09:34:20,358 - ERROR - Erro ao abrir configurações: 'unidades_medida'
+2025-08-02 09:35:04,027 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 09:59:50,527 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 09:59:50,888 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 09:59:53,752 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'materiais_config'
+2025-08-02 10:00:59,288 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 10:02:59,412 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 10:02:59,641 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 10:03:01,604 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'materiais_config'
+2025-08-02 10:05:09,732 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 10:05:19,542 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 10:05:19,791 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 10:05:21,903 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'materiais_config'
+2025-08-02 10:05:47,560 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 10:09:27,360 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 10:09:27,597 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 10:09:29,517 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'materiais_config'
+2025-08-02 10:09:58,108 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 10:33:51,694 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 10:33:52,052 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 10:36:10,929 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 10:43:34,884 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 10:43:35,226 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 10:43:36,820 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'escolher_cor_categoria'
+2025-08-02 10:43:55,272 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 10:45:48,758 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 10:45:49,003 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 10:50:42,978 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 10:50:43,665 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 11:00:10,524 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 11:00:11,098 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 11:00:38,479 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 11:01:30,722 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 11:01:31,052 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 11:01:48,250 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 11:02:17,788 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 11:02:18,096 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 11:02:31,194 - INFO - Saída confirmada, finalizando sistema
+2025-08-02 11:03:45,411 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-02 11:03:45,838 - INFO - Sistema principal inicializado com sucesso
+2025-08-02 11:03:48,977 - INFO - Abrindo sistema de entrada de dados
+2025-08-02 11:03:52,625 - INFO - Configurações importadas com sucesso via src.config
+2025-08-02 11:03:52,630 - INFO - Configurações importadas com sucesso
+2025-08-02 11:03:52,631 - INFO - Configurações do sistema importadas com sucesso

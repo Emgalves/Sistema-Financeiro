@@ -1,0 +1,41 @@
+2025-08-02 09:34:20,176 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 09:34:20,191 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 09:34:20,261 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 09:34:20,262 - sistema - logger_config - INFO - Iniciando: Carregar parâmetros de materiais
+2025-08-02 09:34:20,272 - sistema - logger_config - INFO - Concluído: Carregar parâmetros de materiais
+2025-08-02 09:59:53,551 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 09:59:53,601 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 09:59:53,691 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 10:03:01,457 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 10:03:01,478 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 10:03:01,561 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 10:05:21,746 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 10:05:21,778 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 10:05:21,830 - sistema - configuracoes_sistema - ERROR - Erro ao carregar configurações: type object 'GerenciadorConfiguracoes' has no attribute '_garantir_estrutura_completa'
+2025-08-02 10:05:21,834 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 10:09:29,324 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 10:09:29,357 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 10:09:29,466 - sistema - configuracoes_sistema - ERROR - Erro ao carregar configurações: type object 'GerenciadorConfiguracoes' has no attribute '_garantir_estrutura_completa'
+2025-08-02 10:09:29,466 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 10:33:53,599 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 10:33:53,627 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 10:33:53,755 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 10:43:36,655 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 10:43:36,688 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 10:43:36,779 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 10:45:50,336 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 10:45:50,357 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 10:45:50,474 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 10:50:45,400 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 10:50:45,415 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 10:50:45,458 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 11:00:12,715 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 11:00:12,753 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 11:00:12,802 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 11:01:32,558 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 11:01:32,558 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 11:01:32,619 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 11:02:20,245 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-02 11:02:20,269 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-02 11:02:20,351 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-02 11:03:52,612 - sistema - logger_config - INFO - Sistema de logging inicializado
