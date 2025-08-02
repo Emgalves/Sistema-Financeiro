@@ -144,6 +144,7 @@ ARQUIVO_FORNECEDORES = BASE_PATH / "base_fornecedores.xlsx"
 ARQUIVO_MODELO = BASE_PATH / "MODELO.xlsx"
 ARQUIVO_CONTROLE = BASE_PATH / "controle_taxa_adm.xlsx"
 PASTA_RH = BASE_PATH / "Planilhas_RH"
+ARQUIVO_PARAMETROS_MATERIAIS = BASE_PATH / "parametros_materiais.json"
 
 # CORREÇÃO 4: Verificação melhorada dos diretórios
 print(f"\n📋 VERIFICAÇÃO DE CAMINHOS:")
