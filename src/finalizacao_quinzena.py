@@ -317,7 +317,9 @@ class FinalizacaoQuinzena:
                                         admin_row[9] == 'Percentual'):  # Tipo percentual
 
                                         try:
-                                            taxa = float(str(admin_row[10]).replace(',', '.'))
+                                            # CORREÇÃO: Remover % se existir e converter para float
+                                            taxa_str = str(admin_row[10]).replace(',', '.').replace('%', '').strip()
+                                            taxa = float(taxa_str)
                                             taxa_total += taxa
                                             print(f"Taxa encontrada para contrato {num_contrato}: {taxa}%")
                                         except (ValueError, TypeError) as e:
@@ -425,7 +427,8 @@ class FinalizacaoQuinzena:
                     if (row[6] == num_contrato and  # Número do contrato na coluna G
                         row[9] == 'Percentual'):    # Tipo na coluna J
                         try:
-                            percentual = float(str(row[10]).replace(',', '.'))
+                            taxa_str = str(row[10]).replace(',', '.').replace('%', '').strip()
+                            percentual = float(taxa_str)
                             print(f"Contrato {num_contrato}: Percentual encontrado = {percentual}%")
                             taxa_adm_total += percentual
                         except (ValueError, TypeError) as e:
@@ -512,7 +515,8 @@ class FinalizacaoQuinzena:
                         if cnpj_cpf in administradores:
                             continue
 
-                        percentual = float(str(row[10]).replace(',', '.'))
+                        taxa_str = str(row[10]).replace(',', '.').replace('%', '').strip()
+                        percentual = float(taxa_str)
                         taxa_total += percentual
 
                         administradores[cnpj_cpf] = {
