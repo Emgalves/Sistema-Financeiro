@@ -261,91 +261,103 @@ class FinalizacaoQuinzena:
                                 row[0].month == data_ref_dt.month and 
                                 row[0].year == data_ref_dt.year and 
                                 row[1] == 7):  # Tipo 7 = Taxa ADM percentual
-                                tem_lancamento = True
-                                print(f"Lançamento existente encontrado para {data_ref}")
-                                break
+                                
+                                # CORREÇÃO: Verificar também o status do lançamento existente
+                                status_lancamento = row[13] if len(row) > 13 else None
+                                if status_lancamento == "ATIVO":
+                                    tem_lancamento = True
+                                    print(f"Lançamento ATIVO existente encontrado para {data_ref}")
+                                    break
 
-                    # Se já tem lançamento, pular este cliente
+                    # Se já tem lançamento ATIVO, pular este cliente
                     if tem_lancamento:
-                        print(f"Cliente {nome_cliente} já tem lançamento para esta data")
+                        print(f"Cliente {nome_cliente} já tem lançamento ATIVO para esta data")
                         wb_cliente.close()
                         continue
 
-                    # Calcular base para o valor (soma dos tipos 1 a 6 na data)
-                    valor_total = 0
-                    tem_lancamentos_base = False
-                    for row in ws_dados.iter_rows(min_row=2, values_only=True):
-                        if (row[0] and isinstance(row[0], datetime) and  # Data
-                            row[0].day == data_ref_dt.day and
-                            row[0].month == data_ref_dt.month and
-                            row[0].year == data_ref_dt.year):
-
-                            tipo_lanc = row[1]
-                            if isinstance(tipo_lanc, (int, float)) and 1 <= tipo_lanc <= 6:
-                                try:
-                                    valor = float(str(row[8]).replace(',', '.'))  # Valor na coluna I
-                                    valor_total += valor
-                                    tem_lancamentos_base = True
-                                    print(f"Valor base encontrado: R$ {valor:.2f}")
-                                except (ValueError, TypeError) as e:
-                                    print(f"Erro ao processar valor: {e}")
-
-                    # Se não tem lançamentos base, pular este cliente
-                    if not tem_lancamentos_base:
-                        print(f"Cliente {nome_cliente} não tem lançamentos base para cálculo")
-                        wb_cliente.close()
-                        continue
-
-                    # Verificar contratos ativos com taxa percentual no período
-                    taxa_total = 0
+                    # Primeiro, encontrar todos os números de contratos ativos
+                    contratos_ativos = set()
                     for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                        if row[0]:  # Contrato principal
-                            num_contrato = row[0]
-                            data_inicio = row[1]
-                            data_fim = row[2]
-                            status = row[3]
+                        if row[0] and row[3] == 'ATIVO':  # Número do contrato e Status
+                            contratos_ativos.add(row[0])
 
-                            # Verificar se o contrato está ativo e dentro do período
-                            if (status == 'ATIVO' and
-                                isinstance(data_inicio, datetime) and
-                                isinstance(data_fim, datetime) and
-                                data_inicio <= data_ref_dt <= data_fim):
+                    print(f"Contratos ativos encontrados: {contratos_ativos}")
 
-                                # Buscar taxas do contrato
-                                for admin_row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                                    if (admin_row[6] == num_contrato and  # Mesmo contrato
-                                        admin_row[9] == 'Percentual'):  # Tipo percentual
+                    # Para cada contrato ativo, procurar administradores com taxa percentual
+                    taxa_adm_total = 0
+                    for num_contrato in contratos_ativos:
+                        for row in ws_contratos.iter_rows(min_row=3, values_only=True):
+                            if (row[6] == num_contrato and  # Número do contrato na coluna G
+                                row[9] == 'Percentual'):    # Tipo na coluna J
+                                try:
+                                    taxa_str = str(row[10]).replace(',', '.').replace('%', '').strip()
+                                    percentual = float(taxa_str)
+                                    print(f"Contrato {num_contrato}: Percentual encontrado = {percentual}%")
+                                    taxa_adm_total += percentual
+                                except (ValueError, TypeError) as e:
+                                    print(f"Erro ao processar percentual do contrato {num_contrato}: {e}")
+                                    continue
 
-                                        try:
-                                            # CORREÇÃO: Remover % se existir e converter para float
-                                            taxa_str = str(admin_row[10]).replace(',', '.').replace('%', '').strip()
-                                            taxa = float(taxa_str)
-                                            taxa_total += taxa
-                                            print(f"Taxa encontrada para contrato {num_contrato}: {taxa}%")
-                                        except (ValueError, TypeError) as e:
-                                            print(f"Erro ao processar taxa: {e}")
+                    print(f"Taxa ADM total encontrada: {taxa_adm_total:.2f}%")
 
-                    if taxa_total > 0:
-                        valor_taxa = (valor_total * taxa_total) / 100
-
-                        # Função local para formatar valor em Real
-                        def formatar_valor_br(valor):
-                            return f"{valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-                        print(f"Cliente {nome_cliente}:")
-                        print(f"Base de cálculo: R$ {valor_total:.2f}")
-                        print(f"Taxa total: {taxa_total}%")
-                        print(f"Valor da taxa: R$ {valor_taxa:.2f}")
-
-                        # Adicionar à tree
-                        self.tree_clientes.insert('', 'end', values=(
-                            nome_cliente,
-                            f"{taxa_total:.1f}",  # Taxa em porcentagem
-                            formatar_valor_br(valor_taxa),  # Valor formatado no padrão brasileiro
-                            "PENDENTE"
-                        ))
-                    else:
+                    if taxa_adm_total == 0:
                         print(f"Cliente {nome_cliente} não tem taxa percentual ativa no período")
+                        wb_cliente.close()
+                        continue
+
+                    # Calcular valor base usando a MESMA lógica do calcular_taxa_adm
+                    valor_base = 0
+                    lancamentos_encontrados = 0
+
+                    print("Buscando lançamentos do período...")
+                    for row in ws_dados.iter_rows(min_row=2, values_only=True):
+                        data_lancamento = row[0]
+                        if isinstance(data_lancamento, datetime):
+                            if (data_lancamento.day == data_ref_dt.day and 
+                                data_lancamento.month == data_ref_dt.month and 
+                                data_lancamento.year == data_ref_dt.year):
+
+                                tipo_desp = row[1]
+                                status = row[13] if len(row) > 13 else None  # Verificar se existe coluna 14
+                                
+                                # CORREÇÃO: Usar a mesma lógica do calcular_taxa_adm
+                                if (isinstance(tipo_desp, (int, float)) and 1 <= tipo_desp <= 6 and 
+                                    status == "ATIVO"):
+                                    valor = row[8]  # Coluna I com o valor
+                                    if valor:
+                                        valor_numeric = float(str(valor).replace(',', '.'))
+                                        valor_base += valor_numeric
+                                        lancamentos_encontrados += 1
+                                        print(f"Lançamento encontrado - Tipo: {tipo_desp}, Valor: R$ {valor_numeric:.2f}, Status: {status}")
+
+                    print(f"Valor base total: R$ {valor_base:.2f}")
+                    print(f"Total de lançamentos encontrados: {lancamentos_encontrados}")
+
+                    # Se não tem lançamentos base ATIVOS, pular este cliente
+                    if lancamentos_encontrados == 0:
+                        print(f"Cliente {nome_cliente} não tem lançamentos base ATIVOS para cálculo")
+                        wb_cliente.close()
+                        continue
+
+                    # Calcular valor da taxa
+                    valor_taxa = valor_base * (taxa_adm_total / 100)
+
+                    # Função local para formatar valor em Real
+                    def formatar_valor_br(valor):
+                        return f"{valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+                    print(f"Cliente {nome_cliente}:")
+                    print(f"Base de cálculo: R$ {valor_base:.2f}")
+                    print(f"Taxa total: {taxa_adm_total}%")
+                    print(f"Valor da taxa: R$ {valor_taxa:.2f}")
+
+                    # Adicionar à tree
+                    self.tree_clientes.insert('', 'end', values=(
+                        nome_cliente,
+                        f"{taxa_adm_total:.1f}",  # Taxa em porcentagem
+                        formatar_valor_br(valor_taxa),  # Valor formatado no padrão brasileiro
+                        "PENDENTE"
+                    ))
 
                     wb_cliente.close()
 
@@ -382,7 +394,8 @@ class FinalizacaoQuinzena:
                             data_lancamento.year == data_ref.year):
 
                             tipo_desp = row[1]
-                            if tipo_desp == 7:  # Tipo 7 = Taxa ADM
+                            status = row[13]
+                            if tipo_desp == 7 and status == "ATIVO":  # Tipo 7 = Taxa ADM
                                 wb.close()
                                 return True
 
@@ -462,13 +475,15 @@ class FinalizacaoQuinzena:
                         data_lancamento.year == data_ref.year):
 
                         tipo_desp = row[1]
-                        if isinstance(tipo_desp, (int, float)) and 1 <= tipo_desp <= 6:
+                        status = row[13]
+                        if (isinstance(tipo_desp, (int, float)) and 1 <= tipo_desp <= 6 and 
+                            status == "ATIVO"):
                             valor = row[8]  # Coluna I com o valor
                             if valor:
                                 valor_numeric = float(str(valor).replace(',', '.'))
                                 valor_base += valor_numeric
                                 lancamentos_encontrados += 1
-                                print(f"Lançamento encontrado - Tipo: {tipo_desp}, Valor: R$ {valor_numeric:.2f}")
+                                print(f"Lançamento encontrado - Tipo: {tipo_desp}, Valor: R$ {valor_numeric:.2f}, Status: {status}")
 
             print(f"\nValor base total: R$ {valor_base:.2f}")
             print(f"Total de lançamentos encontrados: {lancamentos_encontrados}")
