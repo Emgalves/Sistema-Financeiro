@@ -1,0 +1,766 @@
+2025-08-05 09:14:16,804 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 09:24:13,672 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 09:29:38,248 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 09:31:26,320 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 09:54:56,278 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 10:02:36,160 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 10:18:12,962 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 10:23:20,132 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 10:38:41,972 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 10:42:19,522 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 10:43:36,431 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 10:47:20,883 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 10:54:27,862 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 10:55:51,187 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 11:55:16,612 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 11:56:35,245 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 11:56:35,262 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-05 11:56:35,263 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 11:57:20,350 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 11:57:21,821 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 11:57:29,702 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 11:57:29,703 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 11:57:52,701 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 11:57:53,726 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 11:57:56,949 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 11:57:56,949 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 11:58:23,212 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 11:58:24,630 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 3
+2025-08-05 11:58:32,041 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 11:58:32,041 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 11:59:16,324 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 11:59:17,349 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 4
+2025-08-05 11:59:33,615 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 11:59:33,616 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 11:59:33,617 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 11:59:33,618 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 11:59:33,618 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 11:59:33,619 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 11:59:33,624 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 11:59:33,625 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:01:38,040 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 12:01:38,040 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:04:55,420 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 12:04:58,158 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 5
+2025-08-05 12:05:14,862 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 5
+2025-08-05 12:05:14,862 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 12:05:14,862 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 5
+2025-08-05 12:05:14,862 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/07/2021']
+2025-08-05 12:05:14,862 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 12:05:14,862 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 12:05:15,518 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 108 na linha 109
+2025-08-05 12:05:15,518 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 109 na linha 110
+2025-08-05 12:05:15,518 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 110 na linha 111
+2025-08-05 12:05:15,518 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 111 na linha 112
+2025-08-05 12:05:15,534 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 112 na linha 113
+2025-08-05 12:05:15,732 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-05 12:05:16,233 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-07-05
+2025-08-05 12:05:16,402 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2021-07-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 12:05:26,603 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 12:05:26,603 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:06:13,239 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 12:06:14,631 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 12:06:28,208 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 12:06:28,208 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:07:00,248 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 12:07:01,606 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 12:07:09,897 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 12:07:09,897 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:07:58,684 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 12:07:59,982 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 3
+2025-08-05 12:08:22,025 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 12:08:22,025 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 12:08:22,025 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:08:22,025 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:08:22,025 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 12:08:22,025 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:08:22,043 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 12:08:22,044 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:09:38,157 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 12:09:38,158 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 12:15:56,937 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 3
+2025-08-05 12:15:56,938 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 12:15:56,939 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-08-05 12:15:56,939 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/07/2021']
+2025-08-05 12:15:56,940 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 12:15:56,941 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 12:15:57,196 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 113 na linha 114
+2025-08-05 12:15:57,198 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 114 na linha 115
+2025-08-05 12:15:57,199 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 115 na linha 116
+2025-08-05 12:15:57,374 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-05 12:15:57,875 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-07-05
+2025-08-05 12:15:57,992 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2021-07-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 12:16:05,407 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-08-05 14:21:42,995 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-08-05 14:22:43,461 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:22:43,462 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:23:46,571 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 14:23:47,987 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 14:23:50,674 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:23:50,675 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:24:09,187 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 14:24:10,668 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 14:24:23,548 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:24:23,549 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:25:19,172 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:25:19,173 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:25:49,289 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 14:25:50,522 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 3
+2025-08-05 14:26:02,029 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:26:02,030 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:26:43,097 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 14:26:44,368 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 4
+2025-08-05 14:27:13,968 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:27:13,968 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:27:13,968 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:27:13,968 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:27:13,968 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:27:13,968 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:27:13,987 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:27:13,992 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:27:39,005 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:27:39,021 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:28:10,377 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 14:28:12,370 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 5
+2025-08-05 14:33:13,501 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:33:13,645 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:33:13,761 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:33:13,764 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:33:13,901 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:33:13,995 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:33:14,103 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:33:14,161 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:34:46,591 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 14:34:46,593 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 14:35:13,035 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 14:35:14,565 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 6
+2025-08-05 14:36:31,818 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 6
+2025-08-05 14:36:31,821 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 14:36:31,822 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 6
+2025-08-05 14:36:31,823 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/07/2021']
+2025-08-05 14:36:31,823 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 14:36:31,826 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 14:36:32,129 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 116 na linha 117
+2025-08-05 14:36:32,130 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 117 na linha 118
+2025-08-05 14:36:32,132 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 118 na linha 119
+2025-08-05 14:36:32,134 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 119 na linha 120
+2025-08-05 14:36:32,137 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 120 na linha 121
+2025-08-05 14:36:32,139 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 121 na linha 122
+2025-08-05 14:36:32,545 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-05 14:36:33,047 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-07-05
+2025-08-05 14:36:33,334 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2021-07-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 14:53:40,130 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 14:59:01,230 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-05 15:00:20,464 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-08-05 15:00:20,469 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-08-05 15:00:20,641 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-08-05 15:00:20,642 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-08-05 15:00:20,642 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-08-05 15:00:20,643 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-08-05 15:00:21,070 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-05 15:00:21,087 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-05 15:00:21,088 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-08-05 15:00:21,090 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-08-05 15:00:21,091 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-08-05 15:00:21,092 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-08-05 15:00:21,125 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-05 15:00:21,142 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-05 15:00:21,144 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-08-05 15:00:21,147 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-08-05 15:00:21,149 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-08-05 15:00:21,150 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 16 itens
+2025-08-05 15:00:28,948 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-08-05 15:00:28,949 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-08-05 15:06:30,537 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-08-05 15:06:30,540 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-08-05 15:06:30,611 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-08-05 15:07:58,264 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:07:58,285 - sistema_relatorios - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-05 15:07:58,285 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:08:39,726 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:08:40,934 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 15:08:49,929 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:08:49,930 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:09:02,318 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:09:03,344 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 15:09:17,287 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:09:17,288 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:09:28,390 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:09:29,181 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 3
+2025-08-05 15:09:48,270 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:09:48,271 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:10:20,053 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:10:21,101 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 4
+2025-08-05 15:10:31,191 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:10:31,192 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:12:43,482 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:12:43,483 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 5
+2025-08-05 15:12:43,487 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:12:43,493 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 6
+2025-08-05 15:13:04,594 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:13:04,595 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:13:47,252 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:13:48,210 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 7
+2025-08-05 15:13:57,400 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:13:57,401 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:14:51,898 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:14:53,402 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 8
+2025-08-05 15:16:36,513 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 8
+2025-08-05 15:16:36,515 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 15:16:36,515 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 8
+2025-08-05 15:16:36,516 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/07/2021', '20/08/2021']
+2025-08-05 15:16:36,517 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 15:16:36,518 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 15:16:36,660 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Corrigindo 2 IDs inválidos/duplicados
+2025-08-05 15:16:36,661 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ID 122 atribuído à linha 123
+2025-08-05 15:16:36,661 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ID 123 atribuído à linha 124
+2025-08-05 15:16:36,863 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Correções de ID salvas com sucesso
+2025-08-05 15:16:37,058 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 124 na linha 125
+2025-08-05 15:16:37,059 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 125 na linha 126
+2025-08-05 15:16:37,060 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 126 na linha 127
+2025-08-05 15:16:37,061 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 127 na linha 128
+2025-08-05 15:16:37,062 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 128 na linha 129
+2025-08-05 15:16:37,064 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 129 na linha 130
+2025-08-05 15:16:37,068 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 130 na linha 131
+2025-08-05 15:16:37,071 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 131 na linha 132
+2025-08-05 15:16:37,261 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 2 datas
+2025-08-05 15:16:37,763 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-07-20
+2025-08-05 15:16:37,900 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2021-07-20: Sem taxas na data - recálculo desnecessário
+2025-08-05 15:16:37,902 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-08-20
+2025-08-05 15:16:38,110 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2021-08-20: Sem taxas na data - recálculo desnecessário
+2025-08-05 15:16:50,802 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:16:50,803 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:37:25,089 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:37:26,465 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 15:37:51,819 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:37:51,819 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:37:51,820 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:37:51,820 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:37:51,821 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:37:51,821 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:37:51,827 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:37:51,827 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:39:17,146 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:39:17,146 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:39:27,456 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:39:28,791 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 15:40:08,759 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:40:08,760 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:40:59,767 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:41:01,415 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 3
+2025-08-05 15:41:36,067 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:41:36,068 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:41:36,069 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:41:36,069 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:41:36,071 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:41:36,072 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:41:36,080 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:41:36,081 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:42:31,270 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:42:31,271 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:42:39,918 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:42:41,126 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 4
+2025-08-05 15:43:09,325 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:43:09,325 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:43:44,245 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:43:45,502 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 5
+2025-08-05 15:43:57,472 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 15:43:57,473 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 15:44:25,332 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 15:44:26,828 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 6
+2025-08-05 15:44:43,244 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 6
+2025-08-05 15:44:43,246 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 15:44:43,247 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 6
+2025-08-05 15:44:43,247 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/07/2021']
+2025-08-05 15:44:43,248 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 15:44:43,249 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 15:44:43,551 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 132 na linha 133
+2025-08-05 15:44:43,553 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 133 na linha 134
+2025-08-05 15:44:43,554 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 134 na linha 135
+2025-08-05 15:44:43,555 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 135 na linha 136
+2025-08-05 15:44:43,557 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 136 na linha 137
+2025-08-05 15:44:43,559 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 137 na linha 138
+2025-08-05 15:44:43,754 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-05 15:44:44,256 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-07-20
+2025-08-05 15:44:44,371 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2021-07-20: Sem taxas na data - recálculo desnecessário
+2025-08-05 16:55:55,555 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 16:55:55,555 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 16:55:55,555 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 16:55:55,571 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 16:55:55,571 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 16:55:55,571 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 16:55:55,571 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 16:55:55,571 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 16:58:06,490 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 16:58:06,505 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 16:59:17,175 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 16:59:18,776 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 16:59:33,708 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 16:59:33,708 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 16:59:51,843 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 16:59:53,979 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 17:00:28,601 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:00:28,601 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:00:28,601 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:00:28,601 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:00:28,601 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:00:28,601 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:00:28,623 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:00:28,625 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:02:40,125 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:02:40,125 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:02:54,101 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:02:55,352 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 3
+2025-08-05 17:03:07,692 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:03:07,692 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:03:19,494 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:03:20,809 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 4
+2025-08-05 17:03:43,764 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:03:43,764 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:03:59,435 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:04:00,861 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 5
+2025-08-05 17:04:17,722 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:04:17,722 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:04:17,722 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:04:17,722 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:04:17,722 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:04:17,722 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:04:17,740 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:04:17,742 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:06:25,483 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:06:25,483 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:06:46,991 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:06:48,508 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 6
+2025-08-05 17:06:58,739 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:06:58,739 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:07:13,137 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:07:14,400 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 7
+2025-08-05 17:07:58,368 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:07:58,368 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:08:23,030 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:08:23,752 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 8
+2025-08-05 17:08:46,779 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:08:46,779 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:08:46,779 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:08:46,779 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:08:46,779 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:08:46,779 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:08:46,779 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:08:46,779 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:09:13,783 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:09:13,799 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:09:13,799 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:09:13,799 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:09:13,799 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:09:13,799 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:09:13,799 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:09:13,799 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:10:46,143 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:10:46,143 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:11:07,470 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:11:08,710 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 9
+2025-08-05 17:11:20,512 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:11:20,512 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:11:20,512 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:11:20,512 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:11:20,512 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:11:20,512 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:11:20,527 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:11:20,527 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:12:38,400 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:12:38,400 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:12:53,596 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:12:54,888 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 10
+2025-08-05 17:13:09,612 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:13:09,612 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:14:02,246 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:14:03,592 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 11
+2025-08-05 17:14:59,552 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:14:59,552 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:14:59,568 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:14:59,568 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:14:59,568 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:14:59,568 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:14:59,584 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:14:59,588 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:34:50,218 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:34:50,218 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:35:04,780 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:35:06,277 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 12
+2025-08-05 17:38:06,667 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:38:06,667 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:38:06,667 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:38:06,667 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:38:06,667 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:38:06,667 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:38:06,683 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:38:06,683 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:40:19,701 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:40:19,701 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:40:33,556 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:40:34,994 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 13
+2025-08-05 17:40:52,658 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:40:52,658 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:40:52,658 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:40:52,673 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:40:52,673 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:40:52,673 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:40:52,673 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:40:52,673 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:51:30,872 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:51:30,872 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:51:44,370 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:51:52,329 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 14
+2025-08-05 17:56:01,594 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:56:01,594 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:57:19,846 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:57:21,255 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 15
+2025-08-05 17:57:31,493 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:57:31,493 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:57:59,476 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:58:00,666 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 16
+2025-08-05 17:58:13,482 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 17:58:13,482 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 17:58:29,757 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 17:58:31,524 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 17
+2025-08-05 18:01:56,806 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:01:56,806 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:01:57,815 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:01:57,815 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:01:58,809 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:01:58,824 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:00,026 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:00,026 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:01,367 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:01,367 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:02,670 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:02,670 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:03,908 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:03,908 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:05,142 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:05,142 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:06,374 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:06,374 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:07,647 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:07,647 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:08,922 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:08,922 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:10,205 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:10,205 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:11,565 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:11,565 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:12,807 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:12,807 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:14,104 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:14,104 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:15,387 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:15,387 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:02:16,811 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:02:16,811 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:13:00,886 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 51
+2025-08-05 18:13:00,886 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 18:13:00,886 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 51
+2025-08-05 18:13:00,886 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/08/2025', '05/08/2021']
+2025-08-05 18:13:00,886 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 18:13:00,886 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 18:13:01,428 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 138 na linha 139
+2025-08-05 18:13:01,428 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 139 na linha 140
+2025-08-05 18:13:01,428 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 140 na linha 141
+2025-08-05 18:13:01,428 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 141 na linha 142
+2025-08-05 18:13:01,428 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 142 na linha 143
+2025-08-05 18:13:01,444 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 143 na linha 144
+2025-08-05 18:13:01,446 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 144 na linha 145
+2025-08-05 18:13:01,448 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 145 na linha 146
+2025-08-05 18:13:01,449 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 146 na linha 147
+2025-08-05 18:13:01,452 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 147 na linha 148
+2025-08-05 18:13:01,453 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 148 na linha 149
+2025-08-05 18:13:01,454 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 149 na linha 150
+2025-08-05 18:13:01,456 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 150 na linha 151
+2025-08-05 18:13:01,458 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 151 na linha 152
+2025-08-05 18:13:01,462 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 152 na linha 153
+2025-08-05 18:13:01,464 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 153 na linha 154
+2025-08-05 18:13:01,465 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 154 na linha 155
+2025-08-05 18:13:01,467 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 155 na linha 156
+2025-08-05 18:13:01,469 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 156 na linha 157
+2025-08-05 18:13:01,471 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 157 na linha 158
+2025-08-05 18:13:01,473 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 158 na linha 159
+2025-08-05 18:13:01,476 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 159 na linha 160
+2025-08-05 18:13:01,477 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 160 na linha 161
+2025-08-05 18:13:01,479 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 161 na linha 162
+2025-08-05 18:13:01,482 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 162 na linha 163
+2025-08-05 18:13:01,483 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 163 na linha 164
+2025-08-05 18:13:01,485 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 164 na linha 165
+2025-08-05 18:13:01,486 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 165 na linha 166
+2025-08-05 18:13:01,489 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 166 na linha 167
+2025-08-05 18:13:01,491 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 167 na linha 168
+2025-08-05 18:13:01,494 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 168 na linha 169
+2025-08-05 18:13:01,495 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 169 na linha 170
+2025-08-05 18:13:01,497 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 170 na linha 171
+2025-08-05 18:13:01,500 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 171 na linha 172
+2025-08-05 18:13:01,501 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 172 na linha 173
+2025-08-05 18:13:01,503 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 173 na linha 174
+2025-08-05 18:13:01,504 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 174 na linha 175
+2025-08-05 18:13:01,506 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 175 na linha 176
+2025-08-05 18:13:01,508 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 176 na linha 177
+2025-08-05 18:13:01,512 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 177 na linha 178
+2025-08-05 18:13:01,514 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 178 na linha 179
+2025-08-05 18:13:01,515 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 179 na linha 180
+2025-08-05 18:13:01,516 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 180 na linha 181
+2025-08-05 18:13:01,516 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 181 na linha 182
+2025-08-05 18:13:01,516 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 182 na linha 183
+2025-08-05 18:13:01,523 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 183 na linha 184
+2025-08-05 18:13:01,525 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 184 na linha 185
+2025-08-05 18:13:01,527 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 185 na linha 186
+2025-08-05 18:13:01,527 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 186 na linha 187
+2025-08-05 18:13:01,527 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 187 na linha 188
+2025-08-05 18:13:01,534 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 188 na linha 189
+2025-08-05 18:13:01,736 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 2 datas
+2025-08-05 18:13:02,252 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-08-05
+2025-08-05 18:13:02,389 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2025-08-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 18:13:02,389 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-08-05
+2025-08-05 18:13:02,512 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2021-08-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 18:16:43,619 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:16:43,619 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:17:16,712 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:17:18,432 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 18:17:33,340 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:17:33,340 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:17:52,729 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:17:54,516 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 18:18:05,678 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:18:05,678 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:18:19,823 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:18:21,073 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 3
+2025-08-05 18:18:27,836 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:18:27,836 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:18:47,721 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:18:48,925 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 4
+2025-08-05 18:19:28,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 4
+2025-08-05 18:19:28,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 18:19:28,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 4
+2025-08-05 18:19:28,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/08/2021']
+2025-08-05 18:19:28,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 18:19:28,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 18:19:29,383 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 189 na linha 190
+2025-08-05 18:19:29,383 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 190 na linha 191
+2025-08-05 18:19:29,383 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 191 na linha 192
+2025-08-05 18:19:29,383 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 192 na linha 193
+2025-08-05 18:19:29,642 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-05 18:19:30,149 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-08-05
+2025-08-05 18:19:30,270 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2021-08-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 18:19:44,245 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:19:44,245 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:20:41,026 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:20:42,554 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 18:20:52,388 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:20:52,388 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:21:28,244 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:21:29,651 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 18:21:42,886 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:21:42,886 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:22:03,751 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:22:04,944 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 3
+2025-08-05 18:22:17,432 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:22:17,432 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:22:40,247 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:22:41,542 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 4
+2025-08-05 18:22:54,539 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:22:54,539 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:23:17,121 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:23:18,835 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 5
+2025-08-05 18:23:21,869 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:23:21,885 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:23:37,872 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:23:39,178 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 6
+2025-08-05 18:23:48,556 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:23:48,572 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:24:15,153 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:24:16,671 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 7
+2025-08-05 18:24:26,593 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:24:26,593 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:24:58,584 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:25:00,586 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 8
+2025-08-05 18:25:10,308 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:25:10,308 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:25:32,487 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:25:33,993 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 9
+2025-08-05 18:25:42,962 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 9
+2025-08-05 18:25:42,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 18:25:42,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 9
+2025-08-05 18:25:42,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/08/2021']
+2025-08-05 18:25:42,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 18:25:42,978 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 18:25:43,348 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 193 na linha 194
+2025-08-05 18:25:43,348 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 194 na linha 195
+2025-08-05 18:25:43,348 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 195 na linha 196
+2025-08-05 18:25:43,348 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 196 na linha 197
+2025-08-05 18:25:43,348 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 197 na linha 198
+2025-08-05 18:25:43,360 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 198 na linha 199
+2025-08-05 18:25:43,364 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 199 na linha 200
+2025-08-05 18:25:43,367 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 200 na linha 201
+2025-08-05 18:25:43,369 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 201 na linha 202
+2025-08-05 18:25:43,591 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-05 18:25:44,097 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-08-05
+2025-08-05 18:25:44,231 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2021-08-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 18:27:25,231 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:27:25,231 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:27:55,753 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:27:57,703 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 18:36:13,926 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:36:13,926 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:40:16,004 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:40:16,004 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:40:44,384 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 1
+2025-08-05 18:40:44,384 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 18:40:44,399 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-05 18:40:44,399 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/08/2021']
+2025-08-05 18:40:44,399 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 18:40:44,399 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 18:40:44,724 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 202 na linha 203
+2025-08-05 18:40:44,931 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-05 18:40:45,437 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-08-05
+2025-08-05 18:40:45,554 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2021-08-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 18:40:52,545 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-08-05 18:45:15,788 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:45:15,788 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:45:15,788 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:45:15,788 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:45:15,788 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:45:15,788 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:45:15,806 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:45:15,807 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:47:14,954 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:47:14,954 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:47:53,886 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:47:55,264 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 18:48:10,195 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:48:10,195 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:48:25,797 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:48:27,287 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 18:48:37,882 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 18:48:37,883 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 18:48:58,638 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 18:49:00,051 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 3
+2025-08-05 19:04:25,354 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:04:25,354 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:04:43,783 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 19:04:45,220 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 4
+2025-08-05 19:06:43,016 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:06:43,017 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:06:43,018 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:06:43,019 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:06:43,020 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:06:43,021 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:06:43,030 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:06:43,031 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:07:19,342 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:07:19,342 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:07:56,941 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 19:07:58,306 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 5
+2025-08-05 19:08:12,965 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:08:12,965 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:10:21,265 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 19:10:22,960 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 6
+2025-08-05 19:10:25,629 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:10:25,629 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:10:45,247 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 19:10:46,536 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 7
+2025-08-05 19:10:57,681 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:10:57,681 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:11:10,423 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 19:11:11,674 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 8
+2025-08-05 19:11:22,189 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:11:22,189 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:11:55,516 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 19:11:56,686 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 9
+2025-08-05 19:12:11,130 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:12:11,130 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:12:33,069 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 19:12:35,104 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 10
+2025-08-05 19:12:56,433 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 10
+2025-08-05 19:12:56,433 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 19:12:56,449 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 10
+2025-08-05 19:12:56,449 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/08/2021']
+2025-08-05 19:12:56,449 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 19:12:56,449 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 19:12:56,608 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Corrigindo 1 IDs inválidos/duplicados
+2025-08-05 19:12:56,609 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ID 203 atribuído à linha 204
+2025-08-05 19:12:56,916 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Correções de ID salvas com sucesso
+2025-08-05 19:12:57,169 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 204 na linha 205
+2025-08-05 19:12:57,169 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 205 na linha 206
+2025-08-05 19:12:57,169 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 206 na linha 207
+2025-08-05 19:12:57,169 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 207 na linha 208
+2025-08-05 19:12:57,184 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 208 na linha 209
+2025-08-05 19:12:57,186 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 209 na linha 210
+2025-08-05 19:12:57,189 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 210 na linha 211
+2025-08-05 19:12:57,192 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 211 na linha 212
+2025-08-05 19:12:57,194 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 212 na linha 213
+2025-08-05 19:12:57,197 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 213 na linha 214
+2025-08-05 19:12:57,405 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-05 19:12:57,908 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-08-05
+2025-08-05 19:12:58,044 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2021-08-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 19:13:10,393 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:13:10,393 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:13:30,481 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 19:13:31,988 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 1
+2025-08-05 19:13:34,940 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-05 19:13:34,940 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-08-05 19:13:56,313 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS
+2025-08-05 19:13:57,932 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Total: 2
+2025-08-05 19:14:04,517 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: LUCAS COSTA OLIVEIRA SANTOS, Registros: 2
+2025-08-05 19:14:04,517 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-05 19:14:04,517 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-08-05 19:14:04,517 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/08/2021']
+2025-08-05 19:14:04,517 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\LUCAS COSTA OLIVEIRA SANTOS.xlsx
+2025-08-05 19:14:04,517 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-05 19:14:04,851 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 214 na linha 215
+2025-08-05 19:14:04,851 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 215 na linha 216
+2025-08-05 19:14:05,071 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-05 19:14:05,576 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2021-08-05
+2025-08-05 19:14:05,710 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ℹ️ 2021-08-05: Sem taxas na data - recálculo desnecessário
+2025-08-05 19:14:14,096 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-08-05 19:14:14,096 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-08-05 19:14:14,152 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-08-05 19:14:14,152 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-08-05 19:14:14,152 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-08-05 19:14:14,152 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-08-05 19:14:14,246 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-05 19:14:14,282 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-05 19:14:14,285 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-08-05 19:14:14,288 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-08-05 19:14:14,289 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-08-05 19:14:14,289 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-08-05 19:14:14,323 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-05 19:14:14,341 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-05 19:14:14,342 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-08-05 19:14:14,344 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-08-05 19:14:14,345 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-08-05 19:14:14,346 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 16 itens
+2025-08-05 19:14:21,930 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-08-05 19:14:21,930 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-08-05 19:14:47,536 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-08-05 19:14:47,536 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-08-05 19:14:47,618 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-08-05 19:30:00,156 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-08-05 19:30:00,158 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-08-05 19:30:00,214 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-08-05 19:30:00,217 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-08-05 19:30:00,218 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-08-05 19:30:00,219 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-08-05 19:30:00,323 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-05 19:30:00,406 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-05 19:30:00,407 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-08-05 19:30:00,407 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-08-05 19:30:00,407 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-08-05 19:30:00,416 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-08-05 19:30:00,454 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-05 19:30:00,473 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-05 19:30:00,473 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-08-05 19:30:00,480 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-08-05 19:30:00,481 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-08-05 19:30:00,482 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 16 itens
+2025-08-05 19:30:11,759 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-08-05 19:30:11,759 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-08-05 19:54:01,601 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-08-05 19:54:01,601 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-08-05 19:54:01,649 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
