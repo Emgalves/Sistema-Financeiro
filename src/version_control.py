@@ -9,12 +9,16 @@ from pathlib import Path
 # Informações da versão atual
 VERSION_INFO = {
     "major": 1,
-    "minor": 3,
-    "patch": 4,
-    "release_date": "22/07/2025",
+    "minor": 4,
+    "patch": 1,
+    "release_date": "12/08/2025",
     "changes": [
         "Adição de funcionalidade para recálculo de taxa de administração por percentual, sempre que houver inclusão, alteração ou exclusão de lançamento",
-        "Melhoria na funcionalidade que detecta duplicidade de lançamento"
+        "Correção do cálculo de taxa de administração, considerando apenas lançamentos do tipo 'ATIVO'",
+        "Melhoria na funcionalidade que detecta duplicidade de lançamento",
+        "Inclusão do campo 'NF' no Gerenciador de Lançamentos",
+        "Inclusão de botões de 'EXCLUSÃO/RESTAURAÇÃO' de várias despesas no Gerenciador de Lançamentos",
+        "Inclusão do campo 'ETAPA DA OBRA' na Entrada de Dados, com manutenção através das Configurações do Sistema"
     ]
 }
 
