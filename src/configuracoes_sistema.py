@@ -201,6 +201,25 @@ class GerenciadorConfiguracoes:
                 'lista': ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
                 'historico_alteracoes': []
             },
+            # NOVA SEÇÃO: Etapas da Obra
+            'etapas_obra': {
+                'lista': [
+                    'DEMOLIÇÃO',
+                    'FUNDAÇÃO',
+                    'ESTRUTURA',
+                    'ALVENARIA',
+                    'INSTALAÇÕES HIDRÁULICAS',
+                    'INSTALAÇÕES ELÉTRICAS',
+                    'COBERTURA',
+                    'ESQUADRIAS',
+                    'REVESTIMENTOS',
+                    'PISOS',
+                    'PINTURA',
+                    'ACABAMENTOS',
+                    'LIMPEZA FINAL'
+                ],
+                'historico_alteracoes': []
+            },
             'indices_correcao': {
                 'indice_padrao': 'IGPM',
                 'indices_disponiveis': {
@@ -246,6 +265,17 @@ class GerenciadorConfiguracoes:
         if config and 'categorias' in config:
             return config['categorias']['lista']
         return ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP']
+    
+    @staticmethod
+    def get_etapas_obra():
+        """Retorna a lista de etapas da obra"""
+        config = GerenciadorConfiguracoes.carregar_configuracoes()
+        if config and 'etapas_obra' in config:
+            return config['etapas_obra']['lista']
+        return ['DEMOLIÇÃO', 'FUNDAÇÃO', 'ESTRUTURA', 'ALVENARIA', 
+                'INSTALAÇÕES HIDRÁULICAS', 'INSTALAÇÕES ELÉTRICAS', 
+                'COBERTURA', 'ESQUADRIAS', 'REVESTIMENTOS', 'PISOS', 
+                'PINTURA', 'ACABAMENTOS', 'LIMPEZA FINAL']
 
     def __init__(self, parent=None):
         self.root = tk.Toplevel(parent) if parent else tk.Tk()
@@ -301,7 +331,24 @@ class GerenciadorConfiguracoes:
                 'lista': ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
                 'historico_alteracoes': []
             },
-            # NOVAS CONFIGURAÇÕES: Índices de correção monetária
+            'etapas_obra': {
+                'lista': [
+                    'DEMOLIÇÃO',
+                    'FUNDAÇÃO', 
+                    'ESTRUTURA',
+                    'ALVENARIA',
+                    'INSTALAÇÕES HIDRÁULICAS',
+                    'INSTALAÇÕES ELÉTRICAS',
+                    'COBERTURA',
+                    'ESQUADRIAS',
+                    'REVESTIMENTOS',
+                    'PISOS',
+                    'PINTURA',
+                    'ACABAMENTOS',
+                    'LIMPEZA FINAL'
+                ],
+                'historico_alteracoes': []
+            },
             'indices_correcao': {
                 'indice_padrao': 'IGPM',
                 'indices_disponiveis': {
@@ -379,6 +426,7 @@ class GerenciadorConfiguracoes:
         self.setup_aba_cafe()
         self.setup_aba_bancos()
         self.setup_aba_categorias()
+        self.setup_aba_etapas_obra()
         self.setup_aba_indices_correcao()
         self.setup_aba_materiais()
         
@@ -618,6 +666,113 @@ class GerenciadorConfiguracoes:
             
         for categoria in sorted(self.config['categorias']['lista']):
             self.tree_categorias.insert('', 'end', values=(categoria,))
+
+    def setup_aba_etapas_obra(self):
+        """Configura a aba de etapas da obra"""
+        frame_etapas = ttk.Frame(self.notebook)
+        self.notebook.add(frame_etapas, text='Etapas da Obra')
+        
+        # Frame para adicionar nova etapa
+        frame_novo = ttk.LabelFrame(frame_etapas, text="Adicionar Nova Etapa")
+        frame_novo.pack(fill='x', padx=5, pady=5)
+        
+        ttk.Label(frame_novo, text="Nome da Etapa:").grid(row=0, column=0, padx=5, pady=5)
+        self.nova_etapa = ttk.Entry(frame_novo, width=40)
+        self.nova_etapa.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Button(frame_novo, text="Adicionar",
+                command=self.adicionar_etapa_obra).grid(row=1, column=0, columnspan=2, pady=10)
+        
+        # Lista de etapas
+        frame_lista = ttk.LabelFrame(frame_etapas, text="Etapas Cadastradas")
+        frame_lista.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        self.tree_etapas = ttk.Treeview(frame_lista, columns=('Etapa',), show='headings')
+        self.tree_etapas.heading('Etapa', text='Etapa da Obra')
+        self.tree_etapas.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        frame_botoes_etapas = ttk.Frame(frame_lista)
+        frame_botoes_etapas.pack(fill='x', pady=5)
+        
+        ttk.Button(frame_botoes_etapas, text="Mover para Cima",
+                command=self.mover_etapa_cima).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_etapas, text="Mover para Baixo",
+                command=self.mover_etapa_baixo).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_etapas, text="Remover Selecionada",
+                command=self.remover_etapa_obra).pack(side='right', padx=5)
+        
+        self.atualizar_lista_etapas_obra()
+
+    def adicionar_etapa_obra(self):
+        """Adiciona uma nova etapa da obra à lista"""
+        etapa = self.nova_etapa.get().strip().upper()
+        if not etapa:
+            messagebox.showerror("Erro", "Digite o nome da etapa!")
+            return
+            
+        if etapa in self.config['etapas_obra']['lista']:
+            messagebox.showerror("Erro", "Esta etapa já está cadastrada!")
+            return
+            
+        self.config['etapas_obra']['lista'].append(etapa)
+        self.salvar_configuracoes()
+        
+        self.nova_etapa.delete(0, tk.END)
+        self.atualizar_lista_etapas_obra()
+        messagebox.showinfo("Sucesso", "Etapa adicionada com sucesso!")
+
+    def remover_etapa_obra(self):
+        """Remove a etapa selecionada"""
+        selecionado = self.tree_etapas.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione uma etapa para remover!")
+            return
+            
+        etapa = self.tree_etapas.item(selecionado)['values'][0]
+        if messagebox.askyesno("Confirmar", f"Deseja remover a etapa '{etapa}'?"):
+            self.config['etapas_obra']['lista'].remove(etapa)
+            self.salvar_configuracoes()
+            self.atualizar_lista_etapas_obra()
+
+    def mover_etapa_cima(self):
+        """Move a etapa selecionada para cima na lista"""
+        selecionado = self.tree_etapas.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione uma etapa!")
+            return
+        
+        etapa = self.tree_etapas.item(selecionado)['values'][0]
+        lista = self.config['etapas_obra']['lista']
+        indice = lista.index(etapa)
+        
+        if indice > 0:
+            lista[indice], lista[indice-1] = lista[indice-1], lista[indice]
+            self.salvar_configuracoes()
+            self.atualizar_lista_etapas_obra()
+
+    def mover_etapa_baixo(self):
+        """Move a etapa selecionada para baixo na lista"""
+        selecionado = self.tree_etapas.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione uma etapa!")
+            return
+        
+        etapa = self.tree_etapas.item(selecionado)['values'][0]
+        lista = self.config['etapas_obra']['lista']
+        indice = lista.index(etapa)
+        
+        if indice < len(lista) - 1:
+            lista[indice], lista[indice+1] = lista[indice+1], lista[indice]
+            self.salvar_configuracoes()
+            self.atualizar_lista_etapas_obra()
+
+    def atualizar_lista_etapas_obra(self):
+        """Atualiza a exibição da lista de etapas da obra"""
+        for item in self.tree_etapas.get_children():
+            self.tree_etapas.delete(item)
+            
+        for etapa in self.config['etapas_obra']['lista']:
+            self.tree_etapas.insert('', 'end', values=(etapa,))
 
     def setup_aba_indices_correcao(self):
         """Configura a aba de índices de correção monetária"""
