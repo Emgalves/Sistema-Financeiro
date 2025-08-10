@@ -2050,3 +2050,51 @@
 2025-08-05 19:30:00,453 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
 2025-08-05 19:54:05,724 - INFO - Saída confirmada, finalizando sistema
 2025-08-05 19:54:06,008 - INFO - Forçando encerramento do programa...
+2025-08-08 14:47:46,504 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-08 14:47:47,642 - INFO - Sistema principal inicializado com sucesso
+2025-08-08 14:48:53,700 - INFO - Saída confirmada, finalizando sistema
+2025-08-08 15:12:08,697 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-08 15:12:08,920 - INFO - Sistema principal inicializado com sucesso
+2025-08-08 15:30:55,151 - INFO - Saída confirmada, finalizando sistema
+2025-08-10 12:20:19,269 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 12:20:20,516 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 12:20:22,658 - INFO - Abrindo sistema de entrada de dados
+2025-08-10 12:20:32,860 - INFO - Configurações importadas com sucesso via src.config
+2025-08-10 12:20:32,873 - INFO - Configurações importadas com sucesso
+2025-08-10 12:20:32,879 - INFO - Configurações do sistema importadas com sucesso
+2025-08-10 12:25:08,262 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 12:25:08,553 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 12:32:51,913 - INFO - Abrindo sistema de entrada de dados
+2025-08-10 12:32:54,381 - INFO - Configurações importadas com sucesso via src.config
+2025-08-10 12:32:54,386 - INFO - Configurações importadas com sucesso
+2025-08-10 12:32:54,386 - INFO - Configurações do sistema importadas com sucesso
+2025-08-10 14:17:11,791 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 14:17:12,125 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 14:17:50,374 - INFO - Saída confirmada, finalizando sistema
+2025-08-10 15:02:53,243 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 15:02:53,573 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 15:03:34,132 - INFO - Saída confirmada, finalizando sistema
+2025-08-10 15:23:55,095 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 15:23:55,411 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 15:23:57,270 - INFO - Abrindo sistema de entrada de dados
+2025-08-10 15:24:01,993 - INFO - Configurações importadas com sucesso via src.config
+2025-08-10 15:24:01,997 - INFO - Configurações importadas com sucesso
+2025-08-10 15:24:01,998 - INFO - Configurações do sistema importadas com sucesso
+2025-08-10 15:25:39,843 - INFO - Saída confirmada, finalizando sistema
+2025-08-10 15:27:29,916 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 15:27:30,254 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 15:28:15,338 - INFO - Abrindo sistema de entrada de dados
+2025-08-10 15:28:19,897 - INFO - Configurações importadas com sucesso via src.config
+2025-08-10 15:28:19,901 - INFO - Configurações importadas com sucesso
+2025-08-10 15:28:19,904 - INFO - Configurações do sistema importadas com sucesso
+2025-08-10 15:33:56,128 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 15:33:57,052 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 15:33:58,558 - INFO - Abrindo sistema de entrada de dados
+2025-08-10 15:34:05,368 - INFO - Configurações importadas com sucesso via src.config
+2025-08-10 15:34:05,373 - INFO - Configurações importadas com sucesso
+2025-08-10 15:34:05,374 - INFO - Configurações do sistema importadas com sucesso
+2025-08-10 15:34:55,019 - INFO - Cabeçalho 'ETAPA_OBRA' adicionado na coluna Q (17)
+2025-08-10 15:36:05,955 - INFO - Saída confirmada, finalizando sistema
+2025-08-10 16:02:04,741 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 16:02:05,065 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 16:02:19,001 - INFO - Saída confirmada, finalizando sistema

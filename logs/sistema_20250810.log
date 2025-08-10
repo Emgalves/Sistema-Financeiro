@@ -1,0 +1,49 @@
+2025-08-10 12:20:32,852 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-10 12:32:54,380 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-10 13:57:05,037 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 13:57:05,056 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-10 13:57:05,057 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 14:17:13,488 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-10 14:17:13,497 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 14:17:13,520 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-10 14:17:13,524 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 15:03:06,930 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-10 15:03:06,959 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 15:03:07,042 - sistema - configuracoes_sistema - INFO - Seção 'etapas_obra' adicionada às configurações
+2025-08-10 15:03:07,043 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-10 15:03:07,044 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 15:24:01,991 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-10 15:24:03,830 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 15:24:03,833 - sistema - configuracoes_sistema - INFO - Seção 'etapas_obra' adicionada às configurações
+2025-08-10 15:24:03,834 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-10 15:24:03,835 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 15:24:22,048 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 15:24:22,050 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 15:24:49,810 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 15:24:49,810 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 15:28:19,895 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-10 15:28:21,666 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 15:28:21,670 - sistema - configuracoes_sistema - INFO - Seção 'etapas_obra' adicionada às configurações
+2025-08-10 15:28:21,671 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-10 15:28:21,672 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 15:28:50,263 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 15:28:50,264 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 15:34:05,365 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-10 15:34:08,058 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 15:34:08,070 - sistema - configuracoes_sistema - INFO - Seção 'etapas_obra' adicionada às configurações
+2025-08-10 15:34:08,071 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-10 15:34:08,072 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 15:34:19,121 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 15:34:19,122 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 15:34:47,990 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-08-10 15:34:49,686 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-08-10 15:34:54,453 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-10 15:34:54,455 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-10 15:34:54,456 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-10 15:34:54,457 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/08/2025']
+2025-08-10 15:34:54,457 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-10 15:34:54,458 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-10 15:34:55,034 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 226 na linha 226
+2025-08-10 15:34:55,424 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-10 15:34:55,925 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-08-20
+2025-08-10 15:34:56,168 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2025-08-20: Sem taxas na data - recálculo desnecessário
