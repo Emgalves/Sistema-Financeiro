@@ -2336,13 +2336,26 @@ class SistemaEntradaDados:
         self.campos_despesa['referencia'].bind(
             '<<ComboboxSelected>>', lambda e: self.calcular_valor_total())
         
+        # Etapa da Obra
+        ttk.Label(frame_despesa, text="Etapa da Obra:", font=('Arial', 10)).grid(
+            row=1, column=2, padx=5, pady=5, sticky='e')
+        
+        # Importar e obter etapas da obra
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
+        etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()
+        
+        self.campos_despesa['etapa_obra'] = ttk.Combobox(
+            frame_despesa, font=('Arial', 10), width=40, state='readonly')
+        self.campos_despesa['etapa_obra']['values'] = etapas_obra
+        self.campos_despesa['etapa_obra'].grid(row=1, column=3, padx=5, pady=5, sticky='ew')
+
         # NF + Checkbox para materiais
         ttk.Label(frame_despesa, text="NF:", font=('Arial', 10)).grid(
-            row=1, column=2, padx=5, pady=5, sticky='e')
+        row=2, column=2, padx=5, pady=5, sticky='e')
 
         # Frame para NF e checkbox de materiais
         frame_nf = ttk.Frame(frame_despesa)
-        frame_nf.grid(row=1, column=3, padx=5, pady=5, sticky='ew')
+        frame_nf.grid(row=2, column=3, padx=5, pady=5, sticky='ew')
 
         self.campos_despesa['nf'] = ttk.Entry(frame_nf, font=('Arial', 10), width=15)
         self.campos_despesa['nf'].pack(side='left')
@@ -2353,16 +2366,13 @@ class SistemaEntradaDados:
             frame_nf,
             text="Tem materiais",
             variable=self.tem_materiais_var,
-            command=self.handle_checkbox_change  # AGORA REFERENCIA O MÉTODO DA CLASSE
+            command=self.handle_checkbox_change
         )
         self.checkbox_materiais.pack(side='left', padx=(10, 0))
-
-        # Debug para verificar se foi criado corretamente
-        print(f"DEBUG: Checkbox criado com comando: {self.checkbox_materiais.cget('command')}")
                 
-        # Data Vencimento
+        # Data Vencimento (movido para row=3)
         ttk.Label(frame_despesa, text="Data Vencimento:", font=('Arial', 10)).grid(
-            row=2, column=2, padx=5, pady=5, sticky='e')
+            row=3, column=2, padx=5, pady=5, sticky='e')
         self.campos_despesa['dt_vencto'] = DateEntry(
             frame_despesa,
             format='dd/mm/yyyy',
@@ -2373,16 +2383,16 @@ class SistemaEntradaDados:
             font=('Arial', 10),
             width=15
         )
-        self.campos_despesa['dt_vencto'].grid(row=2, column=3, padx=5, pady=5, sticky='w')
+        self.campos_despesa['dt_vencto'].grid(row=3, column=3, padx=5, pady=5, sticky='w')
         # Inicializa o campo vazio
         self.campos_despesa['dt_vencto'].delete(0, tk.END)
         
-        # Observação
+        # Observação (movido para row=4)
         ttk.Label(frame_despesa, text="Observação:", font=('Arial', 10)).grid(
-            row=3, column=2, padx=5, pady=5, sticky='e')
+            row=4, column=2, padx=5, pady=5, sticky='e')
         self.campos_despesa['observacao'] = ttk.Entry(frame_despesa, font=('Arial', 10), width=40)
-        self.campos_despesa['observacao'].grid(row=3, column=3, padx=5, pady=5, sticky='ew')
-        
+        self.campos_despesa['observacao'].grid(row=4, column=3, padx=5, pady=5, sticky='ew')
+       
         # Configurar peso da coluna para expandir apenas os campos de referência e observação
         frame_despesa.columnconfigure(3, weight=1)  # Apenas a coluna 3 (campos expansíveis) cresce
         
@@ -2396,7 +2406,8 @@ class SistemaEntradaDados:
         
         # Configurar a ordem de tab para seguir o fluxo de trabalho natural
         self.campos_despesa['tp_desp'].bind('<Return>', lambda e: self.campos_despesa['referencia'].focus())
-        self.campos_despesa['referencia'].bind('<Return>', lambda e: self.campos_despesa['vr_unit'].focus())
+        self.campos_despesa['referencia'].bind('<Return>', lambda e: self.campos_despesa['etapa_obra'].focus())
+        self.campos_despesa['etapa_obra'].bind('<Return>', lambda e: self.campos_despesa['vr_unit'].focus())
         self.campos_despesa['vr_unit'].bind('<Return>', lambda e: self.campos_despesa['dias'].focus())
         self.campos_despesa['dias'].bind('<Return>', lambda e: self.campos_despesa['nf'].focus())
         self.campos_despesa['nf'].bind('<Return>', lambda e: self.campos_despesa['dt_vencto'].focus())
@@ -4032,6 +4043,7 @@ class SistemaEntradaDados:
                 'categoria': self.campos_fornecedor['categoria'].get().upper(),
                 'tp_desp': self.campos_despesa['tp_desp'].get(),
                 'referencia': self.campos_despesa['referencia'].get().upper(),
+                'etapa_obra': self.campos_despesa['etapa_obra'].get(),
                 'nf': self.campos_despesa['nf'].get().upper(),
                 'vr_unit': f"{vr_unit:.2f}",
                 'dias': float(self.campos_despesa['dias'].get().replace(',', '.')) if self.campos_despesa['dias'].get() else 1,
@@ -6889,30 +6901,24 @@ class SistemaEntradaDados:
             custom_messagebox("error", "Erro", f"Erro ao abrir importador de transporte: {str(e)}")
 
     def limpar_campos_despesa(self):
-        """Limpa os campos de despesa mantendo alguns valores padrão"""
-        # Limpar todos os campos
-        self.campos_despesa['tp_desp'].delete(0, tk.END)
-        self.campos_despesa['referencia'].set('')  # Para Combobox
-        self.campos_despesa['nf'].delete(0, tk.END)  # Novo campo
-        self.campos_despesa['vr_unit'].delete(0, tk.END)
-        self.campos_despesa['dias'].delete(0, tk.END)
-        self.campos_despesa['dias'].insert(0, '1')  # Valor padrão
-        self.campos_despesa['valor'].config(state='normal')
-        self.campos_despesa['valor'].delete(0, tk.END)
-        self.campos_despesa['valor'].config(state='readonly')
-        self.campos_despesa['observacao'].delete(0, tk.END)
+        """Limpa todos os campos da despesa"""
+        campos_para_limpar = ['tp_desp', 'referencia', 'etapa_obra', 'nf', 'vr_unit', 
+                            'dias', 'valor', 'observacao']
         
-        # Definir data de vencimento igual à data de referência
-        self.campos_despesa['dt_vencto'].set_date(self.data_rel_entry.get_date())
-
-        # Resetar estado do campo referência
-        self.campos_despesa['referencia'].config(state='normal')
-        self.campos_despesa['referencia']['values'] = []
-
-        self.tem_materiais_var.set(False)
-        self.checkbox_materiais.configure(text="Tem materiais")
-        if hasattr(self, 'campos_despesa') and 'nf' in self.campos_despesa:
-            self.campos_despesa['nf'].configure(style='TEntry')
+        for campo in campos_para_limpar:
+            if campo in self.campos_despesa:
+                if hasattr(self.campos_despesa[campo], 'delete'):
+                    self.campos_despesa[campo].delete(0, tk.END)
+                elif hasattr(self.campos_despesa[campo], 'set'):
+                    self.campos_despesa[campo].set('')
+        
+        # Reinicializar valor padrão para dias
+        if 'dias' in self.campos_despesa:
+            self.campos_despesa['dias'].insert(0, "1")
+        
+        # Limpar data de vencimento
+        if 'dt_vencto' in self.campos_despesa:
+            self.campos_despesa['dt_vencto'].delete(0, tk.END)
 
     def verificar_duplicidade_antes_salvar(self, sheet, dados):
         """
@@ -7076,6 +7082,8 @@ class SistemaEntradaDados:
                 # Abrir workbook e verificar duplicidade ANTES de salvar
                 workbook = load_workbook(arquivo_cliente)
                 sheet = workbook["Dados"]
+
+                self.verificar_e_adicionar_cabecalho_etapa_obra(sheet)
                 
                 # Verificar duplicatas ANTES de processar qualquer registro
                 lancamentos_duplicados = []
@@ -7177,7 +7185,10 @@ class SistemaEntradaDados:
                         novo_id = self.obter_proximo_id_sequencial(sheet)
                         sheet.cell(row=proxima_linha, column=14, value='ATIVO')  # STATUS
                         sheet.cell(row=proxima_linha, column=15, value=novo_id)  # ID_LANCAMENTO sequencial
-                        
+
+                        # NOVA COLUNA: Etapa da Obra na próxima coluna vazia (coluna 17)
+                        sheet.cell(row=proxima_linha, column=17, value=dados['etapa_obra'])
+
                         logger.info(f"Lançamento inserido com ID {novo_id} na linha {proxima_linha}")
                         
                         registros_salvos += 1
@@ -7274,6 +7285,25 @@ class SistemaEntradaDados:
             if hasattr(self, '_is_saving'):
                 self._is_saving = False
 
+    def verificar_e_adicionar_cabecalho_etapa_obra(self, sheet):
+        """
+        Verifica se o cabeçalho da coluna Etapa da Obra existe e adiciona se necessário
+        """
+        try:
+            # Verificar se existe cabeçalho na linha 1, coluna 17
+            cabecalho_atual = sheet.cell(row=1, column=17).value
+            
+            if cabecalho_atual is None or cabecalho_atual == "":
+                # Adicionar cabeçalho para Etapa da Obra
+                sheet.cell(row=1, column=17, value="ETAPA_OBRA")
+                logger.info("Cabeçalho 'ETAPA_OBRA' adicionado na coluna Q (17)")
+                
+            return True
+            
+        except Exception as e:
+            logger.error(f"Erro ao verificar/adicionar cabeçalho de etapa da obra: {str(e)}")
+            return False
+    
     def verificar_e_corrigir_ids_antes_insercao(self, arquivo_cliente):
         """
         Verifica e corrige IDs duplicados ANTES de inserir novos lançamentos
@@ -13475,7 +13505,7 @@ class GerenciadorLancamentos:
         self.carregar_lancamentos()
         
     def criar_interface(self):
-        """Cria a interface do gerenciador"""
+        """Cria a interface do gerenciador - VERSÃO COM EXCLUSÃO EM LOTE"""
         # Frame principal
         main_frame = ttk.Frame(self.janela, padding="10")
         main_frame.pack(fill='both', expand=True)
@@ -13496,27 +13526,28 @@ class GerenciadorLancamentos:
         # Filtro por status
         ttk.Label(frame_filtros, text="Status:").grid(row=0, column=4, padx=5, pady=5)
         self.combo_status = ttk.Combobox(frame_filtros, values=['Todos', 'Ativos', 'Excluídos'], 
-                                       state='readonly', width=10)
+                                    state='readonly', width=10)
         self.combo_status.set('Ativos')
         self.combo_status.grid(row=0, column=5, padx=5, pady=5)
         
         # Botão filtrar
         ttk.Button(frame_filtros, text="Filtrar", 
-                  command=self.aplicar_filtros).grid(row=0, column=6, padx=10, pady=5)
+                command=self.aplicar_filtros).grid(row=0, column=6, padx=10, pady=5)
         
         # Frame da lista de lançamentos
         frame_lista = ttk.Frame(main_frame)
         frame_lista.pack(fill='both', expand=True)
         
-        # Treeview para lançamentos
+        # Treeview para lançamentos - MODIFICAÇÃO: Adicionar selectmode para múltipla seleção
         colunas = ('Data', 'Tipo', 'Nome', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'ID')
-        self.tree_lancamentos = ttk.Treeview(frame_lista, columns=colunas, show='headings', height=20)
+        self.tree_lancamentos = ttk.Treeview(frame_lista, columns=colunas, show='headings', 
+                                        height=20, selectmode='extended')  # CHAVE: selectmode='extended'
         
-        # Configurar cabeçalhos
+        # Configurar cabeçalhos (mantém igual)
         for col in colunas:
             self.tree_lancamentos.heading(col, text=col)
             if col == 'ID':
-                self.tree_lancamentos.column(col, width=0, stretch=False)  # Ocultar coluna ID
+                self.tree_lancamentos.column(col, width=0, stretch=False)
             elif col in ['Data', 'Vencimento']:
                 self.tree_lancamentos.column(col, width=60)
             elif col == 'Tipo':
@@ -13528,18 +13559,12 @@ class GerenciadorLancamentos:
             else:
                 self.tree_lancamentos.column(col, width=200)
         
-        # Scrollbars
-        # scrolly = ttk.Scrollbar(frame_lista, orient='vertical', command=self.tree_lancamentos.yview)
-        # scrollx = ttk.Scrollbar(frame_lista, orient='horizontal', command=self.tree_lancamentos.xview)
-        # self.tree_lancamentos.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
+        # Scrollbars (mantém igual)
         scrolly = ttk.Scrollbar(frame_lista, orient='vertical', command=self.tree_lancamentos.yview)
         scrollx = ttk.Scrollbar(frame_lista, orient='horizontal', command=self.tree_lancamentos.xview)
         self.tree_lancamentos.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
         
         # Posicionar elementos
-        # self.tree_lancamentos.pack(side='left', fill='both', expand=True)
-        # scrolly.pack(side='right', fill='y')
-        # scrollx.pack(side='bottom', fill='x')
         self.tree_lancamentos.grid(row=0, column=0, sticky='nsew')
         scrolly.grid(row=0, column=1, sticky='ns')
         scrollx.grid(row=1, column=0, sticky='ew')
@@ -13548,64 +13573,665 @@ class GerenciadorLancamentos:
         frame_lista.grid_rowconfigure(0, weight=1)
         frame_lista.grid_columnconfigure(0, weight=1)
 
-        # Frame de botões (MODIFICAR esta parte)
+        # Frame de botões - VERSÃO EXPANDIDA
         frame_botoes = ttk.Frame(main_frame)
         frame_botoes.pack(fill='x', pady=(10, 0))
         
-        # Organizar botões em grupos
-        # Grupo 1: Ações nos lançamentos
-        ttk.Button(frame_botoes, text="Editar", command=self.editar_lancamento).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Excluir", command=self.excluir_lancamento).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Restaurar", command=self.restaurar_lancamento).pack(side='left', padx=5)
+        # === SELEÇÃO E INFORMAÇÕES ===
+        # Frame para informações de seleção
+        frame_selecao = ttk.Frame(frame_botoes)
+        frame_selecao.pack(fill='x', pady=(0, 5))
         
-        # ADICIONAR ESTE BOTÃO:
-        ttk.Button(frame_botoes, text="Ver Histórico", 
+        # Label para mostrar quantidade selecionada
+        self.label_selecao = ttk.Label(frame_selecao, text="Nenhum item selecionado", 
+                                    font=('TkDefaultFont', 9, 'italic'))
+        self.label_selecao.pack(side='left')
+        
+        # Botões de seleção
+        ttk.Button(frame_selecao, text="Selecionar Todos Visíveis", 
+                command=self.selecionar_todos_visiveis).pack(side='right', padx=2)
+        ttk.Button(frame_selecao, text="Limpar Seleção", 
+                command=self.limpar_selecao).pack(side='right', padx=2)
+        
+        # === BOTÕES DE AÇÃO PRINCIPAL ===
+        frame_acoes = ttk.Frame(frame_botoes)
+        frame_acoes.pack(fill='x', pady=(5, 0))
+        
+        # Grupo 1: Ações individuais
+        ttk.Button(frame_acoes, text="Editar", command=self.editar_lancamento).pack(side='left', padx=5)
+        ttk.Button(frame_acoes, text="Ver Histórico", 
                 command=self.visualizar_historico_lancamento).pack(side='left', padx=5)
         
-        # Separador visual
-        ttk.Separator(frame_botoes, orient='vertical').pack(side='left', fill='y', padx=10)
+        # Separador
+        ttk.Separator(frame_acoes, orient='vertical').pack(side='left', fill='y', padx=10)
         
-        # Grupo 2: Ações gerais
-        ttk.Button(frame_botoes, text="Atualizar", command=self.carregar_lancamentos).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Fechar", command=self.janela.destroy).pack(side='right', padx=5)
+        # Grupo 2: Ações em lote - NOVOS BOTÕES
+        self.btn_excluir_individual = ttk.Button(frame_acoes, text="Excluir", 
+                                            command=self.excluir_lancamento)
+        self.btn_excluir_individual.pack(side='left', padx=2)
+        
+        self.btn_excluir_lote = ttk.Button(frame_acoes, text="Excluir Selecionados", 
+                                        command=self.excluir_lote, state='disabled')
+        self.btn_excluir_lote.pack(side='left', padx=2)
+        
+        self.btn_restaurar_individual = ttk.Button(frame_acoes, text="Restaurar", 
+                                                command=self.restaurar_lancamento)
+        self.btn_restaurar_individual.pack(side='left', padx=2)
+        
+        self.btn_restaurar_lote = ttk.Button(frame_acoes, text="Restaurar Selecionados", 
+                                        command=self.restaurar_lote, state='disabled')
+        self.btn_restaurar_lote.pack(side='left', padx=2)
+        
+        # Separador
+        ttk.Separator(frame_acoes, orient='vertical').pack(side='left', fill='y', padx=10)
+        
+        # Grupo 3: Ações gerais
+        ttk.Button(frame_acoes, text="Atualizar", command=self.carregar_lancamentos).pack(side='left', padx=5)
+        ttk.Button(frame_acoes, text="Fechar", command=self.janela.destroy).pack(side='right', padx=5)
 
         # Configurar tags para cores
         self.tree_lancamentos.tag_configure('excluido', background='#ffcccc')
         self.tree_lancamentos.tag_configure('normal', background='white')
+        self.tree_lancamentos.tag_configure('selecionado', background='#e6f3ff')  # Nova tag para seleção
 
+        # Configurar eventos
         self.configurar_atalhos()
+        self.configurar_eventos_selecao()
+
+    def configurar_eventos_selecao(self):
+        """Configura eventos para controle de seleção múltipla"""
+        try:
+            # Evento quando seleção muda
+            def on_selection_change(event=None):
+                self.atualizar_interface_selecao()
+            
+            # Bind no evento de seleção
+            self.tree_lancamentos.bind('<<TreeviewSelect>>', on_selection_change)
+            
+            # Evento de clique com Ctrl para seleção múltipla
+            def on_ctrl_click(event):
+                # O Treeview já gerencia Ctrl+Click automaticamente com selectmode='extended'
+                self.tree_lancamentos.after_idle(self.atualizar_interface_selecao)
+            
+            self.tree_lancamentos.bind('<Control-Button-1>', on_ctrl_click)
+            
+            # Evento de clique com Shift para seleção em intervalo
+            def on_shift_click(event):
+                # O Treeview já gerencia Shift+Click automaticamente com selectmode='extended'
+                self.tree_lancamentos.after_idle(self.atualizar_interface_selecao)
+            
+            self.tree_lancamentos.bind('<Shift-Button-1>', on_shift_click)
+            
+            print("DEBUG: Eventos de seleção configurados")
+            
+        except Exception as e:
+            print(f"Erro ao configurar eventos de seleção: {str(e)}")
+
+    def atualizar_interface_selecao(self):
+        """Atualiza a interface baseada na seleção atual"""
+        try:
+            items_selecionados = self.tree_lancamentos.selection()
+            qtd_selecionados = len(items_selecionados)
+            
+            # Atualizar label de seleção
+            if qtd_selecionados == 0:
+                self.label_selecao.config(text="Nenhum item selecionado")
+            elif qtd_selecionados == 1:
+                self.label_selecao.config(text="1 item selecionado")
+            else:
+                self.label_selecao.config(text=f"{qtd_selecionados} itens selecionados")
+            
+            # Controlar estado dos botões
+            if qtd_selecionados == 0:
+                # Nenhum selecionado - desabilitar todos
+                self.btn_excluir_individual.config(state='disabled')
+                self.btn_excluir_lote.config(state='disabled')
+                self.btn_restaurar_individual.config(state='disabled')
+                self.btn_restaurar_lote.config(state='disabled')
+                
+            elif qtd_selecionados == 1:
+                # Um selecionado - habilitar individuais, desabilitar lote
+                self.btn_excluir_individual.config(state='normal')
+                self.btn_excluir_lote.config(state='disabled')
+                self.btn_restaurar_individual.config(state='normal')
+                self.btn_restaurar_lote.config(state='disabled')
+                
+            else:
+                # Múltiplos selecionados - desabilitar individuais, habilitar lote
+                self.btn_excluir_individual.config(state='disabled')
+                self.btn_excluir_lote.config(state='normal')
+                self.btn_restaurar_individual.config(state='disabled')
+                self.btn_restaurar_lote.config(state='normal')
+            
+        except Exception as e:
+            print(f"Erro ao atualizar interface de seleção: {str(e)}")
+
+    def selecionar_todos_visiveis(self):
+        """Seleciona todos os itens visíveis na lista"""
+        try:
+            # Obter todos os itens filhos visíveis
+            items_visiveis = self.tree_lancamentos.get_children()
+            
+            if not items_visiveis:
+                custom_messagebox("info", "Seleção", "Nenhum item visível para selecionar")
+                return
+            
+            # Selecionar todos os itens visíveis
+            self.tree_lancamentos.selection_set(items_visiveis)
+            
+            # Atualizar interface
+            self.atualizar_interface_selecao()
+            
+            print(f"DEBUG: Selecionados {len(items_visiveis)} itens visíveis")
+            
+        except Exception as e:
+            print(f"Erro ao selecionar todos os itens: {str(e)}")
+            custom_messagebox("error", "Erro", f"Erro ao selecionar itens: {str(e)}")
+
+    def limpar_selecao(self):
+        """Limpa a seleção atual"""
+        try:
+            self.tree_lancamentos.selection_remove(self.tree_lancamentos.selection())
+            self.atualizar_interface_selecao()
+            print("DEBUG: Seleção limpa")
+            
+        except Exception as e:
+            print(f"Erro ao limpar seleção: {str(e)}")
+
+    def obter_dados_selecionados(self):
+        """Obtém dados dos itens selecionados para processamento"""
+        try:
+            items_selecionados = self.tree_lancamentos.selection()
+            
+            if not items_selecionados:
+                return []
+            
+            dados_selecionados = []
+            
+            for item in items_selecionados:
+                valores = self.tree_lancamentos.item(item)['values']
+                
+                # Extrair informações principais
+                dados_item = {
+                    'item_id': item,  # ID do item no Treeview
+                    'data': valores[0],
+                    'tp_desp': valores[1],
+                    'nome': valores[2],
+                    'referencia': valores[3],
+                    'nf': valores[4],
+                    'valor': valores[5],
+                    'vencimento': valores[6],
+                    'status': valores[7],
+                    'id_lancamento': valores[8]
+                }
+                
+                dados_selecionados.append(dados_item)
+            
+            return dados_selecionados
+            
+        except Exception as e:
+            print(f"Erro ao obter dados selecionados: {str(e)}")
+            return []
+
+    def excluir_lote(self):
+        """Executa exclusão em lote dos itens selecionados"""
+        try:
+            dados_selecionados = self.obter_dados_selecionados()
+            
+            if not dados_selecionados:
+                custom_messagebox("warning", "Aviso", "Nenhum item selecionado para exclusão")
+                return
+            
+            qtd_selecionados = len(dados_selecionados)
+            
+            # Verificar se há itens já excluídos
+            ja_excluidos = [item for item in dados_selecionados if item['status'] == 'EXCLUIDO']
+            ativos = [item for item in dados_selecionados if item['status'] != 'EXCLUIDO']
+            
+            if not ativos:
+                custom_messagebox("info", "Informação", 
+                                f"Todos os {qtd_selecionados} itens selecionados já estão excluídos")
+                return
+            
+            # Verificar se há taxas de administração
+            taxas_admin = [item for item in ativos if str(item['tp_desp']) == '7']
+            qtd_taxas = len(taxas_admin)
+            qtd_normais = len(ativos) - qtd_taxas
+            
+            # Montar mensagem de confirmação detalhada
+            mensagem = f"EXCLUSÃO EM LOTE\n\n"
+            mensagem += f"📊 RESUMO DA SELEÇÃO:\n"
+            mensagem += f"• {len(ativos)} itens serão excluídos\n"
+            
+            if ja_excluidos:
+                mensagem += f"• {len(ja_excluidos)} já estavam excluídos (ignorados)\n"
+            
+            if qtd_taxas > 0:
+                mensagem += f"• ⚠️ {qtd_taxas} TAXA(S) DE ADMINISTRAÇÃO\n"
+            
+            if qtd_normais > 0:
+                mensagem += f"• {qtd_normais} lançamento(s) normal(is)\n"
+            
+            mensagem += f"\n🎯 PERÍODO AFETADO:\n"
+            
+            # Obter intervalo de datas
+            datas = [item['data'] for item in ativos if item['data']]
+            if datas:
+                datas_ordenadas = sorted(set(datas))
+                if len(datas_ordenadas) == 1:
+                    mensagem += f"• {datas_ordenadas[0]}\n"
+                else:
+                    mensagem += f"• De {datas_ordenadas[0]} até {datas_ordenadas[-1]}\n"
+            
+            # Calcular valor total
+            valor_total = 0
+            for item in ativos:
+                try:
+                    # Limpar formatação do valor
+                    valor_str = str(item['valor']).replace('.', '').replace(',', '.')
+                    valor_total += float(valor_str)
+                except:
+                    pass
+            
+            if valor_total > 0:
+                mensagem += f"\n💰 VALOR TOTAL: R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+            
+            if qtd_taxas > 0:
+                mensagem += f"\n\n⚠️ ATENÇÃO ESPECIAL:\n"
+                mensagem += f"Esta operação inclui TAXAS DE ADMINISTRAÇÃO!\n"
+                mensagem += f"Verifique se não há duplicação antes de prosseguir.\n"
+            
+            mensagem += f"\n🔄 As taxas restantes serão verificadas automaticamente.\n"
+            mensagem += f"\n❓ Deseja realmente continuar com a exclusão em lote?"
+            
+            # Confirmar operação
+            if not custom_messagebox("yesno", "Confirmação - Exclusão em Lote", mensagem):
+                return
+            
+            # Executar exclusões
+            sucessos = 0
+            erros = []
+            datas_afetadas = set()
+            
+            progress_window = self.criar_janela_progresso("Excluindo lançamentos...", len(ativos))
+            
+            try:
+                for i, item in enumerate(ativos):
+                    try:
+                        # Atualizar progresso
+                        self.atualizar_progresso(progress_window, i + 1, 
+                                            f"Excluindo: {item['nome'][:30]}...")
+                        
+                        # Executar exclusão
+                        self.atualizar_status_lancamento(item['id_lancamento'], 'EXCLUIDO')
+                        
+                        # Coletar data para verificação posterior
+                        if item['data']:
+                            try:
+                                data_obj = datetime.strptime(item['data'], '%d/%m/%Y').date()
+                                datas_afetadas.add(data_obj)
+                            except:
+                                pass
+                        
+                        sucessos += 1
+                        
+                    except Exception as e:
+                        erros.append(f"ID {item['id_lancamento']}: {str(e)}")
+                        continue
+                
+            finally:
+                progress_window.destroy()
+            
+            # Verificar recálculo de taxas para as datas afetadas
+            self.verificar_recalculo_datas_afetadas(datas_afetadas, "EXCLUSAO")
+            
+            # Recarregar interface
+            self.carregar_lancamentos()
+            
+            # Mostrar resultado
+            mensagem_resultado = f"EXCLUSÃO EM LOTE CONCLUÍDA\n\n"
+            mensagem_resultado += f"✅ {sucessos} lançamentos excluídos com sucesso\n"
+            
+            if erros:
+                mensagem_resultado += f"❌ {len(erros)} erros encontrados:\n"
+                for erro in erros[:5]:  # Mostrar apenas os primeiros 5 erros
+                    mensagem_resultado += f"• {erro}\n"
+                if len(erros) > 5:
+                    mensagem_resultado += f"• ... e mais {len(erros) - 5} erros\n"
+            
+            if datas_afetadas:
+                mensagem_resultado += f"\n🔄 {len(datas_afetadas)} data(s) verificada(s) para recálculo de taxas"
+            
+            custom_messagebox("info", "Resultado da Exclusão em Lote", mensagem_resultado)
+            
+        except Exception as e:
+            import traceback
+            print(f"DEBUG: Erro na exclusão em lote: {traceback.format_exc()}")
+            custom_messagebox("error", "Erro", f"Erro na exclusão em lote: {str(e)}")
+
+    def restaurar_lote(self):
+        """Executa restauração em lote dos itens selecionados"""
+        try:
+            dados_selecionados = self.obter_dados_selecionados()
+            
+            if not dados_selecionados:
+                custom_messagebox("warning", "Aviso", "Nenhum item selecionado para restauração")
+                return
+            
+            qtd_selecionados = len(dados_selecionados)
+            
+            # Verificar se há itens já ativos
+            ja_ativos = [item for item in dados_selecionados if item['status'] != 'EXCLUIDO']
+            excluidos = [item for item in dados_selecionados if item['status'] == 'EXCLUIDO']
+            
+            if not excluidos:
+                custom_messagebox("info", "Informação", 
+                                f"Todos os {qtd_selecionados} itens selecionados já estão ativos")
+                return
+            
+            # Verificar se há taxas de administração
+            taxas_admin = [item for item in excluidos if str(item['tp_desp']) == '7']
+            qtd_taxas = len(taxas_admin)
+            qtd_normais = len(excluidos) - qtd_taxas
+            
+            # Montar mensagem de confirmação
+            mensagem = f"RESTAURAÇÃO EM LOTE\n\n"
+            mensagem += f"📊 RESUMO DA SELEÇÃO:\n"
+            mensagem += f"• {len(excluidos)} itens serão restaurados\n"
+            
+            if ja_ativos:
+                mensagem += f"• {len(ja_ativos)} já estavam ativos (ignorados)\n"
+            
+            if qtd_taxas > 0:
+                mensagem += f"• ⚠️ {qtd_taxas} TAXA(S) DE ADMINISTRAÇÃO\n"
+            
+            if qtd_normais > 0:
+                mensagem += f"• {qtd_normais} lançamento(s) normal(is)\n"
+            
+            if qtd_taxas > 0:
+                mensagem += f"\n⚠️ ATENÇÃO ESPECIAL:\n"
+                mensagem += f"Esta operação inclui TAXAS DE ADMINISTRAÇÃO!\n"
+                mensagem += f"Verifique se não haverá duplicação.\n"
+            
+            mensagem += f"\n🔄 As taxas serão verificadas automaticamente.\n"
+            mensagem += f"\n❓ Deseja realmente continuar com a restauração em lote?"
+            
+            # Confirmar operação
+            if not custom_messagebox("yesno", "Confirmação - Restauração em Lote", mensagem):
+                return
+            
+            # Executar restaurações
+            sucessos = 0
+            erros = []
+            datas_afetadas = set()
+            
+            progress_window = self.criar_janela_progresso("Restaurando lançamentos...", len(excluidos))
+            
+            try:
+                for i, item in enumerate(excluidos):
+                    try:
+                        # Atualizar progresso
+                        self.atualizar_progresso(progress_window, i + 1, 
+                                            f"Restaurando: {item['nome'][:30]}...")
+                        
+                        # Executar restauração
+                        self.atualizar_status_lancamento(item['id_lancamento'], 'ATIVO')
+                        
+                        # Coletar data para verificação posterior
+                        if item['data']:
+                            try:
+                                data_obj = datetime.strptime(item['data'], '%d/%m/%Y').date()
+                                datas_afetadas.add(data_obj)
+                            except:
+                                pass
+                        
+                        sucessos += 1
+                        
+                    except Exception as e:
+                        erros.append(f"ID {item['id_lancamento']}: {str(e)}")
+                        continue
+                
+            finally:
+                progress_window.destroy()
+            
+            # Verificar recálculo de taxas para as datas afetadas
+            self.verificar_recalculo_datas_afetadas(datas_afetadas, "ALTERACAO")
+            
+            # Recarregar interface
+            self.carregar_lancamentos()
+            
+            # Mostrar resultado
+            mensagem_resultado = f"RESTAURAÇÃO EM LOTE CONCLUÍDA\n\n"
+            mensagem_resultado += f"✅ {sucessos} lançamentos restaurados com sucesso\n"
+            
+            if erros:
+                mensagem_resultado += f"❌ {len(erros)} erros encontrados:\n"
+                for erro in erros[:5]:
+                    mensagem_resultado += f"• {erro}\n"
+                if len(erros) > 5:
+                    mensagem_resultado += f"• ... e mais {len(erros) - 5} erros\n"
+            
+            if datas_afetadas:
+                mensagem_resultado += f"\n🔄 {len(datas_afetadas)} data(s) verificada(s) para recálculo de taxas"
+            
+            custom_messagebox("info", "Resultado da Restauração em Lote", mensagem_resultado)
+            
+        except Exception as e:
+            import traceback
+            print(f"DEBUG: Erro na restauração em lote: {traceback.format_exc()}")
+            custom_messagebox("error", "Erro", f"Erro na restauração em lote: {str(e)}")
+
+    def verificar_recalculo_datas_afetadas(self, datas_afetadas, tipo_operacao):
+        """Verifica recálculo de taxas para múltiplas datas afetadas"""
+        try:
+            if not datas_afetadas:
+                return
+            
+            print(f"DEBUG: Verificando recálculo para {len(datas_afetadas)} datas afetadas")
+            
+            # Aguardar um pouco para garantir que as operações foram salvas
+            import time
+            time.sleep(0.5)
+            
+            resultados = []
+            
+            for data_afetada in sorted(datas_afetadas):
+                try:
+                    print(f"DEBUG: Verificando recálculo para {data_afetada}")
+                    
+                    # Usar o método unificado do sistema
+                    resultado = self.sistema.chamar_apos_operacao_lancamento(data_afetada, tipo_operacao)
+                    
+                    resultados.append({
+                        'data': data_afetada,
+                        'resultado': resultado
+                    })
+                    
+                    if resultado["sucesso"]:
+                        print(f"✅ Verificação para {data_afetada}: {resultado['mensagem']}")
+                    else:
+                        print(f"⚠️ Problema na verificação para {data_afetada}: {resultado['mensagem']}")
+                        
+                except Exception as e:
+                    print(f"❌ Erro ao verificar {data_afetada}: {str(e)}")
+                    resultados.append({
+                        'data': data_afetada,
+                        'resultado': {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
+                    })
+                    continue
+            
+            # Log consolidado
+            verificacoes_ok = sum(1 for r in resultados if r['resultado']['sucesso'])
+            print(f"DEBUG: Verificações concluídas: {verificacoes_ok}/{len(resultados)} OK")
+            
+        except Exception as e:
+            print(f"DEBUG: Erro geral na verificação de múltiplas datas: {str(e)}")
+
+    def criar_janela_progresso(self, titulo, total_items):
+        """Cria janela de progresso para operações em lote"""
+        try:
+            janela_progress = tk.Toplevel(self.janela)
+            janela_progress.title(titulo)
+            janela_progress.geometry("400x120")
+            janela_progress.transient(self.janela)
+            janela_progress.grab_set()
+            
+            # Centralizar janela
+            janela_progress.update_idletasks()
+            x = (janela_progress.winfo_screenwidth() // 2) - (400 // 2)
+            y = (janela_progress.winfo_screenheight() // 2) - (120 // 2)
+            janela_progress.geometry(f"400x120+{x}+{y}")
+            
+            frame = ttk.Frame(janela_progress, padding="20")
+            frame.pack(fill='both', expand=True)
+            
+            # Label de status
+            label_status = ttk.Label(frame, text="Preparando...", font=('TkDefaultFont', 10))
+            label_status.pack(pady=(0, 10))
+            
+            # Barra de progresso
+            progress_var = tk.DoubleVar()
+            progress_bar = ttk.Progressbar(frame, variable=progress_var, maximum=total_items, 
+                                        mode='determinate', length=350)
+            progress_bar.pack(pady=(0, 10))
+            
+            # Label de contagem
+            label_count = ttk.Label(frame, text=f"0 / {total_items}", font=('TkDefaultFont', 9))
+            label_count.pack()
+            
+            # Armazenar referências para atualização
+            janela_progress.label_status = label_status
+            janela_progress.progress_var = progress_var
+            janela_progress.label_count = label_count
+            janela_progress.total_items = total_items
+            
+            # Forçar atualização da interface
+            janela_progress.update()
+            
+            return janela_progress
+            
+        except Exception as e:
+            print(f"Erro ao criar janela de progresso: {str(e)}")
+            return None
+
+    def atualizar_progresso(self, janela_progress, item_atual, mensagem=""):
+        """Atualiza a janela de progresso"""
+        try:
+            if not janela_progress:
+                return
+            
+            # Atualizar barra de progresso
+            janela_progress.progress_var.set(item_atual)
+            
+            # Atualizar status
+            if mensagem:
+                janela_progress.label_status.config(text=mensagem)
+            
+            # Atualizar contagem
+            janela_progress.label_count.config(
+                text=f"{item_atual} / {janela_progress.total_items}"
+            )
+            
+            # Forçar atualização da interface
+            janela_progress.update_idletasks()
+            
+        except Exception as e:
+            print(f"Erro ao atualizar progresso: {str(e)}")
     
     def configurar_atalhos(self):
-        """Configura atalhos de teclado"""
+        """Configura atalhos de teclado - VERSÃO EXPANDIDA"""
         try:
-            # CORREÇÃO 1: Duplo clique no Treeview
+            # ATALHO ORIGINAL: Duplo clique para histórico
             def on_double_click(event):
-                # Verificar se há item selecionado
                 if self.tree_lancamentos.selection():
                     self.visualizar_historico_lancamento()
             
             self.tree_lancamentos.bind('<Double-1>', on_double_click)
             
-            # CORREÇÃO 2: Atalho de teclado - Focar na janela principal primeiro
+            # ATALHO ORIGINAL: Tecla H para histórico
             def on_key_h(event):
-                # Só funciona se a janela do gerenciador estiver em foco
                 if self.tree_lancamentos.selection():
                     self.visualizar_historico_lancamento()
                 else:
                     custom_messagebox("info", "Atalho H", "Selecione um lançamento primeiro para ver o histórico")
             
-            # Bind na janela principal
             self.janela.bind('<Key-h>', on_key_h)
             self.janela.bind('<Key-H>', on_key_h)
-            
-            # CORREÇÃO 3: Também bind no Treeview para garantir que funcione
             self.tree_lancamentos.bind('<Key-h>', on_key_h)
             self.tree_lancamentos.bind('<Key-H>', on_key_h)
             
-            # CORREÇÃO 4: Tornar a janela focável para receber eventos de teclado
+            # NOVOS ATALHOS PARA SELEÇÃO EM LOTE
+            
+            # Ctrl+A: Selecionar todos os itens visíveis
+            def on_ctrl_a(event):
+                self.selecionar_todos_visiveis()
+                return "break"  # Impede comportamento padrão
+            
+            self.janela.bind('<Control-a>', on_ctrl_a)
+            self.tree_lancamentos.bind('<Control-a>', on_ctrl_a)
+            
+            # Ctrl+D: Limpar seleção
+            def on_ctrl_d(event):
+                self.limpar_selecao()
+                return "break"
+            
+            self.janela.bind('<Control-d>', on_ctrl_d)
+            self.tree_lancamentos.bind('<Control-d>', on_ctrl_d)
+            
+            # Delete: Excluir selecionados
+            def on_delete(event):
+                items_selecionados = self.tree_lancamentos.selection()
+                if len(items_selecionados) == 1:
+                    self.excluir_lancamento()
+                elif len(items_selecionados) > 1:
+                    self.excluir_lote()
+                else:
+                    custom_messagebox("info", "Atalho Delete", "Selecione um ou mais lançamentos para excluir")
+                return "break"
+            
+            self.janela.bind('<Delete>', on_delete)
+            self.tree_lancamentos.bind('<Delete>', on_delete)
+            
+            # Ctrl+R: Restaurar selecionados
+            def on_ctrl_r(event):
+                items_selecionados = self.tree_lancamentos.selection()
+                if len(items_selecionados) == 1:
+                    self.restaurar_lancamento()
+                elif len(items_selecionados) > 1:
+                    self.restaurar_lote()
+                else:
+                    custom_messagebox("info", "Atalho Ctrl+R", "Selecione um ou mais lançamentos para restaurar")
+                return "break"
+            
+            self.janela.bind('<Control-r>', on_ctrl_r)
+            self.tree_lancamentos.bind('<Control-r>', on_ctrl_r)
+            
+            # F5: Atualizar lista
+            def on_f5(event):
+                self.carregar_lancamentos()
+                return "break"
+            
+            self.janela.bind('<F5>', on_f5)
+            self.tree_lancamentos.bind('<F5>', on_f5)
+            
+            # Escape: Limpar seleção
+            def on_escape(event):
+                self.limpar_selecao()
+                return "break"
+            
+            self.janela.bind('<Escape>', on_escape)
+            self.tree_lancamentos.bind('<Escape>', on_escape)
+            
+            # Tornar a janela focável para receber eventos de teclado
             self.janela.focus_set()
             
-            print("DEBUG: Atalhos configurados - Duplo clique e tecla H")
+            print("DEBUG: Atalhos configurados (incluindo seleção em lote)")
+            print("       Ctrl+A: Selecionar todos visíveis")
+            print("       Ctrl+D: Limpar seleção")
+            print("       Delete: Excluir selecionados")
+            print("       Ctrl+R: Restaurar selecionados")
+            print("       F5: Atualizar")
+            print("       Escape: Limpar seleção")
             
         except Exception as e:
             print(f"Erro ao configurar atalhos: {str(e)}")
@@ -13906,7 +14532,6 @@ class GerenciadorLancamentos:
         except Exception as e:
             print(f"Erro no debug: {str(e)}")
 
-    # CORREÇÃO ADICIONAL: Método para corrigir planilha também precisa ser atualizado
     def corrigir_planilha_status(self, arquivo_cliente, df):
         """Corrige o status na planilha para dados antigos"""
         try:
@@ -14009,6 +14634,52 @@ class GerenciadorLancamentos:
             import traceback
             traceback.print_exc()
             custom_messagebox("error", "Erro", f"Erro ao aplicar filtros: {str(e)}")
+
+    def aplicar_filtros_melhorados(self):
+        """Versão melhorada do filtro que preserva seleção quando possível"""
+        try:
+            # Salvar seleção atual
+            selecao_anterior = []
+            for item in self.tree_lancamentos.selection():
+                valores = self.tree_lancamentos.item(item, 'values')
+                if len(valores) >= 9:
+                    selecao_anterior.append(valores[8])  # ID do lançamento
+            
+            # Aplicar filtros (método original)
+            self.aplicar_filtros()
+            
+            # Tentar restaurar seleção
+            if selecao_anterior:
+                self.restaurar_selecao_por_ids(selecao_anterior)
+            
+            # Atualizar interface
+            self.atualizar_interface_selecao()
+            
+        except Exception as e:
+            print(f"Erro ao aplicar filtros melhorados: {str(e)}")
+            # Fallback para método original
+            self.aplicar_filtros()
+
+    def restaurar_selecao_por_ids(self, ids_para_selecionar):
+        """Restaura seleção baseada nos IDs dos lançamentos"""
+        try:
+            items_para_selecionar = []
+            
+            # Buscar itens que correspondem aos IDs
+            for item in self.tree_lancamentos.get_children():
+                valores = self.tree_lancamentos.item(item, 'values')
+                if len(valores) >= 9:
+                    id_item = valores[8]
+                    if id_item in ids_para_selecionar:
+                        items_para_selecionar.append(item)
+            
+            # Selecionar itens encontrados
+            if items_para_selecionar:
+                self.tree_lancamentos.selection_set(items_para_selecionar)
+                print(f"DEBUG: Restaurada seleção de {len(items_para_selecionar)} itens")
+            
+        except Exception as e:
+            print(f"Erro ao restaurar seleção: {str(e)}")
 
     def inicializar_datas_padrao(self):
         """Inicializa as datas padrão dos filtros baseado no sistema (dias 5 e 20)"""
@@ -14448,22 +15119,6 @@ class GerenciadorLancamentos:
             traceback.print_exc()
             custom_messagebox("error", "Erro", f"Erro ao visualizar histórico: {str(e)}")
             print(f"DEBUG: Erro completo: {str(e)}")
-
-    # # MÉTODO ADICIONAL: Para debug e manutenção
-    # def debug_dados_originais(self):
-    #     """Método para debug dos dados originais"""
-    #     try:
-    #         if hasattr(self, 'dados_originais') and not self.dados_originais.empty:
-    #             print("DEBUG: Informações dos dados originais:")
-    #             print(f"       Shape: {self.dados_originais.shape}")
-    #             print(f"       Colunas: {self.dados_originais.columns.tolist()}")
-    #             print(f"       Tipos: {self.dados_originais.dtypes['ID_LANCAMENTO']}")
-    #             print(f"       Primeiros 5 IDs: {self.dados_originais['ID_LANCAMENTO'].head().tolist()}")
-    #             print(f"       Últimos 5 IDs: {self.dados_originais['ID_LANCAMENTO'].tail().tolist()}")
-    #         else:
-    #             print("DEBUG: dados_originais não existe ou está vazio")
-    #     except Exception as e:
-    #         print(f"DEBUG: Erro no debug_dados_originais: {e}")
 
     def salvar_edicao(self, id_lancamento, dados_editados):
         """
