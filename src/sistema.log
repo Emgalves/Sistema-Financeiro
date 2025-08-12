@@ -2098,3 +2098,52 @@
 2025-08-10 16:02:04,741 - INFO - === Iniciando Sistema de Gestão Financeira ===
 2025-08-10 16:02:05,065 - INFO - Sistema principal inicializado com sucesso
 2025-08-10 16:02:19,001 - INFO - Saída confirmada, finalizando sistema
+2025-08-10 16:25:37,454 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 16:25:37,748 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 16:26:16,560 - INFO - Saída confirmada, finalizando sistema
+2025-08-10 16:26:50,049 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-10 16:26:50,273 - INFO - Sistema principal inicializado com sucesso
+2025-08-10 16:26:52,824 - INFO - Abrindo sistema de entrada de dados
+2025-08-10 16:26:57,111 - INFO - Configurações importadas com sucesso via src.config
+2025-08-10 16:26:57,114 - INFO - Configurações importadas com sucesso
+2025-08-10 16:26:57,115 - INFO - Configurações do sistema importadas com sucesso
+2025-08-12 15:32:08,738 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-12 15:32:10,063 - INFO - Sistema principal inicializado com sucesso
+2025-08-12 15:32:13,663 - INFO - Abrindo sistema de entrada de dados
+2025-08-12 15:32:21,944 - INFO - Configurações importadas com sucesso via src.config
+2025-08-12 15:32:21,955 - INFO - Configurações importadas com sucesso
+2025-08-12 15:32:21,955 - INFO - Configurações do sistema importadas com sucesso
+2025-08-12 15:35:35,701 - INFO - Saída confirmada, finalizando sistema
+2025-08-12 15:50:24,383 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-12 15:50:24,690 - INFO - Sistema principal inicializado com sucesso
+2025-08-12 15:50:29,117 - INFO - Abrindo sistema de entrada de dados
+2025-08-12 15:50:32,401 - INFO - Configurações importadas com sucesso via src.config
+2025-08-12 15:50:32,415 - INFO - Configurações importadas com sucesso
+2025-08-12 15:50:32,416 - INFO - Configurações do sistema importadas com sucesso
+2025-08-12 15:58:36,763 - INFO - Saída confirmada, finalizando sistema
+2025-08-12 16:01:31,672 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-12 16:01:31,976 - INFO - Sistema principal inicializado com sucesso
+2025-08-12 16:01:34,182 - INFO - Abrindo sistema de entrada de dados
+2025-08-12 16:01:36,753 - INFO - Configurações importadas com sucesso via src.config
+2025-08-12 16:01:36,776 - INFO - Configurações importadas com sucesso
+2025-08-12 16:01:36,777 - INFO - Configurações do sistema importadas com sucesso
+2025-08-12 16:05:20,826 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-12 16:05:21,085 - INFO - Sistema principal inicializado com sucesso
+2025-08-12 16:05:22,710 - INFO - Abrindo sistema de entrada de dados
+2025-08-12 16:05:26,117 - INFO - Configurações importadas com sucesso via src.config
+2025-08-12 16:05:26,198 - ERROR - Erro ao abrir sistema de entrada de dados: expected 'except' or 'finally' block (gerenciador_materiais.py, line 954)
+2025-08-12 16:07:04,946 - INFO - Saída confirmada, finalizando sistema
+2025-08-12 16:11:28,223 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-12 16:11:28,522 - INFO - Sistema principal inicializado com sucesso
+2025-08-12 16:11:31,700 - INFO - Abrindo sistema de entrada de dados
+2025-08-12 16:11:34,379 - INFO - Configurações importadas com sucesso via src.config
+2025-08-12 16:11:34,419 - INFO - Configurações importadas com sucesso
+2025-08-12 16:11:34,420 - INFO - Configurações do sistema importadas com sucesso
+2025-08-12 16:11:35,530 - ERROR - Erro ao abrir sistema de entrada de dados: 'SistemaEntradaDados' object has no attribute 'adicionar_secao_materiais_fornecedor'
+2025-08-12 16:13:39,764 - INFO - Saída confirmada, finalizando sistema
+2025-08-12 16:13:55,712 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-08-12 16:13:56,023 - INFO - Sistema principal inicializado com sucesso
+2025-08-12 16:15:17,360 - INFO - Abrindo sistema de entrada de dados
+2025-08-12 16:15:21,372 - INFO - Configurações importadas com sucesso via src.config
+2025-08-12 16:15:21,381 - INFO - Configurações importadas com sucesso
+2025-08-12 16:15:21,381 - INFO - Configurações do sistema importadas com sucesso

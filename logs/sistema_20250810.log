@@ -47,3 +47,11 @@
 2025-08-10 15:34:55,424 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
 2025-08-10 15:34:55,925 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-08-20
 2025-08-10 15:34:56,168 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2025-08-20: Sem taxas na data - recálculo desnecessário
+2025-08-10 16:25:57,840 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-10 16:25:57,850 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 16:25:57,947 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-10 16:25:57,948 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-10 16:26:57,110 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-10 16:26:58,911 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-10 16:26:58,915 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-10 16:26:58,917 - sistema - logger_config - INFO - Concluído: Carregar configurações

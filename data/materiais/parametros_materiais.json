@@ -1,0 +1,144 @@
+{
+  "categorias_materiais": {
+    "ACABAMENTOS": {
+      "subcategorias": [
+        "CERAMICA",
+        "PORCELANATO",
+        "PISO_LAMINADO",
+        "RODAPE",
+        "MOLDURA",
+        "REJUNTE",
+        "GESSO",
+        "FORRO"
+      ],
+      "cor": "#4CAF50"
+    },
+    "TINTAS": {
+      "subcategorias": [
+        "TINTA_LATEX",
+        "TINTA_ACRILICA",
+        "VERNIZ",
+        "ESMALTE",
+        "PRIMER",
+        "SELADOR",
+        "MASSA_CORRIDA"
+      ],
+      "cor": "#FF9800"
+    },
+    "ELETRICO": {
+      "subcategorias": [
+        "CABOS",
+        "TOMADAS",
+        "INTERRUPTORES",
+        "ILUMINACAO",
+        "PROTECAO",
+        "CONDUTOS"
+      ],
+      "cor": "#2196F3"
+    },
+    "HIDRAULICO": {
+      "subcategorias": [
+        "TUBULACAO",
+        "CONEXOES",
+        "METAIS",
+        "LOUÇAS",
+        "VALVULAS",
+        "BOMBAS"
+      ],
+      "cor": "#00BCD4"
+    },
+    "ESTRUTURAL": {
+      "subcategorias": [
+        "CONCRETO",
+        "FERRAGEM",
+        "ALVENARIA",
+        "MADEIRAMENTO",
+        "METALICO",
+        "FUNDACAO"
+      ],
+      "cor": "#795548"
+    },
+    "ESQUADRIAS": {
+      "subcategorias": [
+        "PORTAS",
+        "JANELAS",
+        "FERRAGENS",
+        "VIDROS",
+        "MARCOS",
+        "BATENTES"
+      ],
+      "cor": "#607D8B"
+    },
+    "PAISAGISMO": {
+      "subcategorias": [
+        "PLANTAS",
+        "TERRA_SUBSTRATO",
+        "IRRIGACAO",
+        "DECORATIVO",
+        "FERRAMENTAS"
+      ],
+      "cor": "#8BC34A"
+    },
+    "OUTROS": {
+      "subcategorias": [
+        "DIVERSOS",
+        "FERRAMENTAS",
+        "LIMPEZA",
+        "SEGURANCA"
+      ],
+      "cor": "#9E9E9E"
+    }
+  },
+  "ambientes": [
+    "INSTALAÇÃO DA OBRA",
+    "SALA DE ESTAR",
+    "SALA DE JANTAR",
+    "COZINHA",
+    "DORMITÓRIO SUITE",
+    "DORMITÓRIO 1",
+    "DORMITÓRIO 2",
+    "DORMITÓRIO 3",
+    "BANHEIRO SUITE",
+    "BANHEIRO SOCIAL",
+    "LAVABO",
+    "ÁREA DE SERVIÇO",
+    "VARANDA",
+    "ÁREA EXTERNA",
+    "GARAGEM",
+    "DEPÓSITO",
+    "GERAL"
+  ],
+  "unidades": [
+    "UN",
+    "M",
+    "M²",
+    "M³",
+    "KG",
+    "G",
+    "L",
+    "ML",
+    "PC",
+    "CX",
+    "SC",
+    "PAR",
+    "JG",
+    "KIT",
+    "ROL",
+    "LT"
+  ],
+  "status_instalacao": [
+    "PENDENTE",
+    "INSTALADO",
+    "EM_INSTALACAO",
+    "AGUARDANDO_MATERIAL",
+    "AGUARDANDO_INSTALADOR",
+    "DEFEITO",
+    "SUBSTITUIDO",
+    "CANCELADO"
+  ],
+  "config": {
+    "auto_backup": true,
+    "validar_dados": true,
+    "log_alteracoes": true
+  }
+}
