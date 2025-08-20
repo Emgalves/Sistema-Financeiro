@@ -38,7 +38,7 @@ class ProcessadorNFeHibrido:
         """Cria interface unificada para importação"""
         self.janela_nfe = tk.Toplevel(self.sistema.root)
         self.janela_nfe.title("Importação de NF-e - Sistema Híbrido")
-        self.janela_nfe.geometry("900x700")
+        self.janela_nfe.geometry("900x800")
         self.janela_nfe.grab_set()
         
         # Notebook para abas
@@ -751,6 +751,13 @@ class ProcessadorNFeHibrido:
     
     def configurar_certificado(self):
         """Configura certificado digital"""
+        print("SISTEMA_HIBRIDO: Usando versão corrigida")
+        try:
+            return self.sistema.consultor_sefaz_a1.configurar_certificado_interface()
+        except:
+            # Fallback para método direto
+            return self.sistema.configurar_certificado_rapido()
+
         janela_cert = tk.Toplevel(self.janela_nfe)
         janela_cert.title("Configurar Certificado Digital")
         janela_cert.geometry("500x300")
