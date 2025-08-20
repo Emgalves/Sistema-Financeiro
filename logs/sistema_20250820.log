@@ -72,3 +72,107 @@
 2025-08-20 12:32:23,267 - sistema - logger_config - INFO - Iniciando: Carregar configurações
 2025-08-20 12:32:23,284 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
 2025-08-20 12:32:23,284 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 15:43:54,969 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-20 15:43:56,296 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 15:43:56,302 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 15:43:56,304 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 16:54:54,280 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-20 16:54:55,635 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 16:54:55,651 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 16:54:55,652 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 16:56:15,339 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-20 16:56:15,339 - sistema - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-08-20 16:56:15,339 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-20 16:56:15,339 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/08/2025']
+2025-08-20 16:56:15,339 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-20 16:56:15,339 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-20 16:56:16,549 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 232 na linha 232
+2025-08-20 16:56:17,017 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-20 16:56:17,521 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-08-20
+2025-08-20 16:56:17,757 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2025-08-20: Sem taxas na data - recálculo desnecessário
+2025-08-20 16:57:11,100 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 16:57:11,146 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 17:03:56,028 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-20 17:03:57,462 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 17:03:57,472 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 17:03:57,475 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 17:05:07,318 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-20 17:05:07,318 - sistema - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-08-20 17:05:07,318 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-20 17:05:07,318 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/08/2025']
+2025-08-20 17:05:07,318 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-20 17:05:07,318 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-20 17:05:07,778 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 233 na linha 233
+2025-08-20 17:05:08,132 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-20 17:05:08,633 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-08-20
+2025-08-20 17:05:08,847 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2025-08-20: Sem taxas na data - recálculo desnecessário
+2025-08-20 17:17:36,270 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-20 17:17:37,569 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 17:17:37,580 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 17:17:37,580 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 17:18:28,649 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-20 17:18:28,649 - sistema - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-08-20 17:18:28,649 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-20 17:18:28,649 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/08/2025']
+2025-08-20 17:18:28,649 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-20 17:18:28,665 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-20 17:18:29,196 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 234 na linha 234
+2025-08-20 17:18:29,669 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-20 17:18:30,183 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-08-20
+2025-08-20 17:18:30,427 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2025-08-20: Sem taxas na data - recálculo desnecessário
+2025-08-20 17:39:42,772 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-20 17:39:44,489 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 17:39:44,507 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 17:39:44,507 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 17:40:15,991 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 17:40:15,991 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 17:40:15,991 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 17:41:46,029 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-20 17:41:46,029 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-20 17:41:46,029 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-20 17:41:46,029 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/08/2025']
+2025-08-20 17:41:46,029 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-20 17:41:46,029 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-20 17:41:46,489 - sistema - Sistema_Entrada_Dados - WARNING - DUPLICATA #1 encontrada:
+2025-08-20 17:41:46,489 - sistema - Sistema_Entrada_Dados - WARNING -   Nome: APFC COMERCIO LTDA - EPP
+2025-08-20 17:41:46,505 - sistema - Sistema_Entrada_Dados - WARNING -   Referência: MATERIAL VIA NFE
+2025-08-20 17:41:46,505 - sistema - Sistema_Entrada_Dados - WARNING -   Valor: R$ 373.23 (planilha: R$ 373.23)
+2025-08-20 17:41:46,505 - sistema - Sistema_Entrada_Dados - WARNING -   Vencimento: 31/01/2025
+2025-08-20 17:41:46,505 - sistema - Sistema_Entrada_Dados - WARNING -   NF: 22429
+2025-08-20 17:41:46,505 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: APFC COMERCIO LTDA - EPP - MATERIAL VIA NFE - R$ 373.23
+2025-08-20 17:41:46,505 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 1 possíveis lançamentos duplicados
+2025-08-20 17:41:58,349 - sistema - Sistema_Entrada_Dados - INFO - Usuário optou por continuar. Processando 0 lançamentos únicos
+2025-08-20 17:43:50,123 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-20 17:43:51,619 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 17:43:51,629 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 17:43:51,630 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 17:44:34,648 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 17:44:34,648 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 17:44:34,664 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 17:45:22,277 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-20 17:45:22,277 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-20 17:45:22,277 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-20 17:45:22,277 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/08/2025']
+2025-08-20 17:45:22,277 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-20 17:45:22,277 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-20 17:45:22,721 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 235 na linha 235
+2025-08-20 17:45:23,061 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-20 17:45:23,578 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-08-20
+2025-08-20 17:45:23,756 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2025-08-20: Sem taxas na data - recálculo desnecessário
+2025-08-20 17:57:13,162 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-20 17:57:15,377 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 17:57:15,385 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 17:57:15,387 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 17:57:58,147 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-20 17:57:58,147 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-20 17:57:58,147 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-20 17:58:45,881 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-20 17:58:45,881 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-20 17:58:45,881 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-20 17:58:45,881 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/08/2025']
+2025-08-20 17:58:45,881 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-20 17:58:45,881 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-20 17:58:46,346 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 236 na linha 236
+2025-08-20 17:58:46,686 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-20 17:58:47,192 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-08-20
+2025-08-20 17:58:47,349 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2025-08-20: Sem taxas na data - recálculo desnecessário
