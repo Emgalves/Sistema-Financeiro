@@ -22,7 +22,7 @@ class IntegradorNFeFinanceiroMateriais:
         # Criar janela principal
         self.janela = tk.Toplevel(self.sistema.root)
         self.janela.title("Integração NFe - Financeiro e Materiais")
-        self.janela.geometry("900x700")
+        self.janela.geometry("900x750")
         self.janela.grab_set()
         
         # Título
@@ -80,7 +80,12 @@ class IntegradorNFeFinanceiroMateriais:
         self.frame_financeiro = ttk.LabelFrame(frame_config, text="Dados Financeiros", padding=10)
         self.frame_financeiro.pack(fill='x', pady=5)
         
-        # Data de referência
+        # Carregar etapas da obra
+        from configuracoes_sistema import GerenciadorConfiguracoes
+        etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()
+        
+        # Grid 2x2 para dados financeiros
+        # Linha 1: Data de referência e Tipo de despesa
         tk.Label(self.frame_financeiro, text="Data Referência:", 
                 font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky='w', padx=5, pady=5)
         
@@ -88,9 +93,8 @@ class IntegradorNFeFinanceiroMateriais:
         tk.Label(self.frame_financeiro, text=data_ref, 
                 fg='blue').grid(row=0, column=1, sticky='w', padx=5, pady=5)
         
-        # Tipo de despesa
         tk.Label(self.frame_financeiro, text="Tipo Despesa:", 
-                font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky='w', padx=5, pady=5)
+                font=('Arial', 10, 'bold')).grid(row=0, column=2, sticky='w', padx=5, pady=5)
         
         self.tipo_despesa_var = tk.StringVar(value="3")
         tipo_combo = ttk.Combobox(
@@ -98,21 +102,34 @@ class IntegradorNFeFinanceiroMateriais:
             textvariable=self.tipo_despesa_var,
             values=["2", "3", "5", "6"],
             state="readonly",
-            width=5
+            width=10
         )
-        tipo_combo.grid(row=1, column=1, sticky='w', padx=5, pady=5)
+        tipo_combo.grid(row=0, column=3, sticky='w', padx=5, pady=5)
         
-        # Referência
+        # Linha 2: Referência e Etapa da Obra
         tk.Label(self.frame_financeiro, text="Referência:", 
-                font=('Arial', 10, 'bold')).grid(row=2, column=0, sticky='w', padx=5, pady=5)
+                font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky='w', padx=5, pady=5)
         
         self.referencia_var = tk.StringVar(value="MATERIAL VIA NFE")
-        ref_entry = tk.Entry(self.frame_financeiro, textvariable=self.referencia_var, width=30)
-        ref_entry.grid(row=2, column=1, sticky='w', padx=5, pady=5)
+        ref_entry = tk.Entry(self.frame_financeiro, textvariable=self.referencia_var, width=25)
+        ref_entry.grid(row=1, column=1, sticky='ew', padx=5, pady=5)
         
-        # Data vencimento (usar data da NFe, não hoje)
+        tk.Label(self.frame_financeiro, text="Etapa da Obra:", 
+                font=('Arial', 10, 'bold')).grid(row=1, column=2, sticky='w', padx=5, pady=5)
+        
+        self.etapa_obra_var = tk.StringVar(value="")
+        etapa_combo = ttk.Combobox(
+            self.frame_financeiro,
+            textvariable=self.etapa_obra_var,
+            values=etapas_obra,
+            state="readonly",
+            width=20
+        )
+        etapa_combo.grid(row=1, column=3, sticky='ew', padx=5, pady=5)
+        
+        # Linha 3: Data vencimento (centralizada)
         tk.Label(self.frame_financeiro, text="Vencimento:", 
-                font=('Arial', 10, 'bold')).grid(row=3, column=0, sticky='w', padx=5, pady=5)
+                font=('Arial', 10, 'bold')).grid(row=2, column=0, sticky='w', padx=5, pady=5)
         
         from tkcalendar import DateEntry
         self.data_vencimento = DateEntry(
@@ -120,7 +137,11 @@ class IntegradorNFeFinanceiroMateriais:
             format='dd/mm/yyyy',
             locale='pt_BR'
         )
-        self.data_vencimento.grid(row=3, column=1, sticky='w', padx=5, pady=5)
+        self.data_vencimento.grid(row=2, column=1, sticky='w', padx=5, pady=5)
+        
+        # Configurar expansão das colunas
+        self.frame_financeiro.columnconfigure(1, weight=1)
+        self.frame_financeiro.columnconfigure(3, weight=1)
         
         # CORREÇÃO: Definir data vencimento como data da NFe
         try:
@@ -140,30 +161,173 @@ class IntegradorNFeFinanceiroMateriais:
         )
         cb_materiais.pack(anchor='w', pady=(20, 5))
         
-        # Frame materiais
+        # Frame materiais - MODIFICADO
         frame_materiais = ttk.LabelFrame(frame_config, text="Configuração dos Materiais", padding=10)
         frame_materiais.pack(fill='x', pady=5)
         
-        tk.Label(frame_materiais, text="Ambiente:", font=('Arial', 10, 'bold')).pack(anchor='w')
+        # MODIFICAÇÃO: Carregar parâmetros de materiais
+        self.parametros_materiais = self.carregar_parametros_materiais()
+        
+        # Grid para organizar os campos em 2 colunas
+        # Linha 1: Categoria e Subcategoria
+        tk.Label(frame_materiais, text="Categoria:", font=('Arial', 10, 'bold')).grid(
+            row=0, column=0, sticky='w', padx=5, pady=5)
+        
+        self.categoria_var = tk.StringVar(value="OUTROS")
+        self.categoria_combo = ttk.Combobox(
+            frame_materiais,
+            textvariable=self.categoria_var,
+            values=list(self.parametros_materiais.get('categorias_materiais', {}).keys()),
+            state="readonly",
+            width=20
+        )
+        self.categoria_combo.grid(row=0, column=1, sticky='ew', padx=5, pady=5)
+        self.categoria_combo.bind('<<ComboboxSelected>>', self.atualizar_subcategorias)
+        
+        tk.Label(frame_materiais, text="Subcategoria:", font=('Arial', 10, 'bold')).grid(
+            row=0, column=2, sticky='w', padx=5, pady=5)
+        
+        self.subcategoria_var = tk.StringVar(value="")
+        self.subcategoria_combo = ttk.Combobox(
+            frame_materiais,
+            textvariable=self.subcategoria_var,
+            values=[],
+            state="readonly",
+            width=20
+        )
+        self.subcategoria_combo.grid(row=0, column=3, sticky='ew', padx=5, pady=5)
+        
+        # Linha 2: Ambiente e Localização
+        tk.Label(frame_materiais, text="Ambiente:", font=('Arial', 10, 'bold')).grid(
+            row=1, column=0, sticky='w', padx=5, pady=5)
         
         self.ambiente_var = tk.StringVar(value="DEPÓSITO DA OBRA")
-        ambiente_combo = ttk.Combobox(
+        self.ambiente_combo = ttk.Combobox(
             frame_materiais,
             textvariable=self.ambiente_var,
-            values=[
+            values=self.parametros_materiais.get('ambientes', [
                 "DEPÓSITO DA OBRA", "SALA", "COZINHA", "BANHEIRO SUITE",
                 "QUARTO CASAL", "ÁREA EXTERNA", "TODOS AMBIENTES"
-            ],
-            state="readonly"
+            ]),
+            state="readonly",
+            width=20
         )
-        ambiente_combo.pack(anchor='w', pady=5)
+        self.ambiente_combo.grid(row=1, column=1, sticky='ew', padx=5, pady=5)
+        
+        tk.Label(frame_materiais, text="Localização Específica:", font=('Arial', 10, 'bold')).grid(
+            row=1, column=2, sticky='w', padx=5, pady=5)
+        
+        self.localizacao_var = tk.StringVar(value="")
+        self.localizacao_entry = tk.Entry(
+            frame_materiais,
+            textvariable=self.localizacao_var,
+            width=25
+        )
+        self.localizacao_entry.grid(row=1, column=3, sticky='ew', padx=5, pady=5)
+        
+        # Configurar expansão das colunas
+        frame_materiais.columnconfigure(1, weight=1)
+        frame_materiais.columnconfigure(3, weight=1)
+        
+        # Inicializar subcategorias para categoria padrão
+        self.atualizar_subcategorias()
         
         # Produtos
         produtos = self.dados_nfe_atual.get('produtos', []) if self.dados_nfe_atual else []
         if produtos:
             tk.Label(frame_materiais, 
                     text=f"📦 {len(produtos)} produtos serão importados",
-                    font=('Arial', 10)).pack(anchor='w', pady=5)
+                    font=('Arial', 10)).grid(row=2, column=0, columnspan=4, sticky='w', pady=5)
+            
+    def carregar_parametros_materiais(self):
+        """Carrega parâmetros de materiais das configurações centralizadas"""
+        try:
+            from configuracoes_sistema import GerenciadorConfiguracoes
+            parametros = GerenciadorConfiguracoes.carregar_configuracoes_materiais()
+            
+            if parametros is None:
+                print("⚠️ Não foi possível carregar parâmetros de materiais, usando padrão")
+                # Parâmetros padrão caso não consiga carregar
+                return {
+                    "categorias_materiais": {
+                        "REVESTIMENTO": {
+                            "subcategorias": ["CERAMICA", "PORCELANATO", "PEDRA NATURAL", "MADEIRA"],
+                            "cor": "#8B4513"
+                        },
+                        "ACABAMENTO": {
+                            "subcategorias": ["RODAPE", "MOLDURA", "SANCA", "BAGUETE"],
+                            "cor": "#4682B4"
+                        },
+                        "ILUMINACAO": {
+                            "subcategorias": ["LUMINARIA LED", "SPOT", "PENDENTE", "ARANDELA"],
+                            "cor": "#FFD700"
+                        },
+                        "HIDRAULICO": {
+                            "subcategorias": ["TORNEIRA", "CHUVEIRO", "VASO SANITARIO", "CUBA"],
+                            "cor": "#0000FF"
+                        },
+                        "ELETRICO": {
+                            "subcategorias": ["TOMADA", "INTERRUPTOR", "DISJUNTOR", "QUADRO"],
+                            "cor": "#FF4500"
+                        },
+                        "OUTROS": {
+                            "subcategorias": ["DIVERSOS", "ACESSORIO", "FERRAMENTA", "CONSUMIVEL"],
+                            "cor": "#808080"
+                        }
+                    },
+                    "ambientes": [
+                        "DEPÓSITO DA OBRA", "SALA", "COZINHA", "BANHEIRO SUITE", 
+                        "QUARTO CASAL", "ÁREA EXTERNA", "TODOS AMBIENTES"
+                    ],
+                    "status_instalacao": [
+                        "PENDENTE", "EM INSTALACAO", "INSTALADO", "GARANTIA", "MANUTENCAO"
+                    ],
+                    "unidades": [
+                        "PC", "M2", "MT", "KG", "LT", "CX", "UN", "PAR", "JG", "GL", "BD", "RL"
+                    ]
+                }
+            
+            return parametros
+            
+        except Exception as e:
+            print(f"❌ Erro ao carregar parâmetros de materiais: {e}")
+            # Retornar parâmetros mínimos em caso de erro
+            return {
+                "categorias_materiais": {
+                    "OUTROS": {
+                        "subcategorias": ["DIVERSOS"],
+                        "cor": "#808080"
+                    }
+                },
+                "ambientes": ["DEPÓSITO DA OBRA", "SALA", "COZINHA"],
+                "status_instalacao": ["PENDENTE", "INSTALADO"],
+                "unidades": ["PC", "M2", "UN"]
+            }
+    
+    def atualizar_subcategorias(self, event=None):
+        """Atualiza subcategorias baseado na categoria selecionada"""
+        try:
+            categoria = self.categoria_var.get()
+            categorias_materiais = self.parametros_materiais.get('categorias_materiais', {})
+            
+            if categoria in categorias_materiais:
+                subcategorias = categorias_materiais[categoria].get('subcategorias', [])
+                self.subcategoria_combo['values'] = subcategorias
+                
+                # Limpar seleção atual
+                self.subcategoria_var.set('')
+                
+                # Se houver subcategorias, selecionar a primeira
+                if subcategorias:
+                    self.subcategoria_var.set(subcategorias[0])
+            else:
+                self.subcategoria_combo['values'] = []
+                self.subcategoria_var.set('')
+                
+        except Exception as e:
+            print(f"❌ Erro ao atualizar subcategorias: {e}")
+            self.subcategoria_combo['values'] = []
+            self.subcategoria_var.set('')
         
     def criar_botoes(self):
         """Cria botões principais"""
@@ -253,18 +417,18 @@ class IntegradorNFeFinanceiroMateriais:
             dados_financeiro = {
                 'data': self.calcular_data_referencia(),
                 'cnpj_cpf': self.dados_nfe_atual.get('cnpj_emitente', ''),
-                'nome': self.dados_nfe_atual.get('razao_social_emitente', ''),
+                'nome': self.dados_nfe_atual.get('razao_social_emitente', '').upper(),
                 'categoria': 'MAT',
                 'tp_desp': self.tipo_despesa_var.get(),
                 'referencia': self.referencia_var.get().upper(),
-                'etapa_obra': '',
+                'etapa_obra': self.etapa_obra_var.get(),
                 'nf': self.dados_nfe_atual.get('numero_nf', ''),
                 'vr_unit': f"{self.dados_nfe_atual.get('valor_total', 0):.2f}",
                 'dias': 1,
                 'valor': f"{self.dados_nfe_atual.get('valor_total', 0):.2f}",
                 'dt_vencto': self.data_vencimento.get(),
                 'dados_bancarios': '',
-                'observacao': f"NFE {self.dados_nfe_atual.get('numero_nf', '')}",
+                'observacao': f"IMPORTADO - NFE {self.dados_nfe_atual.get('numero_nf', '')}",
                 'forma_pagamento': ''
             }
             
@@ -272,7 +436,7 @@ class IntegradorNFeFinanceiroMateriais:
             self.sistema.dados_para_incluir = [dados_financeiro]
             
             # Chamar método de envio
-            self.sistema.enviar_dados()
+            # self.sistema.enviar_dados()
             
             return "Salvo com sucesso"
             
@@ -292,13 +456,15 @@ class IntegradorNFeFinanceiroMateriais:
             for produto in produtos:
                 material = {
                     'Cliente': self.sistema.cliente_atual,
-                    'Categoria': produto.get('categoria_sugerida', 'OUTROS'),
+                    'Categoria': self.categoria_var.get(),  # MODIFICADO: usar valor selecionado
+                    'Subcategoria': self.subcategoria_var.get(),  # ADICIONADO: subcategoria
                     'Codigo_Produto': produto.get('codigo', ''),
-                    'Descricao_Completa': produto.get('descricao', ''),
+                    'Descricao_Completa': produto.get('descricao', '').upper(),
                     'Ambiente_Aplicacao': self.ambiente_var.get(),
+                    'Localizacao_Especifica': self.localizacao_var.get(),  # ADICIONADO: localização específica
                     'Status_Instalacao': 'PENDENTE',
                     'Tem_Dados_Compra': True,
-                    'Nome_Fornecedor': self.dados_nfe_atual.get('razao_social_emitente', ''),
+                    'Nome_Fornecedor': self.dados_nfe_atual.get('razao_social_emitente', '').upper(),
                     'CNPJ_Fornecedor': self.dados_nfe_atual.get('cnpj_emitente', ''),
                     'Data_Compra': self.dados_nfe_atual.get('data_emissao', ''),
                     'Quantidade': produto.get('quantidade', 0),
@@ -306,7 +472,7 @@ class IntegradorNFeFinanceiroMateriais:
                     'Valor_Unitario': produto.get('valor_unitario', 0),
                     'Valor_Total': produto.get('valor_total', 0),
                     'Numero_NF': self.dados_nfe_atual.get('numero_nf', ''),
-                    'Observacoes': f"Importado NFe {self.dados_nfe_atual.get('numero_nf', '')}"
+                    'Observacoes': f"Importado NFe {self.dados_nfe_atual.get('numero_nf', '')} - Cat: {self.categoria_var.get()}"  # MODIFICADO: incluir categoria na observação
                 }
                 
                 try:
