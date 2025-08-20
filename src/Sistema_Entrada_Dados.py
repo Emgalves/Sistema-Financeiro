@@ -2456,10 +2456,10 @@ class SistemaEntradaDados:
         
         # Configurar a ordem de tab para seguir o fluxo de trabalho natural
         self.campos_despesa['tp_desp'].bind('<Return>', lambda e: self.campos_despesa['referencia'].focus())
-        self.campos_despesa['referencia'].bind('<Return>', lambda e: self.campos_despesa['etapa_obra'].focus())
-        self.campos_despesa['etapa_obra'].bind('<Return>', lambda e: self.campos_despesa['vr_unit'].focus())
+        self.campos_despesa['referencia'].bind('<Return>', lambda e: self.campos_despesa['vr_unit'].focus())
         self.campos_despesa['vr_unit'].bind('<Return>', lambda e: self.campos_despesa['dias'].focus())
-        self.campos_despesa['dias'].bind('<Return>', lambda e: self.campos_despesa['nf'].focus())
+        self.campos_despesa['dias'].bind('<Return>', lambda e: self.campos_despesa['etapa_obra'].focus())
+        self.campos_despesa['etapa_obra'].bind('<Return>', lambda e: self.campos_despesa['nf'].focus())
         self.campos_despesa['nf'].bind('<Return>', lambda e: self.campos_despesa['dt_vencto'].focus())
         self.campos_despesa['dt_vencto'].bind('<Return>', lambda e: self.campos_despesa['observacao'].focus())
         
