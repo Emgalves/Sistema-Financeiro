@@ -1,0 +1,125 @@
+2025-08-14 11:05:04,589 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 11:05:06,275 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 11:05:06,309 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 11:05:06,310 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 11:05:22,056 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 11:05:22,056 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 11:05:22,056 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 13:37:49,566 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 13:39:24,715 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 13:39:26,313 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 13:39:26,329 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 13:39:26,329 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 13:39:44,540 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 13:39:44,556 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 13:39:44,556 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 13:42:21,477 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 13:42:23,081 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 13:42:23,096 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 13:42:23,097 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 13:45:19,796 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 13:45:20,912 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 13:45:20,923 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 13:45:20,924 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 13:48:20,314 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 13:48:22,508 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 13:48:22,512 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 13:48:22,514 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 14:44:49,306 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 14:44:51,000 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 14:44:51,018 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 14:44:51,020 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 15:01:01,297 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 15:01:03,505 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 15:01:03,509 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 15:01:03,511 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 15:02:21,850 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 15:02:23,587 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 15:02:23,599 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 15:02:23,600 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 15:27:06,612 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 15:27:06,628 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 16:56:00,668 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 16:56:02,531 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 16:56:02,536 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 16:56:02,536 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 17:00:20,649 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 17:00:22,340 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 17:00:22,344 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 17:00:22,345 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 17:16:54,570 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 17:16:57,254 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 17:16:57,263 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 17:16:57,264 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 17:24:36,529 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 17:24:37,805 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 17:24:37,811 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 17:24:37,813 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 17:34:49,939 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 17:34:51,234 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 17:34:51,238 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 17:34:51,239 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 18:22:05,688 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 18:22:07,794 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 18:22:07,797 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 18:22:07,800 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 18:28:50,565 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 18:28:52,384 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 18:28:52,387 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 18:28:52,388 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 18:34:17,386 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 18:34:19,239 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 18:34:19,260 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 18:34:19,262 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 18:54:35,570 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 18:54:55,104 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 18:54:55,116 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 18:54:55,117 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:09:48,954 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:10:08,273 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:10:08,277 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:10:08,279 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:19:11,100 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:19:12,602 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:19:12,606 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:19:12,609 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:25:09,492 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:25:11,163 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:25:11,172 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:25:11,174 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:33:47,316 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:33:48,712 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:33:48,717 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:33:48,718 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:40:49,827 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:40:51,079 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:40:51,082 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:40:51,084 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:44:40,092 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:44:41,458 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:44:41,463 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:44:41,463 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:46:26,135 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:46:27,527 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:46:27,529 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:46:27,531 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:48:05,689 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:48:06,956 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:48:06,959 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:48:06,960 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:56:04,114 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:56:05,406 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:56:05,410 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:56:05,411 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 19:58:22,225 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 19:58:23,786 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 19:58:23,789 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 19:58:23,791 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 20:09:52,223 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 20:09:53,615 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 20:09:53,620 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 20:09:53,625 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-14 20:14:57,457 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-14 20:14:58,707 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-14 20:14:58,710 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-14 20:14:58,711 - sistema - logger_config - INFO - Concluído: Carregar configurações
