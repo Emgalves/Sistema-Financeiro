@@ -140,7 +140,7 @@ except ImportError:
             logger.error(f"Erro ao importar configurações: {str(e)}")
             # Não raise aqui para permitir definições alternativas
 
-from src.nfe.sistema_hibrido_nfe import inicializar_sistema_nfe_hibrido
+# from src.nfe.sistema_nfe_unificado import substituir_sistemas_nfe_por_unificado
 from src.materiais.gerenciador_materiais import inicializar_sistema_materiais_completo
 
 # Definir funções de compatibilidade, caso a importação das configurações falhe
@@ -1105,8 +1105,50 @@ class SistemaEntradaDados:
         # Inicializar sistema de materiais
         self.integrador_materiais = inicializar_sistema_materiais_completo(self)
         
-        # Inicializar sistema NFe
-        self.integrador_nfe = inicializar_sistema_nfe_hibrido(self)
+        # Inicializar sistema NFe:
+        try:
+            from src.nfe.extensao_sistema_hibrido import inicializar_sistema_nfe_estendido
+            inicializar_sistema_nfe_estendido(self)
+        except Exception as e:
+            print(f"⚠️ Sistema NFe estendido não carregado: {e}")
+            # Fallback para sistema original
+            try:
+                from src.nfe.sistema_hibrido_nfe import inicializar_sistema_nfe_hibrido
+                inicializar_sistema_nfe_hibrido(self)
+                print("⚠️ Usando sistema NFe original (sem extensão)")
+            except Exception as e2:
+                print(f"⚠️ Sistema NFe não carregado: {e2}")
+
+        if hasattr(self, 'configurar_certificado_rapido'):
+            print("✅ Certificado A1 disponível!")
+        else:
+            print("❌ Certificado A1 NÃO disponível")
+
+        # Verificação automática do certificado A1
+        try:
+            from teste_certificado_automatico import verificar_certificado_a1_automatico
+            verificar_certificado_a1_automatico(self)
+        except Exception as e:
+            print(f"Erro na verificação do certificado: {e}")
+
+        # Adicionar métodos de interface
+        try:
+            from teste_certificado_automatico import (
+                criar_botao_teste_certificado,
+                configurar_certificado_interface,
+                testar_certificado_interface,
+                consultar_nfe_interface,
+                processar_nfe_consultada
+            )
+            
+            self.criar_botao_teste_certificado = criar_botao_teste_certificado.__get__(self)
+            self.configurar_certificado_interface = configurar_certificado_interface.__get__(self)
+            self.testar_certificado_interface = testar_certificado_interface.__get__(self)
+            self.consultar_nfe_interface = consultar_nfe_interface.__get__(self)
+            self.processar_nfe_consultada = processar_nfe_consultada.__get__(self)
+            
+        except Exception as e:
+            print(f"Erro ao adicionar métodos de interface: {e}")
         
         print("Finalizada inicialização do sistema")
 
@@ -4123,47 +4165,76 @@ class SistemaEntradaDados:
             return False
 
     def handle_checkbox_change(self):
-        """Handler para mudança do checkbox de materiais"""
-        print(f"DEBUG: Checkbox alterado! Valor: {self.tem_materiais_var.get()}")
+        """
+        Versão modificada que inclui sugestão de importar NFe quando materiais são marcados
+        """
+        print(f"DEBUG: handle_checkbox_change chamado. tem_materiais_var: {self.tem_materiais_var.get()}")
         
         if self.tem_materiais_var.get():
-            # Verificar NF
-            if not self.campos_despesa['nf'].get().strip():
-                custom_messagebox("warning", "Atenção", 
-                    "Preencha o número da NF antes de cadastrar materiais!")
-                self.tem_materiais_var.set(False)
+            # Checkbox foi marcado
+            print("DEBUG: Checkbox marcado - materiais vinculados")
+            
+            # Perguntar se usuário quer importar NFe
+            resposta = messagebox.askyesno(
+                "Importar NFe", 
+                "🏗️ MATERIAIS VINCULADOS!\n\n"
+                "Esta despesa possui materiais associados.\n\n"
+                "💡 Dica: Você pode importar os materiais diretamente de uma NFe "
+                "para o controle de obra, incluindo:\n"
+                "• Descrições detalhadas\n"
+                "• Quantidades e valores\n"
+                "• Dados do fornecedor\n"
+                "• Classificação automática\n\n"
+                "Deseja importar materiais de uma NFe agora?"
+            )
+            
+            if resposta:
+                self.abrir_importacao_nfe_completa()
+        else:
+            # Checkbox foi desmarcado
+            print("DEBUG: Checkbox desmarcado - sem materiais")
+
+    def abrir_importacao_nfe_completa(self):
+        """
+        Método para abrir importação NFe completa
+        """
+        try:
+            # Verificar se cliente está selecionado
+            if not self.cliente_atual:
+                messagebox.showerror("Erro", "Selecione um cliente antes de importar NFe!")
                 return
             
-            # Feedback visual
-            self.checkbox_materiais.configure(text="✓ Tem materiais")
-            try:
-                self.campos_despesa['nf'].configure(style='Highlight.TEntry')
-            except:
-                pass  # Ignorar se estilo não existir
+            # Abrir seletor de arquivo XML
+            from tkinter import filedialog
+            arquivo_xml = filedialog.askopenfilename(
+                title="Selecionar XML da NFe",
+                filetypes=[
+                    ("Arquivos XML", "*.xml"),
+                    ("Todos os arquivos", "*.*")
+                ]
+            )
             
-            # Chamar cadastro
-            try:
-                if hasattr(self, 'cadastrar_material_vinculado_nf'):
-                    print("DEBUG: Chamando cadastrar_material_vinculado_nf...")
-                    self.cadastrar_material_vinculado_nf()
+            if arquivo_xml:
+                # Processar XML usando o sistema híbrido existente
+                if hasattr(self, 'processador_nfe'):
+                    try:
+                        dados_nfe = self.processador_nfe.processar_xml_nfe(arquivo_xml)
+                        
+                        if dados_nfe:
+                            # Abrir integrador completo
+                            from src.nfe.integrador_nfe_sistema import IntegradorNFeFinanceiroMateriais
+                            integrador = IntegradorNFeFinanceiroMateriais(self)
+                            integrador.criar_interface_integracao_nfe(dados_nfe)
+                        else:
+                            messagebox.showerror("Erro", "Erro ao processar XML da NFe!")
+                            
+                    except Exception as e:
+                        messagebox.showerror("Erro", f"Erro ao processar XML:\n{str(e)}")
                 else:
-                    print("ERRO: Método cadastrar_material_vinculado_nf não encontrado!")
-            except Exception as e:
-                print(f"ERRO ao cadastrar material: {e}")
-                import traceback
-                print(f"Traceback: {traceback.format_exc()}")
-                custom_messagebox("error", "Erro", f"Erro ao abrir cadastro de materiais: {str(e)}")
-                self.tem_materiais_var.set(False)
-                self.checkbox_materiais.configure(text="Tem materiais")
-        else:
-            # Desmarcado
-            print("DEBUG: Checkbox desmarcado")
-            self.checkbox_materiais.configure(text="Tem materiais")
-            try:
-                self.campos_despesa['nf'].configure(style='TEntry')
-            except:
-                pass
-
+                    messagebox.showerror("Erro", "Sistema NFe não inicializado!")
+                    
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao importar NFe:\n{str(e)}")
 
     def validar_campos(self):
         """Valida os campos antes de adicionar/enviar dados"""
@@ -4382,6 +4453,36 @@ class SistemaEntradaDados:
             if not self.cliente_atual:
                 custom_messagebox("error", "Erro", "Selecione um cliente!")
                 return
+            
+            # ========== AQUI INSERIR A NOVA VERIFICAÇÃO ==========
+            # NOVA VERIFICAÇÃO: Se há NF preenchida com materiais marcados
+            nf_numero = self.campos_despesa['nf'].get().strip()
+            tem_materiais_marcado = self.tem_materiais_var.get()
+            
+            if nf_numero and tem_materiais_marcado:
+                # Verificar se esta NF já foi processada via integrador
+                if not self.verificar_nf_ja_processada(nf_numero):
+                    resposta = custom_messagebox(
+                        "yesno",
+                        "📄 NFe Detectada",
+                        f"🔍 NOTA FISCAL DETECTADA!\n\n"
+                        f"📋 NF: {nf_numero}\n"
+                        f"✅ Materiais marcados como vinculados\n\n"
+                        f"💡 SUGESTÃO: Para melhor controle, importe os materiais "
+                        f"diretamente do XML da NFe. Isso permitirá:\n\n"
+                        f"• 📦 Controle detalhado de cada item\n"
+                        f"• 💰 Valores unitários e totais precisos\n"
+                        f"• 🏗️ Classificação automática por categoria\n"
+                        f"• 📍 Controle de localização na obra\n"
+                        f"• ⚡ Preenchimento automático dos dados\n\n"
+                        f"Deseja importar esta NFe agora?\n"
+                        f"(Clique 'Não' para continuar com o lançamento manual)"
+                    )
+                    
+                    if resposta:
+                        # Tentar localizar e processar XML da NFe
+                        if self.localizar_e_processar_nfe(nf_numero):
+                            return
             
             # Verificar se existem dados para processar
             dados_para_processar = []
@@ -4733,6 +4834,88 @@ class SistemaEntradaDados:
             print(f"Erro ao obter próximo ID: {str(e)}")
             # Fallback: usar número da linha como ID
             return worksheet.max_row
+
+    # ========== MÉTODOS AUXILIARES NECESSÁRIOS NFe==========
+    def verificar_nf_ja_processada(self, numero_nf):
+        """
+        Verifica se uma NF já foi processada via integrador
+        """
+        try:
+            # Verificar no sistema de materiais se há materiais desta NF
+            if hasattr(self, 'gerenciador_materiais'):
+                df_materiais = self.gerenciador_materiais.carregar_materiais_cliente(self.cliente_atual)
+                if not df_materiais.empty and 'Numero_NF' in df_materiais.columns:
+                    nfs_existentes = df_materiais['Numero_NF'].dropna().astype(str).str.strip()
+                    return numero_nf in nfs_existentes.values
+            return False
+        except Exception as e:
+            print(f"Erro ao verificar NF processada: {e}")
+            return False
+
+    def localizar_e_processar_nfe(self, numero_nf):
+        """
+        Tenta localizar e processar NFe por número
+        """
+        try:
+            from tkinter import filedialog
+            
+            # Solicitar localização do XML
+            custom_messagebox(
+                "info",
+                "Localizar XML", 
+                f"📁 LOCALIZAR XML DA NFe\n\n"
+                f"📋 NF: {numero_nf}\n\n"
+                f"Na próxima janela, selecione o arquivo XML "
+                f"correspondente a esta nota fiscal."
+            )
+            
+            arquivo_xml = filedialog.askopenfilename(
+                title=f"Selecionar XML da NFe {numero_nf}",
+                filetypes=[
+                    ("Arquivos XML", "*.xml"),
+                    ("Todos os arquivos", "*.*")
+                ]
+            )
+            
+            if arquivo_xml:
+                # Verificar se o XML corresponde à NF informada
+                if hasattr(self, 'processador_nfe'):
+                    dados_nfe = self.processador_nfe.processar_xml_nfe(arquivo_xml)
+                    
+                    if dados_nfe and dados_nfe.get('numero_nf') == numero_nf:
+                        # XML correto, abrir integrador
+                        from src.nfe.integrador_nfe_sistema import IntegradorNFeFinanceiroMateriais
+                        integrador = IntegradorNFeFinanceiroMateriais(self)
+                        integrador.criar_interface_integracao_nfe(dados_nfe)
+                        return True
+                    else:
+                        nf_encontrada = dados_nfe.get('numero_nf', 'não identificada') if dados_nfe else 'erro ao ler arquivo'
+                        custom_messagebox(
+                            "error",
+                            "Arquivo Incorreto", 
+                            f"❌ ARQUIVO INCORRETO!\n\n"
+                            f"O XML selecionado não corresponde à NF {numero_nf}.\n\n"
+                            f"📋 NF esperada: {numero_nf}\n"
+                            f"📄 NF do arquivo: {nf_encontrada}\n\n"
+                            f"Selecione o arquivo XML correto ou continue "
+                            f"com o lançamento manual."
+                        )
+                else:
+                    custom_messagebox(
+                        "error",
+                        "Sistema NFe", 
+                        "❌ Sistema NFe não inicializado!\n\n"
+                        "O processador de NFe não está disponível. "
+                        "Continue com o lançamento manual."
+                    )
+            
+            return False
+            
+        except Exception as e:
+            logger = system_logger.get_logger()
+            logger.error(f"Erro ao processar NFe: {str(e)}")
+            custom_messagebox("error", "Erro", f"Erro ao processar NFe:\n{str(e)}")
+            return False
     
     # ===== FUNÇÕES UTILITÁRIAS PARA VERIFICAÇÃO E RECÁLCULO =====
     def verificar_e_ajustar_diferancas_quinzenas_pagas(self, incluir_atual=False):
