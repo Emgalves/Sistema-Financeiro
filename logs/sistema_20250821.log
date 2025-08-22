@@ -1,0 +1,152 @@
+2025-08-21 10:40:28,241 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 10:44:47,011 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 10:44:48,710 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 10:44:48,736 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 10:44:48,737 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 10:45:26,697 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 10:45:26,697 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 10:45:26,697 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 10:46:34,075 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-21 10:46:34,091 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-21 10:46:34,091 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-21 10:46:34,091 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/08/2025']
+2025-08-21 10:46:34,091 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-21 10:46:34,091 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-21 10:46:34,848 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 237 na linha 237
+2025-08-21 10:46:35,201 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-21 10:46:35,705 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-08-05
+2025-08-21 10:46:44,985 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2025-08-05: Recálculo cancelado pelo usuário
+2025-08-21 10:47:06,892 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 10:47:06,892 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 11:02:02,202 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 11:02:03,618 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 11:02:03,636 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 11:02:03,637 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 11:02:25,000 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 11:02:25,000 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 11:02:25,000 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 11:05:17,740 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-21 11:05:17,740 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-21 11:05:17,740 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-21 11:05:17,740 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/09/2025']
+2025-08-21 11:05:17,740 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-21 11:05:17,740 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-21 11:05:18,217 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao processar registro LOJA ELECTROLUX COMERCIO VIRTUAL DE ELETRODOMESTICOS LTDA: 'etapa_obra'
+2025-08-21 11:05:18,557 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao salvar arquivo: cannot access local variable 'datas_recalculadas' where it is not associated with a value
+2025-08-21 11:33:22,144 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-21 11:33:22,144 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-21 11:33:22,144 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-21 11:33:22,144 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/08/2025']
+2025-08-21 11:33:22,160 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-21 11:33:22,160 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-21 11:33:22,599 - sistema - Sistema_Entrada_Dados - WARNING - DUPLICATA #1 encontrada:
+2025-08-21 11:33:22,599 - sistema - Sistema_Entrada_Dados - WARNING -   Nome: LOJA ELECTROLUX COMERCIO VIRTUAL DE ELETRODOMESTICOS LTDA
+2025-08-21 11:33:22,599 - sistema - Sistema_Entrada_Dados - WARNING -   Referência: MATERIAL DE TESTE
+2025-08-21 11:33:22,599 - sistema - Sistema_Entrada_Dados - WARNING -   Valor: R$ 279.00 (planilha: R$ 279.00)
+2025-08-21 11:33:22,599 - sistema - Sistema_Entrada_Dados - WARNING -   Vencimento: 11/06/2024
+2025-08-21 11:33:22,599 - sistema - Sistema_Entrada_Dados - WARNING -   NF: 1613248
+2025-08-21 11:33:22,599 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: LOJA ELECTROLUX COMERCIO VIRTUAL DE ELETRODOMESTICOS LTDA - MATERIAL DE TESTE - R$ 279.00
+2025-08-21 11:33:22,599 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 1 possíveis lançamentos duplicados
+2025-08-21 11:33:34,371 - sistema - Sistema_Entrada_Dados - INFO - Operação cancelada pelo usuário devido a duplicatas
+2025-08-21 11:34:01,708 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-21 11:34:01,708 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-21 11:34:01,708 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-21 11:34:01,708 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/08/2025']
+2025-08-21 11:34:01,708 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-21 11:34:01,708 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-21 11:34:02,087 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao processar registro LOJA ELECTROLUX COMERCIO VIRTUAL DE ELETRODOMESTICOS LTDA: 'etapa_obra'
+2025-08-21 11:34:02,405 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao salvar arquivo: cannot access local variable 'datas_recalculadas' where it is not associated with a value
+2025-08-21 11:39:03,804 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 11:39:05,195 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 11:39:05,208 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 11:39:05,209 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 11:39:15,604 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 11:39:15,604 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 11:40:15,995 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-08-21 11:40:17,498 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-08-21 11:40:22,459 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-21 11:40:22,459 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-21 11:40:22,459 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-21 11:40:22,475 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/09/2025']
+2025-08-21 11:40:22,475 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-21 11:40:22,475 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-21 11:40:23,007 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 240 na linha 240
+2025-08-21 11:40:23,286 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-21 11:40:23,795 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-09-05
+2025-08-21 11:40:24,057 - sistema - Sistema_Entrada_Dados - INFO - ℹ️ 2025-09-05: Sem taxas na data - recálculo desnecessário
+2025-08-21 11:45:34,748 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 11:45:36,260 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 11:45:36,276 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 11:45:36,276 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 11:45:57,244 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 11:45:57,260 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 11:45:57,260 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 12:51:53,811 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 12:51:55,184 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 12:51:55,197 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 12:51:55,197 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 12:52:39,188 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 12:52:39,203 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 12:52:39,203 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 12:54:58,477 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 12:54:59,696 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 12:54:59,696 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 12:54:59,712 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 12:55:15,814 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 12:55:15,814 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 12:55:15,814 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 12:57:29,901 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 12:57:29,901 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 13:21:46,201 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 13:21:47,698 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 13:21:47,711 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 13:21:47,712 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 13:22:02,454 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 13:22:02,456 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 13:22:02,457 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 13:23:24,073 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-21 13:23:24,088 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-21 13:23:24,088 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-21 13:23:24,088 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/09/2025']
+2025-08-21 13:23:24,088 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-21 13:23:24,088 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-21 13:23:24,465 - sistema - Sistema_Entrada_Dados - WARNING - DUPLICATA #1 encontrada:
+2025-08-21 13:23:24,465 - sistema - Sistema_Entrada_Dados - WARNING -   Nome: CARAMELODRAMA PRODUTOS DE CONFEITARIA LTDA.
+2025-08-21 13:23:24,465 - sistema - Sistema_Entrada_Dados - WARNING -   Referência: MATERIAL VIA NFE
+2025-08-21 13:23:24,465 - sistema - Sistema_Entrada_Dados - WARNING -   Valor: R$ 288.30 (planilha: R$ 288.30)
+2025-08-21 13:23:24,465 - sistema - Sistema_Entrada_Dados - WARNING -   Vencimento: 07/11/2024
+2025-08-21 13:23:24,465 - sistema - Sistema_Entrada_Dados - WARNING -   NF: 10059
+2025-08-21 13:23:24,465 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CARAMELODRAMA PRODUTOS DE CONFEITARIA LTDA. - MATERIAL VIA NFE - R$ 288.30
+2025-08-21 13:23:24,465 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 1 possíveis lançamentos duplicados
+2025-08-21 13:23:38,070 - sistema - Sistema_Entrada_Dados - INFO - Usuário optou por continuar. Processando 0 lançamentos únicos
+2025-08-21 13:24:04,201 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-21 13:24:04,201 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-21 13:24:04,201 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-21 13:24:04,217 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/09/2025']
+2025-08-21 13:24:04,217 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-21 13:24:04,217 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-21 13:24:04,693 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao processar registro CARAMELODRAMA PRODUTOS DE CONFEITARIA LTDA.: 'etapa_obra'
+2025-08-21 13:24:05,002 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao salvar arquivo: cannot access local variable 'datas_recalculadas' where it is not associated with a value
+2025-08-21 14:49:05,650 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 14:49:07,554 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 14:49:07,570 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 14:49:07,570 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 14:49:33,069 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 14:49:33,072 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 14:49:33,072 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 14:50:34,029 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-08-21 14:50:34,029 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-08-21 14:50:34,029 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-08-21 14:50:34,029 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/09/2025']
+2025-08-21 14:50:34,029 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-08-21 14:50:34,044 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-08-21 14:50:34,458 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 242 na linha 242
+2025-08-21 14:50:34,751 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-08-21 14:50:35,253 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-09-05
+2025-08-21 14:50:35,612 - sistema - Sistema_Entrada_Dados - INFO - 2025-09-05: Sem taxas na data - recálculo desnecessário
+2025-08-21 14:51:59,617 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 14:51:59,632 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-08-21 16:53:57,039 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-08-21 16:53:58,376 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-08-21 16:53:58,405 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-08-21 16:53:58,406 - sistema - logger_config - INFO - Concluído: Carregar configurações
