@@ -11,14 +11,16 @@ VERSION_INFO = {
     "major": 1,
     "minor": 4,
     "patch": 1,
-    "release_date": "12/08/2025",
+    "release_date": "25/08/2025",
     "changes": [
         "Adição de funcionalidade para recálculo de taxa de administração por percentual, sempre que houver inclusão, alteração ou exclusão de lançamento",
         "Correção do cálculo de taxa de administração, considerando apenas lançamentos do tipo 'ATIVO'",
         "Melhoria na funcionalidade que detecta duplicidade de lançamento",
         "Inclusão do campo 'NF' no Gerenciador de Lançamentos",
         "Inclusão de botões de 'EXCLUSÃO/RESTAURAÇÃO' de várias despesas no Gerenciador de Lançamentos",
-        "Inclusão do campo 'ETAPA DA OBRA' na Entrada de Dados, com manutenção através das Configurações do Sistema"
+        "Inclusão do campo 'ETAPA DA OBRA' na Entrada de Dados, com manutenção através das Configurações do Sistema",
+        "Inclusão de gerenciamento para excluir CPF temporário",
+        "Inclusão de funcionalidade para importaçãoo de NFe via XML e Chave de Acesso, permitindo salvar dados financeiros e materiais na planilha do cliente"
     ]
 }
 
