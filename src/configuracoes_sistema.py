@@ -349,6 +349,25 @@ class GerenciadorConfiguracoes:
                 ],
                 'historico_alteracoes': []
             },
+            'insumos': {
+                'lista': [
+                    'CIMENTO',
+                    'TIJOLO',
+                    'EMPREITEIROS',
+                    'BLOCOS CONCRETO',
+                    'MATERIAIS ELÉTRICO',
+                    'MATERIAIS HIDRÁULICO',
+                    'ESPAÇADOR',
+                    'MASSA CORRIDA',
+                    'BIANCO',
+                    'TELAS',
+                    'UNIFORMES',
+                    'ARGAMASSA',
+                    'LONA',
+                    'MANTA ASFÁLTICA'
+                ],
+                'historico_alteracoes': []
+            },
             'indices_correcao': {
                 'indice_padrao': 'IGPM',
                 'indices_disponiveis': {
@@ -427,6 +446,7 @@ class GerenciadorConfiguracoes:
         self.setup_aba_bancos()
         self.setup_aba_categorias()
         self.setup_aba_etapas_obra()
+        self.setup_aba_insumos()
         self.setup_aba_indices_correcao()
         self.setup_aba_materiais()
         
@@ -773,6 +793,124 @@ class GerenciadorConfiguracoes:
             
         for etapa in self.config['etapas_obra']['lista']:
             self.tree_etapas.insert('', 'end', values=(etapa,))
+
+    @staticmethod
+    def get_insumos():
+        """Retorna a lista de insumos"""
+        config = GerenciadorConfiguracoes.carregar_configuracoes()
+        if config and 'insumos' in config:
+            return config['insumos']['lista']
+        return ['CIMENTO', 'TIJOLO','EMPREITEIROS','BLOCOS CONCRETO',
+                'MATERIAIS ELÉTRICO','MATERIAIS HIDRÁULICO','ESPAÇADOR',
+                'MASSA CORRIDA','BIANCO','TELAS','UNIFORMES','ARGAMASSA','LONA', 'OUTROS']
+
+    # Adicionar aba de insumos (método completo):
+    def setup_aba_insumos(self):
+        """Configura a aba de insumos"""
+        frame_insumos = ttk.Frame(self.notebook)
+        self.notebook.add(frame_insumos, text='Insumos')
+        
+        # Frame para adicionar novo insumo
+        frame_novo = ttk.LabelFrame(frame_insumos, text="Adicionar Novo Insumo")
+        frame_novo.pack(fill='x', padx=5, pady=5)
+        
+        ttk.Label(frame_novo, text="Nome do Insumo:").grid(row=0, column=0, padx=5, pady=5)
+        self.novo_insumo = ttk.Entry(frame_novo, width=40)
+        self.novo_insumo.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Button(frame_novo, text="Adicionar",
+                command=self.adicionar_insumo).grid(row=1, column=0, columnspan=2, pady=10)
+        
+        # Lista de insumos
+        frame_lista = ttk.LabelFrame(frame_insumos, text="Insumos Cadastrados")
+        frame_lista.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        self.tree_insumos = ttk.Treeview(frame_lista, columns=('Insumo',), show='headings')
+        self.tree_insumos.heading('Insumo', text='Insumo')
+        self.tree_insumos.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        frame_botoes_insumos = ttk.Frame(frame_lista)
+        frame_botoes_insumos.pack(fill='x', pady=5)
+        
+        ttk.Button(frame_botoes_insumos, text="Mover para Cima",
+                command=self.mover_insumo_cima).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_insumos, text="Mover para Baixo",
+                command=self.mover_insumo_baixo).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_insumos, text="Remover Selecionado",
+                command=self.remover_insumo).pack(side='right', padx=5)
+        
+        self.atualizar_lista_insumos()
+
+    def adicionar_insumo(self):
+        """Adiciona um novo insumo à lista"""
+        insumo = self.novo_insumo.get().strip().upper()
+        if not insumo:
+            messagebox.showerror("Erro", "Digite o nome do insumo!")
+            return
+            
+        if insumo in self.config['insumos']['lista']:
+            messagebox.showerror("Erro", "Este insumo já está cadastrado!")
+            return
+            
+        self.config['insumos']['lista'].append(insumo)
+        self.salvar_configuracoes()
+        
+        self.novo_insumo.delete(0, tk.END)
+        self.atualizar_lista_insumos()
+        messagebox.showinfo("Sucesso", "Insumo adicionado com sucesso!")
+
+    def remover_insumo(self):
+        """Remove o insumo selecionado"""
+        selecionado = self.tree_insumos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um insumo para remover!")
+            return
+            
+        insumo = self.tree_insumos.item(selecionado)['values'][0]
+        if messagebox.askyesno("Confirmar", f"Deseja remover o insumo '{insumo}'?"):
+            self.config['insumos']['lista'].remove(insumo)
+            self.salvar_configuracoes()
+            self.atualizar_lista_insumos()
+
+    def mover_insumo_cima(self):
+        """Move o insumo selecionado para cima na lista"""
+        selecionado = self.tree_insumos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um insumo!")
+            return
+        
+        insumo = self.tree_insumos.item(selecionado)['values'][0]
+        lista = self.config['insumos']['lista']
+        indice = lista.index(insumo)
+        
+        if indice > 0:
+            lista[indice], lista[indice-1] = lista[indice-1], lista[indice]
+            self.salvar_configuracoes()
+            self.atualizar_lista_insumos()
+
+    def mover_insumo_baixo(self):
+        """Move o insumo selecionado para baixo na lista"""
+        selecionado = self.tree_insumos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um insumo!")
+            return
+        
+        insumo = self.tree_insumos.item(selecionado)['values'][0]
+        lista = self.config['insumos']['lista']
+        indice = lista.index(insumo)
+        
+        if indice < len(lista) - 1:
+            lista[indice], lista[indice+1] = lista[indice+1], lista[indice]
+            self.salvar_configuracoes()
+            self.atualizar_lista_insumos()
+
+    def atualizar_lista_insumos(self):
+        """Atualiza a exibição da lista de insumos"""
+        for item in self.tree_insumos.get_children():
+            self.tree_insumos.delete(item)
+            
+        for insumo in self.config['insumos']['lista']:
+            self.tree_insumos.insert('', 'end', values=(insumo,))
 
     def setup_aba_indices_correcao(self):
         """Configura a aba de índices de correção monetária"""
