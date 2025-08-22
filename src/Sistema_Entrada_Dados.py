@@ -1021,6 +1021,116 @@ class GerenciadorCPFsCriados:
         except Exception as e:
             print(f"Erro ao listar CPFs disponíveis: {str(e)}")
             return []     
+        
+    def marcar_cpf_como_disponivel(self, cpf):
+        """Marca um CPF como disponível novamente na aba CPF"""
+        try:
+            wb = load_workbook(self.arquivo_fornecedores)
+            
+            if 'CPF' not in wb.sheetnames:
+                wb.close()
+                return False
+            
+            ws_cpf = wb['CPF']
+            
+            # Procurar o CPF e marcar como disponível
+            for row in range(2, ws_cpf.max_row + 1):
+                if str(ws_cpf.cell(row=row, column=1).value).strip() == str(cpf):
+                    ws_cpf.cell(row=row, column=2, value='DISPONIVEL')  # Status
+                    ws_cpf.cell(row=row, column=3, value='')  # Limpar nome do fornecedor
+                    ws_cpf.cell(row=row, column=4, value='')  # Limpar data de uso
+                    break
+            
+            wb.save(self.arquivo_fornecedores)
+            wb.close()
+            return True
+            
+        except Exception as e:
+            print(f"Erro ao marcar CPF como disponível: {str(e)}")
+            return False
+
+    def listar_todos_cpfs_criados(self):
+        """Lista todos os CPFs criados da aba CPF (disponíveis e usados)"""
+        try:
+            wb = load_workbook(self.arquivo_fornecedores, data_only=True)
+            
+            if 'CPF' not in wb.sheetnames:
+                wb.close()
+                return []
+            
+            ws_cpf = wb['CPF']
+            cpfs = []
+            
+            for row in range(2, ws_cpf.max_row + 1):
+                cpf_valor = ws_cpf.cell(row=row, column=1).value
+                if cpf_valor:  # Se tem CPF
+                    cpfs.append(str(cpf_valor).strip())
+            
+            wb.close()
+            return cpfs
+            
+        except Exception as e:
+            print(f"Erro ao listar todos os CPFs criados: {str(e)}")
+            return []
+
+    def listar_cpfs_usados(self):
+        """Lista apenas os CPFs que estão marcados como USADO na aba CPF"""
+        try:
+            wb = load_workbook(self.arquivo_fornecedores, data_only=True)
+            
+            if 'CPF' not in wb.sheetnames:
+                wb.close()
+                return []
+            
+            ws_cpf = wb['CPF']
+            cpfs_usados = []
+            
+            for row in range(2, ws_cpf.max_row + 1):
+                cpf_valor = ws_cpf.cell(row=row, column=1).value
+                status = ws_cpf.cell(row=row, column=2).value
+                
+                if cpf_valor and status and str(status).strip().upper() == 'USADO':
+                    cpfs_usados.append(str(cpf_valor).strip())
+            
+            wb.close()
+            return cpfs_usados
+            
+        except Exception as e:
+            print(f"Erro ao listar CPFs usados: {str(e)}")
+            return []
+
+    def obter_detalhes_cpf_usado(self, cpf):
+        """Obtém detalhes de um CPF usado (nome do fornecedor e data de uso)"""
+        try:
+            wb = load_workbook(self.arquivo_fornecedores, data_only=True)
+            
+            if 'CPF' not in wb.sheetnames:
+                wb.close()
+                return None
+            
+            ws_cpf = wb['CPF']
+            
+            for row in range(2, ws_cpf.max_row + 1):
+                cpf_valor = ws_cpf.cell(row=row, column=1).value
+                
+                if str(cpf_valor).strip() == str(cpf):
+                    status = ws_cpf.cell(row=row, column=2).value
+                    usado_por = ws_cpf.cell(row=row, column=3).value
+                    data_uso = ws_cpf.cell(row=row, column=4).value
+                    
+                    wb.close()
+                    return {
+                        'status': str(status) if status else '',
+                        'usado_por': str(usado_por) if usado_por else '',
+                        'data_uso': str(data_uso) if data_uso else ''
+                    }
+            
+            wb.close()
+            return None
+            
+        except Exception as e:
+            print(f"Erro ao obter detalhes do CPF: {str(e)}")
+            return None
 
 class SistemaEntradaDados:
 
@@ -2086,6 +2196,17 @@ class SistemaEntradaDados:
                 text="Selecionar", 
                 command=self.selecionar_fornecedor,
                 style='Medium.TButton').pack(side='left', padx=5)
+        
+        ttk.Button(frame_acoes,
+                text="🗑️ Gerenciar CPFs Criados",
+                command=self.gerenciar_cpfs_criados,
+                style='Medium.TButton').pack(side='left', padx=5)
+                    
+        # Label explicativo
+        ttk.Label(frame_acoes,
+                text="(Excluir fornecedores temporários)",
+                font=('Arial', 8),
+                foreground='gray').pack(side='left', padx=10)
 
         self.adicionar_botao_gerenciar_lancamentos()
 
@@ -2182,6 +2303,1518 @@ class SistemaEntradaDados:
         
         # self.adicionar_secao_materiais_fornecedor()
         
+    def buscar_fornecedor(self):
+        """Busca fornecedores baseado no termo digitado"""
+        try:
+            termo = self.busca_entry.get().strip()
+            
+            # Limpar resultados anteriores
+            for item in self.tree_fornecedores.get_children():
+                self.tree_fornecedores.delete(item)
+            
+            if not termo:
+                return
+            
+            # Abrir planilha de fornecedores
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+            
+            resultados_encontrados = 0
+            termo_upper = termo.upper()
+            
+            # Buscar na planilha
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Pular linhas vazias
+                    continue
+                    
+                cnpj_cpf = str(row[0]).strip()
+                nome = str(row[3] or '').strip().upper()  # Coluna D = Nome
+                categoria = str(row[11] or '').strip()    # Coluna L = Categoria
+                
+                # Verificar se o termo está no nome
+                if termo_upper in nome:
+                    # Formatar CNPJ/CPF para exibição
+                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf)
+                    
+                    # Inserir resultado na tree
+                    self.tree_fornecedores.insert('', 'end', values=(
+                        cnpj_cpf_formatado,
+                        nome,
+                        categoria
+                    ))
+                    
+                    resultados_encontrados += 1
+                    
+                    # Limitar resultados para evitar travamento
+                    if resultados_encontrados >= 100:
+                        break
+            
+            wb.close()
+            
+            # Ordenar resultados por nome
+            if resultados_encontrados > 1:
+                # Obter todos os itens
+                items = []
+                for item in self.tree_fornecedores.get_children():
+                    values = self.tree_fornecedores.item(item)['values']
+                    items.append(values)
+                
+                # Limpar tree
+                for item in self.tree_fornecedores.get_children():
+                    self.tree_fornecedores.delete(item)
+                
+                # Ordenar por nome (segundo elemento)
+                items.sort(key=lambda x: x[1])
+                
+                # Reinserir ordenado
+                for values in items:
+                    self.tree_fornecedores.insert('', 'end', values=values)
+            
+            if resultados_encontrados == 0:
+                # Mostrar mensagem quando não encontrar
+                self.tree_fornecedores.insert('', 'end', values=(
+                    '', 'Nenhum fornecedor encontrado', ''
+                ))
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro na busca: {str(e)}")
+            print(f"Erro detalhado na busca: {str(e)}")
+
+    def novo_fornecedor(self):
+        """Abre janela para cadastro de novo fornecedor - VERSÃO CORRIGIDA"""
+        self.janela_fornecedor = tk.Toplevel(self.root)
+        self.janela_fornecedor.title("Novo Fornecedor")
+        self.janela_fornecedor.geometry("800x700")
+        
+        self.janela_fornecedor.transient(self.root)  # Definir como janela filha
+        self.janela_fornecedor.grab_set()  # Tornar modal
+        self.janela_fornecedor.update_idletasks()  # Garantir que o tamanho seja calculado
+        
+        # Calcular posição central
+        largura = 800
+        altura = 700
+        pos_x = (self.janela_fornecedor.winfo_screenwidth() // 2) - (largura // 2)
+        pos_y = (self.janela_fornecedor.winfo_screenheight() // 2) - (altura // 2)
+        
+        # Aplicar posição
+        self.janela_fornecedor.geometry(f"{largura}x{altura}+{pos_x}+{pos_y}")
+
+        self.janela_fornecedor.lift()  # Trazer para frente
+        self.janela_fornecedor.focus_force()  # Forçar foco
+        self.janela_fornecedor.attributes('-topmost', True)  # Manter no topo temporariamente
+
+        self.janela_fornecedor.after(500, lambda: self.janela_fornecedor.attributes('-topmost', False))
+        
+        # Configurar formulário
+        self.setup_formulario_fornecedor()
+
+        self.janela_fornecedor.after(100, lambda: self.janela_fornecedor.focus_force())
+
+    def editar_fornecedor(self):
+        """Abre janela para edição de fornecedor existente"""
+        selecionado = self.tree_fornecedores.selection()
+        if not selecionado:
+            custom_messagebox("warning",  "Aviso", "Selecione um fornecedor para editar")
+            return
+
+        # Buscar dados completos do fornecedor
+        fornecedor = self.buscar_fornecedor_completo(
+            self.tree_fornecedores.item(selecionado)['values'][0]
+        )
+        if not fornecedor:
+            custom_messagebox("error", "Erro", "Fornecedor não encontrado")
+            return
+
+        # Criar janela de edição
+        self.janela_fornecedor = tk.Toplevel(self.root)
+        self.janela_fornecedor.title("Editar Fornecedor")
+        self.setup_formulario_fornecedor(modo_edicao=True)
+
+        try:
+            # Determinar tipo de pessoa baseado no tamanho do CNPJ/CPF
+            cnpj_cpf = str(fornecedor['cnpj_cpf']).strip()
+            tipo_pessoa = 'PJ' if len(cnpj_cpf) > 11 else 'PF'
+
+            # Preencher e configurar campos não editáveis
+            # CNPJ/CPF
+            self.campos_form['cnpj_cpf'].insert(0, cnpj_cpf.zfill(14 if tipo_pessoa == 'PJ' else 11))
+            self.campos_form['cnpj_cpf'].config(state='readonly')
+            
+            # Tipo Pessoa
+            self.campos_form['tipo_pessoa'].set(tipo_pessoa)
+            self.campos_form['tipo_pessoa'].config(state='disabled')
+            
+            # Razão Social
+            self.campos_form['razao_social'].insert(0, fornecedor['razao_social'] or '')
+            self.campos_form['razao_social'].config(state='readonly')
+            
+            # Preencher campos editáveis
+            self.campos_form['nome'].insert(0, fornecedor['nome'] or '')
+            self.campos_form['telefone'].insert(0, fornecedor['telefone'] or '')
+            self.campos_form['email'].insert(0, fornecedor['email'] or '')
+            self.campos_form['banco'].insert(0, fornecedor['banco'] or '')
+            self.campos_form['op'].insert(0, fornecedor['op'] or '')
+            self.campos_form['agencia'].insert(0, fornecedor['agencia'] or '')
+            self.campos_form['conta'].insert(0, fornecedor['conta'] or '')
+            self.campos_form['chave_pix'].insert(0, fornecedor['chave_pix'] or '')
+            
+            # Categoria (pode ser combobox)
+            if isinstance(self.campos_form['categoria'], ttk.Combobox):
+                self.campos_form['categoria'].set(fornecedor['categoria'] or '')
+            else:
+                self.campos_form['categoria'].insert(0, fornecedor['categoria'] or '')
+                
+            self.campos_form['especificacao'].insert(0, fornecedor['especificacao'] or '')
+            self.campos_form['vinculo'].insert(0, fornecedor['vinculo'] or '')
+
+            # Centralizar a janela
+            self.janela_fornecedor.update_idletasks()
+            width = self.janela_fornecedor.winfo_width()
+            height = self.janela_fornecedor.winfo_height()
+            x = (self.janela_fornecedor.winfo_screenwidth() // 2) - (width // 2)
+            y = (self.janela_fornecedor.winfo_screenheight() // 2) - (height // 2)
+            self.janela_fornecedor.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+            
+            # Tornar a janela modal
+            self.janela_fornecedor.transient(self.root)
+            self.janela_fornecedor.grab_set()
+
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao carregar dados do fornecedor: {str(e)}")
+            self.janela_fornecedor.destroy()
+
+    def selecionar_fornecedor(self):
+        """Seleciona o fornecedor e preenche seus dados"""
+        fornecedor = selecionar_fornecedor(
+            self.tree_fornecedores, 
+            self.campos_fornecedor,
+            self.campos_despesa,
+            self.notebook,
+            self.buscar_fornecedor_completo
+        )
+        if fornecedor:
+            # Formatar CNPJ/CPF
+            cnpj_cpf = str(fornecedor[0]).strip()
+            self.campos_fornecedor['cnpj_cpf'].config(state='normal')
+            self.campos_fornecedor['cnpj_cpf'].delete(0, tk.END)
+            self.campos_fornecedor['cnpj_cpf'].insert(0, formatar_cnpj_cpf(cnpj_cpf))
+            self.campos_fornecedor['cnpj_cpf'].config(state='readonly')
+            
+            # Carregar dados completos do fornecedor
+            fornecedor_completo = self.buscar_fornecedor_completo(cnpj_cpf)
+            if fornecedor_completo:
+                # Substituir o campo de categoria por Combobox
+                self.campos_fornecedor['categoria'] = ttk.Combobox(
+                    self.frame_fornecedor,  # Usando o atributo da classe
+                    values=get_categorias_fornecedor(),
+                    state='readonly',
+                    width=30
+                )
+                self.campos_fornecedor['categoria'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
+        
+                    
+                # Definir categoria do fornecedor
+                self.campos_fornecedor['categoria'].set(fornecedor_completo['categoria'])
+                
+                self.campos_fornecedor['dados_bancarios'].config(state='normal')
+                self.campos_fornecedor['dados_bancarios'].delete(0, tk.END)
+                
+                # Construir dados bancários
+                if fornecedor_completo['chave_pix']:
+                    dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
+                else:
+                    dados_bancarios = (f"{fornecedor_completo['banco'] or ''} "
+                                    f"{fornecedor_completo['op'] or ''} - "
+                                    f"{fornecedor_completo['agencia'] or ''} "
+                                    f"{fornecedor_completo['conta'] or ''}").strip()
+                    
+                if dados_bancarios.strip() in ['', ' - ']:
+                    dados_bancarios = 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+                
+                self.campos_fornecedor['dados_bancarios'].insert(0, dados_bancarios)
+                self.campos_fornecedor['dados_bancarios'].config(state='readonly')
+                
+                # NOVO: Preencher campo de referência com a especificação do fornecedor, se disponível
+                if fornecedor_completo['especificacao'] and hasattr(self, 'campos_despesa') and 'referencia' in self.campos_despesa:
+                    if isinstance(self.campos_despesa['referencia'], ttk.Combobox):
+                        # Para Combobox, verificamos se o valor está nas opções
+                        especificacao = fornecedor_completo['especificacao'].strip()
+                        valores = self.campos_despesa['referencia']['values']
+                        
+                        # Deixamos o campo livre para edição quando não for tipo 1
+                        self.campos_despesa['referencia'].config(state='normal')
+                        self.campos_despesa['referencia'].delete(0, tk.END)
+                        self.campos_despesa['referencia'].insert(0, especificacao)
+                    else:
+                        # Para Entry normal
+                        self.campos_despesa['referencia'].delete(0, tk.END)
+                        self.campos_despesa['referencia'].insert(0, fornecedor_completo['especificacao'].strip())
+                
+                self.notebook.select(2)  # Vai para aba de dados
+            
+    def buscar_dados_bancarios(self, cnpj_cpf):
+        try:
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+        
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0] == cnpj_cpf:
+                    print(f"CNPJ/CPF encontrado: {cnpj_cpf}")
+                    print(f"Dados da linha: {row}")
+                    if row[14]:  # coluna O com dados bancários consolidados
+                        return row[14]
+                    return ""
+            return ""
+        except Exception as e:
+            print(f"Erro ao buscar dados bancários: {e}")
+            return ""
+
+    def buscar_fornecedor_completo(self, cnpj_cpf):
+        """Busca todos os dados de um fornecedor - VERSÃO OTIMIZADA"""
+        try:
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+        
+            # Normalizar CNPJ/CPF de entrada
+            cnpj_cpf_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))
+            if len(cnpj_cpf_numeros) <= 11:
+                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(11)
+            else:
+                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(14)
+            
+            # Buscar na planilha
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:
+                    continue
+                    
+                # Normalizar CNPJ/CPF da planilha
+                row_cnpj_numeros = ''.join(filter(str.isdigit, str(row[0])))
+                if len(row_cnpj_numeros) <= 11:
+                    row_cnpj_normalizado = row_cnpj_numeros.zfill(11)
+                else:
+                    row_cnpj_normalizado = row_cnpj_numeros.zfill(14)
+                    
+                if row_cnpj_normalizado == cnpj_cpf_normalizado:
+                    fornecedor = {
+                        'cnpj_cpf': row[0],
+                        'tipo_pessoa': row[1],
+                        'razao_social': row[2],
+                        'nome': row[3],
+                        'telefone': row[4],
+                        'email': row[5],
+                        'banco': row[6],
+                        'op': row[7],
+                        'agencia': row[8],
+                        'conta': row[9],
+                        'chave_pix': row[10],
+                        'categoria': row[11],
+                        'especificacao': row[12],
+                        'vinculo': row[13],
+                    }
+                    wb.close()
+                    return fornecedor
+            
+            wb.close()
+            return None
+            
+        except Exception as e:
+            print(f"Erro ao buscar fornecedor: {e}")
+            return None
+   
+    def setup_formulario_fornecedor(self, modo_edicao=False):
+        """Configura o formulário de cadastro/edição de fornecedor com suporte a CPFs criados"""
+        formulario = ttk.Frame(self.janela_fornecedor)
+        formulario.pack(padx=10, pady=5, fill='both', expand=True)
+
+        # Inicializar gerenciador de CPFs se não existir
+        if not hasattr(self, 'gerenciador_cpfs'):
+            self.gerenciador_cpfs = GerenciadorCPFsCriados()
+
+        # Campos principais
+        campos_principais = ttk.LabelFrame(formulario, text="Dados Principais")
+        campos_principais.pack(fill='x', pady=5)
+
+        self.campos_form = {}
+
+        # Frame especial para CNPJ/CPF com botões de CPF criado
+        frame_cpf_completo = ttk.Frame(campos_principais)
+        frame_cpf_completo.grid(row=0, column=0, columnspan=4, sticky='ew', padx=5, pady=5)
+
+        # Label e campo CNPJ/CPF
+        tk.Label(frame_cpf_completo, text="CNPJ/CPF:*").grid(row=0, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['cnpj_cpf'] = tk.Entry(frame_cpf_completo, width=20)
+        self.campos_form['cnpj_cpf'].grid(row=0, column=1, padx=5, pady=2)
+        self.campos_form['cnpj_cpf'].bind('<FocusOut>', self.atualizar_tipo_pessoa)
+        
+        # Tipo de pessoa
+        tk.Label(frame_cpf_completo, text="Tipo:*").grid(row=0, column=2, padx=10, pady=2, sticky='w')
+        self.campos_form['tipo_pessoa'] = ttk.Combobox(frame_cpf_completo, 
+                                                    values=['PF', 'PJ'],
+                                                    state='readonly',
+                                                    width=5)
+        self.campos_form['tipo_pessoa'].grid(row=0, column=3, padx=5, pady=2)
+
+        # Frame para botões de CPF criado
+        frame_botoes_cpf = ttk.Frame(frame_cpf_completo)
+        frame_botoes_cpf.grid(row=1, column=0, columnspan=4, pady=5, sticky='ew')
+
+        # Botão para usar CPF criado automaticamente
+        btn_cpf_auto = ttk.Button(frame_botoes_cpf, 
+                                text="🔄 Obter CPF Criado", 
+                                command=self.usar_cpf_criado_auto,
+                                width=18)
+        btn_cpf_auto.pack(side='left', padx=5)
+
+        # Botão para escolher CPF da lista
+        btn_cpf_lista = ttk.Button(frame_botoes_cpf, 
+                                text="📋 Escolher da Lista", 
+                                command=self.mostrar_cpfs_disponiveis,
+                                width=18)
+        btn_cpf_lista.pack(side='left', padx=5)
+
+        # Label informativo
+        lbl_info = tk.Label(frame_botoes_cpf, 
+                        text="💡 Use estes botões para prestadores sem CPF próprio",
+                        font=('Arial', 8),
+                        fg='gray')
+        lbl_info.pack(side='left', padx=20)
+
+        # Razão Social e Nome
+        tk.Label(campos_principais, text="Razão Social:*").grid(row=1, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['razao_social'] = tk.Entry(campos_principais, width=50)
+        self.campos_form['razao_social'].grid(row=1, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
+        self.campos_form['razao_social'].bind('<FocusOut>', self.copiar_para_nome)
+
+        tk.Label(campos_principais, text="Nome Fantasia:*").grid(row=2, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['nome'] = tk.Entry(campos_principais, width=50)
+        self.campos_form['nome'].grid(row=2, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
+
+        # Contatos - Frame especial para telefone com botão PIX
+        campos_contato = ttk.LabelFrame(formulario, text="Contato")
+        campos_contato.pack(fill='x', pady=5)
+
+        # Frame para telefone com botão PIX
+        frame_telefone = ttk.Frame(campos_contato)
+        frame_telefone.grid(row=0, column=0, columnspan=2, sticky='ew', padx=5, pady=2)
+
+        tk.Label(frame_telefone, text="Telefone:").grid(row=0, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['telefone'] = tk.Entry(frame_telefone, width=20)
+        self.campos_form['telefone'].grid(row=0, column=1, padx=5, pady=2)
+
+        # Botão para usar telefone como PIX
+        btn_tel_pix = ttk.Button(frame_telefone, 
+                                text="📱 Usar como PIX", 
+                                command=self.usar_telefone_como_pix,
+                                width=15)
+        btn_tel_pix.grid(row=0, column=2, padx=10, pady=2)
+
+        # Email
+        tk.Label(campos_contato, text="Email:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['email'] = tk.Entry(campos_contato, width=50)
+        self.campos_form['email'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
+
+        # Dados Bancários
+        campos_bancarios = ttk.LabelFrame(formulario, text="Dados Bancários")
+        campos_bancarios.pack(fill='x', pady=5)
+
+        # Carregar configurações
+        try:
+            carregar_configuracoes()  
+            lista_bancos = get_bancos()
+        except Exception as e:
+            print(f"Erro ao carregar bancos: {str(e)}")
+            lista_bancos = []
+
+        tk.Label(campos_bancarios, text="Banco:").grid(row=0, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['banco'] = ttk.Combobox(
+            campos_bancarios,
+            values=lista_bancos,
+            state='readonly'
+        )
+        self.campos_form['banco'].grid(row=0, column=1, padx=5, pady=2, sticky='ew')
+
+        tk.Label(campos_bancarios, text="Operação:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['op'] = tk.Entry(campos_bancarios)
+        self.campos_form['op'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
+
+        tk.Label(campos_bancarios, text="Agência:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['agencia'] = tk.Entry(campos_bancarios)
+        self.campos_form['agencia'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
+
+        tk.Label(campos_bancarios, text="Conta:").grid(row=3, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['conta'] = tk.Entry(campos_bancarios)
+        self.campos_form['conta'].grid(row=3, column=1, padx=5, pady=2, sticky='ew')
+
+        # PIX
+        campos_pix = ttk.LabelFrame(formulario, text="Chave PIX")
+        campos_pix.pack(fill='x', pady=5)
+
+        # Tipo de chave PIX
+        ttk.Label(campos_pix, text="Tipo de Chave:").grid(row=0, column=0, padx=5, pady=2, sticky='w')
+        self.tipo_pix = ttk.Combobox(
+            campos_pix, 
+            values=['Selecione', 'CNPJ/CPF', 'Telefone', 'Email'],
+            state='readonly'
+        )
+        self.tipo_pix.grid(row=0, column=1, padx=5, pady=2)
+        self.tipo_pix.set('Telefone')  # Padrão para prestadores
+
+        ttk.Label(campos_pix, text="Chave:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['chave_pix'] = ttk.Entry(campos_pix, width=40)
+        self.campos_form['chave_pix'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
+
+        # Binding para atualização automática
+        self.tipo_pix.bind('<<ComboboxSelected>>', self.atualizar_chave_pix)
+
+        # Classificação
+        campos_class = ttk.LabelFrame(formulario, text="Classificação")
+        campos_class.pack(fill='x', pady=5)
+
+        # Carregar categorias
+        try:
+            categorias = get_categorias_fornecedor()
+        except Exception as e:
+            print(f"Erro ao carregar categorias: {str(e)}")
+            categorias = ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP']
+
+        tk.Label(campos_class, text="Categoria:*").grid(row=0, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['categoria'] = ttk.Combobox(campos_class, 
+                                                    values=categorias,
+                                                    state='readonly')
+        self.campos_form['categoria'].grid(row=0, column=1, padx=5, pady=2, sticky='ew')
+
+        tk.Label(campos_class, text="Especificação:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['especificacao'] = tk.Entry(campos_class, width=40)
+        self.campos_form['especificacao'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
+
+        tk.Label(campos_class, text="Vínculo:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['vinculo'] = tk.Entry(campos_class, width=40)
+        self.campos_form['vinculo'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
+
+        # Botões de ação
+        frame_botoes = ttk.Frame(formulario)
+        frame_botoes.pack(fill='x', pady=10)
+
+        ttk.Button(frame_botoes, 
+                text="Salvar", 
+                command=self.salvar_fornecedor_com_cpf_criado).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, 
+                text="Cancelar", 
+                command=self.janela_fornecedor.destroy).pack(side='left', padx=5)
+
+    def usar_cpf_criado_auto(self):
+        """Busca e usa automaticamente o próximo CPF criado disponível - VERSÃO MELHORADA"""
+        try:
+            if not hasattr(self, 'gerenciador_cpfs'):
+                self.gerenciador_cpfs = GerenciadorCPFsCriados()
+            
+            print("Iniciando busca por CPF disponível...")
+            cpf_disponivel, linha = self.gerenciador_cpfs.obter_proximo_cpf_disponivel()
+            
+            if cpf_disponivel:
+                print(f"CPF obtido: {cpf_disponivel}")
+                
+                # TESTE: Validar o CPF antes de usar
+                if not self.gerenciador_cpfs.validar_cpf_gerado(cpf_disponivel):
+                    custom_messagebox("error", "Erro", 
+                                    f"❌ CPF gerado é inválido: {cpf_disponivel}\n\n"
+                                    f"Verifique o algoritmo de geração")
+                    return
+                
+                # Formatar CPF
+                cpf_formatado = f"{cpf_disponivel[:3]}.{cpf_disponivel[3:6]}.{cpf_disponivel[6:9]}-{cpf_disponivel[9:]}"
+                print(f"CPF formatado: {cpf_formatado}")
+                
+                # TESTE: Validar CPF formatado com a função do sistema
+                try:
+                    if not validar_cnpj_cpf(cpf_formatado):
+                        print(f"AVISO: Sistema não reconheceu CPF como válido: {cpf_formatado}")
+                        # Mesmo assim, continuar - pode ser problema na função validar_cnpj_cpf
+                except Exception as e:
+                    print(f"Erro na validação do sistema: {str(e)}")
+                
+                # Preencher campo CNPJ/CPF
+                self.campos_form['cnpj_cpf'].delete(0, tk.END)
+                self.campos_form['cnpj_cpf'].insert(0, cpf_formatado)
+                
+                # Definir como PF
+                self.campos_form['tipo_pessoa'].set('PF')
+                
+                # Configurar PIX automaticamente
+                self.tipo_pix.set('CNPJ/CPF')
+                self.campos_form['chave_pix'].delete(0, tk.END)
+                self.campos_form['chave_pix'].insert(0, cpf_formatado)
+                
+                # Focar no campo nome para continuar o cadastro
+                self.campos_form['razao_social'].focus()
+                
+                custom_messagebox("info", "CPF Obtido", 
+                                f"✅ CPF criado obtido com sucesso!\n\n"
+                                f"📋 CPF: {cpf_formatado}\n"
+                                f"🔑 Configurado como chave PIX\n"
+                                f"🔍 Validação: CPF matematicamente correto\n\n"
+                                f"➡️ Continue preenchendo os dados do prestador")
+            else:
+                custom_messagebox("error", "Erro", 
+                                "❌ Não foi possível obter um CPF criado.\n\n"
+                                "Possíveis causas:\n"
+                                "• Arquivo Base_Fornecedores.xlsx não encontrado\n"
+                                "• Erro na geração de CPFs válidos\n"
+                                "• Problema de permissão no arquivo")
+                
+        except Exception as e:
+            print(f"Erro detalhado: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            custom_messagebox("error", "Erro", f"❌ Erro ao obter CPF criado:\n{str(e)}")
+
+    def mostrar_cpfs_disponiveis(self):
+        """Mostra lista de CPFs disponíveis para seleção manual"""
+        try:
+            if not hasattr(self, 'gerenciador_cpfs'):
+                self.gerenciador_cpfs = GerenciadorCPFsCriados()
+                
+            cpfs_disponiveis = self.gerenciador_cpfs.listar_cpfs_disponiveis()
+            
+            if not cpfs_disponiveis:
+                custom_messagebox("info", "CPFs Disponíveis", 
+                                "❌ Nenhum CPF disponível no momento.\n\n"
+                                "Use o botão 'Obter CPF Criado' para gerar novos CPFs automaticamente.")
+                return
+            
+            # Criar janela de seleção
+            janela_cpfs = tk.Toplevel(self.janela_fornecedor)
+            janela_cpfs.title("📋 CPFs Criados - Escolher da Lista")
+            janela_cpfs.geometry("450x600")
+            janela_cpfs.transient(self.janela_fornecedor)
+            janela_cpfs.grab_set()
+            
+            # Centralizar janela
+            janela_cpfs.update_idletasks()
+            x = (janela_cpfs.winfo_screenwidth() // 2) - (225)
+            y = (janela_cpfs.winfo_screenheight() // 2) - (300)
+            janela_cpfs.geometry(f"450x600+{x}+{y}")
+            
+            frame = ttk.Frame(janela_cpfs, padding="15")
+            frame.pack(fill='both', expand=True)
+            
+            # Cabeçalho
+            header_frame = ttk.Frame(frame)
+            header_frame.pack(fill='x', pady=(0, 15))
+            
+            ttk.Label(header_frame, text="📋 CPFs Criados Disponíveis", 
+                    font=('Arial', 14, 'bold')).pack()
+            ttk.Label(header_frame, text=f"Total disponível: {len(cpfs_disponiveis)}", 
+                    font=('Arial', 10)).pack()
+            
+            # Lista de CPFs
+            lista_frame = ttk.LabelFrame(frame, text="Selecione um CPF:")
+            lista_frame.pack(fill='both', expand=True, pady=(0, 15))
+            
+            # Frame interno para Treeview e scrollbar
+            tree_frame = ttk.Frame(lista_frame)
+            tree_frame.pack(fill='both', expand=True, padx=10, pady=10)
+            
+            # Treeview para CPFs
+            tree_cpfs = ttk.Treeview(tree_frame, columns=('CPF', 'Status'), show='headings', height=15)
+            tree_cpfs.heading('CPF', text='CPF Disponível')
+            tree_cpfs.heading('Status', text='Status')
+            tree_cpfs.column('CPF', width=200, anchor='center')
+            tree_cpfs.column('Status', width=100, anchor='center')
+            
+            # Scrollbar
+            scroll_cpfs = ttk.Scrollbar(tree_frame, orient='vertical', command=tree_cpfs.yview)
+            tree_cpfs.configure(yscrollcommand=scroll_cpfs.set)
+            
+            tree_cpfs.pack(side='left', fill='both', expand=True)
+            scroll_cpfs.pack(side='right', fill='y')
+            
+            # Preencher lista
+            for i, cpf in enumerate(cpfs_disponiveis, 1):
+                cpf_formatado = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
+                tree_cpfs.insert('', 'end', values=(cpf_formatado, '✅ Disponível'), tags=(cpf,))
+            
+            def selecionar_cpf():
+                selecionado = tree_cpfs.selection()
+                if not selecionado:
+                    custom_messagebox("warning", "Aviso", "⚠️ Selecione um CPF da lista")
+                    return
+                
+                # Obter CPF selecionado (não formatado)
+                cpf_selecionado = tree_cpfs.item(selecionado[0])['tags'][0]
+                cpf_formatado = tree_cpfs.item(selecionado[0])['values'][0]
+                
+                # Preencher no formulário principal
+                self.campos_form['cnpj_cpf'].delete(0, tk.END)
+                self.campos_form['cnpj_cpf'].insert(0, cpf_formatado)
+                
+                # Configurar tipo como PF
+                self.campos_form['tipo_pessoa'].set('PF')
+                
+                # Configurar PIX
+                self.tipo_pix.set('CNPJ/CPF')
+                self.campos_form['chave_pix'].delete(0, tk.END)
+                self.campos_form['chave_pix'].insert(0, cpf_formatado)
+                
+                # Fechar janela
+                janela_cpfs.destroy()
+                
+                # Focar no campo nome
+                self.campos_form['razao_social'].focus()
+                
+                custom_messagebox("info", "CPF Selecionado", 
+                                f"✅ CPF selecionado com sucesso!\n\n"
+                                f"📋 {cpf_formatado}\n\n"
+                                f"➡️ Continue preenchendo os dados")
+            
+            # Botões
+            frame_botoes = ttk.Frame(frame)
+            frame_botoes.pack(fill='x')
+            
+            ttk.Button(frame_botoes, text="✅ Selecionar", 
+                    command=selecionar_cpf).pack(side='left', padx=5)
+            ttk.Button(frame_botoes, text="❌ Cancelar", 
+                    command=janela_cpfs.destroy).pack(side='left', padx=5)
+            
+            # Info adicional
+            info_label = tk.Label(frame_botoes, 
+                                text="💡 Dica: Dê duplo clique no CPF para selecioná-lo rapidamente",
+                                font=('Arial', 8), fg='gray')
+            info_label.pack(side='right', padx=10)
+            
+            # Double-click para selecionar rapidamente
+            tree_cpfs.bind('<Double-1>', lambda e: selecionar_cpf())
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"❌ Erro ao mostrar CPFs:\n{str(e)}")
+
+    def usar_telefone_como_pix(self):
+        """Usa o telefone digitado como chave PIX"""
+        telefone = self.campos_form['telefone'].get().strip()
+        
+        if not telefone:
+            custom_messagebox("warning", "Aviso", "⚠️ Digite o telefone primeiro!")
+            self.campos_form['telefone'].focus()
+            return
+        
+        # Limpar telefone (remover caracteres especiais)
+        telefone_limpo = ''.join(filter(str.isdigit, telefone))
+        
+        # Verificar se tem pelo menos 10 dígitos
+        if len(telefone_limpo) < 10:
+            custom_messagebox("warning", "Aviso", "⚠️ Telefone deve ter pelo menos 10 dígitos!")
+            self.campos_form['telefone'].focus()
+            return
+        
+        # Formatar telefone para PIX
+        if len(telefone_limpo) == 10:
+            # Fixo: (XX) XXXX-XXXX
+            tel_formatado = f"({telefone_limpo[:2]}) {telefone_limpo[2:6]}-{telefone_limpo[6:]}"
+        elif len(telefone_limpo) == 11:
+            # Celular: (XX) 9XXXX-XXXX
+            tel_formatado = f"({telefone_limpo[:2]}) {telefone_limpo[2:7]}-{telefone_limpo[7:]}"
+        else:
+            # Manter como estava se tiver mais de 11 dígitos
+            tel_formatado = telefone_limpo
+        
+        # Atualizar campo telefone com formatação
+        self.campos_form['telefone'].delete(0, tk.END)
+        self.campos_form['telefone'].insert(0, tel_formatado)
+        
+        # Definir tipo PIX como Telefone
+        self.tipo_pix.set('Telefone')
+        
+        # Preencher chave PIX
+        self.campos_form['chave_pix'].delete(0, tk.END)
+        self.campos_form['chave_pix'].insert(0, tel_formatado)
+        
+        custom_messagebox("info", "PIX Configurado", 
+                        f"✅ Telefone configurado como chave PIX!\n\n"
+                        f"📱 {tel_formatado}\n\n"
+                        f"➡️ Continue preenchendo os outros dados")
+
+    def atualizar_chave_pix(self, event=None):
+        """Atualiza o campo de chave PIX baseado no tipo selecionado"""
+        tipo_selecionado = self.tipo_pix.get()
+        self.campos_form['chave_pix'].delete(0, tk.END)
+        
+        if tipo_selecionado == 'CNPJ/CPF':
+            self.campos_form['chave_pix'].insert(0, self.campos_form['cnpj_cpf'].get())
+        elif tipo_selecionado == 'Telefone':
+            self.campos_form['chave_pix'].insert(0, self.campos_form['telefone'].get())
+        elif tipo_selecionado == 'Email':
+            self.campos_form['chave_pix'].insert(0, self.campos_form['email'].get())
+
+    def atualizar_tipo_pessoa(self, event=None):
+        """Determina automaticamente o tipo de pessoa baseado no CNPJ/CPF"""
+        cnpj_cpf = self.campos_form['cnpj_cpf'].get().strip()
+        # Remove caracteres não numéricos
+        cnpj_cpf = ''.join(filter(str.isdigit, cnpj_cpf))
+        
+        if len(cnpj_cpf) <= 11:
+            self.campos_form['tipo_pessoa'].set('PF')
+        else:
+            self.campos_form['tipo_pessoa'].set('PJ')
+
+    def copiar_para_nome(self, event=None):
+        """Copia a razão social para o nome se este estiver vazio"""
+        razao_social = self.campos_form['razao_social'].get().strip()
+        nome_atual = self.campos_form['nome'].get().strip()
+        
+        if razao_social and not nome_atual:
+            self.campos_form['nome'].insert(0, razao_social)
+
+    def salvar_fornecedor_com_cpf_criado(self):
+        """Salva fornecedor e marca CPF criado como usado - VERSÃO CORRIGIDA"""
+        # Validar campos obrigatórios
+        campos_obrigatorios = ['tipo_pessoa', 'cnpj_cpf', 'razao_social', 'nome', 'categoria']
+        for campo in campos_obrigatorios:
+            if not self.campos_form[campo].get().strip():
+                custom_messagebox("error", "Erro", f"❌ O campo {campo} é obrigatório!")
+                return
+
+        # Validar CNPJ/CPF
+        tipo_pessoa = self.campos_form['tipo_pessoa'].get()
+        cnpj_cpf_original = self.campos_form['cnpj_cpf'].get().strip()
+        
+        # Limpar CNPJ/CPF mantendo apenas números
+        cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_original))
+        
+        # Validar com números limpos
+        if not self.validar_cnpj_cpf_numeros(cnpj_cpf_numeros):
+            custom_messagebox("error", "Erro", f"❌ {'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
+            return
+        
+        # Verificar se é um CPF criado
+        eh_cpf_criado = False
+        if tipo_pessoa == 'PF' and len(cnpj_cpf_numeros) == 11:
+            try:
+                if not hasattr(self, 'gerenciador_cpfs'):
+                    self.gerenciador_cpfs = GerenciadorCPFsCriados()
+                cpfs_disponiveis = self.gerenciador_cpfs.listar_cpfs_disponiveis()
+                if cnpj_cpf_numeros in cpfs_disponiveis:
+                    eh_cpf_criado = True
+            except Exception as e:
+                print(f"Erro ao verificar CPF criado: {str(e)}")
+
+        # Montar dados bancários
+        if self.campos_form['chave_pix'].get():
+            dados_bancarios = f"PIX: {self.campos_form['chave_pix'].get()}"
+        else:
+            dados_bancarios = (f"{self.campos_form['banco'].get()} "
+                            f"{self.campos_form['op'].get()} - "
+                            f"{self.campos_form['agencia'].get()} "
+                            f"{self.campos_form['conta'].get()}").strip()
+
+        # Preparar dados garantindo que tudo seja string
+        dados = {
+            'tipo_pessoa': str(tipo_pessoa),
+            'cnpj_cpf': str(cnpj_cpf_numeros),  # Salvar apenas números
+            'razao_social': str(self.campos_form['razao_social'].get().upper()),
+            'nome': str(self.campos_form['nome'].get().upper()),
+            'telefone': str(self.campos_form['telefone'].get()),
+            'email': str(self.campos_form['email'].get()),
+            'banco': str(self.campos_form['banco'].get()),
+            'op': str(self.campos_form['op'].get()),
+            'agencia': str(self.campos_form['agencia'].get()),
+            'conta': str(self.campos_form['conta'].get()),
+            'chave_pix': str(self.campos_form['chave_pix'].get()),
+            'categoria': str(self.campos_form['categoria'].get().upper()),
+            'especificacao': str(self.campos_form['especificacao'].get().upper()),
+            'vinculo': str(self.campos_form['vinculo'].get().upper()),
+            'dados_bancarios': str(dados_bancarios)
+        }
+
+        try:
+            # Salvar na base de fornecedores
+            self.salvar_na_base_fornecedores(dados)
+            
+            # Se for CPF criado, marcar como usado
+            if eh_cpf_criado:
+                nome_fornecedor = self.campos_form['nome'].get().upper()
+                sucesso_marcacao = self.gerenciador_cpfs.marcar_cpf_como_usado(cnpj_cpf_numeros, nome_fornecedor)
+                
+                if sucesso_marcacao:
+                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf_numeros)
+                    mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
+                                    f"🔄 CPF criado marcado como usado:\n"
+                                    f"📋 {cnpj_cpf_formatado}\n"
+                                    f"👤 {nome_fornecedor}")
+                else:
+                    mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
+                                    f"⚠️ Aviso: Não foi possível marcar o CPF como usado")
+            else:
+                mensagem_sucesso = f"✅ Fornecedor salvo com sucesso!"
+                
+            custom_messagebox("info", "Sucesso", mensagem_sucesso)
+            self.janela_fornecedor.destroy()
+            self.buscar_fornecedor()  # Atualizar lista
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"❌ Erro ao salvar fornecedor:\n{str(e)}")
+
+    def gerenciar_cpfs_criados(self):
+        """Abre interface para gerenciar fornecedores com CPFs criados - NOVA FUNCIONALIDADE"""
+        try:
+            # Verificar se o arquivo de fornecedores existe
+            if not os.path.exists(ARQUIVO_FORNECEDORES):
+                custom_messagebox("error", "Erro", "Arquivo de fornecedores não encontrado!")
+                return
+            
+            # Criar janela de gerenciamento
+            janela_gerencia = tk.Toplevel(self.root)
+            janela_gerencia.title("Gerenciar Fornecedores com CPF Criado")
+            janela_gerencia.geometry("900x700")
+            janela_gerencia.transient(self.root)
+            janela_gerencia.grab_set()
+            
+            # Centralizar janela
+            janela_gerencia.update_idletasks()
+            x = (janela_gerencia.winfo_screenwidth() // 2) - (450)
+            y = (janela_gerencia.winfo_screenheight() // 2) - (350)
+            janela_gerencia.geometry(f"900x800+{x}+{y}")
+            
+            main_frame = ttk.Frame(janela_gerencia, padding="15")
+            main_frame.pack(fill='both', expand=True)
+            
+            # Cabeçalho
+            header_frame = ttk.Frame(main_frame)
+            header_frame.pack(fill='x', pady=(0, 15))
+            
+            ttk.Label(header_frame, text="Gerenciar Fornecedores com CPF Criado", 
+                    font=('Arial', 16, 'bold')).pack()
+            ttk.Label(header_frame, text="Exclua registros temporários quando obtiver os dados reais", 
+                    font=('Arial', 10), foreground='gray').pack()
+            
+            # Frame de controles
+            controls_frame = ttk.Frame(main_frame)
+            controls_frame.pack(fill='x', pady=(0, 10))
+            
+            # Botão para atualizar lista
+            ttk.Button(controls_frame, text="Atualizar Lista", 
+                    command=lambda: self.carregar_fornecedores_cpf_criado(tree_fornecedores)).pack(side='left', padx=5)
+            
+            # Botão para excluir selecionados
+            ttk.Button(controls_frame, text="Excluir Selecionados", 
+                    command=lambda: self.excluir_fornecedores_selecionados(tree_fornecedores)).pack(side='left', padx=5)
+            
+            # Label para contagem
+            self.lbl_contagem = ttk.Label(controls_frame, text="", font=('Arial', 10))
+            self.lbl_contagem.pack(side='right', padx=10)
+            
+            # Frame para lista de fornecedores
+            lista_frame = ttk.LabelFrame(main_frame, text="Fornecedores com CPF Criado:")
+            lista_frame.pack(fill='both', expand=True, pady=(0, 10))
+            
+            # Frame interno para Treeview e scrollbars
+            tree_frame = ttk.Frame(lista_frame)
+            tree_frame.pack(fill='both', expand=True, padx=10, pady=10)
+            
+            # Treeview para fornecedores
+            tree_fornecedores = ttk.Treeview(tree_frame, 
+                                            columns=('CPF', 'Nome', 'Categoria', 'Especificacao', 'Status'), 
+                                            show='headings', 
+                                            height=20,
+                                            selectmode='extended')  # Permite seleção múltipla
+            
+            # Configurar colunas
+            tree_fornecedores.heading('CPF', text='CPF Criado')
+            tree_fornecedores.heading('Nome', text='Nome/Razão Social')
+            tree_fornecedores.heading('Categoria', text='Categoria')
+            tree_fornecedores.heading('Especificacao', text='Especificação')
+            tree_fornecedores.heading('Status', text='Status')
+            
+            tree_fornecedores.column('CPF', width=150, anchor='center')
+            tree_fornecedores.column('Nome', width=250)
+            tree_fornecedores.column('Categoria', width=100, anchor='center')
+            tree_fornecedores.column('Especificacao', width=150)
+            tree_fornecedores.column('Status', width=120, anchor='center')
+            
+            # Scrollbars
+            scroll_y = ttk.Scrollbar(tree_frame, orient='vertical', command=tree_fornecedores.yview)
+            scroll_x = ttk.Scrollbar(tree_frame, orient='horizontal', command=tree_fornecedores.xview)
+            tree_fornecedores.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
+            
+            tree_fornecedores.pack(side='left', fill='both', expand=True)
+            scroll_y.pack(side='right', fill='y')
+            scroll_x.pack(side='bottom', fill='x')
+            
+            # Frame de informações e ações
+            info_frame = ttk.LabelFrame(main_frame, text="Informações:")
+            info_frame.pack(fill='x', pady=(0, 15))
+            
+            info_text = tk.Text(info_frame, height=4, wrap='word', bg='#f0f0f0', 
+                            font=('Arial', 9), state='normal')
+            info_text.pack(fill='x', padx=10, pady=10)
+            
+            info_text.insert('1.0', 
+                "• Selecione um ou múltiplos fornecedores para exclusão (Ctrl+Click para múltipla seleção)\n"
+                "• CPFs criados são identificados automaticamente pela base de CPFs gerados\n"
+                "• A exclusão é permanente - certifique-se antes de confirmar\n"
+                "• Após excluir, o CPF volta a ficar disponível para reutilização")
+            info_text.config(state='disabled')
+            
+            # Botões de ação
+            buttons_frame = ttk.Frame(main_frame)
+            buttons_frame.pack(fill='x')
+            
+            ttk.Button(buttons_frame, text="Fechar", 
+                    command=janela_gerencia.destroy).pack(side='right', padx=5)
+            
+            ttk.Button(buttons_frame, text="Exportar Lista", 
+                    command=lambda: self.exportar_lista_cpf_criado(tree_fornecedores)).pack(side='left', padx=5)
+            
+            # Carregar dados iniciais
+            self.carregar_fornecedores_cpf_criado(tree_fornecedores)
+            
+            # Armazenar referência da tree para uso em outras funções
+            self.tree_gerencia_cpf = tree_fornecedores
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir gerenciador: {str(e)}")
+
+    def carregar_fornecedores_cpf_criado(self, tree_widget):
+        """Carrega fornecedores que usam CPFs criados da aba CPF"""
+        try:
+            # Limpar tree
+            for item in tree_widget.get_children():
+                tree_widget.delete(item)
+            
+            # Inicializar gerenciador de CPFs se não existir
+            if not hasattr(self, 'gerenciador_cpfs'):
+                self.gerenciador_cpfs = GerenciadorCPFsCriados()
+            
+            # Obter lista de CPFs criados da aba CPF
+            cpfs_criados_total = self.gerenciador_cpfs.listar_todos_cpfs_criados()
+            
+            if not cpfs_criados_total:
+                self.lbl_contagem.config(text="Nenhum CPF criado encontrado na aba CPF")
+                tree_widget.insert('', 'end', values=(
+                    '', 'Nenhum CPF criado encontrado na aba CPF', '', '', ''
+                ))
+                return
+            
+            # Carregar fornecedores da aba Fornecedores
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+            
+            fornecedores_encontrados = []
+            cpfs_usados = self.gerenciador_cpfs.listar_cpfs_usados()
+            
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Pular linhas vazias
+                    continue
+                
+                cnpj_cpf_row = str(row[0]).strip()
+                # Remover formatação para comparação
+                cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_row))
+                
+                # Verificar se é um CPF criado
+                if cnpj_cpf_numeros in cpfs_criados_total:
+                    nome = str(row[3] or '').strip()  # Coluna D = Nome
+                    categoria = str(row[11] or '').strip()  # Coluna L = Categoria
+                    especificacao = str(row[12] or '').strip()  # Coluna M = Especificação
+                    
+                    # Verificar status na aba CPF
+                    status = "Em Uso" if cnpj_cpf_numeros in cpfs_usados else "Disponível"
+                    
+                    # Obter detalhes do CPF da aba CPF
+                    detalhes = self.gerenciador_cpfs.obter_detalhes_cpf_usado(cnpj_cpf_numeros)
+                    if detalhes:
+                        if detalhes['status'].upper() == 'USADO':
+                            status = f"Em Uso ({detalhes['data_uso']})"
+                        elif detalhes['status'].upper() == 'DISPONIVEL':
+                            status = "Cadastrado (não deveria existir)"
+                        elif detalhes['status'].upper() == 'INVALIDO':
+                            status = "CPF Inválido"
+                    
+                    # Formatar CPF para exibição
+                    cpf_formatado = f"{cnpj_cpf_numeros[:3]}.{cnpj_cpf_numeros[3:6]}.{cnpj_cpf_numeros[6:9]}-{cnpj_cpf_numeros[9:]}"
+                    
+                    # Inserir na tree
+                    item_id = tree_widget.insert('', 'end', values=(
+                        cpf_formatado,
+                        nome,
+                        categoria,
+                        especificacao,
+                        status
+                    ), tags=(cnpj_cpf_numeros,))  # Armazenar CPF sem formatação nas tags
+                    
+                    fornecedores_encontrados.append({
+                        'cpf': cnpj_cpf_numeros,
+                        'nome': nome,
+                        'categoria': categoria,
+                        'especificacao': especificacao,
+                        'status': status
+                    })
+            
+            wb.close()
+            
+            # Atualizar contador
+            total = len(fornecedores_encontrados)
+            em_uso = len([f for f in fornecedores_encontrados if 'Em Uso' in f['status']])
+            inconsistentes = len([f for f in fornecedores_encontrados if 'não deveria existir' in f['status']])
+            
+            contador_texto = f"Total: {total} | Em uso: {em_uso}"
+            if inconsistentes > 0:
+                contador_texto += f" | Inconsistentes: {inconsistentes}"
+            
+            self.lbl_contagem.config(text=contador_texto)
+            
+            if total == 0:
+                # Inserir mensagem informativa
+                tree_widget.insert('', 'end', values=(
+                    '', 'Nenhum fornecedor com CPF criado encontrado', '', '', ''
+                ))
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao carregar fornecedores: {str(e)}")
+            print(f"Erro detalhado: {str(e)}")
+            import traceback
+            traceback.print_exc()
+
+    def excluir_fornecedores_selecionados(self, tree_widget):
+        """Exclui os fornecedores selecionados da base"""
+        try:
+            selecionados = tree_widget.selection()
+            
+            if not selecionados:
+                custom_messagebox("warning", "Aviso", "Selecione pelo menos um fornecedor para excluir!")
+                return
+            
+            # Coletar dados dos selecionados
+            fornecedores_para_excluir = []
+            for item in selecionados:
+                values = tree_widget.item(item)['values']
+                if values[1] == 'Nenhum fornecedor com CPF criado encontrado':
+                    continue
+                
+                cpf_sem_formatacao = tree_widget.item(item)['tags'][0]
+                fornecedores_para_excluir.append({
+                    'cpf': cpf_sem_formatacao,
+                    'cpf_formatado': values[0],
+                    'nome': values[1],
+                    'categoria': values[2],
+                    'especificacao': values[3],
+                    'status': values[4]
+                })
+            
+            if not fornecedores_para_excluir:
+                custom_messagebox("warning", "Aviso", "Nenhum fornecedor válido selecionado!")
+                return
+            
+            # Confirmar exclusão
+            total = len(fornecedores_para_excluir)
+            lista_nomes = '\n'.join([f"• {f['cpf_formatado']} - {f['nome']}" for f in fornecedores_para_excluir[:5]])
+            if total > 5:
+                lista_nomes += f"\n... e mais {total - 5} fornecedores"
+            
+            resposta = custom_messagebox("question", "Confirmar Exclusão", 
+                                    f"Deseja realmente excluir {total} fornecedor(es)?\n\n"
+                                    f"{lista_nomes}\n\n"
+                                    f"ATENÇÃO: Esta ação é permanente e não pode ser desfeita!")
+            
+            if resposta != 'yes':
+                return
+            
+            # Executar exclusão
+            sucesso, falhas = self.executar_exclusao_fornecedores(fornecedores_para_excluir)
+            
+            # Mostrar resultado
+            if falhas:
+                mensagem = f"Exclusão concluída com problemas:\n\n"
+                mensagem += f"✓ Excluídos com sucesso: {sucesso}\n"
+                mensagem += f"✗ Falhas: {len(falhas)}\n\n"
+                mensagem += "Fornecedores com falha:\n"
+                for falha in falhas[:3]:
+                    mensagem += f"• {falha['nome']} - {falha['erro']}\n"
+                if len(falhas) > 3:
+                    mensagem += f"... e mais {len(falhas) - 3} falhas"
+                
+                custom_messagebox("warning", "Exclusão com Problemas", mensagem)
+            else:
+                custom_messagebox("info", "Sucesso", 
+                                f"✓ {sucesso} fornecedor(es) excluído(s) com sucesso!\n\n"
+                                f"Os CPFs voltaram a ficar disponíveis para reutilização.")
+            
+            # Recarregar lista
+            self.carregar_fornecedores_cpf_criado(tree_widget)
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro durante exclusão: {str(e)}")
+
+    def executar_exclusao_fornecedores(self, fornecedores_para_excluir):
+        """Executa a exclusão dos fornecedores da base e atualiza CPFs criados"""
+        sucesso = 0
+        falhas = []
+        
+        try:
+            # Carregar planilha de fornecedores
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+            
+            # Coletar todas as linhas que NÃO devem ser excluídas
+            linhas_manter = []
+            cpfs_excluir = [f['cpf'] for f in fornecedores_para_excluir]
+            
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Linha vazia
+                    continue
+                
+                cnpj_cpf_row = str(row[0]).strip()
+                cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_row))
+                
+                # Se não está na lista de exclusão, manter
+                if cnpj_cpf_numeros not in cpfs_excluir:
+                    linhas_manter.append(row)
+            
+            # Limpar planilha (manter apenas cabeçalho)
+            for row in ws.iter_rows(min_row=2):
+                for cell in row:
+                    cell.value = None
+            
+            # Reescrever apenas as linhas que devem ser mantidas
+            for i, row_data in enumerate(linhas_manter, start=2):
+                for j, value in enumerate(row_data, start=1):
+                    if j <= 15:  # Limitar às colunas existentes
+                        ws.cell(row=i, column=j, value=value)
+            
+            # Salvar alterações na base de fornecedores
+            wb.save(ARQUIVO_FORNECEDORES)
+            
+            # Marcar CPFs como disponíveis novamente
+            if not hasattr(self, 'gerenciador_cpfs'):
+                self.gerenciador_cpfs = GerenciadorCPFsCriados()
+            
+            for fornecedor in fornecedores_para_excluir:
+                try:
+                    # Tentar marcar CPF como disponível novamente
+                    self.gerenciador_cpfs.marcar_cpf_como_disponivel(fornecedor['cpf'])
+                    sucesso += 1
+                except Exception as e:
+                    falhas.append({
+                        'nome': fornecedor['nome'],
+                        'cpf': fornecedor['cpf'],
+                        'erro': str(e)
+                    })
+            
+        except Exception as e:
+            # Se der erro geral, considerar falha para todos
+            for fornecedor in fornecedores_para_excluir:
+                falhas.append({
+                    'nome': fornecedor['nome'],
+                    'cpf': fornecedor['cpf'],
+                    'erro': f"Erro geral: {str(e)}"
+                })
+        
+        return sucesso, falhas
+
+    def exportar_lista_cpf_criado(self, tree_widget):
+        """Exporta a lista de fornecedores com CPF criado para Excel"""
+        try:
+            from tkinter import filedialog
+            import pandas as pd
+            from datetime import datetime
+            
+            # Verificar se há dados
+            if not tree_widget.get_children():
+                custom_messagebox("warning", "Aviso", "Não há dados para exportar!")
+                return
+            
+            # Coletar dados da tree
+            dados = []
+            for item in tree_widget.get_children():
+                values = tree_widget.item(item)['values']
+                if values[1] != 'Nenhum fornecedor com CPF criado encontrado':
+                    dados.append({
+                        'CPF_Criado': values[0],
+                        'Nome_Razao_Social': values[1],
+                        'Categoria': values[2],
+                        'Especificacao': values[3],
+                        'Status': values[4]
+                    })
+            
+            if not dados:
+                custom_messagebox("warning", "Aviso", "Não há dados válidos para exportar!")
+                return
+            
+            # Escolher local para salvar
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            arquivo = filedialog.asksaveasfilename(
+                title="Salvar lista de fornecedores com CPF criado",
+                defaultextension=".xlsx",
+                filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
+                initialvalue=f"fornecedores_cpf_criado_{timestamp}.xlsx"
+            )
+            
+            if not arquivo:
+                return
+            
+            # Criar DataFrame e salvar
+            df = pd.DataFrame(dados)
+            
+            with pd.ExcelWriter(arquivo, engine='openpyxl') as writer:
+                df.to_excel(writer, sheet_name='Fornecedores_CPF_Criado', index=False)
+                
+                # Ajustar largura das colunas
+                worksheet = writer.sheets['Fornecedores_CPF_Criado']
+                for column in worksheet.columns:
+                    max_length = 0
+                    column_letter = column[0].column_letter
+                    for cell in column:
+                        try:
+                            if len(str(cell.value)) > max_length:
+                                max_length = len(str(cell.value))
+                        except:
+                            pass
+                    adjusted_width = min(max_length + 2, 50)
+                    worksheet.column_dimensions[column_letter].width = adjusted_width
+            
+            custom_messagebox("info", "Sucesso", 
+                            f"Lista exportada com sucesso!\n\n"
+                            f"Arquivo: {arquivo}\n"
+                            f"Total de registros: {len(dados)}")
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao exportar: {str(e)}")
+
+    def validar_cnpj_cpf_numeros(self, numeros):
+        """Valida CNPJ ou CPF usando apenas números"""
+        if not numeros or not numeros.isdigit():
+            return False
+        
+        if len(numeros) == 11:
+            return self.validar_cpf_algoritmo(numeros)
+        elif len(numeros) == 14:
+            return self.validar_cnpj_algoritmo(numeros)
+        else:
+            return False
+
+    def validar_cpf_algoritmo(self, cpf):
+        """Valida CPF usando algoritmo oficial"""
+        if cpf == cpf[0] * 11:
+            return False
+        
+        # Calcular primeiro dígito verificador
+        soma = 0
+        for i in range(9):
+            soma += int(cpf[i]) * (10 - i)
+        
+        resto = soma % 11
+        digito1 = 0 if resto < 2 else 11 - resto
+        
+        if int(cpf[9]) != digito1:
+            return False
+        
+        # Calcular segundo dígito verificador
+        soma = 0
+        for i in range(10):
+            soma += int(cpf[i]) * (11 - i)
+        
+        resto = soma % 11
+        digito2 = 0 if resto < 2 else 11 - resto
+        
+        return int(cpf[10]) == digito2
+
+    def validar_cnpj_algoritmo(self, cnpj):
+        """Valida CNPJ usando algoritmo oficial"""
+        if cnpj == cnpj[0] * 14:
+            return False
+        
+        # Calcular primeiro dígito verificador
+        peso = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+        soma = sum(int(cnpj[i]) * peso[i] for i in range(12))
+        resto = soma % 11
+        digito1 = 0 if resto < 2 else 11 - resto
+        
+        if int(cnpj[12]) != digito1:
+            return False
+        
+        # Calcular segundo dígito verificador
+        peso = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+        soma = sum(int(cnpj[i]) * peso[i] for i in range(13))
+        resto = soma % 11
+        digito2 = 0 if resto < 2 else 11 - resto
+        
+        return int(cnpj[13]) == digito2
+
+    def salvar_na_base_fornecedores(self, dados):
+        """Salva os dados na planilha de fornecedores - VERSÃO CORRIGIDA"""
+        try:
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+            
+            # Coletar todos os dados existentes e o novo
+            fornecedores = []
+            
+            # Converter dados existentes mantendo formato original da planilha
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0]:  # Se tem CNPJ/CPF
+                    fornecedor = {
+                        'cnpj_cpf': str(row[0]) if row[0] is not None else '',  # CORREÇÃO: Garantir string
+                        'tipo_pessoa': str(row[1]) if row[1] is not None else '',
+                        'razao_social': str(row[2]) if row[2] is not None else '',
+                        'nome': str(row[3]) if row[3] is not None else '',
+                        'telefone': str(row[4]) if row[4] is not None else '',
+                        'email': str(row[5]) if row[5] is not None else '',
+                        'banco': str(row[6]) if row[6] is not None else '',
+                        'op': str(row[7]) if row[7] is not None else '',
+                        'agencia': str(row[8]) if row[8] is not None else '',
+                        'conta': str(row[9]) if row[9] is not None else '',
+                        'chave_pix': str(row[10]) if row[10] is not None else '',
+                        'categoria': str(row[11]) if row[11] is not None else '',
+                        'especificacao': str(row[12]) if row[12] is not None else '',
+                        'vinculo': str(row[13]) if row[13] is not None else '',
+                        'dados_bancarios': str(row[14]) if row[14] is not None else ''
+                    }
+                    fornecedores.append(fornecedor)
+            
+            # CORREÇÃO: Garantir que todos os campos do novo fornecedor sejam strings
+            dados_corrigidos = {}
+            for key, value in dados.items():
+                if value is None:
+                    dados_corrigidos[key] = ''
+                else:
+                    dados_corrigidos[key] = str(value)
+            
+            # Adicionar novo fornecedor ou atualizar existente
+            fornecedor_encontrado = False
+            for i, fornecedor in enumerate(fornecedores):
+                # CORREÇÃO: Comparar strings com strings
+                if str(fornecedor['cnpj_cpf']).strip() == str(dados_corrigidos['cnpj_cpf']).strip():
+                    fornecedores[i] = dados_corrigidos.copy()
+                    fornecedor_encontrado = True
+                    break
+            
+            if not fornecedor_encontrado:
+                fornecedores.append(dados_corrigidos.copy())
+            
+            # CORREÇÃO: Ordenar de forma segura convertendo tudo para string maiúscula
+            try:
+                fornecedores_ordenados = sorted(
+                    fornecedores,
+                    key=lambda x: (str(x.get('nome', '')).upper().strip(), str(x.get('cnpj_cpf', '')).strip())
+                )
+            except Exception as e:
+                print(f"Erro na ordenação, mantendo ordem original: {str(e)}")
+                # Se der erro na ordenação, manter ordem original
+                fornecedores_ordenados = fornecedores
+            
+            # Limpar planilha existente
+            for row in ws.iter_rows(min_row=2):
+                for cell in row:
+                    cell.value = None
+            
+            # Reescrever dados ordenados
+            for i, fornecedor in enumerate(fornecedores_ordenados, start=2):
+                ws.cell(row=i, column=1, value=fornecedor.get('cnpj_cpf', ''))
+                ws.cell(row=i, column=2, value=fornecedor.get('tipo_pessoa', ''))
+                ws.cell(row=i, column=3, value=fornecedor.get('razao_social', ''))
+                ws.cell(row=i, column=4, value=fornecedor.get('nome', ''))
+                ws.cell(row=i, column=5, value=fornecedor.get('telefone', ''))
+                ws.cell(row=i, column=6, value=fornecedor.get('email', ''))
+                ws.cell(row=i, column=7, value=fornecedor.get('banco', ''))
+                ws.cell(row=i, column=8, value=fornecedor.get('op', ''))
+                ws.cell(row=i, column=9, value=fornecedor.get('agencia', ''))
+                ws.cell(row=i, column=10, value=fornecedor.get('conta', ''))
+                ws.cell(row=i, column=11, value=fornecedor.get('chave_pix', ''))
+                ws.cell(row=i, column=12, value=fornecedor.get('categoria', ''))
+                ws.cell(row=i, column=13, value=fornecedor.get('especificacao', ''))
+                ws.cell(row=i, column=14, value=fornecedor.get('vinculo', ''))
+                ws.cell(row=i, column=15, value=fornecedor.get('dados_bancarios', ''))
+            
+            wb.save(ARQUIVO_FORNECEDORES)
+            
+        except Exception as e:
+            raise Exception(f"Erro ao salvar na planilha: {str(e)}")
+
+    def atualizar_linha_fornecedor(self, row, dados):
+        """Atualiza uma linha existente com novos dados"""
+        row[0].value = dados['cnpj_cpf']
+        row[1].value = dados['tipo_pessoa']  # Nova coluna para tipo de pessoa
+        row[2].value = dados['razao_social']
+        row[3].value = dados['nome']
+        row[4].value = dados['telefone']
+        row[5].value = dados['email']
+        row[6].value = dados['banco']
+        row[7].value = dados['op']
+        row[8].value = dados['agencia']
+        row[9].value = dados['conta']
+        row[10].value = dados['chave_pix']
+        row[11].value = dados['categoria']
+        row[12].value = dados['especificacao']
+        row[13].value = dados['vinculo']
+        row[14].value = dados['dados_bancarios']
+
+    def adicionar_linha_fornecedor(self, ws, linha, dados):
+        """Adiciona uma nova linha com os dados do fornecedor"""
+        ws.cell(row=linha, column=1, value=dados['cnpj_cpf'])
+        ws.cell(row=linha, column=2, value=dados['tipo_pessoa'])
+        ws.cell(row=linha, column=3, value=dados['razao_social'])
+        ws.cell(row=linha, column=4, value=dados['nome'])
+        ws.cell(row=linha, column=5, value=dados['telefone'])
+        ws.cell(row=linha, column=6, value=dados['email'])
+        ws.cell(row=linha, column=7, value=dados['banco'])
+        ws.cell(row=linha, column=8, value=dados['op'])
+        ws.cell(row=linha, column=9, value=dados['agencia'])
+        ws.cell(row=linha, column=10, value=dados['conta'])
+        ws.cell(row=linha, column=11, value=dados['chave_pix'])
+        ws.cell(row=linha, column=12, value=dados['categoria'])
+        ws.cell(row=linha, column=13, value=dados['especificacao'])
+        ws.cell(row=linha, column=14, value=dados['vinculo'])
+        ws.cell(row=linha, column=15, value=dados['dados_bancarios'])
+      
+    def atualizar_fornecedor(self):
+        """Atualiza dados do fornecedor existente"""
+        # Validações semelhantes ao salvar_fornecedor
+        campos_obrigatorios = ['razao_social', 'nome', 'categoria']
+        for campo in campos_obrigatorios:
+            if not self.campos_form[campo].get().strip():
+                custom_messagebox("error", "Erro", f"O campo {campo} é obrigatório!")
+                return
+
+        try:
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+            
+            cnpj_cpf = self.campos_form['cnpj_cpf'].get()
+            for row in ws.iter_rows(min_row=2):
+                if row[0].value == cnpj_cpf:
+                    # Atualizar dados na linha existente
+                    row[1].value = self.campos_form['tipo_pessoa'].get().upper()
+                    row[2].value = self.campos_form['razao_social'].get().upper()
+                    row[3].value = self.campos_form['nome'].get().upper()
+                    row[4].value = self.campos_form['telefone'].get()
+                    row[5].value = self.campos_form['email'].get()
+                    row[6].value = self.campos_form['banco'].get()
+                    row[7].value = self.campos_form['op'].get()
+                    row[8].value = self.campos_form['agencia'].get()
+                    row[9].value = self.campos_form['conta'].get()
+                    row[10].value = self.campos_form['chave_pix'].get()
+                    row[11].value = self.campos_form['categoria'].get()
+                    row[12].value = self.campos_form['especificacao'].get().upper()
+                    row[13].value = self.campos_form['vinculo'].get().upper()
+                    row[14].value = self.campos_form['dados_bancarios'].get().upper()
+                    break
+
+            wb.save(ARQUIVO_FORNECEDORES)
+            custom_messagebox("info", "Sucesso", "Fornecedor atualizado com sucesso!")
+            self.janela_fornecedor.destroy()
+            self.buscar_fornecedor()  # Atualiza a lista
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao atualizar fornecedor: {str(e)}")
+
+    def preencher_dados_fornecedor(self, dados):
+        """Preenche os campos do fornecedor na aba de entrada"""
+        self.campos_fornecedor['cnpj_cpf'].delete(0, tk.END)
+        self.campos_fornecedor['cnpj_cpf'].insert(0, dados[0])
+        
+        self.campos_fornecedor['nome'].delete(0, tk.END)
+        self.campos_fornecedor['nome'].insert(0, dados[1])
+        
+        self.campos_fornecedor['categoria'].delete(0, tk.END)
+        self.campos_fornecedor['categoria'].insert(0, dados[2])
+
     def abrir_visualizador_fornecedor(self):
         """Abre o visualizador de lançamentos para o fornecedor selecionado"""
         # Verificar se há fornecedor selecionado
@@ -2870,1111 +4503,7 @@ class SistemaEntradaDados:
         else:
             self.notebook.select(1)  # Volta para aba fornecedor
 
-    def buscar_fornecedor(self):
-        """Busca fornecedores baseado no termo digitado"""
-        try:
-            termo = self.busca_entry.get().strip()
-            
-            # Limpar resultados anteriores
-            for item in self.tree_fornecedores.get_children():
-                self.tree_fornecedores.delete(item)
-            
-            if not termo:
-                return
-            
-            # Abrir planilha de fornecedores
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-            
-            resultados_encontrados = 0
-            termo_upper = termo.upper()
-            
-            # Buscar na planilha
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular linhas vazias
-                    continue
-                    
-                cnpj_cpf = str(row[0]).strip()
-                nome = str(row[3] or '').strip().upper()  # Coluna D = Nome
-                categoria = str(row[11] or '').strip()    # Coluna L = Categoria
-                
-                # Verificar se o termo está no nome
-                if termo_upper in nome:
-                    # Formatar CNPJ/CPF para exibição
-                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf)
-                    
-                    # Inserir resultado na tree
-                    self.tree_fornecedores.insert('', 'end', values=(
-                        cnpj_cpf_formatado,
-                        nome,
-                        categoria
-                    ))
-                    
-                    resultados_encontrados += 1
-                    
-                    # Limitar resultados para evitar travamento
-                    if resultados_encontrados >= 100:
-                        break
-            
-            wb.close()
-            
-            # Ordenar resultados por nome
-            if resultados_encontrados > 1:
-                # Obter todos os itens
-                items = []
-                for item in self.tree_fornecedores.get_children():
-                    values = self.tree_fornecedores.item(item)['values']
-                    items.append(values)
-                
-                # Limpar tree
-                for item in self.tree_fornecedores.get_children():
-                    self.tree_fornecedores.delete(item)
-                
-                # Ordenar por nome (segundo elemento)
-                items.sort(key=lambda x: x[1])
-                
-                # Reinserir ordenado
-                for values in items:
-                    self.tree_fornecedores.insert('', 'end', values=values)
-            
-            if resultados_encontrados == 0:
-                # Mostrar mensagem quando não encontrar
-                self.tree_fornecedores.insert('', 'end', values=(
-                    '', 'Nenhum fornecedor encontrado', ''
-                ))
-                
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro na busca: {str(e)}")
-            print(f"Erro detalhado na busca: {str(e)}")
-
-    def novo_fornecedor(self):
-        """Abre janela para cadastro de novo fornecedor - VERSÃO CORRIGIDA"""
-        self.janela_fornecedor = tk.Toplevel(self.root)
-        self.janela_fornecedor.title("Novo Fornecedor")
-        self.janela_fornecedor.geometry("800x700")
-        
-        self.janela_fornecedor.transient(self.root)  # Definir como janela filha
-        self.janela_fornecedor.grab_set()  # Tornar modal
-        self.janela_fornecedor.update_idletasks()  # Garantir que o tamanho seja calculado
-        
-        # Calcular posição central
-        largura = 800
-        altura = 700
-        pos_x = (self.janela_fornecedor.winfo_screenwidth() // 2) - (largura // 2)
-        pos_y = (self.janela_fornecedor.winfo_screenheight() // 2) - (altura // 2)
-        
-        # Aplicar posição
-        self.janela_fornecedor.geometry(f"{largura}x{altura}+{pos_x}+{pos_y}")
-
-        self.janela_fornecedor.lift()  # Trazer para frente
-        self.janela_fornecedor.focus_force()  # Forçar foco
-        self.janela_fornecedor.attributes('-topmost', True)  # Manter no topo temporariamente
-
-        self.janela_fornecedor.after(500, lambda: self.janela_fornecedor.attributes('-topmost', False))
-        
-        # Configurar formulário
-        self.setup_formulario_fornecedor()
-
-        self.janela_fornecedor.after(100, lambda: self.janela_fornecedor.focus_force())
-
-    def editar_fornecedor(self):
-        """Abre janela para edição de fornecedor existente"""
-        selecionado = self.tree_fornecedores.selection()
-        if not selecionado:
-            custom_messagebox("warning",  "Aviso", "Selecione um fornecedor para editar")
-            return
-
-        # Buscar dados completos do fornecedor
-        fornecedor = self.buscar_fornecedor_completo(
-            self.tree_fornecedores.item(selecionado)['values'][0]
-        )
-        if not fornecedor:
-            custom_messagebox("error", "Erro", "Fornecedor não encontrado")
-            return
-
-        # Criar janela de edição
-        self.janela_fornecedor = tk.Toplevel(self.root)
-        self.janela_fornecedor.title("Editar Fornecedor")
-        self.setup_formulario_fornecedor(modo_edicao=True)
-
-        try:
-            # Determinar tipo de pessoa baseado no tamanho do CNPJ/CPF
-            cnpj_cpf = str(fornecedor['cnpj_cpf']).strip()
-            tipo_pessoa = 'PJ' if len(cnpj_cpf) > 11 else 'PF'
-
-            # Preencher e configurar campos não editáveis
-            # CNPJ/CPF
-            self.campos_form['cnpj_cpf'].insert(0, cnpj_cpf.zfill(14 if tipo_pessoa == 'PJ' else 11))
-            self.campos_form['cnpj_cpf'].config(state='readonly')
-            
-            # Tipo Pessoa
-            self.campos_form['tipo_pessoa'].set(tipo_pessoa)
-            self.campos_form['tipo_pessoa'].config(state='disabled')
-            
-            # Razão Social
-            self.campos_form['razao_social'].insert(0, fornecedor['razao_social'] or '')
-            self.campos_form['razao_social'].config(state='readonly')
-            
-            # Preencher campos editáveis
-            self.campos_form['nome'].insert(0, fornecedor['nome'] or '')
-            self.campos_form['telefone'].insert(0, fornecedor['telefone'] or '')
-            self.campos_form['email'].insert(0, fornecedor['email'] or '')
-            self.campos_form['banco'].insert(0, fornecedor['banco'] or '')
-            self.campos_form['op'].insert(0, fornecedor['op'] or '')
-            self.campos_form['agencia'].insert(0, fornecedor['agencia'] or '')
-            self.campos_form['conta'].insert(0, fornecedor['conta'] or '')
-            self.campos_form['chave_pix'].insert(0, fornecedor['chave_pix'] or '')
-            
-            # Categoria (pode ser combobox)
-            if isinstance(self.campos_form['categoria'], ttk.Combobox):
-                self.campos_form['categoria'].set(fornecedor['categoria'] or '')
-            else:
-                self.campos_form['categoria'].insert(0, fornecedor['categoria'] or '')
-                
-            self.campos_form['especificacao'].insert(0, fornecedor['especificacao'] or '')
-            self.campos_form['vinculo'].insert(0, fornecedor['vinculo'] or '')
-
-            # Centralizar a janela
-            self.janela_fornecedor.update_idletasks()
-            width = self.janela_fornecedor.winfo_width()
-            height = self.janela_fornecedor.winfo_height()
-            x = (self.janela_fornecedor.winfo_screenwidth() // 2) - (width // 2)
-            y = (self.janela_fornecedor.winfo_screenheight() // 2) - (height // 2)
-            self.janela_fornecedor.geometry('{}x{}+{}+{}'.format(width, height, x, y))
-            
-            # Tornar a janela modal
-            self.janela_fornecedor.transient(self.root)
-            self.janela_fornecedor.grab_set()
-
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao carregar dados do fornecedor: {str(e)}")
-            self.janela_fornecedor.destroy()
-
-    def selecionar_fornecedor(self):
-        """Seleciona o fornecedor e preenche seus dados"""
-        fornecedor = selecionar_fornecedor(
-            self.tree_fornecedores, 
-            self.campos_fornecedor,
-            self.campos_despesa,
-            self.notebook,
-            self.buscar_fornecedor_completo
-        )
-        if fornecedor:
-            # Formatar CNPJ/CPF
-            cnpj_cpf = str(fornecedor[0]).strip()
-            self.campos_fornecedor['cnpj_cpf'].config(state='normal')
-            self.campos_fornecedor['cnpj_cpf'].delete(0, tk.END)
-            self.campos_fornecedor['cnpj_cpf'].insert(0, formatar_cnpj_cpf(cnpj_cpf))
-            self.campos_fornecedor['cnpj_cpf'].config(state='readonly')
-            
-            # Carregar dados completos do fornecedor
-            fornecedor_completo = self.buscar_fornecedor_completo(cnpj_cpf)
-            if fornecedor_completo:
-                # Substituir o campo de categoria por Combobox
-                self.campos_fornecedor['categoria'] = ttk.Combobox(
-                    self.frame_fornecedor,  # Usando o atributo da classe
-                    values=get_categorias_fornecedor(),
-                    state='readonly',
-                    width=30
-                )
-                self.campos_fornecedor['categoria'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
-        
-                    
-                # Definir categoria do fornecedor
-                self.campos_fornecedor['categoria'].set(fornecedor_completo['categoria'])
-                
-                self.campos_fornecedor['dados_bancarios'].config(state='normal')
-                self.campos_fornecedor['dados_bancarios'].delete(0, tk.END)
-                
-                # Construir dados bancários
-                if fornecedor_completo['chave_pix']:
-                    dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
-                else:
-                    dados_bancarios = (f"{fornecedor_completo['banco'] or ''} "
-                                    f"{fornecedor_completo['op'] or ''} - "
-                                    f"{fornecedor_completo['agencia'] or ''} "
-                                    f"{fornecedor_completo['conta'] or ''}").strip()
-                    
-                if dados_bancarios.strip() in ['', ' - ']:
-                    dados_bancarios = 'DADOS BANCÁRIOS NÃO CADASTRADOS'
-                
-                self.campos_fornecedor['dados_bancarios'].insert(0, dados_bancarios)
-                self.campos_fornecedor['dados_bancarios'].config(state='readonly')
-                
-                # NOVO: Preencher campo de referência com a especificação do fornecedor, se disponível
-                if fornecedor_completo['especificacao'] and hasattr(self, 'campos_despesa') and 'referencia' in self.campos_despesa:
-                    if isinstance(self.campos_despesa['referencia'], ttk.Combobox):
-                        # Para Combobox, verificamos se o valor está nas opções
-                        especificacao = fornecedor_completo['especificacao'].strip()
-                        valores = self.campos_despesa['referencia']['values']
-                        
-                        # Deixamos o campo livre para edição quando não for tipo 1
-                        self.campos_despesa['referencia'].config(state='normal')
-                        self.campos_despesa['referencia'].delete(0, tk.END)
-                        self.campos_despesa['referencia'].insert(0, especificacao)
-                    else:
-                        # Para Entry normal
-                        self.campos_despesa['referencia'].delete(0, tk.END)
-                        self.campos_despesa['referencia'].insert(0, fornecedor_completo['especificacao'].strip())
-                
-                self.notebook.select(2)  # Vai para aba de dados
-            
-    def buscar_dados_bancarios(self, cnpj_cpf):
-        try:
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-        
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0] == cnpj_cpf:
-                    print(f"CNPJ/CPF encontrado: {cnpj_cpf}")
-                    print(f"Dados da linha: {row}")
-                    if row[14]:  # coluna O com dados bancários consolidados
-                        return row[14]
-                    return ""
-            return ""
-        except Exception as e:
-            print(f"Erro ao buscar dados bancários: {e}")
-            return ""
-
-    def abrir_controle_pagamentos(self):
-        """Abre o controle de pagamentos de taxa"""
-        try:
-            from gestao_taxas import GestaoTaxasAdministracao
-            gestao = GestaoTaxasAdministracao(self.root)
-            gestao.abrir_controle_pagamentos()
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
-
-    def abrir_finalizacao_quinzena(self):
-        """Abre a finalização de quinzena"""
-        try:
-            from gestao_taxas import GestaoTaxasAdministracao
-            gestao = GestaoTaxasAdministracao(self.root)
-            gestao.abrir_finalizacao_quinzena()
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao abrir finalização de quinzena: {str(e)}")    
-
-    def buscar_fornecedor_completo(self, cnpj_cpf):
-        """Busca todos os dados de um fornecedor - VERSÃO OTIMIZADA"""
-        try:
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-        
-            # Normalizar CNPJ/CPF de entrada
-            cnpj_cpf_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))
-            if len(cnpj_cpf_numeros) <= 11:
-                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(11)
-            else:
-                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(14)
-            
-            # Buscar na planilha
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:
-                    continue
-                    
-                # Normalizar CNPJ/CPF da planilha
-                row_cnpj_numeros = ''.join(filter(str.isdigit, str(row[0])))
-                if len(row_cnpj_numeros) <= 11:
-                    row_cnpj_normalizado = row_cnpj_numeros.zfill(11)
-                else:
-                    row_cnpj_normalizado = row_cnpj_numeros.zfill(14)
-                    
-                if row_cnpj_normalizado == cnpj_cpf_normalizado:
-                    fornecedor = {
-                        'cnpj_cpf': row[0],
-                        'tipo_pessoa': row[1],
-                        'razao_social': row[2],
-                        'nome': row[3],
-                        'telefone': row[4],
-                        'email': row[5],
-                        'banco': row[6],
-                        'op': row[7],
-                        'agencia': row[8],
-                        'conta': row[9],
-                        'chave_pix': row[10],
-                        'categoria': row[11],
-                        'especificacao': row[12],
-                        'vinculo': row[13],
-                    }
-                    wb.close()
-                    return fornecedor
-            
-            wb.close()
-            return None
-            
-        except Exception as e:
-            print(f"Erro ao buscar fornecedor: {e}")
-            return None
-   
-    def setup_formulario_fornecedor(self, modo_edicao=False):
-        """Configura o formulário de cadastro/edição de fornecedor com suporte a CPFs criados"""
-        formulario = ttk.Frame(self.janela_fornecedor)
-        formulario.pack(padx=10, pady=5, fill='both', expand=True)
-
-        # Inicializar gerenciador de CPFs se não existir
-        if not hasattr(self, 'gerenciador_cpfs'):
-            self.gerenciador_cpfs = GerenciadorCPFsCriados()
-
-        # Campos principais
-        campos_principais = ttk.LabelFrame(formulario, text="Dados Principais")
-        campos_principais.pack(fill='x', pady=5)
-
-        self.campos_form = {}
-
-        # Frame especial para CNPJ/CPF com botões de CPF criado
-        frame_cpf_completo = ttk.Frame(campos_principais)
-        frame_cpf_completo.grid(row=0, column=0, columnspan=4, sticky='ew', padx=5, pady=5)
-
-        # Label e campo CNPJ/CPF
-        tk.Label(frame_cpf_completo, text="CNPJ/CPF:*").grid(row=0, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['cnpj_cpf'] = tk.Entry(frame_cpf_completo, width=20)
-        self.campos_form['cnpj_cpf'].grid(row=0, column=1, padx=5, pady=2)
-        self.campos_form['cnpj_cpf'].bind('<FocusOut>', self.atualizar_tipo_pessoa)
-        
-        # Tipo de pessoa
-        tk.Label(frame_cpf_completo, text="Tipo:*").grid(row=0, column=2, padx=10, pady=2, sticky='w')
-        self.campos_form['tipo_pessoa'] = ttk.Combobox(frame_cpf_completo, 
-                                                    values=['PF', 'PJ'],
-                                                    state='readonly',
-                                                    width=5)
-        self.campos_form['tipo_pessoa'].grid(row=0, column=3, padx=5, pady=2)
-
-        # Frame para botões de CPF criado
-        frame_botoes_cpf = ttk.Frame(frame_cpf_completo)
-        frame_botoes_cpf.grid(row=1, column=0, columnspan=4, pady=5, sticky='ew')
-
-        # Botão para usar CPF criado automaticamente
-        btn_cpf_auto = ttk.Button(frame_botoes_cpf, 
-                                text="🔄 Obter CPF Criado", 
-                                command=self.usar_cpf_criado_auto,
-                                width=18)
-        btn_cpf_auto.pack(side='left', padx=5)
-
-        # Botão para escolher CPF da lista
-        btn_cpf_lista = ttk.Button(frame_botoes_cpf, 
-                                text="📋 Escolher da Lista", 
-                                command=self.mostrar_cpfs_disponiveis,
-                                width=18)
-        btn_cpf_lista.pack(side='left', padx=5)
-
-        # Label informativo
-        lbl_info = tk.Label(frame_botoes_cpf, 
-                        text="💡 Use estes botões para prestadores sem CPF próprio",
-                        font=('Arial', 8),
-                        fg='gray')
-        lbl_info.pack(side='left', padx=20)
-
-        # Razão Social e Nome
-        tk.Label(campos_principais, text="Razão Social:*").grid(row=1, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['razao_social'] = tk.Entry(campos_principais, width=50)
-        self.campos_form['razao_social'].grid(row=1, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
-        self.campos_form['razao_social'].bind('<FocusOut>', self.copiar_para_nome)
-
-        tk.Label(campos_principais, text="Nome Fantasia:*").grid(row=2, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['nome'] = tk.Entry(campos_principais, width=50)
-        self.campos_form['nome'].grid(row=2, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
-
-        # Contatos - Frame especial para telefone com botão PIX
-        campos_contato = ttk.LabelFrame(formulario, text="Contato")
-        campos_contato.pack(fill='x', pady=5)
-
-        # Frame para telefone com botão PIX
-        frame_telefone = ttk.Frame(campos_contato)
-        frame_telefone.grid(row=0, column=0, columnspan=2, sticky='ew', padx=5, pady=2)
-
-        tk.Label(frame_telefone, text="Telefone:").grid(row=0, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['telefone'] = tk.Entry(frame_telefone, width=20)
-        self.campos_form['telefone'].grid(row=0, column=1, padx=5, pady=2)
-
-        # Botão para usar telefone como PIX
-        btn_tel_pix = ttk.Button(frame_telefone, 
-                                text="📱 Usar como PIX", 
-                                command=self.usar_telefone_como_pix,
-                                width=15)
-        btn_tel_pix.grid(row=0, column=2, padx=10, pady=2)
-
-        # Email
-        tk.Label(campos_contato, text="Email:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['email'] = tk.Entry(campos_contato, width=50)
-        self.campos_form['email'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
-
-        # Dados Bancários
-        campos_bancarios = ttk.LabelFrame(formulario, text="Dados Bancários")
-        campos_bancarios.pack(fill='x', pady=5)
-
-        # Carregar configurações
-        try:
-            carregar_configuracoes()  
-            lista_bancos = get_bancos()
-        except Exception as e:
-            print(f"Erro ao carregar bancos: {str(e)}")
-            lista_bancos = []
-
-        tk.Label(campos_bancarios, text="Banco:").grid(row=0, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['banco'] = ttk.Combobox(
-            campos_bancarios,
-            values=lista_bancos,
-            state='readonly'
-        )
-        self.campos_form['banco'].grid(row=0, column=1, padx=5, pady=2, sticky='ew')
-
-        tk.Label(campos_bancarios, text="Operação:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['op'] = tk.Entry(campos_bancarios)
-        self.campos_form['op'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
-
-        tk.Label(campos_bancarios, text="Agência:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['agencia'] = tk.Entry(campos_bancarios)
-        self.campos_form['agencia'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
-
-        tk.Label(campos_bancarios, text="Conta:").grid(row=3, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['conta'] = tk.Entry(campos_bancarios)
-        self.campos_form['conta'].grid(row=3, column=1, padx=5, pady=2, sticky='ew')
-
-        # PIX
-        campos_pix = ttk.LabelFrame(formulario, text="Chave PIX")
-        campos_pix.pack(fill='x', pady=5)
-
-        # Tipo de chave PIX
-        ttk.Label(campos_pix, text="Tipo de Chave:").grid(row=0, column=0, padx=5, pady=2, sticky='w')
-        self.tipo_pix = ttk.Combobox(
-            campos_pix, 
-            values=['Selecione', 'CNPJ/CPF', 'Telefone', 'Email'],
-            state='readonly'
-        )
-        self.tipo_pix.grid(row=0, column=1, padx=5, pady=2)
-        self.tipo_pix.set('Telefone')  # Padrão para prestadores
-
-        ttk.Label(campos_pix, text="Chave:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['chave_pix'] = ttk.Entry(campos_pix, width=40)
-        self.campos_form['chave_pix'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
-
-        # Binding para atualização automática
-        self.tipo_pix.bind('<<ComboboxSelected>>', self.atualizar_chave_pix)
-
-        # Classificação
-        campos_class = ttk.LabelFrame(formulario, text="Classificação")
-        campos_class.pack(fill='x', pady=5)
-
-        # Carregar categorias
-        try:
-            categorias = get_categorias_fornecedor()
-        except Exception as e:
-            print(f"Erro ao carregar categorias: {str(e)}")
-            categorias = ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP']
-
-        tk.Label(campos_class, text="Categoria:*").grid(row=0, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['categoria'] = ttk.Combobox(campos_class, 
-                                                    values=categorias,
-                                                    state='readonly')
-        self.campos_form['categoria'].grid(row=0, column=1, padx=5, pady=2, sticky='ew')
-
-        tk.Label(campos_class, text="Especificação:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['especificacao'] = tk.Entry(campos_class, width=40)
-        self.campos_form['especificacao'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
-
-        tk.Label(campos_class, text="Vínculo:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['vinculo'] = tk.Entry(campos_class, width=40)
-        self.campos_form['vinculo'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
-
-        # Botões de ação
-        frame_botoes = ttk.Frame(formulario)
-        frame_botoes.pack(fill='x', pady=10)
-
-        ttk.Button(frame_botoes, 
-                text="Salvar", 
-                command=self.salvar_fornecedor_com_cpf_criado).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, 
-                text="Cancelar", 
-                command=self.janela_fornecedor.destroy).pack(side='left', padx=5)
-
-    def usar_cpf_criado_auto(self):
-        """Busca e usa automaticamente o próximo CPF criado disponível - VERSÃO MELHORADA"""
-        try:
-            if not hasattr(self, 'gerenciador_cpfs'):
-                self.gerenciador_cpfs = GerenciadorCPFsCriados()
-            
-            print("Iniciando busca por CPF disponível...")
-            cpf_disponivel, linha = self.gerenciador_cpfs.obter_proximo_cpf_disponivel()
-            
-            if cpf_disponivel:
-                print(f"CPF obtido: {cpf_disponivel}")
-                
-                # TESTE: Validar o CPF antes de usar
-                if not self.gerenciador_cpfs.validar_cpf_gerado(cpf_disponivel):
-                    custom_messagebox("error", "Erro", 
-                                    f"❌ CPF gerado é inválido: {cpf_disponivel}\n\n"
-                                    f"Verifique o algoritmo de geração")
-                    return
-                
-                # Formatar CPF
-                cpf_formatado = f"{cpf_disponivel[:3]}.{cpf_disponivel[3:6]}.{cpf_disponivel[6:9]}-{cpf_disponivel[9:]}"
-                print(f"CPF formatado: {cpf_formatado}")
-                
-                # TESTE: Validar CPF formatado com a função do sistema
-                try:
-                    if not validar_cnpj_cpf(cpf_formatado):
-                        print(f"AVISO: Sistema não reconheceu CPF como válido: {cpf_formatado}")
-                        # Mesmo assim, continuar - pode ser problema na função validar_cnpj_cpf
-                except Exception as e:
-                    print(f"Erro na validação do sistema: {str(e)}")
-                
-                # Preencher campo CNPJ/CPF
-                self.campos_form['cnpj_cpf'].delete(0, tk.END)
-                self.campos_form['cnpj_cpf'].insert(0, cpf_formatado)
-                
-                # Definir como PF
-                self.campos_form['tipo_pessoa'].set('PF')
-                
-                # Configurar PIX automaticamente
-                self.tipo_pix.set('CNPJ/CPF')
-                self.campos_form['chave_pix'].delete(0, tk.END)
-                self.campos_form['chave_pix'].insert(0, cpf_formatado)
-                
-                # Focar no campo nome para continuar o cadastro
-                self.campos_form['razao_social'].focus()
-                
-                custom_messagebox("info", "CPF Obtido", 
-                                f"✅ CPF criado obtido com sucesso!\n\n"
-                                f"📋 CPF: {cpf_formatado}\n"
-                                f"🔑 Configurado como chave PIX\n"
-                                f"🔍 Validação: CPF matematicamente correto\n\n"
-                                f"➡️ Continue preenchendo os dados do prestador")
-            else:
-                custom_messagebox("error", "Erro", 
-                                "❌ Não foi possível obter um CPF criado.\n\n"
-                                "Possíveis causas:\n"
-                                "• Arquivo Base_Fornecedores.xlsx não encontrado\n"
-                                "• Erro na geração de CPFs válidos\n"
-                                "• Problema de permissão no arquivo")
-                
-        except Exception as e:
-            print(f"Erro detalhado: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            custom_messagebox("error", "Erro", f"❌ Erro ao obter CPF criado:\n{str(e)}")
-
-    def mostrar_cpfs_disponiveis(self):
-        """Mostra lista de CPFs disponíveis para seleção manual"""
-        try:
-            if not hasattr(self, 'gerenciador_cpfs'):
-                self.gerenciador_cpfs = GerenciadorCPFsCriados()
-                
-            cpfs_disponiveis = self.gerenciador_cpfs.listar_cpfs_disponiveis()
-            
-            if not cpfs_disponiveis:
-                custom_messagebox("info", "CPFs Disponíveis", 
-                                "❌ Nenhum CPF disponível no momento.\n\n"
-                                "Use o botão 'Obter CPF Criado' para gerar novos CPFs automaticamente.")
-                return
-            
-            # Criar janela de seleção
-            janela_cpfs = tk.Toplevel(self.janela_fornecedor)
-            janela_cpfs.title("📋 CPFs Criados - Escolher da Lista")
-            janela_cpfs.geometry("450x600")
-            janela_cpfs.transient(self.janela_fornecedor)
-            janela_cpfs.grab_set()
-            
-            # Centralizar janela
-            janela_cpfs.update_idletasks()
-            x = (janela_cpfs.winfo_screenwidth() // 2) - (225)
-            y = (janela_cpfs.winfo_screenheight() // 2) - (300)
-            janela_cpfs.geometry(f"450x600+{x}+{y}")
-            
-            frame = ttk.Frame(janela_cpfs, padding="15")
-            frame.pack(fill='both', expand=True)
-            
-            # Cabeçalho
-            header_frame = ttk.Frame(frame)
-            header_frame.pack(fill='x', pady=(0, 15))
-            
-            ttk.Label(header_frame, text="📋 CPFs Criados Disponíveis", 
-                    font=('Arial', 14, 'bold')).pack()
-            ttk.Label(header_frame, text=f"Total disponível: {len(cpfs_disponiveis)}", 
-                    font=('Arial', 10)).pack()
-            
-            # Lista de CPFs
-            lista_frame = ttk.LabelFrame(frame, text="Selecione um CPF:")
-            lista_frame.pack(fill='both', expand=True, pady=(0, 15))
-            
-            # Frame interno para Treeview e scrollbar
-            tree_frame = ttk.Frame(lista_frame)
-            tree_frame.pack(fill='both', expand=True, padx=10, pady=10)
-            
-            # Treeview para CPFs
-            tree_cpfs = ttk.Treeview(tree_frame, columns=('CPF', 'Status'), show='headings', height=15)
-            tree_cpfs.heading('CPF', text='CPF Disponível')
-            tree_cpfs.heading('Status', text='Status')
-            tree_cpfs.column('CPF', width=200, anchor='center')
-            tree_cpfs.column('Status', width=100, anchor='center')
-            
-            # Scrollbar
-            scroll_cpfs = ttk.Scrollbar(tree_frame, orient='vertical', command=tree_cpfs.yview)
-            tree_cpfs.configure(yscrollcommand=scroll_cpfs.set)
-            
-            tree_cpfs.pack(side='left', fill='both', expand=True)
-            scroll_cpfs.pack(side='right', fill='y')
-            
-            # Preencher lista
-            for i, cpf in enumerate(cpfs_disponiveis, 1):
-                cpf_formatado = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
-                tree_cpfs.insert('', 'end', values=(cpf_formatado, '✅ Disponível'), tags=(cpf,))
-            
-            def selecionar_cpf():
-                selecionado = tree_cpfs.selection()
-                if not selecionado:
-                    custom_messagebox("warning", "Aviso", "⚠️ Selecione um CPF da lista")
-                    return
-                
-                # Obter CPF selecionado (não formatado)
-                cpf_selecionado = tree_cpfs.item(selecionado[0])['tags'][0]
-                cpf_formatado = tree_cpfs.item(selecionado[0])['values'][0]
-                
-                # Preencher no formulário principal
-                self.campos_form['cnpj_cpf'].delete(0, tk.END)
-                self.campos_form['cnpj_cpf'].insert(0, cpf_formatado)
-                
-                # Configurar tipo como PF
-                self.campos_form['tipo_pessoa'].set('PF')
-                
-                # Configurar PIX
-                self.tipo_pix.set('CNPJ/CPF')
-                self.campos_form['chave_pix'].delete(0, tk.END)
-                self.campos_form['chave_pix'].insert(0, cpf_formatado)
-                
-                # Fechar janela
-                janela_cpfs.destroy()
-                
-                # Focar no campo nome
-                self.campos_form['razao_social'].focus()
-                
-                custom_messagebox("info", "CPF Selecionado", 
-                                f"✅ CPF selecionado com sucesso!\n\n"
-                                f"📋 {cpf_formatado}\n\n"
-                                f"➡️ Continue preenchendo os dados")
-            
-            # Botões
-            frame_botoes = ttk.Frame(frame)
-            frame_botoes.pack(fill='x')
-            
-            ttk.Button(frame_botoes, text="✅ Selecionar", 
-                    command=selecionar_cpf).pack(side='left', padx=5)
-            ttk.Button(frame_botoes, text="❌ Cancelar", 
-                    command=janela_cpfs.destroy).pack(side='left', padx=5)
-            
-            # Info adicional
-            info_label = tk.Label(frame_botoes, 
-                                text="💡 Dica: Dê duplo clique no CPF para selecioná-lo rapidamente",
-                                font=('Arial', 8), fg='gray')
-            info_label.pack(side='right', padx=10)
-            
-            # Double-click para selecionar rapidamente
-            tree_cpfs.bind('<Double-1>', lambda e: selecionar_cpf())
-            
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"❌ Erro ao mostrar CPFs:\n{str(e)}")
-
-    def usar_telefone_como_pix(self):
-        """Usa o telefone digitado como chave PIX"""
-        telefone = self.campos_form['telefone'].get().strip()
-        
-        if not telefone:
-            custom_messagebox("warning", "Aviso", "⚠️ Digite o telefone primeiro!")
-            self.campos_form['telefone'].focus()
-            return
-        
-        # Limpar telefone (remover caracteres especiais)
-        telefone_limpo = ''.join(filter(str.isdigit, telefone))
-        
-        # Verificar se tem pelo menos 10 dígitos
-        if len(telefone_limpo) < 10:
-            custom_messagebox("warning", "Aviso", "⚠️ Telefone deve ter pelo menos 10 dígitos!")
-            self.campos_form['telefone'].focus()
-            return
-        
-        # Formatar telefone para PIX
-        if len(telefone_limpo) == 10:
-            # Fixo: (XX) XXXX-XXXX
-            tel_formatado = f"({telefone_limpo[:2]}) {telefone_limpo[2:6]}-{telefone_limpo[6:]}"
-        elif len(telefone_limpo) == 11:
-            # Celular: (XX) 9XXXX-XXXX
-            tel_formatado = f"({telefone_limpo[:2]}) {telefone_limpo[2:7]}-{telefone_limpo[7:]}"
-        else:
-            # Manter como estava se tiver mais de 11 dígitos
-            tel_formatado = telefone_limpo
-        
-        # Atualizar campo telefone com formatação
-        self.campos_form['telefone'].delete(0, tk.END)
-        self.campos_form['telefone'].insert(0, tel_formatado)
-        
-        # Definir tipo PIX como Telefone
-        self.tipo_pix.set('Telefone')
-        
-        # Preencher chave PIX
-        self.campos_form['chave_pix'].delete(0, tk.END)
-        self.campos_form['chave_pix'].insert(0, tel_formatado)
-        
-        custom_messagebox("info", "PIX Configurado", 
-                        f"✅ Telefone configurado como chave PIX!\n\n"
-                        f"📱 {tel_formatado}\n\n"
-                        f"➡️ Continue preenchendo os outros dados")
-
-    def atualizar_chave_pix(self, event=None):
-        """Atualiza o campo de chave PIX baseado no tipo selecionado"""
-        tipo_selecionado = self.tipo_pix.get()
-        self.campos_form['chave_pix'].delete(0, tk.END)
-        
-        if tipo_selecionado == 'CNPJ/CPF':
-            self.campos_form['chave_pix'].insert(0, self.campos_form['cnpj_cpf'].get())
-        elif tipo_selecionado == 'Telefone':
-            self.campos_form['chave_pix'].insert(0, self.campos_form['telefone'].get())
-        elif tipo_selecionado == 'Email':
-            self.campos_form['chave_pix'].insert(0, self.campos_form['email'].get())
-
-    def atualizar_tipo_pessoa(self, event=None):
-        """Determina automaticamente o tipo de pessoa baseado no CNPJ/CPF"""
-        cnpj_cpf = self.campos_form['cnpj_cpf'].get().strip()
-        # Remove caracteres não numéricos
-        cnpj_cpf = ''.join(filter(str.isdigit, cnpj_cpf))
-        
-        if len(cnpj_cpf) <= 11:
-            self.campos_form['tipo_pessoa'].set('PF')
-        else:
-            self.campos_form['tipo_pessoa'].set('PJ')
-
-    def copiar_para_nome(self, event=None):
-        """Copia a razão social para o nome se este estiver vazio"""
-        razao_social = self.campos_form['razao_social'].get().strip()
-        nome_atual = self.campos_form['nome'].get().strip()
-        
-        if razao_social and not nome_atual:
-            self.campos_form['nome'].insert(0, razao_social)
-
-    def salvar_fornecedor_com_cpf_criado(self):
-        """Salva fornecedor e marca CPF criado como usado - VERSÃO CORRIGIDA"""
-        # Validar campos obrigatórios
-        campos_obrigatorios = ['tipo_pessoa', 'cnpj_cpf', 'razao_social', 'nome', 'categoria']
-        for campo in campos_obrigatorios:
-            if not self.campos_form[campo].get().strip():
-                custom_messagebox("error", "Erro", f"❌ O campo {campo} é obrigatório!")
-                return
-
-        # Validar CNPJ/CPF
-        tipo_pessoa = self.campos_form['tipo_pessoa'].get()
-        cnpj_cpf_original = self.campos_form['cnpj_cpf'].get().strip()
-        
-        # Limpar CNPJ/CPF mantendo apenas números
-        cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_original))
-        
-        # Validar com números limpos
-        if not self.validar_cnpj_cpf_numeros(cnpj_cpf_numeros):
-            custom_messagebox("error", "Erro", f"❌ {'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
-            return
-        
-        # Verificar se é um CPF criado
-        eh_cpf_criado = False
-        if tipo_pessoa == 'PF' and len(cnpj_cpf_numeros) == 11:
-            try:
-                if not hasattr(self, 'gerenciador_cpfs'):
-                    self.gerenciador_cpfs = GerenciadorCPFsCriados()
-                cpfs_disponiveis = self.gerenciador_cpfs.listar_cpfs_disponiveis()
-                if cnpj_cpf_numeros in cpfs_disponiveis:
-                    eh_cpf_criado = True
-            except Exception as e:
-                print(f"Erro ao verificar CPF criado: {str(e)}")
-
-        # Montar dados bancários
-        if self.campos_form['chave_pix'].get():
-            dados_bancarios = f"PIX: {self.campos_form['chave_pix'].get()}"
-        else:
-            dados_bancarios = (f"{self.campos_form['banco'].get()} "
-                            f"{self.campos_form['op'].get()} - "
-                            f"{self.campos_form['agencia'].get()} "
-                            f"{self.campos_form['conta'].get()}").strip()
-
-        # Preparar dados garantindo que tudo seja string
-        dados = {
-            'tipo_pessoa': str(tipo_pessoa),
-            'cnpj_cpf': str(cnpj_cpf_numeros),  # Salvar apenas números
-            'razao_social': str(self.campos_form['razao_social'].get().upper()),
-            'nome': str(self.campos_form['nome'].get().upper()),
-            'telefone': str(self.campos_form['telefone'].get()),
-            'email': str(self.campos_form['email'].get()),
-            'banco': str(self.campos_form['banco'].get()),
-            'op': str(self.campos_form['op'].get()),
-            'agencia': str(self.campos_form['agencia'].get()),
-            'conta': str(self.campos_form['conta'].get()),
-            'chave_pix': str(self.campos_form['chave_pix'].get()),
-            'categoria': str(self.campos_form['categoria'].get().upper()),
-            'especificacao': str(self.campos_form['especificacao'].get().upper()),
-            'vinculo': str(self.campos_form['vinculo'].get().upper()),
-            'dados_bancarios': str(dados_bancarios)
-        }
-
-        try:
-            # Salvar na base de fornecedores
-            self.salvar_na_base_fornecedores(dados)
-            
-            # Se for CPF criado, marcar como usado
-            if eh_cpf_criado:
-                nome_fornecedor = self.campos_form['nome'].get().upper()
-                sucesso_marcacao = self.gerenciador_cpfs.marcar_cpf_como_usado(cnpj_cpf_numeros, nome_fornecedor)
-                
-                if sucesso_marcacao:
-                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf_numeros)
-                    mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
-                                    f"🔄 CPF criado marcado como usado:\n"
-                                    f"📋 {cnpj_cpf_formatado}\n"
-                                    f"👤 {nome_fornecedor}")
-                else:
-                    mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
-                                    f"⚠️ Aviso: Não foi possível marcar o CPF como usado")
-            else:
-                mensagem_sucesso = f"✅ Fornecedor salvo com sucesso!"
-                
-            custom_messagebox("info", "Sucesso", mensagem_sucesso)
-            self.janela_fornecedor.destroy()
-            self.buscar_fornecedor()  # Atualizar lista
-            
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"❌ Erro ao salvar fornecedor:\n{str(e)}")
-
-    def validar_cnpj_cpf_numeros(self, numeros):
-        """Valida CNPJ ou CPF usando apenas números"""
-        if not numeros or not numeros.isdigit():
-            return False
-        
-        if len(numeros) == 11:
-            return self.validar_cpf_algoritmo(numeros)
-        elif len(numeros) == 14:
-            return self.validar_cnpj_algoritmo(numeros)
-        else:
-            return False
-
-    def validar_cpf_algoritmo(self, cpf):
-        """Valida CPF usando algoritmo oficial"""
-        if cpf == cpf[0] * 11:
-            return False
-        
-        # Calcular primeiro dígito verificador
-        soma = 0
-        for i in range(9):
-            soma += int(cpf[i]) * (10 - i)
-        
-        resto = soma % 11
-        digito1 = 0 if resto < 2 else 11 - resto
-        
-        if int(cpf[9]) != digito1:
-            return False
-        
-        # Calcular segundo dígito verificador
-        soma = 0
-        for i in range(10):
-            soma += int(cpf[i]) * (11 - i)
-        
-        resto = soma % 11
-        digito2 = 0 if resto < 2 else 11 - resto
-        
-        return int(cpf[10]) == digito2
-
-    def validar_cnpj_algoritmo(self, cnpj):
-        """Valida CNPJ usando algoritmo oficial"""
-        if cnpj == cnpj[0] * 14:
-            return False
-        
-        # Calcular primeiro dígito verificador
-        peso = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-        soma = sum(int(cnpj[i]) * peso[i] for i in range(12))
-        resto = soma % 11
-        digito1 = 0 if resto < 2 else 11 - resto
-        
-        if int(cnpj[12]) != digito1:
-            return False
-        
-        # Calcular segundo dígito verificador
-        peso = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-        soma = sum(int(cnpj[i]) * peso[i] for i in range(13))
-        resto = soma % 11
-        digito2 = 0 if resto < 2 else 11 - resto
-        
-        return int(cnpj[13]) == digito2
-
-    def salvar_na_base_fornecedores(self, dados):
-        """Salva os dados na planilha de fornecedores - VERSÃO CORRIGIDA"""
-        try:
-            wb = load_workbook(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
-            
-            # Coletar todos os dados existentes e o novo
-            fornecedores = []
-            
-            # Converter dados existentes mantendo formato original da planilha
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Se tem CNPJ/CPF
-                    fornecedor = {
-                        'cnpj_cpf': str(row[0]) if row[0] is not None else '',  # CORREÇÃO: Garantir string
-                        'tipo_pessoa': str(row[1]) if row[1] is not None else '',
-                        'razao_social': str(row[2]) if row[2] is not None else '',
-                        'nome': str(row[3]) if row[3] is not None else '',
-                        'telefone': str(row[4]) if row[4] is not None else '',
-                        'email': str(row[5]) if row[5] is not None else '',
-                        'banco': str(row[6]) if row[6] is not None else '',
-                        'op': str(row[7]) if row[7] is not None else '',
-                        'agencia': str(row[8]) if row[8] is not None else '',
-                        'conta': str(row[9]) if row[9] is not None else '',
-                        'chave_pix': str(row[10]) if row[10] is not None else '',
-                        'categoria': str(row[11]) if row[11] is not None else '',
-                        'especificacao': str(row[12]) if row[12] is not None else '',
-                        'vinculo': str(row[13]) if row[13] is not None else '',
-                        'dados_bancarios': str(row[14]) if row[14] is not None else ''
-                    }
-                    fornecedores.append(fornecedor)
-            
-            # CORREÇÃO: Garantir que todos os campos do novo fornecedor sejam strings
-            dados_corrigidos = {}
-            for key, value in dados.items():
-                if value is None:
-                    dados_corrigidos[key] = ''
-                else:
-                    dados_corrigidos[key] = str(value)
-            
-            # Adicionar novo fornecedor ou atualizar existente
-            fornecedor_encontrado = False
-            for i, fornecedor in enumerate(fornecedores):
-                # CORREÇÃO: Comparar strings com strings
-                if str(fornecedor['cnpj_cpf']).strip() == str(dados_corrigidos['cnpj_cpf']).strip():
-                    fornecedores[i] = dados_corrigidos.copy()
-                    fornecedor_encontrado = True
-                    break
-            
-            if not fornecedor_encontrado:
-                fornecedores.append(dados_corrigidos.copy())
-            
-            # CORREÇÃO: Ordenar de forma segura convertendo tudo para string maiúscula
-            try:
-                fornecedores_ordenados = sorted(
-                    fornecedores,
-                    key=lambda x: (str(x.get('nome', '')).upper().strip(), str(x.get('cnpj_cpf', '')).strip())
-                )
-            except Exception as e:
-                print(f"Erro na ordenação, mantendo ordem original: {str(e)}")
-                # Se der erro na ordenação, manter ordem original
-                fornecedores_ordenados = fornecedores
-            
-            # Limpar planilha existente
-            for row in ws.iter_rows(min_row=2):
-                for cell in row:
-                    cell.value = None
-            
-            # Reescrever dados ordenados
-            for i, fornecedor in enumerate(fornecedores_ordenados, start=2):
-                ws.cell(row=i, column=1, value=fornecedor.get('cnpj_cpf', ''))
-                ws.cell(row=i, column=2, value=fornecedor.get('tipo_pessoa', ''))
-                ws.cell(row=i, column=3, value=fornecedor.get('razao_social', ''))
-                ws.cell(row=i, column=4, value=fornecedor.get('nome', ''))
-                ws.cell(row=i, column=5, value=fornecedor.get('telefone', ''))
-                ws.cell(row=i, column=6, value=fornecedor.get('email', ''))
-                ws.cell(row=i, column=7, value=fornecedor.get('banco', ''))
-                ws.cell(row=i, column=8, value=fornecedor.get('op', ''))
-                ws.cell(row=i, column=9, value=fornecedor.get('agencia', ''))
-                ws.cell(row=i, column=10, value=fornecedor.get('conta', ''))
-                ws.cell(row=i, column=11, value=fornecedor.get('chave_pix', ''))
-                ws.cell(row=i, column=12, value=fornecedor.get('categoria', ''))
-                ws.cell(row=i, column=13, value=fornecedor.get('especificacao', ''))
-                ws.cell(row=i, column=14, value=fornecedor.get('vinculo', ''))
-                ws.cell(row=i, column=15, value=fornecedor.get('dados_bancarios', ''))
-            
-            wb.save(ARQUIVO_FORNECEDORES)
-            
-        except Exception as e:
-            raise Exception(f"Erro ao salvar na planilha: {str(e)}")
-
-    def atualizar_linha_fornecedor(self, row, dados):
-        """Atualiza uma linha existente com novos dados"""
-        row[0].value = dados['cnpj_cpf']
-        row[1].value = dados['tipo_pessoa']  # Nova coluna para tipo de pessoa
-        row[2].value = dados['razao_social']
-        row[3].value = dados['nome']
-        row[4].value = dados['telefone']
-        row[5].value = dados['email']
-        row[6].value = dados['banco']
-        row[7].value = dados['op']
-        row[8].value = dados['agencia']
-        row[9].value = dados['conta']
-        row[10].value = dados['chave_pix']
-        row[11].value = dados['categoria']
-        row[12].value = dados['especificacao']
-        row[13].value = dados['vinculo']
-        row[14].value = dados['dados_bancarios']
-
-    def adicionar_linha_fornecedor(self, ws, linha, dados):
-        """Adiciona uma nova linha com os dados do fornecedor"""
-        ws.cell(row=linha, column=1, value=dados['cnpj_cpf'])
-        ws.cell(row=linha, column=2, value=dados['tipo_pessoa'])
-        ws.cell(row=linha, column=3, value=dados['razao_social'])
-        ws.cell(row=linha, column=4, value=dados['nome'])
-        ws.cell(row=linha, column=5, value=dados['telefone'])
-        ws.cell(row=linha, column=6, value=dados['email'])
-        ws.cell(row=linha, column=7, value=dados['banco'])
-        ws.cell(row=linha, column=8, value=dados['op'])
-        ws.cell(row=linha, column=9, value=dados['agencia'])
-        ws.cell(row=linha, column=10, value=dados['conta'])
-        ws.cell(row=linha, column=11, value=dados['chave_pix'])
-        ws.cell(row=linha, column=12, value=dados['categoria'])
-        ws.cell(row=linha, column=13, value=dados['especificacao'])
-        ws.cell(row=linha, column=14, value=dados['vinculo'])
-        ws.cell(row=linha, column=15, value=dados['dados_bancarios'])
-      
-    def atualizar_fornecedor(self):
-        """Atualiza dados do fornecedor existente"""
-        # Validações semelhantes ao salvar_fornecedor
-        campos_obrigatorios = ['razao_social', 'nome', 'categoria']
-        for campo in campos_obrigatorios:
-            if not self.campos_form[campo].get().strip():
-                custom_messagebox("error", "Erro", f"O campo {campo} é obrigatório!")
-                return
-
-        try:
-            wb = load_workbook(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
-            
-            cnpj_cpf = self.campos_form['cnpj_cpf'].get()
-            for row in ws.iter_rows(min_row=2):
-                if row[0].value == cnpj_cpf:
-                    # Atualizar dados na linha existente
-                    row[1].value = self.campos_form['tipo_pessoa'].get().upper()
-                    row[2].value = self.campos_form['razao_social'].get().upper()
-                    row[3].value = self.campos_form['nome'].get().upper()
-                    row[4].value = self.campos_form['telefone'].get()
-                    row[5].value = self.campos_form['email'].get()
-                    row[6].value = self.campos_form['banco'].get()
-                    row[7].value = self.campos_form['op'].get()
-                    row[8].value = self.campos_form['agencia'].get()
-                    row[9].value = self.campos_form['conta'].get()
-                    row[10].value = self.campos_form['chave_pix'].get()
-                    row[11].value = self.campos_form['categoria'].get()
-                    row[12].value = self.campos_form['especificacao'].get().upper()
-                    row[13].value = self.campos_form['vinculo'].get().upper()
-                    row[14].value = self.campos_form['dados_bancarios'].get().upper()
-                    break
-
-            wb.save(ARQUIVO_FORNECEDORES)
-            custom_messagebox("info", "Sucesso", "Fornecedor atualizado com sucesso!")
-            self.janela_fornecedor.destroy()
-            self.buscar_fornecedor()  # Atualiza a lista
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao atualizar fornecedor: {str(e)}")
-
-    def preencher_dados_fornecedor(self, dados):
-        """Preenche os campos do fornecedor na aba de entrada"""
-        self.campos_fornecedor['cnpj_cpf'].delete(0, tk.END)
-        self.campos_fornecedor['cnpj_cpf'].insert(0, dados[0])
-        
-        self.campos_fornecedor['nome'].delete(0, tk.END)
-        self.campos_fornecedor['nome'].insert(0, dados[1])
-        
-        self.campos_fornecedor['categoria'].delete(0, tk.END)
-        self.campos_fornecedor['categoria'].insert(0, dados[2])
-
+    
     def calcular_valor_total(self, event=None):
         """Calcula o valor total baseado no tipo de despesa"""
         try:
@@ -4428,9 +4957,11 @@ class SistemaEntradaDados:
             if hasattr(self, '_is_saving'):
                 self._is_saving = False
 
+    # Correção para o método enviar_dados() - SistemaEntradaDados.py
+
     def enviar_dados(self):
         """
-        Versão corrigida que SEMPRE verifica necessidade de recálculo após inserção
+        Versão corrigida que resolve os erros de 'etapa_obra' e 'datas_recalculadas'
         """
         logger = system_logger.get_logger()
         logger.info(f"Iniciando envio de dados - Cliente: {self.cliente_atual}, Registros: {len(self.dados_para_incluir) if self.dados_para_incluir else 0}")
@@ -4448,13 +4979,15 @@ class SistemaEntradaDados:
         if btn_enviar:
             btn_enviar.config(state='disabled')
         
+        # CORREÇÃO: Inicializar variável datas_recalculadas no início
+        datas_recalculadas = []
+        
         try:
             # Verificar se há cliente selecionado
             if not self.cliente_atual:
                 custom_messagebox("error", "Erro", "Selecione um cliente!")
                 return
             
-            # ========== AQUI INSERIR A NOVA VERIFICAÇÃO ==========
             # NOVA VERIFICAÇÃO: Se há NF preenchida com materiais marcados
             nf_numero = self.campos_despesa['nf'].get().strip()
             tem_materiais_marcado = self.tem_materiais_var.get()
@@ -4464,17 +4997,17 @@ class SistemaEntradaDados:
                 if not self.verificar_nf_ja_processada(nf_numero):
                     resposta = custom_messagebox(
                         "yesno",
-                        "📄 NFe Detectada",
-                        f"🔍 NOTA FISCAL DETECTADA!\n\n"
-                        f"📋 NF: {nf_numero}\n"
-                        f"✅ Materiais marcados como vinculados\n\n"
-                        f"💡 SUGESTÃO: Para melhor controle, importe os materiais "
+                        "NFe Detectada",
+                        f"NOTA FISCAL DETECTADA!\n\n"
+                        f"NF: {nf_numero}\n"
+                        f"Materiais marcados como vinculados\n\n"
+                        f"SUGESTÃO: Para melhor controle, importe os materiais "
                         f"diretamente do XML da NFe. Isso permitirá:\n\n"
-                        f"• 📦 Controle detalhado de cada item\n"
-                        f"• 💰 Valores unitários e totais precisos\n"
-                        f"• 🏗️ Classificação automática por categoria\n"
-                        f"• 📍 Controle de localização na obra\n"
-                        f"• ⚡ Preenchimento automático dos dados\n\n"
+                        f"• Controle detalhado de cada item\n"
+                        f"• Valores unitários e totais precisos\n"
+                        f"• Classificação automática por categoria\n"
+                        f"• Controle de localização na obra\n"
+                        f"• Preenchimento automático dos dados\n\n"
                         f"Deseja importar esta NFe agora?\n"
                         f"(Clique 'Não' para continuar com o lançamento manual)"
                     )
@@ -4499,7 +5032,13 @@ class SistemaEntradaDados:
 
             logger.info(f"Total de registros a processar: {len(dados_para_processar)}")
 
-            # ===== NOVO: Capturar datas afetadas ANTES da inserção =====
+            # CORREÇÃO: Garantir que todos os registros tenham o campo 'etapa_obra'
+            for lancamento in dados_para_processar:
+                if 'etapa_obra' not in lancamento:
+                    lancamento['etapa_obra'] = ''  # Valor padrão vazio se não existir
+                    logger.info(f"Campo 'etapa_obra' adicionado ao lançamento: {lancamento.get('nome', 'DESCONHECIDO')}")
+
+            # Capturar datas afetadas ANTES da inserção
             datas_afetadas = set()
             for lancamento in dados_para_processar:
                 try:
@@ -4522,7 +5061,7 @@ class SistemaEntradaDados:
             logger.info(f"Salvando em: {arquivo_cliente}")
             
             try:
-                # ===== CORREÇÃO: Verificar e corrigir IDs ANTES de inserir novos dados =====
+                # Verificar e corrigir IDs ANTES de inserir novos dados
                 self.verificar_e_corrigir_ids_antes_insercao(arquivo_cliente)
                 
                 # Abrir workbook e verificar duplicidade ANTES de salvar
@@ -4546,27 +5085,27 @@ class SistemaEntradaDados:
                 if lancamentos_duplicados:
                     logger.warning(f"Detectados {len(lancamentos_duplicados)} possíveis lançamentos duplicados")
                     
-                    msg_duplicados = f"⚠️ DUPLICATAS DETECTADAS!\n\n"
+                    msg_duplicados = f"DUPLICATAS DETECTADAS!\n\n"
                     msg_duplicados += f"Foram encontrados {len(lancamentos_duplicados)} possíveis lançamentos duplicados:\n\n"
                     
                     for i, dados in enumerate(lancamentos_duplicados[:5], 1):
                         msg_duplicados += f"{i}. {dados['nome']}\n"
-                        msg_duplicados += f"   📋 {dados['referencia']}\n"
-                        msg_duplicados += f"   💰 R$ {dados['valor']}\n"
-                        msg_duplicados += f"   📅 Vencimento: {dados['dt_vencto']}\n"
+                        msg_duplicados += f"   {dados['referencia']}\n"
+                        msg_duplicados += f"   R$ {dados['valor']}\n"
+                        msg_duplicados += f"   Vencimento: {dados['dt_vencto']}\n"
                         if dados.get('nf'):
-                            msg_duplicados += f"   🧾 NF: {dados['nf']}\n"
+                            msg_duplicados += f"   NF: {dados['nf']}\n"
                         msg_duplicados += "\n"
                     
                     if len(lancamentos_duplicados) > 5:
                         msg_duplicados += f"... e mais {len(lancamentos_duplicados) - 5} duplicatas.\n\n"
                     
-                    msg_duplicados += f"📊 Resumo:\n"
+                    msg_duplicados += f"Resumo:\n"
                     msg_duplicados += f"• Lançamentos únicos: {len(lancamentos_validos)}\n"
                     msg_duplicados += f"• Possíveis duplicatas: {len(lancamentos_duplicados)}\n\n"
                     msg_duplicados += "Deseja continuar salvando APENAS os lançamentos únicos?"
                     
-                    resposta = custom_messagebox("yesno", "⚠️ Duplicatas Detectadas", msg_duplicados)
+                    resposta = custom_messagebox("yesno", "Duplicatas Detectadas", msg_duplicados)
                     
                     if not resposta:
                         logger.info("Operação cancelada pelo usuário devido a duplicatas")
@@ -4627,27 +5166,28 @@ class SistemaEntradaDados:
                         sheet.cell(row=proxima_linha, column=12, value=dados['dados_bancarios'])
                         sheet.cell(row=proxima_linha, column=13, value=dados['observacao'])
                         
-                        # ===== CORREÇÃO: Gerar ID sequencial corretamente =====
+                        # Gerar ID sequencial corretamente
                         novo_id = self.obter_proximo_id_sequencial(sheet)
                         sheet.cell(row=proxima_linha, column=14, value='ATIVO')  # STATUS
                         sheet.cell(row=proxima_linha, column=15, value=novo_id)  # ID_LANCAMENTO sequencial
 
-                        # NOVA COLUNA: Etapa da Obra na próxima coluna vazia (coluna 17)
-                        sheet.cell(row=proxima_linha, column=17, value=dados['etapa_obra'])
+                        # CORREÇÃO: Etapa da Obra na coluna 17 (garantir que o campo existe)
+                        etapa_obra = dados.get('etapa_obra', '')  # Usar get() para evitar KeyError
+                        sheet.cell(row=proxima_linha, column=17, value=etapa_obra)
 
                         logger.info(f"Lançamento inserido com ID {novo_id} na linha {proxima_linha}")
                         
                         registros_salvos += 1
                         
                     except Exception as e:
-                        logger.error(f"Erro ao processar registro {dados['nome']}: {str(e)}")
+                        logger.error(f"Erro ao processar registro {dados.get('nome', 'DESCONHECIDO')}: {str(e)}")
                         continue
 
                 # Salvar o arquivo
                 try:
                     workbook.save(arquivo_cliente)
                     
-                    # ===== CORREÇÃO PRINCIPAL: Sempre verificar recálculo após inserção =====
+                    # Sempre verificar recálculo após inserção
                     if registros_salvos > 0:
                         logger.info(f"Iniciando verificação de recálculo para {len(datas_afetadas)} datas")
                         
@@ -4656,7 +5196,6 @@ class SistemaEntradaDados:
                         time.sleep(0.5)
                         
                         # Para cada data afetada, verificar se precisa recalcular
-                        datas_recalculadas = []
                         for data_rel in datas_afetadas:
                             try:
                                 logger.info(f"Verificando necessidade de recálculo para {data_rel}")
@@ -4667,30 +5206,30 @@ class SistemaEntradaDados:
                                 if resultado["sucesso"]:
                                     if "taxas recalculadas" in resultado["mensagem"]:
                                         datas_recalculadas.append(data_rel.strftime('%d/%m/%Y'))
-                                        logger.info(f"✅ Taxas recalculadas para {data_rel}: {resultado['mensagem']}")
+                                        logger.info(f"Taxas recalculadas para {data_rel}: {resultado['mensagem']}")
                                     else:
-                                        logger.info(f"ℹ️ {data_rel}: {resultado['mensagem']}")
+                                        logger.info(f"{data_rel}: {resultado['mensagem']}")
                                 else:
-                                    logger.warning(f"⚠️ Erro no recálculo para {data_rel}: {resultado['mensagem']}")
+                                    logger.warning(f"Erro no recálculo para {data_rel}: {resultado['mensagem']}")
                                     
                             except Exception as e:
-                                logger.error(f"❌ Erro ao verificar recálculo para {data_rel}: {str(e)}")
+                                logger.error(f"Erro ao verificar recálculo para {data_rel}: {str(e)}")
                                 continue
                     
                     # Mensagem de sucesso diferenciada
                     if lancamentos_duplicados:
-                        mensagem_sucesso = f"✅ Dados salvos com sucesso!\n\n"
-                        mensagem_sucesso += f"📊 Resumo da operação:\n"
+                        mensagem_sucesso = f"Dados salvos com sucesso!\n\n"
+                        mensagem_sucesso += f"Resumo da operação:\n"
                         mensagem_sucesso += f"• Lançamentos salvos: {registros_salvos}\n"
                         mensagem_sucesso += f"• Duplicatas ignoradas: {len(lancamentos_duplicados)}\n\n"
                         if datas_recalculadas:
-                            mensagem_sucesso += f"🔄 Taxas recalculadas para: {', '.join(datas_recalculadas)}\n\n"
-                        mensagem_sucesso += f"🛡️ Sistema de verificação ativo!"
+                            mensagem_sucesso += f"Taxas recalculadas para: {', '.join(datas_recalculadas)}\n\n"
+                        mensagem_sucesso += f"Sistema de verificação ativo!"
                         custom_messagebox("info", "Sucesso com Filtro", mensagem_sucesso)
                     else:
-                        mensagem_sucesso = f"✅ Dados salvos com sucesso! {registros_salvos} lançamentos processados."
+                        mensagem_sucesso = f"Dados salvos com sucesso! {registros_salvos} lançamentos processados."
                         if datas_recalculadas:
-                            mensagem_sucesso += f"\n\n🔄 Taxas recalculadas para: {', '.join(datas_recalculadas)}"
+                            mensagem_sucesso += f"\n\nTaxas recalculadas para: {', '.join(datas_recalculadas)}"
                         custom_messagebox("info", "Sucesso", mensagem_sucesso)
                     
                     self.limpar_backup()  # Limpar backup após sucesso
@@ -4918,6 +5457,24 @@ class SistemaEntradaDados:
             return False
     
     # ===== FUNÇÕES UTILITÁRIAS PARA VERIFICAÇÃO E RECÁLCULO =====
+    def abrir_controle_pagamentos(self):
+        """Abre o controle de pagamentos de taxa"""
+        try:
+            from gestao_taxas import GestaoTaxasAdministracao
+            gestao = GestaoTaxasAdministracao(self.root)
+            gestao.abrir_controle_pagamentos()
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
+
+    def abrir_finalizacao_quinzena(self):
+        """Abre a finalização de quinzena"""
+        try:
+            from gestao_taxas import GestaoTaxasAdministracao
+            gestao = GestaoTaxasAdministracao(self.root)
+            gestao.abrir_finalizacao_quinzena()
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir finalização de quinzena: {str(e)}")    
+
     def verificar_e_ajustar_diferancas_quinzenas_pagas(self, incluir_atual=False):
         """
         Verifica diferenças em quinzenas já pagas e registra ajustes na quinzena atual
