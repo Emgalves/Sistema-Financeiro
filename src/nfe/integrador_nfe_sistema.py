@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Integrador NFe com Sistema Financeiro e Materiais - VERSÃO LIMPA
+Integrador NFe com Sistema Financeiro e Materiais - VERSÃO ATUALIZADA
+Compatível com gerenciador de materiais refatorado (por cliente)
 """
 
 import tkinter as tk
@@ -9,7 +10,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 class IntegradorNFeFinanceiroMateriais:
-    """Integra dados da NFe com o sistema financeiro e de materiais"""
+    """Integra dados da NFe com o sistema financeiro e de materiais refatorado"""
     
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
@@ -18,6 +19,11 @@ class IntegradorNFeFinanceiroMateriais:
     def criar_interface_integracao_nfe(self, dados_nfe):
         """Cria interface para integração da NFe"""
         self.dados_nfe_atual = dados_nfe
+        
+        # Verificar se cliente está selecionado
+        if not hasattr(self.sistema, 'cliente_atual') or not self.sistema.cliente_atual:
+            messagebox.showerror("Erro", "Selecione um cliente antes de processar NFe!")
+            return
         
         # Criar janela principal
         self.janela = tk.Toplevel(self.sistema.root)
@@ -28,7 +34,7 @@ class IntegradorNFeFinanceiroMateriais:
         # Título
         titulo = tk.Label(
             self.janela,
-            text="🚀 PROCESSAMENTO COMPLETO DE NFe",
+            text="PROCESSAMENTO COMPLETO DE NFe",
             font=('Arial', 16, 'bold'),
             fg='#0056b3'
         )
@@ -45,17 +51,18 @@ class IntegradorNFeFinanceiroMateriais:
         
     def criar_info_nfe(self, dados_nfe):
         """Cria seção de informações da NFe"""
-        frame_info = ttk.LabelFrame(self.janela, text="📋 Informações da NFe", padding=10)
+        frame_info = ttk.LabelFrame(self.janela, text="Informações da NFe", padding=10)
         frame_info.pack(fill='x', padx=10, pady=5)
         
         # Dados principais
         info_texto = f"""
-🏢 Fornecedor: {dados_nfe.get('razao_social_emitente', '')}
-📋 CNPJ: {self.formatar_cnpj(dados_nfe.get('cnpj_emitente', ''))}
-📄 NFe: {dados_nfe.get('numero_nf', '')}
-📅 Data: {dados_nfe.get('data_emissao', '')}
-💰 Valor: R$ {dados_nfe.get('valor_total', 0):,.2f}
-📦 Produtos: {len(dados_nfe.get('produtos', []))} itens
+Cliente: {getattr(self.sistema, 'cliente_atual', 'Não selecionado')}
+Fornecedor: {dados_nfe.get('razao_social_emitente', '')}
+CNPJ: {self.formatar_cnpj(dados_nfe.get('cnpj_emitente', ''))}
+NFe: {dados_nfe.get('numero_nf', '')}
+Data: {dados_nfe.get('data_emissao', '')}
+Valor: R$ {dados_nfe.get('valor_total', 0):,.2f}
+Produtos: {len(dados_nfe.get('produtos', []))} itens
         """
         
         tk.Label(frame_info, text=info_texto.strip(), 
@@ -63,14 +70,14 @@ class IntegradorNFeFinanceiroMateriais:
     
     def criar_configuracoes(self):
         """Cria seção de configurações"""
-        frame_config = ttk.LabelFrame(self.janela, text="⚙️ Configurações", padding=10)
+        frame_config = ttk.LabelFrame(self.janela, text="Configurações", padding=10)
         frame_config.pack(fill='both', expand=True, padx=10, pady=5)
         
         # === FINANCEIRO ===
         self.incluir_financeiro_var = tk.BooleanVar(value=True)
         cb_financeiro = tk.Checkbutton(
             frame_config,
-            text="💰 Incluir lançamento financeiro",
+            text="Incluir lançamento financeiro",
             variable=self.incluir_financeiro_var,
             font=('Arial', 11, 'bold')
         )
@@ -143,7 +150,7 @@ class IntegradorNFeFinanceiroMateriais:
         self.frame_financeiro.columnconfigure(1, weight=1)
         self.frame_financeiro.columnconfigure(3, weight=1)
         
-        # CORREÇÃO: Definir data vencimento como data da NFe
+        # Definir data vencimento como data da NFe
         try:
             data_nfe = datetime.strptime(self.dados_nfe_atual.get('data_emissao', ''), '%d/%m/%Y')
             self.data_vencimento.set_date(data_nfe.date())
@@ -155,17 +162,17 @@ class IntegradorNFeFinanceiroMateriais:
         self.incluir_materiais_var = tk.BooleanVar(value=True)
         cb_materiais = tk.Checkbutton(
             frame_config,
-            text="📦 Incluir materiais no controle de obra",
+            text="Incluir materiais no controle de obra",
             variable=self.incluir_materiais_var,
             font=('Arial', 11, 'bold')
         )
         cb_materiais.pack(anchor='w', pady=(20, 5))
         
-        # Frame materiais - MODIFICADO
+        # Frame materiais
         frame_materiais = ttk.LabelFrame(frame_config, text="Configuração dos Materiais", padding=10)
         frame_materiais.pack(fill='x', pady=5)
         
-        # MODIFICAÇÃO: Carregar parâmetros de materiais
+        # Carregar parâmetros de materiais
         self.parametros_materiais = self.carregar_parametros_materiais()
         
         # Grid para organizar os campos em 2 colunas
@@ -236,7 +243,7 @@ class IntegradorNFeFinanceiroMateriais:
         produtos = self.dados_nfe_atual.get('produtos', []) if self.dados_nfe_atual else []
         if produtos:
             tk.Label(frame_materiais, 
-                    text=f"📦 {len(produtos)} produtos serão importados",
+                    text=f"{len(produtos)} produtos serão importados",
                     font=('Arial', 10)).grid(row=2, column=0, columnspan=4, sticky='w', pady=5)
             
     def carregar_parametros_materiais(self):
@@ -246,7 +253,7 @@ class IntegradorNFeFinanceiroMateriais:
             parametros = GerenciadorConfiguracoes.carregar_configuracoes_materiais()
             
             if parametros is None:
-                print("⚠️ Não foi possível carregar parâmetros de materiais, usando padrão")
+                print("Não foi possível carregar parâmetros de materiais, usando padrão")
                 # Parâmetros padrão caso não consiga carregar
                 return {
                     "categorias_materiais": {
@@ -290,7 +297,7 @@ class IntegradorNFeFinanceiroMateriais:
             return parametros
             
         except Exception as e:
-            print(f"❌ Erro ao carregar parâmetros de materiais: {e}")
+            print(f"Erro ao carregar parâmetros de materiais: {e}")
             # Retornar parâmetros mínimos em caso de erro
             return {
                 "categorias_materiais": {
@@ -325,7 +332,7 @@ class IntegradorNFeFinanceiroMateriais:
                 self.subcategoria_var.set('')
                 
         except Exception as e:
-            print(f"❌ Erro ao atualizar subcategorias: {e}")
+            print(f"Erro ao atualizar subcategorias: {e}")
             self.subcategoria_combo['values'] = []
             self.subcategoria_var.set('')
         
@@ -334,10 +341,10 @@ class IntegradorNFeFinanceiroMateriais:
         frame_botoes = ttk.Frame(self.janela)
         frame_botoes.pack(fill='x', padx=10, pady=10)
         
-        ttk.Button(frame_botoes, text="❌ Cancelar",
+        ttk.Button(frame_botoes, text="Cancelar",
                   command=self.janela.destroy).pack(side='left', padx=5)
         
-        ttk.Button(frame_botoes, text="💾 Processar e Salvar",
+        ttk.Button(frame_botoes, text="Processar e Salvar",
                   command=self.processar_e_salvar).pack(side='right', padx=5)
     
     def calcular_data_referencia(self):
@@ -346,22 +353,18 @@ class IntegradorNFeFinanceiroMateriais:
         - Se hoje está entre 21 e 5: data é 5 do mês corrente
         - Caso contrário: dia 20 do mês corrente
         """
-        try:
-            # Usar data de HOJE para calcular (não da NFe)
-            hoje = datetime.now()
+        hoje = datetime.now()
             
-            # REGRA CORRIGIDA: Entre 21 e 5 → dia 5, senão → dia 20
-            if hoje.day >= 21 or hoje.day <= 5:
-                # Entre 21 e 5 → dia 5 do mês corrente
-                data_rel = hoje.replace(day=5)
+        if 6 <= hoje.day <= 20:
+            data_rel = hoje.replace(day=20)
+        else:
+            if hoje.day > 20:
+                data_rel = (hoje + relativedelta(months=1)).replace(day=5)
             else:
-                # Entre 6 e 20 → dia 20 do mês corrente  
-                data_rel = hoje.replace(day=20)
+                data_rel = hoje.replace(day=5)
             
-            return data_rel.strftime('%d/%m/%Y')
-            
-        except:
-            return datetime.now().strftime('%d/%m/%Y')
+        return data_rel.strftime('%d/%m/%Y')
+        
     
     def formatar_cnpj(self, cnpj):
         """Formata CNPJ"""
@@ -393,15 +396,15 @@ class IntegradorNFeFinanceiroMateriais:
             # Processar financeiro
             if self.incluir_financeiro_var.get():
                 resultado_fin = self.salvar_financeiro()
-                resultados.append(f"💰 Financeiro: {resultado_fin}")
+                resultados.append(f"Financeiro: {resultado_fin}")
             
             # Processar materiais
             if self.incluir_materiais_var.get():
                 resultado_mat = self.salvar_materiais()
-                resultados.append(f"📦 Materiais: {resultado_mat}")
+                resultados.append(f"Materiais: {resultado_mat}")
             
             # Mostrar resultado
-            mensagem = "✅ PROCESSAMENTO CONCLUÍDO!\n\n"
+            mensagem = "PROCESSAMENTO CONCLUÍDO!\n\n"
             for resultado in resultados:
                 mensagem += f"{resultado}\n"
             
@@ -433,10 +436,10 @@ class IntegradorNFeFinanceiroMateriais:
             }
             
             # Adicionar aos dados do sistema
-            self.sistema.dados_para_incluir = [dados_financeiro]
+            if not hasattr(self.sistema, 'dados_para_incluir'):
+                self.sistema.dados_para_incluir = []
             
-            # Chamar método de envio
-            # self.sistema.enviar_dados()
+            self.sistema.dados_para_incluir.append(dados_financeiro)
             
             return "Salvo com sucesso"
             
@@ -444,44 +447,77 @@ class IntegradorNFeFinanceiroMateriais:
             return f"Erro: {str(e)}"
     
     def salvar_materiais(self):
-        """Salva materiais"""
+        """Salva materiais usando o gerenciador refatorado"""
         try:
+            # MUDANÇA PRINCIPAL: Usar gerenciador refatorado
             if not hasattr(self.sistema, 'gerenciador_materiais'):
-                from src.materiais.gerenciador_materiais import GerenciadorMateriais
-                self.sistema.gerenciador_materiais = GerenciadorMateriais(self.sistema)
+                # Importar e inicializar gerenciador refatorado
+                try:
+                    from gerenciador_materiais import GerenciadorMateriaisRefatorado
+                    self.sistema.gerenciador_materiais = GerenciadorMateriaisRefatorado(self.sistema)
+                except ImportError:
+                    # Fallback para nome atualizado
+                    from gerenciador_materiais import GerenciadorMateriais
+                    self.sistema.gerenciador_materiais = GerenciadorMateriais(self.sistema)
             
             produtos = self.dados_nfe_atual.get('produtos', [])
             salvos = 0
+            erros = []
+            
+            cliente_atual = self.sistema.cliente_atual
             
             for produto in produtos:
-                material = {
-                    'Cliente': self.sistema.cliente_atual,
-                    'Categoria': self.categoria_var.get(),  # MODIFICADO: usar valor selecionado
-                    'Subcategoria': self.subcategoria_var.get(),  # ADICIONADO: subcategoria
-                    'Codigo_Produto': produto.get('codigo', ''),
-                    'Descricao_Completa': produto.get('descricao', '').upper(),
-                    'Ambiente_Aplicacao': self.ambiente_var.get(),
-                    'Localizacao_Especifica': self.localizacao_var.get(),  # ADICIONADO: localização específica
-                    'Status_Instalacao': 'PENDENTE',
-                    'Tem_Dados_Compra': True,
-                    'Nome_Fornecedor': self.dados_nfe_atual.get('razao_social_emitente', '').upper(),
-                    'CNPJ_Fornecedor': self.dados_nfe_atual.get('cnpj_emitente', ''),
-                    'Data_Compra': self.dados_nfe_atual.get('data_emissao', ''),
-                    'Quantidade': produto.get('quantidade', 0),
-                    'Unidade': produto.get('unidade', 'UN'),
-                    'Valor_Unitario': produto.get('valor_unitario', 0),
-                    'Valor_Total': produto.get('valor_total', 0),
-                    'Numero_NF': self.dados_nfe_atual.get('numero_nf', ''),
-                    'Observacoes': f"Importado NFe {self.dados_nfe_atual.get('numero_nf', '')} - Cat: {self.categoria_var.get()}"  # MODIFICADO: incluir categoria na observação
-                }
-                
                 try:
-                    self.sistema.gerenciador_materiais.salvar_material(material)
-                    salvos += 1
-                except:
+                    material = {
+                        'Categoria': self.categoria_var.get(),
+                        'Subcategoria': self.subcategoria_var.get(),
+                        'Codigo_Produto': produto.get('codigo', ''),
+                        'Descricao_Completa': produto.get('descricao', '').upper(),
+                        'Ambiente_Aplicacao': self.ambiente_var.get(),
+                        'Localizacao_Especifica': self.localizacao_var.get(),
+                        'Status_Instalacao': 'PENDENTE',
+                        'Tem_Dados_Compra': True,
+                        'Nome_Fornecedor': self.dados_nfe_atual.get('razao_social_emitente', '').upper(),
+                        'CNPJ_Fornecedor': self.dados_nfe_atual.get('cnpj_emitente', ''),
+                        'Data_Compra': self.dados_nfe_atual.get('data_emissao', ''),
+                        'Quantidade': produto.get('quantidade', 1),
+                        'Unidade': produto.get('unidade', 'UN'),
+                        'Valor_Unitario': produto.get('valor_unitario', 0),
+                        'Valor_Total': produto.get('valor_total', 0),
+                        'Numero_NF': self.dados_nfe_atual.get('numero_nf', ''),
+                        'Origem_Dados': 'IMPORTACAO_NFE',
+                        'Observacoes': f"Importado NFe {self.dados_nfe_atual.get('numero_nf', '')} - Cat: {self.categoria_var.get()}"
+                    }
+                    
+                    # MUDANÇA: Usar método correto do gerenciador refatorado
+                    if hasattr(self.sistema.gerenciador_materiais, 'salvar_material'):
+                        # Versão refatorada - passa cliente como parâmetro
+                        if hasattr(self.sistema.gerenciador_materiais, 'obter_arquivo_cliente'):
+                            material_id = self.sistema.gerenciador_materiais.salvar_material(cliente_atual, material)
+                        else:
+                            # Versão antiga - inclui cliente nos dados
+                            material['Cliente'] = cliente_atual
+                            material_id = self.sistema.gerenciador_materiais.salvar_material(material)
+                        
+                        salvos += 1
+                        print(f"Material {material_id} salvo: {produto.get('descricao', '')[:50]}")
+                    else:
+                        erros.append(f"Método salvar_material não encontrado")
+                        
+                except Exception as e:
+                    erros.append(f"Erro no produto {produto.get('codigo', '')}: {str(e)}")
+                    print(f"Erro ao salvar produto {produto.get('codigo', '')}: {e}")
                     continue
             
-            return f"{salvos} itens salvos"
+            # Resultado
+            resultado = f"{salvos} itens salvos"
+            if erros:
+                resultado += f" ({len(erros)} erros)"
+                print("Erros encontrados:", erros[:3])  # Mostrar apenas primeiros 3 erros
+            
+            return resultado
             
         except Exception as e:
-            return f"Erro: {str(e)}"
+            error_msg = f"Erro geral: {str(e)}"
+            print(f"Erro ao salvar materiais: {e}")
+            return error_msg
