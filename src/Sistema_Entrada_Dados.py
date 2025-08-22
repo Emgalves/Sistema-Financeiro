@@ -3979,37 +3979,53 @@ class SistemaEntradaDados:
         # Coluna 2 e 3: Labels e campos da direita
         
         # ===== LADO ESQUERDO (valores numéricos) =====
-        
-        # Tipo Despesa
-        ttk.Label(frame_despesa, text="Tipo Despesa (1-7):", font=('Arial', 10)).grid(
+    
+        # Tipo Despesa (row=0)
+        ttk.Label(frame_despesa, text="Tipo Despesa (1-6):", font=('Arial', 10)).grid(
             row=0, column=0, padx=5, pady=5, sticky='e')
         vcmd = (frame_despesa.register(self.validar_tipo_despesa), '%P')
         self.campos_despesa['tp_desp'] = ttk.Entry(
             frame_despesa, validate='key', validatecommand=vcmd, font=('Arial', 10), width=10)
         self.campos_despesa['tp_desp'].grid(row=0, column=1, padx=(5, 20), pady=5, sticky='w')
         
-        # Valor Unitário
+        # Valor Unitário (row=1)
         ttk.Label(frame_despesa, text="Valor Unitário:", font=('Arial', 10)).grid(
             row=1, column=0, padx=5, pady=5, sticky='e')
         self.campos_despesa['vr_unit'] = ttk.Entry(frame_despesa, font=('Arial', 10), width=15)
         self.campos_despesa['vr_unit'].grid(row=1, column=1, padx=(5, 20), pady=5, sticky='w')
         
-        # Dias
+        # Dias (row=2)
         ttk.Label(frame_despesa, text="Dias:", font=('Arial', 10)).grid(
             row=2, column=0, padx=5, pady=5, sticky='e')
         self.campos_despesa['dias'] = ttk.Entry(frame_despesa, font=('Arial', 10), width=8)
         self.campos_despesa['dias'].grid(row=2, column=1, padx=(5, 20), pady=5, sticky='w')
         
-        # Valor Total
+        # Valor Total (row=3)
         ttk.Label(frame_despesa, text="Valor Total:", font=('Arial', 10)).grid(
             row=3, column=0, padx=5, pady=5, sticky='e')
         self.campos_despesa['valor'] = ttk.Entry(
             frame_despesa, state='readonly', font=('Arial', 10), width=15)
         self.campos_despesa['valor'].grid(row=3, column=1, padx=(5, 20), pady=5, sticky='w')
         
+        # Data Vencimento (row=4) - MOVIDO PARA A ESQUERDA
+        ttk.Label(frame_despesa, text="Data Vencimento:", font=('Arial', 10)).grid(
+            row=4, column=0, padx=5, pady=5, sticky='e')
+        self.campos_despesa['dt_vencto'] = DateEntry(
+            frame_despesa,
+            format='dd/mm/yyyy',
+            locale='pt_BR',
+            background='darkblue',
+            foreground='white',
+            borderwidth=2,
+            font=('Arial', 10),
+            width=15
+        )
+        self.campos_despesa['dt_vencto'].grid(row=4, column=1, padx=(5, 20), pady=5, sticky='w')
+        self.campos_despesa['dt_vencto'].delete(0, tk.END)  # Inicializa vazio
+        
         # ===== LADO DIREITO (texto) =====
         
-        # Referência
+        # Referência (row=0)
         ttk.Label(frame_despesa, text="Referência:", font=('Arial', 10)).grid(
             row=0, column=2, padx=5, pady=5, sticky='e')
         self.campos_despesa['referencia'] = ttk.Combobox(
@@ -4019,11 +4035,10 @@ class SistemaEntradaDados:
         self.campos_despesa['referencia'].bind(
             '<<ComboboxSelected>>', lambda e: self.calcular_valor_total())
         
-        # Etapa da Obra
+        # Etapa da Obra (row=1)
         ttk.Label(frame_despesa, text="Etapa da Obra:", font=('Arial', 10)).grid(
             row=1, column=2, padx=5, pady=5, sticky='e')
         
-        # Importar e obter etapas da obra
         from src.configuracoes_sistema import GerenciadorConfiguracoes
         etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()
         
@@ -4032,13 +4047,25 @@ class SistemaEntradaDados:
         self.campos_despesa['etapa_obra']['values'] = etapas_obra
         self.campos_despesa['etapa_obra'].grid(row=1, column=3, padx=5, pady=5, sticky='ew')
 
-        # NF + Checkbox para materiais
+        # NOVO CAMPO: Insumo (row=2)
+        ttk.Label(frame_despesa, text="Insumo:", font=('Arial', 10)).grid(
+            row=2, column=2, padx=5, pady=5, sticky='e')
+        
+        # Obter lista de insumos das configurações
+        insumos = GerenciadorConfiguracoes.get_insumos()
+        
+        self.campos_despesa['insumo'] = ttk.Combobox(
+            frame_despesa, font=('Arial', 10), width=40, state='readonly')
+        self.campos_despesa['insumo']['values'] = insumos
+        self.campos_despesa['insumo'].grid(row=2, column=3, padx=5, pady=5, sticky='ew')
+
+        # NF + Checkbox para materiais (row=3)
         ttk.Label(frame_despesa, text="NF:", font=('Arial', 10)).grid(
-        row=2, column=2, padx=5, pady=5, sticky='e')
+            row=3, column=2, padx=5, pady=5, sticky='e')
 
         # Frame para NF e checkbox de materiais
         frame_nf = ttk.Frame(frame_despesa)
-        frame_nf.grid(row=2, column=3, padx=5, pady=5, sticky='ew')
+        frame_nf.grid(row=3, column=3, padx=5, pady=5, sticky='ew')
 
         self.campos_despesa['nf'] = ttk.Entry(frame_nf, font=('Arial', 10), width=15)
         self.campos_despesa['nf'].pack(side='left')
@@ -4053,29 +4080,12 @@ class SistemaEntradaDados:
         )
         self.checkbox_materiais.pack(side='left', padx=(10, 0))
                 
-        # Data Vencimento (movido para row=3)
-        ttk.Label(frame_despesa, text="Data Vencimento:", font=('Arial', 10)).grid(
-            row=3, column=2, padx=5, pady=5, sticky='e')
-        self.campos_despesa['dt_vencto'] = DateEntry(
-            frame_despesa,
-            format='dd/mm/yyyy',
-            locale='pt_BR',
-            background='darkblue',
-            foreground='white',
-            borderwidth=2,
-            font=('Arial', 10),
-            width=15
-        )
-        self.campos_despesa['dt_vencto'].grid(row=3, column=3, padx=5, pady=5, sticky='w')
-        # Inicializa o campo vazio
-        self.campos_despesa['dt_vencto'].delete(0, tk.END)
-        
-        # Observação (movido para row=4)
+        # Observação (row=4)
         ttk.Label(frame_despesa, text="Observação:", font=('Arial', 10)).grid(
             row=4, column=2, padx=5, pady=5, sticky='e')
         self.campos_despesa['observacao'] = ttk.Entry(frame_despesa, font=('Arial', 10), width=40)
         self.campos_despesa['observacao'].grid(row=4, column=3, padx=5, pady=5, sticky='ew')
-       
+    
         # Configurar peso da coluna para expandir apenas os campos de referência e observação
         frame_despesa.columnconfigure(3, weight=1)  # Apenas a coluna 3 (campos expansíveis) cresce
         
@@ -4092,7 +4102,8 @@ class SistemaEntradaDados:
         self.campos_despesa['referencia'].bind('<Return>', lambda e: self.campos_despesa['vr_unit'].focus())
         self.campos_despesa['vr_unit'].bind('<Return>', lambda e: self.campos_despesa['dias'].focus())
         self.campos_despesa['dias'].bind('<Return>', lambda e: self.campos_despesa['etapa_obra'].focus())
-        self.campos_despesa['etapa_obra'].bind('<Return>', lambda e: self.campos_despesa['nf'].focus())
+        self.campos_despesa['etapa_obra'].bind('<Return>', lambda e: self.campos_despesa['insumo'].focus())
+        self.campos_despesa['insumo'].bind('<Return>', lambda e: self.campos_despesa['nf'].focus())
         self.campos_despesa['nf'].bind('<Return>', lambda e: self.campos_despesa['dt_vencto'].focus())
         self.campos_despesa['dt_vencto'].bind('<Return>', lambda e: self.campos_despesa['observacao'].focus())
         
@@ -4623,6 +4634,7 @@ class SistemaEntradaDados:
                 'tp_desp': self.campos_despesa['tp_desp'].get(),
                 'referencia': self.campos_despesa['referencia'].get().upper(),
                 'etapa_obra': self.campos_despesa['etapa_obra'].get(),
+                'insumo': self.campos_despesa['insumo'].get(), 
                 'nf': self.campos_despesa['nf'].get().upper(),
                 'vr_unit': f"{vr_unit:.2f}",
                 'dias': float(self.campos_despesa['dias'].get().replace(',', '.')) if self.campos_despesa['dias'].get() else 1,
@@ -4847,8 +4859,8 @@ class SistemaEntradaDados:
 
     def limpar_campos_despesa(self):
         """Limpa todos os campos da despesa"""
-        campos_para_limpar = ['tp_desp', 'referencia', 'etapa_obra', 'nf', 'vr_unit', 
-                            'dias', 'valor', 'observacao']
+        campos_para_limpar = ['tp_desp', 'referencia', 'etapa_obra', 'insumo', 'nf', 'vr_unit', 
+                            'dias', 'valor', 'observacao']  # ADICIONADO 'insumo'
         
         for campo in campos_para_limpar:
             if campo in self.campos_despesa:
@@ -5032,11 +5044,12 @@ class SistemaEntradaDados:
 
             logger.info(f"Total de registros a processar: {len(dados_para_processar)}")
 
-            # CORREÇÃO: Garantir que todos os registros tenham o campo 'etapa_obra'
+            # CORREÇÃO: Garantir que todos os registros tenham o campo 'insumo'
             for lancamento in dados_para_processar:
                 if 'etapa_obra' not in lancamento:
                     lancamento['etapa_obra'] = ''  # Valor padrão vazio se não existir
-                    logger.info(f"Campo 'etapa_obra' adicionado ao lançamento: {lancamento.get('nome', 'DESCONHECIDO')}")
+                if 'insumo' not in lancamento:  # NOVO CAMPO
+                    lancamento['insumo'] = ''  # Valor padrão vazio se não existir
 
             # Capturar datas afetadas ANTES da inserção
             datas_afetadas = set()
@@ -5069,6 +5082,7 @@ class SistemaEntradaDados:
                 sheet = workbook["Dados"]
 
                 self.verificar_e_adicionar_cabecalho_etapa_obra(sheet)
+                self.verificar_e_adicionar_cabecalho_insumo(sheet)
                 
                 # Verificar duplicatas ANTES de processar qualquer registro
                 lancamentos_duplicados = []
@@ -5174,6 +5188,7 @@ class SistemaEntradaDados:
                         # CORREÇÃO: Etapa da Obra na coluna 17 (garantir que o campo existe)
                         etapa_obra = dados.get('etapa_obra', '')  # Usar get() para evitar KeyError
                         sheet.cell(row=proxima_linha, column=17, value=etapa_obra)
+                        sheet.cell(row=proxima_linha, column=18, value=dados.get('insumo', ''))
 
                         logger.info(f"Lançamento inserido com ID {novo_id} na linha {proxima_linha}")
                         
@@ -5288,7 +5303,26 @@ class SistemaEntradaDados:
         except Exception as e:
             logger.error(f"Erro ao verificar/adicionar cabeçalho de etapa da obra: {str(e)}")
             return False
-    
+
+    def verificar_e_adicionar_cabecalho_insumo(self, sheet):
+        """
+        Verifica se o cabeçalho da coluna Insumo existe e adiciona se necessário
+        """
+        try:
+            # Verificar se existe cabeçalho na linha 1, coluna 18
+            cabecalho_atual = sheet.cell(row=1, column=18).value
+            
+            if cabecalho_atual is None or cabecalho_atual == "":
+                # Adicionar cabeçalho para Insumo
+                sheet.cell(row=1, column=18, value="INSUMO")
+                logger.info("Cabeçalho 'INSUMO' adicionado na coluna R (18)")
+                
+            return True
+            
+        except Exception as e:
+            logger.error(f"Erro ao verificar/adicionar cabeçalho de insumo: {str(e)}")
+            return False
+        
     def verificar_e_corrigir_ids_antes_insercao(self, arquivo_cliente):
         """
         Verifica e corrige IDs duplicados ANTES de inserir novos lançamentos
