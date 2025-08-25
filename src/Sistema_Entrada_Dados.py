@@ -562,7 +562,7 @@ class EditorLancamento:
     def __init__(self, parent, dados, indice, callback_atualizacao):
         self.janela = tk.Toplevel(parent)
         self.janela.title("Editar Lançamento")
-        self.janela.geometry("600x500")
+        self.janela.geometry("600x550")  # Aumentado para acomodar novos campos
         
         self.dados = dados
         self.indice = indice
@@ -604,31 +604,41 @@ class EditorLancamento:
         ttk.Label(frame_despesa, text="Referência:").grid(row=2, column=0, padx=5, pady=2)
         self.referencia = ttk.Entry(frame_despesa)
         self.referencia.grid(row=2, column=1, padx=5, pady=2)
+
+        # Etapa da Obra
+        ttk.Label(frame_despesa, text="Etapa da Obra:").grid(row=3, column=0, padx=5, pady=2)
+        self.etapa_obra = ttk.Entry(frame_despesa)
+        self.etapa_obra.grid(row=3, column=1, padx=5, pady=2)
         
+        # Insumo
+        ttk.Label(frame_despesa, text="Insumo:").grid(row=4, column=0, padx=5, pady=2)
+        self.insumo = ttk.Entry(frame_despesa)
+        self.insumo.grid(row=4, column=1, padx=5, pady=2)
+
         # NF
-        ttk.Label(frame_despesa, text="NF:").grid(row=3, column=0, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="NF:").grid(row=5, column=0, padx=5, pady=2)
         self.nf = ttk.Entry(frame_despesa)
-        self.nf.grid(row=3, column=1, padx=5, pady=2)
+        self.nf.grid(row=5, column=1, padx=5, pady=2)
         
         # Valor Unitário
-        ttk.Label(frame_despesa, text="Valor Unitário:").grid(row=4, column=0, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Valor Unitário:").grid(row=6, column=0, padx=5, pady=2)
         self.vr_unit = ttk.Entry(frame_despesa)
-        self.vr_unit.grid(row=4, column=1, padx=5, pady=2)
+        self.vr_unit.grid(row=6, column=1, padx=5, pady=2)
         
         # Dias
-        ttk.Label(frame_despesa, text="Dias:").grid(row=5, column=0, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Dias:").grid(row=7, column=0, padx=5, pady=2)
         self.dias = ttk.Entry(frame_despesa)
-        self.dias.grid(row=5, column=1, padx=5, pady=2)
+        self.dias.grid(row=7, column=1, padx=5, pady=2)
         
         # Valor Total
-        ttk.Label(frame_despesa, text="Valor Total:").grid(row=6, column=0, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Valor Total:").grid(row=8, column=0, padx=5, pady=2)
         self.valor = ttk.Entry(frame_despesa, state='readonly')
-        self.valor.grid(row=6, column=1, padx=5, pady=2)
+        self.valor.grid(row=8, column=1, padx=5, pady=2)
         
         # Data de Vencimento
-        ttk.Label(frame_despesa, text="Data Vencimento:").grid(row=7, column=0, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Data Vencimento:").grid(row=9, column=0, padx=5, pady=2)
         self.dt_vencto = DateEntry(frame_despesa, width=20, date_pattern='dd/mm/yyyy', locale='pt_BR')
-        self.dt_vencto.grid(row=7, column=1, padx=5, pady=2)
+        self.dt_vencto.grid(row=9, column=1, padx=5, pady=2)
         
         # Configurar o calendário para permitir navegação
         def configurar_calendario(event=None):
@@ -647,14 +657,14 @@ class EditorLancamento:
         self.dt_vencto.bind('<<DateEntryPopup>>', configurar_calendario)
         
         # Forma de Pagamento
-        ttk.Label(frame_despesa, text="Forma de Pagamento:").grid(row=8, column=0, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Forma de Pagamento:").grid(row=10, column=0, padx=5, pady=2)
         self.forma_pagamento = ttk.Combobox(frame_despesa, values=['PIX', 'TED'], state='readonly')
-        self.forma_pagamento.grid(row=8, column=1, padx=5, pady=2)
+        self.forma_pagamento.grid(row=10, column=1, padx=5, pady=2)
         
         # Observação
-        ttk.Label(frame_despesa, text="Observação:").grid(row=9, column=0, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Observação:").grid(row=11, column=0, padx=5, pady=2)
         self.observacao = ttk.Entry(frame_despesa)
-        self.observacao.grid(row=9, column=1, padx=5, pady=2)
+        self.observacao.grid(row=11, column=1, padx=5, pady=2)
         
         # Botões
         frame_botoes = ttk.Frame(frame)
@@ -683,6 +693,10 @@ class EditorLancamento:
         self.data_rel.set_date(datetime.strptime(self.dados['data'], '%d/%m/%Y'))
         self.tp_desp.insert(0, self.dados['tp_desp'])
         self.referencia.insert(0, self.dados['referencia'])
+        
+        self.etapa_obra.insert(0, self.dados.get('etapa_obra', ''))
+        self.insumo.insert(0, self.dados.get('insumo', ''))
+
         self.nf.insert(0, self.dados.get('nf', ''))
         self.vr_unit.insert(0, self.dados['vr_unit'])
         self.dias.insert(0, str(self.dados['dias']))
@@ -693,9 +707,7 @@ class EditorLancamento:
         
         self.dt_vencto.set_date(datetime.strptime(self.dados['dt_vencto'], '%d/%m/%Y'))
         self.observacao.insert(0, self.dados.get('observacao', ''))
-
         self.forma_pagamento.set(self.dados.get('forma_pagamento', ''))
-
 
     def atualizar_dados_bancarios(self, event=None):
         """Atualiza os dados bancários baseado no tipo de despesa e forma de pagamento"""
@@ -782,6 +794,8 @@ class EditorLancamento:
                 'nome': self.dados['nome'],
                 'forma_pagamento': self.forma_pagamento.get(),
                 'referencia': self.referencia.get(),
+                'etapa_obra': self.etapa_obra.get(),  # === NOVO CAMPO ===
+                'insumo': self.insumo.get(),          # === NOVO CAMPO ===
                 'nf': self.nf.get(),
                 'vr_unit': self.vr_unit.get(),
                 'dias': float(self.dias.get().replace(',', '.') if self.dias.get() else 1),
@@ -13408,6 +13422,20 @@ class GerenciadorLancamentos:
             # Referência (Coluna E)
             ws.cell(row=linha_encontrada, column=5, value=dados_editados.get('referencia', ''))
             
+            # Verificar se os cabeçalhos existem e criar se necessário
+            if ws.cell(row=1, column=17).value != 'ETAPA_OBRA':
+                ws.cell(row=1, column=17, value='ETAPA_OBRA')
+            
+            if ws.cell(row=1, column=18).value != 'INSUMO':
+                ws.cell(row=1, column=18, value='INSUMO')
+            
+            # Etapa da Obra (Coluna Q)
+            ws.cell(row=linha_encontrada, column=17, value=dados_editados.get('etapa_obra', ''))
+            
+            # Insumo (Coluna R)
+            ws.cell(row=linha_encontrada, column=18, value=dados_editados.get('insumo', ''))
+            # === FIM DOS NOVOS CAMPOS ===
+            
             # NF (Coluna F)
             ws.cell(row=linha_encontrada, column=6, value=dados_editados.get('nf', ''))
             
@@ -13486,6 +13514,20 @@ class GerenciadorLancamentos:
                         
                         if data_antiga_str != data_nova_str:
                             alteracoes.append(f"DATA: {data_antiga_str} → {data_nova_str}")
+                
+                # === VERIFICAR ALTERAÇÕES NOS NOVOS CAMPOS ===
+                if dados_editados.get('etapa_obra') != str(dados_originais.get('ETAPA_OBRA', '')):
+                    etapa_antiga = dados_originais.get('ETAPA_OBRA', '')
+                    etapa_nova = dados_editados.get('etapa_obra', '')
+                    if etapa_antiga != etapa_nova:
+                        alteracoes.append(f"ETAPA_OBRA: {etapa_antiga} → {etapa_nova}")
+                
+                if dados_editados.get('insumo') != str(dados_originais.get('INSUMO', '')):
+                    insumo_antigo = dados_originais.get('INSUMO', '')
+                    insumo_novo = dados_editados.get('insumo', '')
+                    if insumo_antigo != insumo_novo:
+                        alteracoes.append(f"INSUMO: {insumo_antigo} → {insumo_novo}")
+                # === FIM DA VERIFICAÇÃO DOS NOVOS CAMPOS ===
             
             # Se não conseguiu detectar alterações específicas, registrar edição geral
             if not alteracoes:
@@ -13647,34 +13689,59 @@ class EditorLancamentoCompleto:
         self.referencia = ttk.Entry(frame_despesa, width=40)
         self.referencia.grid(row=0, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
         
-        ttk.Label(frame_despesa, text="NF:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
+        ttk.Label(frame_despesa, text="Etapa da Obra:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
+        
+        # Obter lista de etapas das configurações
+        try:
+            from src.configuracoes_sistema import GerenciadorConfiguracoes
+            etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()
+        except ImportError:
+            etapas_obra = []  # Lista vazia se não conseguir importar
+        
+        self.etapa_obra = ttk.Combobox(frame_despesa, width=30, state='readonly')
+        self.etapa_obra['values'] = etapas_obra
+        self.etapa_obra.grid(row=1, column=1, columnspan=2, padx=5, pady=2, sticky='ew')
+        
+        ttk.Label(frame_despesa, text="Insumo:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
+        
+        # Obter lista de insumos das configurações
+        try:
+            insumos = GerenciadorConfiguracoes.get_insumos()
+        except (ImportError, AttributeError):
+            insumos = []  # Lista vazia se não conseguir importar
+        
+        self.insumo = ttk.Combobox(frame_despesa, width=30, state='readonly')
+        self.insumo['values'] = insumos
+        self.insumo.grid(row=2, column=1, columnspan=2, padx=5, pady=2, sticky='ew')
+        
+        ttk.Label(frame_despesa, text="NF:").grid(row=3, column=0, padx=5, pady=2, sticky='w')
         self.nf = ttk.Entry(frame_despesa, width=15)
-        self.nf.grid(row=1, column=1, padx=5, pady=2, sticky='w')
+        self.nf.grid(row=3, column=1, padx=5, pady=2, sticky='w')
         
-        ttk.Label(frame_despesa, text="Valor Unitário:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
+        ttk.Label(frame_despesa, text="Valor Unitário:").grid(row=4, column=0, padx=5, pady=2, sticky='w')
         self.vr_unit = ttk.Entry(frame_despesa, width=15)
-        self.vr_unit.grid(row=2, column=1, padx=5, pady=2, sticky='w')
+        self.vr_unit.grid(row=4, column=1, padx=5, pady=2, sticky='w')
         
-        ttk.Label(frame_despesa, text="Dias:").grid(row=2, column=2, padx=5, pady=2, sticky='w')
+        ttk.Label(frame_despesa, text="Dias:").grid(row=4, column=2, padx=5, pady=2, sticky='w')
         self.dias = ttk.Entry(frame_despesa, width=8)
-        self.dias.grid(row=2, column=3, padx=5, pady=2, sticky='w')
+        self.dias.grid(row=4, column=3, padx=5, pady=2, sticky='w')
         
-        ttk.Label(frame_despesa, text="Valor Total:").grid(row=3, column=0, padx=5, pady=2, sticky='w')
+        ttk.Label(frame_despesa, text="Valor Total:").grid(row=5, column=0, padx=5, pady=2, sticky='w')
         self.valor = ttk.Entry(frame_despesa, width=15)
-        self.valor.grid(row=3, column=1, padx=5, pady=2, sticky='w')
+        self.valor.grid(row=5, column=1, padx=5, pady=2, sticky='w')
         
-        ttk.Label(frame_despesa, text="Data Vencimento:").grid(row=3, column=2, padx=5, pady=2, sticky='w')
+        ttk.Label(frame_despesa, text="Data Vencimento:").grid(row=5, column=2, padx=5, pady=2, sticky='w')
         self.dt_vencto = DateEntry(frame_despesa, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
-        self.dt_vencto.grid(row=3, column=3, padx=5, pady=2, sticky='w')
+        self.dt_vencto.grid(row=5, column=3, padx=5, pady=2, sticky='w')
         
         # Dados Bancários e Observação
-        ttk.Label(frame_despesa, text="Dados Bancários:").grid(row=4, column=0, padx=5, pady=2, sticky='w')
+        ttk.Label(frame_despesa, text="Dados Bancários:").grid(row=6, column=0, padx=5, pady=2, sticky='w')
         self.dados_bancarios = ttk.Entry(frame_despesa, width=50)
-        self.dados_bancarios.grid(row=4, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
+        self.dados_bancarios.grid(row=6, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
         
-        ttk.Label(frame_despesa, text="Observação:").grid(row=5, column=0, padx=5, pady=2, sticky='w')
+        ttk.Label(frame_despesa, text="Observação:").grid(row=7, column=0, padx=5, pady=2, sticky='w')
         self.observacao = ttk.Entry(frame_despesa, width=50)
-        self.observacao.grid(row=5, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
+        self.observacao.grid(row=7, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
         
         # Configurar expansão
         frame_fornecedor.columnconfigure(1, weight=1)
@@ -13709,6 +13776,15 @@ class EditorLancamentoCompleto:
             self.nome.insert(0, str(self.lancamento.get('NOME', '')))
             self.categoria.insert(0, str(self.lancamento.get('CATEGORIA', '')))
             self.referencia.insert(0, str(self.lancamento.get('REFERÊNCIA', '')))
+            
+            etapa_obra_valor = str(self.lancamento.get('ETAPA_OBRA', ''))
+            if etapa_obra_valor and etapa_obra_valor != 'nan':
+                self.etapa_obra.set(etapa_obra_valor)
+            
+            insumo_valor = str(self.lancamento.get('INSUMO', ''))
+            if insumo_valor and insumo_valor != 'nan':
+                self.insumo.set(insumo_valor)
+                
             self.nf.insert(0, str(self.lancamento.get('NF', '')))
             
             # Valores numéricos
@@ -13770,6 +13846,8 @@ class EditorLancamentoCompleto:
                 'nome': self.nome.get().upper(),
                 'categoria': self.categoria.get().upper(),
                 'referencia': self.referencia.get().upper(),
+                'etapa_obra': self.etapa_obra.get(), 
+                'insumo': self.insumo.get(),
                 'nf': self.nf.get().upper(),
                 'vr_unit': self.vr_unit.get().replace(',', '.'),
                 'dias': self.dias.get() or '1',
