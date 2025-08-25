@@ -94,6 +94,7 @@ class RelatorioCategoria:
             'MAT': "MATERIAL", 
             'MO': "MÃO-DE-OBRA", 
             'SERV': "SERVIÇOS",
+            'TAX': "TAXA ADMINISTRAÇÃO",
             'TP': "TARIFAS/TRIBUTOS PÚBLICOS"
         }
         
@@ -218,7 +219,7 @@ class RelatorioCategoria:
         frame_resumo.pack(fill='both', expand=True, pady=5)
         
         # Criar TreeView para os dados por data
-        # Colunas: 'data', categorias (ADM, DIV, LOC, MAT, MO, SERV, TP), 'total'
+        # Colunas: 'data', categorias (ADM, DIV, LOC, MAT, MO, SERV, TAX, TP), 'total'
         colunas = ['data']
         for categoria in self.categorias_despesas.keys():
             colunas.append(f'cat_{categoria}')
