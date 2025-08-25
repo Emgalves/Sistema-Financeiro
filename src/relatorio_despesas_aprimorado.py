@@ -897,7 +897,7 @@ class RelatorioHandler:
             4: "4) RESSARCIMENTOS E RESTITUIÇÕES",
             5: "5) DESPESAS PAGAS PELO CLIENTE",
             6: "6) PAGAMENTOS CAIXA DE OBRA",
-            7: "7) ADMINISTRAÇÃO DA OBRA"
+            7: "7) ADMINISTRAÇÃO DA OBRA - % SOBRE DESPESAS",
         }
 
         # Verificar se a logomarca existe na mesma pasta do script
