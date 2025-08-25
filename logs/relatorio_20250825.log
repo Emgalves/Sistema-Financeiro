@@ -1,0 +1,119 @@
+2025-08-25 11:52:37,144 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-25 11:52:37,220 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-25 11:52:37,221 - INFO - Coluna de status: Data Final
+2025-08-25 11:52:37,238 - INFO - Coluna de nome: Nome
+2025-08-25 11:52:37,239 - INFO - Total de clientes ativos encontrados: 15
+2025-08-25 11:52:37,241 - INFO - Lista de clientes atualizada com 16 clientes
+2025-08-25 11:52:37,271 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-08-25 11:52:37,272 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-25 11:52:37,292 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-25 11:52:37,293 - INFO - Coluna de status: Data Final
+2025-08-25 11:52:37,295 - INFO - Coluna de nome: Nome
+2025-08-25 11:52:37,298 - INFO - Total de clientes ativos encontrados: 15
+2025-08-25 11:52:37,299 - INFO - Lista de clientes carregada com 16 itens
+2025-08-25 11:52:43,213 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-08-25 11:52:43,213 - INFO - 📋 Processando outros relatórios: categoria
+2025-08-25 11:53:02,531 - INFO - Data calculada automaticamente: 05/09/2025
+2025-08-25 11:53:02,531 - INFO - Data calculada automaticamente: 05/09/2025
+2025-08-25 11:53:03,564 - INFO - Data calculada automaticamente: 05/09/2025
+2025-08-25 11:53:03,566 - INFO - Data calculada automaticamente: 05/09/2025
+2025-08-25 11:53:07,046 - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-08-25 11:53:07,048 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:53:07,049 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:53:16,981 - INFO - Modo manual ativado
+2025-08-25 11:53:26,732 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-08-25 11:53:26,733 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-08-25 11:53:26,734 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-08-25 11:53:26,735 - INFO - Data final obtida: 2025-08-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-08-25 11:53:26,736 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:53:26,736 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:53:26,737 - INFO - ✅ Configurações coletadas
+2025-08-25 11:53:26,738 - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:53:29,009 - INFO - Modo selecionado: Preview
+2025-08-25 11:53:29,010 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-08-25 11:53:29,471 - INFO - df_filtrado final: 30 registros
+2025-08-25 11:53:29,471 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'RELATÓRIO']
+2025-08-25 11:53:29,471 - INFO - Tipos de despesa únicos: [2 3 5]
+2025-08-25 11:53:29,768 - INFO - 
+Obtendo número do relatório para data 2025-08-20 00:00:00
+2025-08-25 11:53:29,768 - INFO - Número do relatório calculado: 13
+2025-08-25 11:53:29,768 - INFO - Calculando acumulado para data 2025-08-20 00:00:00
+2025-08-25 11:53:29,768 - INFO - Acumulado - registros após filtrar excluídos: 391
+2025-08-25 11:53:29,785 - INFO - Valor acumulado calculado (apenas ativos): 768,503.84
+2025-08-25 11:53:29,788 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-08-25 11:53:29,789 - INFO - 📄 Criando PDF temporário: PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250825_115329.pdf
+2025-08-25 11:53:29,790 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-08-25 11:53:29,790 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-08-25 11:53:29,790 - INFO - Logo carregada com sucesso!
+2025-08-25 11:53:29,793 - INFO - Criando cabeçalho COM logo
+2025-08-25 11:53:29,795 - INFO - Informações do cliente adicionadas com sucesso
+2025-08-25 11:53:29,796 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-08-25 11:53:29,808 - INFO - Iniciando adição de detalhes ao relatório
+2025-08-25 11:53:29,901 - INFO - Detalhes adicionados com sucesso
+2025-08-25 11:53:29,997 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250825_115329.pdf
+2025-08-25 11:53:29,997 - INFO - ✅ PDF temporário válido: 50,961 bytes
+2025-08-25 11:53:30,287 - INFO - ✅ Janela de decisão criada
+2025-08-25 11:53:46,514 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250825_115329.pdf
+2025-08-25 11:53:48,517 - INFO - 🗑️ Arquivo temporário removido: PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250825_115329.pdf
+2025-08-25 11:53:54,003 - INFO - Solicitado retorno ao menu principal
+2025-08-25 11:53:54,005 - INFO - Retornando ao menu principal existente
+2025-08-25 11:53:54,119 - INFO - Retorno ao menu principal concluído
+2025-08-25 11:53:57,781 - INFO - Saída confirmada, finalizando sistema
+2025-08-25 11:53:58,045 - INFO - Forçando encerramento do programa...
+2025-08-25 11:56:37,229 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-25 11:56:37,316 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-25 11:56:37,317 - INFO - Coluna de status: Data Final
+2025-08-25 11:56:37,333 - INFO - Coluna de nome: Nome
+2025-08-25 11:56:37,335 - INFO - Total de clientes ativos encontrados: 15
+2025-08-25 11:56:37,337 - INFO - Lista de clientes atualizada com 16 clientes
+2025-08-25 11:56:37,371 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-08-25 11:56:37,372 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-08-25 11:56:37,389 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-08-25 11:56:37,396 - INFO - Coluna de status: Data Final
+2025-08-25 11:56:37,400 - INFO - Coluna de nome: Nome
+2025-08-25 11:56:37,401 - INFO - Total de clientes ativos encontrados: 15
+2025-08-25 11:56:37,402 - INFO - Lista de clientes carregada com 16 itens
+2025-08-25 11:56:40,423 - INFO - Data calculada automaticamente: 05/09/2025
+2025-08-25 11:56:40,424 - INFO - Data calculada automaticamente: 05/09/2025
+2025-08-25 11:56:46,195 - INFO - Modo manual ativado
+2025-08-25 11:56:54,955 - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-08-25 11:56:54,956 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:56:54,967 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:56:59,412 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-08-25 11:56:59,412 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-08-25 11:56:59,412 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-08-25 11:56:59,412 - INFO - Data final obtida: 2025-08-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-08-25 11:56:59,412 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:56:59,412 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:56:59,412 - INFO - ✅ Configurações coletadas
+2025-08-25 11:56:59,424 - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-08-25 11:57:01,379 - INFO - Modo selecionado: Preview
+2025-08-25 11:57:01,379 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-08-25 11:57:01,663 - INFO - df_filtrado final: 30 registros
+2025-08-25 11:57:01,663 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'RELATÓRIO']
+2025-08-25 11:57:01,663 - INFO - Tipos de despesa únicos: [2 3 5]
+2025-08-25 11:57:01,912 - INFO - 
+Obtendo número do relatório para data 2025-08-20 00:00:00
+2025-08-25 11:57:01,928 - INFO - Número do relatório calculado: 13
+2025-08-25 11:57:01,928 - INFO - Calculando acumulado para data 2025-08-20 00:00:00
+2025-08-25 11:57:01,929 - INFO - Acumulado - registros após filtrar excluídos: 391
+2025-08-25 11:57:01,929 - INFO - Valor acumulado calculado (apenas ativos): 768,503.84
+2025-08-25 11:57:01,947 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-08-25 11:57:01,950 - INFO - 📄 Criando PDF temporário: PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250825_115701.pdf
+2025-08-25 11:57:01,951 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-08-25 11:57:01,952 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-08-25 11:57:01,954 - INFO - Logo carregada com sucesso!
+2025-08-25 11:57:01,956 - INFO - Criando cabeçalho COM logo
+2025-08-25 11:57:01,958 - INFO - Informações do cliente adicionadas com sucesso
+2025-08-25 11:57:01,959 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-08-25 11:57:01,976 - INFO - Iniciando adição de detalhes ao relatório
+2025-08-25 11:57:02,083 - INFO - Detalhes adicionados com sucesso
+2025-08-25 11:57:02,213 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250825_115701.pdf
+2025-08-25 11:57:02,213 - INFO - ✅ PDF temporário válido: 50,978 bytes
+2025-08-25 11:57:02,428 - INFO - ✅ Janela de decisão criada
+2025-08-25 11:57:17,796 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20250825_115701.pdf
+2025-08-25 11:57:19,462 - INFO - Solicitado retorno ao menu principal
+2025-08-25 11:57:19,462 - INFO - Retornando ao menu principal existente
+2025-08-25 11:57:19,569 - INFO - Retorno ao menu principal concluído
+2025-08-25 11:57:25,184 - INFO - Saída confirmada, finalizando sistema
+2025-08-25 11:57:25,240 - INFO - Ação concluída: Gerar relatório
