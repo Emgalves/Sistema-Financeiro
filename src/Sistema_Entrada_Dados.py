@@ -4874,14 +4874,25 @@ class SistemaEntradaDados:
     def limpar_campos_despesa(self):
         """Limpa todos os campos da despesa"""
         campos_para_limpar = ['tp_desp', 'referencia', 'etapa_obra', 'insumo', 'nf', 'vr_unit', 
-                            'dias', 'valor', 'observacao']  # ADICIONADO 'insumo'
+                            'dias', 'valor', 'observacao']
         
         for campo in campos_para_limpar:
             if campo in self.campos_despesa:
-                if hasattr(self.campos_despesa[campo], 'delete'):
-                    self.campos_despesa[campo].delete(0, tk.END)
-                elif hasattr(self.campos_despesa[campo], 'set'):
-                    self.campos_despesa[campo].set('')
+                widget = self.campos_despesa[campo]
+                
+                # Tratamento especial para campo 'valor' (Entry readonly)
+                if campo == 'valor':
+                    widget.config(state='normal')
+                    widget.delete(0, tk.END)
+                    widget.config(state='readonly')
+                
+                # Tratamento para Combobox readonly (etapa_obra, insumo)
+                elif isinstance(widget, ttk.Combobox):
+                    widget.set('')
+                
+                # Tratamento para Entry normais
+                elif hasattr(widget, 'delete'):
+                    widget.delete(0, tk.END)
         
         # Reinicializar valor padrão para dias
         if 'dias' in self.campos_despesa:
@@ -13874,24 +13885,20 @@ class VisualizadorLancamentosFornecedor:
         self.sistema = sistema_principal
         self.janela = None
         self.tree_lancamentos = None
-        self.dados_fornecedor = None
+        self.dados_originais = []  # Para armazenar dados completos
         
     def formatar_cnpj_cpf(self, cnpj_cpf):
         """Formata CNPJ/CPF mantendo zeros à esquerda"""
         try:
-            # Converter para string e extrair apenas números
             numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))
             
             if len(numeros) == 11:  # CPF
-                # Garantir 11 dígitos com zeros à esquerda
                 cpf = numeros.zfill(11)
                 return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
             elif len(numeros) == 14:  # CNPJ
-                # Garantir 14 dígitos com zeros à esquerda
                 cnpj = numeros.zfill(14)
                 return f"{cnpj[:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:]}"
             else:
-                # Retornar original se não for CPF nem CNPJ válido
                 return str(cnpj_cpf)
         except:
             return str(cnpj_cpf)
@@ -13906,22 +13913,16 @@ class VisualizadorLancamentosFornecedor:
         cnpj_cpf_str = str(cnpj_cpf_fornecedor)
         cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_str))
         
-        # Garantir zeros à esquerda baseado no tamanho
         if len(cnpj_cpf_numeros) <= 11:
             cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(11)  # CPF
         else:
             cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(14)  # CNPJ
             
-        # Formatar CNPJ/CPF corretamente
         cnpj_cpf_formatado = self.formatar_cnpj_cpf(cnpj_cpf_normalizado)
         
-        print(f"DEBUG: CNPJ original: {cnpj_cpf_fornecedor}")
-        print(f"DEBUG: CNPJ normalizado: {cnpj_cpf_normalizado}")
-        print(f"DEBUG: CNPJ formatado: {cnpj_cpf_formatado}")
-        
         self.dados_fornecedor = {
-            'cnpj_cpf': cnpj_cpf_normalizado,  # Usar normalizado para busca
-            'cnpj_cpf_formatado': cnpj_cpf_formatado,  # Para exibição
+            'cnpj_cpf': cnpj_cpf_normalizado,
+            'cnpj_cpf_formatado': cnpj_cpf_formatado,
             'nome': nome_fornecedor
         }
         
@@ -13929,10 +13930,10 @@ class VisualizadorLancamentosFornecedor:
         self.carregar_lancamentos()
         
     def criar_janela(self):
-        """Cria a janela do visualizador"""
+        """Cria a janela do visualizador com funcionalidades estendidas"""
         self.janela = tk.Toplevel(self.parent)
         self.janela.title(f"Lançamentos - {self.dados_fornecedor['nome']}")
-        self.janela.geometry("1200x900")
+        self.janela.geometry("1400x900")  # Aumentado para acomodar novos botões
         
         # Configurar janela
         self.janela.transient(self.parent)
@@ -13941,7 +13942,7 @@ class VisualizadorLancamentosFornecedor:
         self.criar_interface()
         
     def criar_interface(self):
-        """Cria a interface do visualizador"""
+        """Cria a interface do visualizador com funcionalidades de edição"""
         # Frame principal
         main_frame = ttk.Frame(self.janela, padding="10")
         main_frame.pack(fill='both', expand=True)
@@ -14011,7 +14012,7 @@ class VisualizadorLancamentosFornecedor:
         frame_busca = ttk.Frame(filtros_frame)
         frame_busca.grid(row=1, column=0, columnspan=10, pady=10, sticky='ew')
         
-        ttk.Label(frame_busca, text="🔍 Busca rápida por NF ou Observação:").pack(side='left', padx=5)
+        ttk.Label(frame_busca, text="Busca rápida por NF ou Observação:").pack(side='left', padx=5)
         self.busca_rapida = ttk.Entry(frame_busca, width=30)
         self.busca_rapida.pack(side='left', padx=5)
         self.busca_rapida.bind('<KeyRelease>', self.busca_incremental)
@@ -14020,19 +14021,22 @@ class VisualizadorLancamentosFornecedor:
         frame_lista = ttk.LabelFrame(main_frame, text="Lançamentos Encontrados")
         frame_lista.pack(fill='both', expand=True)
         
-        # Treeview para lançamentos
-        colunas = ('Data Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação')
-        self.tree_lancamentos = ttk.Treeview(frame_lista, columns=colunas, show='headings', height=18)
+        # Treeview para lançamentos - ADICIONADA SELEÇÃO MÚLTIPLA
+        colunas = ('Data Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação', 'ID')
+        self.tree_lancamentos = ttk.Treeview(frame_lista, columns=colunas, show='headings', 
+                                           height=18, selectmode='extended')  # Seleção múltipla
         
         # Configurar cabeçalhos e larguras
         larguras = {'Data Rel.': 90, 'Tipo': 50, 'Referência': 200, 'NF': 100, 
-                   'Valor': 100, 'Vencimento': 90, 'Status': 80, 'Observação': 250}
+                   'Valor': 100, 'Vencimento': 90, 'Status': 80, 'Observação': 250, 'ID': 0}
         
         for col in colunas:
             self.tree_lancamentos.heading(col, text=col)
             self.tree_lancamentos.column(col, width=larguras.get(col, 100))
             if col == 'Valor':
                 self.tree_lancamentos.column(col, anchor='e')
+            elif col == 'ID':
+                self.tree_lancamentos.column(col, width=0, stretch=False)  # Oculto
         
         # Scrollbars
         scrolly = ttk.Scrollbar(frame_lista, orient='vertical', command=self.tree_lancamentos.yview)
@@ -14043,6 +14047,19 @@ class VisualizadorLancamentosFornecedor:
         self.tree_lancamentos.pack(side='left', fill='both', expand=True, padx=5, pady=5)
         scrolly.pack(side='right', fill='y')
         scrollx.pack(side='bottom', fill='x')
+        
+        # Frame de informações de seleção (NOVO)
+        frame_selecao = ttk.Frame(main_frame)
+        frame_selecao.pack(fill='x', pady=(5, 0))
+        
+        self.label_selecao = ttk.Label(frame_selecao, text="Nenhum item selecionado", 
+                                     font=('TkDefaultFont', 9, 'italic'))
+        self.label_selecao.pack(side='left')
+        
+        ttk.Button(frame_selecao, text="Selecionar Todos Visíveis", 
+                  command=self.selecionar_todos_visiveis).pack(side='right', padx=2)
+        ttk.Button(frame_selecao, text="Limpar Seleção", 
+                  command=self.limpar_selecao).pack(side='right', padx=2)
         
         # Frame de resumo
         frame_resumo = ttk.LabelFrame(main_frame, text="Resumo")
@@ -14063,16 +14080,48 @@ class VisualizadorLancamentosFornecedor:
                                              font=('Arial', 10))
         self.lbl_ultimo_lancamento.pack(side='left', padx=10)
         
-        # Frame de botões
+        # Frame de botões - ESTENDIDO COM FUNCIONALIDADES DE EDIÇÃO
         frame_botoes = ttk.Frame(main_frame)
         frame_botoes.pack(fill='x', pady=(10, 0))
         
-        # Botões de ação
-        ttk.Button(frame_botoes, text="📋 Exportar Lista", 
+        # === BOTÕES DE AÇÃO INDIVIDUAL ===
+        self.btn_editar = ttk.Button(frame_botoes, text="Editar", 
+                                    command=self.editar_lancamento)
+        self.btn_editar.pack(side='left', padx=5)
+        
+        self.btn_ver_historico = ttk.Button(frame_botoes, text="Ver Histórico", 
+                                          command=self.visualizar_historico_lancamento)
+        self.btn_ver_historico.pack(side='left', padx=5)
+        
+        # Separador visual
+        ttk.Separator(frame_botoes, orient='vertical').pack(side='left', fill='y', padx=10)
+        
+        # === BOTÕES DE EXCLUSÃO/RESTAURAÇÃO ===
+        self.btn_excluir_individual = ttk.Button(frame_botoes, text="Excluir", 
+                                                command=self.excluir_lancamento)
+        self.btn_excluir_individual.pack(side='left', padx=2)
+        
+        self.btn_excluir_lote = ttk.Button(frame_botoes, text="Excluir Selecionados", 
+                                         command=self.excluir_lote, state='disabled')
+        self.btn_excluir_lote.pack(side='left', padx=2)
+        
+        self.btn_restaurar_individual = ttk.Button(frame_botoes, text="Restaurar", 
+                                                 command=self.restaurar_lancamento)
+        self.btn_restaurar_individual.pack(side='left', padx=2)
+        
+        self.btn_restaurar_lote = ttk.Button(frame_botoes, text="Restaurar Selecionados", 
+                                           command=self.restaurar_lote, state='disabled')
+        self.btn_restaurar_lote.pack(side='left', padx=2)
+        
+        # Separador visual
+        ttk.Separator(frame_botoes, orient='vertical').pack(side='left', fill='y', padx=10)
+        
+        # === BOTÕES GERAIS ===
+        ttk.Button(frame_botoes, text="Exportar Lista", 
                   command=self.exportar_lista).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="🔄 Atualizar", 
+        ttk.Button(frame_botoes, text="Atualizar", 
                   command=self.carregar_lancamentos).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="📊 Ver Estatísticas", 
+        ttk.Button(frame_botoes, text="Ver Estatísticas", 
                   command=self.mostrar_estatisticas).pack(side='left', padx=5)
         
         ttk.Button(frame_botoes, text="Fechar", 
@@ -14081,50 +14130,642 @@ class VisualizadorLancamentosFornecedor:
         # Configurar tags para cores
         self.tree_lancamentos.tag_configure('excluido', background='#ffcccc')
         self.tree_lancamentos.tag_configure('normal', background='white')
-        self.tree_lancamentos.tag_configure('recente', background='#e8f5e8')  # Verde claro para lançamentos recentes
+        self.tree_lancamentos.tag_configure('recente', background='#e8f5e8')
         
-        # Bindings
-        self.tree_lancamentos.bind('<Double-1>', self.ver_detalhes_lancamento)
+        # Configurar eventos
+        self.configurar_eventos_selecao()
+        self.configurar_atalhos()
         
+        # Inicializar estado dos botões
+        self.atualizar_interface_selecao()
+
+    def configurar_eventos_selecao(self):
+        """Configura eventos para controle de seleção múltipla"""
+        try:
+            def on_selection_change(event=None):
+                self.atualizar_interface_selecao()
+            
+            self.tree_lancamentos.bind('<<TreeviewSelect>>', on_selection_change)
+            self.tree_lancamentos.bind('<Double-1>', self.ver_detalhes_lancamento)
+            
+        except Exception as e:
+            print(f"Erro ao configurar eventos de seleção: {str(e)}")
+
+    def configurar_atalhos(self):
+        """Configura atalhos de teclado"""
+        try:
+            # Duplo clique para ver detalhes
+            self.tree_lancamentos.bind('<Double-1>', self.ver_detalhes_lancamento)
+            
+            # Tecla H para histórico
+            def on_key_h(event):
+                if self.tree_lancamentos.selection():
+                    self.visualizar_historico_lancamento()
+            
+            self.janela.bind('<Key-h>', on_key_h)
+            self.janela.bind('<Key-H>', on_key_h)
+            
+            # Delete para excluir
+            def on_delete(event):
+                items_selecionados = self.tree_lancamentos.selection()
+                if len(items_selecionados) == 1:
+                    self.excluir_lancamento()
+                elif len(items_selecionados) > 1:
+                    self.excluir_lote()
+            
+            self.janela.bind('<Delete>', on_delete)
+            
+            # Ctrl+A para selecionar todos
+            def on_ctrl_a(event):
+                self.selecionar_todos_visiveis()
+                return "break"
+            
+            self.janela.bind('<Control-a>', on_ctrl_a)
+            
+            # Escape para limpar seleção
+            def on_escape(event):
+                self.limpar_selecao()
+                return "break"
+            
+            self.janela.bind('<Escape>', on_escape)
+            
+            self.janela.focus_set()
+            
+        except Exception as e:
+            print(f"Erro ao configurar atalhos: {str(e)}")
+
+    def atualizar_interface_selecao(self):
+        """Atualiza a interface baseada na seleção atual"""
+        try:
+            items_selecionados = self.tree_lancamentos.selection()
+            qtd_selecionados = len(items_selecionados)
+            
+            # Atualizar label de seleção
+            if qtd_selecionados == 0:
+                self.label_selecao.config(text="Nenhum item selecionado")
+            elif qtd_selecionados == 1:
+                self.label_selecao.config(text="1 item selecionado")
+            else:
+                self.label_selecao.config(text=f"{qtd_selecionados} itens selecionados")
+            
+            # Controlar estado dos botões
+            if qtd_selecionados == 0:
+                # Nenhum selecionado - desabilitar todos
+                self.btn_editar.config(state='disabled')
+                self.btn_ver_historico.config(state='disabled')
+                self.btn_excluir_individual.config(state='disabled')
+                self.btn_excluir_lote.config(state='disabled')
+                self.btn_restaurar_individual.config(state='disabled')
+                self.btn_restaurar_lote.config(state='disabled')
+                
+            elif qtd_selecionados == 1:
+                # Um selecionado - habilitar individuais
+                self.btn_editar.config(state='normal')
+                self.btn_ver_historico.config(state='normal')
+                self.btn_excluir_individual.config(state='normal')
+                self.btn_excluir_lote.config(state='disabled')
+                self.btn_restaurar_individual.config(state='normal')
+                self.btn_restaurar_lote.config(state='disabled')
+                
+            else:
+                # Múltiplos selecionados - habilitar lote, desabilitar individuais
+                self.btn_editar.config(state='disabled')
+                self.btn_ver_historico.config(state='disabled')
+                self.btn_excluir_individual.config(state='disabled')
+                self.btn_excluir_lote.config(state='normal')
+                self.btn_restaurar_individual.config(state='disabled')
+                self.btn_restaurar_lote.config(state='normal')
+            
+        except Exception as e:
+            print(f"Erro ao atualizar interface de seleção: {str(e)}")
+
+    def selecionar_todos_visiveis(self):
+        """Seleciona todos os itens visíveis na lista"""
+        try:
+            items_visiveis = self.tree_lancamentos.get_children()
+            
+            if not items_visiveis:
+                custom_messagebox("info", "Seleção", "Nenhum item visível para selecionar")
+                return
+            
+            self.tree_lancamentos.selection_set(items_visiveis)
+            self.atualizar_interface_selecao()
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao selecionar itens: {str(e)}")
+
+    def limpar_selecao(self):
+        """Limpa a seleção atual"""
+        try:
+            self.tree_lancamentos.selection_remove(self.tree_lancamentos.selection())
+            self.atualizar_interface_selecao()
+            
+        except Exception as e:
+            print(f"Erro ao limpar seleção: {str(e)}")
+
+    def obter_dados_selecionados(self):
+        """Obtém dados dos itens selecionados para processamento"""
+        try:
+            items_selecionados = self.tree_lancamentos.selection()
+            
+            if not items_selecionados:
+                return []
+            
+            dados_selecionados = []
+            
+            for item in items_selecionados:
+                valores = self.tree_lancamentos.item(item)['values']
+                
+                dados_item = {
+                    'item_id': item,
+                    'data': valores[0],
+                    'tp_desp': valores[1],
+                    'referencia': valores[2],
+                    'nf': valores[3],
+                    'valor': valores[4],
+                    'vencimento': valores[5],
+                    'status': valores[6],
+                    'observacao': valores[7],
+                    'id_lancamento': valores[8]
+                }
+                
+                dados_selecionados.append(dados_item)
+            
+            return dados_selecionados
+            
+        except Exception as e:
+            print(f"Erro ao obter dados selecionados: {str(e)}")
+            return []
+
+    def editar_lancamento(self):
+        """Edita o lançamento selecionado usando o editor do GerenciadorLancamentos"""
+        item_selecionado = self.tree_lancamentos.selection()
+        if not item_selecionado:
+            custom_messagebox("warning", "Aviso", "Selecione um lançamento para editar")
+            return
+        
+        try:
+            valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+            id_lancamento = valores[8]  # ID do lançamento
+            
+            # Buscar dados completos do lançamento
+            lancamento = None
+            for _, row in self.dados_originais.iterrows():
+                if row.get('ID_LANCAMENTO') == id_lancamento:
+                    lancamento = row
+                    break
+            
+            if lancamento is None:
+                custom_messagebox("error", "Erro", f"Lançamento com ID {id_lancamento} não encontrado")
+                return
+            
+            # Abrir editor usando a classe do GerenciadorLancamentos
+            # from src.sistema_entrada_dados import EditorLancamentoCompleto
+            editor = EditorLancamentoCompleto(self.janela, lancamento, self.salvar_edicao)
+                
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            custom_messagebox("error", "Erro", f"Erro ao editar lançamento: {str(e)}")
+
+    def salvar_edicao(self, id_lancamento, dados_editados):
+        """Callback para salvar edições (usa lógica do GerenciadorLancamentos)"""
+        try:
+            # Importar e usar o método de salvamento do GerenciadorLancamentos
+            from openpyxl import load_workbook
+            from datetime import datetime
+            import pandas as pd
+            
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            wb = load_workbook(arquivo_cliente)
+            ws = wb["Dados"]
+            
+            # Encontrar a linha do lançamento
+            linha_encontrada = None
+            for row_num in range(2, ws.max_row + 1):
+                id_na_planilha = ws.cell(row=row_num, column=15).value
+                
+                if str(id_na_planilha) == str(id_lancamento):
+                    linha_encontrada = row_num
+                    break
+            
+            if not linha_encontrada:
+                wb.close()
+                return False
+            
+            # Atualizar os dados na planilha (usar mesmo código do GerenciadorLancamentos)
+            if dados_editados.get('data'):
+                data_rel = datetime.strptime(dados_editados['data'], '%d/%m/%Y') if isinstance(dados_editados['data'], str) else dados_editados['data']
+                ws.cell(row=linha_encontrada, column=1, value=data_rel)
+                ws.cell(row=linha_encontrada, column=1).number_format = 'DD/MM/YYYY'
+            
+            if dados_editados.get('tp_desp'):
+                ws.cell(row=linha_encontrada, column=2, value=int(dados_editados['tp_desp']))
+            
+            ws.cell(row=linha_encontrada, column=3, value=dados_editados.get('cnpj_cpf', ''))
+            ws.cell(row=linha_encontrada, column=4, value=dados_editados.get('nome', ''))
+            ws.cell(row=linha_encontrada, column=5, value=dados_editados.get('referencia', ''))
+            ws.cell(row=linha_encontrada, column=6, value=dados_editados.get('nf', ''))
+            
+            if dados_editados.get('vr_unit'):
+                vr_unit = float(dados_editados['vr_unit'])
+                ws.cell(row=linha_encontrada, column=7, value=vr_unit)
+                ws.cell(row=linha_encontrada, column=7).number_format = '#,##0.00'
+            
+            if dados_editados.get('dias'):
+                ws.cell(row=linha_encontrada, column=8, value=int(dados_editados['dias']))
+            
+            if dados_editados.get('valor'):
+                valor = float(dados_editados['valor'])
+                ws.cell(row=linha_encontrada, column=9, value=valor)
+                ws.cell(row=linha_encontrada, column=9).number_format = '#,##0.00'
+            
+            if dados_editados.get('dt_vencto'):
+                dt_vencto = datetime.strptime(dados_editados['dt_vencto'], '%d/%m/%Y') if isinstance(dados_editados['dt_vencto'], str) else dados_editados['dt_vencto']
+                ws.cell(row=linha_encontrada, column=10, value=dt_vencto)
+                ws.cell(row=linha_encontrada, column=10).number_format = 'DD/MM/YYYY'
+            
+            ws.cell(row=linha_encontrada, column=11, value=dados_editados.get('categoria', ''))
+            ws.cell(row=linha_encontrada, column=12, value=dados_editados.get('dados_bancarios', ''))
+            
+            # Observação com timestamp de edição
+            observacao_editada = dados_editados.get('observacao', '')
+            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            observacao_com_historico = f"{observacao_editada} - EDITADO EM: {timestamp}"
+            ws.cell(row=linha_encontrada, column=13, value=observacao_com_historico)
+            
+            # Adicionar aos campos novos se existirem
+            if dados_editados.get('etapa_obra'):
+                ws.cell(row=linha_encontrada, column=17, value=dados_editados['etapa_obra'])
+            if dados_editados.get('insumo'):
+                ws.cell(row=linha_encontrada, column=18, value=dados_editados['insumo'])
+            
+            wb.save(arquivo_cliente)
+            wb.close()
+            
+            # Recarregar dados e atualizar visualização
+            self.carregar_lancamentos()
+            
+            return True
+            
+        except Exception as e:
+            if 'wb' in locals():
+                wb.close()
+            print(f"Erro ao salvar edição: {str(e)}")
+            return False
+
+    def excluir_lancamento(self):
+        """Exclui um lançamento individual"""
+        item_selecionado = self.tree_lancamentos.selection()
+        if not item_selecionado:
+            custom_messagebox("warning", "Aviso", "Selecione um lançamento para excluir")
+            return
+        
+        valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+        nome_fornecedor = self.dados_fornecedor['nome']
+        referencia = valores[2]
+        valor = valores[4]
+        data_lancamento = valores[0]
+        status_atual = valores[6]
+        
+        if status_atual == 'EXCLUIDO':
+            custom_messagebox("info", "Informação", "Este lançamento já está excluído")
+            return
+        
+        if custom_messagebox("yesno", "Confirmação", 
+                            f"Deseja realmente excluir este lançamento?\n\n"
+                            f"Fornecedor: {nome_fornecedor}\n"
+                            f"Referência: {referencia}\n"
+                            f"Valor: {valor}\n"
+                            f"Data: {data_lancamento}"):
+            try:
+                id_lancamento = valores[8]
+                self.atualizar_status_lancamento(id_lancamento, 'EXCLUIDO')
+                
+                # Verificar recálculo de taxas se necessário
+                self.verificar_recalculo_apos_alteracao(data_lancamento, "EXCLUSÃO")
+                
+                self.carregar_lancamentos()
+                custom_messagebox("info", "Sucesso", "Lançamento excluído com sucesso!")
+                
+            except Exception as e:
+                custom_messagebox("error", "Erro", f"Erro ao excluir lançamento: {str(e)}")
+
+    def excluir_lote(self):
+        """Exclui múltiplos lançamentos selecionados"""
+        try:
+            dados_selecionados = self.obter_dados_selecionados()
+            
+            if not dados_selecionados:
+                custom_messagebox("warning", "Aviso", "Nenhum item selecionado para exclusão")
+                return
+            
+            # Filtrar apenas lançamentos ativos
+            ativos = [item for item in dados_selecionados if item['status'] != 'EXCLUIDO']
+            
+            if not ativos:
+                custom_messagebox("info", "Informação", "Todos os itens selecionados já estão excluídos")
+                return
+            
+            if custom_messagebox("yesno", "Confirmação de Exclusão em Lote", 
+                                f"Deseja realmente excluir {len(ativos)} lançamento(s)?\n\n"
+                                f"Fornecedor: {self.dados_fornecedor['nome']}\n"
+                                f"Esta operação não pode ser desfeita facilmente."):
+                
+                sucesso = 0
+                datas_afetadas = set()
+                
+                for item in ativos:
+                    try:
+                        self.atualizar_status_lancamento(item['id_lancamento'], 'EXCLUIDO')
+                        # Coletar datas para verificação posterior
+                        if item['data']:
+                            data_obj = datetime.strptime(item['data'], '%d/%m/%Y').date()
+                            datas_afetadas.add(data_obj)
+                        sucesso += 1
+                    except Exception as e:
+                        print(f"Erro ao excluir item {item['id_lancamento']}: {str(e)}")
+                        continue
+                
+                # Verificar recálculo para as datas afetadas
+                for data_afetada in datas_afetadas:
+                    self.verificar_recalculo_apos_alteracao(data_afetada.strftime('%d/%m/%Y'), "EXCLUSÃO")
+                
+                self.carregar_lancamentos()
+                custom_messagebox("info", "Sucesso", f"{sucesso} lançamentos excluídos com sucesso!")
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro na exclusão em lote: {str(e)}")
+
+    def restaurar_lancamento(self):
+        """Restaura um lançamento individual"""
+        item_selecionado = self.tree_lancamentos.selection()
+        if not item_selecionado:
+            custom_messagebox("warning", "Aviso", "Selecione um lançamento para restaurar")
+            return
+        
+        valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+        nome_fornecedor = self.dados_fornecedor['nome']
+        referencia = valores[2]
+        valor = valores[4]
+        data_lancamento = valores[0]
+        status_atual = valores[6]
+        
+        if status_atual != 'EXCLUIDO':
+            custom_messagebox("info", "Informação", "Este lançamento já está ativo")
+            return
+        
+        if custom_messagebox("yesno", "Confirmação", 
+                            f"Deseja realmente restaurar este lançamento?\n\n"
+                            f"Fornecedor: {nome_fornecedor}\n"
+                            f"Referência: {referencia}\n"
+                            f"Valor: {valor}\n"
+                            f"Data: {data_lancamento}"):
+            try:
+                id_lancamento = valores[8]
+                self.atualizar_status_lancamento(id_lancamento, 'ATIVO')
+                
+                # Verificar recálculo de taxas se necessário
+                self.verificar_recalculo_apos_alteracao(data_lancamento, "RESTAURAÇÃO")
+                
+                self.carregar_lancamentos()
+                custom_messagebox("info", "Sucesso", "Lançamento restaurado com sucesso!")
+                
+            except Exception as e:
+                custom_messagebox("error", "Erro", f"Erro ao restaurar lançamento: {str(e)}")
+
+    def restaurar_lote(self):
+        """Restaura múltiplos lançamentos selecionados"""
+        try:
+            dados_selecionados = self.obter_dados_selecionados()
+            
+            if not dados_selecionados:
+                custom_messagebox("warning", "Aviso", "Nenhum item selecionado para restauração")
+                return
+            
+            # Filtrar apenas lançamentos excluídos
+            excluidos = [item for item in dados_selecionados if item['status'] == 'EXCLUIDO']
+            
+            if not excluidos:
+                custom_messagebox("info", "Informação", "Todos os itens selecionados já estão ativos")
+                return
+            
+            if custom_messagebox("yesno", "Confirmação de Restauração em Lote", 
+                                f"Deseja realmente restaurar {len(excluidos)} lançamento(s)?\n\n"
+                                f"Fornecedor: {self.dados_fornecedor['nome']}"):
+                
+                sucesso = 0
+                datas_afetadas = set()
+                
+                for item in excluidos:
+                    try:
+                        self.atualizar_status_lancamento(item['id_lancamento'], 'ATIVO')
+                        # Coletar datas para verificação posterior
+                        if item['data']:
+                            data_obj = datetime.strptime(item['data'], '%d/%m/%Y').date()
+                            datas_afetadas.add(data_obj)
+                        sucesso += 1
+                    except Exception as e:
+                        print(f"Erro ao restaurar item {item['id_lancamento']}: {str(e)}")
+                        continue
+                
+                # Verificar recálculo para as datas afetadas
+                for data_afetada in datas_afetadas:
+                    self.verificar_recalculo_apos_alteracao(data_afetada.strftime('%d/%m/%Y'), "RESTAURAÇÃO")
+                
+                self.carregar_lancamentos()
+                custom_messagebox("info", "Sucesso", f"{sucesso} lançamentos restaurados com sucesso!")
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro na restauração em lote: {str(e)}")
+
+    def atualizar_status_lancamento(self, id_lancamento, novo_status):
+        """Atualiza o status de um lançamento específico"""
+        try:
+            from openpyxl import load_workbook
+            
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            wb = load_workbook(arquivo_cliente)
+            ws = wb['Dados']
+            
+            # Verificar se colunas existem
+            if ws.cell(row=1, column=14).value != 'STATUS':
+                ws.cell(row=1, column=14, value='STATUS')
+            if ws.cell(row=1, column=16).value != 'HISTORICO_ALTERACAO':
+                ws.cell(row=1, column=16, value='HISTORICO_ALTERACAO')
+            
+            # Encontrar e atualizar linha
+            for row in range(2, ws.max_row + 1):
+                if ws.cell(row=row, column=15).value == id_lancamento:
+                    # Atualizar status
+                    ws.cell(row=row, column=14, value=novo_status)
+                    
+                    # Adicionar ao histórico
+                    timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+                    historico_atual = ws.cell(row=row, column=16).value or ""
+                    
+                    if novo_status == 'EXCLUIDO':
+                        acao = f"EXCLUÍDO EM: {timestamp}"
+                    elif novo_status == 'ATIVO':
+                        acao = f"RESTAURADO EM: {timestamp}"
+                    else:
+                        acao = f"STATUS ALTERADO PARA {novo_status} EM: {timestamp}"
+                    
+                    if historico_atual:
+                        novo_historico = f"{historico_atual} | {acao}"
+                    else:
+                        novo_historico = acao
+                        
+                    ws.cell(row=row, column=16, value=novo_historico)
+                    break
+            
+            wb.save(arquivo_cliente)
+            wb.close()
+            
+        except Exception as e:
+            if 'wb' in locals():
+                wb.close()
+            raise Exception(f"Erro ao atualizar status: {str(e)}")
+
+    def verificar_recalculo_apos_alteracao(self, data_lancamento, tipo_operacao):
+        """Verifica se precisa recalcular taxas após alteração"""
+        try:
+            if hasattr(self.sistema, 'chamar_apos_operacao_lancamento'):
+                data_obj = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
+                resultado = self.sistema.chamar_apos_operacao_lancamento(data_obj, tipo_operacao)
+                
+                if not resultado["sucesso"] and "Erro" in resultado["mensagem"]:
+                    print(f"Aviso: {resultado['mensagem']}")
+                    
+        except Exception as e:
+            print(f"Erro ao verificar recálculo: {str(e)}")
+
+    def visualizar_historico_lancamento(self):
+        """Visualiza o histórico de alterações de um lançamento"""
+        try:
+            selected_items = self.tree_lancamentos.selection()
+            if not selected_items:
+                custom_messagebox("info", "Seleção", "Selecione um lançamento para ver o histórico!")
+                return
+            
+            item = selected_items[0]
+            valores = self.tree_lancamentos.item(item, 'values')
+            id_lancamento = valores[8]
+            
+            # Buscar dados completos do lançamento
+            if not hasattr(self, 'dados_originais') or self.dados_originais.empty:
+                custom_messagebox("error", "Erro", "Dados não carregados. Clique em 'Atualizar' primeiro!")
+                return
+            
+            try:
+                id_busca = int(float(str(id_lancamento)))
+            except (ValueError, TypeError):
+                custom_messagebox("error", "Erro", f"ID inválido: {id_lancamento}")
+                return
+            
+            filtro = self.dados_originais['ID_LANCAMENTO'] == id_busca
+            lancamentos_encontrados = self.dados_originais[filtro]
+            
+            if lancamentos_encontrados.empty:
+                custom_messagebox("error", "Erro", f"Lançamento com ID {id_busca} não encontrado!")
+                return
+            
+            lancamento = lancamentos_encontrados.iloc[0]
+            
+            # Criar janela de histórico
+            janela_historico = tk.Toplevel(self.janela)
+            janela_historico.title(f"Histórico do Lançamento - ID {id_busca}")
+            janela_historico.geometry("700x400")
+            janela_historico.transient(self.janela)
+            janela_historico.grab_set()
+            
+            frame_principal = ttk.Frame(janela_historico, padding="10")
+            frame_principal.pack(fill='both', expand=True)
+            
+            # Informações do lançamento
+            frame_info = ttk.LabelFrame(frame_principal, text="Informações do Lançamento")
+            frame_info.pack(fill='x', pady=(0, 10))
+            
+            info_frame_interno = ttk.Frame(frame_info)
+            info_frame_interno.pack(fill='x', padx=10, pady=5)
+            
+            frame_esq = ttk.Frame(info_frame_interno)
+            frame_esq.pack(side='left', fill='x', expand=True)
+            
+            ttk.Label(frame_esq, text=f"ID: {lancamento['ID_LANCAMENTO']}", font=('TkDefaultFont', 9, 'bold')).pack(anchor='w')
+            ttk.Label(frame_esq, text=f"Fornecedor: {self.dados_fornecedor['nome']}", font=('TkDefaultFont', 9)).pack(anchor='w')
+            ttk.Label(frame_esq, text=f"Referência: {lancamento['REFERÊNCIA']}", font=('TkDefaultFont', 9)).pack(anchor='w')
+            
+            frame_dir = ttk.Frame(info_frame_interno)
+            frame_dir.pack(side='right', fill='x', expand=True)
+            
+            ttk.Label(frame_dir, text=f"Valor: R$ {lancamento['VALOR']:,.2f}", font=('TkDefaultFont', 9)).pack(anchor='w')
+            ttk.Label(frame_dir, text=f"Status: {lancamento['STATUS']}", font=('TkDefaultFont', 9)).pack(anchor='w')
+            
+            # Histórico
+            frame_historico = ttk.LabelFrame(frame_principal, text="Histórico de Alterações")
+            frame_historico.pack(fill='x', pady=(0, 10))
+            
+            text_historico = tk.Text(frame_historico, wrap='word', font=('Consolas', 9), height=12)
+            scrollbar_hist = ttk.Scrollbar(frame_historico, orient='vertical', command=text_historico.yview)
+            text_historico.configure(yscrollcommand=scrollbar_hist.set)
+            
+            historico = lancamento.get('HISTORICO_ALTERACAO', '')
+            if historico and str(historico) not in ['', 'nan', 'None']:
+                text_historico.insert('1.0', str(historico))
+            else:
+                text_historico.insert('1.0', "Nenhum histórico de alterações registrado.")
+            
+            text_historico.config(state='disabled')
+            
+            text_historico.pack(side='left', fill='both', expand=True, padx=(10, 0), pady=5)
+            scrollbar_hist.pack(side='right', fill='y', pady=5)
+            
+            # Botão fechar
+            frame_botoes = ttk.Frame(frame_principal)
+            frame_botoes.pack(fill='x', pady=(5, 0))
+            
+            ttk.Button(frame_botoes, text="Fechar", command=janela_historico.destroy).pack(side='right')
+            
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            custom_messagebox("error", "Erro", f"Erro ao visualizar histórico: {str(e)}")
+
     def carregar_lancamentos(self):
         """Carrega os lançamentos do fornecedor"""
         try:
+            from openpyxl import load_workbook
+            import pandas as pd
+            
             arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
             
-            # Carregar dados com CNPJ/CPF como string para preservar zeros à esquerda
+            # Carregar dados preservando tipos
             df = pd.read_excel(arquivo_cliente, sheet_name='Dados', dtype={'CNPJ_CPF': str})
             df = df.fillna("")
-            
-            # Debug: Verificar tipos de dados na coluna VALOR
-            print(f"DEBUG: Tipos de dados na coluna VALOR: {df['VALOR'].dtypes}")
-            print(f"DEBUG: Primeiros valores da coluna VALOR: {df['VALOR'].head()}")
             
             # Adicionar coluna de status se não existir
             if 'STATUS' not in df.columns:
                 df['STATUS'] = 'ATIVO'
+            df['STATUS'] = df['STATUS'].replace('', 'ATIVO').fillna('ATIVO')
             
-            # Preencher status vazios
-            df['STATUS'] = df['STATUS'].replace('', 'ATIVO')
-            df['STATUS'] = df['STATUS'].fillna('ATIVO')
+            # Adicionar ID_LANCAMENTO se não existir
+            if 'ID_LANCAMENTO' not in df.columns:
+                df['ID_LANCAMENTO'] = range(1, len(df) + 1)
+            
+            # Converter ID_LANCAMENTO para int
+            df['ID_LANCAMENTO'] = pd.to_numeric(df['ID_LANCAMENTO'], errors='coerce').fillna(0).astype(int)
             
             # Filtrar apenas lançamentos do fornecedor
-            # CORREÇÃO: Garantir que cnpj_cpf seja string antes de usar replace
             cnpj_cpf_original = self.dados_fornecedor['cnpj_cpf']
-            print(f"DEBUG: CNPJ/CPF original: {cnpj_cpf_original}, tipo: {type(cnpj_cpf_original)}")
-            
-            # Converter para string, garantir zeros à esquerda e limpar
             cnpj_cpf_str = str(cnpj_cpf_original)
             cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_str))
             
-            # Determinar se é CPF ou CNPJ e formatar com zeros à esquerda
             if len(cnpj_cpf_numeros) <= 11:
-                cnpj_cpf_padded = cnpj_cpf_numeros.zfill(11)  # CPF
+                cnpj_cpf_padded = cnpj_cpf_numeros.zfill(11)
             else:
-                cnpj_cpf_padded = cnpj_cpf_numeros.zfill(14)  # CNPJ
+                cnpj_cpf_padded = cnpj_cpf_numeros.zfill(14)
             
-            print(f"DEBUG: CNPJ/CPF com zeros: {cnpj_cpf_padded}")
-            
-            # Função para normalizar CNPJ/CPF (extrair números e adicionar zeros)
             def normalizar_cnpj_cpf(valor):
                 if pd.isna(valor) or valor == '':
                     return ''
@@ -14134,10 +14775,8 @@ class VisualizadorLancamentosFornecedor:
                 else:
                     return numeros.zfill(14)
             
-            # Aplicar normalização na coluna da planilha
             df['CNPJ_CPF_NORMALIZADO'] = df['CNPJ_CPF'].apply(normalizar_cnpj_cpf)
             
-            # Criar máscara para buscar o fornecedor
             mask_fornecedor = (
                 df['CNPJ_CPF_NORMALIZADO'] == cnpj_cpf_padded
             ) | (
@@ -14147,31 +14786,20 @@ class VisualizadorLancamentosFornecedor:
             self.df_fornecedor = df[mask_fornecedor].copy()
             
             if self.df_fornecedor.empty:
-                # Tentar busca mais flexível pelo nome
+                # Busca alternativa pelo nome
                 nome_busca = str(self.dados_fornecedor['nome']).upper().strip()
                 if ' ' in nome_busca:
                     primeiro_nome = nome_busca.split()[0]
                 else:
                     primeiro_nome = nome_busca
                 
-                print(f"DEBUG: Tentando busca flexível por nome: {primeiro_nome}")
-                
                 mask_nome_flexivel = df['NOME'].astype(str).str.upper().str.contains(
                     primeiro_nome, na=False
                 )
                 self.df_fornecedor = df[mask_nome_flexivel].copy()
             
-            # Debug: Verificar dados encontrados
-            print(f"DEBUG: Encontrados {len(self.df_fornecedor)} lançamentos para o fornecedor")
-            if not self.df_fornecedor.empty:
-                print(f"DEBUG: Tipos na coluna VALOR do fornecedor: {self.df_fornecedor['VALOR'].dtypes}")
-                print(f"DEBUG: Nomes encontrados: {self.df_fornecedor['NOME'].unique()}")
-                print(f"DEBUG: CNPJs encontrados: {self.df_fornecedor['CNPJ_CPF'].unique()}")
-            else:
-                print(f"DEBUG: Nenhum lançamento encontrado. Tentando debug mais detalhado...")
-                print(f"DEBUG: Únicos CNPJs na planilha: {df['CNPJ_CPF'].unique()[:5]}")
-                print(f"DEBUG: CNPJs normalizados na planilha: {df['CNPJ_CPF_NORMALIZADO'].unique()[:5]}")
-                print(f"DEBUG: Únicos nomes na planilha: {df['NOME'].unique()[:5]}")
+            # Salvar dados originais para uso posterior
+            self.dados_originais = self.df_fornecedor.copy()
             
             # Ordenar por data (mais recente primeiro)
             if not self.df_fornecedor.empty:
@@ -14183,7 +14811,7 @@ class VisualizadorLancamentosFornecedor:
             
         except Exception as e:
             import traceback
-            print(f"DEBUG: Erro detalhado: {traceback.format_exc()}")
+            print(f"Erro ao carregar lançamentos: {traceback.format_exc()}")
             custom_messagebox("error", "Erro", f"Erro ao carregar lançamentos: {str(e)}")
             
     def aplicar_filtros(self):
@@ -14224,7 +14852,7 @@ class VisualizadorLancamentosFornecedor:
             
             # Preencher tree
             hoje = datetime.now().date()
-            limite_recente = hoje - relativedelta(days=30)  # Últimos 30 dias
+            limite_recente = hoje - relativedelta(days=30)
             
             for idx, row in df_filtrado.iterrows():
                 status = row.get('STATUS', 'ATIVO')
@@ -14242,7 +14870,8 @@ class VisualizadorLancamentosFornecedor:
                     self.formatar_valor(row['VALOR']),
                     self.formatar_data(row['DT_VENCTO']),
                     status,
-                    row.get('OBSERVAÇÃO', '')
+                    row.get('OBSERVAÇÃO', ''),
+                    row.get('ID_LANCAMENTO', 0)  # ID oculto
                 )
                 
                 self.tree_lancamentos.insert('', 'end', values=valores, tags=(tag,))
@@ -14273,7 +14902,7 @@ class VisualizadorLancamentosFornecedor:
             (df_busca['DATA_REL'].dt.date <= data_fim)
         ]
         
-        # Buscar em NF ou Observação
+        # Buscar em NF, Observação ou Referência
         mask_busca = (
             df_busca['NF'].astype(str).str.upper().str.contains(termo, na=False) |
             df_busca['OBSERVAÇÃO'].astype(str).str.upper().str.contains(termo, na=False) |
@@ -14298,7 +14927,8 @@ class VisualizadorLancamentosFornecedor:
                 self.formatar_valor(row['VALOR']),
                 self.formatar_data(row['DT_VENCTO']),
                 status,
-                row.get('OBSERVAÇÃO', '')
+                row.get('OBSERVAÇÃO', ''),
+                row.get('ID_LANCAMENTO', 0)
             )
             
             self.tree_lancamentos.insert('', 'end', values=valores, tags=(tag,))
@@ -14307,7 +14937,6 @@ class VisualizadorLancamentosFornecedor:
         
     def limpar_filtros(self):
         """Limpa todos os filtros e recarrega"""
-        # Restaurar valores padrão
         data_padrao = datetime.now() - relativedelta(months=6)
         self.data_inicio.set_date(data_padrao.date())
         self.data_fim.set_date(datetime.now().date())
@@ -14315,7 +14944,6 @@ class VisualizadorLancamentosFornecedor:
         self.combo_status.set('Ativos')
         self.busca_rapida.delete(0, tk.END)
         
-        # Reaplicar filtros
         self.aplicar_filtros()
         
     def atualizar_resumo(self, df_filtrado):
@@ -14326,17 +14954,13 @@ class VisualizadorLancamentosFornecedor:
             self.lbl_ultimo_lancamento.config(text="Último Lançamento: -")
             return
             
-        # Calcular totais
         total_lancamentos = len(df_filtrado)
-        
-        # Calcular valor total (apenas ativos)
         df_ativos = df_filtrado[df_filtrado['STATUS'] != 'EXCLUIDO']
         valor_total = 0
         
         for _, row in df_ativos.iterrows():
             try:
                 valor_raw = row['VALOR']
-                # Converter diferentes tipos de valor
                 if isinstance(valor_raw, str):
                     valor_limpo = valor_raw.replace('R$', '').replace(' ', '').replace(',', '.').strip()
                     if valor_limpo:
@@ -14350,19 +14974,17 @@ class VisualizadorLancamentosFornecedor:
                 
                 valor_total += valor
             except (ValueError, TypeError, AttributeError):
-                # Em caso de erro, ignorar este valor
                 continue
         
         # Último lançamento
         if not df_filtrado.empty:
-            ultimo = df_filtrado.iloc[0]  # Já ordenado por data desc
+            ultimo = df_filtrado.iloc[0]
             data_ultimo = self.formatar_data(ultimo['DATA_REL'])
             ref_ultimo = ultimo.get('REFERÊNCIA', '')[:20] + ('...' if len(str(ultimo.get('REFERÊNCIA', ''))) > 20 else '')
             ultimo_texto = f"{data_ultimo} - {ref_ultimo}"
         else:
             ultimo_texto = "-"
         
-        # Atualizar labels
         self.lbl_total_lancamentos.config(text=f"Total de Lançamentos: {total_lancamentos}")
         self.lbl_valor_total.config(text=f"Valor Total: R$ {valor_total:,.2f}")
         self.lbl_ultimo_lancamento.config(text=f"Último Lançamento: {ultimo_texto}")
@@ -14373,27 +14995,25 @@ class VisualizadorLancamentosFornecedor:
         if not item_selecionado:
             return
             
-        # Pegar dados da linha selecionada
         valores = self.tree_lancamentos.item(item_selecionado[0])['values']
         
-        # Criar janela de detalhes
         janela_detalhes = tk.Toplevel(self.janela)
         janela_detalhes.title("Detalhes do Lançamento")
-        janela_detalhes.geometry("600x400")
+        janela_detalhes.geometry("600x450")
         janela_detalhes.transient(self.janela)
         
         frame = ttk.Frame(janela_detalhes, padding="15")
         frame.pack(fill='both', expand=True)
         
-        # Título
         ttk.Label(frame, text="Detalhes Completos do Lançamento", 
                  font=('Arial', 14, 'bold')).pack(pady=(0, 15))
         
-        # Criar grid de informações
         info_frame = ttk.Frame(frame)
         info_frame.pack(fill='both', expand=True)
         
         detalhes = [
+            ("Fornecedor:", self.dados_fornecedor['nome']),
+            ("CNPJ/CPF:", self.dados_fornecedor['cnpj_cpf_formatado']),
             ("Data do Relatório:", valores[0]),
             ("Tipo de Despesa:", valores[1]),
             ("Referência:", valores[2]),
@@ -14410,9 +15030,7 @@ class VisualizadorLancamentosFornecedor:
             ttk.Label(info_frame, text=str(valor), font=('Arial', 10)).grid(
                 row=i, column=1, padx=15, pady=5, sticky='w')
         
-        # Botão fechar
-        ttk.Button(frame, text="Fechar", 
-                  command=janela_detalhes.destroy).pack(pady=15)
+        ttk.Button(frame, text="Fechar", command=janela_detalhes.destroy).pack(pady=15)
         
     def mostrar_estatisticas(self):
         """Mostra estatísticas detalhadas do fornecedor"""
@@ -14420,7 +15038,6 @@ class VisualizadorLancamentosFornecedor:
             custom_messagebox("info", "Estatísticas", "Nenhum lançamento encontrado para este fornecedor.")
             return
             
-        # Criar janela de estatísticas
         janela_stats = tk.Toplevel(self.janela)
         janela_stats.title(f"Estatísticas - {self.dados_fornecedor['nome']}")
         janela_stats.geometry("700x500")
@@ -14446,7 +15063,7 @@ class VisualizadorLancamentosFornecedor:
         ref_counts = df_ativos['REFERÊNCIA'].value_counts().head(5)
         
         # Criar interface
-        ttk.Label(frame, text="📊 Estatísticas do Fornecedor", 
+        ttk.Label(frame, text="Estatísticas do Fornecedor", 
                  font=('Arial', 16, 'bold')).pack(pady=(0, 20))
         
         # Notebook para organizar
@@ -14494,8 +15111,7 @@ class VisualizadorLancamentosFornecedor:
                      text=f"{ref}: {count} lançamentos (R$ {valor_ref:,.2f})",
                      font=('Arial', 10)).pack(anchor='w', pady=2)
         
-        ttk.Button(frame, text="Fechar", 
-                  command=janela_stats.destroy).pack(pady=15)
+        ttk.Button(frame, text="Fechar", command=janela_stats.destroy).pack(pady=15)
         
     def exportar_lista(self):
         """Exporta a lista atual para Excel"""
@@ -14506,7 +15122,8 @@ class VisualizadorLancamentosFornecedor:
             dados_exportar = []
             for item in self.tree_lancamentos.get_children():
                 valores = self.tree_lancamentos.item(item)['values']
-                dados_exportar.append(valores)
+                # Remover ID (último elemento) da exportação
+                dados_exportar.append(valores[:-1])
             
             if not dados_exportar:
                 custom_messagebox("warning", "Aviso", "Nenhum dado para exportar!")
@@ -14541,9 +15158,8 @@ class VisualizadorLancamentosFornecedor:
                     worksheet['A5'] = f"Exportado em: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
                     
                     # Formatação do cabeçalho
-                    from openpyxl.styles import Font, PatternFill, Alignment
+                    from openpyxl.styles import Font
                     
-                    # Estilo para título
                     title_font = Font(bold=True, size=14)
                     info_font = Font(bold=True, size=10)
                     
@@ -14598,23 +15214,17 @@ class VisualizadorLancamentosFornecedor:
     def formatar_valor(self, valor):
         """Formata valor para exibição"""
         try:
-            # Se for string, limpar e converter
             if isinstance(valor, str):
-                # Remover caracteres não numéricos exceto vírgula e ponto
-                valor_limpo = valor.replace('R$', '').replace(' ', '').strip()
+                valor_limpo = valor_raw.replace('R$', '').replace(' ', '').replace(',', '.').strip()
                 if valor_limpo:
                     valor = float(valor_limpo.replace(',', '.'))
                 else:
                     return "0,00"
-            
-            # Se for int ou float, usar diretamente
             elif isinstance(valor, (int, float)):
                 valor = float(valor)
             else:
-                # Para outros tipos, tentar converter
                 valor = float(str(valor).replace(',', '.') if str(valor) else 0)
             
-            # Formatar para o padrão brasileiro
             return f"{valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
         except (ValueError, TypeError, AttributeError):
             return "0,00"
