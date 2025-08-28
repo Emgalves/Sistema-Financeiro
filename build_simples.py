@@ -70,6 +70,7 @@ def main():
         "--hidden-import=src.finalizacao_quinzena",
         "--hidden-import=src.correcao_monetaria",
         "--hidden-import=src.configuracoes_sistema",
+        "--hidden-import=src.teste_certificado_automatico",
         "--hidden-import=src.version_control",
         "src/sistema_principal.py"
     ]
