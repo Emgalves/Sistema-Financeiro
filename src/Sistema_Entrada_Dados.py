@@ -13981,13 +13981,12 @@ class VisualizadorLancamentosFornecedor:
         ttk.Label(filtros_frame, text="Período:").grid(row=0, column=0, padx=5, pady=5)
         self.data_inicio = DateEntry(filtros_frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.data_inicio.grid(row=0, column=1, padx=5, pady=5)
-        # Definir data padrão (últimos 6 meses)
-        data_padrao = datetime.now() - relativedelta(months=6)
-        self.data_inicio.set_date(data_padrao.date())
         
         ttk.Label(filtros_frame, text="até").grid(row=0, column=2, padx=5, pady=5)
         self.data_fim = DateEntry(filtros_frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.data_fim.grid(row=0, column=3, padx=5, pady=5)
+    
+    # Filtro por referência
         
         # Filtro por referência
         ttk.Label(filtros_frame, text="Referência:").grid(row=0, column=4, padx=15, pady=5)
@@ -14138,6 +14137,7 @@ class VisualizadorLancamentosFornecedor:
         
         # Inicializar estado dos botões
         self.atualizar_interface_selecao()
+        self.inicializar_datas_padrao()
 
     def configurar_eventos_selecao(self):
         """Configura eventos para controle de seleção múltipla"""
@@ -14733,7 +14733,7 @@ class VisualizadorLancamentosFornecedor:
             custom_messagebox("error", "Erro", f"Erro ao visualizar histórico: {str(e)}")
 
     def carregar_lancamentos(self):
-        """Carrega os lançamentos do fornecedor"""
+        """Carrega os lançamentos do fornecedor - VERSÃO CORRIGIDA"""
         try:
             from openpyxl import load_workbook
             import pandas as pd
@@ -14756,17 +14756,24 @@ class VisualizadorLancamentosFornecedor:
             # Converter ID_LANCAMENTO para int
             df['ID_LANCAMENTO'] = pd.to_numeric(df['ID_LANCAMENTO'], errors='coerce').fillna(0).astype(int)
             
-            # Filtrar apenas lançamentos do fornecedor
+            # === BUSCA CORRIGIDA POR FORNECEDOR ===
+            
+            # Normalizar CNPJ/CPF do fornecedor buscado
             cnpj_cpf_original = self.dados_fornecedor['cnpj_cpf']
             cnpj_cpf_str = str(cnpj_cpf_original)
             cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_str))
             
             if len(cnpj_cpf_numeros) <= 11:
-                cnpj_cpf_padded = cnpj_cpf_numeros.zfill(11)
+                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(11)
             else:
-                cnpj_cpf_padded = cnpj_cpf_numeros.zfill(14)
+                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(14)
             
-            def normalizar_cnpj_cpf(valor):
+            print(f"DEBUG: Buscando fornecedor:")
+            print(f"       Nome: {self.dados_fornecedor['nome']}")
+            print(f"       CNPJ/CPF normalizado: {cnpj_cpf_normalizado}")
+            
+            # Função para normalizar CNPJ/CPF da planilha
+            def normalizar_cnpj_cpf_planilha(valor):
                 if pd.isna(valor) or valor == '':
                     return ''
                 numeros = ''.join(filter(str.isdigit, str(valor)))
@@ -14775,36 +14782,103 @@ class VisualizadorLancamentosFornecedor:
                 else:
                     return numeros.zfill(14)
             
-            df['CNPJ_CPF_NORMALIZADO'] = df['CNPJ_CPF'].apply(normalizar_cnpj_cpf)
+            df['CNPJ_CPF_NORMALIZADO'] = df['CNPJ_CPF'].apply(normalizar_cnpj_cpf_planilha)
             
-            mask_fornecedor = (
-                df['CNPJ_CPF_NORMALIZADO'] == cnpj_cpf_padded
-            ) | (
-                df['NOME'].astype(str).str.upper().str.strip() == str(self.dados_fornecedor['nome']).upper().strip()
-            )
+            # === BUSCA PRINCIPAL: Por CNPJ/CPF exato ===
+            mask_cnpj = df['CNPJ_CPF_NORMALIZADO'] == cnpj_cpf_normalizado
+            lancamentos_por_cnpj = df[mask_cnpj]
             
-            self.df_fornecedor = df[mask_fornecedor].copy()
+            print(f"DEBUG: Encontrados {len(lancamentos_por_cnpj)} lançamentos por CNPJ/CPF")
             
-            if self.df_fornecedor.empty:
-                # Busca alternativa pelo nome
-                nome_busca = str(self.dados_fornecedor['nome']).upper().strip()
-                if ' ' in nome_busca:
-                    primeiro_nome = nome_busca.split()[0]
-                else:
-                    primeiro_nome = nome_busca
+            # === BUSCA SECUNDÁRIA: Por nome EXATO (apenas se não encontrou por CNPJ) ===
+            if lancamentos_por_cnpj.empty:
+                nome_fornecedor_normalizado = str(self.dados_fornecedor['nome']).upper().strip()
                 
-                mask_nome_flexivel = df['NOME'].astype(str).str.upper().str.contains(
-                    primeiro_nome, na=False
+                # CORREÇÃO: Busca por nome EXATO, não parcial
+                mask_nome_exato = (
+                    df['NOME'].astype(str).str.upper().str.strip() == nome_fornecedor_normalizado
                 )
-                self.df_fornecedor = df[mask_nome_flexivel].copy()
+                lancamentos_por_nome = df[mask_nome_exato]
+                
+                print(f"DEBUG: Encontrados {len(lancamentos_por_nome)} lançamentos por nome exato")
+                
+                # === VALIDAÇÃO CRUZADA (NOVO) ===
+                # Se encontrou por nome, verificar se o CNPJ/CPF bate
+                if not lancamentos_por_nome.empty:
+                    cnpj_encontrado = lancamentos_por_nome.iloc[0]['CNPJ_CPF_NORMALIZADO']
+                    
+                    if cnpj_encontrado and cnpj_encontrado != cnpj_cpf_normalizado:
+                        print(f"AVISO: Nome encontrado mas CNPJ/CPF não confere!")
+                        print(f"       Esperado: {cnpj_cpf_normalizado}")
+                        print(f"       Encontrado: {cnpj_encontrado}")
+                        
+                        # Mostrar aviso ao usuário
+                        custom_messagebox("warning", "Divergência de Dados", 
+                                        f"ATENÇÃO: Encontrado fornecedor com nome igual mas CNPJ/CPF diferente:\n\n"
+                                        f"Nome buscado: {self.dados_fornecedor['nome']}\n"
+                                        f"CNPJ/CPF buscado: {self.dados_fornecedor['cnpj_cpf_formatado']}\n"
+                                        f"CNPJ/CPF encontrado na base: {self.formatar_cnpj_cpf(cnpj_encontrado)}\n\n"
+                                        f"Os dados podem estar inconsistentes. Verifique o cadastro do fornecedor.")
+                
+                self.df_fornecedor = lancamentos_por_nome.copy()
+            else:
+                self.df_fornecedor = lancamentos_por_cnpj.copy()
             
-            # Salvar dados originais para uso posterior
-            self.dados_originais = self.df_fornecedor.copy()
+            # === VALIDAÇÃO FINAL (NOVO) ===
+            if self.df_fornecedor.empty:
+                print(f"DEBUG: Nenhum lançamento encontrado para o fornecedor")
+                
+                # Mostrar mensagem clara ao usuário
+                custom_messagebox("info", "Nenhum Lançamento Encontrado", 
+                                f"Não foram encontrados lançamentos para:\n\n"
+                                f"Fornecedor: {self.dados_fornecedor['nome']}\n"
+                                f"CNPJ/CPF: {self.dados_fornecedor['cnpj_cpf_formatado']}\n"
+                                f"Cliente: {self.sistema.cliente_atual}\n\n"
+                                f"Verifique se:\n"
+                                f"• O fornecedor possui lançamentos neste cliente\n"
+                                f"• Os dados do fornecedor estão corretos\n"
+                                f"• O período de busca está adequado")
+            else:
+                # Verificar se encontrou o fornecedor correto
+                primeiro_lancamento = self.df_fornecedor.iloc[0]
+                nome_encontrado = str(primeiro_lancamento['NOME']).upper().strip()
+                cnpj_encontrado = primeiro_lancamento['CNPJ_CPF_NORMALIZADO']
+                
+                print(f"DEBUG: Fornecedor encontrado:")
+                print(f"       Nome na base: {nome_encontrado}")
+                print(f"       CNPJ/CPF na base: {cnpj_encontrado}")
+                print(f"       Total de lançamentos: {len(self.df_fornecedor)}")
+                
+                # Validação adicional: verificar se realmente é o fornecedor correto
+                nome_buscado = str(self.dados_fornecedor['nome']).upper().strip()
+                
+                if (nome_encontrado != nome_buscado and 
+                    cnpj_encontrado != cnpj_cpf_normalizado):
+                    
+                    # ERRO CRÍTICO: dados não conferem
+                    print(f"ERRO: Dados não conferem!")
+                    custom_messagebox("error", "Erro Crítico", 
+                                    f"ERRO: Os dados encontrados não conferem com o fornecedor buscado!\n\n"
+                                    f"BUSCADO:\n"
+                                    f"Nome: {self.dados_fornecedor['nome']}\n"
+                                    f"CNPJ/CPF: {self.dados_fornecedor['cnpj_cpf_formatado']}\n\n"
+                                    f"ENCONTRADO:\n"
+                                    f"Nome: {primeiro_lancamento['NOME']}\n"
+                                    f"CNPJ/CPF: {self.formatar_cnpj_cpf(cnpj_encontrado)}\n\n"
+                                    f"Possível erro no sistema. Contate o suporte técnico.")
+                    
+                    # Limpar dados para evitar mostrar informações incorretas
+                    self.df_fornecedor = pd.DataFrame()
             
-            # Ordenar por data (mais recente primeiro)
+            # Salvar dados originais para uso posterior (apenas se houver dados válidos)
             if not self.df_fornecedor.empty:
+                self.dados_originais = self.df_fornecedor.copy()
+                
+                # Ordenar por data (mais recente primeiro)
                 self.df_fornecedor['DATA_REL'] = pd.to_datetime(self.df_fornecedor['DATA_REL'], errors='coerce')
                 self.df_fornecedor = self.df_fornecedor.sort_values('DATA_REL', ascending=False)
+            else:
+                self.dados_originais = pd.DataFrame()
             
             # Aplicar filtros iniciais
             self.aplicar_filtros()
@@ -14813,7 +14887,99 @@ class VisualizadorLancamentosFornecedor:
             import traceback
             print(f"Erro ao carregar lançamentos: {traceback.format_exc()}")
             custom_messagebox("error", "Erro", f"Erro ao carregar lançamentos: {str(e)}")
+
+    def debug_busca_fornecedor(self, cnpj_cpf_fornecedor, nome_fornecedor):
+        """Método auxiliar para debug da busca por fornecedor"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', dtype={'CNPJ_CPF': str})
             
+            print("=== DEBUG BUSCA POR FORNECEDOR ===")
+            print(f"Fornecedor buscado: {nome_fornecedor}")
+            print(f"CNPJ/CPF buscado: {cnpj_cpf_fornecedor}")
+            
+            # Mostrar todos os fornecedores únicos na base
+            fornecedores_unicos = df[['NOME', 'CNPJ_CPF']].drop_duplicates()
+            print(f"\nFornecedores na base do cliente {self.sistema.cliente_atual}:")
+            print(f"Total: {len(fornecedores_unicos)}")
+            
+            for _, row in fornecedores_unicos.head(10).iterrows():  # Mostrar apenas os primeiros 10
+                nome_base = str(row['NOME']).strip()
+                cnpj_base = str(row['CNPJ_CPF']).strip()
+                print(f"  - {nome_base} | {cnpj_base}")
+            
+            if len(fornecedores_unicos) > 10:
+                print(f"  ... e mais {len(fornecedores_unicos) - 10} fornecedores")
+            
+            # Buscar fornecedores com nomes similares
+            nome_busca = str(nome_fornecedor).upper()
+            nomes_similares = fornecedores_unicos[
+                fornecedores_unicos['NOME'].astype(str).str.upper().str.contains('ANTONIO', na=False)
+            ]
+            
+            if not nomes_similares.empty:
+                print(f"\nFornecedores com 'ANTONIO' no nome:")
+                for _, row in nomes_similares.iterrows():
+                    print(f"  - {row['NOME']} | {row['CNPJ_CPF']}")
+            
+            return df, fornecedores_unicos
+            
+        except Exception as e:
+            print(f"Erro no debug: {str(e)}")
+            return None, None
+
+    def inicializar_datas_padrao(self):
+        """Inicializa as datas padrão dos filtros baseado no sistema (dias 5 e 20)"""
+        try:
+            from datetime import datetime, timedelta
+            from calendar import monthrange
+            
+            # Data de hoje
+            hoje = datetime.now().date()
+            dia_atual = hoje.day
+            mes_atual = hoje.month
+            ano_atual = hoje.year
+            
+            # LÓGICA DO SISTEMA: Data fim baseada nos dias 5 e 20
+            if dia_atual <= 5:
+                # Do dia 1 ao 5: data fim = dia 5 do mês atual
+                data_fim_padrao = hoje.replace(day=5)
+            elif dia_atual <= 20:
+                # Do dia 6 ao 20: data fim = dia 20 do mês atual
+                data_fim_padrao = hoje.replace(day=20)
+            else:
+                # Do dia 21 em diante: data fim = dia 5 do próximo mês
+                if mes_atual == 12:
+                    # Se dezembro, vai para janeiro do próximo ano
+                    data_fim_padrao = datetime(ano_atual + 1, 1, 5).date()
+                else:
+                    # Senão, próximo mês do mesmo ano
+                    data_fim_padrao = datetime(ano_atual, mes_atual + 1, 5).date()
+            
+            # Data de início: 30 dias antes da data fim (mais lógico para o sistema)
+            data_inicio_padrao = data_fim_padrao - timedelta(days=185)  # Aproximadamente 6 meses
+            
+            # Definir as datas nos controles
+            self.data_inicio.set_date(data_inicio_padrao)
+            self.data_fim.set_date(data_fim_padrao)
+            
+            print(f"DEBUG: Datas padrão definidas (sistema dias 5/20):")
+            print(f"       Hoje: {hoje} (dia {dia_atual})")
+            print(f"       Data início: {data_inicio_padrao}")
+            print(f"       Data fim: {data_fim_padrao}")
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao inicializar datas padrão: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            # Fallback para comportamento anterior
+            try:
+                from dateutil.relativedelta import relativedelta
+                data_padrao = datetime.now() - relativedelta(months=6)
+                self.data_inicio.set_date(data_padrao.date())
+                self.data_fim.set_date(datetime.now().date())
+            except:
+                pass        
     def aplicar_filtros(self):
         """Aplica os filtros selecionados"""
         try:
@@ -14937,9 +15103,8 @@ class VisualizadorLancamentosFornecedor:
         
     def limpar_filtros(self):
         """Limpa todos os filtros e recarrega"""
-        data_padrao = datetime.now() - relativedelta(months=6)
-        self.data_inicio.set_date(data_padrao.date())
-        self.data_fim.set_date(datetime.now().date())
+        self.inicializar_datas_padrao()
+    
         self.filtro_referencia.delete(0, tk.END)
         self.combo_status.set('Ativos')
         self.busca_rapida.delete(0, tk.END)
