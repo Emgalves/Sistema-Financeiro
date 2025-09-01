@@ -1,0 +1,45 @@
+2025-09-01 12:09:37,806 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-01 12:09:39,594 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:09:39,609 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-09-01 12:09:39,610 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:09:39,613 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:09:39,614 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:09:55,477 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:09:55,478 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:09:55,480 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:09:55,480 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:10:23,655 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:10:23,656 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:11:35,624 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: MARCIA UBERENICE NOGUEIRA
+2025-09-01 12:11:37,640 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: MARCIA UBERENICE NOGUEIRA, Total: 1
+2025-09-01 12:11:53,694 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:11:53,694 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:12:43,551 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: MARCIA UBERENICE NOGUEIRA
+2025-09-01 12:12:44,921 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: MARCIA UBERENICE NOGUEIRA, Total: 2
+2025-09-01 12:12:56,757 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:12:56,758 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:13:26,680 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: MARCIA UBERENICE NOGUEIRA
+2025-09-01 12:13:27,912 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: MARCIA UBERENICE NOGUEIRA, Total: 3
+2025-09-01 12:13:36,183 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:13:36,183 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:14:02,238 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: MARCIA UBERENICE NOGUEIRA
+2025-09-01 12:14:03,936 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: MARCIA UBERENICE NOGUEIRA, Total: 4
+2025-09-01 12:20:20,624 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-01 12:20:23,120 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:20:23,135 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-09-01 12:20:23,137 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:20:23,140 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-01 12:20:23,141 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-01 12:21:22,607 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: MARCIA UBERENICE NOGUEIRA, Registros: 4
+2025-09-01 12:21:22,607 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-01 12:21:22,607 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 4
+2025-09-01 12:21:22,607 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/09/2025']
+2025-09-01 12:21:22,607 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\MARCIA UBERENICE NOGUEIRA.xlsx
+2025-09-01 12:21:22,607 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-01 12:21:23,428 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 99 na linha 100
+2025-09-01 12:21:23,429 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 100 na linha 101
+2025-09-01 12:21:23,432 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 101 na linha 102
+2025-09-01 12:21:23,434 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 102 na linha 103
+2025-09-01 12:21:24,338 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-09-01 12:21:24,843 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-09-05
+2025-09-01 12:21:25,554 - sistema - Sistema_Entrada_Dados - INFO - 2025-09-05: Sem taxas na data - recálculo desnecessário

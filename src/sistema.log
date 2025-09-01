@@ -3128,3 +3128,18 @@
 2025-08-28 13:11:27,271 - INFO - Configurações do sistema importadas com sucesso
 2025-08-28 14:26:25,739 - INFO - Abrindo sistema de entrada de dados
 2025-08-28 14:27:49,538 - INFO - Abrindo sistema de entrada de dados
+2025-09-01 12:07:56,544 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-01 12:07:57,810 - INFO - Sistema principal inicializado com sucesso
+2025-09-01 12:09:27,370 - INFO - Abrindo sistema de entrada de dados
+2025-09-01 12:09:37,807 - INFO - Configurações importadas com sucesso via src.config
+2025-09-01 12:09:37,821 - INFO - Configurações importadas com sucesso
+2025-09-01 12:09:37,821 - INFO - Configurações do sistema importadas com sucesso
+2025-09-01 12:09:54,993 - INFO - Abrindo sistema de entrada de dados
+2025-09-01 12:20:06,330 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-01 12:20:07,092 - INFO - Sistema principal inicializado com sucesso
+2025-09-01 12:20:12,405 - INFO - Abrindo sistema de entrada de dados
+2025-09-01 12:20:20,650 - INFO - Configurações importadas com sucesso via src.config
+2025-09-01 12:20:20,675 - INFO - Configurações importadas com sucesso
+2025-09-01 12:20:20,676 - INFO - Configurações do sistema importadas com sucesso
+2025-09-01 12:21:23,405 - INFO - Cabeçalho 'ETAPA_OBRA' adicionado na coluna Q (17)
+2025-09-01 12:21:23,405 - INFO - Cabeçalho 'INSUMO' adicionado na coluna R (18)
