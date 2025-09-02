@@ -1,0 +1,182 @@
+2025-09-02 11:55:09,510 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-02 11:55:11,063 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 11:55:11,083 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-09-02 11:55:11,084 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 11:55:11,087 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 11:55:11,090 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 13:23:27,114 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-02 13:23:29,107 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 13:23:29,111 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-09-02 13:23:29,112 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 13:23:29,116 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 13:23:29,117 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 13:24:43,625 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-02 13:24:44,880 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 13:24:44,883 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-09-02 13:24:44,883 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 13:24:44,886 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 13:24:44,889 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 13:39:53,625 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-02 13:39:55,368 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 13:39:55,371 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-09-02 13:39:55,372 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 13:39:55,373 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 13:39:55,374 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 13:51:01,732 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-02 13:51:03,723 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 13:51:03,726 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-09-02 13:51:03,727 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 13:51:03,728 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 13:51:03,729 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:15:08,941 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-02 15:15:11,030 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:15:11,034 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-09-02 15:15:11,034 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:15:11,037 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:15:11,038 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:15:52,132 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:15:52,133 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:16:43,652 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:16:45,037 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 1
+2025-09-02 15:16:56,003 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:16:56,003 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:17:47,451 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:17:50,179 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 2
+2025-09-02 15:18:12,811 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:18:12,811 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:18:56,418 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:18:57,643 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 3
+2025-09-02 15:19:06,313 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:19:06,314 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:19:55,786 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:19:57,300 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 4
+2025-09-02 15:20:04,952 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:20:04,953 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:20:31,705 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:20:33,018 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 5
+2025-09-02 15:20:42,863 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:20:42,864 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:21:24,745 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:21:26,304 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 6
+2025-09-02 15:21:35,292 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:21:35,293 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:21:58,393 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:21:59,592 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 7
+2025-09-02 15:22:11,915 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:22:11,916 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:22:49,768 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:22:50,872 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 8
+2025-09-02 15:22:54,313 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:22:54,314 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:23:39,463 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:23:40,977 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 9
+2025-09-02 15:23:59,855 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: JOSE PAULO DE SOUZA PEIXE, Registros: 9
+2025-09-02 15:23:59,857 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-02 15:23:59,857 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 9
+2025-09-02 15:23:59,859 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/09/2025']
+2025-09-02 15:23:59,860 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\JOSE PAULO DE SOUZA PEIXE.xlsx
+2025-09-02 15:23:59,862 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-02 15:24:01,558 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1198 na linha 1199
+2025-09-02 15:24:01,566 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1199 na linha 1200
+2025-09-02 15:24:01,578 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1200 na linha 1201
+2025-09-02 15:24:01,585 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1201 na linha 1202
+2025-09-02 15:24:01,595 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1202 na linha 1203
+2025-09-02 15:24:01,602 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1203 na linha 1204
+2025-09-02 15:24:01,613 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1204 na linha 1205
+2025-09-02 15:24:01,619 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1205 na linha 1206
+2025-09-02 15:24:01,630 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1206 na linha 1207
+2025-09-02 15:24:02,300 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-09-02 15:24:02,802 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-09-05
+2025-09-02 15:24:03,402 - sistema - Sistema_Entrada_Dados - INFO - 2025-09-05: Sem taxas na data - recálculo desnecessário
+2025-09-02 15:37:32,959 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-02 15:37:34,882 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:37:34,885 - sistema - configuracoes_sistema - INFO - Seção 'historico_correcoes' adicionada às configurações
+2025-09-02 15:37:34,886 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:37:34,887 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:37:34,888 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:37:55,648 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:37:55,649 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:40:09,508 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:40:11,227 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 1
+2025-09-02 15:40:31,192 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:40:31,193 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:41:31,419 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:41:32,949 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 2
+2025-09-02 15:42:16,684 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-02 15:42:16,685 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-02 15:43:01,706 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-09-02 15:43:03,570 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 3
+2025-09-02 15:43:24,866 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: JOSE PAULO DE SOUZA PEIXE, Registros: 3
+2025-09-02 15:43:24,868 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-02 15:43:24,868 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-09-02 15:43:24,870 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/09/2025']
+2025-09-02 15:43:24,871 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\JOSE PAULO DE SOUZA PEIXE.xlsx
+2025-09-02 15:43:24,871 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-02 15:43:26,036 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-02 15:43:26,037 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-02 15:43:26,038 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: CARMO SION MATERIAIS DE CONSTRUÇÃO LTDA | AREIA GROSSA | R$ 795.60 | 08/09/2025
+2025-09-02 15:43:26,117 - sistema - Sistema_Entrada_Dados - ERROR - 🚨 DUPLICATA PROVÁVEL DETECTADA (Critério: Fornecedor+Valor+Data+Referência Similar)!
+2025-09-02 15:43:26,118 - sistema - Sistema_Entrada_Dados - ERROR -    Nome: CARMO SION MATERIAIS DE CONSTRUÇÃO LTDA
+2025-09-02 15:43:26,119 - sistema - Sistema_Entrada_Dados - ERROR -    Referência nova: 'AREIA GROSSA'
+2025-09-02 15:43:26,119 - sistema - Sistema_Entrada_Dados - ERROR -    Referência existente: 'AREIA'
+2025-09-02 15:43:26,120 - sistema - Sistema_Entrada_Dados - ERROR -    Similaridade: 90.00%
+2025-09-02 15:43:26,121 - sistema - Sistema_Entrada_Dados - ERROR -    Valor: R$ 795.60
+2025-09-02 15:43:26,121 - sistema - Sistema_Entrada_Dados - ERROR -    Vencimento: 08/09/2025
+2025-09-02 15:43:26,121 - sistema - Sistema_Entrada_Dados - ERROR -    Linha existente: 1201
+2025-09-02 15:43:26,122 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CARMO SION MATERIAIS DE CONSTRUÇÃO LTDA - AREIA GROSSA - R$ 795.60
+2025-09-02 15:43:26,124 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-02 15:43:26,125 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-02 15:43:26,127 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: JB CIMENTO | CIMENTO | R$ 2240.00 | 28/08/2025
+2025-09-02 15:43:26,206 - sistema - Sistema_Entrada_Dados - ERROR - 🚨 DUPLICATA EXATA DETECTADA (Critério: NF)!
+2025-09-02 15:43:26,207 - sistema - Sistema_Entrada_Dados - ERROR -    NF: 294700
+2025-09-02 15:43:26,207 - sistema - Sistema_Entrada_Dados - ERROR -    Nome: JB CIMENTO
+2025-09-02 15:43:26,208 - sistema - Sistema_Entrada_Dados - ERROR -    Valor: R$ 2240.00
+2025-09-02 15:43:26,209 - sistema - Sistema_Entrada_Dados - ERROR -    Vencimento: 28/08/2025
+2025-09-02 15:43:26,211 - sistema - Sistema_Entrada_Dados - ERROR -    Linha existente: 1173
+2025-09-02 15:43:26,212 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: JB CIMENTO - CIMENTO - R$ 2240.00
+2025-09-02 15:43:26,213 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-02 15:43:26,214 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-02 15:43:26,214 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: AMAZONIA UNIFORMES LTDA | UNIFORMES | R$ 853.00 | 10/09/2025
+2025-09-02 15:43:26,275 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: AMAZONIA UNIFORMES LTDA - UNIFORMES
+2025-09-02 15:43:26,275 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 2 possíveis lançamentos duplicados
+2025-09-02 15:43:42,321 - sistema - Sistema_Entrada_Dados - INFO - Usuário optou por continuar. Processando 1 lançamentos únicos
+2025-09-02 15:43:42,331 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1207 na linha 1208
+2025-09-02 15:43:42,332 - sistema - Sistema_Entrada_Dados - ERROR - Permissão negada ao salvar arquivo - provável arquivo aberto
+2025-09-02 15:44:01,010 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: JOSE PAULO DE SOUZA PEIXE, Registros: 3
+2025-09-02 15:44:01,011 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-02 15:44:01,012 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-09-02 15:44:01,013 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/09/2025']
+2025-09-02 15:44:01,013 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\JOSE PAULO DE SOUZA PEIXE.xlsx
+2025-09-02 15:44:01,014 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-02 15:44:02,123 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-02 15:44:02,124 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-02 15:44:02,124 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: CARMO SION MATERIAIS DE CONSTRUÇÃO LTDA | AREIA GROSSA | R$ 795.60 | 08/09/2025
+2025-09-02 15:44:02,201 - sistema - Sistema_Entrada_Dados - ERROR - 🚨 DUPLICATA PROVÁVEL DETECTADA (Critério: Fornecedor+Valor+Data+Referência Similar)!
+2025-09-02 15:44:02,202 - sistema - Sistema_Entrada_Dados - ERROR -    Nome: CARMO SION MATERIAIS DE CONSTRUÇÃO LTDA
+2025-09-02 15:44:02,203 - sistema - Sistema_Entrada_Dados - ERROR -    Referência nova: 'AREIA GROSSA'
+2025-09-02 15:44:02,204 - sistema - Sistema_Entrada_Dados - ERROR -    Referência existente: 'AREIA'
+2025-09-02 15:44:02,204 - sistema - Sistema_Entrada_Dados - ERROR -    Similaridade: 90.00%
+2025-09-02 15:44:02,205 - sistema - Sistema_Entrada_Dados - ERROR -    Valor: R$ 795.60
+2025-09-02 15:44:02,205 - sistema - Sistema_Entrada_Dados - ERROR -    Vencimento: 08/09/2025
+2025-09-02 15:44:02,206 - sistema - Sistema_Entrada_Dados - ERROR -    Linha existente: 1201
+2025-09-02 15:44:02,206 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: CARMO SION MATERIAIS DE CONSTRUÇÃO LTDA - AREIA GROSSA - R$ 795.60
+2025-09-02 15:44:02,210 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-02 15:44:02,211 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-02 15:44:02,212 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: JB CIMENTO | CIMENTO | R$ 2240.00 | 28/08/2025
+2025-09-02 15:44:02,272 - sistema - Sistema_Entrada_Dados - ERROR - 🚨 DUPLICATA EXATA DETECTADA (Critério: NF)!
+2025-09-02 15:44:02,272 - sistema - Sistema_Entrada_Dados - ERROR -    NF: 294700
+2025-09-02 15:44:02,273 - sistema - Sistema_Entrada_Dados - ERROR -    Nome: JB CIMENTO
+2025-09-02 15:44:02,273 - sistema - Sistema_Entrada_Dados - ERROR -    Valor: R$ 2240.00
+2025-09-02 15:44:02,274 - sistema - Sistema_Entrada_Dados - ERROR -    Vencimento: 28/08/2025
+2025-09-02 15:44:02,274 - sistema - Sistema_Entrada_Dados - ERROR -    Linha existente: 1173
+2025-09-02 15:44:02,275 - sistema - Sistema_Entrada_Dados - WARNING - Duplicata detectada: JB CIMENTO - CIMENTO - R$ 2240.00
+2025-09-02 15:44:02,278 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-02 15:44:02,278 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-02 15:44:02,279 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: AMAZONIA UNIFORMES LTDA | UNIFORMES | R$ 853.00 | 10/09/2025
+2025-09-02 15:44:02,348 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: AMAZONIA UNIFORMES LTDA - UNIFORMES
+2025-09-02 15:44:02,348 - sistema - Sistema_Entrada_Dados - WARNING - Detectados 2 possíveis lançamentos duplicados
+2025-09-02 15:44:09,593 - sistema - Sistema_Entrada_Dados - INFO - Usuário optou por continuar. Processando 1 lançamentos únicos
+2025-09-02 15:44:09,605 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1207 na linha 1208
+2025-09-02 15:44:10,255 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-09-02 15:44:10,756 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-09-05
+2025-09-02 15:44:11,507 - sistema - Sistema_Entrada_Dados - INFO - 2025-09-05: Sem taxas na data - recálculo desnecessário
