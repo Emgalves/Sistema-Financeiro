@@ -4904,10 +4904,15 @@ class SistemaEntradaDados:
 
     def verificar_duplicidade_antes_salvar(self, sheet, dados):
         """
-        Verifica se um lançamento similar já existe na planilha usando critérios mais precisos
-        MELHORADO: Com logs detalhados e verificação mais robusta
+        Verifica se um lançamento similar já existe na planilha usando critérios inteligentes
+        VERSÃO SIMPLIFICADA E TESTADA
         """
+        # TESTE: Log bem visível
+        print("🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!")
+        print(f"🔍 Dados recebidos: {dados}")
+        
         logger = system_logger.get_logger()
+        logger.error("🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!")  # Use ERROR para garantir que apareça
         
         try:
             # Normalizar dados para comparação
@@ -4915,6 +4920,7 @@ class SistemaEntradaDados:
             referencia_nova = str(dados['referencia']).strip().upper()
             nf_nova = str(dados.get('nf', '')).strip().upper()
             dt_vencto_nova = str(dados['dt_vencto']).strip()
+            cnpj_novo = str(dados.get('cnpj_cpf', '')).strip()
             
             try:
                 valor_novo = float(str(dados['valor']).replace(',', '.'))
@@ -4922,16 +4928,17 @@ class SistemaEntradaDados:
                 logger.error(f"Erro ao converter valor para verificação: {dados['valor']}")
                 return False
             
-            logger.debug(f"Verificando duplicidade: {nome_novo} - {referencia_nova} - R$ {valor_novo:.2f}")
+            logger.info(f"=== INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===")
+            logger.info(f"Dados novos: {nome_novo} | {referencia_nova} | R$ {valor_novo:.2f} | {dt_vencto_nova}")
             
             duplicatas_encontradas = 0
             
-            for row in sheet.iter_rows(min_row=2, values_only=True):
+            for row_num, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
                 # Pular linhas vazias
                 if not row[0]:
                     continue
 
-                # Verificar status - pular se excluído (coluna 14 = índice 13)
+                # Verificar status - pular se excluído
                 status = row[13] if len(row) > 13 else 'ATIVO'
                 if status == 'EXCLUIDO':
                     continue
@@ -4940,6 +4947,7 @@ class SistemaEntradaDados:
                 nome_planilha = str(row[3] or '').strip().upper()  # NOME
                 referencia_planilha = str(row[4] or '').strip().upper()  # REFERÊNCIA
                 nf_planilha = str(row[5] or '').strip().upper()  # NF
+                cnpj_planilha = str(row[2] or '').strip()  # CNPJ_CPF
                 
                 # Comparar datas de vencimento
                 dt_vencto_planilha = ""
@@ -4949,50 +4957,108 @@ class SistemaEntradaDados:
                     else:
                         dt_vencto_planilha = str(row[9]).strip()
                 
-                # Comparar valores com tolerância
+                # Comparar valores
                 try:
                     valor_planilha = float(str(row[8] or 0).replace(',', '.'))  # VALOR
                     diferenca_valor = abs(valor_planilha - valor_novo)
                 except (ValueError, TypeError):
-                    continue  # Pular se não conseguir converter valor
+                    continue
                 
-                # CRITÉRIOS DE DUPLICIDADE (todos devem ser verdadeiros)
-                criterios_duplicidade = [
-                    nome_planilha == nome_novo,                    # Nome idêntico
-                    referencia_planilha == referencia_nova,       # Referência idêntica
-                    diferenca_valor < 0.01,                       # Valor idêntico (tolerância de 1 centavo)
-                    dt_vencto_planilha == dt_vencto_nova,         # Data de vencimento idêntica
-                ]
+                # LOG para debug
+                logger.debug(f"Linha {row_num}: {nome_planilha} | {referencia_planilha} | R$ {valor_planilha:.2f} | {dt_vencto_planilha}")
                 
-                # Se NF estiver preenchida em ambos, deve ser igual
-                if nf_nova and nf_planilha:
-                    criterios_duplicidade.append(nf_planilha == nf_nova)
-                
-                # Se TODOS os critérios forem verdadeiros, é duplicata
-                if all(criterios_duplicidade):
-                    duplicatas_encontradas += 1
-                    logger.warning(f"DUPLICATA #{duplicatas_encontradas} encontrada:")
-                    logger.warning(f"  Nome: {nome_novo}")
-                    logger.warning(f"  Referência: {referencia_nova}")
-                    logger.warning(f"  Valor: R$ {valor_novo:.2f} (planilha: R$ {valor_planilha:.2f})")
-                    logger.warning(f"  Vencimento: {dt_vencto_nova}")
-                    if nf_nova:
-                        logger.warning(f"  NF: {nf_nova}")
+                # =============================================================
+                # CRITÉRIO 1: DUPLICATA EXATA POR NF
+                # =============================================================
+                if (nf_nova and nf_planilha and 
+                    nf_nova == nf_planilha and 
+                    nome_planilha == nome_novo and 
+                    diferenca_valor < 0.01 and 
+                    dt_vencto_planilha == dt_vencto_nova):
                     
-                    return True  # Encontrou duplicata
+                    logger.error(f"🚨 DUPLICATA EXATA DETECTADA (Critério: NF)!")
+                    logger.error(f"   NF: {nf_nova}")
+                    logger.error(f"   Nome: {nome_novo}")
+                    logger.error(f"   Valor: R$ {valor_novo:.2f}")
+                    logger.error(f"   Vencimento: {dt_vencto_nova}")
+                    logger.error(f"   Linha existente: {row_num}")
+                    return True
+                
+                # =============================================================
+                # CRITÉRIO 2: MESMO FORNECEDOR + VALOR + DATA + REFERÊNCIA SIMILAR
+                # =============================================================
+                if (nome_planilha == nome_novo and 
+                    diferenca_valor < 0.01 and 
+                    dt_vencto_planilha == dt_vencto_nova):
+                    
+                    # Verificar similaridade da referência
+                    similaridade = self._calcular_similaridade_simples(referencia_nova, referencia_planilha)
+                    
+                    logger.debug(f"   Similaridade entre '{referencia_nova}' e '{referencia_planilha}': {similaridade:.2%}")
+                    
+                    if similaridade >= 0.7:  # 70% de similaridade
+                        logger.error(f"🚨 DUPLICATA PROVÁVEL DETECTADA (Critério: Fornecedor+Valor+Data+Referência Similar)!")
+                        logger.error(f"   Nome: {nome_novo}")
+                        logger.error(f"   Referência nova: '{referencia_nova}'")
+                        logger.error(f"   Referência existente: '{referencia_planilha}'")
+                        logger.error(f"   Similaridade: {similaridade:.2%}")
+                        logger.error(f"   Valor: R$ {valor_novo:.2f}")
+                        logger.error(f"   Vencimento: {dt_vencto_nova}")
+                        logger.error(f"   Linha existente: {row_num}")
+                        return True
+                
+                # =============================================================
+                # CRITÉRIO 3: MESMO CNPJ + VALOR + DATA (independente da referência)
+                # =============================================================
+                if (cnpj_novo and cnpj_planilha and 
+                    cnpj_novo == cnpj_planilha and 
+                    diferenca_valor < 0.01 and 
+                    dt_vencto_planilha == dt_vencto_nova):
+                    
+                    logger.error(f"🚨 DUPLICATA SUSPEITA DETECTADA (Critério: CNPJ+Valor+Data)!")
+                    logger.error(f"   CNPJ: {cnpj_novo}")
+                    logger.error(f"   Nome: {nome_novo}")
+                    logger.error(f"   Valor: R$ {valor_novo:.2f}")
+                    logger.error(f"   Vencimento: {dt_vencto_nova}")
+                    logger.error(f"   Referência nova: '{referencia_nova}'")
+                    logger.error(f"   Referência existente: '{referencia_planilha}'")
+                    logger.error(f"   Linha existente: {row_num}")
+                    return True
             
-            logger.debug(f"Nenhuma duplicata encontrada para: {nome_novo} - {referencia_nova}")
-            return False  # Não encontrou duplicata
+            logger.info(f"✅ Nenhuma duplicata encontrada para: {nome_novo} - {referencia_nova}")
+            return False
             
         except Exception as e:
-            logger.error(f"Erro ao processar dados: {str(e)}", exc_info=True)
-            custom_messagebox("error", "Erro", f"Erro ao processar dados: {str(e)}")
+            logger.error(f"❌ ERRO na verificação de duplicidade: {str(e)}", exc_info=True)
             return False
         
         finally:
-            # Desmarcar flag de processamento se existir
             if hasattr(self, '_is_saving'):
                 self._is_saving = False
+
+    def _calcular_similaridade_simples(self, texto1, texto2):
+        """
+        Calcula similaridade simples entre dois textos
+        """
+        if not texto1 or not texto2:
+            return 0.0
+        
+        # Converter para minúsculas e remover espaços extras
+        t1 = ' '.join(texto1.lower().split())
+        t2 = ' '.join(texto2.lower().split())
+        
+        # Se um texto está contido no outro, alta similaridade
+        if t1 in t2 or t2 in t1:
+            return 0.9
+        
+        # Calcular similaridade por caracteres comuns
+        comum = sum(1 for c in t1 if c in t2)
+        total = max(len(t1), len(t2))
+        
+        if total == 0:
+            return 0.0
+        
+        return comum / total
 
     # Correção para o método enviar_dados() - SistemaEntradaDados.py
 
@@ -13135,9 +13201,10 @@ class GerenciadorLancamentos:
         tp_desp = valores[1]         # Tipo de despesa
         nome_lancamento = valores[2]  # Nome
         referencia = valores[3]      # Referência
-        valor = valores[4]           # Valor
+        valor = valores[5]           # Valor
         data_lancamento = valores[0] # Data
-        status_atual = valores[6]    # Status
+        status_atual = valores[7]    # Status
+        id_lancamento = valores[8]   # ID
         
         # Verificar se já está excluído
         if status_atual == 'EXCLUIDO':
@@ -13167,7 +13234,7 @@ class GerenciadorLancamentos:
                 return
         
         try:
-            id_lancamento = valores[7]
+            id_lancamento = valores[8]
             
             print(f"DEBUG: Excluindo lançamento ID {id_lancamento}")
             
@@ -13230,9 +13297,10 @@ class GerenciadorLancamentos:
         tp_desp = valores[1]         # Tipo de despesa
         nome_lancamento = valores[2]  # Nome
         referencia = valores[3]      # Referência
-        valor = valores[4]           # Valor
+        valor = valores[5]           # Valor
         data_lancamento = valores[0] # Data
-        status_atual = valores[6]    # Status
+        status_atual = valores[7]    # Status
+        id_lancamento = valores[8]   # ID
         
         # Verificar se já está ativo
         if status_atual != 'EXCLUIDO':
