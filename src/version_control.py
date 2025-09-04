@@ -10,11 +10,12 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 4,
-    "patch": 1,
-    "release_date": "28/08/2025",
+    "patch": 2,
+    "release_date": "05/09/2025",
     "changes": [
-        "Melhoria no Visualizador de Lançamentos de Fornecedor que agora possui todas as funcionalidades do Gerenciador de Lançamentos",
-        "Correção na aba Entrada de Dados que não estava limpando corretamente todos os campos"
+        "Inclusão de auto completar nos campos 'Etapa da Obra' e 'Insumo' na aba Entrada de Dados",
+        "Correção de EXCLUIR/RESTAURAR individual no Gerenciador de Lançamentos",
+        "Correção do Backup Automático para verificar o Cliente antes de salvar"
     ]
 }
 
