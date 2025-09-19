@@ -1,0 +1,367 @@
+2025-09-19 09:28:27,801 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 09:28:29,464 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 09:28:29,486 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 09:28:29,494 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 09:28:29,495 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 10:02:28,002 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 10:02:28,002 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 10:02:28,002 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 10:02:28,002 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 10:02:28,002 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 10:02:28,002 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 10:02:28,002 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 10:02:28,002 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 10:04:46,976 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 10:04:46,976 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 10:07:19,494 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:07:19,494 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-09-19 10:07:19,502 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:07:19,504 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-09-19 10:07:19,514 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:07:19,515 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2025-09-19 10:07:19,519 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:07:19,523 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 4
+2025-09-19 10:07:19,526 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:07:19,527 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 5
+2025-09-19 10:07:54,383 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 10:07:54,383 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 10:07:54,383 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 10:07:54,383 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 10:09:04,092 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 10:09:04,092 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 10:09:36,326 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:09:36,326 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-09-19 10:09:36,336 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:09:36,338 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-09-19 10:09:36,344 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:09:36,346 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2025-09-19 10:09:36,350 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:09:36,358 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 4
+2025-09-19 10:09:36,362 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 10:09:36,363 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 5
+2025-09-19 10:10:02,769 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 5
+2025-09-19 10:10:02,769 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-19 10:10:02,769 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 5
+2025-09-19 10:10:02,769 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/12/2025', '05/10/2025', '05/11/2025', '05/02/2026', '05/01/2026']
+2025-09-19 10:10:02,769 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 10:10:02,769 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-19 10:10:03,279 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 10:10:03,295 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 10:10:03,295 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS DIVERSOS - PARC. 1/5 | R$ 75538.63 | 20/10/2025
+2025-09-19 10:10:03,295 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS DIVERSOS - PARC. 1/5
+2025-09-19 10:10:03,311 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 10:10:03,313 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 10:10:03,314 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS DIVERSOS - PARC. 2/5 | R$ 75538.63 | 18/11/2025
+2025-09-19 10:10:03,332 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS DIVERSOS - PARC. 2/5
+2025-09-19 10:10:03,335 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 10:10:03,340 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 10:10:03,340 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS DIVERSOS - PARC. 3/5 | R$ 75538.63 | 18/12/2025
+2025-09-19 10:10:03,359 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS DIVERSOS - PARC. 3/5
+2025-09-19 10:10:03,360 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 10:10:03,361 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 10:10:03,361 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS DIVERSOS - PARC. 4/5 | R$ 75538.63 | 19/01/2026
+2025-09-19 10:10:03,377 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS DIVERSOS - PARC. 4/5
+2025-09-19 10:10:03,381 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 10:10:03,382 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 10:10:03,382 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS DIVERSOS - PARC. 5/5 | R$ 75538.63 | 16/02/2026
+2025-09-19 10:10:03,397 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS DIVERSOS - PARC. 5/5
+2025-09-19 10:10:03,401 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 248 na linha 248
+2025-09-19 10:10:03,402 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 249 na linha 249
+2025-09-19 10:10:03,408 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 250 na linha 250
+2025-09-19 10:10:03,410 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 251 na linha 251
+2025-09-19 10:10:03,412 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 252 na linha 252
+2025-09-19 10:10:03,707 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 5 datas
+2025-09-19 10:10:04,215 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-12-05
+2025-09-19 10:10:04,461 - sistema - Sistema_Entrada_Dados - INFO - 2025-12-05: Sem taxas na data - recálculo desnecessário
+2025-09-19 10:10:04,468 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-10-05
+2025-09-19 10:10:04,617 - sistema - Sistema_Entrada_Dados - INFO - 2025-10-05: Sem taxas na data - recálculo desnecessário
+2025-09-19 10:10:04,617 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-09-19 10:10:04,765 - sistema - Sistema_Entrada_Dados - INFO - 2025-11-05: Sem taxas na data - recálculo desnecessário
+2025-09-19 10:10:04,765 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2026-02-05
+2025-09-19 10:10:04,901 - sistema - Sistema_Entrada_Dados - INFO - 2026-02-05: Sem taxas na data - recálculo desnecessário
+2025-09-19 10:10:04,901 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2026-01-05
+2025-09-19 10:10:05,050 - sistema - Sistema_Entrada_Dados - INFO - 2026-01-05: Sem taxas na data - recálculo desnecessário
+2025-09-19 14:44:36,090 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 14:44:36,106 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 15:47:56,061 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 15:47:58,086 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 15:47:58,109 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 15:47:58,109 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 15:47:58,116 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 15:48:09,540 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 15:48:09,540 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 15:49:03,783 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 15:49:05,391 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-09-19 15:49:12,319 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-09-19 15:49:12,319 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-19 15:49:12,319 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-09-19 15:49:12,319 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/09/2025']
+2025-09-19 15:49:12,319 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 15:49:12,319 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-19 15:49:12,803 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 15:49:12,803 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 15:49:12,803 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: VASCONCELOS & RINALDI ENGENHARIA | TAXA ADMINISRAÇÃO | R$ 5500.00 | 20/09/2025
+2025-09-19 15:49:12,819 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: VASCONCELOS & RINALDI ENGENHARIA - TAXA ADMINISRAÇÃO
+2025-09-19 15:49:12,834 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 253 na linha 253
+2025-09-19 15:49:13,197 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-09-19 15:49:13,705 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-09-20
+2025-09-19 15:49:13,956 - sistema - Sistema_Entrada_Dados - INFO - 2025-09-20: Sem taxas na data - recálculo desnecessário
+2025-09-19 15:49:18,713 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-09-19 15:49:18,713 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-09-19 15:49:18,830 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-09-19 15:49:18,831 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-09-19 15:49:18,832 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-09-19 15:49:18,832 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-09-19 15:49:19,399 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-19 15:49:19,415 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-19 15:49:19,416 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-09-19 15:49:19,421 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-09-19 15:49:19,425 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-09-19 15:49:19,425 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-19 15:49:19,461 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-19 15:49:19,477 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-19 15:49:19,478 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-09-19 15:49:19,480 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-09-19 15:49:19,481 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-09-19 15:49:19,482 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 16 itens
+2025-09-19 15:49:20,846 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/09/2025
+2025-09-19 15:49:20,846 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/09/2025
+2025-09-19 15:49:24,250 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-09-19 15:49:24,250 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 15:49:24,265 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 15:49:26,896 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-09-19 15:49:26,912 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-09-19 15:49:26,912 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-09-19 15:49:26,912 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-09-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-09-19 15:49:26,912 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 15:49:26,912 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 15:49:26,912 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-09-19 15:49:26,912 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-09-19 15:49:28,965 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-09-19 15:49:28,978 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-09-19 15:49:30,220 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-09-19 15:49:51,430 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20250919_154929.pdf
+2025-09-19 15:49:53,444 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20250919_154929.pdf
+2025-09-19 15:49:53,699 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-09-19 15:49:53,699 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-09-19 15:49:53,802 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-09-19 16:19:12,761 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 16:19:14,877 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 16:19:14,877 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 16:19:14,877 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 16:19:14,877 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 16:19:29,360 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 16:19:29,360 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 16:22:42,174 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 16:22:42,174 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-09-19 16:22:42,174 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 16:22:42,174 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-09-19 16:22:42,181 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 16:22:42,182 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2025-09-19 16:22:42,190 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 16:22:42,197 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 4
+2025-09-19 16:22:42,200 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 16:22:42,206 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 5
+2025-09-19 16:24:30,697 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 5
+2025-09-19 16:24:30,698 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-19 16:24:30,699 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 5
+2025-09-19 16:24:30,700 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/10/2025', '20/01/2026', '20/12/2025', '20/09/2025', '20/11/2025']
+2025-09-19 16:24:30,701 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 16:24:30,702 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-19 16:24:31,116 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 16:24:31,117 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 16:24:31,118 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS - GRANITO - 1ª PARCELA | R$ 5000.00 | 30/09/2025
+2025-09-19 16:24:31,132 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS - GRANITO - 1ª PARCELA
+2025-09-19 16:24:31,134 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 16:24:31,135 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 16:24:31,135 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS - GRANITO - 2ª PARCELA | R$ 10000.00 | 30/10/2025
+2025-09-19 16:24:31,149 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS - GRANITO - 2ª PARCELA
+2025-09-19 16:24:31,151 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 16:24:31,152 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 16:24:31,153 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS - GRANITO - 3ª PARCELA | R$ 12000.00 | 30/11/2025
+2025-09-19 16:24:31,170 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS - GRANITO - 3ª PARCELA
+2025-09-19 16:24:31,172 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 16:24:31,172 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 16:24:31,173 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS - GRANITO - 4ª PARCELA | R$ 15000.00 | 30/12/2025
+2025-09-19 16:24:31,190 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS - GRANITO - 4ª PARCELA
+2025-09-19 16:24:31,192 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 16:24:31,193 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 16:24:31,193 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTOS - GRANITO - 5ª PARCELA - CONDICIONADA À ENTREGA | R$ 8000.00 | 30/01/2026
+2025-09-19 16:24:31,209 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTOS - GRANITO - 5ª PARCELA - CONDICIONADA À ENTREGA
+2025-09-19 16:24:31,211 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 254 na linha 254
+2025-09-19 16:24:31,211 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 255 na linha 255
+2025-09-19 16:24:31,217 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 256 na linha 256
+2025-09-19 16:24:31,222 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 257 na linha 257
+2025-09-19 16:24:31,225 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 258 na linha 258
+2025-09-19 16:24:31,713 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 5 datas
+2025-09-19 16:24:32,222 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-10-20
+2025-09-19 16:24:32,538 - sistema - Sistema_Entrada_Dados - INFO - 2025-10-20: Sem taxas na data - recálculo desnecessário
+2025-09-19 16:24:32,538 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2026-01-20
+2025-09-19 16:24:32,698 - sistema - Sistema_Entrada_Dados - INFO - 2026-01-20: Sem taxas na data - recálculo desnecessário
+2025-09-19 16:24:32,698 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-09-19 16:24:32,877 - sistema - Sistema_Entrada_Dados - INFO - 2025-12-20: Sem taxas na data - recálculo desnecessário
+2025-09-19 16:24:32,878 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-09-20
+2025-09-19 16:24:33,085 - sistema - Sistema_Entrada_Dados - INFO - 2025-09-20: Sem taxas na data - recálculo desnecessário
+2025-09-19 16:24:33,085 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-20
+2025-09-19 16:24:33,235 - sistema - Sistema_Entrada_Dados - INFO - 2025-11-20: Sem taxas na data - recálculo desnecessário
+2025-09-19 17:05:16,433 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 17:05:18,429 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:05:18,432 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:05:18,434 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:05:18,435 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:05:31,599 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:05:31,599 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:08:12,463 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 17:08:14,196 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:08:14,211 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:08:14,211 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:08:14,211 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:08:29,178 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:08:29,179 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:10:41,719 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 17:10:43,525 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:10:43,525 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:10:43,525 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:10:43,525 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:10:55,470 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:10:55,470 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:17:02,037 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 17:17:03,798 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:17:03,798 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:17:03,813 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:17:03,813 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:17:15,703 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:17:15,703 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:21:36,241 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 17:21:38,144 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:21:38,144 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:21:38,144 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:21:38,144 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:21:48,727 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:21:48,727 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:24:41,369 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 17:24:43,074 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:24:43,074 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:24:43,074 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:24:43,074 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:24:59,058 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:24:59,058 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:26:11,992 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 17:26:11,993 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-09-19 17:26:11,998 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 17:26:11,999 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-09-19 17:28:24,864 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-09-19 17:28:24,866 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-19 17:28:24,866 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-09-19 17:28:24,867 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/11/2025', '05/10/2025']
+2025-09-19 17:28:24,868 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 17:28:24,869 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-19 17:28:25,397 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 17:28:25,397 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 17:28:25,397 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTO - 1ª PARCELA | R$ 20000.00 | 10/10/2025
+2025-09-19 17:28:25,427 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTO - 1ª PARCELA
+2025-09-19 17:28:25,429 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 17:28:25,430 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 17:28:25,431 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTO - 2ª PARCELA - CONDICIONADA À ENTREGA | R$ 30000.00 | 10/11/2025
+2025-09-19 17:28:25,447 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTO - 2ª PARCELA - CONDICIONADA À ENTREGA
+2025-09-19 17:28:25,450 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 259 na linha 259
+2025-09-19 17:28:25,453 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 260 na linha 260
+2025-09-19 17:28:26,046 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 2 datas
+2025-09-19 17:28:26,553 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-09-19 17:28:26,927 - sistema - Sistema_Entrada_Dados - INFO - 2025-11-05: Sem taxas na data - recálculo desnecessário
+2025-09-19 17:28:26,928 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-10-05
+2025-09-19 17:28:27,089 - sistema - Sistema_Entrada_Dados - INFO - 2025-10-05: Sem taxas na data - recálculo desnecessário
+2025-09-19 17:29:19,530 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:29:19,530 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:29:19,530 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:29:19,530 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:29:19,530 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:29:19,530 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:29:19,530 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:29:19,546 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:45:04,207 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 17:45:06,105 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:45:06,105 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:45:06,105 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:45:06,105 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:45:20,751 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 17:45:20,751 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 17:46:32,071 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 17:46:32,071 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-09-19 17:46:32,071 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 17:46:32,081 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-09-19 18:02:15,718 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 18:02:17,884 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:02:17,884 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:02:17,884 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:02:17,884 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:02:29,193 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:02:29,193 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:03:23,994 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 18:03:23,995 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-09-19 18:03:23,998 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 18:03:23,999 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-09-19 18:27:52,722 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 18:27:54,722 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:27:54,724 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:27:54,724 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:27:54,724 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:28:06,207 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:28:06,207 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:29:09,433 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 18:29:09,433 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-09-19 18:29:09,433 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 18:29:09,433 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-09-19 18:29:19,866 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-09-19 18:29:19,868 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-19 18:29:19,868 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-09-19 18:29:19,869 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/10/2025', '05/11/2025']
+2025-09-19 18:29:19,870 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 18:29:19,870 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-19 18:29:20,494 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 18:29:20,495 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 18:29:20,495 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTO - TRAVERTINO - 1ª PARCELA | R$ 10000.00 | 10/10/2025
+2025-09-19 18:29:20,516 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTO - TRAVERTINO - 1ª PARCELA
+2025-09-19 18:29:20,517 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 18:29:20,518 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 18:29:20,518 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: INTENSE STONE MARMORES LTDA | REVESTIMENTO - TRAVERTINO - 2ª PARCELA - CONDICIONADA À ENTREGA | R$ 15000.00 | 10/11/2025
+2025-09-19 18:29:20,534 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INTENSE STONE MARMORES LTDA - REVESTIMENTO - TRAVERTINO - 2ª PARCELA - CONDICIONADA À ENTREGA
+2025-09-19 18:29:20,534 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 261 na linha 261
+2025-09-19 18:29:20,539 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 262 na linha 262
+2025-09-19 18:29:20,980 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 2 datas
+2025-09-19 18:29:21,481 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-10-05
+2025-09-19 18:29:21,740 - sistema - Sistema_Entrada_Dados - INFO - 2025-10-05: Sem taxas na data - recálculo desnecessário
+2025-09-19 18:29:21,740 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-09-19 18:29:21,902 - sistema - Sistema_Entrada_Dados - INFO - 2025-11-05: Sem taxas na data - recálculo desnecessário
+2025-09-19 18:32:23,642 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:32:23,642 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:33:11,122 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 18:33:12,734 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-09-19 18:33:23,436 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:33:23,436 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:33:42,351 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-19 18:33:44,036 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-09-19 18:37:54,984 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-19 18:37:57,951 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:37:58,009 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:37:58,035 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-19 18:37:58,040 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-19 18:38:15,694 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-09-19 18:38:15,710 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-09-19 18:38:15,710 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-09-19 18:38:15,710 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/09/2025']
+2025-09-19 18:38:15,710 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-09-19 18:38:15,710 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-09-19 18:38:16,417 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 18:38:16,433 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 18:38:16,433 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: DEPÓSITO 040 | MATERIAIS DIVERSOS | R$ 256.00 | 30/09/2025
+2025-09-19 18:38:16,464 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: DEPÓSITO 040 - MATERIAIS DIVERSOS
+2025-09-19 18:38:16,468 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-09-19 18:38:16,472 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-09-19 18:38:16,472 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: JB CIMENTO | CIMENTO | R$ 2240.00 | 26/09/2025
+2025-09-19 18:38:16,495 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: JB CIMENTO - CIMENTO
+2025-09-19 18:38:16,498 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 263 na linha 263
+2025-09-19 18:38:16,503 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 264 na linha 264
+2025-09-19 18:38:16,992 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-09-19 18:38:17,497 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-09-20
+2025-09-19 18:38:17,844 - sistema - Sistema_Entrada_Dados - INFO - 2025-09-20: Sem taxas na data - recálculo desnecessário

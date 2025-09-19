@@ -35,3 +35,8 @@
 2025-09-04 16:10:37,626 - sistema - Sistema_Entrada_Dados - INFO - 2025-09-05: Sem taxas na data - recálculo desnecessário
 2025-09-04 16:11:07,258 - sistema - logger_config - INFO - Iniciando: Carregar configurações
 2025-09-04 16:11:07,279 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-04 17:34:01,756 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-04 17:34:03,167 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-04 17:34:03,204 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-04 17:34:03,220 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-04 17:34:03,220 - sistema - logger_config - INFO - Concluído: Carregar configurações
