@@ -33,10 +33,11 @@ import os
 import sys
 from pathlib import Path
 import re
-from datetime import datetime
+import calendar
+from datetime import datetime, timedelta
 from decimal import Decimal
 
-# Imports relacionados ao Tkinter (MUITO IMPORTANTE - NÃO REMOVER)
+# Imports relacionados ao Tkinter (MUITO IMPORTANTE)
 import tkinter as tk
 from tkinter import ttk, messagebox, StringVar
 from tkinter import *
@@ -1175,6 +1176,8 @@ class SistemaEntradaDados:
         self.visualizador = None
         self._gestor_parcelas = None  # Inicializa como None
         self.gerenciador_lancamentos = None
+        self.gerenciador_agenda = None 
+        self.cache_fornecedores = CacheFornecedores()
 
         # Inicializar a variável de forma de pagamento
         self.forma_pagamento_var = tk.StringVar(value="")
@@ -2395,6 +2398,56 @@ class SistemaEntradaDados:
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro na busca: {str(e)}")
             print(f"Erro detalhado na busca: {str(e)}")
+
+    def buscar_fornecedores_por_nome_parcial(self, nome_parcial):
+        """
+        Busca otimizada por nome parcial usando cache
+        VERSÃO FINAL OTIMIZADA
+        """
+        try:
+            if not nome_parcial or len(nome_parcial) < 3:
+                return []
+            
+            # Carregar fornecedores do cache
+            fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
+            
+            if not fornecedores:
+                print("DEBUG: Cache vazio, fazendo busca direta")
+                return self.buscar_fornecedores_por_nome_parcial_direto(nome_parcial)
+            
+            nome_busca = nome_parcial.strip().upper()
+            fornecedores_encontrados = []
+            
+            print(f"DEBUG: Buscando '{nome_busca}' em {len(fornecedores)} fornecedores do cache")
+            
+            for fornecedor in fornecedores:
+                nome = fornecedor['nome']
+                
+                if nome_busca in nome:
+                    # Calcular relevância (posição no nome)
+                    posicao = nome.find(nome_busca)
+                    relevancia = 1000 - posicao
+                    
+                    fornecedor_resultado = fornecedor.copy()
+                    fornecedor_resultado['relevancia'] = relevancia
+                    
+                    fornecedores_encontrados.append(fornecedor_resultado)
+                    
+                    # Limitar resultados para performance
+                    if len(fornecedores_encontrados) >= 15:
+                        break
+            
+            # Ordenar por relevância
+            fornecedores_encontrados.sort(key=lambda x: (-x['relevancia'], x['nome']))
+            
+            print(f"DEBUG: {len(fornecedores_encontrados)} fornecedores encontrados no cache")
+            
+            return fornecedores_encontrados
+            
+        except Exception as e:
+            print(f"DEBUG: Erro na busca por cache: {str(e)}")
+            # Fallback para busca direta
+            return self.buscar_fornecedores_por_nome_parcial_direto(nome_parcial)
 
     def novo_fornecedor(self):
         """Abre janela para cadastro de novo fornecedor - VERSÃO CORRIGIDA"""
@@ -4254,6 +4307,13 @@ class SistemaEntradaDados:
         
         ttk.Button(
             frame_botoes_ger, 
+            text="📅 Agenda",
+            command=self.abrir_agenda,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+        
+        ttk.Button(
+            frame_botoes_ger, 
             text="Gerenciar Lançamentos",
             command=self.abrir_gerenciador_lancamentos,
             style='Medium.TButton'
@@ -4565,6 +4625,505 @@ class SistemaEntradaDados:
         else:
             self.notebook.select(1)  # Volta para aba fornecedor
 
+    def abrir_agenda(self):
+        """Abre o gerenciador de agenda"""
+        try:
+            if not self.cliente_atual:
+                custom_messagebox("error", "Erro", "Selecione um cliente primeiro!")
+                return
+            
+            # Importar e instanciar o gerenciador de agenda apenas quando necessário
+            if not hasattr(self, 'gerenciador_agenda') or self.gerenciador_agenda is None:
+                self.gerenciador_agenda = GerenciadorAgenda(self)
+            
+            self.gerenciador_agenda.abrir_agenda()
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir agenda: {str(e)}")
+            print(f"DEBUG: Erro ao abrir agenda: {str(e)}")
+
+    def validar_campos_agenda(self):
+        """Validação específica para dados vindos da agenda - SIMPLIFICADA"""
+        try:
+            print("DEBUG: Validação simplificada para agenda")
+            
+            # Verificar apenas campos essenciais sem mostrar erros
+            # (os erros serão tratados pelo fluxo normal se necessário)
+            
+            # CNPJ/CPF
+            cnpj_cpf = self.campos_fornecedor['cnpj_cpf'].get().strip()
+            if not cnpj_cpf:
+                print("DEBUG: CNPJ/CPF vazio")
+                return False
+            
+            # Nome
+            nome = self.campos_fornecedor['nome'].get().strip()
+            if not nome:
+                print("DEBUG: Nome vazio")
+                return False
+            
+            # Valor unitário
+            vr_unit_str = self.campos_despesa['vr_unit'].get().strip()
+            if not vr_unit_str:
+                print("DEBUG: Valor unitário vazio")
+                return False
+            
+            try:
+                vr_unit = float(vr_unit_str.replace(',', '.'))
+                if vr_unit <= 0:
+                    print("DEBUG: Valor unitário inválido")
+                    return False
+            except ValueError:
+                print("DEBUG: Valor unitário não numérico")
+                return False
+            
+            print("DEBUG: Validação simplificada passou")
+            return True
+            
+        except Exception as e:
+            print(f"DEBUG: Erro na validação simplificada: {str(e)}")
+            return False
+
+    def inserir_lancamento_completo(self, dados_lancamento):
+        """
+        Método para inserir lançamento completo chamado pela agenda
+        VERSÃO CORRIGIDA - SEGUINDO O FLUXO CORRETO DO SISTEMA
+        """
+        try:
+            print("DEBUG: Iniciando inserção de lançamento via agenda")
+            
+            # 1. Validar dados básicos
+            if not self.validar_dados_basicos_agenda(dados_lancamento):
+                return False
+            
+            # 2. Verificar se cliente está selecionado
+            if not hasattr(self, 'cliente_atual') or not self.cliente_atual:
+                custom_messagebox("error", "Erro", "Nenhum cliente selecionado!")
+                return False
+            
+            # 3. Configurar campos do formulário principal com os dados
+            self.preencher_campos_desde_agenda(dados_lancamento)
+            
+            # 4. FLUXO CORRETO: Usar adicionar_dados que adiciona à lista
+            print("DEBUG: Chamando adicionar_dados para adicionar à lista")
+            
+            # Temporariamente substituir o método de validação
+            metodo_validacao_original = self.validar_campos
+            self.validar_campos = self.validar_campos_agenda
+            
+            try:
+                sucesso = self.adicionar_dados(eh_parcelamento=False)
+            finally:
+                # Restaurar método original
+                self.validar_campos = metodo_validacao_original
+            
+            if sucesso:
+                print("DEBUG: Dados adicionados à lista com sucesso")
+                
+                # 5. FLUXO CORRETO: Chamar enviar_dados para salvar na planilha
+                print("DEBUG: Chamando enviar_dados para salvar na planilha")
+                
+                try:
+                    # Verificar se há dados para enviar
+                    if not hasattr(self, 'dados_para_incluir') or not self.dados_para_incluir:
+                        print("DEBUG: Nenhum dado na lista para enviar")
+                        return False
+                    
+                    # Chamar enviar_dados que faz todo o processo de validação e salvamento
+                    self.enviar_dados()
+                    
+                    print("DEBUG: Dados enviados com sucesso")
+                    return True
+                    
+                except Exception as e:
+                    print(f"DEBUG: Erro ao enviar dados: {str(e)}")
+                    return False
+            else:
+                print("DEBUG: Erro ao adicionar dados à lista")
+                return False
+            
+        except Exception as e:
+            print(f"DEBUG: Erro geral ao inserir lançamento da agenda: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            custom_messagebox("error", "Erro", f"Erro ao inserir lançamento: {str(e)}")
+            return False
+        
+    def validar_dados_basicos_agenda(self, dados):
+        """Valida dados vindos da agenda"""
+        campos_obrigatorios = ['nome', 'valor', 'data_rel', 'dt_vencto']
+        
+        for campo in campos_obrigatorios:
+            if not dados.get(campo):
+                custom_messagebox("error", "Erro", f"Campo '{campo}' é obrigatório!")
+                return False
+        
+        # Validar valor numérico
+        try:
+            float(dados['valor'])
+        except ValueError:
+            custom_messagebox("error", "Erro", "Valor deve ser numérico!")
+            return False
+        
+        return True
+
+    def preencher_campos_desde_agenda(self, dados):
+        """Preenche os campos do formulário principal com dados da agenda - NOMES CORRETOS"""
+        try:
+            print("DEBUG: Iniciando preenchimento de campos desde agenda")
+            
+            # DATA_REL - usar o nome correto do campo
+            if dados.get('data_rel'):
+                if isinstance(dados['data_rel'], str):
+                    data_obj = datetime.strptime(dados['data_rel'], '%d/%m/%Y').date()
+                else:
+                    data_obj = dados['data_rel']
+                
+                # CORREÇÃO: usar data_rel_entry (baseado no código adicionar_dados)
+                if hasattr(self, 'data_rel_entry'):
+                    self.data_rel_entry.set_date(data_obj)
+                    print(f"DEBUG: Data_rel preenchida: {data_obj}")
+                else:
+                    print("DEBUG: Campo data_rel_entry não encontrado")
+            
+            # TIPO DE DESPESA - CORREÇÃO: usar delete/insert para Entry
+            if dados.get('tp_desp'):
+                if hasattr(self, 'campos_despesa') and 'tp_desp' in self.campos_despesa:
+                    campo_tp_desp = self.campos_despesa['tp_desp']
+                    
+                    # Verificar se é Combobox ou Entry
+                    if hasattr(campo_tp_desp, 'set'):
+                        # É um Combobox
+                        campo_tp_desp.set(str(dados['tp_desp']))
+                        print(f"DEBUG: Tipo despesa preenchido (Combobox): {dados['tp_desp']}")
+                    else:
+                        # É um Entry
+                        campo_tp_desp.delete(0, tk.END)
+                        campo_tp_desp.insert(0, str(dados['tp_desp']))
+                        print(f"DEBUG: Tipo despesa preenchido (Entry): {dados['tp_desp']}")
+                else:
+                    print("DEBUG: Campo tp_desp não encontrado em campos_despesa")
+            
+            # FORNECEDOR - CNPJ/CPF
+            if dados.get('cnpj_cpf'):
+                if hasattr(self, 'campos_fornecedor') and 'cnpj_cpf' in self.campos_fornecedor:
+                    campo_cnpj = self.campos_fornecedor['cnpj_cpf']
+                    campo_cnpj.config(state='normal')  # Habilitar temporariamente
+                    campo_cnpj.delete(0, tk.END)
+                    campo_cnpj.insert(0, dados['cnpj_cpf'])
+                    campo_cnpj.config(state='readonly')  # Voltar ao readonly
+                    print(f"DEBUG: CNPJ/CPF preenchido: {dados['cnpj_cpf']}")
+                    
+                    # Tentar buscar fornecedor existente
+                    try:
+                        self.buscar_fornecedor_por_cnpj_agenda_manual(dados['cnpj_cpf'])
+                    except Exception as e:
+                        print(f"DEBUG: Erro ao buscar fornecedor: {str(e)}")
+                else:
+                    print("DEBUG: Campo cnpj_cpf não encontrado em campos_fornecedor")
+
+            # FORNECEDOR - NOME
+            if dados.get('nome'):
+                if hasattr(self, 'campos_fornecedor') and 'nome' in self.campos_fornecedor:
+                    campo_nome = self.campos_fornecedor['nome']
+                    campo_nome.config(state='normal')  # Habilitar temporariamente
+                    campo_nome.delete(0, tk.END)
+                    campo_nome.insert(0, dados['nome'].upper())
+                    campo_nome.config(state='readonly')  # Voltar ao readonly
+                    print(f"DEBUG: Nome preenchido: {dados['nome']}")
+                else:
+                    print("DEBUG: Campo nome não encontrado em campos_fornecedor")
+            
+            # DESPESA - REFERÊNCIA
+            if dados.get('referencia'):
+                if hasattr(self, 'campos_despesa') and 'referencia' in self.campos_despesa:
+                    self.campos_despesa['referencia'].delete(0, tk.END)
+                    self.campos_despesa['referencia'].insert(0, dados['referencia'].upper())
+                    print(f"DEBUG: Referência preenchida: {dados['referencia']}")
+                else:
+                    print("DEBUG: Campo referencia não encontrado em campos_despesa")
+            
+            # DESPESA - NF
+            if dados.get('nf'):
+                if hasattr(self, 'campos_despesa') and 'nf' in self.campos_despesa:
+                    self.campos_despesa['nf'].delete(0, tk.END)
+                    self.campos_despesa['nf'].insert(0, dados['nf'].upper())
+                    print(f"DEBUG: NF preenchida: {dados['nf']}")
+                else:
+                    print("DEBUG: Campo nf não encontrado em campos_despesa")
+            
+            # DESPESA - VALOR UNITÁRIO E DIAS (baseado no método adicionar_dados)
+            if dados.get('valor'):
+                valor = float(dados['valor'])
+                dias = dados.get('dias', 1)
+                if isinstance(dias, str):
+                    dias = float(dias) if dias else 1
+                
+                # Calcular valor unitário
+                vr_unit = valor / dias if dias > 0 else valor
+                
+                # Preencher valor unitário
+                if hasattr(self, 'campos_despesa') and 'vr_unit' in self.campos_despesa:
+                    valor_unit_formatado = f"{vr_unit:.2f}".replace('.', ',')
+                    self.campos_despesa['vr_unit'].delete(0, tk.END)
+                    self.campos_despesa['vr_unit'].insert(0, valor_unit_formatado)
+                    print(f"DEBUG: Valor unitário preenchido: {valor_unit_formatado}")
+                
+                # Preencher dias
+                if hasattr(self, 'campos_despesa') and 'dias' in self.campos_despesa:
+                    self.campos_despesa['dias'].delete(0, tk.END)
+                    self.campos_despesa['dias'].insert(0, str(int(dias)))
+                    print(f"DEBUG: Dias preenchido: {dias}")
+                
+                # Preencher valor total
+                if hasattr(self, 'campos_despesa') and 'valor' in self.campos_despesa:
+                    valor_formatado = f"{valor:.2f}".replace('.', ',')
+                    campo_valor = self.campos_despesa['valor']
+                    campo_valor.config(state='normal')  # Habilitar temporariamente
+                    campo_valor.delete(0, tk.END)
+                    campo_valor.insert(0, valor_formatado)
+                    campo_valor.config(state='readonly')  # Voltar ao readonly
+                    print(f"DEBUG: Valor total preenchido: {valor_formatado}")
+            
+            # DATA DE VENCIMENTO
+            if dados.get('dt_vencto'):
+                if isinstance(dados['dt_vencto'], str):
+                    data_vencto_obj = datetime.strptime(dados['dt_vencto'], '%d/%m/%Y').date()
+                else:
+                    data_vencto_obj = dados['dt_vencto']
+                
+                if hasattr(self, 'campos_despesa') and 'dt_vencto' in self.campos_despesa:
+                    self.campos_despesa['dt_vencto'].set_date(data_vencto_obj)
+                    print(f"DEBUG: Data vencimento preenchida: {data_vencto_obj}")
+                else:
+                    print("DEBUG: Campo dt_vencto não encontrado em campos_despesa")
+            
+            # OBSERVAÇÃO
+            if dados.get('observacao'):
+                if hasattr(self, 'campos_despesa') and 'observacao' in self.campos_despesa:
+                    self.campos_despesa['observacao'].delete(0, tk.END)
+                    self.campos_despesa['observacao'].insert(0, dados['observacao'].upper())
+                    print(f"DEBUG: Observação preenchida: {dados['observacao']}")
+                else:
+                    print("DEBUG: Campo observacao não encontrado em campos_despesa")
+            
+            print(f"DEBUG: Preenchimento concluído para {dados.get('nome', 'N/A')}")
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao preencher campos desde agenda: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise
+
+    def buscar_fornecedor_por_cnpj(self, cnpj_cpf):
+        """Busca e seleciona fornecedor pelo CNPJ/CPF"""
+        try:
+            fornecedor = self.buscar_fornecedor_completo(cnpj_cpf)
+            if fornecedor:
+                # Preencher dados do fornecedor encontrado
+                self.campos_fornecedor['nome'].delete(0, tk.END)
+                self.campos_fornecedor['nome'].insert(0, fornecedor['nome'])
+                
+                if fornecedor.get('categoria'):
+                    self.campos_fornecedor['categoria'].delete(0, tk.END)
+                    self.campos_fornecedor['categoria'].insert(0, fornecedor['categoria'])
+                
+                # Preencher dados bancários baseado na forma de pagamento padrão
+                if fornecedor.get('chave_pix'):
+                    dados_bancarios = f"PIX: {fornecedor['chave_pix']}"
+                else:
+                    # Construir dados para TED
+                    partes_dados = []
+                    if fornecedor.get('banco'): partes_dados.append(fornecedor['banco'])
+                    if fornecedor.get('op'): partes_dados.append(fornecedor['op'])
+                    if fornecedor.get('agencia'): partes_dados.append(fornecedor['agencia'])
+                    if fornecedor.get('conta'): partes_dados.append(fornecedor['conta'])
+                    partes_dados.append(fornecedor['cnpj_cpf'])
+                    dados_bancarios = ' - '.join(partes_dados)
+                
+                self.campos_despesa['dados_bancarios'].delete(0, tk.END)
+                self.campos_despesa['dados_bancarios'].insert(0, dados_bancarios)
+                
+                print(f"DEBUG: Fornecedor encontrado e dados preenchidos: {fornecedor['nome']}")
+                return True
+            else:
+                print(f"DEBUG: Fornecedor não encontrado para CNPJ/CPF: {cnpj_cpf}")
+                return False
+                
+        except Exception as e:
+            print(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
+            return False
+
+    def buscar_fornecedor_por_nome_agenda(self, nome_fornecedor):
+        """Busca fornecedor pelo nome para uso na agenda"""
+        try:
+            if not nome_fornecedor or not nome_fornecedor.strip():
+                return None
+            
+            # Abrir planilha de fornecedores
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+            
+            nome_busca = nome_fornecedor.strip().upper()
+            fornecedor_encontrado = None
+            melhor_match = 0
+            
+            # Buscar na planilha
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Pular linhas vazias
+                    continue
+                    
+                cnpj_cpf = str(row[0]).strip()
+                nome = str(row[3] or '').strip().upper()  # Coluna D = Nome
+                categoria = str(row[11] or '').strip()    # Coluna L = Categoria
+                
+                # Verificar correspondência
+                if nome_busca in nome:
+                    # Calcular qualidade do match
+                    match_quality = len(nome_busca) / len(nome) if nome else 0
+                    
+                    # Se for match exato ou melhor que o anterior
+                    if nome_busca == nome or match_quality > melhor_match:
+                        melhor_match = match_quality
+                        fornecedor_encontrado = {
+                            'cnpj_cpf': cnpj_cpf,
+                            'nome': nome,
+                            'categoria': categoria,
+                            'banco': str(row[4] or '').strip(),      # Coluna E
+                            'op': str(row[5] or '').strip(),         # Coluna F  
+                            'agencia': str(row[6] or '').strip(),    # Coluna G
+                            'conta': str(row[7] or '').strip(),      # Coluna H
+                            'chave_pix': str(row[8] or '').strip()   # Coluna I
+                        }
+                        
+                        # Se for match exato, parar a busca
+                        if nome_busca == nome:
+                            break
+            
+            wb.close()
+            
+            if fornecedor_encontrado:
+                print(f"DEBUG: Fornecedor encontrado: {fornecedor_encontrado['nome']} - {fornecedor_encontrado['cnpj_cpf']}")
+            else:
+                print(f"DEBUG: Nenhum fornecedor encontrado para: {nome_fornecedor}")
+            
+            return fornecedor_encontrado
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao buscar fornecedor por nome: {str(e)}")
+            return None
+    
+    def buscar_fornecedor_por_cnpj_agenda(self, cnpj_cpf):
+        """Busca fornecedor pelo CNPJ/CPF para uso na agenda"""
+        try:
+            if not cnpj_cpf or not cnpj_cpf.strip():
+                return None
+            
+            # Limpar formatação do CNPJ/CPF
+            cnpj_limpo = ''.join(filter(str.isdigit, cnpj_cpf))
+            
+            # Abrir planilha de fornecedores
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+            
+            # Buscar na planilha
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Pular linhas vazias
+                    continue
+                    
+                cnpj_planilha = ''.join(filter(str.isdigit, str(row[0])))
+                
+                if cnpj_limpo == cnpj_planilha:
+                    fornecedor = {
+                        'cnpj_cpf': str(row[0]).strip(),
+                        'nome': str(row[3] or '').strip().upper(),
+                        'categoria': str(row[11] or '').strip(),
+                        'banco': str(row[4] or '').strip(),
+                        'op': str(row[5] or '').strip(),
+                        'agencia': str(row[6] or '').strip(),
+                        'conta': str(row[7] or '').strip(),
+                        'chave_pix': str(row[8] or '').strip()
+                    }
+                    
+                    wb.close()
+                    print(f"DEBUG: Fornecedor encontrado por CNPJ: {fornecedor['nome']}")
+                    return fornecedor
+            
+            wb.close()
+            print(f"DEBUG: Nenhum fornecedor encontrado para CNPJ: {cnpj_cpf}")
+            return None
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
+            return None
+
+    def obter_dados_bancarios_fornecedor(self, cnpj_cpf, forma_pagamento_preferida="PIX"):
+        """Obtém dados bancários formatados do fornecedor"""
+        try:
+            fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
+            
+            if not fornecedor:
+                return "DADOS BANCÁRIOS NÃO CADASTRADOS"
+            
+            if forma_pagamento_preferida == "PIX" and fornecedor.get('chave_pix'):
+                return f"PIX: {fornecedor['chave_pix']}"
+            
+            # Construir dados para TED
+            partes_dados = []
+            if fornecedor.get('banco'): 
+                partes_dados.append(fornecedor['banco'])
+            if fornecedor.get('op'): 
+                partes_dados.append(fornecedor['op'])
+            if fornecedor.get('agencia'): 
+                partes_dados.append(fornecedor['agencia'])
+            if fornecedor.get('conta'): 
+                partes_dados.append(fornecedor['conta'])
+            
+            # Sempre adicionar CNPJ/CPF
+            partes_dados.append(fornecedor['cnpj_cpf'])
+            
+            return ' - '.join(partes_dados) if partes_dados else "DADOS BANCÁRIOS INCOMPLETOS"
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao obter dados bancários: {str(e)}")
+            return "ERRO AO OBTER DADOS BANCÁRIOS"
+
+    def buscar_fornecedor_por_cnpj_agenda_manual(self, cnpj_cpf):
+        """Método auxiliar para buscar e preencher dados do fornecedor"""
+        try:
+            # Usar o método que você já tem para buscar fornecedor
+            fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
+            
+            if fornecedor:
+                # Preencher campos do fornecedor se encontrado
+                if fornecedor.get('nome'):
+                    self.campos_fornecedor['nome'].delete(0, tk.END)
+                    self.campos_fornecedor['nome'].insert(0, fornecedor['nome'])
+                
+                if fornecedor.get('categoria'):
+                    # Verificar se campo categoria existe
+                    if hasattr(self, 'campos_fornecedor') and 'categoria' in self.campos_fornecedor:
+                        self.campos_fornecedor['categoria'].delete(0, tk.END)
+                        self.campos_fornecedor['categoria'].insert(0, fornecedor['categoria'])
+                
+                # Preencher dados bancários se existir o campo
+                dados_bancarios = self.obter_dados_bancarios_fornecedor(cnpj_cpf)
+                if hasattr(self, 'campos_fornecedor') and 'dados_bancarios' in self.campos_fornecedor:
+                    campo_dados_bancarios = self.campos_fornecedor['dados_bancarios']
+                    campo_dados_bancarios.config(state='normal')  # Habilitar temporariamente
+                    campo_dados_bancarios.delete(0, tk.END)
+                    campo_dados_bancarios.insert(0, dados_bancarios)
+                    campo_dados_bancarios.config(state='readonly')  # Voltar ao readonly
+                
+                print(f"DEBUG: Dados do fornecedor preenchidos: {fornecedor['nome']}")
+                return True
+            else:
+                print(f"DEBUG: Fornecedor não encontrado para CNPJ/CPF: {cnpj_cpf}")
+                return False
+                
+        except Exception as e:
+            print(f"DEBUG: Erro ao buscar fornecedor para agenda: {str(e)}")
+            return False
     
     def calcular_valor_total(self, event=None):
         """Calcula o valor total baseado no tipo de despesa"""
@@ -9331,6 +9890,8 @@ class GestorParcelas:
         ttk.Label(frame, text="Valor Original:").grid(row=5, column=0, padx=5, pady=5)
         self.valor_original = ttk.Entry(frame)
         self.valor_original.grid(row=5, column=1, padx=5, pady=5)
+        self.valor_original.bind('<KeyPress>', self.on_valor_original_manual_edit)
+
 
         # Alterar o label do número de parcelas para ser mais claro
         self.lbl_num_parcelas = ttk.Label(frame, text="Número de Parcelas:")
@@ -9555,25 +10116,33 @@ class GestorParcelas:
         self.obs_condicional = ttk.Entry(self.frame_data_condicional, width=25)
         self.obs_condicional.pack(side='left', padx=5)
 
-    # NOVO MÉTODO: criar_frame_scrollavel_parcelas
     def criar_frame_scrollavel_parcelas(self):
-        """Cria um frame scrollável para edição das parcelas"""
+        """Cria um frame scrollável para edição das parcelas - VERSÃO CORRIGIDA"""
         
         # Frame container para o canvas e scrollbar
         container_frame = ttk.Frame(self.frame_dinamico)
         container_frame.pack(fill='both', expand=True, pady=10)
         
-        # Canvas e scrollbar
-        self.canvas_parcelas = tk.Canvas(container_frame, height=200)
+        # CORREÇÃO 1: Definir largura mínima maior para o canvas
+        self.canvas_parcelas = tk.Canvas(container_frame, height=200, width=650)  # Largura aumentada
         self.scrollbar_parcelas = ttk.Scrollbar(container_frame, orient="vertical", command=self.canvas_parcelas.yview)
         self.frame_parcelas_personalizadas = ttk.Frame(self.canvas_parcelas)
         
+        # CORREÇÃO 2: Configurar o frame interno para expandir adequadamente
         self.frame_parcelas_personalizadas.bind(
             "<Configure>",
             lambda e: self.canvas_parcelas.configure(scrollregion=self.canvas_parcelas.bbox("all"))
         )
         
-        self.canvas_parcelas.create_window((0, 0), window=self.frame_parcelas_personalizadas, anchor="nw")
+        # CORREÇÃO 3: Configurar o canvas para ajustar a largura do frame interno
+        def configure_canvas_width(event):
+            canvas_width = event.width
+            self.canvas_parcelas.itemconfig(self.canvas_window_id, width=canvas_width)
+        
+        self.canvas_parcelas.bind('<Configure>', configure_canvas_width)
+        
+        # Criar a janela no canvas
+        self.canvas_window_id = self.canvas_parcelas.create_window((0, 0), window=self.frame_parcelas_personalizadas, anchor="nw")
         self.canvas_parcelas.configure(yscrollcommand=self.scrollbar_parcelas.set)
         
         self.canvas_parcelas.pack(side="left", fill="both", expand=True)
@@ -9584,9 +10153,8 @@ class GestorParcelas:
             self.canvas_parcelas.yview_scroll(int(-1*(event.delta/120)), "units")
         self.canvas_parcelas.bind_all("<MouseWheel>", _on_mousewheel)
 
-    # NOVO MÉTODO: atualizar_grid_parcelas
     def atualizar_grid_parcelas(self):
-        """Atualiza o grid de parcelas baseado no número selecionado"""
+        """Atualiza o grid de parcelas baseado no número selecionado - VERSÃO CORRIGIDA"""
         
         if not hasattr(self, 'frame_parcelas_personalizadas'):
             return
@@ -9597,15 +10165,21 @@ class GestorParcelas:
         
         num_parcelas = self.num_parcelas_personalizado.get()
         
+        # CORREÇÃO PRINCIPAL: Configurar o grid com pesos adequados
+        self.frame_parcelas_personalizadas.columnconfigure(0, weight=0, minsize=60)   # Parcela - fixo
+        self.frame_parcelas_personalizadas.columnconfigure(1, weight=1, minsize=120)  # Valor - expansível
+        self.frame_parcelas_personalizadas.columnconfigure(2, weight=1, minsize=130)  # Data - expansível
+        self.frame_parcelas_personalizadas.columnconfigure(3, weight=2, minsize=200)  # Observação - maior espaço
+        
         # Cabeçalho do grid
         ttk.Label(self.frame_parcelas_personalizadas, text="Parcela", 
-                 font=('Arial', 10, 'bold')).grid(row=0, column=0, padx=5, pady=5)
+                font=('Arial', 10, 'bold')).grid(row=0, column=0, padx=5, pady=5, sticky='w')
         ttk.Label(self.frame_parcelas_personalizadas, text="Valor (R$)", 
-                 font=('Arial', 10, 'bold')).grid(row=0, column=1, padx=5, pady=5)
+                font=('Arial', 10, 'bold')).grid(row=0, column=1, padx=5, pady=5, sticky='w')
         ttk.Label(self.frame_parcelas_personalizadas, text="Data Vencimento", 
-                 font=('Arial', 10, 'bold')).grid(row=0, column=2, padx=5, pady=5)
+                font=('Arial', 10, 'bold')).grid(row=0, column=2, padx=5, pady=5, sticky='w')
         ttk.Label(self.frame_parcelas_personalizadas, text="Observação", 
-                 font=('Arial', 10, 'bold')).grid(row=0, column=3, padx=5, pady=5)
+                font=('Arial', 10, 'bold')).grid(row=0, column=3, padx=5, pady=5, sticky='w')
         
         # Criar campos para cada parcela
         self.campos_parcelas = []
@@ -9615,13 +10189,13 @@ class GestorParcelas:
             
             # Número da parcela
             ttk.Label(self.frame_parcelas_personalizadas, 
-                     text=f"{parcela_num}ª").grid(row=parcela_num, column=0, padx=5, pady=2)
+                    text=f"{parcela_num}ª").grid(row=parcela_num, column=0, padx=5, pady=2, sticky='w')
             
             # Campo valor
             valor_var = tk.StringVar()
             entry_valor = ttk.Entry(self.frame_parcelas_personalizadas, 
-                                   textvariable=valor_var, width=15)
-            entry_valor.grid(row=parcela_num, column=1, padx=5, pady=2)
+                                textvariable=valor_var, width=15)
+            entry_valor.grid(row=parcela_num, column=1, padx=5, pady=2, sticky='ew')
             entry_valor.bind('<KeyRelease>', self.calcular_total_personalizado)
             
             # Campo data
@@ -9634,13 +10208,13 @@ class GestorParcelas:
                 borderwidth=1,
                 width=12
             )
-            data_entry.grid(row=parcela_num, column=2, padx=5, pady=2)
+            data_entry.grid(row=parcela_num, column=2, padx=5, pady=2, sticky='ew')
             
-            # Campo observação
+            # CORREÇÃO PRINCIPAL: Campo observação com configuração adequada
             obs_var = tk.StringVar()
             entry_obs = ttk.Entry(self.frame_parcelas_personalizadas, 
-                                 textvariable=obs_var, width=25)
-            entry_obs.grid(row=parcela_num, column=3, padx=5, pady=2)
+                                textvariable=obs_var)  # Removido width fixo
+            entry_obs.grid(row=parcela_num, column=3, padx=5, pady=2, sticky='ew')  # sticky='ew' para expandir
             
             self.campos_parcelas.append({
                 'valor': valor_var,
@@ -9654,16 +10228,32 @@ class GestorParcelas:
         frame_total.grid(row=num_parcelas + 1, column=0, columnspan=4, pady=10, sticky='ew')
         
         ttk.Label(frame_total, text="TOTAL:", 
-                 font=('Arial', 10, 'bold')).pack(side='left', padx=5)
+                font=('Arial', 10, 'bold')).pack(side='left', padx=5)
         
         self.label_total_personalizado = ttk.Label(frame_total, text="R$ 0,00", 
-                                                  font=('Arial', 10, 'bold'),
-                                                  foreground='red')
+                                                font=('Arial', 10, 'bold'),
+                                                foreground='red')
         self.label_total_personalizado.pack(side='left', padx=5)
+        
+        # FORÇAR ATUALIZAÇÃO DO LAYOUT
+        self.frame_parcelas_personalizadas.update_idletasks()
+        
+        # CORREÇÃO: Forçar o canvas a reconhecer o novo tamanho
+        self.canvas_parcelas.after(100, self._update_canvas_scroll)
 
-    # NOVO MÉTODO: calcular_total_personalizado
+    def _update_canvas_scroll(self):
+        """Método auxiliar para atualizar o scroll do canvas após mudanças no grid"""
+        if hasattr(self, 'canvas_parcelas') and hasattr(self, 'frame_parcelas_personalizadas'):
+            # Atualizar a scroll region
+            self.canvas_parcelas.configure(scrollregion=self.canvas_parcelas.bbox("all"))
+            
+            # Forçar atualização da largura se necessário
+            canvas_width = self.canvas_parcelas.winfo_width()
+            if canvas_width > 1:  # Verificar se o canvas já foi renderizado
+                self.canvas_parcelas.itemconfig(self.canvas_window_id, width=canvas_width)
+
     def calcular_total_personalizado(self, event=None):
-        """Calcula o total das parcelas personalizadas"""
+        """Calcula o total das parcelas personalizadas e atualiza o campo Valor Original"""
         total = 0.0
         
         if hasattr(self, 'campos_parcelas'):
@@ -9676,8 +10266,38 @@ class GestorParcelas:
                     pass
         
         self.valor_total_personalizado = total
+        
+        # Atualizar label do total
         if hasattr(self, 'label_total_personalizado'):
             self.label_total_personalizado.config(text=f"R$ {total:,.2f}")
+        
+        # NOVA FUNCIONALIDADE: Auto-preencher o campo Valor Original
+        if hasattr(self, 'valor_original') and total > 0:
+            # Limpar o campo atual
+            self.valor_original.delete(0, tk.END)
+            # Inserir o novo valor formatado
+            self.valor_original.insert(0, f"{total:.2f}".replace('.', ','))
+            
+            # Opcional: alterar cor do campo para indicar que foi preenchido automaticamente
+            self.valor_original.configure(style='AutoFilled.TEntry')
+            
+            # Criar o estilo se não existir
+            try:
+                style = ttk.Style()
+                style.configure('AutoFilled.TEntry', 
+                            fieldbackground='#E8F5E8',  # Verde claro
+                            bordercolor='#4CAF50')       # Verde
+            except:
+                pass  # Se o estilo já existir ou houver erro, ignorar
+
+    # MÉTODO ADICIONAL: resetar estilo do campo quando editado manualmente
+    def on_valor_original_manual_edit(self, event=None):
+        """Reseta o estilo quando o usuário edita manualmente o Valor Original"""
+        if hasattr(self, 'valor_original'):
+            try:
+                self.valor_original.configure(style='TEntry')  # Estilo padrão
+            except:
+                pass
 
     # NOVO MÉTODO: toggle_condicao_ultima_parcela
     def toggle_condicao_ultima_parcela(self):
@@ -9882,7 +10502,8 @@ class GestorParcelas:
                         'referencia': referencia,
                         'valor': valor,
                         'dt_vencto': data_vencto,
-                        'forma_pagamento': self.forma_pagamento_var.get()
+                        'forma_pagamento': self.forma_pagamento_var.get(),
+                        'observacao': observacao
                     }
                     
                     self.parcelas.append(parcela)
@@ -16373,7 +16994,3262 @@ class ComboboxAutocompletar(ttk.Combobox):
         self.valores_originais = novos_valores
         self['values'] = self.valores_originais
 
+class GerenciadorAgenda:
+    def __init__(self, sistema_principal):
+        self.sistema = sistema_principal
+        self.janela = None
+        self.tree_agenda = None
+        self.dados_agenda = []
+        self.filtro_periodo = "quinzena_atual"  # quinzena_atual, mes_atual, periodo_personalizado
+        
+    def abrir_agenda(self):
+        """Abre a agenda com carregamento otimizado"""
+        if not self.sistema.cliente_atual:
+            custom_messagebox("error", "Erro", "Selecione um cliente primeiro!")
+            return
+            
+        # Mostrar janela de loading para clientes com muitos dados
+        loading_window = self.criar_janela_loading()
+        
+        try:
+            self.janela = tk.Toplevel(self.sistema.root)
+            self.janela.title(f"Agenda - {self.sistema.cliente_atual}")
+            self.janela.geometry("1200x800")
+            
+            self.janela.transient(self.sistema.root)
+            self.janela.grab_set()
+            
+            # Atualizar loading
+            self.atualizar_loading(loading_window, "Criando interface...")
+            self.criar_interface()
+            
+            # Atualizar loading
+            self.atualizar_loading(loading_window, "Carregando dados...")
+            self.carregar_dados_agenda()
+            
+            # Fechar loading
+            loading_window.destroy()
+            
+            # Mostrar alertas se necessário
+            self.janela.after(500, self.mostrar_alertas_se_necessario)
+            
+        except Exception as e:
+            if 'loading_window' in locals():
+                loading_window.destroy()
+            custom_messagebox("error", "Erro", f"Erro ao abrir agenda: {str(e)}")
 
+    def criar_janela_loading(self):
+        """Cria janela de loading simples"""
+        loading = tk.Toplevel(self.sistema.root)
+        loading.title("Carregando Agenda")
+        loading.geometry("300x100")
+        loading.transient(self.sistema.root)
+        loading.grab_set()
+        
+        # Centralizar
+        loading.update_idletasks()
+        x = (loading.winfo_screenwidth() // 2) - (300 // 2)
+        y = (loading.winfo_screenheight() // 2) - (100 // 2)
+        loading.geometry(f"300x100+{x}+{y}")
+        
+        frame = ttk.Frame(loading, padding="20")
+        frame.pack(fill='both', expand=True)
+        
+        loading.label_status = ttk.Label(frame, text="Iniciando...", font=('TkDefaultFont', 10))
+        loading.label_status.pack(pady=10)
+        
+        # Barra de progresso indeterminada
+        progress = ttk.Progressbar(frame, mode='indeterminate')
+        progress.pack(fill='x', pady=10)
+        progress.start()
+        
+        loading.update()
+        return loading
+
+    def atualizar_loading(self, loading_window, mensagem):
+        """Atualiza mensagem da janela de loading"""
+        try:
+            if loading_window and loading_window.winfo_exists():
+                loading_window.label_status.config(text=mensagem)
+                loading_window.update()
+        except:
+            pass
+    
+    def abrir_configuracoes_agenda(self):
+        """Abre configurações específicas da agenda"""
+        janela_config = tk.Toplevel(self.janela)
+        janela_config.title("Configurações da Agenda")
+        janela_config.geometry("500x400")
+        janela_config.transient(self.janela)
+        janela_config.grab_set()
+        
+        main_frame = ttk.Frame(janela_config, padding="15")
+        main_frame.pack(fill='both', expand=True)
+        
+        # Configurações de exibição
+        frame_exibicao = ttk.LabelFrame(main_frame, text="Configurações de Exibição")
+        frame_exibicao.pack(fill='x', pady=(0, 10))
+        
+        self.var_mostrar_apenas_futuros = tk.BooleanVar(value=True)
+        ttk.Checkbutton(frame_exibicao, text="Mostrar apenas itens futuros por padrão",
+                    variable=self.var_mostrar_apenas_futuros).pack(anchor='w', padx=10, pady=5)
+        
+        self.var_agrupar_por_semana = tk.BooleanVar(value=False)
+        ttk.Checkbutton(frame_exibicao, text="Agrupar itens por semana",
+                    variable=self.var_agrupar_por_semana).pack(anchor='w', padx=10, pady=5)
+        
+        # Configurações de alertas
+        frame_alertas = ttk.LabelFrame(main_frame, text="Configurações de Alertas")
+        frame_alertas.pack(fill='x', pady=(0, 10))
+        
+        ttk.Label(frame_alertas, text="Alertar com quantos dias de antecedência:").pack(anchor='w', padx=10, pady=5)
+        self.entry_dias_alerta = ttk.Entry(frame_alertas, width=5)
+        self.entry_dias_alerta.insert(0, "3")
+        self.entry_dias_alerta.pack(anchor='w', padx=10, pady=5)
+        
+        # Configurações de dados
+        frame_dados = ttk.LabelFrame(main_frame, text="Configurações de Dados")
+        frame_dados.pack(fill='x', pady=(0, 10))
+        
+        ttk.Label(frame_dados, text="Carregar últimos X dias do passado:").pack(anchor='w', padx=10, pady=5)
+        self.entry_dias_passado = ttk.Entry(frame_dados, width=5)
+        self.entry_dias_passado.insert(0, "30")
+        self.entry_dias_passado.pack(anchor='w', padx=10, pady=5)
+        
+        self.var_excluir_mao_obra = tk.BooleanVar(value=True)
+        ttk.Checkbutton(frame_dados, text="Excluir mão de obra (TP_DESP = 1)",
+                    variable=self.var_excluir_mao_obra).pack(anchor='w', padx=10, pady=5)
+        
+        # Botões
+        frame_botoes = ttk.Frame(main_frame)
+        frame_botoes.pack(fill='x', pady=(10, 0))
+        
+        def aplicar_configuracoes():
+            try:
+                # Aplicar configurações e recarregar
+                self.carregar_dados_agenda()
+                custom_messagebox("info", "Sucesso", "Configurações aplicadas!")
+                janela_config.destroy()
+            except Exception as e:
+                custom_messagebox("error", "Erro", f"Erro ao aplicar configurações: {str(e)}")
+        
+        ttk.Button(frame_botoes, text="Aplicar", command=aplicar_configuracoes).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Cancelar", command=janela_config.destroy).pack(side='left', padx=5)
+
+    def criar_interface(self):
+        """Cria a interface da agenda"""
+        # Frame principal
+        main_frame = ttk.Frame(self.janela, padding="10")
+        main_frame.pack(fill='both', expand=True)
+        
+        # === FRAME SUPERIOR: FILTROS E CONTROLES ===
+        frame_controles = ttk.Frame(main_frame)
+        frame_controles.pack(fill='x', pady=(0, 10))
+        
+        # Filtros de período
+        frame_periodo = ttk.LabelFrame(frame_controles, text="Período")
+        frame_periodo.pack(side='left', padx=(0, 10), fill='y')
+        
+        self.var_periodo = tk.StringVar(value="quinzena_atual")
+        
+        ttk.Radiobutton(frame_periodo, text="Próxima Quinzena", 
+                       variable=self.var_periodo, value="quinzena_atual",
+                       command=self.aplicar_filtro_periodo).pack(anchor='w', padx=5)
+        ttk.Radiobutton(frame_periodo, text="Próximo Mês", 
+                       variable=self.var_periodo, value="mes_atual",
+                       command=self.aplicar_filtro_periodo).pack(anchor='w', padx=5)
+        ttk.Radiobutton(frame_periodo, text="Período Personalizado", 
+                       variable=self.var_periodo, value="personalizado",
+                       command=self.aplicar_filtro_periodo).pack(anchor='w', padx=5)
+        
+        # Datas personalizadas (inicialmente ocultas)
+        self.frame_datas_personalizado = ttk.Frame(frame_periodo)
+        
+        ttk.Label(self.frame_datas_personalizado, text="De:").grid(row=0, column=0, padx=2)
+        self.data_inicio_personalizada = DateEntry(self.frame_datas_personalizado, width=10, 
+                                                  date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_inicio_personalizada.grid(row=0, column=1, padx=2)
+        
+        ttk.Label(self.frame_datas_personalizado, text="Até:").grid(row=0, column=2, padx=2)
+        self.data_fim_personalizada = DateEntry(self.frame_datas_personalizado, width=10, 
+                                                date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_fim_personalizada.grid(row=0, column=3, padx=2)
+        
+        ttk.Button(self.frame_datas_personalizado, text="Aplicar", 
+                  command=self.aplicar_filtro_periodo).grid(row=0, column=4, padx=5)
+        
+        # Filtros de status
+        frame_origem = ttk.LabelFrame(frame_controles, text="Origem dos Dados")
+        frame_origem.pack(side='left', padx=(0, 10), fill='y')
+        
+        self.var_mostrar_existentes = tk.BooleanVar(value=True)
+        self.var_mostrar_pendentes_config = tk.BooleanVar(value=True)
+        # self.var_mostrar_vencidos_apenas = tk.BooleanVar(value=True)
+        
+        ttk.Checkbutton(frame_origem, text="Já Lançados", 
+                    variable=self.var_mostrar_existentes,
+                    command=self.aplicar_filtros).pack(anchor='w', padx=5)
+        ttk.Checkbutton(frame_origem, text="Compromissos Configurados", 
+                    variable=self.var_mostrar_pendentes_config,
+                    command=self.aplicar_filtros).pack(anchor='w', padx=5)
+        # ttk.Checkbutton(frame_origem, text="Apenas Vencidos/Hoje", 
+        #             variable=self.var_mostrar_vencidos_apenas,
+        #             command=self.aplicar_filtros).pack(anchor='w', padx=5)
+        
+        # Resumo rápido
+        frame_resumo = ttk.LabelFrame(frame_controles, text="Resumo Rápido")
+        frame_resumo.pack(side='left', padx=(0, 10), fill='y')
+        
+        self.label_total_periodo = ttk.Label(frame_resumo, text="Total Período: R$ 0,00", 
+                                           font=('TkDefaultFont', 9, 'bold'))
+        self.label_total_periodo.pack(padx=5, pady=2)
+        
+        self.label_pendentes = ttk.Label(frame_resumo, text="Pendentes: 0 (R$ 0,00)", 
+                                        foreground='orange')
+        self.label_pendentes.pack(padx=5, pady=2)
+        
+        self.label_vencidos = ttk.Label(frame_resumo, text="Vencidos: 0 (R$ 0,00)", 
+                                       foreground='red')
+        self.label_vencidos.pack(padx=5, pady=2)
+        
+        # === FRAME PRINCIPAL: LISTA DA AGENDA ===
+        frame_lista = ttk.Frame(main_frame)
+        frame_lista.pack(fill='both', expand=True)
+        
+        # Treeview - COLUNAS CORRIGIDAS (SEM CLIENTE)
+        colunas = ('Vencimento', 'Status', 'Fornecedor', 'Referência', 
+                'Valor', 'Tipo', 'Observação', 'ID_Origem')
+        self.tree_agenda = ttk.Treeview(frame_lista, columns=colunas, show='headings', 
+                                    height=25, selectmode='extended')
+        
+        # Configurar cabeçalhos
+        self.tree_agenda.heading('Vencimento', text='Vencimento')
+        self.tree_agenda.heading('Status', text='Status')
+        self.tree_agenda.heading('Fornecedor', text='Fornecedor')
+        self.tree_agenda.heading('Referência', text='Referência')
+        self.tree_agenda.heading('Valor', text='Valor')
+        self.tree_agenda.heading('Tipo', text='Tipo')
+        self.tree_agenda.heading('Observação', text='Observação')
+        self.tree_agenda.heading('ID_Origem', text='ID')
+        
+        # Configurar larguras - AJUSTADAS SEM CLIENTE
+        self.tree_agenda.column('Vencimento', width=80, anchor='center')
+        self.tree_agenda.column('Status', width=100, anchor='center')
+        self.tree_agenda.column('Fornecedor', width=200)  # Mais espaço sem cliente
+        self.tree_agenda.column('Referência', width=280)  # Mais espaço
+        self.tree_agenda.column('Valor', width=100, anchor='e')
+        self.tree_agenda.column('Tipo', width=80, anchor='center')
+        self.tree_agenda.column('Observação', width=200)
+        self.tree_agenda.column('ID_Origem', width=0, stretch=False)  # Oculto
+    
+        # Scrollbars
+        scrolly_agenda = ttk.Scrollbar(frame_lista, orient='vertical', command=self.tree_agenda.yview)
+        scrollx_agenda = ttk.Scrollbar(frame_lista, orient='horizontal', command=self.tree_agenda.xview)
+        self.tree_agenda.configure(yscrollcommand=scrolly_agenda.set, xscrollcommand=scrollx_agenda.set)
+        
+        # Posicionar elementos
+        self.tree_agenda.grid(row=0, column=0, sticky='nsew')
+        scrolly_agenda.grid(row=0, column=1, sticky='ns')
+        scrollx_agenda.grid(row=1, column=0, sticky='ew')
+        
+        # Configurar expansão
+        frame_lista.grid_rowconfigure(0, weight=1)
+        frame_lista.grid_columnconfigure(0, weight=1)
+        
+        # Tags para cores
+        self.tree_agenda.tag_configure('lancado', background='#e8f5e8')      # Verde claro
+        self.tree_agenda.tag_configure('pendente', background='#fff8dc')     # Bege claro
+        self.tree_agenda.tag_configure('vencido', background='#ffe4e1')      # Rosa claro
+        self.tree_agenda.tag_configure('condicionado', background='#e6f3ff') # Azul claro
+        self.tree_agenda.tag_configure('hoje', background='#ffffe0')         # Amarelo claro
+        
+        # === FRAME INFERIOR: BOTÕES DE AÇÃO ===
+        frame_botoes = ttk.Frame(main_frame)
+        frame_botoes.pack(fill='x', pady=(10, 0))
+        
+        # Botões principais
+        ttk.Button(frame_botoes, text="Novo Lançamento", 
+                  command=self.novo_lancamento).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Editar Selecionado", 
+                  command=self.editar_selecionado).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Confirmar Lançamento", 
+                  command=self.confirmar_lancamento).pack(side='left', padx=5)
+        
+        # Separador
+        ttk.Separator(frame_botoes, orient='vertical').pack(side='left', fill='y', padx=10)
+        
+        # NOVO BOTÃO: Gerenciar Compromissos
+        ttk.Button(frame_botoes, text="📅 Gerenciar Compromissos", 
+                command=self.abrir_gerenciador_compromissos).pack(side='left', padx=5)
+    
+        # Separador
+        ttk.Separator(frame_botoes, orient='vertical').pack(side='left', fill='y', padx=10)
+        
+        # Botões de importação/exportação
+        ttk.Button(frame_botoes, text="Importar de Excel", 
+                  command=self.importar_excel).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Exportar Período", 
+                  command=self.exportar_periodo).pack(side='left', padx=5)
+        
+        # Separador
+        ttk.Separator(frame_botoes, orient='vertical').pack(side='left', fill='y', padx=10)
+        
+        # Botões de controle
+        ttk.Button(frame_botoes, text="Atualizar", 
+                  command=self.carregar_dados_agenda).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Fechar", 
+                  command=self.janela.destroy).pack(side='right', padx=5)
+        
+        # Separador
+        ttk.Separator(frame_botoes, orient='vertical').pack(side='left', fill='y', padx=10)
+        
+        # Botões de configuração e limpeza
+        ttk.Button(frame_botoes, text="🧹 Limpar Duplicações", 
+                command=self.limpar_duplicacoes_inteligente).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="⚙️ Configurações", 
+                command=self.abrir_configuracoes_agenda).pack(side='left', padx=5)
+    
+        # Configurar eventos
+        self.tree_agenda.bind('<Double-1>', self.on_double_click)
+        self.configurar_atalhos()
+    
+    def carregar_dados_agenda(self):
+        """Versão simplificada do carregamento da agenda"""
+        try:
+            print("DEBUG: Iniciando carregamento simplificado da agenda")
+            self.dados_agenda = []
+            
+            # 1. Carregar apenas lançamentos existentes relevantes (últimos 30 dias + futuros)
+            self.carregar_lancamentos_existentes()
+            
+            # 2. Carregar apenas compromissos das configurações
+            self.carregar_compromissos_futuros()
+            
+            # 3. Identificar condicionados
+            self.carregar_lancamentos_condicionados()
+            
+            # 4. Aplicar filtros e atualizar
+            self.aplicar_filtros()
+            self.atualizar_resumo()
+            
+            total_items = len(self.dados_agenda)
+            existentes = len([d for d in self.dados_agenda if d['origem'] == 'EXISTENTE'])
+            pendentes = len([d for d in self.dados_agenda if d['origem'] in ['CONFIGURACAO', 'BASICO']])
+            
+            print(f"DEBUG: Agenda carregada - {total_items} itens ({existentes} existentes, {pendentes} pendentes)")
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao carregar agenda simplificada: {str(e)}")
+            custom_messagebox("error", "Erro", f"Erro ao carregar agenda: {str(e)}")
+    
+    def carregar_lancamentos_existentes(self):
+        """Carrega apenas lançamentos com data_rel futura"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            if not arquivo_cliente.exists():
+                print("DEBUG: Arquivo do cliente não existe")
+                return
+
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = df.fillna("")
+
+            hoje = datetime.now().date()
+            
+            print(f"DEBUG: Carregando lançamentos com DATA_REL > {hoje}")
+
+            for idx, row in df.iterrows():
+                if row.get('STATUS', 'ATIVO') == 'EXCLUIDO':
+                    continue
+                
+                # FILTRAR POR DATA_REL (não por data de vencimento)
+                try:
+                    data_rel = pd.to_datetime(row['DATA_REL'], dayfirst=True).date()
+                    if data_rel <= hoje:  # Pular se data_rel já passou
+                        continue
+                except:
+                    print(f"DEBUG: Data_rel inválida na linha {idx}")
+                    continue
+                
+                # FILTRAR POR TIPO DE DESPESA - EXCLUIR MÃO DE OBRA (tp_desp == 1)
+                try:
+                    tp_desp = int(float(row.get('TP_DESP', 0)))
+                    if tp_desp == 1:  # Pular mão de obra
+                        continue
+                except (ValueError, TypeError):
+                    continue
+
+                # Verificar e validar valor
+                try:
+                    valor = row.get('VALOR', 0)
+                    if pd.isna(valor) or valor == '' or valor == 0:
+                        continue  # Pular lançamentos sem valor
+                    valor = float(valor)
+                except (ValueError, TypeError):
+                    print(f"DEBUG: Valor inválido na linha {idx}: {valor}")
+                    continue
+
+                # Determinar status baseado na data de vencimento
+                try:
+                    dt_vencto = pd.to_datetime(row['DT_VENCTO'], dayfirst=True).date()
+                    
+                    if dt_vencto < hoje:
+                        status = "VENCIDO"
+                    elif dt_vencto == hoje:
+                        status = "VENCE HOJE"
+                    else:
+                        status = "LANÇADO"
+                        
+                except:
+                    print(f"DEBUG: Data vencimento inválida na linha {idx}")
+                    continue
+
+                item_agenda = {
+                    'vencimento': dt_vencto,
+                    'status': status,
+                    'fornecedor': row.get('NOME', ''),
+                    'referencia': row.get('REFERÊNCIA', ''),
+                    'valor': valor,
+                    'tipo': tp_desp,
+                    'observacao': row.get('OBSERVAÇÃO', ''),
+                    'id_origem': row.get('ID_LANCAMENTO', ''),
+                    'origem': 'EXISTENTE',
+                    'dados_completos': row.to_dict()
+                }
+                
+                self.dados_agenda.append(item_agenda)
+                
+            print(f"DEBUG: {len([d for d in self.dados_agenda if d['origem'] == 'EXISTENTE'])} lançamentos existentes carregados")
+                    
+        except Exception as e:
+            print(f"DEBUG: Erro ao carregar lançamentos existentes: {str(e)}")
+    
+    def carregar_compromissos_futuros(self):
+        """Carrega apenas compromissos das configurações (sem arquivos externos)"""
+        try:
+            print("DEBUG: Carregando apenas compromissos das configurações")
+            
+            # APENAS usar compromissos recorrentes das configurações
+            self.gerar_compromissos_recorrentes_config()
+            
+            # NÃO importar de Agenda.xlsx nem fazer análise histórica
+            # Isso simplifica e torna mais previsível
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao carregar compromissos futuros: {str(e)}")
+
+    def gerar_compromissos_recorrentes_config(self):
+        """Gera apenas compromissos das configurações do sistema"""
+        try:
+            from src.configuracoes_sistema import GerenciadorConfiguracoes
+            
+            compromissos_config = GerenciadorConfiguracoes.get_compromissos_recorrentes()
+            
+            if not compromissos_config:
+                print("DEBUG: Nenhum compromisso configurado")
+                return
+            
+            hoje = datetime.now().date()
+            fim_periodo = hoje + relativedelta(months=3)  # Próximos 3 meses apenas
+            
+            print(f"DEBUG: Gerando compromissos para {len(compromissos_config)} itens configurados")
+            
+            for compromisso in compromissos_config:
+                try:
+                    datas_geradas = self.calcular_datas_recorrencia_simples(
+                        compromisso, hoje, fim_periodo
+                    )
+                    
+                    for data_vencimento in datas_geradas:
+                        # VERIFICAÇÃO INTELIGENTE: só verificar se já existe nos dados já carregados
+                        ja_existe = any(
+                            item['vencimento'] == data_vencimento and 
+                            compromisso['nome'].upper() in item['fornecedor'].upper()
+                            for item in self.dados_agenda
+                        )
+                        
+                        if not ja_existe:
+                            item_agenda = {
+                                'vencimento': data_vencimento,
+                                'status': 'PENDENTE',
+                                'cliente': self.sistema.cliente_atual,
+                                'fornecedor': compromisso['nome'],
+                                'referencia': f"{compromisso['nome']} - {data_vencimento.strftime('%m/%Y')}",
+                                'valor': compromisso.get('valor_estimado', 0.0),
+                                'tipo': f"TD{compromisso.get('tipo_despesa', 3)}",
+                                'observacao': compromisso.get('observacao', 'Compromisso recorrente'),
+                                'id_origem': f"CONFIG_{compromisso['nome'].replace(' ', '_')}_{data_vencimento.strftime('%Y%m%d')}",
+                                'origem': 'CONFIGURACAO',
+                                'dados_originais': compromisso
+                            }
+                            
+                            self.dados_agenda.append(item_agenda)
+                            
+                except Exception as e:
+                    print(f"DEBUG: Erro ao processar {compromisso.get('nome', 'N/A')}: {str(e)}")
+                    continue
+            
+            print(f"DEBUG: Compromissos das configurações gerados")
+            
+        except ImportError:
+            print("DEBUG: Configurações não disponíveis - usando lista básica")
+            self.gerar_compromissos_basicos()
+        except Exception as e:
+            print(f"DEBUG: Erro ao gerar compromissos das configurações: {str(e)}")
+    
+    def gerar_compromissos_basicos(self):
+        """Fallback com compromissos básicos se configurações não disponíveis"""
+        compromissos_basicos = [
+            {
+                'nome': 'MOTOBOY', 
+                'dia_vencimento': 5, 
+                'valor_estimado': 0.0,
+                'categoria': 'DIV',
+                'tipo_despesa': 2,
+                'recorrencia': 'mensal',
+                'observacao': 'Serviço de motoboy obra'
+            },
+            {
+                'nome': 'FOLHA DP', 
+                'dia_vencimento': 5, 
+                'valor_estimado': 0.0,
+                'categoria': 'MO',
+                'tipo_despesa': 3,
+                'recorrencia': 'mensal',
+                'observacao': 'Gestão de folha de pagamento'
+            }
+        ]
+        
+        hoje = datetime.now().date()
+        fim_periodo = hoje + relativedelta(months=3)  # Próximos 3 meses
+        
+        print("DEBUG: Usando compromissos básicos (fallback)")
+        
+        for compromisso in compromissos_basicos:
+            try:
+                # Calcular próximas ocorrências
+                data_atual = hoje.replace(day=1)  # Primeiro dia do mês atual
+                
+                while data_atual <= fim_periodo:
+                    try:
+                        # Tentar criar data com o dia especificado
+                        data_vencimento = data_atual.replace(day=compromisso['dia_vencimento'])
+                    except ValueError:
+                        # Se o dia não existir no mês (ex: 31 em fevereiro), usar último dia
+                        ultimo_dia = calendar.monthrange(data_atual.year, data_atual.month)[1]
+                        dia_ajustado = min(compromisso['dia_vencimento'], ultimo_dia)
+                        data_vencimento = data_atual.replace(day=dia_ajustado)
+                    
+                    # Só adicionar se for data futura
+                    if data_vencimento > hoje:
+                        # Verificar se já não existe
+                        ja_existe = any(
+                            item['vencimento'] == data_vencimento and 
+                            compromisso['nome'].upper() in item['fornecedor'].upper()
+                            for item in self.dados_agenda
+                        )
+                        
+                        if not ja_existe:
+                            item_agenda = {
+                                'vencimento': data_vencimento,
+                                'status': 'PENDENTE',
+                                'cliente': self.sistema.cliente_atual,
+                                'fornecedor': compromisso['nome'],
+                                'referencia': f"{compromisso['nome']} - {data_vencimento.strftime('%m/%Y')}",
+                                'valor': compromisso['valor_estimado'],
+                                'tipo': f"TD{compromisso['tipo_despesa']}",
+                                'observacao': compromisso['observacao'],
+                                'id_origem': f"BASICO_{compromisso['nome'].replace(' ', '_')}_{data_vencimento.strftime('%Y%m%d')}",
+                                'origem': 'BASICO',
+                                'categoria': compromisso['categoria'],
+                                'dados_originais': compromisso
+                            }
+                            
+                            self.dados_agenda.append(item_agenda)
+                            print(f"DEBUG: Adicionado compromisso básico: {compromisso['nome']} - {data_vencimento}")
+                    
+                    # Avançar para próximo mês
+                    data_atual = data_atual + relativedelta(months=1)
+                    
+            except Exception as e:
+                print(f"DEBUG: Erro ao processar compromisso básico {compromisso['nome']}: {str(e)}")
+                continue
+        
+        print("DEBUG: Compromissos básicos gerados com sucesso")
+
+    def calcular_datas_recorrencia_simples(self, compromisso, data_inicio, data_fim):
+        """Versão simplificada do cálculo de recorrência"""
+        datas = []
+        dia_vencimento = compromisso.get('dia_vencimento', 5)
+        recorrencia = compromisso.get('recorrencia', 'mensal').lower()
+        
+        # Começar do mês atual
+        data_atual = data_inicio.replace(day=1)
+        
+        while data_atual <= data_fim:
+            try:
+                data_vencimento = data_atual.replace(day=dia_vencimento)
+            except ValueError:
+                # Dia não existe no mês
+                ultimo_dia = calendar.monthrange(data_atual.year, data_atual.month)[1]
+                data_vencimento = data_atual.replace(day=min(dia_vencimento, ultimo_dia))
+            
+            if data_vencimento > data_inicio:
+                datas.append(data_vencimento)
+            
+            # Próxima data
+            if recorrencia == 'mensal':
+                data_atual = data_atual + relativedelta(months=1)
+            elif recorrencia == 'trimestral':
+                data_atual = data_atual + relativedelta(months=3)
+            else:
+                data_atual = data_atual + relativedelta(months=1)  # Default mensal
+        
+        return datas
+
+    def gerar_compromissos_recorrentes(self):
+        """Gera compromissos recorrentes comuns (salários, seguros, etc.)"""
+        try:
+            hoje = datetime.now().date()
+            fim_periodo = hoje + relativedelta(months=2)  # Próximos 2 meses
+            
+            # Definir compromissos padrão baseados na imagem da agenda
+            compromissos_padrao = [
+                {
+                    'nome': 'FOLHA DP',
+                    'dia_vencimento': 5,
+                    'recorrencia': 'mensal',
+                    'valor_estimado': 0,
+                    'categoria': 'MO'
+                },
+                {
+                    'nome': 'ADMINISTRAÇÃO',
+                    'dia_vencimento': 20,
+                    'recorrencia': 'mensal',
+                    'valor_estimado': 0,
+                    'categoria': 'ADM'
+                },
+                {
+                    'nome': 'MHS EVENTO SST ESOCIAL',
+                    'dia_vencimento': 20,
+                    'recorrencia': 'mensal',
+                    'valor_estimado': 0,
+                    'categoria': 'MO'
+                },
+                {
+                    'nome': 'FGTS',
+                    'dia_vencimento': 20,
+                    'recorrencia': 'mensal',
+                    'valor_estimado': 0,
+                    'categoria': 'MO'
+                }
+            ]
+            
+            # Gerar ocorrências futuras
+            data_atual = hoje
+            while data_atual <= fim_periodo:
+                for compromisso in compromissos_padrao:
+                    try:
+                        # Calcular data de vencimento para o mês atual
+                        data_vencimento = data_atual.replace(day=compromisso['dia_vencimento'])
+                        
+                        # Só adicionar se for data futura
+                        if data_vencimento > hoje:
+                            # Verificar se já não existe lançamento para esta data
+                            ja_existe = any(
+                                item['vencimento'] == data_vencimento and 
+                                compromisso['nome'].upper() in item['fornecedor'].upper()
+                                for item in self.dados_agenda
+                            )
+                            
+                            if not ja_existe:
+                                item_agenda = {
+                                    'vencimento': data_vencimento,
+                                    'status': 'PENDENTE',
+                                    'cliente': self.sistema.cliente_atual,
+                                    'fornecedor': compromisso['nome'],
+                                    'referencia': f"{compromisso['nome']} - {data_vencimento.strftime('%m/%Y')}",
+                                    'valor': compromisso['valor_estimado'],
+                                    'tipo': 'RECORRENTE',
+                                    'observacao': f"Recorrente - {compromisso['categoria']}",
+                                    'id_origem': f"REC_{compromisso['categoria']}_{data_vencimento.strftime('%Y%m%d')}",
+                                    'origem': 'RECORRENTE',
+                                    'categoria': compromisso['categoria']
+                                }
+                                
+                                self.dados_agenda.append(item_agenda)
+                    
+                    except ValueError:
+                        # Se o dia não existir no mês (ex: 31 em fevereiro), usar último dia
+                        ultimo_dia = calendar.monthrange(data_atual.year, data_atual.month)[1]
+                        dia_ajustado = min(compromisso['dia_vencimento'], ultimo_dia)
+                        data_vencimento = data_atual.replace(day=dia_ajustado)
+                        
+                        if data_vencimento > hoje:
+                            # Mesmo processo de verificação e adição
+                            pass
+                
+                # Avançar para próximo mês
+                data_atual = data_atual + relativedelta(months=1)
+                data_atual = data_atual.replace(day=1)  # Primeiro dia do próximo mês
+                
+        except Exception as e:
+            print(f"DEBUG: Erro ao gerar compromissos recorrentes: {str(e)}")
+    
+    def carregar_lancamentos_condicionados(self):
+        """Versão simplificada - apenas identificar condicionados nos existentes"""
+        try:
+            for item in self.dados_agenda:
+                if item['origem'] == 'EXISTENTE':
+                    observacao = item['observacao'].upper()
+                    
+                    # Identificar se é condicionado
+                    if any(palavra in observacao for palavra in ['CONDICIONADA', 'ENTREGA', 'APROVAÇÃO']):
+                        item['status'] = 'CONDICIONADO'
+                        item['observacao'] = f"🔒 {item['observacao']}"
+                            
+        except Exception as e:
+            print(f"DEBUG: Erro ao carregar lançamentos condicionados: {str(e)}")
+    
+    def aplicar_filtro_periodo(self):
+        """Aplica filtro de período e preenche datas personalizadas quando necessário"""
+        # Lógica de preenchimento automático para período personalizado
+        if self.var_periodo.get() == "personalizado":
+            hoje = datetime.now().date()
+            data_fim_padrao = hoje + timedelta(days=60)
+            
+            try:
+                # Verificar se os campos estão vazios ou com valores muito antigos
+                try:
+                    inicio_atual = self.data_inicio_personalizada.get_date()
+                    fim_atual = self.data_fim_personalizada.get_date()
+                    
+                    # Se as datas são muito antigas ou iguais, atualizar
+                    if (inicio_atual < hoje - timedelta(days=30) or 
+                        inicio_atual == fim_atual):
+                        self.data_inicio_personalizada.set_date(hoje)
+                        self.data_fim_personalizada.set_date(data_fim_padrao)
+                except:
+                    # Se der erro ao ler, preencher com valores padrão
+                    self.data_inicio_personalizada.set_date(hoje)
+                    self.data_fim_personalizada.set_date(data_fim_padrao)
+                    
+            except Exception as e:
+                print(f"DEBUG: Erro ao preencher datas personalizadas: {e}")
+            
+            # Mostrar frame de datas personalizadas
+            self.frame_datas_personalizado.pack(pady=5)
+        else:
+            # Ocultar frame de datas personalizadas
+            self.frame_datas_personalizado.pack_forget()
+        
+        # Aplicar o filtro (sua lógica existente aqui)
+        self.aplicar_filtros()  # ou qualquer método que já existe
+
+    def aplicar_filtros(self):
+        """Filtros corrigidos sem coluna cliente"""
+        try:
+            # Limpar tree
+            for item in self.tree_agenda.get_children():
+                self.tree_agenda.delete(item)
+            
+            # Determinar período
+            data_inicio, data_fim = self.calcular_periodo_filtro()
+            
+            print(f"DEBUG: Aplicando filtros para período {data_inicio} a {data_fim}")
+            
+            items_mostrados = 0
+            
+            for item in self.dados_agenda:
+                # Filtro por período
+                if not (data_inicio <= item['vencimento'] <= data_fim):
+                    continue
+                
+                # Filtros por origem
+                if item['origem'] == 'EXISTENTE' and not self.var_mostrar_existentes.get():
+                    continue
+                if item['origem'] in ['CONFIGURACAO', 'BASICO'] and not self.var_mostrar_pendentes_config.get():
+                    continue
+                
+                # Filtro especial: apenas vencidos/hoje
+                # if self.var_mostrar_vencidos_apenas.get():
+                #     if item['status'] not in ['VENCIDO', 'VENCE HOJE']:
+                #         continue
+                
+                # Determinar tag para cor
+                if item['status'] == 'LANÇADO':
+                    tag = 'lancado'
+                elif item['status'] == 'VENCIDO':
+                    tag = 'vencido'
+                elif item['status'] == 'VENCE HOJE':
+                    tag = 'hoje'
+                elif item['status'] == 'CONDICIONADO':
+                    tag = 'condicionado'
+                else:
+                    tag = 'pendente'
+                
+                # Adicionar indicador de origem
+                tipo_display = item['tipo']
+                if item['origem'] == 'CONFIGURACAO':
+                    tipo_display += " (CFG)"
+                elif item['origem'] == 'BASICO':
+                    tipo_display += " (BAS)"
+                
+                # Inserir no tree - SEM COLUNA CLIENTE
+                valores = (
+                    item['vencimento'].strftime('%d/%m/%Y'),
+                    item['status'],
+                    item['fornecedor'],
+                    item['referencia'],
+                    f"R$ {item['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+                    tipo_display,
+                    item['observacao'],
+                    item['id_origem']
+                )
+                
+                self.tree_agenda.insert('', 'end', values=valores, tags=(tag,))
+                items_mostrados += 1
+            
+            print(f"DEBUG: {items_mostrados} itens mostrados após filtros")
+            
+            # Atualizar resumo
+            self.atualizar_resumo()
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao aplicar filtros: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    def calcular_periodo_filtro(self):
+        """
+        Calcula períodos de filtro baseados nos relatórios futuros (dias 5 e 20)
+        Para agenda de lançamentos futuros orientada pelos relatórios
+        """
+        hoje = datetime.now().date()
+        periodo = self.var_periodo.get()
+        
+        if periodo == "quinzena_atual":
+            # Lógica orientada pelos próximos relatórios
+            if hoje.day > 20:
+                # Após dia 20: próxima quinzena é o dia 5 do próximo mês
+                if hoje.month == 12:
+                    proximo_mes = hoje.replace(year=hoje.year + 1, month=1, day=5)
+                else:
+                    proximo_mes = hoje.replace(month=hoje.month + 1, day=5)
+                
+                data_inicio = hoje
+                data_fim = proximo_mes
+                
+            elif hoje.day > 5:
+                # Entre dia 6 e 20: próxima quinzena é o dia 20 do mesmo mês
+                data_inicio = hoje
+                data_fim = hoje.replace(day=20)
+                
+            else:
+                # Até dia 5: próxima quinzena é o dia 5 do mesmo mês
+                data_inicio = hoje
+                data_fim = hoje.replace(day=5)
+        
+        elif periodo == "mes_atual":
+            # Próximo mês completo (ambos relatórios: dias 5 e 20)
+            if hoje.month == 12:
+                proximo_mes = hoje.replace(year=hoje.year + 1, month=1)
+            else:
+                proximo_mes = hoje.replace(month=hoje.month + 1)
+            
+            # Do dia 5 ao dia 20 do próximo mês
+            data_inicio = proximo_mes.replace(day=5)
+            data_fim = proximo_mes.replace(day=20)
+            
+        else:  # personalizado
+            # Padrão: próximos 60 dias (comportamento útil por padrão)
+            data_inicio = hoje
+            data_fim = hoje + timedelta(days=60)
+            
+            # Sobrescrever apenas se datas personalizadas foram definidas
+            try:
+                data_inicio_personalizada = self.data_inicio_personalizada.get_date()
+                data_fim_personalizada = self.data_fim_personalizada.get_date()
+                
+                # Validar se as datas são diferentes do padrão ou foram realmente editadas
+                if (data_inicio_personalizada != hoje or 
+                    data_fim_personalizada != hoje + timedelta(days=60)):
+                    data_inicio = data_inicio_personalizada
+                    data_fim = data_fim_personalizada
+            except:
+                # Manter o padrão se houver erro ao acessar campos personalizados
+                pass
+        
+        return data_inicio, data_fim
+
+    def atualizar_resumo(self):
+        """Resumo mais claro e útil"""
+        try:
+            # Contadores
+            total_valor = 0
+            pendentes_count = 0
+            pendentes_valor = 0
+            vencidos_count = 0
+            vencidos_valor = 0
+            lancados_count = 0
+            lancados_valor = 0
+
+            for child in self.tree_agenda.get_children():
+                valores = self.tree_agenda.item(child, 'values')
+                status = valores[1]
+                valor_str = valores[5].replace('R$ ', '').replace('.', '').replace(',', '.')
+                try:
+                    valor = float(valor_str)
+                except:
+                    valor = 0.0
+
+                total_valor += valor
+
+                if status == 'PENDENTE':
+                    pendentes_count += 1
+                    pendentes_valor += valor
+                elif status in ['VENCIDO', 'VENCE HOJE']:
+                    vencidos_count += 1
+                    vencidos_valor += valor
+                elif status == 'LANÇADO':
+                    lancados_count += 1
+                    lancados_valor += valor
+
+            # Atualizar labels com informações mais claras
+            self.label_total_periodo.config(
+                text=f"Total Período: R$ {total_valor:,.2f} ({lancados_count + pendentes_count + vencidos_count} itens)".replace(',', 'X').replace('.', ',').replace('X', '.')
+            )
+
+            self.label_pendentes.config(
+                text=f"Pendentes: {pendentes_count} (R$ {pendentes_valor:,.2f})".replace(',', 'X').replace('.', ',').replace('X', '.')
+            )
+
+            self.label_vencidos.config(
+                text=f"Vencidos: {vencidos_count} (R$ {vencidos_valor:,.2f})".replace(',', 'X').replace('.', ',').replace('X', '.')
+            )
+
+        except Exception as e:
+            print(f"DEBUG: Erro ao atualizar resumo: {str(e)}")
+    
+    def novo_lancamento(self):
+        """Abre interface para novo lançamento diretamente da agenda"""
+        try:
+            # Abrir janela de novo lançamento direto
+            self.abrir_janela_novo_lancamento()
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir novo lançamento: {str(e)}")
+            print(f"DEBUG: Erro ao abrir novo lançamento: {str(e)}")
+
+    def abrir_janela_novo_lancamento(self):
+        """Cria janela para novo lançamento diretamente da agenda"""
+        try:
+            # Janela de novo lançamento
+            janela_novo = tk.Toplevel(self.janela)
+            janela_novo.title("Novo Lançamento")
+            janela_novo.geometry("700x600")
+            janela_novo.transient(self.janela)
+            janela_novo.grab_set()
+            
+            # Frame principal
+            main_frame = ttk.Frame(janela_novo, padding="15")
+            main_frame.pack(fill='both', expand=True)
+            
+            # Título
+            ttk.Label(main_frame, text=f"Novo Lançamento - {self.sistema.cliente_atual}", 
+                    font=('TkDefaultFont', 12, 'bold')).pack(pady=(0, 15))
+            
+            # === SEÇÃO: DATA ===
+            frame_data = ttk.LabelFrame(main_frame, text="Data de Referência")
+            frame_data.pack(fill='x', pady=(0, 10))
+            
+            ttk.Label(frame_data, text="Data do Relatório:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+            data_rel = DateEntry(frame_data, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+            data_rel.grid(row=0, column=1, padx=5, pady=5, sticky='w')
+            
+            # === SEÇÃO: FORNECEDOR ===
+            frame_fornecedor = ttk.LabelFrame(main_frame, text="Dados do Fornecedor")
+            frame_fornecedor.pack(fill='x', pady=(0, 10))
+            
+            # CNPJ/CPF com busca automática
+            ttk.Label(frame_fornecedor, text="CNPJ/CPF:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+            cnpj_cpf = ttk.Entry(frame_fornecedor, width=20)
+            cnpj_cpf.grid(row=0, column=1, padx=5, pady=5, sticky='w')
+            
+            # Nome com busca por parte do nome
+            ttk.Label(frame_fornecedor, text="Nome:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+            nome = ttk.Entry(frame_fornecedor, width=40)
+            nome.grid(row=1, column=1, columnspan=2, padx=5, pady=5, sticky='ew')
+            
+            # Lista de sugestões para o nome
+            lista_sugestoes = tk.Listbox(frame_fornecedor, height=4)
+            lista_sugestoes.grid(row=2, column=1, columnspan=2, padx=5, pady=5, sticky='ew')
+            lista_sugestoes.grid_remove()  # Inicialmente oculta
+            
+            def buscar_fornecedor_por_cnpj(event=None):
+                """Busca fornecedor pelo CNPJ/CPF"""
+                cnpj_digitado = cnpj_cpf.get().strip()
+                if len(cnpj_digitado) >= 11:  # CNPJ/CPF completo
+                    try:
+                        fornecedor_dados = self.sistema.buscar_fornecedor_por_cnpj_agenda(cnpj_digitado)
+                        if fornecedor_dados:
+                            preencher_dados_fornecedor(fornecedor_dados)
+                            print(f"DEBUG: Fornecedor encontrado por CNPJ: {fornecedor_dados.get('nome', '')}")
+                    except Exception as e:
+                        print(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
+            
+            def buscar_fornecedor_por_nome(event=None):
+                """Busca fornecedor por parte do nome"""
+                nome_digitado = nome.get().strip()
+                
+                if len(nome_digitado) < 3:  # Só buscar com 3+ caracteres
+                    lista_sugestoes.grid_remove()
+                    return
+                    
+                try:
+                    fornecedores_encontrados = self.sistema.buscar_fornecedores_por_nome_parcial(nome_digitado)
+                    
+                    if fornecedores_encontrados:
+                        # Mostrar lista de sugestões
+                        lista_sugestoes.delete(0, tk.END)
+                        for fornecedor in fornecedores_encontrados[:10]:  # Máximo 10 sugestões
+                            texto = f"{fornecedor['nome']} - {fornecedor['cnpj_cpf']}"
+                            lista_sugestoes.insert(tk.END, texto)
+                        
+                        lista_sugestoes.grid()
+                        print(f"DEBUG: {len(fornecedores_encontrados)} fornecedores encontrados para '{nome_digitado}'")
+                    else:
+                        lista_sugestoes.grid_remove()
+                        print(f"DEBUG: Nenhum fornecedor encontrado para '{nome_digitado}'")
+                        
+                except Exception as e:
+                    print(f"DEBUG: Erro ao buscar fornecedor por nome: {str(e)}")
+                    lista_sugestoes.grid_remove()
+            
+            def selecionar_fornecedor_da_lista(event=None):
+                """Seleciona fornecedor da lista de sugestões - CORRIGIDO"""
+                try:
+                    selection = lista_sugestoes.curselection()
+                    if selection:
+                        texto_selecionado = lista_sugestoes.get(selection[0])
+                        print(f"DEBUG: Texto selecionado: {texto_selecionado}")
+                        
+                        # Extrair CNPJ do texto: "NOME - CNPJ"
+                        cnpj_extraido = texto_selecionado.split(' - ')[-1]
+                        print(f"DEBUG: CNPJ extraído: {cnpj_extraido}")
+                        
+                        # Buscar dados completos do fornecedor
+                        fornecedor_dados = self.sistema.buscar_fornecedor_por_cnpj_agenda(cnpj_extraido)
+                        if fornecedor_dados:
+                            preencher_dados_fornecedor(fornecedor_dados)
+                            lista_sugestoes.grid_remove()
+                            print(f"DEBUG: Fornecedor selecionado: {fornecedor_dados.get('nome', '')}")
+                        else:
+                            print(f"DEBUG: Dados do fornecedor não encontrados para CNPJ: {cnpj_extraido}")
+                    else:
+                        print("DEBUG: Nenhuma seleção na lista")
+                            
+                except Exception as e:
+                    print(f"DEBUG: Erro ao selecionar fornecedor: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
+            
+            def selecionar_por_clique(event=None):
+                """Seleciona fornecedor por clique simples"""
+                try:
+                    # Pequeno delay para garantir que a seleção foi processada
+                    janela_novo.after(50, selecionar_fornecedor_da_lista)
+                except Exception as e:
+                    print(f"DEBUG: Erro no clique: {str(e)}")
+            
+            def preencher_dados_fornecedor(fornecedor_dados):
+                """Preenche todos os campos com dados do fornecedor"""
+                try:
+                    print(f"DEBUG: Preenchendo dados do fornecedor: {fornecedor_dados.get('nome', '')}")
+                    
+                    # Preencher CNPJ/CPF
+                    cnpj_cpf.delete(0, tk.END)
+                    cnpj_cpf.insert(0, fornecedor_dados.get('cnpj_cpf', ''))
+                    
+                    # Preencher nome
+                    nome.delete(0, tk.END)
+                    nome.insert(0, fornecedor_dados.get('nome', ''))
+                    
+                    # Preencher categoria
+                    categoria.delete(0, tk.END)
+                    categoria.insert(0, fornecedor_dados.get('categoria', 'FORNECEDOR'))
+                    
+                    # Preencher dados bancários
+                    dados_bancarios = self.sistema.obter_dados_bancarios_fornecedor(fornecedor_dados.get('cnpj_cpf', ''))
+                    dados_bancarios_entry.config(state='normal')
+                    dados_bancarios_entry.delete(0, tk.END)
+                    dados_bancarios_entry.insert(0, dados_bancarios)
+                    dados_bancarios_entry.config(state='readonly')
+                    
+                    print(f"DEBUG: Campos preenchidos com sucesso")
+                    
+                except Exception as e:
+                    print(f"DEBUG: Erro ao preencher dados: {str(e)}")
+            
+            def navegar_lista_com_teclado(event):
+                """Navega na lista com teclado e seleciona com Enter"""
+                try:
+                    if event.keysym == 'Down':
+                        current = lista_sugestoes.curselection()
+                        if current:
+                            next_index = min(current[0] + 1, lista_sugestoes.size() - 1)
+                        else:
+                            next_index = 0
+                        lista_sugestoes.selection_clear(0, tk.END)
+                        lista_sugestoes.selection_set(next_index)
+                        lista_sugestoes.see(next_index)
+                        return "break"
+                        
+                    elif event.keysym == 'Up':
+                        current = lista_sugestoes.curselection()
+                        if current:
+                            next_index = max(current[0] - 1, 0)
+                        else:
+                            next_index = 0
+                        lista_sugestoes.selection_clear(0, tk.END)
+                        lista_sugestoes.selection_set(next_index)
+                        lista_sugestoes.see(next_index)
+                        return "break"
+                        
+                    elif event.keysym == 'Return':
+                        selecionar_fornecedor_da_lista()
+                        return "break"
+                        
+                except Exception as e:
+                    print(f"DEBUG: Erro na navegação: {str(e)}")
+            
+            def ocultar_sugestoes_ao_sair_foco(event=None):
+                """Oculta sugestões quando sai do foco - MELHORADO"""
+                # Verificar se o foco foi para a lista de sugestões
+                try:
+                    widget_foco = janela_novo.focus_get()
+                    if widget_foco == lista_sugestoes:
+                        return  # Não ocultar se o foco foi para a lista
+                    
+                    # Delay maior para permitir clique
+                    janela_novo.after(300, lambda: lista_sugestoes.grid_remove())
+                except:
+                    janela_novo.after(300, lambda: lista_sugestoes.grid_remove())
+            
+            # Bindings para busca
+            cnpj_cpf.bind('<KeyRelease>', buscar_fornecedor_por_cnpj)
+            cnpj_cpf.bind('<FocusOut>', buscar_fornecedor_por_cnpj)
+            
+            nome.bind('<KeyRelease>', buscar_fornecedor_por_nome)
+            nome.bind('<FocusOut>', ocultar_sugestoes_ao_sair_foco)
+            
+            # Navegação por teclado no campo nome quando há sugestões
+            nome.bind('<Down>', lambda e: lista_sugestoes.focus() if lista_sugestoes.winfo_viewable() else None)
+            
+            # Bindings da lista - CORRIGIDOS
+            lista_sugestoes.bind('<Button-1>', selecionar_por_clique)  # Clique simples
+            lista_sugestoes.bind('<Double-Button-1>', selecionar_fornecedor_da_lista)  # Duplo clique
+            lista_sugestoes.bind('<KeyPress>', navegar_lista_com_teclado)  # Navegação por teclado
+            
+            # Permitir que a lista receba foco
+            lista_sugestoes.bind('<FocusIn>', lambda e: print("DEBUG: Lista recebeu foco"))
+            lista_sugestoes.bind('<FocusOut>', ocultar_sugestoes_ao_sair_foco)
+            
+            # Categoria
+            ttk.Label(frame_fornecedor, text="Categoria:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
+            categoria = ttk.Entry(frame_fornecedor, width=20)
+            categoria.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+            
+            # Dados bancários
+            ttk.Label(frame_fornecedor, text="Dados Bancários:").grid(row=3, column=0, padx=5, pady=5, sticky='w')
+            dados_bancarios_entry = ttk.Entry(frame_fornecedor, width=40, state='readonly')
+            dados_bancarios_entry.grid(row=3, column=1, columnspan=2, padx=5, pady=5, sticky='ew')
+            
+            frame_fornecedor.columnconfigure(1, weight=1)
+            
+            # === SEÇÃO: DESPESA ===
+            frame_despesa = ttk.LabelFrame(main_frame, text="Dados da Despesa")
+            frame_despesa.pack(fill='x', pady=(0, 10))
+            
+            # Tipo de despesa
+            ttk.Label(frame_despesa, text="Tipo Despesa:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+            tp_desp = ttk.Combobox(frame_despesa, values=['1', '2', '3', '4', '5', '6'], state='readonly', width=5)
+            tp_desp.set('3')  # Padrão
+            tp_desp.grid(row=0, column=1, padx=5, pady=5, sticky='w')
+            
+            # Referência
+            ttk.Label(frame_despesa, text="Referência:").grid(row=0, column=2, padx=5, pady=5, sticky='w')
+            referencia = ttk.Entry(frame_despesa, width=30)
+            referencia.grid(row=0, column=3, padx=5, pady=5, sticky='ew')
+            
+            # Valor unitário
+            ttk.Label(frame_despesa, text="Valor Unitário:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+            vr_unit = ttk.Entry(frame_despesa, width=15)
+            vr_unit.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+            
+            # Dias
+            ttk.Label(frame_despesa, text="Dias:").grid(row=1, column=2, padx=5, pady=5, sticky='w')
+            dias = ttk.Entry(frame_despesa, width=8)
+            dias.insert(0, "1")
+            dias.grid(row=1, column=3, padx=5, pady=5, sticky='w')
+            
+            # Valor total (calculado automaticamente)
+            ttk.Label(frame_despesa, text="Valor Total:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
+            valor_total = ttk.Entry(frame_despesa, width=15, state='readonly')
+            valor_total.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+            
+            def calcular_valor_total_automatico(event=None):
+                try:
+                    vr_unit_val = float(vr_unit.get().replace(',', '.')) if vr_unit.get() else 0
+                    dias_val = float(dias.get().replace(',', '.')) if dias.get() else 1
+                    total = vr_unit_val * dias_val
+                    
+                    valor_total.config(state='normal')
+                    valor_total.delete(0, tk.END)
+                    valor_total.insert(0, f"{total:.2f}".replace('.', ','))
+                    valor_total.config(state='readonly')
+                except ValueError:
+                    pass
+            
+            vr_unit.bind('<KeyRelease>', calcular_valor_total_automatico)
+            dias.bind('<KeyRelease>', calcular_valor_total_automatico)
+            
+            # Data de vencimento
+            ttk.Label(frame_despesa, text="Data Vencimento:").grid(row=2, column=2, padx=5, pady=5, sticky='w')
+            dt_vencto = DateEntry(frame_despesa, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+            dt_vencto.grid(row=2, column=3, padx=5, pady=5, sticky='w')
+            
+            # NF
+            ttk.Label(frame_despesa, text="NF:").grid(row=3, column=0, padx=5, pady=5, sticky='w')
+            nf = ttk.Entry(frame_despesa, width=15)
+            nf.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+            
+            # Observação
+            ttk.Label(frame_despesa, text="Observação:").grid(row=3, column=2, padx=5, pady=5, sticky='w')
+            observacao = ttk.Entry(frame_despesa, width=30)
+            observacao.grid(row=3, column=3, padx=5, pady=5, sticky='ew')
+            
+            frame_despesa.columnconfigure(3, weight=1)
+            
+            # === BOTÕES ===
+            frame_botoes = ttk.Frame(main_frame)
+            frame_botoes.pack(fill='x', pady=(15, 0))
+            
+            def salvar_lancamento():
+                try:
+                    # Validações básicas
+                    if not cnpj_cpf.get().strip():
+                        custom_messagebox("error", "Erro", "CNPJ/CPF é obrigatório!")
+                        cnpj_cpf.focus()
+                        return
+                    
+                    if not nome.get().strip():
+                        custom_messagebox("error", "Erro", "Nome é obrigatório!")
+                        nome.focus()
+                        return
+                    
+                    if not vr_unit.get().strip():
+                        custom_messagebox("error", "Erro", "Valor unitário é obrigatório!")
+                        vr_unit.focus()
+                        return
+                    
+                    # Preparar dados do lançamento
+                    dados_lancamento = {
+                        'data_rel': data_rel.get_date(),
+                        'tp_desp': tp_desp.get(),
+                        'cnpj_cpf': cnpj_cpf.get().strip(),
+                        'nome': nome.get().strip().upper(),
+                        'categoria': categoria.get().strip().upper() or 'FORNECEDOR',
+                        'referencia': referencia.get().strip().upper(),
+                        'nf': nf.get().strip().upper(),
+                        'valor': float(valor_total.get().replace(',', '.')),
+                        'vr_unit': float(vr_unit.get().replace(',', '.')),
+                        'dias': float(dias.get().replace(',', '.')) if dias.get() else 1,
+                        'dt_vencto': dt_vencto.get_date(),
+                        'observacao': observacao.get().strip().upper(),
+                        'etapa_obra': '',  # Valores padrão para campos não presentes
+                        'insumo': '',
+                        'dados_bancarios': dados_bancarios_entry.get(),
+                        'forma_pagamento': 'PIX'  # Padrão
+                    }
+                    
+                    # Inserir lançamento
+                    sucesso = self.sistema.inserir_lancamento_completo(dados_lancamento)
+                    
+                    if sucesso:
+                        custom_messagebox("info", "Sucesso", "Lançamento criado com sucesso!")
+                        janela_novo.destroy()
+                        self.carregar_dados_agenda()  # Recarregar agenda
+                    else:
+                        custom_messagebox("error", "Erro", "Erro ao criar lançamento!")
+                        
+                except Exception as e:
+                    custom_messagebox("error", "Erro", f"Erro ao salvar lançamento: {str(e)}")
+                    print(f"DEBUG: Erro ao salvar lançamento direto: {str(e)}")
+            
+            ttk.Button(frame_botoes, text="Salvar Lançamento", 
+                    command=salvar_lancamento).pack(side='left', padx=5)
+            ttk.Button(frame_botoes, text="Cancelar", 
+                    command=janela_novo.destroy).pack(side='left', padx=5)
+            
+            # Focar no primeiro campo
+            cnpj_cpf.focus()
+            
+            print("DEBUG: Janela de novo lançamento aberta")
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao criar janela de lançamento: {str(e)}")
+            print(f"DEBUG: Erro ao criar janela de lançamento: {str(e)}")
+        
+    def editar_selecionado(self):
+        """Edita apenas a data de vencimento do item selecionado"""
+        try:
+            selected = self.tree_agenda.selection()
+            if not selected:
+                custom_messagebox("warning", "Aviso", "Selecione um item para editar")
+                return
+            
+            valores = self.tree_agenda.item(selected[0], 'values')
+            
+            if len(valores) < 8:
+                custom_messagebox("error", "Erro", "Dados incompletos no item selecionado")
+                return
+            
+            id_origem = valores[7]  # ID_Origem
+            status = valores[1]     # Status
+            fornecedor = valores[2] # Fornecedor
+            vencimento_atual = valores[0]  # Data de vencimento atual
+            
+            # Verificar se é um lançamento existente (ID numérico)
+            if not id_origem or id_origem.strip() == "" or id_origem.startswith(('CONFIG_', 'BASICO_', 'REC_', 'TPL_', 'HIST_')):
+                custom_messagebox("info", "Edição", 
+                    "Este é um compromisso configurado.\n"
+                    "Use 'Confirmar Lançamento' para criar o lançamento real primeiro.")
+                return
+            
+            try:
+                # Verificar se é um ID numérico (lançamento real)
+                id_numerico = int(float(id_origem))
+            except (ValueError, TypeError):
+                custom_messagebox("info", "Edição", 
+                    "Este item não pode ser editado.\n"
+                    "Use 'Confirmar Lançamento' para criar o lançamento real.")
+                return
+            
+            # Abrir dialog de edição da data de vencimento
+            self.abrir_editor_vencimento(id_numerico, fornecedor, vencimento_atual, selected[0])
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao editar selecionado: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            custom_messagebox("error", "Erro", f"Erro ao editar item: {str(e)}")
+
+    def abrir_editor_vencimento(self, id_lancamento, fornecedor, vencimento_atual, tree_item):
+        """Versão simplificada e robusta do editor de vencimento"""
+        try:
+            print(f"DEBUG: Abrindo editor para ID {id_lancamento}")
+            
+            # Criar janela simples
+            dialog = tk.Toplevel(self.janela)
+            dialog.title("Editar Data de Vencimento")
+            dialog.geometry("350x320")
+            dialog.transient(self.janela)
+            dialog.grab_set()
+            
+            # Frame principal
+            frame = tk.Frame(dialog, padx=20, pady=20)
+            frame.pack(fill='both', expand=True)
+            
+            # Informações
+            tk.Label(frame, text=f"ID: {id_lancamento}", font=('Arial', 11, 'bold')).pack(anchor='w', pady=2)
+            tk.Label(frame, text=f"Fornecedor: {fornecedor}").pack(anchor='w', pady=2)
+            
+            # Separador
+            tk.Label(frame, text="").pack(pady=5)
+            
+            # Data atual
+            tk.Label(frame, text=f"Data atual: {vencimento_atual}", font=('Arial', 10, 'bold')).pack(anchor='w')
+            
+            # Espaço
+            tk.Label(frame, text="").pack(pady=5)
+            
+            # Nova data
+            tk.Label(frame, text="Nova data (dd/mm/yyyy):").pack(anchor='w')
+            entry_data = tk.Entry(frame, font=('Arial', 12), width=12)
+            entry_data.pack(anchor='w', pady=5)
+            entry_data.insert(0, vencimento_atual)
+            
+            # Instrução
+            tk.Label(frame, text="Exemplo: 25/12/2025", font=('Arial', 9), fg='gray').pack(anchor='w')
+            
+            # Espaço
+            tk.Label(frame, text="").pack(pady=10)
+            
+            # Botões
+            frame_botoes = tk.Frame(frame)
+            frame_botoes.pack(fill='x')
+            
+            def salvar_simples():
+                try:
+                    nova_data_str = entry_data.get().strip()
+                    print(f"DEBUG: Data digitada: {nova_data_str}")
+                    
+                    # Validar data
+                    try:
+                        from datetime import datetime
+                        nova_data_obj = datetime.strptime(nova_data_str, '%d/%m/%Y').date()
+                        nova_data_formatada = nova_data_obj.strftime('%d/%m/%Y')
+                        print(f"DEBUG: Data validada: {nova_data_formatada}")
+                    except ValueError:
+                        import tkinter.messagebox as msg
+                        msg.showerror("Erro", "Data inválida! Use o formato dd/mm/yyyy")
+                        return
+                    
+                    # Verificar se mudou
+                    if nova_data_formatada == vencimento_atual:
+                        import tkinter.messagebox as msg
+                        msg.showinfo("Informação", "A data não foi alterada.")
+                        return
+                    
+                    # Confirmar
+                    import tkinter.messagebox as msg
+                    resposta = msg.askyesno("Confirmar", 
+                        f"Alterar data de vencimento:\n\n"
+                        f"DE: {vencimento_atual}\n"
+                        f"PARA: {nova_data_formatada}\n\n"
+                        f"Confirma?")
+                    
+                    print(f"DEBUG: Resposta: {resposta}")
+                    
+                    if resposta:
+                        # Salvar
+                        if self.salvar_nova_data_vencimento(id_lancamento, nova_data_obj):
+                            # CORREÇÃO: Atualizar tree ANTES de recarregar
+                            valores = list(self.tree_agenda.item(tree_item, 'values'))
+                            valores[0] = nova_data_formatada
+                            self.tree_agenda.item(tree_item, values=valores)
+                            
+                            msg.showinfo("Sucesso", f"Data alterada para {nova_data_formatada}")
+                            dialog.destroy()
+                            
+                            # CORREÇÃO: Recarregar dados da agenda para sincronizar
+                            self.carregar_dados_agenda()  # Em vez de aplicar_filtros()
+                        else:
+                            msg.showerror("Erro", "Falha ao salvar na planilha")
+                            
+                except Exception as e:
+                    print(f"DEBUG: Erro ao salvar: {e}")
+                    import tkinter.messagebox as msg
+                    msg.showerror("Erro", f"Erro: {str(e)}")
+            
+            def cancelar_simples():
+                dialog.destroy()
+            
+            # Botões
+            tk.Button(frame_botoes, text="Cancelar", command=cancelar_simples).pack(side='left', padx=5)
+            tk.Button(frame_botoes, text="Salvar", command=salvar_simples).pack(side='left', padx=5)
+            
+            # Focar no campo
+            entry_data.focus()
+            entry_data.select_range(0, tk.END)
+            
+            # Bindings
+            entry_data.bind('<Return>', lambda e: salvar_simples())
+            dialog.bind('<Escape>', lambda e: cancelar_simples())
+            
+            print("DEBUG: Editor simples criado")
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao criar editor: {e}")
+            import traceback
+            traceback.print_exc()
+
+    def salvar_nova_data_vencimento(self, id_lancamento, nova_data):
+        """Salva a nova data de vencimento usando o fluxo correto do sistema"""
+        print(f"DEBUG: ==> MÉTODO SALVAR_NOVA_DATA_VENCIMENTO CHAMADO <==")
+        print(f"DEBUG: ID: {id_lancamento}, Nova Data: {nova_data}")
+        
+        try:
+            if not self.sistema.cliente_atual:
+                print("DEBUG: ERRO - Nenhum cliente selecionado")
+                return False
+            
+            # Importações necessárias
+            import os
+            from pathlib import Path
+            from openpyxl import load_workbook
+            from datetime import datetime
+            
+            # Caminho da planilha
+            caminho_planilha = Path(PASTA_CLIENTES) / f"{self.sistema.cliente_atual}.xlsx"
+            print(f"DEBUG: Caminho da planilha: {caminho_planilha}")
+            
+            if not caminho_planilha.exists():
+                print(f"DEBUG: ERRO - Planilha não encontrada: {caminho_planilha}")
+                return False
+            
+            print("DEBUG: Planilha encontrada, abrindo...")
+            
+            # Abrir workbook
+            wb = load_workbook(caminho_planilha)
+            print(f"DEBUG: Workbook aberto. Abas disponíveis: {wb.sheetnames}")
+            
+            if 'Dados' not in wb.sheetnames:
+                print("DEBUG: ERRO - Aba 'Dados' não encontrada")
+                wb.close()
+                return False
+            
+            ws = wb['Dados']
+            print(f"DEBUG: Aba 'Dados' selecionada. Max row: {ws.max_row}")
+            
+            # Procurar o ID na coluna O (posição 15)
+            linha_encontrada = None
+            print(f"DEBUG: Procurando ID {id_lancamento} na coluna O...")
+            
+            for row in range(2, ws.max_row + 1):  # Começar da linha 2
+                valor_id = ws[f'O{row}'].value  # Coluna O = ID_LANCAMENTO
+                
+                if valor_id is not None:
+                    try:
+                        id_convertido = int(valor_id)
+                        id_procurado = int(id_lancamento)
+                        
+                        if id_convertido == id_procurado:
+                            linha_encontrada = row
+                            print(f"DEBUG: *** ID {id_lancamento} ENCONTRADO na linha {row} ***")
+                            break
+                            
+                    except (ValueError, TypeError) as e:
+                        continue
+            
+            if not linha_encontrada:
+                print(f"DEBUG: ERRO - ID {id_lancamento} NÃO ENCONTRADO")
+                wb.close()
+                return False
+            
+            # Mostrar valor atual da coluna J antes da alteração
+            valor_atual = ws[f'J{linha_encontrada}'].value
+            print(f"DEBUG: Valor atual da célula J{linha_encontrada}: {valor_atual}")
+            
+            # CORREÇÃO: Salvar como objeto datetime, não como string
+            if isinstance(nova_data, str):
+                nova_data_obj = datetime.strptime(nova_data, '%d/%m/%Y')
+            else:
+                nova_data_obj = datetime.combine(nova_data, datetime.min.time())
+            
+            print(f"DEBUG: Atualizando J{linha_encontrada} com objeto datetime: {nova_data_obj}")
+            
+            # Salvar como datetime e aplicar formato
+            celula = ws[f'J{linha_encontrada}']
+            celula.value = nova_data_obj
+            celula.number_format = 'DD/MM/YYYY'  # Aplicar formato de data
+            
+            # Verificar se a atualização funcionou
+            valor_depois = ws[f'J{linha_encontrada}'].value
+            print(f"DEBUG: Valor após atualização: {valor_depois}")
+            
+            # Salvar o arquivo
+            print("DEBUG: Salvando workbook...")
+            wb.save(caminho_planilha)
+            wb.close()
+            
+            print("DEBUG: *** SUCESSO - Data de vencimento alterada com sucesso ***")
+            return True
+            
+        except Exception as e:
+            print(f"DEBUG: *** ERRO CRÍTICO ao salvar nova data: {str(e)} ***")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    def confirmar_lancamento(self):
+        """Confirma um lançamento pendente, convertendo-o em lançamento real"""
+        selected = self.tree_agenda.selection()
+        if not selected:
+            custom_messagebox("warning", "Aviso", "Selecione um item para confirmar")
+            return
+        
+        valores = self.tree_agenda.item(selected[0], 'values')
+        status = valores[1]
+        
+        if status != 'PENDENTE':
+            custom_messagebox("info", "Informação", "Apenas itens pendentes podem ser confirmados")
+            return
+        
+        # Abrir interface de confirmação/criação de lançamento
+        self.abrir_confirmacao_lancamento(valores)
+    
+    def limpar_duplicacoes_inteligente(self):
+        """Remove compromissos configurados que já foram lançados"""
+        try:
+            if not custom_messagebox("yesno", "Limpeza Inteligente", 
+                "Esta função vai remover da visualização os compromissos configurados "
+                "que já possuem lançamentos correspondentes.\n\n"
+                "Isso deixará a agenda mais limpa, mostrando apenas:\n"
+                "• Lançamentos reais\n" 
+                "• Compromissos que ainda precisam ser lançados\n\n"
+                "Continuar?"):
+                return
+            
+            # Identificar duplicações
+            removidos = 0
+            agenda_limpa = []
+            
+            for item in self.dados_agenda:
+                if item['origem'] in ['CONFIGURACAO', 'BASICO']:
+                    # Verificar se existe lançamento real para esta data/fornecedor
+                    existe_real = any(
+                        outro['origem'] == 'EXISTENTE' and
+                        outro['vencimento'] == item['vencimento'] and
+                        item['fornecedor'].upper() in outro['fornecedor'].upper()
+                        for outro in self.dados_agenda
+                    )
+                    
+                    if existe_real:
+                        removidos += 1
+                        print(f"DEBUG: Removido compromisso duplicado: {item['fornecedor']} - {item['vencimento']}")
+                        continue
+                
+                agenda_limpa.append(item)
+            
+            # Atualizar dados
+            self.dados_agenda = agenda_limpa
+            
+            # Reaplicar filtros
+            self.aplicar_filtros()
+            
+            custom_messagebox("info", "Limpeza Concluída", 
+                f"Foram removidos {removidos} compromissos configurados que "
+                f"já possuem lançamentos correspondentes.\n\n"
+                f"A agenda agora mostra apenas itens únicos.")
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro na limpeza: {str(e)}")
+
+    def resetar_agenda(self):
+        """Reseta e recarrega todos os dados da agenda"""
+        try:
+            if custom_messagebox("yesno", "Resetar Agenda", 
+                "Isso vai recarregar todos os dados da agenda do zero.\n"
+                "Útil se os dados estiverem inconsistentes.\n\n"
+                "Continuar?"):
+                
+                # Limpar cache
+                self.dados_agenda = []
+                
+                # Recarregar tudo
+                self.carregar_dados_agenda()
+                
+                custom_messagebox("info", "Sucesso", "Agenda resetada e recarregada!")
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao resetar agenda: {str(e)}")
+
+    def abrir_gerenciador_compromissos(self):
+        """Abre o gerenciador de compromissos recorrentes integrado à agenda"""
+        try:
+            from src.config.utils import custom_messagebox
+            # Criar janela de gerenciamento
+            janela_compromissos = tk.Toplevel(self.janela)
+            janela_compromissos.title("Gerenciar Compromissos Recorrentes")
+            janela_compromissos.geometry("900x700")
+            janela_compromissos.transient(self.janela)
+            janela_compromissos.grab_set()
+            
+            # Frame principal
+            main_frame = ttk.Frame(janela_compromissos, padding="10")
+            main_frame.pack(fill='both', expand=True)
+            
+            # Título
+            ttk.Label(main_frame, text="Gerenciador de Compromissos Recorrentes", 
+                    font=('TkDefaultFont', 14, 'bold')).pack(pady=(0, 15))
+            
+            # Frame dividido em duas colunas
+            frame_conteudo = ttk.Frame(main_frame)
+            frame_conteudo.pack(fill='both', expand=True)
+            
+            # === COLUNA ESQUERDA: LISTA DE COMPROMISSOS ===
+            frame_esquerda = ttk.LabelFrame(frame_conteudo, text="Compromissos Cadastrados")
+            frame_esquerda.pack(side='left', fill='both', expand=True, padx=(0, 10))
+            
+            # Treeview para compromissos
+            colunas = ('Nome', 'Dia', 'Recorrência', 'Valor', 'Status')
+            tree_compromissos = ttk.Treeview(frame_esquerda, columns=colunas, show='headings', height=20)
+            
+            # Configurar cabeçalhos
+            for col in colunas:
+                tree_compromissos.heading(col, text=col)
+            
+            # Configurar larguras
+            tree_compromissos.column('Nome', width=180)
+            tree_compromissos.column('Dia', width=60, anchor='center')
+            tree_compromissos.column('Recorrência', width=100, anchor='center')
+            tree_compromissos.column('Valor', width=100, anchor='e')
+            tree_compromissos.column('Status', width=80, anchor='center')
+            
+            # Scrollbar
+            scrollbar = ttk.Scrollbar(frame_esquerda, orient='vertical', command=tree_compromissos.yview)
+            tree_compromissos.configure(yscrollcommand=scrollbar.set)
+            
+            tree_compromissos.pack(side='left', fill='both', expand=True, padx=5, pady=5)
+            scrollbar.pack(side='right', fill='y', pady=5)
+            
+            # === COLUNA DIREITA: FORMULÁRIOS ===
+            frame_direita = ttk.Frame(frame_conteudo)
+            frame_direita.pack(side='right', fill='y', padx=(10, 0))
+            
+            # Frame para novo compromisso
+            frame_novo = ttk.LabelFrame(frame_direita, text="Novo Compromisso")
+            frame_novo.pack(fill='x', pady=(0, 10))
+            
+            # Campos do formulário
+            campos_novo = {}
+            
+            # Nome
+            ttk.Label(frame_novo, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+            campos_novo['nome'] = ttk.Entry(frame_novo, width=25)
+            campos_novo['nome'].grid(row=0, column=1, padx=5, pady=5)
+            
+            # Dia vencimento
+            ttk.Label(frame_novo, text="Dia Vencimento:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+            campos_novo['dia'] = ttk.Spinbox(frame_novo, from_=1, to=31, width=10)
+            campos_novo['dia'].set('5')
+            campos_novo['dia'].grid(row=1, column=1, padx=5, pady=5, sticky='w')
+            
+            # Recorrência
+            ttk.Label(frame_novo, text="Recorrência:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
+            campos_novo['recorrencia'] = ttk.Combobox(frame_novo, 
+                                                    values=['mensal', 'trimestral', 'semestral', 'anual'],
+                                                    state='readonly', width=22)
+            campos_novo['recorrencia'].set('mensal')
+            campos_novo['recorrencia'].grid(row=2, column=1, padx=5, pady=5)
+            
+            # Categoria
+            ttk.Label(frame_novo, text="Categoria:").grid(row=3, column=0, padx=5, pady=5, sticky='w')
+            categorias = ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP']
+            campos_novo['categoria'] = ttk.Combobox(frame_novo, values=categorias, state='readonly', width=22)
+            campos_novo['categoria'].set('MO')
+            campos_novo['categoria'].grid(row=3, column=1, padx=5, pady=5)
+            
+            # Tipo despesa
+            ttk.Label(frame_novo, text="Tipo Despesa:").grid(row=4, column=0, padx=5, pady=5, sticky='w')
+            campos_novo['tipo_despesa'] = ttk.Combobox(frame_novo, values=['2', '3', '5', '6', '7'], 
+                                                    state='readonly', width=10)
+            campos_novo['tipo_despesa'].set('3')
+            campos_novo['tipo_despesa'].grid(row=4, column=1, padx=5, pady=5, sticky='w')
+            
+            # Valor estimado
+            ttk.Label(frame_novo, text="Valor Estimado:").grid(row=5, column=0, padx=5, pady=5, sticky='w')
+            campos_novo['valor'] = ttk.Entry(frame_novo, width=15)
+            campos_novo['valor'].insert(0, "0,00")
+            campos_novo['valor'].grid(row=5, column=1, padx=5, pady=5, sticky='w')
+            
+            # Observação
+            ttk.Label(frame_novo, text="Observação:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
+            campos_novo['observacao'] = ttk.Entry(frame_novo, width=25)
+            campos_novo['observacao'].grid(row=6, column=1, padx=5, pady=5)
+            
+            # Frame para editar compromisso
+            frame_editar = ttk.LabelFrame(frame_direita, text="Editar Compromisso Selecionado")
+            frame_editar.pack(fill='x', pady=(0, 10))
+            
+            # Campos de edição (similares aos de criação)
+            campos_editar = {}
+            
+            ttk.Label(frame_editar, text="Nome:").grid(row=0, column=0, padx=5, pady=3, sticky='w')
+            campos_editar['nome'] = ttk.Entry(frame_editar, width=25)
+            campos_editar['nome'].grid(row=0, column=1, padx=5, pady=3)
+            
+            ttk.Label(frame_editar, text="Dia:").grid(row=1, column=0, padx=5, pady=3, sticky='w')
+            campos_editar['dia'] = ttk.Spinbox(frame_editar, from_=1, to=31, width=10)
+            campos_editar['dia'].grid(row=1, column=1, padx=5, pady=3, sticky='w')
+            
+            ttk.Label(frame_editar, text="Valor:").grid(row=2, column=0, padx=5, pady=3, sticky='w')
+            campos_editar['valor'] = ttk.Entry(frame_editar, width=15)
+            campos_editar['valor'].grid(row=2, column=1, padx=5, pady=3, sticky='w')
+            
+            # === FUNÇÕES LOCAIS ===
+            
+            def carregar_compromissos():
+                """Carrega compromissos no treeview"""
+                # Limpar tree
+                for item in tree_compromissos.get_children():
+                    tree_compromissos.delete(item)
+                
+                # Carregar configurações
+                try:
+                    from src.configuracoes_sistema import GerenciadorConfiguracoes
+                    compromissos = GerenciadorConfiguracoes.get_compromissos_recorrentes_todos()
+                    
+                    for comp in compromissos:
+                        status = "ATIVO" if comp.get('ativo', True) else "INATIVO"
+                        tag = 'ativo' if comp.get('ativo', True) else 'inativo'
+                        
+                        tree_compromissos.insert('', 'end',
+                            values=(
+                                comp['nome'],
+                                comp['dia_vencimento'],
+                                comp['recorrencia'],
+                                f"R$ {comp['valor_estimado']:.2f}",
+                                status
+                            ),
+                            tags=(tag,)
+                        )
+                    
+                    # Configurar cores
+                    tree_compromissos.tag_configure('ativo', background='#e8f5e8')
+                    tree_compromissos.tag_configure('inativo', background='#ffe4e1')
+                    
+                except Exception as e:
+                    print(f"Erro ao carregar compromissos: {e}")
+            
+            def on_select_compromisso(event):
+                """Evento de seleção de compromisso"""
+                selecionado = tree_compromissos.selection()
+                if not selecionado:
+                    return
+                
+                valores = tree_compromissos.item(selecionado[0])['values']
+                
+                # Preencher campos de edição
+                campos_editar['nome'].delete(0, tk.END)
+                campos_editar['nome'].insert(0, valores[0])
+                
+                campos_editar['dia'].delete(0, tk.END)
+                campos_editar['dia'].insert(0, valores[1])
+                
+                # Extrair valor numérico
+                valor_str = valores[3].replace('R$ ', '').replace('.', '').replace(',', '.')
+                campos_editar['valor'].delete(0, tk.END)
+                campos_editar['valor'].insert(0, f"{float(valor_str):.2f}".replace('.', ','))
+            
+            def adicionar_compromisso():
+                """Adiciona novo compromisso"""
+                try:
+                    # Validações
+                    nome = campos_novo['nome'].get().strip().upper()
+                    if not nome:
+                        custom_messagebox("error", "Erro", "Nome é obrigatório!")
+                        return
+                    
+                    # Coletar dados
+                    dia = int(campos_novo['dia'].get())
+                    recorrencia = campos_novo['recorrencia'].get()
+                    categoria = campos_novo['categoria'].get()
+                    tipo_despesa = int(campos_novo['tipo_despesa'].get())
+                    
+                    valor_str = campos_novo['valor'].get().replace(',', '.')
+                    valor = float(valor_str) if valor_str else 0.0
+                    
+                    observacao = campos_novo['observacao'].get().strip()
+                    
+                    # Salvar na configuração
+                    from src.configuracoes_sistema import GerenciadorConfiguracoes
+                    config = GerenciadorConfiguracoes.carregar_configuracoes()
+                    
+                    if 'compromissos_recorrentes' not in config:
+                        config['compromissos_recorrentes'] = {'lista': [], 'historico_alteracoes': []}
+                    
+                    # Verificar duplicatas
+                    if any(c['nome'] == nome for c in config['compromissos_recorrentes']['lista']):
+                        custom_messagebox("error", "Erro", "Já existe um compromisso com este nome!")
+                        return
+                    
+                    # Adicionar compromisso
+                    novo_compromisso = {
+                        'nome': nome,
+                        'dia_vencimento': dia,
+                        'recorrencia': recorrencia,
+                        'valor_estimado': valor,
+                        'categoria': categoria,
+                        'tipo_despesa': tipo_despesa,
+                        'ativo': True,
+                        'observacao': observacao
+                    }
+                    
+                    config['compromissos_recorrentes']['lista'].append(novo_compromisso)
+                    
+                    # Salvar configuração
+                    from pathlib import Path
+                    import json
+                    config_path = GerenciadorConfiguracoes.CONFIG_PATH
+                    with open(config_path, 'w', encoding='utf-8') as f:
+                        json.dump(config, f, indent=4, ensure_ascii=False)
+                    
+                    # Atualizar cache
+                    GerenciadorConfiguracoes._atualizar_cache(config)
+                    
+                    # Limpar campos
+                    for campo in campos_novo.values():
+                        if hasattr(campo, 'delete'):
+                            campo.delete(0, tk.END)
+                        elif hasattr(campo, 'set'):
+                            campo.set('')
+                    
+                    # Recarregar lista
+                    carregar_compromissos()
+                    
+                    custom_messagebox("info", "Sucesso", "Compromisso adicionado com sucesso!")
+                    
+                except Exception as e:
+                    custom_messagebox("error", "Erro", f"Erro ao adicionar compromisso: {str(e)}")
+            
+            def salvar_alteracoes():
+                """Salva alterações no compromisso selecionado"""
+                selecionado = tree_compromissos.selection()
+                if not selecionado:
+                    custom_messagebox("warning", "Aviso", "Selecione um compromisso para editar!")
+                    return
+                
+                try:
+                    nome_original = tree_compromissos.item(selecionado[0])['values'][0]
+                    
+                    # Carregar configuração
+                    from src.configuracoes_sistema import GerenciadorConfiguracoes
+                    config = GerenciadorConfiguracoes.carregar_configuracoes()
+                    
+                    # Encontrar e atualizar compromisso
+                    for comp in config['compromissos_recorrentes']['lista']:
+                        if comp['nome'] == nome_original:
+                            comp['nome'] = campos_editar['nome'].get().strip().upper()
+                            comp['dia_vencimento'] = int(campos_editar['dia'].get())
+                            
+                            valor_str = campos_editar['valor'].get().replace(',', '.')
+                            comp['valor_estimado'] = float(valor_str) if valor_str else 0.0
+                            break
+                    
+                    # Salvar configuração
+                    import json
+                    config_path = GerenciadorConfiguracoes.CONFIG_PATH
+                    with open(config_path, 'w', encoding='utf-8') as f:
+                        json.dump(config, f, indent=4, ensure_ascii=False)
+                    
+                    # Atualizar cache
+                    GerenciadorConfiguracoes._atualizar_cache(config)
+                    
+                    # Recarregar
+                    carregar_compromissos()
+                    
+                    custom_messagebox("info", "Sucesso", "Compromisso atualizado com sucesso!")
+                    
+                except Exception as e:
+                    custom_messagebox("error", "Erro", f"Erro ao salvar: {str(e)}")
+            
+            def toggle_status():
+                """Ativa/desativa compromisso selecionado"""
+                selecionado = tree_compromissos.selection()
+                if not selecionado:
+                    custom_messagebox("warning", "Aviso", "Selecione um compromisso!")
+                    return
+                
+                try:
+                    nome = tree_compromissos.item(selecionado[0])['values'][0]
+                    
+                    # Carregar e alterar configuração
+                    from src.configuracoes_sistema import GerenciadorConfiguracoes
+                    config = GerenciadorConfiguracoes.carregar_configuracoes()
+                    
+                    for comp in config['compromissos_recorrentes']['lista']:
+                        if comp['nome'] == nome:
+                            comp['ativo'] = not comp.get('ativo', True)
+                            status = "ativado" if comp['ativo'] else "desativado"
+                            break
+                    
+                    # Salvar
+                    import json
+                    config_path = GerenciadorConfiguracoes.CONFIG_PATH
+                    with open(config_path, 'w', encoding='utf-8') as f:
+                        json.dump(config, f, indent=4, ensure_ascii=False)
+                    
+                    GerenciadorConfiguracoes._atualizar_cache(config)
+                    carregar_compromissos()
+                    
+                    custom_messagebox("info", "Sucesso", f"Compromisso {status}!")
+                    
+                except Exception as e:
+                    custom_messagebox("error", "Erro", f"Erro ao alterar status: {str(e)}")
+            
+            def remover_compromisso():
+                """Remove compromisso selecionado"""
+                selecionado = tree_compromissos.selection()
+                if not selecionado:
+                    custom_messagebox("warning", "Aviso", "Selecione um compromisso para remover!")
+                    return
+                
+                nome = tree_compromissos.item(selecionado[0])['values'][0]
+                
+                if not custom_messagebox("yesno", "Confirmar", f"Deseja remover o compromisso '{nome}'?"):
+                    return
+                
+                try:
+                    # Remover da configuração
+                    from src.configuracoes_sistema import GerenciadorConfiguracoes
+                    config = GerenciadorConfiguracoes.carregar_configuracoes()
+                    
+                    config['compromissos_recorrentes']['lista'] = [
+                        c for c in config['compromissos_recorrentes']['lista'] 
+                        if c['nome'] != nome
+                    ]
+                    
+                    # Salvar
+                    import json
+                    config_path = GerenciadorConfiguracoes.CONFIG_PATH
+                    with open(config_path, 'w', encoding='utf-8') as f:
+                        json.dump(config, f, indent=4, ensure_ascii=False)
+                    
+                    GerenciadorConfiguracoes._atualizar_cache(config)
+                    carregar_compromissos()
+                    
+                    # Limpar campos de edição
+                    for campo in campos_editar.values():
+                        campo.delete(0, tk.END)
+                    
+                    custom_messagebox("info", "Sucesso", "Compromisso removido com sucesso!")
+                    
+                except Exception as e:
+                    custom_messagebox("error", "Erro", f"Erro ao remover: {str(e)}")
+            
+            def fechar_e_recarregar():
+                """Fecha o gerenciador e recarrega a agenda"""
+                janela_compromissos.destroy()
+                # Recarregar dados da agenda para refletir alterações
+                self.carregar_dados_agenda()
+            
+            # === BOTÕES ===
+            
+            # Botões para novo compromisso
+            ttk.Button(frame_novo, text="Adicionar Compromisso",
+                    command=adicionar_compromisso).grid(row=7, column=0, columnspan=2, pady=10)
+            
+            # Botões para edição
+            frame_botoes_edicao = ttk.Frame(frame_editar)
+            frame_botoes_edicao.grid(row=3, column=0, columnspan=2, pady=10)
+            
+            ttk.Button(frame_botoes_edicao, text="Salvar",
+                    command=salvar_alteracoes).pack(side='left', padx=2)
+            ttk.Button(frame_botoes_edicao, text="Ativar/Desativar",
+                    command=toggle_status).pack(side='left', padx=2)
+            ttk.Button(frame_botoes_edicao, text="Remover",
+                    command=remover_compromisso).pack(side='left', padx=2)
+            
+            # Botões inferiores
+            frame_botoes_inferior = ttk.Frame(main_frame)
+            frame_botoes_inferior.pack(fill='x', pady=(15, 0))
+            
+            ttk.Button(frame_botoes_inferior, text="Fechar e Recarregar Agenda",
+                    command=fechar_e_recarregar).pack(side='right', padx=5)
+            
+            # === EVENTOS ===
+            tree_compromissos.bind('<<TreeviewSelect>>', on_select_compromisso)
+            
+            # Carregar dados iniciais
+            carregar_compromissos()
+            
+            print("DEBUG: Gerenciador de compromissos aberto com sucesso")
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir gerenciador: {str(e)}")
+            print(f"DEBUG: Erro ao abrir gerenciador de compromissos: {str(e)}")
+
+    def importar_excel(self):
+        """Importa agenda de arquivo Excel"""
+        try:
+            arquivo = filedialog.askopenfilename(
+                title="Selecionar arquivo de agenda",
+                filetypes=[("Excel files", "*.xlsx *.xls"), ("All files", "*.*")]
+            )
+            
+            if not arquivo:
+                return
+            
+            # Implementar lógica de importação
+            custom_messagebox("info", "Importação", "Funcionalidade de importação será implementada")
+            
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao importar: {str(e)}")
+    
+    def exportar_periodo(self):
+        """Exporta período atual para Excel com mais detalhes"""
+        try:
+            # Preparar dados para exportação
+            dados_exportacao = []
+            
+            for child in self.tree_agenda.get_children():
+                valores = self.tree_agenda.item(child, 'values')
+                
+                # Buscar dados originais para mais detalhes
+                item_original = None
+                for item in self.dados_agenda:
+                    if item['vencimento'].strftime('%d/%m/%Y') == valores[0] and item['fornecedor'] == valores[3]:
+                        item_original = item
+                        break
+                
+                linha_excel = {
+                    'Vencimento': valores[0],
+                    'Status': valores[1],
+                    'Cliente': valores[2],
+                    'Fornecedor': valores[3],
+                    'Referência': valores[4],
+                    'Valor': valores[5],
+                    'Tipo': valores[6],
+                    'Observação': valores[7],
+                    'Origem': item_original['origem'] if item_original else 'N/A',
+                    'ID_Sistema': valores[8] if len(valores) > 8 else ''
+                }
+                
+                dados_exportacao.append(linha_excel)
+            
+            if not dados_exportacao:
+                custom_messagebox("warning", "Aviso", "Nenhum dado para exportar no período atual")
+                return
+            
+            # Salvar arquivo
+            from tkinter import filedialog
+            data_atual = datetime.now().strftime('%Y%m%d_%H%M')
+            nome_padrao = f"Agenda_{self.sistema.cliente_atual}_{data_atual}.xlsx"
+            
+            arquivo = filedialog.asksaveasfilename(
+                title="Salvar agenda",
+                defaultextension=".xlsx",
+                initialvalue=nome_padrao,
+                filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")]
+            )
+            
+            if arquivo:
+                df_export = pd.DataFrame(dados_exportacao)
+                
+                # Adicionar resumo
+                total_valor = sum(float(d['Valor'].replace('R$ ', '').replace('.', '').replace(',', '.')) 
+                                for d in dados_exportacao)
+                
+                resumo = {
+                    'Total_Itens': len(dados_exportacao),
+                    'Total_Valor': f"R$ {total_valor:,.2f}",
+                    'Periodo_Inicio': self.data_inicio_personalizada.get(),
+                    'Periodo_Fim': self.data_fim_personalizada.get(),
+                    'Data_Exportacao': datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
+                    'Cliente': self.sistema.cliente_atual
+                }
+                
+                with pd.ExcelWriter(arquivo, engine='openpyxl') as writer:
+                    df_export.to_excel(writer, sheet_name='Agenda', index=False)
+                    
+                    # Adicionar resumo em aba separada
+                    df_resumo = pd.DataFrame([resumo])
+                    df_resumo.to_excel(writer, sheet_name='Resumo', index=False)
+                
+                custom_messagebox("info", "Sucesso", f"Agenda exportada para:\n{arquivo}")
+                    
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao exportar: {str(e)}")
+    
+    def verificar_alertas_inteligentes(self):
+        """Verifica alertas baseados em padrões reais"""
+        alertas = []
+        hoje = datetime.now().date()
+        
+        try:
+            # Alertar sobre vencimentos de hoje
+            venc_hoje = [item for item in self.dados_agenda if item['vencimento'] == hoje]
+            if venc_hoje:
+                valor_hoje = sum(item['valor'] for item in venc_hoje)
+                alertas.append({
+                    'tipo': 'URGENTE',
+                    'titulo': f'{len(venc_hoje)} vencimento(s) HOJE',
+                    'descricao': f'Total: R$ {valor_hoje:,.2f}',
+                    'itens': [f"• {item['fornecedor']}" for item in venc_hoje]
+                })
+            
+            # Alertar sobre vencidos
+            vencidos = [item for item in self.dados_agenda if item['vencimento'] < hoje and item['status'] != 'LANÇADO']
+            if vencidos:
+                valor_vencido = sum(item['valor'] for item in vencidos)
+                alertas.append({
+                    'tipo': 'ATENCAO',
+                    'titulo': f'{len(vencidos)} item(ns) vencido(s)',
+                    'descricao': f'Total: R$ {valor_vencido:,.2f}',
+                    'itens': [f"• {item['fornecedor']} ({item['vencimento'].strftime('%d/%m')})" for item in vencidos[:5]]
+                })
+            
+            # Alertar sobre alto volume nos próximos 7 dias
+            proximos_7_dias = hoje + timedelta(days=7)
+            proximos = [item for item in self.dados_agenda 
+                    if hoje < item['vencimento'] <= proximos_7_dias]
+            
+            if proximos:
+                valor_proximo = sum(item['valor'] for item in proximos)
+                if valor_proximo > 50000:  # Configurável
+                    alertas.append({
+                        'tipo': 'INFO',
+                        'titulo': f'Alto volume próximos 7 dias',
+                        'descricao': f'R$ {valor_proximo:,.2f} em {len(proximos)} itens',
+                        'itens': []
+                    })
+            
+            return alertas
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao verificar alertas: {str(e)}")
+            return []
+
+    def mostrar_alertas_se_necessario(self):
+        """Mostra alertas inteligentes se houver itens importantes"""
+        alertas = self.verificar_alertas_inteligentes()
+        
+        if not alertas:
+            return
+        
+        # Mostrar apenas se houver alertas urgentes ou de atenção
+        alertas_importantes = [a for a in alertas if a['tipo'] in ['URGENTE', 'ATENCAO']]
+        
+        if not alertas_importantes:
+            return
+        
+        # Criar janela de alerta discreta
+        janela_alerta = tk.Toplevel(self.janela)
+        janela_alerta.title("Alertas da Agenda")
+        janela_alerta.geometry("400x300")
+        janela_alerta.attributes('-topmost', True)
+        
+        frame_main = ttk.Frame(janela_alerta, padding="10")
+        frame_main.pack(fill='both', expand=True)
+        
+        ttk.Label(frame_main, text="Alertas da Agenda", 
+                font=('TkDefaultFont', 12, 'bold')).pack(pady=(0, 10))
+        
+        for alerta in alertas_importantes:
+            frame_alerta = ttk.LabelFrame(frame_main, text=alerta['titulo'])
+            frame_alerta.pack(fill='x', pady=5)
+            
+            ttk.Label(frame_alerta, text=alerta['descricao']).pack(anchor='w', padx=5, pady=2)
+            
+            for item in alerta.get('itens', [])[:3]:  # Máximo 3 itens
+                ttk.Label(frame_alerta, text=item, font=('TkDefaultFont', 8)).pack(anchor='w', padx=15, pady=1)
+        
+        # Botões
+        frame_botoes = ttk.Frame(frame_main)
+        frame_botoes.pack(fill='x', pady=(10, 0))
+        
+        ttk.Button(frame_botoes, text="OK", command=janela_alerta.destroy).pack(side='right')
+
+    def abrir_confirmacao_lancamento(self, valores_item):
+        """Janela de confirmação com CNPJ/CPF pré-preenchido e busca de fornecedor"""
+        
+        # Buscar dados do item na agenda
+        item_agenda = None
+        for item in self.dados_agenda:
+            # CORREÇÃO: ajustar índices sem coluna cliente
+            if (item['fornecedor'] == valores_item[2] and  # índice 2 (antes era 3)
+                item['vencimento'].strftime('%d/%m/%Y') == valores_item[0]):
+                item_agenda = item
+                break
+        
+        # Janela de confirmação
+        janela_confirm = tk.Toplevel(self.janela)
+        janela_confirm.title("Confirmar Lançamento")
+        janela_confirm.geometry("700x600")  # Aumentada para acomodar lista de sugestões
+        janela_confirm.transient(self.janela)
+        janela_confirm.grab_set()
+        
+        # Frame principal
+        main_frame = ttk.Frame(janela_confirm, padding="15")
+        main_frame.pack(fill='both', expand=True)
+        
+        # Informações do item
+        frame_info = ttk.LabelFrame(main_frame, text="Dados da Agenda")
+        frame_info.pack(fill='x', pady=(0, 10))
+        
+        ttk.Label(frame_info, text=f"Vencimento: {valores_item[0]}", 
+                font=('TkDefaultFont', 10, 'bold')).pack(anchor='w', padx=10, pady=2)
+        ttk.Label(frame_info, text=f"Fornecedor Original: {valores_item[2]}").pack(anchor='w', padx=10, pady=2)  # índice 2
+        ttk.Label(frame_info, text=f"Referência: {valores_item[3]}").pack(anchor='w', padx=10, pady=2)   # índice 3
+        ttk.Label(frame_info, text=f"Valor Estimado: {valores_item[4]}").pack(anchor='w', padx=10, pady=2)  # índice 4
+        
+        # Formulário de lançamento
+        frame_form = ttk.LabelFrame(main_frame, text="Dados do Lançamento")
+        frame_form.pack(fill='both', expand=True, pady=(0, 10))
+        
+        # Data do relatório
+        ttk.Label(frame_form, text="Data do Relatório:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        data_rel = DateEntry(frame_form, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        data_rel.grid(row=0, column=1, padx=5, pady=5, sticky='w')
+        
+        # Tipo de despesa
+        ttk.Label(frame_form, text="Tipo Despesa:").grid(row=0, column=2, padx=5, pady=5, sticky='w')
+        tp_desp = ttk.Combobox(frame_form, values=['2', '3', '5', '6', '7'], state='readonly', width=5)
+        
+        # Pré-preencher com dados da configuração se disponível
+        if item_agenda and item_agenda.get('dados_originais'):
+            tp_desp.set(str(item_agenda['dados_originais'].get('tipo_despesa', 3)))
+        else:
+            tp_desp.set('3')
+        tp_desp.grid(row=0, column=3, padx=5, pady=5, sticky='w')
+        
+        # === SEÇÃO DE FORNECEDOR COM BUSCA ===
+        
+        # CNPJ/CPF - BUSCA AUTOMÁTICA CORRIGIDA
+        ttk.Label(frame_form, text="CNPJ/CPF:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        cnpj_cpf = ttk.Entry(frame_form, width=20)
+        cnpj_cpf.grid(row=1, column=1, padx=5, pady=5, sticky='ew')
+        
+        # Nome/Fornecedor com busca por parte do nome
+        ttk.Label(frame_form, text="Nome:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
+        nome = ttk.Entry(frame_form, width=40)
+        nome.grid(row=2, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        
+        # Lista de sugestões para o nome
+        lista_sugestoes = tk.Listbox(frame_form, height=4)
+        lista_sugestoes.grid(row=3, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        lista_sugestoes.grid_remove()  # Inicialmente oculta
+        
+        # === FUNÇÕES DE BUSCA ===
+        
+        def buscar_fornecedor_por_cnpj(event=None):
+            """Busca fornecedor pelo CNPJ/CPF"""
+            cnpj_digitado = cnpj_cpf.get().strip()
+            if len(cnpj_digitado) >= 11:  # CNPJ/CPF completo
+                try:
+                    fornecedor_dados = self.sistema.buscar_fornecedor_por_cnpj_agenda(cnpj_digitado)
+                    if fornecedor_dados:
+                        preencher_dados_fornecedor(fornecedor_dados)
+                        print(f"DEBUG: Fornecedor encontrado por CNPJ: {fornecedor_dados.get('nome', '')}")
+                except Exception as e:
+                    print(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
+        
+        def buscar_fornecedor_por_nome(event=None):
+            """Busca fornecedor por parte do nome"""
+            nome_digitado = nome.get().strip()
+            
+            if len(nome_digitado) < 3:  # Só buscar com 3+ caracteres
+                lista_sugestoes.grid_remove()
+                return
+                
+            try:
+                fornecedores_encontrados = self.sistema.buscar_fornecedores_por_nome_parcial(nome_digitado)
+                
+                if fornecedores_encontrados:
+                    # Mostrar lista de sugestões
+                    lista_sugestoes.delete(0, tk.END)
+                    for fornecedor in fornecedores_encontrados[:10]:  # Máximo 10 sugestões
+                        texto = f"{fornecedor['nome']} - {fornecedor['cnpj_cpf']}"
+                        lista_sugestoes.insert(tk.END, texto)
+                    
+                    lista_sugestoes.grid()
+                    print(f"DEBUG: {len(fornecedores_encontrados)} fornecedores encontrados para '{nome_digitado}'")
+                else:
+                    lista_sugestoes.grid_remove()
+                    print(f"DEBUG: Nenhum fornecedor encontrado para '{nome_digitado}'")
+                    
+            except Exception as e:
+                print(f"DEBUG: Erro ao buscar fornecedor por nome: {str(e)}")
+                lista_sugestoes.grid_remove()
+        
+        def selecionar_fornecedor_da_lista(event=None):
+            """Seleciona fornecedor da lista de sugestões"""
+            try:
+                selection = lista_sugestoes.curselection()
+                if selection:
+                    texto_selecionado = lista_sugestoes.get(selection[0])
+                    print(f"DEBUG: Texto selecionado: {texto_selecionado}")
+                    
+                    # Extrair CNPJ do texto: "NOME - CNPJ"
+                    cnpj_extraido = texto_selecionado.split(' - ')[-1]
+                    print(f"DEBUG: CNPJ extraído: {cnpj_extraido}")
+                    
+                    # Buscar dados completos do fornecedor
+                    fornecedor_dados = self.sistema.buscar_fornecedor_por_cnpj_agenda(cnpj_extraido)
+                    if fornecedor_dados:
+                        preencher_dados_fornecedor(fornecedor_dados)
+                        lista_sugestoes.grid_remove()
+                        print(f"DEBUG: Fornecedor selecionado: {fornecedor_dados.get('nome', '')}")
+                    else:
+                        print(f"DEBUG: Dados do fornecedor não encontrados para CNPJ: {cnpj_extraido}")
+                else:
+                    print("DEBUG: Nenhuma seleção na lista")
+                            
+            except Exception as e:
+                print(f"DEBUG: Erro ao selecionar fornecedor: {str(e)}")
+                import traceback
+                traceback.print_exc()
+        
+        def selecionar_por_clique(event=None):
+            """Seleciona fornecedor por clique simples"""
+            try:
+                # Pequeno delay para garantir que a seleção foi processada
+                janela_confirm.after(50, selecionar_fornecedor_da_lista)
+            except Exception as e:
+                print(f"DEBUG: Erro no clique: {str(e)}")
+        
+        def preencher_dados_fornecedor(fornecedor_dados):
+            """Preenche todos os campos com dados do fornecedor"""
+            try:
+                print(f"DEBUG: Preenchendo dados do fornecedor: {fornecedor_dados.get('nome', '')}")
+                
+                # Preencher CNPJ/CPF
+                cnpj_cpf.delete(0, tk.END)
+                cnpj_cpf.insert(0, fornecedor_dados.get('cnpj_cpf', ''))
+                
+                # Preencher nome
+                nome.delete(0, tk.END)
+                nome.insert(0, fornecedor_dados.get('nome', ''))
+                
+                # Preencher categoria se existir o campo
+                if 'categoria' in locals():
+                    categoria.delete(0, tk.END)
+                    categoria.insert(0, fornecedor_dados.get('categoria', 'FORNECEDOR'))
+                
+                print(f"DEBUG: Campos preenchidos com sucesso")
+                
+            except Exception as e:
+                print(f"DEBUG: Erro ao preencher dados: {str(e)}")
+        
+        def navegar_lista_com_teclado(event):
+            """Navega na lista com teclado e seleciona com Enter"""
+            try:
+                if event.keysym == 'Down':
+                    current = lista_sugestoes.curselection()
+                    if current:
+                        next_index = min(current[0] + 1, lista_sugestoes.size() - 1)
+                    else:
+                        next_index = 0
+                    lista_sugestoes.selection_clear(0, tk.END)
+                    lista_sugestoes.selection_set(next_index)
+                    lista_sugestoes.see(next_index)
+                    return "break"
+                    
+                elif event.keysym == 'Up':
+                    current = lista_sugestoes.curselection()
+                    if current:
+                        next_index = max(current[0] - 1, 0)
+                    else:
+                        next_index = 0
+                    lista_sugestoes.selection_clear(0, tk.END)
+                    lista_sugestoes.selection_set(next_index)
+                    lista_sugestoes.see(next_index)
+                    return "break"
+                    
+                elif event.keysym == 'Return':
+                    selecionar_fornecedor_da_lista()
+                    return "break"
+                    
+            except Exception as e:
+                print(f"DEBUG: Erro na navegação: {str(e)}")
+        
+        def ocultar_sugestoes_ao_sair_foco(event=None):
+            """Oculta sugestões quando sai do foco"""
+            try:
+                widget_foco = janela_confirm.focus_get()
+                if widget_foco == lista_sugestoes:
+                    return  # Não ocultar se o foco foi para a lista
+                
+                # Delay maior para permitir clique
+                janela_confirm.after(300, lambda: lista_sugestoes.grid_remove())
+            except:
+                janela_confirm.after(300, lambda: lista_sugestoes.grid_remove())
+        
+        # === BINDINGS PARA BUSCA ===
+        cnpj_cpf.bind('<KeyRelease>', buscar_fornecedor_por_cnpj)
+        cnpj_cpf.bind('<FocusOut>', buscar_fornecedor_por_cnpj)
+        
+        nome.bind('<KeyRelease>', buscar_fornecedor_por_nome)
+        nome.bind('<FocusOut>', ocultar_sugestoes_ao_sair_foco)
+        
+        # Navegação por teclado no campo nome quando há sugestões
+        nome.bind('<Down>', lambda e: lista_sugestoes.focus() if lista_sugestoes.winfo_viewable() else None)
+        
+        # Bindings da lista
+        lista_sugestoes.bind('<Button-1>', selecionar_por_clique)  # Clique simples
+        lista_sugestoes.bind('<Double-Button-1>', selecionar_fornecedor_da_lista)  # Duplo clique
+        lista_sugestoes.bind('<KeyPress>', navegar_lista_com_teclado)  # Navegação por teclado
+        
+        # Permitir que a lista receba foco
+        lista_sugestoes.bind('<FocusIn>', lambda e: print("DEBUG: Lista recebeu foco"))
+        lista_sugestoes.bind('<FocusOut>', ocultar_sugestoes_ao_sair_foco)
+        
+        # === PREENCHER DADOS INICIAIS ===
+        try:
+            fornecedor_nome = valores_item[2]  # Nome do fornecedor (índice correto sem cliente)
+            print(f"DEBUG: Buscando fornecedor: {fornecedor_nome}")
+            
+            # Usar o método específico para agenda
+            fornecedor_dados = self.sistema.buscar_fornecedor_por_nome_agenda(fornecedor_nome)
+            
+            if fornecedor_dados:
+                # Preencher dados automaticamente
+                preencher_dados_fornecedor(fornecedor_dados)
+                print(f"DEBUG: CNPJ/CPF encontrado e preenchido: {fornecedor_dados.get('cnpj_cpf', '')}")
+            else:
+                # Se não encontrou, preencher apenas o nome original da agenda
+                nome.insert(0, valores_item[2])  # índice 2
+                # Usar CNPJ genérico para teste
+                cnpj_cpf.insert(0, "00.000.000/0001-00")
+                print("DEBUG: Fornecedor não encontrado, dados padrão inseridos")
+                
+        except Exception as e:
+            print(f"DEBUG: Erro ao buscar fornecedor: {str(e)}")
+            # Fallback: preencher com dados da agenda
+            nome.insert(0, valores_item[2])  # índice 2
+            cnpj_cpf.insert(0, "00.000.000/0001-00")
+        
+        # === CAMPOS RESTANTES ===
+        
+        # Referência
+        ttk.Label(frame_form, text="Referência:").grid(row=4, column=0, padx=5, pady=5, sticky='w')
+        referencia = ttk.Entry(frame_form, width=40)
+        referencia.insert(0, valores_item[3])  # índice 3
+        referencia.grid(row=4, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        
+        # NF
+        ttk.Label(frame_form, text="NF:").grid(row=5, column=0, padx=5, pady=5, sticky='w')
+        nf = ttk.Entry(frame_form, width=15)
+        nf.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        
+        # Valor
+        ttk.Label(frame_form, text="Valor:").grid(row=5, column=2, padx=5, pady=5, sticky='w')
+        valor = ttk.Entry(frame_form, width=15)
+        # Extrair valor numérico da string formatada
+        valor_numerico = valores_item[4].replace('R$ ', '').replace('.', '').replace(',', '.')  # índice 4
+        valor.insert(0, valor_numerico)
+        valor.grid(row=5, column=3, padx=5, pady=5, sticky='w')
+        
+        # Data de vencimento
+        ttk.Label(frame_form, text="Data Vencimento:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
+        dt_vencto = DateEntry(frame_form, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        dt_vencto.set_date(datetime.strptime(valores_item[0], '%d/%m/%Y').date())
+        dt_vencto.grid(row=6, column=1, padx=5, pady=5, sticky='w')
+        
+        # Observação
+        ttk.Label(frame_form, text="Observação:").grid(row=7, column=0, padx=5, pady=5, sticky='w')
+        observacao = ttk.Entry(frame_form, width=40)
+        
+        if item_agenda and item_agenda.get('dados_originais'):
+            obs_config = item_agenda['dados_originais'].get('observacao', '')
+            observacao.insert(0, f"{obs_config} - CONFIRMADO DA AGENDA")
+        else:
+            observacao.insert(0, "CONFIRMADO DA AGENDA")
+        observacao.grid(row=7, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        
+        # Configurar expansão
+        frame_form.columnconfigure(1, weight=1)
+        
+        # Botões
+        frame_botoes = ttk.Frame(main_frame)
+        frame_botoes.pack(fill='x')
+        
+        def confirmar():
+            from src.config.utils import custom_messagebox
+            try:
+                # Validações básicas
+                if not nome.get().strip():
+                    custom_messagebox("error", "Erro", "Nome é obrigatório!")
+                    return
+                
+                if not valor.get().strip():
+                    custom_messagebox("error", "Erro", "Valor é obrigatório!")
+                    return
+                
+                if not cnpj_cpf.get().strip():
+                    custom_messagebox("error", "Erro", "CNPJ/CPF é obrigatório!")
+                    return
+                
+                # Preparar dados do lançamento
+                dados_lancamento = {
+                    'data_rel': data_rel.get_date(),
+                    'tp_desp': tp_desp.get(),
+                    'cnpj_cpf': cnpj_cpf.get().strip(),
+                    'nome': nome.get().strip().upper(),
+                    'referencia': referencia.get().strip().upper(),
+                    'nf': nf.get().strip().upper(),
+                    'valor': float(valor.get().replace(',', '.')),
+                    'dt_vencto': dt_vencto.get_date(),
+                    'observacao': observacao.get().strip().upper()
+                }
+                
+                # CORREÇÃO: Chamar método correto que existe no sistema
+                sucesso = self.sistema.inserir_lancamento_completo(dados_lancamento)
+                
+                if sucesso:
+                    custom_messagebox("info", "Sucesso", "Lançamento confirmado e inserido com sucesso!")
+                    janela_confirm.destroy()
+                    self.carregar_dados_agenda()  # Recarregar agenda
+                else:
+                    custom_messagebox("error", "Erro", "Erro ao inserir lançamento!")
+                    
+            except Exception as e:
+                custom_messagebox("error", "Erro", f"Erro ao confirmar lançamento: {str(e)}")
+        
+        ttk.Button(frame_botoes, text="Confirmar e Lançar", 
+                command=confirmar).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Cancelar", 
+                command=janela_confirm.destroy).pack(side='left', padx=5)
+       
+    def obter_dados_bancarios_fornecedor(self, cnpj_cpf, forma_pagamento_preferida="PIX"):
+        """Obtém dados bancários formatados do fornecedor"""
+        try:
+            fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
+            
+            if not fornecedor:
+                return "DADOS BANCÁRIOS NÃO CADASTRADOS"
+            
+            if forma_pagamento_preferida == "PIX" and fornecedor.get('chave_pix'):
+                return f"PIX: {fornecedor['chave_pix']}"
+            
+            # Construir dados para TED
+            partes_dados = []
+            if fornecedor.get('banco'): 
+                partes_dados.append(fornecedor['banco'])
+            if fornecedor.get('op'): 
+                partes_dados.append(fornecedor['op'])
+            if fornecedor.get('agencia'): 
+                partes_dados.append(fornecedor['agencia'])
+            if fornecedor.get('conta'): 
+                partes_dados.append(fornecedor['conta'])
+            
+            # Sempre adicionar CNPJ/CPF
+            partes_dados.append(fornecedor['cnpj_cpf'])
+            
+            return ' - '.join(partes_dados) if partes_dados else "DADOS BANCÁRIOS INCOMPLETOS"
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao obter dados bancários: {str(e)}")
+            return "ERRO AO OBTER DADOS BANCÁRIOS"
+
+    def importar_template_agenda(self):
+        """Importa compromissos de um template/arquivo de agenda"""
+        try:
+            # Verificar se existe arquivo Agenda.xlsx
+            arquivo_agenda = PASTA_CLIENTES / "Agenda.xlsx"
+            
+            if not arquivo_agenda.exists():
+                print("DEBUG: Arquivo Agenda.xlsx não encontrado")
+                return
+            
+            # Carregar dados do template
+            df_agenda = pd.read_excel(arquivo_agenda)
+            df_agenda = df_agenda.fillna("")
+            
+            hoje = datetime.now().date()
+            
+            # Processar cada linha do template
+            for idx, row in df_agenda.iterrows():
+                try:
+                    nome = row.get('FORNECEDOR', '').strip()
+                    if not nome:
+                        continue
+                    
+                    # Extrair informações de vencimento (assumindo colunas como RELATÓRIO DIA 05, DIA 20, etc.)
+                    for coluna in df_agenda.columns:
+                        if 'DIA' in str(coluna).upper() and row.get(coluna) == 'X':
+                            # Extrair dia do nome da coluna
+                            dia_vencimento = None
+                            if 'DIA 05' in str(coluna).upper() or 'DIA.05' in str(coluna).upper():
+                                dia_vencimento = 5
+                            elif 'DIA 20' in str(coluna).upper() or 'DIA.20' in str(coluna).upper():
+                                dia_vencimento = 20
+                            
+                            if dia_vencimento:
+                                # Gerar compromissos futuros para os próximos meses
+                                for mes_futuro in range(3):  # Próximos 3 meses
+                                    data_compromisso = hoje + relativedelta(months=mes_futuro)
+                                    try:
+                                        data_compromisso = data_compromisso.replace(day=dia_vencimento)
+                                    except ValueError:
+                                        # Se dia não existe no mês, usar último dia
+                                        ultimo_dia = calendar.monthrange(data_compromisso.year, data_compromisso.month)[1]
+                                        data_compromisso = data_compromisso.replace(day=min(dia_vencimento, ultimo_dia))
+                                    
+                                    if data_compromisso > hoje:
+                                        # Verificar se já não existe
+                                        ja_existe = any(
+                                            item['vencimento'] == data_compromisso and 
+                                            nome.upper() in item['fornecedor'].upper()
+                                            for item in self.dados_agenda
+                                        )
+                                        
+                                        if not ja_existe:
+                                            item_agenda = {
+                                                'vencimento': data_compromisso,
+                                                'status': 'PENDENTE',
+                                                'cliente': self.sistema.cliente_atual,
+                                                'fornecedor': nome,
+                                                'referencia': f"{nome} - {data_compromisso.strftime('%m/%Y')}",
+                                                'valor': 0,
+                                                'tipo': 'TEMPLATE',
+                                                'observacao': f"Template - Venc. dia {dia_vencimento}",
+                                                'id_origem': f"TPL_{nome.replace(' ', '_')}_{data_compromisso.strftime('%Y%m%d')}",
+                                                'origem': 'TEMPLATE'
+                                            }
+                                            
+                                            self.dados_agenda.append(item_agenda)
+                
+                except Exception as e:
+                    print(f"DEBUG: Erro ao processar linha do template: {str(e)}")
+                    continue
+                    
+            print(f"DEBUG: Template de agenda processado com sucesso")
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao importar template de agenda: {str(e)}")
+    
+    def analisar_padroes_historicos(self):
+        """Analisa padrões históricos para sugerir compromissos futuros"""
+        try:
+            # Esta função pode analisar o histórico de lançamentos do cliente
+            # para identificar padrões recorrentes e sugerir compromissos futuros
+            
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            if not arquivo_cliente.exists():
+                return
+            
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = df.fillna("")
+            
+            # Analisar últimos 6 meses para identificar padrões
+            seis_meses_atras = datetime.now().date() - relativedelta(months=6)
+            
+            # Agrupar por fornecedor e mês para identificar recorrências
+            padroes_encontrados = {}
+            
+            for idx, row in df.iterrows():
+                try:
+                    dt_vencto = pd.to_datetime(row['DT_VENCTO']).date()
+                    if dt_vencto < seis_meses_atras:
+                        continue
+                    
+                    fornecedor = row.get('NOME', '').strip().upper()
+                    if not fornecedor:
+                        continue
+                    
+                    mes_ano = dt_vencto.strftime('%Y-%m')
+                    dia_vencimento = dt_vencto.day
+                    valor = float(row.get('VALOR', 0))
+                    
+                    chave = f"{fornecedor}_{dia_vencimento}"
+                    
+                    if chave not in padroes_encontrados:
+                        padroes_encontrados[chave] = {
+                            'fornecedor': fornecedor,
+                            'dia_vencimento': dia_vencimento,
+                            'ocorrencias': [],
+                            'valores': []
+                        }
+                    
+                    padroes_encontrados[chave]['ocorrencias'].append(mes_ano)
+                    padroes_encontrados[chave]['valores'].append(valor)
+                    
+                except Exception as e:
+                    continue
+            
+            # Identificar padrões realmente recorrentes (pelo menos 3 ocorrências)
+            hoje = datetime.now().date()
+            
+            for chave, padrao in padroes_encontrados.items():
+                if len(padrao['ocorrencias']) >= 3:
+                    # É um padrão recorrente, gerar compromissos futuros
+                    valor_medio = sum(padrao['valores']) / len(padrao['valores'])
+                    
+                    # Gerar para próximos 2 meses
+                    for mes_futuro in range(1, 3):
+                        data_futura = hoje + relativedelta(months=mes_futuro)
+                        try:
+                            data_compromisso = data_futura.replace(day=padrao['dia_vencimento'])
+                        except ValueError:
+                            ultimo_dia = calendar.monthrange(data_futura.year, data_futura.month)[1]
+                            data_compromisso = data_futura.replace(day=min(padrao['dia_vencimento'], ultimo_dia))
+                        
+                        # Verificar se já não existe
+                        ja_existe = any(
+                            item['vencimento'] == data_compromisso and 
+                            padrao['fornecedor'] in item['fornecedor'].upper()
+                            for item in self.dados_agenda
+                        )
+                        
+                        if not ja_existe:
+                            item_agenda = {
+                                'vencimento': data_compromisso,
+                                'status': 'PENDENTE',
+                                'cliente': self.sistema.cliente_atual,
+                                'fornecedor': padrao['fornecedor'],
+                                'referencia': f"{padrao['fornecedor']} - {data_compromisso.strftime('%m/%Y')}",
+                                'valor': valor_medio,
+                                'tipo': 'HISTÓRICO',
+                                'observacao': f"Baseado em padrão histórico ({len(padrao['ocorrencias'])} ocorrências)",
+                                'id_origem': f"HIST_{chave}_{data_compromisso.strftime('%Y%m%d')}",
+                                'origem': 'HISTÓRICO'
+                            }
+                            
+                            self.dados_agenda.append(item_agenda)
+            
+            print(f"DEBUG: Análise de padrões históricos concluída")
+            
+        except Exception as e:
+            print(f"DEBUG: Erro na análise de padrões históricos: {str(e)}")
+    
+    def on_double_click(self, event):
+        """Trata duplo clique nos itens"""
+        selected = self.tree_agenda.selection()
+        if selected:
+            valores = self.tree_agenda.item(selected[0], 'values')
+            status = valores[1]
+            
+            if status == 'PENDENTE':
+                self.confirmar_lancamento()
+            elif status in ['LANÇADO', 'VENCIDO', 'VENCE HOJE']:
+                self.editar_selecionado()
+    
+    def configurar_atalhos(self):
+        """Configura atalhos de teclado para a agenda"""
+        try:
+            # Enter: Confirmar lançamento (se pendente) ou editar (se lançado)
+            def on_enter(event):
+                selected = self.tree_agenda.selection()
+                if selected:
+                    valores = self.tree_agenda.item(selected[0], 'values')
+                    status = valores[1]
+                    
+                    if status == 'PENDENTE':
+                        self.confirmar_lancamento()
+                    else:
+                        self.editar_selecionado()
+                return "break"
+            
+            self.tree_agenda.bind('<Return>', on_enter)
+            self.janela.bind('<Return>', on_enter)
+            
+            # F5: Atualizar
+            def on_f5(event):
+                self.carregar_dados_agenda()
+                return "break"
+            
+            self.janela.bind('<F5>', on_f5)
+            self.tree_agenda.bind('<F5>', on_f5)
+            
+            # Ctrl+N: Novo lançamento
+            def on_ctrl_n(event):
+                self.novo_lancamento()
+                return "break"
+            
+            self.janela.bind('<Control-n>', on_ctrl_n)
+            
+            # Escape: Fechar
+            def on_escape(event):
+                self.janela.destroy()
+                return "break"
+            
+            self.janela.bind('<Escape>', on_escape)
+            
+            print("DEBUG: Atalhos da agenda configurados")
+            print("       Enter: Confirmar/Editar item selecionado")
+            print("       F5: Atualizar agenda")
+            print("       Ctrl+N: Novo lançamento")
+            print("       Escape: Fechar")
+            
+        except Exception as e:
+            print(f"Erro ao configurar atalhos da agenda: {str(e)}")
+
+class ConfiguradorAgenda:
+    """Classe para configurar templates e padrões da agenda"""
+    
+    @staticmethod
+    def criar_template_agenda():
+        """Cria template inicial da agenda baseado na imagem"""
+        try:
+            arquivo_template = PASTA_CLIENTES / "Agenda.xlsx"
+            
+            # Dados baseados na imagem fornecida
+            template_data = [
+                {'FORNECEDOR': 'FOLHA DP', 'DIA_05': 'X', 'DIA_20': '', 'CATEGORIA': 'FOLHA_PAGAMENTO'},
+                {'FORNECEDOR': 'MOTORISTA', 'DIA_05': 'X', 'DIA_20': '', 'CATEGORIA': 'FOLHA_PAGAMENTO'},
+                {'FORNECEDOR': 'ELETRICISTA', 'DIA_05': 'X', 'DIA_20': '', 'CATEGORIA': 'FOLHA_PAGAMENTO'},
+                {'FORNECEDOR': 'MISS SST', 'DIA_05': '', 'DIA_20': 'X', 'CATEGORIA': 'SERVICOS'},
+                {'FORNECEDOR': 'FGTS', 'DIA_05': 'X', 'DIA_20': '', 'CATEGORIA': 'TRIBUTOS'},
+                {'FORNECEDOR': 'DETRAN', 'DIA_05': '', 'DIA_20': 'X', 'CATEGORIA': 'SERVICOS'},
+                {'FORNECEDOR': 'ADMINISTRAÇÃO', 'DIA_05': '', 'DIA_20': 'X', 'CATEGORIA': 'TAXA_ADM'},
+                {'FORNECEDOR': 'FESTA SAFRA', 'DIA_05': '', 'DIA_20': '', 'CATEGORIA': 'EVENTOS'},
+                {'FORNECEDOR': 'PROJ SEGURANÇA', 'DIA_05': '', 'DIA_20': 'X', 'CATEGORIA': 'PROJETOS'},
+                {'FORNECEDOR': 'MAQUINAS', 'DIA_05': '', 'DIA_20': 'X', 'CATEGORIA': 'EQUIPAMENTOS'},
+            ]
+            
+            df_template = pd.DataFrame(template_data)
+            df_template.to_excel(arquivo_template, index=False)
+            
+            print(f"✅ Template da agenda criado: {arquivo_template}")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Erro ao criar template: {str(e)}")
+            return False
+    
+    @staticmethod
+    def configurar_compromissos_personalizados():
+        """Interface para configurar compromissos personalizados por cliente"""
+        
+        janela_config = tk.Toplevel()
+        janela_config.title("Configurar Compromissos Personalizados")
+        janela_config.geometry("800x600")
+        
+        # Frame principal
+        main_frame = ttk.Frame(janela_config, padding="10")
+        main_frame.pack(fill='both', expand=True)
+        
+        # Lista de compromissos
+        frame_lista = ttk.LabelFrame(main_frame, text="Compromissos Configurados")
+        frame_lista.pack(fill='both', expand=True, pady=(0, 10))
+        
+        # Treeview
+        colunas = ('Fornecedor', 'Dia_Vencimento', 'Recorrencia', 'Valor_Estimado', 'Categoria')
+        tree_config = ttk.Treeview(frame_lista, columns=colunas, show='headings', height=15)
+        
+        for col in colunas:
+            tree_config.heading(col, text=col.replace('_', ' '))
+            tree_config.column(col, width=150)
+        
+        tree_config.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Frame de edição
+        frame_edicao = ttk.LabelFrame(main_frame, text="Adicionar/Editar Compromisso")
+        frame_edicao.pack(fill='x', pady=(0, 10))
+        
+        # Campos de entrada
+        ttk.Label(frame_edicao, text="Fornecedor:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        entry_fornecedor = ttk.Entry(frame_edicao, width=30)
+        entry_fornecedor.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
+        
+        ttk.Label(frame_edicao, text="Dia Vencimento:").grid(row=0, column=2, padx=5, pady=5, sticky='w')
+        combo_dia = ttk.Combobox(frame_edicao, values=[str(i) for i in range(1, 32)], width=5)
+        combo_dia.grid(row=0, column=3, padx=5, pady=5, sticky='w')
+        
+        ttk.Label(frame_edicao, text="Categoria:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        combo_categoria = ttk.Combobox(frame_edicao, values=[
+            'FOLHA_PAGAMENTO', 'TRIBUTOS', 'SERVICOS', 'EQUIPAMENTOS', 
+            'PROJETOS', 'EVENTOS', 'TAXA_ADM', 'OUTROS'
+        ], width=20)
+        combo_categoria.grid(row=1, column=1, padx=5, pady=5, sticky='ew')
+        
+        ttk.Label(frame_edicao, text="Valor Estimado:").grid(row=1, column=2, padx=5, pady=5, sticky='w')
+        entry_valor = ttk.Entry(frame_edicao, width=15)
+        entry_valor.grid(row=1, column=3, padx=5, pady=5, sticky='w')
+        
+        frame_edicao.columnconfigure(1, weight=1)
+        
+        # Botões
+        frame_botoes_config = ttk.Frame(frame_edicao)
+        frame_botoes_config.grid(row=2, column=0, columnspan=4, pady=10)
+        
+        ttk.Button(frame_botoes_config, text="Adicionar", 
+                  command=lambda: None).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_config, text="Atualizar", 
+                  command=lambda: None).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_config, text="Remover", 
+                  command=lambda: None).pack(side='left', padx=5)
+        
+        # Botões principais
+        frame_botoes_main = ttk.Frame(main_frame)
+        frame_botoes_main.pack(fill='x')
+        
+        ttk.Button(frame_botoes_main, text="Salvar Configurações", 
+                  command=lambda: None).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_main, text="Fechar", 
+                  command=janela_config.destroy).pack(side='right', padx=5)
+
+class NotificadorAgenda:
+    """Sistema de notificações para a agenda"""
+    
+    def __init__(self, sistema_principal):
+        self.sistema = sistema_principal
+        self.notificacoes_ativas = []
+    
+    def verificar_vencimentos_hoje(self):
+        """Verifica vencimentos do dia atual"""
+        try:
+            if not self.sistema.cliente_atual:
+                return []
+            
+            hoje = datetime.now().date()
+            vencimentos_hoje = []
+            
+            # Carregar dados do cliente
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            if arquivo_cliente.exists():
+                df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+                df = df.fillna("")
+                
+                for idx, row in df.iterrows():
+                    if row.get('STATUS', 'ATIVO') == 'EXCLUIDO':
+                        continue
+                    
+                    try:
+                        dt_vencto = pd.to_datetime(row['DT_VENCTO']).date()
+                        if dt_vencto == hoje:
+                            vencimentos_hoje.append({
+                                'fornecedor': row.get('NOME', ''),
+                                'referencia': row.get('REFERÊNCIA', ''),
+                                'valor': float(row.get('VALOR', 0)),
+                                'observacao': row.get('OBSERVAÇÃO', '')
+                            })
+                    except:
+                        continue
+            
+            return vencimentos_hoje
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao verificar vencimentos: {str(e)}")
+            return []
+    
+    def verificar_vencimentos_proximos(self, dias_antecedencia=3):
+        """Verifica vencimentos nos próximos dias"""
+        try:
+            if not self.sistema.cliente_atual:
+                return []
+            
+            hoje = datetime.now().date()
+            data_limite = hoje + timedelta(days=dias_antecedencia)
+            vencimentos_proximos = []
+            
+            # Carregar dados do cliente
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            if arquivo_cliente.exists():
+                df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+                df = df.fillna("")
+                
+                for idx, row in df.iterrows():
+                    if row.get('STATUS', 'ATIVO') == 'EXCLUIDO':
+                        continue
+                    
+                    try:
+                        dt_vencto = pd.to_datetime(row['DT_VENCTO']).date()
+                        if hoje < dt_vencto <= data_limite:
+                            dias_restantes = (dt_vencto - hoje).days
+                            vencimentos_proximos.append({
+                                'fornecedor': row.get('NOME', ''),
+                                'referencia': row.get('REFERÊNCIA', ''),
+                                'valor': float(row.get('VALOR', 0)),
+                                'vencimento': dt_vencto,
+                                'dias_restantes': dias_restantes
+                            })
+                    except:
+                        continue
+            
+            return sorted(vencimentos_proximos, key=lambda x: x['vencimento'])
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao verificar vencimentos próximos: {str(e)}")
+            return []
+    
+    def mostrar_notificacao_vencimentos(self):
+        """Mostra notificação com vencimentos do dia e próximos"""
+        vencimentos_hoje = self.verificar_vencimentos_hoje()
+        vencimentos_proximos = self.verificar_vencimentos_proximos()
+        
+        if not vencimentos_hoje and not vencimentos_proximos:
+            return
+        
+        # Janela de notificação
+        janela_notif = tk.Toplevel(self.sistema.root)
+        janela_notif.title("Notificações de Vencimento")
+        janela_notif.geometry("500x400")
+        janela_notif.attributes('-topmost', True)
+        
+        # Frame principal
+        main_frame = ttk.Frame(janela_notif, padding="15")
+        main_frame.pack(fill='both', expand=True)
+        
+        # Título
+        ttk.Label(main_frame, text=f"📅 Agenda - {self.sistema.cliente_atual}", 
+                 font=('TkDefaultFont', 12, 'bold')).pack(pady=(0, 10))
+        
+        # Vencimentos de hoje
+        if vencimentos_hoje:
+            frame_hoje = ttk.LabelFrame(main_frame, text="🚨 Vencimentos de HOJE")
+            frame_hoje.pack(fill='x', pady=(0, 10))
+            
+            valor_total_hoje = sum(v['valor'] for v in vencimentos_hoje)
+            
+            ttk.Label(frame_hoje, text=f"Total: R$ {valor_total_hoje:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+                     font=('TkDefaultFont', 10, 'bold'), foreground='red').pack(anchor='w', padx=10, pady=5)
+            
+            for venc in vencimentos_hoje[:5]:  # Mostrar no máximo 5
+                texto = f"• {venc['fornecedor']} - R$ {venc['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                ttk.Label(frame_hoje, text=texto).pack(anchor='w', padx=20, pady=1)
+            
+            if len(vencimentos_hoje) > 5:
+                ttk.Label(frame_hoje, text=f"... e mais {len(vencimentos_hoje) - 5} vencimentos",
+                         font=('TkDefaultFont', 9, 'italic')).pack(anchor='w', padx=20, pady=1)
+        
+        # Vencimentos próximos
+        if vencimentos_proximos:
+            frame_proximos = ttk.LabelFrame(main_frame, text="⏰ Próximos Vencimentos")
+            frame_proximos.pack(fill='x', pady=(0, 10))
+            
+            for venc in vencimentos_proximos[:5]:  # Mostrar no máximo 5
+                dias_texto = "amanhã" if venc['dias_restantes'] == 1 else f"em {venc['dias_restantes']} dias"
+                texto = f"• {venc['fornecedor']} - {dias_texto} (R$ {venc['valor']:,.2f})".replace(',', 'X').replace('.', ',').replace('X', '.')
+                ttk.Label(frame_proximos, text=texto).pack(anchor='w', padx=20, pady=1)
+        
+        # Botões
+        frame_botoes = ttk.Frame(main_frame)
+        frame_botoes.pack(fill='x', pady=(10, 0))
+        
+        ttk.Button(frame_botoes, text="Abrir Agenda", 
+                  command=lambda: [janela_notif.destroy(), self.sistema.abrir_agenda()]).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Lembrar depois", 
+                  command=janela_notif.destroy).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Não mostrar hoje", 
+                  command=self.desativar_notificacoes_hoje).pack(side='right', padx=5)
+        
+        # Posicionar no canto inferior direito
+        janela_notif.update_idletasks()
+        largura = janela_notif.winfo_width()
+        altura = janela_notif.winfo_height()
+        pos_x = janela_notif.winfo_screenwidth() - largura - 50
+        pos_y = janela_notif.winfo_screenheight() - altura - 100
+        janela_notif.geometry(f"+{pos_x}+{pos_y}")
+    
+    def desativar_notificacoes_hoje(self):
+        """Desativa notificações para o dia atual"""
+        # Implementar lógica para não mostrar mais notificações hoje
+        pass
+
+class RelatorioAgenda:
+    """Gerador de relatórios da agenda"""
+    
+    @staticmethod
+    def gerar_relatorio_mensal(cliente, mes, ano):
+        """Gera relatório mensal da agenda"""
+        try:
+            # Carregar dados
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            if not arquivo_cliente.exists():
+                return None
+            
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = df.fillna("")
+            
+            # Filtrar por mês/ano
+            inicio_mes = datetime(ano, mes, 1).date()
+            if mes == 12:
+                fim_mes = datetime(ano + 1, 1, 1).date() - timedelta(days=1)
+            else:
+                fim_mes = datetime(ano, mes + 1, 1).date() - timedelta(days=1)
+            
+            dados_mes = []
+            
+            for idx, row in df.iterrows():
+                try:
+                    dt_vencto = pd.to_datetime(row['DT_VENCTO']).date()
+                    if inicio_mes <= dt_vencto <= fim_mes:
+                        dados_mes.append({
+                            'Data_Vencimento': dt_vencto.strftime('%d/%m/%Y'),
+                            'Fornecedor': row.get('NOME', ''),
+                            'Referencia': row.get('REFERÊNCIA', ''),
+                            'Valor': float(row.get('VALOR', 0)),
+                            'Status': row.get('STATUS', 'ATIVO'),
+                            'Observacao': row.get('OBSERVAÇÃO', '')
+                        })
+                except:
+                    continue
+            
+            # Gerar relatório Excel
+            if dados_mes:
+                df_relatorio = pd.DataFrame(dados_mes)
+                df_relatorio = df_relatorio.sort_values('Data_Vencimento')
+                
+                nome_arquivo = f"Agenda_{cliente}_{mes:02d}_{ano}.xlsx"
+                caminho_arquivo = PASTA_CLIENTES / nome_arquivo
+                
+                with pd.ExcelWriter(caminho_arquivo, engine='openpyxl') as writer:
+                    df_relatorio.to_excel(writer, sheet_name='Agenda_Mensal', index=False)
+                    
+                    # Adicionar resumo
+                    total_mes = df_relatorio['Valor'].sum()
+                    ativos = df_relatorio[df_relatorio['Status'] == 'ATIVO']
+                    
+                    resumo = pd.DataFrame([
+                        {'Metrica': 'Total de Lançamentos', 'Valor': len(df_relatorio)},
+                        {'Metrica': 'Lançamentos Ativos', 'Valor': len(ativos)},
+                        {'Metrica': 'Valor Total (R$)', 'Valor': f"{total_mes:,.2f}"},
+                        {'Metrica': 'Valor Ativos (R$)', 'Valor': f"{ativos['Valor'].sum():,.2f}"}
+                    ])
+                    
+                    resumo.to_excel(writer, sheet_name='Resumo', index=False)
+                
+                return caminho_arquivo
+            
+            return None
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao gerar relatório mensal: {str(e)}")
+            return None
+
+class CacheFornecedores:
+    """Cache para otimizar buscas de fornecedores"""
+    
+    def __init__(self):
+        self.cache_fornecedores = None
+        self.cache_timestamp = None
+        self.cache_duracao = 300  # 5 minutos
+    
+    def carregar_cache_se_necessario(self, arquivo_fornecedores):
+        """Carrega cache se necessário ou se arquivo foi modificado"""
+        try:
+            import os
+            from datetime import datetime
+            
+            agora = datetime.now()
+            arquivo_modificado = os.path.getmtime(arquivo_fornecedores)
+            
+            # Verificar se precisa recarregar
+            precisa_recarregar = (
+                self.cache_fornecedores is None or
+                self.cache_timestamp is None or
+                (agora - self.cache_timestamp).seconds > self.cache_duracao or
+                arquivo_modificado > self.cache_timestamp.timestamp()
+            )
+            
+            if precisa_recarregar:
+                print("DEBUG: Recarregando cache de fornecedores...")
+                self.cache_fornecedores = self._carregar_fornecedores(arquivo_fornecedores)
+                self.cache_timestamp = agora
+                print(f"DEBUG: Cache carregado com {len(self.cache_fornecedores)} fornecedores")
+            
+            return self.cache_fornecedores
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao carregar cache: {str(e)}")
+            return []
+    
+    def _carregar_fornecedores(self, arquivo_fornecedores):
+        """Carrega todos os fornecedores em memória"""
+        fornecedores = []
+        
+        try:
+            wb = load_workbook(arquivo_fornecedores, data_only=True)
+            ws = wb['Fornecedores']
+            
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0] or not row[3]:  # Pular se não tem CNPJ ou nome
+                    continue
+                
+                fornecedor = {
+                    'cnpj_cpf': str(row[0]).strip(),
+                    'nome': str(row[3]).strip().upper(),
+                    'categoria': str(row[11] or '').strip(),
+                    'banco': str(row[4] or '').strip(),
+                    'op': str(row[5] or '').strip(),
+                    'agencia': str(row[6] or '').strip(),
+                    'conta': str(row[7] or '').strip(),
+                    'chave_pix': str(row[8] or '').strip()
+                }
+                
+                fornecedores.append(fornecedor)
+            
+            wb.close()
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao carregar fornecedores: {str(e)}")
+        
+        return fornecedores
+    
 if __name__ == "__main__":
     print("Iniciando aplicação...")
     app = SistemaEntradaDados()
