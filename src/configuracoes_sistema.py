@@ -331,6 +331,62 @@ class GerenciadorConfiguracoes:
                 'lista': ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
                 'historico_alteracoes': []
             },
+            'compromissos_recorrentes': {
+                'ativos': True,
+                'lista': [
+                    {
+                        'nome': 'FOLHA DP',
+                        'dia_vencimento': 5,
+                        'recorrencia': 'mensal',
+                        'valor_estimado': 0.0,
+                        'categoria': 'MO',
+                        'tipo_despesa': 3,
+                        'ativo': True,
+                        'observacao': 'Folha de pagamento mensal'
+                    },
+                    {
+                        'nome': 'MHS MENSALIDADE',
+                        'dia_vencimento': 5,
+                        'recorrencia': 'mensal',
+                        'valor_estimado': 0.0,
+                        'categoria': 'MO',
+                        'tipo_despesa': 7,
+                        'ativo': True,
+                        'observacao': ''
+                    },
+                    {
+                        'nome': 'MHS EVENTO SST ESOCIAL',
+                        'dia_vencimento': 20,
+                        'recorrencia': 'mensal',
+                        'valor_estimado': 0.0,
+                        'categoria': 'MO',
+                        'tipo_despesa': 3,
+                        'ativo': True,
+                        'observacao': 'Serviços de segurança do trabalho'
+                    },
+                    {
+                        'nome': 'FGTS',
+                        'dia_vencimento': 7,
+                        'recorrencia': 'mensal',
+                        'valor_estimado': 0.0,
+                        'categoria': 'MO',
+                        'tipo_despesa': 3,
+                        'ativo': True,
+                        'observacao': 'Recolhimento FGTS'
+                    },
+                    {
+                        'nome': 'INSS/IRRF',
+                        'dia_vencimento': 20,
+                        'recorrencia': 'mensal',
+                        'valor_estimado': 0.0,
+                        'categoria': 'MO',
+                        'tipo_despesa': 3,
+                        'ativo': True,
+                        'observacao': 'Recolhimento INSS/IRRF'
+                    }
+                ],
+                'historico_alteracoes': []
+            },
             'etapas_obra': {
                 'lista': [
                     'DEMOLIÇÃO',
@@ -445,6 +501,7 @@ class GerenciadorConfiguracoes:
         self.setup_aba_cafe()
         self.setup_aba_bancos()
         self.setup_aba_categorias()
+        self.setup_aba_compromissos_recorrentes()
         self.setup_aba_etapas_obra()
         self.setup_aba_insumos()
         self.setup_aba_indices_correcao()
@@ -803,6 +860,378 @@ class GerenciadorConfiguracoes:
         return ['CIMENTO', 'TIJOLO','EMPREITEIROS','BLOCOS CONCRETO',
                 'MATERIAIS ELÉTRICO','MATERIAIS HIDRÁULICO','ESPAÇADOR',
                 'MASSA CORRIDA','BIANCO','TELAS','UNIFORMES','ARGAMASSA','LONA', 'OUTROS']
+
+    @staticmethod
+    def get_compromissos_recorrentes():
+        """Retorna a lista de compromissos recorrentes ativos"""
+        config = GerenciadorConfiguracoes.carregar_configuracoes()
+        if config and 'compromissos_recorrentes' in config:
+            # Retornar apenas os compromissos ativos
+            return [c for c in config['compromissos_recorrentes']['lista'] if c.get('ativo', True)]
+        return []
+
+    @staticmethod
+    def get_compromissos_recorrentes_todos():
+        """Retorna todos os compromissos recorrentes (ativos e inativos)"""
+        config = GerenciadorConfiguracoes.carregar_configuracoes()
+        if config and 'compromissos_recorrentes' in config:
+            return config['compromissos_recorrentes']['lista']
+        return []
+
+    def setup_aba_compromissos_recorrentes(self):
+        """Configura a aba de compromissos recorrentes da agenda"""
+        frame_compromissos = ttk.Frame(self.notebook)
+        self.notebook.add(frame_compromissos, text='Agenda - Compromissos')
+        
+        # Frame principal dividido em duas seções
+        main_frame = ttk.Frame(frame_compromissos)
+        main_frame.pack(fill='both', expand=True, padx=5, pady=5)
+        
+        # === SEÇÃO ESQUERDA: LISTA DE COMPROMISSOS ===
+        frame_esquerda = ttk.Frame(main_frame)
+        frame_esquerda.pack(side='left', fill='both', expand=True, padx=(0, 5))
+        
+        # Lista de compromissos
+        frame_lista = ttk.LabelFrame(frame_esquerda, text="Compromissos Recorrentes Cadastrados")
+        frame_lista.pack(fill='both', expand=True)
+        
+        # Treeview para exibir compromissos
+        colunas = ('Nome', 'Dia', 'Recorrência', 'Categoria', 'Valor Est.', 'Status')
+        self.tree_compromissos = ttk.Treeview(frame_lista, columns=colunas, show='headings', height=15)
+        
+        # Configurar cabeçalhos
+        self.tree_compromissos.heading('Nome', text='Nome')
+        self.tree_compromissos.heading('Dia', text='Dia Venc.')
+        self.tree_compromissos.heading('Recorrência', text='Recorrência')
+        self.tree_compromissos.heading('Categoria', text='Categoria')
+        self.tree_compromissos.heading('Valor Est.', text='Valor Est.')
+        self.tree_compromissos.heading('Status', text='Status')
+        
+        # Configurar larguras
+        self.tree_compromissos.column('Nome', width=150)
+        self.tree_compromissos.column('Dia', width=60, anchor='center')
+        self.tree_compromissos.column('Recorrência', width=80, anchor='center')
+        self.tree_compromissos.column('Categoria', width=100)
+        self.tree_compromissos.column('Valor Est.', width=80, anchor='e')
+        self.tree_compromissos.column('Status', width=60, anchor='center')
+        
+        # Scrollbar
+        scrollbar_comp = ttk.Scrollbar(frame_lista, orient='vertical', command=self.tree_compromissos.yview)
+        self.tree_compromissos.configure(yscrollcommand=scrollbar_comp.set)
+        
+        self.tree_compromissos.pack(side='left', fill='both', expand=True, padx=5, pady=5)
+        scrollbar_comp.pack(side='right', fill='y', pady=5)
+        
+        # Bind para seleção
+        self.tree_compromissos.bind('<<TreeviewSelect>>', self.on_compromisso_select)
+        
+        # === SEÇÃO DIREITA: EDIÇÃO ===
+        frame_direita = ttk.Frame(main_frame)
+        frame_direita.pack(side='right', fill='y', padx=(5, 0))
+        
+        # Frame para novo compromisso
+        frame_novo_comp = ttk.LabelFrame(frame_direita, text="Novo Compromisso")
+        frame_novo_comp.pack(fill='x', pady=(0, 10))
+        
+        # Campos do novo compromisso
+        ttk.Label(frame_novo_comp, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        self.entry_novo_comp_nome = ttk.Entry(frame_novo_comp, width=25)
+        self.entry_novo_comp_nome.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Label(frame_novo_comp, text="Dia Vencimento:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        self.entry_novo_comp_dia = ttk.Spinbox(frame_novo_comp, from_=1, to=31, width=5)
+        self.entry_novo_comp_dia.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        
+        ttk.Label(frame_novo_comp, text="Recorrência:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
+        self.combo_novo_comp_rec = ttk.Combobox(frame_novo_comp, values=['mensal', 'trimestral', 'semestral', 'anual'], 
+                                            state='readonly', width=22)
+        self.combo_novo_comp_rec.set('mensal')
+        self.combo_novo_comp_rec.grid(row=2, column=1, padx=5, pady=5)
+        
+        ttk.Label(frame_novo_comp, text="Categoria:").grid(row=3, column=0, padx=5, pady=5, sticky='w')
+        self.combo_novo_comp_cat = ttk.Combobox(frame_novo_comp, 
+                                            values=['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
+                                            state='readonly', width=22)
+        self.combo_novo_comp_cat.set('')
+        self.combo_novo_comp_cat.grid(row=3, column=1, padx=5, pady=5)
+        
+        ttk.Label(frame_novo_comp, text="Tipo Despesa:").grid(row=4, column=0, padx=5, pady=5, sticky='w')
+        self.combo_novo_comp_tipo = ttk.Combobox(frame_novo_comp, values=['2', '3', '5', '6', '7'], 
+                                                state='readonly', width=5)
+        self.combo_novo_comp_tipo.set('3')
+        self.combo_novo_comp_tipo.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        
+        ttk.Label(frame_novo_comp, text="Valor Est. (R$):").grid(row=5, column=0, padx=5, pady=5, sticky='w')
+        self.entry_novo_comp_valor = ttk.Entry(frame_novo_comp, width=15)
+        self.entry_novo_comp_valor.insert(0, "0,00")
+        self.entry_novo_comp_valor.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        
+        ttk.Label(frame_novo_comp, text="Observação:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
+        self.entry_novo_comp_obs = ttk.Entry(frame_novo_comp, width=25)
+        self.entry_novo_comp_obs.grid(row=6, column=1, padx=5, pady=5)
+        
+        ttk.Button(frame_novo_comp, text="Adicionar Compromisso",
+                command=self.adicionar_compromisso_recorrente).grid(row=7, column=0, columnspan=2, pady=10)
+        
+        # Frame para editar compromisso selecionado
+        frame_editar_comp = ttk.LabelFrame(frame_direita, text="Editar Compromisso")
+        frame_editar_comp.pack(fill='x', pady=(0, 10))
+        
+        # Campos de edição (similares aos de criação)
+        ttk.Label(frame_editar_comp, text="Nome:").grid(row=0, column=0, padx=5, pady=3, sticky='w')
+        self.entry_edit_comp_nome = ttk.Entry(frame_editar_comp, width=25)
+        self.entry_edit_comp_nome.grid(row=0, column=1, padx=5, pady=3)
+        
+        ttk.Label(frame_editar_comp, text="Dia Vencimento:").grid(row=1, column=0, padx=5, pady=3, sticky='w')
+        self.entry_edit_comp_dia = ttk.Spinbox(frame_editar_comp, from_=1, to=31, width=5)
+        self.entry_edit_comp_dia.grid(row=1, column=1, padx=5, pady=3, sticky='w')
+        
+        ttk.Label(frame_editar_comp, text="Valor Est. (R$):").grid(row=2, column=0, padx=5, pady=3, sticky='w')
+        self.entry_edit_comp_valor = ttk.Entry(frame_editar_comp, width=15)
+        self.entry_edit_comp_valor.grid(row=2, column=1, padx=5, pady=3, sticky='w')
+        
+        # Frame para botões de ação
+        frame_acoes_comp = ttk.Frame(frame_editar_comp)
+        frame_acoes_comp.grid(row=3, column=0, columnspan=2, pady=10)
+        
+        ttk.Button(frame_acoes_comp, text="Salvar Alterações",
+                command=self.salvar_compromisso_recorrente).pack(side='left', padx=5)
+        ttk.Button(frame_acoes_comp, text="Ativar/Desativar",
+                command=self.toggle_compromisso_status).pack(side='left', padx=5)
+        ttk.Button(frame_acoes_comp, text="Remover",
+                command=self.remover_compromisso_recorrente).pack(side='left', padx=5)
+        
+        # Carregar dados
+        self.atualizar_lista_compromissos_recorrentes()
+
+    # 5. IMPLEMENTAR MÉTODOS DE GESTÃO
+
+    def adicionar_compromisso_recorrente(self):
+        """Adiciona um novo compromisso recorrente"""
+        try:
+            nome = self.entry_novo_comp_nome.get().strip().upper()
+            if not nome:
+                messagebox.showerror("Erro", "Nome é obrigatório!")
+                return
+            
+            # Verificar se já existe
+            if any(c['nome'] == nome for c in self.config['compromissos_recorrentes']['lista']):
+                messagebox.showerror("Erro", "Já existe um compromisso com este nome!")
+                return
+            
+            dia = int(self.entry_novo_comp_dia.get())
+            recorrencia = self.combo_novo_comp_rec.get()
+            categoria = self.combo_novo_comp_cat.get()
+            tipo_despesa = int(self.combo_novo_comp_tipo.get())
+            
+            valor_str = self.entry_novo_comp_valor.get().replace(',', '.')
+            valor_estimado = float(valor_str) if valor_str else 0.0
+            
+            observacao = self.entry_novo_comp_obs.get().strip()
+            
+            # Criar novo compromisso
+            novo_compromisso = {
+                'nome': nome,
+                'dia_vencimento': dia,
+                'recorrencia': recorrencia,
+                'valor_estimado': valor_estimado,
+                'categoria': categoria,
+                'tipo_despesa': tipo_despesa,
+                'ativo': True,
+                'observacao': observacao
+            }
+            
+            # Adicionar à configuração
+            if 'compromissos_recorrentes' not in self.config:
+                self.config['compromissos_recorrentes'] = {'lista': [], 'historico_alteracoes': []}
+            
+            self.config['compromissos_recorrentes']['lista'].append(novo_compromisso)
+            
+            # Registrar no histórico
+            self.config['compromissos_recorrentes']['historico_alteracoes'].append({
+                'acao': 'ADICIONAR',
+                'compromisso': nome,
+                'data': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            })
+            
+            # Salvar e atualizar
+            self.salvar_configuracoes()
+            self.atualizar_lista_compromissos_recorrentes()
+            
+            # Limpar campos
+            self.entry_novo_comp_nome.delete(0, tk.END)
+            self.entry_novo_comp_dia.set('5')
+            self.entry_novo_comp_valor.delete(0, tk.END)
+            self.entry_novo_comp_valor.insert(0, "0,00")
+            self.entry_novo_comp_obs.delete(0, tk.END)
+            
+            messagebox.showinfo("Sucesso", "Compromisso recorrente adicionado com sucesso!")
+            
+        except ValueError as e:
+            messagebox.showerror("Erro", f"Erro nos dados informados: {str(e)}")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao adicionar compromisso: {str(e)}")
+
+    def on_compromisso_select(self, event):
+        """Evento de seleção de compromisso"""
+        selecionado = self.tree_compromissos.selection()
+        if not selecionado:
+            return
+        
+        # Obter dados do compromisso selecionado
+        item = self.tree_compromissos.item(selecionado[0])
+        nome = item['values'][0]
+        
+        # Buscar compromisso na configuração
+        compromisso = None
+        for c in self.config['compromissos_recorrentes']['lista']:
+            if c['nome'] == nome:
+                compromisso = c
+                break
+        
+        if compromisso:
+            # Preencher campos de edição
+            self.entry_edit_comp_nome.delete(0, tk.END)
+            self.entry_edit_comp_nome.insert(0, compromisso['nome'])
+            
+            self.entry_edit_comp_dia.delete(0, tk.END)
+            self.entry_edit_comp_dia.insert(0, str(compromisso['dia_vencimento']))
+            
+            self.entry_edit_comp_valor.delete(0, tk.END)
+            valor_formatado = f"{compromisso['valor_estimado']:.2f}".replace('.', ',')
+            self.entry_edit_comp_valor.insert(0, valor_formatado)
+
+    def salvar_compromisso_recorrente(self):
+        """Salva alterações no compromisso selecionado"""
+        selecionado = self.tree_compromissos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um compromisso para editar!")
+            return
+        
+        try:
+            nome_original = self.tree_compromissos.item(selecionado[0])['values'][0]
+            
+            # Buscar compromisso
+            for i, c in enumerate(self.config['compromissos_recorrentes']['lista']):
+                if c['nome'] == nome_original:
+                    # Atualizar dados
+                    c['nome'] = self.entry_edit_comp_nome.get().strip().upper()
+                    c['dia_vencimento'] = int(self.entry_edit_comp_dia.get())
+                    
+                    valor_str = self.entry_edit_comp_valor.get().replace(',', '.')
+                    c['valor_estimado'] = float(valor_str) if valor_str else 0.0
+                    
+                    # Registrar alteração
+                    self.config['compromissos_recorrentes']['historico_alteracoes'].append({
+                        'acao': 'EDITAR',
+                        'compromisso': c['nome'],
+                        'data': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+                    })
+                    
+                    break
+            
+            self.salvar_configuracoes()
+            self.atualizar_lista_compromissos_recorrentes()
+            
+            messagebox.showinfo("Sucesso", "Compromisso atualizado com sucesso!")
+            
+        except ValueError as e:
+            messagebox.showerror("Erro", f"Erro nos dados: {str(e)}")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao salvar: {str(e)}")
+
+    def toggle_compromisso_status(self):
+        """Ativa/desativa compromisso selecionado"""
+        selecionado = self.tree_compromissos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um compromisso!")
+            return
+        
+        nome = self.tree_compromissos.item(selecionado[0])['values'][0]
+        
+        # Buscar e alterar status
+        for c in self.config['compromissos_recorrentes']['lista']:
+            if c['nome'] == nome:
+                c['ativo'] = not c.get('ativo', True)
+                status = "ATIVADO" if c['ativo'] else "DESATIVADO"
+                
+                # Registrar alteração
+                self.config['compromissos_recorrentes']['historico_alteracoes'].append({
+                    'acao': status,
+                    'compromisso': nome,
+                    'data': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+                })
+                
+                break
+        
+        self.salvar_configuracoes()
+        self.atualizar_lista_compromissos_recorrentes()
+        
+        messagebox.showinfo("Sucesso", f"Status do compromisso alterado!")
+
+    def remover_compromisso_recorrente(self):
+        """Remove compromisso selecionado"""
+        selecionado = self.tree_compromissos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um compromisso para remover!")
+            return
+        
+        nome = self.tree_compromissos.item(selecionado[0])['values'][0]
+        
+        if messagebox.askyesno("Confirmar", f"Deseja remover o compromisso '{nome}'?"):
+            # Remover da lista
+            self.config['compromissos_recorrentes']['lista'] = [
+                c for c in self.config['compromissos_recorrentes']['lista'] 
+                if c['nome'] != nome
+            ]
+            
+            # Registrar remoção
+            self.config['compromissos_recorrentes']['historico_alteracoes'].append({
+                'acao': 'REMOVER',
+                'compromisso': nome,
+                'data': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            })
+            
+            self.salvar_configuracoes()
+            self.atualizar_lista_compromissos_recorrentes()
+            
+            # Limpar campos de edição
+            self.entry_edit_comp_nome.delete(0, tk.END)
+            self.entry_edit_comp_dia.delete(0, tk.END)
+            self.entry_edit_comp_valor.delete(0, tk.END)
+            
+            messagebox.showinfo("Sucesso", "Compromisso removido com sucesso!")
+
+    def atualizar_lista_compromissos_recorrentes(self):
+        """Atualiza a exibição da lista de compromissos recorrentes"""
+        # Limpar tree
+        for item in self.tree_compromissos.get_children():
+            self.tree_compromissos.delete(item)
+        
+        # Verificar se existe a seção
+        if 'compromissos_recorrentes' not in self.config:
+            return
+        
+        # Inserir compromissos
+        for compromisso in self.config['compromissos_recorrentes']['lista']:
+            status = "ATIVO" if compromisso.get('ativo', True) else "INATIVO"
+            tag = 'ativo' if compromisso.get('ativo', True) else 'inativo'
+            
+            self.tree_compromissos.insert('', 'end', 
+                values=(
+                    compromisso['nome'],
+                    compromisso['dia_vencimento'],
+                    compromisso['recorrencia'],
+                    compromisso['categoria'],
+                    f"R$ {compromisso['valor_estimado']:.2f}",
+                    status
+                ),
+                tags=(tag,)
+            )
+        
+        # Configurar tags de cor
+        self.tree_compromissos.tag_configure('ativo', background='#e8f5e8')
+        self.tree_compromissos.tag_configure('inativo', background='#ffe4e1')
 
     # Adicionar aba de insumos (método completo):
     def setup_aba_insumos(self):
