@@ -1,0 +1,82 @@
+2025-09-21 09:50:58,382 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 09:51:01,927 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 09:51:01,943 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 09:51:01,943 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 09:51:01,949 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 09:51:09,931 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 09:51:09,931 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 09:51:18,134 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 09:51:18,134 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 09:51:23,035 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 09:51:23,035 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 09:54:29,856 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 09:54:31,448 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 09:54:31,463 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 09:54:31,468 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 09:54:31,469 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 09:54:41,112 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 09:54:41,113 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 10:15:25,935 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-21 10:15:30,204 - sistema - Sistema_Entrada_Dados - WARNING - Falha na validação dos campos
+2025-09-21 10:26:54,721 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 10:26:57,010 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 10:26:57,010 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 10:26:57,010 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 10:26:57,010 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 10:27:04,161 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 10:27:04,161 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 10:29:24,964 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 10:29:26,825 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 10:29:26,825 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 10:29:26,825 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 10:29:26,825 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 10:29:38,992 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 10:29:38,993 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 10:30:06,843 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-21 10:30:25,265 - sistema - Sistema_Entrada_Dados - WARNING - Falha na validação dos campos
+2025-09-21 10:39:55,996 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 10:39:57,766 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 10:39:57,766 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 10:39:57,766 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 10:39:57,766 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 10:40:05,553 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 10:40:05,554 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 11:20:39,865 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 11:20:41,858 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 11:20:41,881 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 11:20:41,881 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 11:20:41,881 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 11:21:01,175 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 11:21:01,177 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 11:31:28,739 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 11:31:32,184 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 11:31:32,184 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 11:31:32,192 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 11:31:32,193 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 11:31:38,466 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 11:31:38,467 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 11:35:18,378 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 11:35:20,431 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 11:35:20,431 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 11:35:20,431 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 11:35:20,431 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 11:35:28,028 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 11:35:28,029 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 12:02:56,015 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 12:02:58,178 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 12:02:58,178 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 12:02:58,178 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 12:02:58,178 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 12:03:04,243 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 12:03:04,244 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 12:11:52,819 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 12:16:15,029 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 12:36:48,477 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-21 12:36:50,463 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 12:36:50,463 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 12:36:50,471 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 12:36:50,471 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 12:36:56,742 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-09-21 12:36:56,742 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-09-21 12:37:41,611 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-09-21 12:37:41,612 - sistema - Sistema_Entrada_Dados - WARNING - Falha na validação dos campos
