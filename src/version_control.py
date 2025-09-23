@@ -10,12 +10,12 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 4,
-    "patch": 2,
-    "release_date": "05/09/2025",
+    "patch": 3,
+    "release_date": "24/09/2025",
     "changes": [
-        "Inclusão de auto completar nos campos 'Etapa da Obra' e 'Insumo' na aba Entrada de Dados",
-        "Correção de EXCLUIR/RESTAURAR individual no Gerenciador de Lançamentos",
-        "Correção do Backup Automático para verificar o Cliente antes de salvar"
+        "Inclusão da opção Dinheiro em Dados Bancários na entrada de dados",
+        "Melhorias no parcelamento, permitindo a entrada de parcelas com diferentes valores",
+        "Inclusão de Agenda com dados pré-definidos e lançamentos futuros"
     ]
 }
 
