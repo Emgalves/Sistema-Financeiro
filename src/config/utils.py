@@ -460,6 +460,147 @@ def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_f
             wb.close()
         return 'ERRO AO BUSCAR DADOS BANCÁRIOS'
 
+def custom_messagebox(tipo, titulo, mensagem):
+    """
+    Função de messagebox personalizada que padroniza as caixas de diálogo do sistema
+    
+    Args:
+        tipo (str): Tipo da mensagem - "info", "error", "warning", "yesno", "question"
+        titulo (str): Título da janela
+        mensagem (str): Texto da mensagem
+        
+    Returns:
+        bool: Para tipos "yesno" e "question", retorna True/False
+        None: Para outros tipos
+    """
+    import tkinter.messagebox as msg
+    
+    try:
+        if tipo.lower() == "info":
+            msg.showinfo(titulo, mensagem)
+            return None
+            
+        elif tipo.lower() == "error":
+            msg.showerror(titulo, mensagem)
+            return None
+            
+        elif tipo.lower() == "warning":
+            msg.showwarning(titulo, mensagem)
+            return None
+            
+        elif tipo.lower() == "yesno":
+            return msg.askyesno(titulo, mensagem)
+            
+        elif tipo.lower() == "question":
+            return msg.askyesno(titulo, mensagem)
+            
+        else:
+            # Tipo desconhecido, usar info como padrão
+            msg.showinfo(titulo, mensagem)
+            return None
+            
+    except Exception as e:
+        print(f"Erro no custom_messagebox: {str(e)}")
+        # Fallback para messagebox padrão
+        msg.showinfo("Erro", f"Erro ao exibir mensagem: {mensagem}")
+        return None
+
+
+def mostrar_alerta(mensagem, titulo="Alerta"):
+    """
+    Função helper para mostrar alertas de forma simplificada
+    
+    Args:
+        mensagem (str): Mensagem a ser exibida
+        titulo (str): Título da janela (padrão: "Alerta")
+    """
+    return custom_messagebox("warning", titulo, mensagem)
+
+
+def mostrar_erro(mensagem, titulo="Erro"):
+    """
+    Função helper para mostrar erros de forma simplificada
+    
+    Args:
+        mensagem (str): Mensagem de erro
+        titulo (str): Título da janela (padrão: "Erro")
+    """
+    return custom_messagebox("error", titulo, mensagem)
+
+
+def mostrar_info(mensagem, titulo="Informação"):
+    """
+    Função helper para mostrar informações de forma simplificada
+    
+    Args:
+        mensagem (str): Mensagem informativa
+        titulo (str): Título da janela (padrão: "Informação")
+    """
+    return custom_messagebox("info", titulo, mensagem)
+
+
+def confirmar_acao(mensagem, titulo="Confirmar"):
+    """
+    Função helper para confirmações de forma simplificada
+    
+    Args:
+        mensagem (str): Mensagem de confirmação
+        titulo (str): Título da janela (padrão: "Confirmar")
+        
+    Returns:
+        bool: True se usuário confirmar, False caso contrário
+    """
+    return custom_messagebox("yesno", titulo, mensagem)
+
+
+def validar_entrada_obrigatoria(valor, nome_campo):
+    """
+    Valida se um campo obrigatório foi preenchido
+    
+    Args:
+        valor (str): Valor do campo
+        nome_campo (str): Nome do campo para a mensagem de erro
+        
+    Returns:
+        bool: True se válido, False se inválido (e mostra erro)
+    """
+    if not valor or not str(valor).strip():
+        mostrar_erro(f"O campo '{nome_campo}' é obrigatório!")
+        return False
+    return True
+
+
+def validar_valor_numerico(valor, nome_campo, permitir_zero=True):
+    """
+    Valida se um valor é numérico válido
+    
+    Args:
+        valor (str): Valor a ser validado
+        nome_campo (str): Nome do campo para mensagem de erro
+        permitir_zero (bool): Se permite valor zero
+        
+    Returns:
+        tuple: (bool, float) - (é_válido, valor_convertido)
+    """
+    try:
+        if isinstance(valor, str):
+            valor_limpo = valor.replace(',', '.')
+        else:
+            valor_limpo = str(valor)
+            
+        valor_float = float(valor_limpo)
+        
+        if not permitir_zero and valor_float <= 0:
+            mostrar_erro(f"O campo '{nome_campo}' deve ser maior que zero!")
+            return False, 0.0
+            
+        return True, valor_float
+        
+    except (ValueError, TypeError):
+        mostrar_erro(f"O campo '{nome_campo}' deve conter um valor numérico válido!")
+        return False, 0.0
+
+
 # === CONSTANTS ===
 DIAS_QUINZENA = [5, 20]
 TIPOS_DESPESA = {
