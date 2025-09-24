@@ -122,5 +122,15 @@
             "Correção do Backup Automático para verificar o Cliente antes de salvar"
         ],
         "timestamp": "2025-09-04T17:22:04.370348"
+    },
+    {
+        "version": "1.4.3",
+        "release_date": "24/09/2025",
+        "changes": [
+            "Inclusão da opção Dinheiro em Dados Bancários na entrada de dados",
+            "Melhorias no parcelamento, permitindo a entrada de parcelas com diferentes valores",
+            "Inclusão de Agenda com dados pré-definidos e lançamentos futuros"
+        ],
+        "timestamp": "2025-09-24T17:51:36.049210"
     }
 ]
