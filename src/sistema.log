@@ -3600,3 +3600,703 @@
 2025-09-23 18:09:08,764 - INFO - Configurações importadas com sucesso via src.config
 2025-09-23 18:09:08,790 - INFO - Configurações importadas com sucesso
 2025-09-23 18:09:08,791 - INFO - Configurações do sistema importadas com sucesso
+2025-09-26 19:14:39,109 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-26 19:14:40,287 - INFO - Sistema principal inicializado com sucesso
+2025-09-26 19:14:46,974 - INFO - Executando ação: Gerar relatório
+2025-09-26 19:14:46,974 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-26 19:14:46,974 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-26 19:14:46,974 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-26 19:14:46,990 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-26 19:14:46,990 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-26 19:14:46,990 - INFO -   ✅ relatorios_interface.py
+2025-09-26 19:14:46,990 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-26 19:14:46,990 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-26 19:14:46,990 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-26 19:14:46,990 - INFO -   ❌ relatorios_interface.py
+2025-09-26 19:14:46,990 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-26 19:14:46,995 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-26 19:14:46,996 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-26 19:14:46,997 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-26 19:14:46,997 - INFO -   ✅ relatorios_interface.py
+2025-09-26 19:14:46,998 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-26 19:14:46,999 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-26 19:14:46,999 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-26 19:14:47,010 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-26 19:14:47,012 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-26 19:14:47,014 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-26 19:14:47,015 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-26 19:14:47,016 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-26 19:14:47,016 - INFO - 🔄 Configurando paths do sistema...
+2025-09-26 19:14:47,092 - INFO - 🔄 Cache do importlib invalidado
+2025-09-26 19:14:47,092 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-26 19:14:47,201 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-26 19:14:47,201 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-26 19:14:47,201 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-26 19:15:01,180 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-26 19:16:09,262 - INFO - Saída confirmada, finalizando sistema
+2025-09-26 19:16:09,521 - INFO - Forçando encerramento do programa...
+2025-09-26 19:18:59,249 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-26 19:18:59,484 - INFO - Sistema principal inicializado com sucesso
+2025-09-26 19:19:07,538 - INFO - Executando ação: Gerar relatório
+2025-09-26 19:19:07,538 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-26 19:19:07,538 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-26 19:19:07,554 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-26 19:19:07,554 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-26 19:19:07,554 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-26 19:19:07,554 - INFO -   ✅ relatorios_interface.py
+2025-09-26 19:19:07,554 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-26 19:19:07,554 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-26 19:19:07,554 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-26 19:19:07,554 - INFO -   ❌ relatorios_interface.py
+2025-09-26 19:19:07,559 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-26 19:19:07,560 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-26 19:19:07,561 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-26 19:19:07,562 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-26 19:19:07,563 - INFO -   ✅ relatorios_interface.py
+2025-09-26 19:19:07,564 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-26 19:19:07,564 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-26 19:19:07,564 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-26 19:19:07,578 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-26 19:19:07,579 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-26 19:19:07,580 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-26 19:19:07,586 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-26 19:19:07,587 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-26 19:19:07,588 - INFO - 🔄 Configurando paths do sistema...
+2025-09-26 19:19:07,656 - INFO - 🔄 Cache do importlib invalidado
+2025-09-26 19:19:07,656 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-26 19:19:07,698 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-26 19:19:07,698 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-26 19:19:07,698 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-26 19:19:09,678 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-26 19:20:47,151 - INFO - Saída confirmada, finalizando sistema
+2025-09-26 19:20:47,217 - INFO - Ação concluída: Gerar relatório
+2025-09-29 09:43:05,467 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-29 09:43:07,825 - INFO - Sistema principal inicializado com sucesso
+2025-09-29 09:46:09,633 - INFO - Executando ação: Gerar relatório
+2025-09-29 09:46:09,633 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-29 09:46:09,633 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-29 09:46:09,633 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-29 09:46:09,633 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 09:46:09,633 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 09:46:09,633 - INFO -   ✅ relatorios_interface.py
+2025-09-29 09:46:09,633 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 09:46:09,633 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 09:46:09,633 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-29 09:46:09,633 - INFO -   ❌ relatorios_interface.py
+2025-09-29 09:46:09,633 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-29 09:46:09,645 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-29 09:46:09,646 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-29 09:46:09,646 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 09:46:09,647 - INFO -   ✅ relatorios_interface.py
+2025-09-29 09:46:09,648 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 09:46:09,649 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 09:46:09,649 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-29 09:46:09,661 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-29 09:46:09,661 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 09:46:09,661 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-29 09:46:09,661 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-29 09:46:09,661 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-29 09:46:09,661 - INFO - 🔄 Configurando paths do sistema...
+2025-09-29 09:46:09,743 - INFO - 🔄 Cache do importlib invalidado
+2025-09-29 09:46:09,743 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-29 09:46:09,858 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-29 09:46:09,858 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-29 09:46:09,858 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-29 09:46:18,103 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-29 09:51:14,806 - INFO - Saída confirmada, finalizando sistema
+2025-09-29 09:51:14,876 - INFO - Ação concluída: Gerar relatório
+2025-09-29 10:06:28,520 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-29 10:06:28,802 - INFO - Sistema principal inicializado com sucesso
+2025-09-29 10:06:30,882 - INFO - Executando ação: Gerar relatório
+2025-09-29 10:06:30,882 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-29 10:06:30,882 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-29 10:06:30,882 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-29 10:06:30,882 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:06:30,882 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:06:30,882 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:06:30,882 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:06:30,882 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:06:30,882 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-29 10:06:30,882 - INFO -   ❌ relatorios_interface.py
+2025-09-29 10:06:30,882 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-29 10:06:30,882 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-29 10:06:30,898 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-29 10:06:30,898 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:06:30,899 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:06:30,900 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:06:30,901 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:06:30,902 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-29 10:06:30,912 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-29 10:06:30,912 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:06:30,913 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-29 10:06:30,914 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-29 10:06:30,915 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-29 10:06:30,916 - INFO - 🔄 Configurando paths do sistema...
+2025-09-29 10:06:30,983 - INFO - 🔄 Cache do importlib invalidado
+2025-09-29 10:06:30,983 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-29 10:06:31,022 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-29 10:06:31,022 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-29 10:06:31,022 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-29 10:06:33,404 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-29 10:15:02,124 - INFO - Saída confirmada, finalizando sistema
+2025-09-29 10:15:02,387 - INFO - Forçando encerramento do programa...
+2025-09-29 10:16:04,838 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-29 10:16:05,090 - INFO - Sistema principal inicializado com sucesso
+2025-09-29 10:16:06,763 - INFO - Executando ação: Gerar relatório
+2025-09-29 10:16:06,763 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-29 10:16:06,763 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-29 10:16:06,763 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-29 10:16:06,763 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:16:06,763 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:16:06,763 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:16:06,763 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:16:06,763 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:16:06,763 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-29 10:16:06,763 - INFO -   ❌ relatorios_interface.py
+2025-09-29 10:16:06,763 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-29 10:16:06,773 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-29 10:16:06,774 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-29 10:16:06,775 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:16:06,775 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:16:06,778 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:16:06,779 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:16:06,780 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-29 10:16:06,790 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-29 10:16:06,791 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:16:06,791 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-29 10:16:06,793 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-29 10:16:06,795 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-29 10:16:06,795 - INFO - 🔄 Configurando paths do sistema...
+2025-09-29 10:16:06,845 - INFO - 🔄 Cache do importlib invalidado
+2025-09-29 10:16:06,845 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-29 10:16:06,899 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-29 10:16:06,899 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-29 10:16:06,900 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-29 10:16:08,660 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-29 10:21:49,607 - INFO - Saída confirmada, finalizando sistema
+2025-09-29 10:21:49,855 - INFO - Forçando encerramento do programa...
+2025-09-29 10:26:33,216 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-29 10:26:33,420 - INFO - Sistema principal inicializado com sucesso
+2025-09-29 10:26:36,785 - INFO - Executando ação: Gerar relatório
+2025-09-29 10:26:36,785 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-29 10:26:36,785 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-29 10:26:36,785 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-29 10:26:36,785 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:26:36,785 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:26:36,785 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:26:36,785 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:26:36,785 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:26:36,785 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-29 10:26:36,785 - INFO -   ❌ relatorios_interface.py
+2025-09-29 10:26:36,785 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-29 10:26:36,785 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-29 10:26:36,785 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-29 10:26:36,793 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:26:36,794 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:26:36,794 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:26:36,795 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:26:36,796 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-29 10:26:36,804 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-29 10:26:36,807 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:26:36,808 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-29 10:26:36,809 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-29 10:26:36,809 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-29 10:26:36,810 - INFO - 🔄 Configurando paths do sistema...
+2025-09-29 10:26:36,873 - INFO - 🔄 Cache do importlib invalidado
+2025-09-29 10:26:36,922 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-29 10:26:36,984 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-29 10:26:36,984 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-29 10:26:36,985 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-29 10:26:38,672 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-29 10:27:06,460 - INFO - Saída confirmada, finalizando sistema
+2025-09-29 10:27:06,734 - INFO - Forçando encerramento do programa...
+2025-09-29 10:29:39,651 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-29 10:29:39,904 - INFO - Sistema principal inicializado com sucesso
+2025-09-29 10:29:41,423 - INFO - Executando ação: Gerar relatório
+2025-09-29 10:29:41,424 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-29 10:29:41,424 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-29 10:29:41,425 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-29 10:29:41,426 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:29:41,426 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:29:41,427 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:29:41,427 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:29:41,427 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:29:41,428 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-29 10:29:41,428 - INFO -   ❌ relatorios_interface.py
+2025-09-29 10:29:41,429 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-29 10:29:41,430 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-29 10:29:41,430 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-29 10:29:41,431 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:29:41,432 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:29:41,432 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:29:41,433 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:29:41,434 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-29 10:29:41,442 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-29 10:29:41,443 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:29:41,444 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-29 10:29:41,445 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-29 10:29:41,447 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-29 10:29:41,447 - INFO - 🔄 Configurando paths do sistema...
+2025-09-29 10:29:41,489 - INFO - 🔄 Cache do importlib invalidado
+2025-09-29 10:29:41,489 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-29 10:29:41,534 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-29 10:29:41,534 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-29 10:29:41,534 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-29 10:29:43,222 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-29 10:30:49,423 - INFO - Saída confirmada, finalizando sistema
+2025-09-29 10:30:49,667 - INFO - Forçando encerramento do programa...
+2025-09-29 10:38:01,338 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-29 10:38:01,585 - INFO - Sistema principal inicializado com sucesso
+2025-09-29 10:38:35,290 - INFO - Executando ação: Gerar relatório
+2025-09-29 10:38:35,291 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-29 10:38:35,291 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-29 10:38:35,292 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-29 10:38:35,293 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:38:35,293 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:38:35,294 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:38:35,294 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:38:35,295 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:38:35,296 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-29 10:38:35,296 - INFO -   ❌ relatorios_interface.py
+2025-09-29 10:38:35,297 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-29 10:38:35,297 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-29 10:38:35,299 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-29 10:38:35,299 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:38:35,300 - INFO -   ✅ relatorios_interface.py
+2025-09-29 10:38:35,300 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 10:38:35,302 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 10:38:35,302 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-29 10:38:35,310 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-29 10:38:35,311 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 10:38:35,312 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-29 10:38:35,312 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-29 10:38:35,313 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-29 10:38:35,314 - INFO - 🔄 Configurando paths do sistema...
+2025-09-29 10:38:35,351 - INFO - 🔄 Cache do importlib invalidado
+2025-09-29 10:38:35,351 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-29 10:38:35,402 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-29 10:38:35,402 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-29 10:38:35,402 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-29 10:38:37,025 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-29 10:52:40,867 - INFO - Saída confirmada, finalizando sistema
+2025-09-29 10:52:41,118 - INFO - Forçando encerramento do programa...
+2025-09-29 11:03:53,507 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-29 11:03:53,786 - INFO - Sistema principal inicializado com sucesso
+2025-09-29 11:03:55,495 - INFO - Executando ação: Gerar relatório
+2025-09-29 11:03:55,510 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-29 11:03:55,510 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-29 11:03:55,510 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-29 11:03:55,510 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 11:03:55,510 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 11:03:55,510 - INFO -   ✅ relatorios_interface.py
+2025-09-29 11:03:55,510 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 11:03:55,510 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 11:03:55,510 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-29 11:03:55,510 - INFO -   ❌ relatorios_interface.py
+2025-09-29 11:03:55,510 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-29 11:03:55,517 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-29 11:03:55,518 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-29 11:03:55,519 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 11:03:55,520 - INFO -   ✅ relatorios_interface.py
+2025-09-29 11:03:55,521 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-29 11:03:55,522 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-29 11:03:55,522 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-29 11:03:55,531 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-29 11:03:55,532 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-29 11:03:55,533 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-29 11:03:55,533 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-29 11:03:55,534 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-29 11:03:55,534 - INFO - 🔄 Configurando paths do sistema...
+2025-09-29 11:03:55,586 - INFO - 🔄 Cache do importlib invalidado
+2025-09-29 11:03:55,586 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-29 11:03:55,642 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-29 11:03:55,643 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-29 11:03:55,643 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-29 11:03:57,480 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-29 14:28:03,977 - INFO - Saída confirmada, finalizando sistema
+2025-09-29 14:28:04,256 - INFO - Forçando encerramento do programa...
+2025-09-30 10:14:19,635 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 10:14:20,634 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 10:17:43,735 - INFO - Executando ação: Gerar relatório
+2025-09-30 10:17:43,735 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 10:17:43,735 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 10:17:43,735 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 10:17:43,735 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 10:17:43,735 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 10:17:43,735 - INFO -   ✅ relatorios_interface.py
+2025-09-30 10:17:43,735 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 10:17:43,735 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 10:17:43,735 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 10:17:43,735 - INFO -   ❌ relatorios_interface.py
+2025-09-30 10:17:43,735 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 10:17:43,746 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 10:17:43,747 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 10:17:43,747 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 10:17:43,748 - INFO -   ✅ relatorios_interface.py
+2025-09-30 10:17:43,749 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 10:17:43,749 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 10:17:43,750 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 10:17:43,760 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 10:17:43,761 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 10:17:43,762 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 10:17:43,763 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 10:17:43,765 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 10:17:43,765 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 10:17:43,850 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 10:17:43,850 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 10:17:43,967 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 10:17:43,967 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 10:17:43,967 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 10:17:50,403 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 10:47:51,954 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 10:47:52,246 - INFO - Forçando encerramento do programa...
+2025-09-30 10:59:35,260 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 10:59:35,581 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 10:59:37,023 - INFO - Executando ação: Gerar relatório
+2025-09-30 10:59:37,023 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 10:59:37,023 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 10:59:37,023 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 10:59:37,039 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 10:59:37,039 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 10:59:37,039 - INFO -   ✅ relatorios_interface.py
+2025-09-30 10:59:37,039 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 10:59:37,039 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 10:59:37,039 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 10:59:37,039 - INFO -   ❌ relatorios_interface.py
+2025-09-30 10:59:37,039 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 10:59:37,039 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 10:59:37,039 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 10:59:37,039 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 10:59:37,039 - INFO -   ✅ relatorios_interface.py
+2025-09-30 10:59:37,039 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 10:59:37,039 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 10:59:37,039 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 10:59:37,060 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 10:59:37,062 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 10:59:37,063 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 10:59:37,064 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 10:59:37,065 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 10:59:37,065 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 10:59:37,130 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 10:59:37,130 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 10:59:37,180 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 10:59:37,180 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 10:59:37,180 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 10:59:39,182 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 11:10:10,017 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 11:10:10,088 - INFO - Ação concluída: Gerar relatório
+2025-09-30 11:10:19,993 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 11:10:20,276 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 11:10:26,375 - INFO - Executando ação: Gerar relatório
+2025-09-30 11:10:26,375 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 11:10:26,375 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 11:10:26,375 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 11:10:26,375 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 11:10:26,375 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 11:10:26,375 - INFO -   ✅ relatorios_interface.py
+2025-09-30 11:10:26,375 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 11:10:26,375 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 11:10:26,375 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 11:10:26,375 - INFO -   ❌ relatorios_interface.py
+2025-09-30 11:10:26,375 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 11:10:26,375 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 11:10:26,390 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 11:10:26,391 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 11:10:26,392 - INFO -   ✅ relatorios_interface.py
+2025-09-30 11:10:26,393 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 11:10:26,393 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 11:10:26,393 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 11:10:26,403 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 11:10:26,406 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 11:10:26,407 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 11:10:26,408 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 11:10:26,409 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 11:10:26,410 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 11:10:26,474 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 11:10:26,474 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 11:10:26,526 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 11:10:26,526 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 11:10:26,526 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 11:10:28,444 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 11:13:39,775 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 11:13:40,066 - INFO - Forçando encerramento do programa...
+2025-09-30 13:13:39,658 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 13:13:40,394 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 13:13:41,827 - INFO - Executando ação: Gerar relatório
+2025-09-30 13:13:41,827 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 13:13:41,827 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 13:13:41,827 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 13:13:41,827 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:13:41,827 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:13:41,827 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:13:41,827 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:13:41,827 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:13:41,827 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 13:13:41,827 - INFO -   ❌ relatorios_interface.py
+2025-09-30 13:13:41,827 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 13:13:41,840 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 13:13:41,842 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 13:13:41,843 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:13:41,845 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:13:41,853 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:13:41,855 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:13:41,856 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 13:13:41,871 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 13:13:41,875 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:13:41,876 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 13:13:41,877 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 13:13:41,877 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 13:13:41,877 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 13:13:42,011 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 13:13:42,011 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 13:13:42,128 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 13:13:42,128 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 13:13:42,128 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 13:13:44,279 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:18:33,149 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:18:33,414 - INFO - Forçando encerramento do programa...
+2025-09-30 13:22:28,466 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 13:22:28,774 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 13:22:30,485 - INFO - Executando ação: Gerar relatório
+2025-09-30 13:22:30,500 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 13:22:30,500 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 13:22:30,500 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 13:22:30,500 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:22:30,500 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:22:30,500 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:22:30,500 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:22:30,500 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:22:30,500 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 13:22:30,500 - INFO -   ❌ relatorios_interface.py
+2025-09-30 13:22:30,500 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 13:22:30,500 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 13:22:30,508 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 13:22:30,510 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:22:30,511 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:22:30,511 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:22:30,513 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:22:30,513 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 13:22:30,522 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 13:22:30,525 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:22:30,526 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 13:22:30,527 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 13:22:30,527 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 13:22:30,528 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 13:22:30,592 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 13:22:30,592 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 13:22:30,643 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 13:22:30,643 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 13:22:30,643 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 13:22:32,593 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:26:11,006 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:26:11,286 - INFO - Forçando encerramento do programa...
+2025-09-30 13:39:49,626 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 13:39:49,954 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 13:39:52,144 - INFO - Executando ação: Gerar relatório
+2025-09-30 13:39:52,144 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 13:39:52,144 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 13:39:52,144 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 13:39:52,144 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:39:52,144 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:39:52,144 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:39:52,144 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:39:52,144 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:39:52,144 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 13:39:52,144 - INFO -   ❌ relatorios_interface.py
+2025-09-30 13:39:52,144 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 13:39:52,144 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 13:39:52,144 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 13:39:52,154 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:39:52,155 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:39:52,156 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:39:52,157 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:39:52,157 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 13:39:52,168 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 13:39:52,169 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:39:52,170 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 13:39:52,170 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 13:39:52,171 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 13:39:52,174 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 13:39:52,249 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 13:39:52,249 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 13:39:52,284 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 13:39:52,284 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 13:39:52,297 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 13:39:54,308 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:43:29,129 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:43:29,394 - INFO - Forçando encerramento do programa...
+2025-09-30 13:47:12,526 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 13:47:12,798 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 13:47:14,550 - INFO - Executando ação: Gerar relatório
+2025-09-30 13:47:14,550 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 13:47:14,550 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 13:47:14,550 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 13:47:14,550 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:47:14,550 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:47:14,550 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:47:14,550 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:47:14,550 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:47:14,550 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 13:47:14,550 - INFO -   ❌ relatorios_interface.py
+2025-09-30 13:47:14,550 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 13:47:14,550 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 13:47:14,566 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 13:47:14,567 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:47:14,568 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:47:14,568 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:47:14,569 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:47:14,570 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 13:47:14,582 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 13:47:14,583 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:47:14,584 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 13:47:14,585 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 13:47:14,585 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 13:47:14,587 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 13:47:14,645 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 13:47:14,645 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 13:47:14,697 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 13:47:14,697 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 13:47:14,697 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 13:47:16,464 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:51:32,115 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:51:32,392 - INFO - Forçando encerramento do programa...
+2025-09-30 13:55:37,322 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 13:55:37,545 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 13:55:40,242 - INFO - Executando ação: Gerar relatório
+2025-09-30 13:55:40,242 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 13:55:40,242 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 13:55:40,242 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 13:55:40,242 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:55:40,242 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:55:40,242 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:55:40,242 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:55:40,256 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:55:40,257 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 13:55:40,258 - INFO -   ❌ relatorios_interface.py
+2025-09-30 13:55:40,259 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 13:55:40,260 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 13:55:40,263 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 13:55:40,264 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:55:40,266 - INFO -   ✅ relatorios_interface.py
+2025-09-30 13:55:40,267 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 13:55:40,268 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 13:55:40,269 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 13:55:40,283 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 13:55:40,285 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 13:55:40,285 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 13:55:40,286 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 13:55:40,287 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 13:55:40,287 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 13:55:40,365 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 13:55:40,366 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 13:55:40,410 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 13:55:40,410 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 13:55:40,412 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 13:55:41,976 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:58:24,509 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:58:24,771 - INFO - Forçando encerramento do programa...
+2025-09-30 14:00:48,920 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 14:00:49,177 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 14:00:50,442 - INFO - Executando ação: Gerar relatório
+2025-09-30 14:00:50,442 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 14:00:50,442 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 14:00:50,442 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 14:00:50,442 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:00:50,442 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:00:50,442 - INFO -   ✅ relatorios_interface.py
+2025-09-30 14:00:50,442 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 14:00:50,442 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 14:00:50,442 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 14:00:50,442 - INFO -   ❌ relatorios_interface.py
+2025-09-30 14:00:50,442 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 14:00:50,455 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 14:00:50,456 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 14:00:50,457 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:00:50,457 - INFO -   ✅ relatorios_interface.py
+2025-09-30 14:00:50,457 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 14:00:50,457 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 14:00:50,462 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 14:00:50,468 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 14:00:50,468 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:00:50,472 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 14:00:50,475 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 14:00:50,475 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 14:00:50,475 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 14:00:50,538 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 14:00:50,538 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 14:00:50,589 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 14:00:50,589 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 14:00:50,589 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 14:00:52,324 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 14:03:51,941 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 14:03:52,199 - INFO - Forçando encerramento do programa...
+2025-09-30 14:05:44,046 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 14:05:44,315 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 14:05:45,700 - INFO - Executando ação: Gerar relatório
+2025-09-30 14:05:45,700 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 14:05:45,700 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 14:05:45,700 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 14:05:45,700 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:05:45,700 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:05:45,700 - INFO -   ✅ relatorios_interface.py
+2025-09-30 14:05:45,700 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 14:05:45,700 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 14:05:45,700 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 14:05:45,700 - INFO -   ❌ relatorios_interface.py
+2025-09-30 14:05:45,700 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 14:05:45,700 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 14:05:45,700 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 14:05:45,700 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:05:45,700 - INFO -   ✅ relatorios_interface.py
+2025-09-30 14:05:45,700 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 14:05:45,700 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 14:05:45,700 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 14:05:45,715 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 14:05:45,715 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:05:45,715 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 14:05:45,715 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 14:05:45,715 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 14:05:45,715 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 14:05:45,785 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 14:05:45,785 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 14:05:45,837 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 14:05:45,837 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 14:05:45,837 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 14:05:47,635 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 14:07:40,531 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 14:07:40,818 - INFO - Forçando encerramento do programa...
+2025-09-30 14:20:32,393 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-09-30 14:20:33,567 - INFO - Sistema principal inicializado com sucesso
+2025-09-30 14:20:37,698 - INFO - Executando ação: Gerar relatório
+2025-09-30 14:20:37,698 - INFO - === INICIANDO SISTEMA DE RELATÓRIOS COM DIAGNÓSTICO ===
+2025-09-30 14:20:37,698 - INFO - 🔍 INICIANDO DIAGNÓSTICO DO SISTEMA
+2025-09-30 14:20:37,698 - INFO - 📍 Tipo de execução: Python Normal
+2025-09-30 14:20:37,698 - INFO - 📁 Diretório base: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:20:37,698 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:20:37,698 - INFO -   ✅ relatorios_interface.py
+2025-09-30 14:20:37,698 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 14:20:37,713 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 14:20:37,713 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro
+2025-09-30 14:20:37,730 - INFO -   ❌ relatorios_interface.py
+2025-09-30 14:20:37,732 - INFO -   ❌ relatorio_despesas_service.py
+2025-09-30 14:20:37,733 - INFO -   ❌ relatorio_despesas_aprimorado.py
+2025-09-30 14:20:37,734 - INFO - 📂 NÃO EXISTE: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src
+2025-09-30 14:20:37,736 - INFO - 📂 Verificando: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:20:37,738 - INFO -   ✅ relatorios_interface.py
+2025-09-30 14:20:37,752 - INFO -   ✅ relatorio_despesas_service.py
+2025-09-30 14:20:37,770 - INFO -   ✅ relatorio_despesas_aprimorado.py
+2025-09-30 14:20:37,770 - INFO - 📊 RESUMO: 6 arquivos relevantes encontrados
+2025-09-30 14:20:37,857 - INFO - 🔍 INICIANDO BUSCA INTELIGENTE POR MÓDULOS
+2025-09-30 14:20:37,857 - INFO - 🐍 Execução Python normal: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src
+2025-09-30 14:20:37,904 - INFO - ✅ ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\relatorios_interface.py
+2025-09-30 14:20:37,907 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\relatorios_interface.py
+2025-09-30 14:20:37,911 - INFO - ❌ NÃO ENCONTRADO: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\src\relatorios_interface.py
+2025-09-30 14:20:37,911 - INFO - 🔄 Configurando paths do sistema...
+2025-09-30 14:20:38,030 - INFO - 🔄 Cache do importlib invalidado
+2025-09-30 14:20:38,045 - INFO - 🎯 Tentando importar: relatorios_interface
+2025-09-30 14:20:38,127 - INFO - ✅ SUCESSO! Módulo relatorios_interface importado!
+2025-09-30 14:20:38,127 - INFO - ✅ Classe SistemaRelatorios encontrada em relatorios_interface
+2025-09-30 14:20:38,127 - INFO - 🚀 INICIALIZANDO SISTEMA INTEGRADO DE RELATÓRIOS
+2025-09-30 14:20:41,823 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 14:24:40,265 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 14:24:40,552 - INFO - Forçando encerramento do programa...

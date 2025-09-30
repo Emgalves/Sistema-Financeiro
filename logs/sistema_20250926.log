@@ -1,0 +1,49 @@
+2025-09-26 19:14:47,008 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-26 19:14:47,009 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-09-26 19:14:47,009 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-09-26 19:14:47,198 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-09-26 19:14:47,199 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-09-26 19:14:47,199 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-09-26 19:14:47,200 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-09-26 19:15:00,916 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-26 19:15:01,124 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-26 19:15:01,124 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-09-26 19:15:01,155 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-09-26 19:15:01,157 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-09-26 19:15:01,159 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-26 19:15:01,192 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-26 19:15:01,208 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-26 19:15:01,210 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-09-26 19:15:01,213 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-09-26 19:15:01,215 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-09-26 19:15:01,216 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 16 itens
+2025-09-26 19:15:14,773 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-26 19:15:14,773 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: categoria
+2025-09-26 19:16:05,841 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-09-26 19:16:05,841 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-09-26 19:16:05,910 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-09-26 19:19:07,572 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-09-26 19:19:07,575 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-09-26 19:19:07,577 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-09-26 19:19:07,698 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-09-26 19:19:07,698 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-09-26 19:19:07,698 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-09-26 19:19:07,698 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-09-26 19:19:09,563 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-26 19:19:09,625 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-26 19:19:09,625 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-09-26 19:19:09,647 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-09-26 19:19:09,648 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-09-26 19:19:09,648 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-26 19:19:09,678 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-26 19:19:09,701 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-26 19:19:09,701 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-09-26 19:19:09,706 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-09-26 19:19:09,708 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-09-26 19:19:09,709 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 16 itens
+2025-09-26 19:19:17,042 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-26 19:19:17,042 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: categoria
+2025-09-26 19:19:17,275 - sistema_relatorios - relatorios_interface - ERROR - 💥 ERRO outros relatórios: 'RelatorioCategoria' object has no attribute 'selecionar_mes'
+2025-09-26 19:20:41,939 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-09-26 19:20:41,939 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-09-26 19:20:42,002 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído

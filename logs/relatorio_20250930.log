@@ -1,0 +1,268 @@
+2025-09-30 10:17:50,232 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 10:17:50,334 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 10:17:50,334 - INFO - Coluna de status: Data Final
+2025-09-30 10:17:50,358 - INFO - Coluna de nome: Nome
+2025-09-30 10:17:50,359 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 10:17:50,361 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 10:17:50,403 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 10:17:50,403 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 10:17:50,418 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 10:17:50,419 - INFO - Coluna de status: Data Final
+2025-09-30 10:17:50,421 - INFO - Coluna de nome: Nome
+2025-09-30 10:17:50,423 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 10:17:50,424 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 10:17:56,830 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 10:17:56,830 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 10:47:49,275 - INFO - Solicitado retorno ao menu principal
+2025-09-30 10:47:49,290 - INFO - Retornando ao menu principal existente
+2025-09-30 10:47:49,364 - INFO - Retorno ao menu principal concluído
+2025-09-30 10:47:51,954 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 10:47:52,246 - INFO - Forçando encerramento do programa...
+2025-09-30 10:59:39,067 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 10:59:39,145 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 10:59:39,145 - INFO - Coluna de status: Data Final
+2025-09-30 10:59:39,161 - INFO - Coluna de nome: Nome
+2025-09-30 10:59:39,164 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 10:59:39,165 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 10:59:39,182 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 10:59:39,197 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 10:59:39,217 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 10:59:39,220 - INFO - Coluna de status: Data Final
+2025-09-30 10:59:39,224 - INFO - Coluna de nome: Nome
+2025-09-30 10:59:39,225 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 10:59:39,226 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 10:59:49,408 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 10:59:49,408 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 11:10:07,450 - INFO - Solicitado retorno ao menu principal
+2025-09-30 11:10:07,466 - INFO - Retornando ao menu principal existente
+2025-09-30 11:10:07,527 - INFO - Retorno ao menu principal concluído
+2025-09-30 11:10:10,017 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 11:10:10,088 - INFO - Ação concluída: Gerar relatório
+2025-09-30 11:10:28,335 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 11:10:28,391 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 11:10:28,391 - INFO - Coluna de status: Data Final
+2025-09-30 11:10:28,407 - INFO - Coluna de nome: Nome
+2025-09-30 11:10:28,407 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 11:10:28,413 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 11:10:28,444 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 11:10:28,444 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 11:10:28,463 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 11:10:28,464 - INFO - Coluna de status: Data Final
+2025-09-30 11:10:28,466 - INFO - Coluna de nome: Nome
+2025-09-30 11:10:28,469 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 11:10:28,472 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 11:10:37,527 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 11:10:37,527 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 11:13:37,153 - INFO - Solicitado retorno ao menu principal
+2025-09-30 11:13:37,169 - INFO - Retornando ao menu principal existente
+2025-09-30 11:13:37,216 - INFO - Retorno ao menu principal concluído
+2025-09-30 11:13:39,775 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 11:13:40,066 - INFO - Forçando encerramento do programa...
+2025-09-30 13:13:44,134 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:13:44,226 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:13:44,227 - INFO - Coluna de status: Data Final
+2025-09-30 13:13:44,245 - INFO - Coluna de nome: Nome
+2025-09-30 13:13:44,246 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:13:44,248 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 13:13:44,279 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:13:44,280 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:13:44,297 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:13:44,297 - INFO - Coluna de status: Data Final
+2025-09-30 13:13:44,301 - INFO - Coluna de nome: Nome
+2025-09-30 13:13:44,302 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:13:44,303 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 13:13:51,584 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 13:13:51,584 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 13:18:30,249 - INFO - Solicitado retorno ao menu principal
+2025-09-30 13:18:30,249 - INFO - Retornando ao menu principal existente
+2025-09-30 13:18:30,316 - INFO - Retorno ao menu principal concluído
+2025-09-30 13:18:33,149 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:18:33,414 - INFO - Forçando encerramento do programa...
+2025-09-30 13:22:32,484 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:22:32,542 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:22:32,542 - INFO - Coluna de status: Data Final
+2025-09-30 13:22:32,542 - INFO - Coluna de nome: Nome
+2025-09-30 13:22:32,542 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:22:32,542 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 13:22:32,593 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:22:32,593 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:22:32,613 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:22:32,614 - INFO - Coluna de status: Data Final
+2025-09-30 13:22:32,616 - INFO - Coluna de nome: Nome
+2025-09-30 13:22:32,617 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:22:32,618 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 13:22:38,990 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 13:22:38,990 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 13:26:08,462 - INFO - Solicitado retorno ao menu principal
+2025-09-30 13:26:08,462 - INFO - Retornando ao menu principal existente
+2025-09-30 13:26:08,564 - INFO - Retorno ao menu principal concluído
+2025-09-30 13:26:11,006 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:26:11,286 - INFO - Forçando encerramento do programa...
+2025-09-30 13:39:54,184 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:39:54,250 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:39:54,250 - INFO - Coluna de status: Data Final
+2025-09-30 13:39:54,271 - INFO - Coluna de nome: Nome
+2025-09-30 13:39:54,272 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:39:54,273 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 13:39:54,308 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:39:54,309 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:39:54,328 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:39:54,329 - INFO - Coluna de status: Data Final
+2025-09-30 13:39:54,334 - INFO - Coluna de nome: Nome
+2025-09-30 13:39:54,339 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:39:54,340 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 13:40:00,260 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 13:40:00,260 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 13:43:26,564 - INFO - Solicitado retorno ao menu principal
+2025-09-30 13:43:26,579 - INFO - Retornando ao menu principal existente
+2025-09-30 13:43:26,673 - INFO - Retorno ao menu principal concluído
+2025-09-30 13:43:29,129 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:43:29,394 - INFO - Forçando encerramento do programa...
+2025-09-30 13:47:16,355 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:47:16,413 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:47:16,413 - INFO - Coluna de status: Data Final
+2025-09-30 13:47:16,413 - INFO - Coluna de nome: Nome
+2025-09-30 13:47:16,413 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:47:16,413 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 13:47:16,464 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:47:16,464 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:47:16,486 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:47:16,488 - INFO - Coluna de status: Data Final
+2025-09-30 13:47:16,490 - INFO - Coluna de nome: Nome
+2025-09-30 13:47:16,490 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:47:16,490 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 13:47:19,283 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 13:47:19,283 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 13:48:19,664 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,664 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,680 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,683 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,686 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,689 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,692 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,695 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,700 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,702 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,706 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,710 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,715 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,718 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,722 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:19,728 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,263 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,263 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,278 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,282 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,285 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,288 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,292 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,296 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,298 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,301 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,303 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,307 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,312 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,316 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,323 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:48:56,325 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:51:29,108 - INFO - Solicitado retorno ao menu principal
+2025-09-30 13:51:29,108 - INFO - Retornando ao menu principal existente
+2025-09-30 13:51:29,180 - INFO - Retorno ao menu principal concluído
+2025-09-30 13:51:32,115 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:51:32,392 - INFO - Forçando encerramento do programa...
+2025-09-30 13:55:41,896 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:55:41,941 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:55:41,941 - INFO - Coluna de status: Data Final
+2025-09-30 13:55:41,941 - INFO - Coluna de nome: Nome
+2025-09-30 13:55:41,941 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:55:41,941 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 13:55:41,976 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 13:55:41,976 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 13:55:42,002 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 13:55:42,002 - INFO - Coluna de status: Data Final
+2025-09-30 13:55:42,005 - INFO - Coluna de nome: Nome
+2025-09-30 13:55:42,012 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 13:55:42,013 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 13:55:44,232 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 13:55:44,232 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 13:57:52,550 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,550 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,550 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,562 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,564 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,568 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,578 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,580 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,584 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,589 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,592 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,595 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,598 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,601 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,604 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:57:52,606 - INFO - Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
+2025-09-30 13:58:18,239 - INFO - Solicitado retorno ao menu principal
+2025-09-30 13:58:18,239 - INFO - Retornando ao menu principal existente
+2025-09-30 13:58:18,316 - INFO - Retorno ao menu principal concluído
+2025-09-30 13:58:24,509 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 13:58:24,771 - INFO - Forçando encerramento do programa...
+2025-09-30 14:00:52,225 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 14:00:52,273 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 14:00:52,273 - INFO - Coluna de status: Data Final
+2025-09-30 14:00:52,273 - INFO - Coluna de nome: Nome
+2025-09-30 14:00:52,273 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 14:00:52,273 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 14:00:52,324 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 14:00:52,324 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 14:00:52,344 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 14:00:52,345 - INFO - Coluna de status: Data Final
+2025-09-30 14:00:52,348 - INFO - Coluna de nome: Nome
+2025-09-30 14:00:52,348 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 14:00:52,348 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 14:00:55,511 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 14:00:55,511 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 14:03:48,759 - INFO - Solicitado retorno ao menu principal
+2025-09-30 14:03:48,759 - INFO - Retornando ao menu principal existente
+2025-09-30 14:03:48,835 - INFO - Retorno ao menu principal concluído
+2025-09-30 14:03:51,941 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 14:03:52,199 - INFO - Forçando encerramento do programa...
+2025-09-30 14:05:47,528 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 14:05:47,586 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 14:05:47,586 - INFO - Coluna de status: Data Final
+2025-09-30 14:05:47,586 - INFO - Coluna de nome: Nome
+2025-09-30 14:05:47,586 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 14:05:47,586 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 14:05:47,635 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 14:05:47,636 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 14:05:47,662 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 14:05:47,663 - INFO - Coluna de status: Data Final
+2025-09-30 14:05:47,665 - INFO - Coluna de nome: Nome
+2025-09-30 14:05:47,675 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 14:05:47,676 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 14:05:52,737 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 14:05:52,737 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 14:07:37,524 - INFO - Solicitado retorno ao menu principal
+2025-09-30 14:07:37,526 - INFO - Retornando ao menu principal existente
+2025-09-30 14:07:37,602 - INFO - Retorno ao menu principal concluído
+2025-09-30 14:07:40,531 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 14:07:40,818 - INFO - Forçando encerramento do programa...
+2025-09-30 14:20:41,581 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 14:20:41,695 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 14:20:41,695 - INFO - Coluna de status: Data Final
+2025-09-30 14:20:41,735 - INFO - Coluna de nome: Nome
+2025-09-30 14:20:41,747 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 14:20:41,747 - INFO - Lista de clientes atualizada com 16 clientes
+2025-09-30 14:20:41,823 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-09-30 14:20:41,839 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-09-30 14:20:41,883 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-09-30 14:20:41,996 - INFO - Coluna de status: Data Final
+2025-09-30 14:20:41,996 - INFO - Coluna de nome: Nome
+2025-09-30 14:20:42,046 - INFO - Total de clientes ativos encontrados: 15
+2025-09-30 14:20:42,046 - INFO - Lista de clientes carregada com 16 itens
+2025-09-30 14:20:44,826 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-09-30 14:20:44,861 - INFO - 📋 Processando outros relatórios: categoria
+2025-09-30 14:24:30,575 - INFO - Solicitado retorno ao menu principal
+2025-09-30 14:24:30,575 - INFO - Retornando ao menu principal existente
+2025-09-30 14:24:30,636 - INFO - Retorno ao menu principal concluído
+2025-09-30 14:24:40,265 - INFO - Saída confirmada, finalizando sistema
+2025-09-30 14:24:40,552 - INFO - Forçando encerramento do programa...
