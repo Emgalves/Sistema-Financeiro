@@ -70,8 +70,16 @@ def formatar_moeda_br(valor):
     except (ValueError, TypeError):
         return f"R$ 0,00"
 
+def formatar_valor_sem_simbolo(valor):
+    """Formata um valor numérico sem o símbolo R$"""
+    try:
+        valor_float = float(valor)
+        return f"{valor_float:,.2f}".replace(',', '_').replace('.', ',').replace('_', '.')
+    except (ValueError, TypeError):
+        return "0,00"
+
 class RelatorioCategoria:
-    """Classe para geração de relatórios por categoria de despesa"""
+    """Classe para geração de relatórios por categoria de despesa agrupado por mês de vencimento"""
     
     def __init__(self, parent=None):
         """Inicializa a interface do relatório"""
@@ -84,7 +92,7 @@ class RelatorioCategoria:
             self.root = tk.Tk()
             self.menu_principal = None
             
-        configurar_janela(self.root, "Relatório por Categoria de Despesa", 1200, 1000)
+        configurar_janela(self.root, "Relatório por Categoria - Agrupado por Mês de Vencimento", 1200, 1000)
         
         # Definição das categorias de despesa
         self.categorias_despesas = {
@@ -103,8 +111,8 @@ class RelatorioCategoria:
         self.arquivo_cliente = None
         self.data_referencia = datetime.now()
         self.df_despesas = None
-        self.df_por_data = None
-        self.data_selecionada = None
+        self.df_por_mes = None  # Mudança: agora agrupamos por mês
+        self.data_selecionada = None  # Mudança: em vez de data_selecionada
         self.dados_grafico = {}
         
         # Configurar interface
@@ -117,7 +125,7 @@ class RelatorioCategoria:
         self.frame_principal.pack(fill='both', expand=True)
         
         # Frame para seleção (TOPO - FIXO)
-        self.frame_selecao = ttk.LabelFrame(self.frame_principal, text="Seleção de Cliente e Data")
+        self.frame_selecao = ttk.LabelFrame(self.frame_principal, text="Seleção de Cliente")
         self.frame_selecao.pack(fill='x', side='top', pady=(0, 10))
         
         # Container para cliente
@@ -193,7 +201,7 @@ class RelatorioCategoria:
         self.atualizar_lista_clientes()
     
     def setup_aba_resumo(self):
-        """Configura a aba de resumo do relatório por data e categoria de despesa"""
+        """Configura a aba de resumo do relatório por mês de vencimento e categoria de despesa"""
         # Frame para informações do cliente
         frame_info = ttk.Frame(self.aba_resumo, padding=5)
         frame_info.pack(fill='x', pady=5)
@@ -208,19 +216,19 @@ class RelatorioCategoria:
         
         self.lbl_data_resumo = ttk.Label(
             frame_info, 
-            text=f"Data: {datetime.now().strftime('%d/%m/%Y')}", 
+            text=f"Agrupamento: Por Mês de Vencimento", 
             font=('Arial', 12, 'bold'),
             foreground='#0056b3'
         )
         self.lbl_data_resumo.pack(side='left', padx=10)
         
-        # Frame para o TreeView com os dados por data
+        # Frame para o TreeView com os dados por mês
         frame_resumo = ttk.Frame(self.aba_resumo, padding=5)
         frame_resumo.pack(fill='both', expand=True, pady=5)
         
-        # Criar TreeView para os dados por data
-        # Colunas: 'data', categorias (ADM, DIV, LOC, MAT, MO, SERV, TAX, TP), 'total'
-        colunas = ['data']
+        # Criar TreeView para os dados por mês
+        # Colunas: 'mes_ano', categorias (ADM, DIV, LOC, MAT, MO, SERV, TAX, TP), 'total'
+        colunas = ['mes_ano']
         for categoria in self.categorias_despesas.keys():
             colunas.append(f'cat_{categoria}')
         colunas.append('total')
@@ -228,7 +236,7 @@ class RelatorioCategoria:
         self.tv_resumo = ttk.Treeview(frame_resumo, columns=colunas, show='headings', height=15)
         
         # Configurar cabeçalhos
-        self.tv_resumo.heading('data', text='Data')
+        self.tv_resumo.heading('mes_ano', text='Mês/Ano')
         for categoria in self.categorias_despesas.keys():
             # Usar a sigla da categoria para o cabeçalho
             self.tv_resumo.heading(f'cat_{categoria}', text=categoria)
@@ -236,7 +244,7 @@ class RelatorioCategoria:
         self.tv_resumo.heading('total', text='Total (R$)')
         
         # Configurar colunas
-        self.tv_resumo.column('data', width=100, anchor='center')
+        self.tv_resumo.column('mes_ano', width=120, anchor='center')
         for categoria in self.categorias_despesas.keys():
             self.tv_resumo.column(f'cat_{categoria}', width=100, anchor='e', stretch=True)
         self.tv_resumo.column('total', width=120, anchor='e')
@@ -260,7 +268,7 @@ class RelatorioCategoria:
         
         # Total de Despesas (primeira linha, primeira coluna)
         ttk.Label(frame_totais, text="Total de Despesas:", font=('Arial', 11, 'bold')).grid(row=0, column=0, sticky='e', padx=5, pady=5)
-        self.lbl_total_geral = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 11))
+        self.lbl_total_geral = ttk.Label(frame_totais, text="0,00", font=('Arial', 11))
         self.lbl_total_geral.grid(row=0, column=1, sticky='w', padx=5, pady=5)
         
         # Criar labels dinâmicos para cada categoria
@@ -273,7 +281,7 @@ class RelatorioCategoria:
             ttk.Label(frame_totais, text=f"{categoria}:", font=('Arial', 10, 'bold')).grid(row=row, column=col, sticky='e', padx=5, pady=2)
             
             # Label do valor da categoria
-            self.labels_categorias[categoria] = ttk.Label(frame_totais, text="R$ 0,00", font=('Arial', 10))
+            self.labels_categorias[categoria] = ttk.Label(frame_totais, text="0,00", font=('Arial', 10))
             self.labels_categorias[categoria].grid(row=row, column=col+1, sticky='w', padx=5, pady=2)
             
             # Avançar para próxima posição
@@ -283,52 +291,53 @@ class RelatorioCategoria:
                 row += 1
     
     def setup_aba_detalhes(self):
-        """Configura a aba de detalhes do relatório para a data selecionada"""
-        # Frame para informações da data selecionada
-        frame_info_data = ttk.Frame(self.aba_detalhes, padding=5)
-        frame_info_data.pack(fill='x', pady=5)
+        """Configura a aba de detalhes do relatório para o mês selecionado"""
+        # Frame para informações do mês selecionado
+        frame_info_mes = ttk.Frame(self.aba_detalhes, padding=5)
+        frame_info_mes.pack(fill='x', pady=5)
         
-        self.lbl_data_detalhe = ttk.Label(
-            frame_info_data, 
-            text="Data Selecionada: Nenhuma", 
+        self.lbl_mes_detalhe = ttk.Label(
+            frame_info_mes, 
+            text="Mês Selecionado: Nenhum", 
             font=('Arial', 12, 'bold'),
             foreground='#0056b3'
         )
-        self.lbl_data_detalhe.pack(side='left', padx=10)
+        self.lbl_mes_detalhe.pack(side='left', padx=10)
         
-        self.lbl_total_data_detalhe = ttk.Label(
-            frame_info_data, 
+        self.lbl_total_mes_detalhe = ttk.Label(
+            frame_info_mes, 
             text="Total: R$ 0,00", 
             font=('Arial', 12, 'bold'),
             foreground='#0056b3'
         )
-        self.lbl_total_data_detalhe.pack(side='left', padx=10)
+        self.lbl_total_mes_detalhe.pack(side='left', padx=10)
         
         # Frame para a tabela de detalhes
         frame_tabela = ttk.Frame(self.aba_detalhes, padding=5)
         frame_tabela.pack(fill='both', expand=True, pady=5)
         
-        # Criar TreeView para os lançamentos da data selecionada
-        colunas = ('data', 'categoria', 'nome', 'referencia', 'dt_vencto', 'valor', 'observacao')
+        # Criar TreeView para os lançamentos do mês selecionado
+        colunas = ('dt_vencto', 'categoria', 'nome', 'referencia', 'data_rel', 'valor', 'observacao')
         self.tv_detalhes = ttk.Treeview(frame_tabela, columns=colunas, show='headings', height=15)
         
         # Configurar cabeçalhos
-        self.tv_detalhes.heading('data', text='Data')
-        self.tv_detalhes.heading('categoria', text='Categoria')
+        self.tv_detalhes.heading('dt_vencto', text='Dt. Vencimento')
+        self.tv_detalhes.heading('categoria', text='Cat')  # MUDOU
         self.tv_detalhes.heading('nome', text='Nome')
         self.tv_detalhes.heading('referencia', text='Referência')
-        self.tv_detalhes.heading('dt_vencto', text='Data Vencto')
-        self.tv_detalhes.heading('valor', text='Valor (R$)')
+        self.tv_detalhes.heading('data_rel', text='Data Relatório')
+        self.tv_detalhes.heading('valor', text='Valor')  # MUDOU - sem (R$)
         self.tv_detalhes.heading('observacao', text='Observação')
         
         # Configurar colunas
-        self.tv_detalhes.column('data', width=80, anchor='center')
-        self.tv_detalhes.column('categoria', width=90, anchor='center')
+        self.tv_detalhes.column('dt_vencto', width=100, anchor='center')
+        self.tv_detalhes.column('categoria', width=50, anchor='center')  # MUDOU largura
         self.tv_detalhes.column('nome', width=180, anchor='w')
         self.tv_detalhes.column('referencia', width=220, anchor='w')
-        self.tv_detalhes.column('dt_vencto', width=80, anchor='center')
-        self.tv_detalhes.column('valor', width=120, anchor='e')
+        self.tv_detalhes.column('data_rel', width=100, anchor='center')
+        self.tv_detalhes.column('valor', width=100, anchor='e')  # MUDOU largura
         self.tv_detalhes.column('observacao', width=180, anchor='w')
+
         
         # Configurar scrollbars
         scrollbar_y = ttk.Scrollbar(frame_tabela, orient='vertical', command=self.tv_detalhes.yview)
@@ -346,7 +355,7 @@ class RelatorioCategoria:
         
         # Total de Despesas (primeira linha, primeira coluna)
         ttk.Label(frame_totais_detalhes, text="Total de Despesas:", font=('Arial', 11, 'bold')).grid(row=0, column=0, sticky='e', padx=5, pady=5)
-        self.lbl_total_geral_detalhes = ttk.Label(frame_totais_detalhes, text="R$ 0,00", font=('Arial', 11))
+        self.lbl_total_geral_detalhes = ttk.Label(frame_totais_detalhes, text="0,00", font=('Arial', 11))
         self.lbl_total_geral_detalhes.grid(row=0, column=1, sticky='w', padx=5, pady=5)
         
         # Criar labels dinâmicos para cada categoria na aba detalhes
@@ -359,7 +368,7 @@ class RelatorioCategoria:
             ttk.Label(frame_totais_detalhes, text=f"{categoria}:", font=('Arial', 10, 'bold')).grid(row=row, column=col, sticky='e', padx=5, pady=2)
             
             # Label do valor da categoria
-            self.labels_categorias_detalhes[categoria] = ttk.Label(frame_totais_detalhes, text="R$ 0,00", font=('Arial', 10))
+            self.labels_categorias_detalhes[categoria] = ttk.Label(frame_totais_detalhes, text="0,00", font=('Arial', 10))
             self.labels_categorias_detalhes[categoria].grid(row=row, column=col+1, sticky='w', padx=5, pady=2)
             
             # Avançar para próxima posição
@@ -387,7 +396,7 @@ class RelatorioCategoria:
         
         ttk.Button(frame_controles, text="Atualizar Gráfico", command=self.atualizar_grafico).pack(side='left', padx=20)
         
-        # Frame para informações da data no gráfico
+        # Frame para informações do mês no gráfico
         frame_info_grafico = ttk.Frame(self.aba_grafico, padding=5)
         frame_info_grafico.pack(fill='x', pady=5)
         
@@ -459,13 +468,13 @@ class RelatorioCategoria:
         
         # Resetar resumo financeiro da aba detalhes (ainda não há data selecionada)
         if hasattr(self, 'lbl_total_geral_detalhes'):
-            self.lbl_total_geral_detalhes.config(text="R$ 0,00")
+            self.lbl_total_geral_detalhes.config(text="0,00")
             
             # PARA CATEGORIA (usar este bloco no relatorio_categoria.py):
             if hasattr(self, 'labels_categorias_detalhes'):
                 for categoria in self.categorias_despesas.keys():
                     if categoria in self.labels_categorias_detalhes:
-                        self.labels_categorias_detalhes[categoria].config(text="R$ 0,00")
+                        self.labels_categorias_detalhes[categoria].config(text="0,00")
 
                         
         # Limpar detalhes (pois ainda não há data selecionada)
@@ -543,7 +552,7 @@ class RelatorioCategoria:
                 
                 # Converter DT_VENCTO para datetime (se existir)
                 if 'DT_VENCTO' in self.df_despesas.columns:
-                    self.df_despesas['DT_VENCTO'] = pd.to_datetime(self.df_despesas['DT_VENCTO'], errors='coerce')
+                    self.df_despesas['DT_VENCTO'] = pd.to_datetime(self.df_despesas['DT_VENCTO'], format='%d/%m/%Y', errors='coerce')
                 else:
                     # Se não existir, criar coluna vazia
                     self.df_despesas['DT_VENCTO'] = pd.NaT
@@ -586,18 +595,20 @@ class RelatorioCategoria:
             return False
     
     def preparar_dados_por_data(self):
-        """Prepara os dados agrupados por data"""
+        """Prepara os dados agrupados por mês de vencimento"""
         try:
-            # Criar um DataFrame para armazenar os dados agrupados por data e categoria
-            # Agrupar por data e categoria de despesa
+            # Criar coluna de mês/ano baseada em DT_VENCTO
+            self.df_despesas['mes_ano_vencto'] = self.df_despesas['DT_VENCTO'].dt.to_period('M')
+            
+            # Agrupar por mês/ano de vencimento e categoria de despesa
             df_pivot = self.df_despesas.pivot_table(
-                index='DATA_REL', 
+                index='mes_ano_vencto', 
                 columns='CATEGORIA', 
                 values='VALOR', 
                 aggfunc='sum'
             ).fillna(0)
             
-            # Resetar o índice para tornar a data uma coluna
+            # Resetar o índice
             df_pivot = df_pivot.reset_index()
             
             # Criar colunas para cada categoria se não existirem
@@ -605,20 +616,20 @@ class RelatorioCategoria:
                 if categoria not in df_pivot.columns:
                     df_pivot[categoria] = 0.0
             
-            # Calcular total por data
+            # Calcular total por mês
             df_pivot['total'] = df_pivot[[cat for cat in self.categorias_despesas.keys() if cat in df_pivot.columns]].sum(axis=1)
             
-            # Ordenar por data (ascendente)
-            df_pivot = df_pivot.sort_values(by='DATA_REL')
+            # Ordenar por mês/ano (ascendente)
+            df_pivot = df_pivot.sort_values(by='mes_ano_vencto')
             
-            # Armazenar o DataFrame para uso posterior
+            # Armazenar o DataFrame
             self.df_por_data = df_pivot
             
             # Preparar dados para gráficos
             self.preparar_dados_grafico()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao preparar dados por data: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao preparar dados por mês: {str(e)}")
             import traceback
             traceback.print_exc()
     
@@ -652,29 +663,28 @@ class RelatorioCategoria:
             
             # Adicionar dados à TreeView
             for _, row in self.df_por_data.iterrows():
-                # Formatar data
-                data_str = row['DATA_REL'].strftime('%d/%m/%Y')
+                # Formatar mês/ano
+                mes_ano_str = row['mes_ano_vencto'].strftime('%m/%Y')
                 
-                # Preparar valores para cada categoria
+                # Preparar valores para cada categoria (SEM R$)
                 valores = []
                 for categoria in self.categorias_despesas.keys():
-                    valor_formatado = formatar_moeda_br(row[categoria]) if categoria in row else "R$ 0,00"
+                    valor_formatado = formatar_valor_sem_simbolo(row[categoria]) if categoria in row else "0,00"
                     valores.append(valor_formatado)
                 
-                # Adicionar total
-                total_formatado = formatar_moeda_br(row['total'])
+                # Adicionar total (SEM R$)
+                total_formatado = formatar_valor_sem_simbolo(row['total'])
                 
                 # Inserir na treeview
                 self.tv_resumo.insert(
                     '', 'end', 
-                    values=[data_str] + valores + [total_formatado]
+                    values=[mes_ano_str] + valores + [total_formatado]
                 )
             
-            # Atualizar labels de totais
+            # Atualizar labels de totais (SEM R$)
             total_geral = self.df_por_data['total'].sum()
-            self.lbl_total_geral.config(text=formatar_moeda_br(total_geral))
+            self.lbl_total_geral.config(text=formatar_valor_sem_simbolo(total_geral))
             
-            # Atualizar totais por tipo/categoria DA ABA RESUMO
             for categoria in self.categorias_despesas.keys():
                 if categoria in self.df_por_data.columns:
                     total_tipo = self.df_por_data[categoria].sum()
@@ -682,73 +692,64 @@ class RelatorioCategoria:
                     total_tipo = 0
                 
                 if categoria in self.labels_categorias:
-                    self.labels_categorias[categoria].config(text=formatar_moeda_br(total_tipo))
-           
+                    self.labels_categorias[categoria].config(text=formatar_valor_sem_simbolo(total_tipo))
+        
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao preencher resumo: {str(e)}")
             import traceback
             traceback.print_exc()
     
     def selecionar_data(self, event=None):
-        """Atualiza a data selecionada e preenche as abas de detalhes e gráfico"""
+        """Atualiza o mês selecionado e preenche as abas de detalhes e gráfico"""
         try:
             # Obter seleção atual
             selecao = self.tv_resumo.selection()
             if not selecao:
                 return
                 
-            # Obter data selecionada
+            # Obter mês/ano selecionado
             item = self.tv_resumo.item(selecao[0])
-            data_str = item['values'][0]  # Primeira coluna é a data
+            mes_ano_str = item['values'][0]  # Primeira coluna é o mês/ano
             
-            # Converter string de data para datetime
+            # Converter string mês/ano para Period
             try:
-                self.data_selecionada = datetime.strptime(data_str, '%d/%m/%Y')
+                mes, ano = mes_ano_str.split('/')
+                self.mes_ano_selecionado = pd.Period(year=int(ano), month=int(mes), freq='M')
+                self.data_selecionada = self.mes_ano_selecionado
             except ValueError:
-                messagebox.showerror("Erro", f"Formato de data inválido: {data_str}")
+                messagebox.showerror("Erro", f"Formato de mês/ano inválido: {mes_ano_str}")
                 return
             
-           
-            # Atualizar label na aba de detalhes
-            self.lbl_data_detalhe.config(text=f"Data Selecionada: {data_str}")
+            # Atualizar labels
+            self.lbl_mes_detalhe.config(text=f"Mês Selecionado: {mes_ano_str}")
+            self.lbl_data_grafico.config(text=f"Mês Selecionado: {mes_ano_str}")
             
-            # Atualizar label na aba de gráfico
-            self.lbl_data_grafico.config(text=f"Data Selecionada: {data_str}")
+            # Encontrar o total do mês no DataFrame
+            df_mes = self.df_por_data[self.df_por_data['mes_ano_vencto'] == self.mes_ano_selecionado]
+            if not df_mes.empty:
+                total_mes = df_mes.iloc[0]['total']
+                self.lbl_total_mes_detalhe.config(text=f"Total: {formatar_moeda_br(total_mes)}")
             
-            # Encontrar o total da data no DataFrame
-            df_data = self.df_por_data[self.df_por_data['DATA_REL'] == self.data_selecionada]
-            if not df_data.empty:
-                total_data = df_data.iloc[0]['total']
-                self.lbl_total_data_detalhe.config(text=f"Total: {formatar_moeda_br(total_data)}")
+            # Filtrar dados para o mês selecionado
+            self.df_despesas['mes_ano_vencto_temp'] = self.df_despesas['DT_VENCTO'].dt.to_period('M')
+            df_filtrado = self.df_despesas[self.df_despesas['mes_ano_vencto_temp'] == self.mes_ano_selecionado].copy()
             
-            # Filtrar dados para a data selecionada
-            df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
-            
-            # Atualizar resumo financeiro da aba detalhes com dados da data selecionada
+            # Atualizar resumo financeiro e detalhes
             self.atualizar_resumo_financeiro_detalhes(df_filtrado)
-
-            # Preencher detalhes
             self.preencher_detalhes(df_filtrado)
-
-             # Atualizar resumo financeiro da aba detalhes com dados da data selecionada
-            self.atualizar_resumo_financeiro_detalhes(df_filtrado)
-
-            
-            # Preparar dados para gráfico
             self.preparar_grafico_data_selecionada(df_filtrado)
             
-            # Atualizar o tipo de gráfico para mostrar a data selecionada se estiver na aba de gráfico
+            # Atualizar tipo de gráfico
             if "Data Selecionada" not in self.combo_tipo_grafico.get():
                 self.combo_tipo_grafico.set("Gráfico de Pizza - Data Selecionada")
             
-            # Atualizar gráfico
             self.atualizar_grafico()
             
-            # Alternar para a aba de detalhes
-            self.notebook.select(1)  # Índice 1 corresponde à aba de detalhes
+            # Alternar para aba de detalhes
+            self.notebook.select(1)
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao selecionar data: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao selecionar mês: {str(e)}")
             import traceback
             traceback.print_exc()
     
@@ -756,26 +757,25 @@ class RelatorioCategoria:
         """Atualiza o resumo financeiro da aba detalhes com dados da data selecionada"""
         try:
             if df_filtrado.empty:
-                # Se não há dados, zerar tudo
-                self.lbl_total_geral_detalhes.config(text="R$ 0,00")
+                self.lbl_total_geral_detalhes.config(text="0,00")
                 for categoria in self.categorias_despesas.keys():
                     if categoria in self.labels_categorias_detalhes:
-                        self.labels_categorias_detalhes[categoria].config(text="R$ 0,00")
+                        self.labels_categorias_detalhes[categoria].config(text="0,00")
                 return
             
-            # Calcular total da data selecionada
+            # Calcular total (SEM R$)
             total_data = df_filtrado['VALOR'].sum()
             if hasattr(self, 'lbl_total_geral_detalhes'):
-                self.lbl_total_geral_detalhes.config(text=formatar_moeda_br(total_data))
+                self.lbl_total_geral_detalhes.config(text=formatar_valor_sem_simbolo(total_data))
             
-            # Calcular totais por categoria da data selecionada
+            # Calcular totais por categoria
             totais_por_categoria = df_filtrado.groupby('CATEGORIA')['VALOR'].sum()
             
-            # Atualizar labels das categorias
+            # Atualizar labels (SEM R$)
             for categoria in self.categorias_despesas.keys():
                 if categoria in self.labels_categorias_detalhes:
                     valor_categoria = totais_por_categoria.get(categoria, 0)
-                    self.labels_categorias_detalhes[categoria].config(text=formatar_moeda_br(valor_categoria))
+                    self.labels_categorias_detalhes[categoria].config(text=formatar_valor_sem_simbolo(valor_categoria))
                     
         except Exception as e:
             print(f"Erro ao atualizar resumo financeiro detalhes: {str(e)}")
@@ -819,14 +819,12 @@ class RelatorioCategoria:
             if df_filtrado.empty:
                 return
             
-            # Ordenar o DataFrame por Categoria (ascendente), Nome (ascendente) e Valor (descendente)
+            # Ordenar por Categoria, Nome e Valor
             df_ordenado = df_filtrado.copy()
             
-            # Garantir que todos os campos necessários existam
             if 'NOME' not in df_ordenado.columns:
                 df_ordenado['NOME'] = ''
                 
-            # Ordenar primeiro por categoria, depois por nome (asc) e finalmente por valor (desc)
             df_ordenado = df_ordenado.sort_values(
                 by=['CATEGORIA', 'NOME', 'VALOR'], 
                 ascending=[True, True, False]
@@ -834,51 +832,47 @@ class RelatorioCategoria:
             
             # Adicionar dados à tabela
             for _, row in df_ordenado.iterrows():
-                # Formatar data
-                data_str = row['DATA_REL'].strftime('%d/%m/%Y') if pd.notna(row['DATA_REL']) else ''
-                
-                # Obter categoria
-                categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
-                categoria_nome = f"{categoria} - {self.categorias_despesas.get(categoria, 'Não classificado')}"
-                
-                # Obter nome e referência
-                nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
-                
-                # Obter referência e NF (juntar referência e NF)
-                referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
-                nf = row.get('NF', '') if pd.notna(row.get('NF', '')) else ''
-
-                # Concatenar referência e NF se ambos existirem
-                if referencia and nf:
-                    referencia = f"{referencia} - NF: {nf}"
-                elif nf:
-                    referencia = f"NF: {nf}"
-
                 # Data de vencimento
                 dt_vencto_str = ''
                 if 'DT_VENCTO' in row and pd.notna(row['DT_VENCTO']):
                     dt_vencto_str = row['DT_VENCTO'].strftime('%d/%m/%Y')
                 
-                # Obter valor
-                valor = formatar_moeda_br(row['VALOR'])
+                # Categoria (APENAS O CÓDIGO)
+                categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
                 
-                # Obter observação
+                # Nome
+                nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
+                
+                # Referência e NF
+                referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
+                nf = row.get('NF', '') if pd.notna(row.get('NF', '')) else ''
+                if referencia and nf:
+                    referencia = f"{referencia} - NF: {nf}"
+                elif nf:
+                    referencia = f"NF: {nf}"
+                
+                # Data relatório
+                data_str = row['DATA_REL'].strftime('%d/%m/%Y') if pd.notna(row['DATA_REL']) else ''
+                
+                # Valor (SEM R$)
+                valor = formatar_valor_sem_simbolo(row['VALOR'])
+                
+                # Observação
                 observacao = row.get('OBSERVAÇÃO', '') if pd.notna(row.get('OBSERVAÇÃO', '')) else ''
                 
-                # Inserir na tabela
+                # Inserir na tabela (ordem: dt_vencto, categoria, nome, referencia, data_rel, valor, observacao)
                 self.tv_detalhes.insert(
                     '', 'end', 
                     values=(
-                        data_str,
-                        categoria_nome,
+                        dt_vencto_str,
+                        categoria,  # APENAS CÓDIGO
                         nome,
                         referencia,
-                        dt_vencto_str,
+                        data_str,
                         valor,
                         observacao
                     )
                 )
-            
                 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao preencher detalhes: {str(e)}")
@@ -890,9 +884,9 @@ class RelatorioCategoria:
         if not hasattr(self, 'df_por_data') or self.df_por_data.empty:
             return 'dia'
         
-        # Calcular diferença em dias entre primeira e última data
-        data_inicio = self.df_por_data['DATA_REL'].min()
-        data_fim = self.df_por_data['DATA_REL'].max()
+        # Calcular diferença baseado nos períodos de mês/ano
+        data_inicio = self.df_por_data['mes_ano_vencto'].min().to_timestamp()
+        data_fim = self.df_por_data['mes_ano_vencto'].max().to_timestamp()
         dias_total = (data_fim - data_inicio).days
         
         # Definir agrupamento baseado no período
@@ -908,7 +902,7 @@ class RelatorioCategoria:
             return 'ano'
 
     def preparar_dados_timeline(self):
-        """Prepara dados para gráfico de linha do tempo"""
+        """Prepara dados para gráfico de linha do tempo baseado em mês de vencimento"""
         try:
             if not hasattr(self, 'df_despesas') or self.df_despesas.empty:
                 return None
@@ -916,21 +910,21 @@ class RelatorioCategoria:
             agrupamento = self.determinar_agrupamento_temporal()
             df_timeline = self.df_despesas.copy()
             
-            # Criar coluna de agrupamento temporal
+            # **MODIFICAR: Criar coluna de agrupamento temporal baseado em DT_VENCTO**
             if agrupamento == 'dia':
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.date
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.date
                 formato_periodo = lambda x: x.strftime('%d/%m/%Y')
             elif agrupamento == 'semana':
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('W')
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('W')
                 formato_periodo = lambda x: f"Sem {x.week}/{x.year}"
             elif agrupamento == 'mes':
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('M')
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('M')
                 formato_periodo = lambda x: f"{x.month:02d}/{x.year}"
             elif agrupamento == 'trimestre':
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('Q')
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('Q')
                 formato_periodo = lambda x: f"Q{x.quarter}/{x.year}"
             else:  # ano
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('Y')
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('Y')
                 formato_periodo = lambda x: str(x.year)
             
             # Agrupar por período e categoria
@@ -961,7 +955,7 @@ class RelatorioCategoria:
             print(f"Erro ao preparar dados de timeline: {str(e)}")
             import traceback
             traceback.print_exc()
-            return None    
+            return None  
 
     def atualizar_grafico(self, event=None):
         """Atualiza o gráfico com base na seleção"""
@@ -1020,8 +1014,8 @@ class RelatorioCategoria:
             return 'dia'
         
         # Calcular diferença em dias entre primeira e última data
-        data_inicio = self.df_por_data['DATA_REL'].min()
-        data_fim = self.df_por_data['DATA_REL'].max()
+        data_inicio = self.df_por_data['mes_ano_vencto'].min().to_timestamp()
+        data_fim = self.df_por_data['mes_ano_vencto'].max().to_timestamp()
         dias_total = (data_fim - data_inicio).days
         
         # Definir agrupamento baseado no período
@@ -1037,7 +1031,7 @@ class RelatorioCategoria:
             return 'ano'
 
     def preparar_dados_timeline(self):
-        """Prepara dados para gráfico de linha do tempo"""
+        """Prepara dados para gráfico de linha do tempo baseado em mês de vencimento"""
         try:
             if not hasattr(self, 'df_despesas') or self.df_despesas.empty:
                 return None
@@ -1045,21 +1039,21 @@ class RelatorioCategoria:
             agrupamento = self.determinar_agrupamento_temporal()
             df_timeline = self.df_despesas.copy()
             
-            # Criar coluna de agrupamento temporal
+            # **MODIFICAR: Criar coluna de agrupamento temporal baseado em DT_VENCTO**
             if agrupamento == 'dia':
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.date
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.date
                 formato_periodo = lambda x: x.strftime('%d/%m/%Y')
             elif agrupamento == 'semana':
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('W')
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('W')
                 formato_periodo = lambda x: f"Sem {x.week}/{x.year}"
             elif agrupamento == 'mes':
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('M')
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('M')
                 formato_periodo = lambda x: f"{x.month:02d}/{x.year}"
             elif agrupamento == 'trimestre':
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('Q')
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('Q')
                 formato_periodo = lambda x: f"Q{x.quarter}/{x.year}"
             else:  # ano
-                df_timeline['periodo'] = df_timeline['DATA_REL'].dt.to_period('Y')
+                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('Y')
                 formato_periodo = lambda x: str(x.year)
             
             # Agrupar por período e categoria
@@ -1104,32 +1098,82 @@ class RelatorioCategoria:
                     transform=ax.transAxes, fontsize=14)
                 return
             
+            # Filtrar apenas valores maiores que zero
+            df = df[df['VALOR'] > 0].copy()
+            
+            if df.empty:
+                ax.text(0.5, 0.5, "Não há dados para exibir", 
+                    horizontalalignment='center', verticalalignment='center',
+                    transform=ax.transAxes, fontsize=14)
+                return
+            
+            # Ordenar por valor (maior para menor) para melhor visualização
+            df = df.sort_values('VALOR', ascending=False)
+            
             # Cores para o gráfico
-            colors = plt.cm.tab10.colors
+            colors = plt.cm.Set3.colors  # Paleta mais suave
+            
+            # Calcular percentuais
+            total = df['VALOR'].sum()
+            df['percentual'] = (df['VALOR'] / total) * 100
+            
+            # Função para formatar labels com percentual
+            def autopct_format(pct):
+                return f'{pct:.1f}%' if pct > 2 else ''  # Só mostra % se for maior que 2%
             
             # Criar o gráfico de pizza
             wedges, texts, autotexts = ax.pie(
                 df['VALOR'], 
-                labels=df['categoria_nome'], 
-                autopct='%1.1f%%',
+                labels=None,  # Não colocar labels direto nas fatias
+                autopct=autopct_format,
                 startangle=90,
                 colors=colors,
-                wedgeprops={'edgecolor': 'w', 'linewidth': 1}
+                wedgeprops={'edgecolor': 'w', 'linewidth': 2},
+                pctdistance=0.85
             )
             
-            # Melhorar aparência
-            for text in texts:
-                text.set_fontsize(9)
-            
+            # Melhorar aparência dos percentuais
             for autotext in autotexts:
-                autotext.set_fontsize(9)
+                autotext.set_fontsize(10)
                 autotext.set_fontweight('bold')
+                autotext.set_color('white')
+            
+            # Criar legenda ao lado do gráfico com valores
+            legend_labels = []
+            for _, row in df.iterrows():
+                categoria = row['CATEGORIA']
+                categoria_desc = self.categorias_despesas.get(categoria, 'Não classificado')
+                valor = row['VALOR']
+                pct = row['percentual']
+                
+                # Formato: "MAT - MATERIAL: R$ 22.639,76 (24.1%)"
+                valor_formatado = formatar_valor_sem_simbolo(valor)
+                legend_labels.append(f"{categoria} - {categoria_desc}: {valor_formatado} ({pct:.1f}%)")
+            
+            # Adicionar legenda
+            ax.legend(
+                wedges,
+                legend_labels,
+                title="Categorias de Despesa",
+                loc="center left",
+                bbox_to_anchor=(1, 0, 0.5, 1),
+                fontsize=9,
+                title_fontsize=10
+            )
             
             # Adicionar título
-            data_str = self.data_selecionada.strftime('%d/%m/%Y')
-            ax.set_title(f'Distribuição por Categoria de Despesa - {data_str}', fontsize=14, pad=20)
+            mes_ano_str = self.data_selecionada.strftime('%m/%Y')
+            data_final = self.data_selecionada.to_timestamp('M')
+            data_final_str = data_final.strftime('%d/%m/%Y')
             
-            # Ajustar layout
+            ax.set_title(
+                f'Distribuição por Categoria de Despesa - {data_final_str}', 
+                fontsize=13, 
+                pad=20,
+                fontweight='bold'
+            )
+            
+            # Ajustar layout para não cortar a legenda
             fig.tight_layout()
             
         except Exception as e:
@@ -1141,7 +1185,7 @@ class RelatorioCategoria:
             ax.text(0.5, 0.5, f"Erro ao gerar gráfico: {str(e)}", 
                 horizontalalignment='center', verticalalignment='center',
                 transform=ax.transAxes, fontsize=12, color='red')
-    
+
     def criar_grafico_barras(self, fig, ax):
         """Cria um gráfico de barras com as categorias da data selecionada"""
         try:
@@ -1154,36 +1198,103 @@ class RelatorioCategoria:
                     transform=ax.transAxes, fontsize=14)
                 return
             
-            # Ordenar por valor para melhor visualização
-            df = df.sort_values(by='VALOR', ascending=True)
+            # Filtrar apenas valores maiores que zero
+            df = df[df['VALOR'] > 0].copy()
             
-            # Cores para o gráfico
-            colors = plt.cm.tab10.colors[:len(df)]
+            if df.empty:
+                ax.text(0.5, 0.5, "Não há dados para exibir", 
+                    horizontalalignment='center', verticalalignment='center',
+                    transform=ax.transAxes, fontsize=14)
+                return
             
-            # Criar o gráfico de barras
-            bars = ax.barh(df['categoria_nome'], df['VALOR'], color=colors)
+            # Ordenar por valor (maior para menor)
+            df = df.sort_values(by='VALOR', ascending=True)  # ascending=True para barras horizontais
             
-            # Adicionar valores nas barras
+            # Criar labels curtos (apenas código da categoria)
+            labels_curtos = [row['CATEGORIA'] for _, row in df.iterrows()]
+            
+            # Cores para o gráfico (mesma paleta do pizza)
+            colors = plt.cm.Set3.colors[:len(df)]
+            
+            # Criar o gráfico de barras horizontais
+            bars = ax.barh(labels_curtos, df['VALOR'], color=colors, edgecolor='white', linewidth=1.5)
+            
+            # Adicionar valores nas barras com formatação
             for bar in bars:
                 width = bar.get_width()
-                label_x_pos = width + width * 0.01
-                ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, f'R$ {width:,.2f}'.replace(',', '.'),
-                       va='center', fontsize=9)
+                # Posicionar o texto dentro da barra se ela for grande, fora se for pequena
+                max_value = df['VALOR'].max()
+                if width > max_value * 0.1:  # Se a barra tem mais de 10% do máximo
+                    label_x_pos = width / 2
+                    ha = 'center'
+                    color = 'white'
+                    weight = 'bold'
+                else:  # Barra pequena, colocar valor fora
+                    label_x_pos = width + width * 0.02
+                    ha = 'left'
+                    color = 'black'
+                    weight = 'normal'
+                
+                valor_formatado = formatar_valor_sem_simbolo(width)
+                ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, 
+                    valor_formatado,
+                    va='center', ha=ha, fontsize=9, color=color, fontweight=weight)
             
             # Ajustar formatação do eixo x (valores)
             def format_real(x, pos):
-                return f'R$ {x:,.0f}'.replace(',', '.')
+                if x >= 1000:
+                    return f'{x/1000:.0f}k'
+                return f'{x:.0f}'
             
             ax.xaxis.set_major_formatter(mticker.FuncFormatter(format_real))
             
-            # Adicionar títulos e labels
-            data_str = self.data_selecionada.strftime('%d/%m/%Y')
-            ax.set_title(f'Valores por Categoria de Despesa - {data_str}', fontsize=14)
-            ax.set_xlabel('Valor (R$)', fontsize=11)
-            ax.set_ylabel('Categoria de Despesa', fontsize=11)
+            # Criar legenda com descrições completas
+            legend_labels = []
+            for _, row in df.sort_values('VALOR', ascending=False).iterrows():
+                categoria = row['CATEGORIA']
+                categoria_desc = self.categorias_despesas.get(categoria, 'Não classificado')
+                legend_labels.append(f"{categoria} - {categoria_desc}")
             
-            # Adicionar grid
-            ax.grid(axis='x', linestyle='--', alpha=0.7)
+            # Pegar as cores na ordem correta (maior para menor)
+            df_sorted = df.sort_values('VALOR', ascending=False)
+            cores_ordenadas = [colors[i] for i in range(len(df_sorted))]
+            
+            # Criar patches para a legenda
+            from matplotlib.patches import Patch
+            legend_patches = [Patch(facecolor=cor, edgecolor='white', linewidth=1.5) 
+                            for cor in cores_ordenadas]
+            
+            # Adicionar legenda
+            ax.legend(
+                legend_patches,
+                legend_labels,
+                title="Categorias de Despesa",
+                loc="lower right",
+                fontsize=8,
+                title_fontsize=9,
+                framealpha=0.95
+            )
+            
+            # Adicionar títulos e labels
+            mes_ano_str = self.data_selecionada.strftime('%m/%Y')
+            data_final = self.data_selecionada.to_timestamp('M')
+            data_final_str = data_final.strftime('%d/%m/%Y')
+            
+            ax.set_title(
+                f'Valores por Categoria de Despesa - {data_final_str}', 
+                fontsize=13,
+                pad=20,
+                fontweight='bold'
+            )
+            ax.set_xlabel('Valor', fontsize=11, fontweight='bold')
+            ax.set_ylabel('Categoria', fontsize=11, fontweight='bold')
+            
+            # Adicionar grid leve
+            ax.grid(axis='x', linestyle='--', alpha=0.3, zorder=0)
+            ax.set_axisbelow(True)  # Grid atrás das barras
+            
+            # Ajustar margens
+            ax.margins(y=0.02)
             
             # Ajustar layout
             fig.tight_layout()
@@ -1197,7 +1308,7 @@ class RelatorioCategoria:
             ax.text(0.5, 0.5, f"Erro ao gerar gráfico: {str(e)}", 
                 horizontalalignment='center', verticalalignment='center',
                 transform=ax.transAxes, fontsize=12, color='red')
-            
+
     def criar_grafico_pizza_totais(self, fig, ax):
         """Cria um gráfico de pizza com os totais por categoria"""
         try:
@@ -1218,36 +1329,69 @@ class RelatorioCategoria:
                     transform=ax.transAxes, fontsize=14)
                 return
             
-            # Preparar dados para o gráfico
+            # Preparar dados e ordenar por valor (maior para menor)
             categorias = list(totais_filtrados.keys())
             valores = list(totais_filtrados.values())
-            labels = [f"{cat} - {self.categorias_despesas[cat]}" for cat in categorias]
             
-            # Cores para o gráfico
-            colors = plt.cm.tab10.colors
+            # Ordenar
+            dados_ordenados = sorted(zip(categorias, valores), key=lambda x: x[1], reverse=True)
+            categorias = [x[0] for x in dados_ordenados]
+            valores = [x[1] for x in dados_ordenados]
+            
+            # Paleta intermediária (Paired - mais balanceada)
+            colors = plt.cm.Paired.colors
+            
+            # Calcular percentuais
+            total = sum(valores)
+            
+            # Função para formatar labels com percentual
+            def autopct_format(pct):
+                return f'{pct:.1f}%' if pct > 2 else ''
             
             # Criar o gráfico de pizza
             wedges, texts, autotexts = ax.pie(
                 valores, 
-                labels=labels, 
-                autopct='%1.1f%%',
+                labels=None,
+                autopct=autopct_format,
                 startangle=90,
                 colors=colors,
-                wedgeprops={'edgecolor': 'w', 'linewidth': 1}
+                wedgeprops={'edgecolor': 'w', 'linewidth': 2},
+                pctdistance=0.85
             )
             
-            # Melhorar aparência
-            for text in texts:
-                text.set_fontsize(9)
-            
+            # Melhorar aparência dos percentuais
             for autotext in autotexts:
-                autotext.set_fontsize(9)
+                autotext.set_fontsize(10)
                 autotext.set_fontweight('bold')
+                autotext.set_color('white')
+            
+            # Criar legenda ao lado do gráfico
+            legend_labels = []
+            for cat, val in zip(categorias, valores):
+                categoria_desc = self.categorias_despesas.get(cat, 'Não classificado')
+                valor_formatado = formatar_valor_sem_simbolo(val)
+                pct = (val / total) * 100
+                legend_labels.append(f"{cat} - {categoria_desc}: {valor_formatado} ({pct:.1f}%)")
+            
+            # Adicionar legenda
+            ax.legend(
+                wedges,
+                legend_labels,
+                title="Categorias de Despesa",
+                loc="center left",
+                bbox_to_anchor=(1, 0, 0.5, 1),
+                fontsize=9,
+                title_fontsize=10
+            )
             
             # Adicionar título
             total_geral = sum(valores)
-            ax.set_title(f'Distribuição Total por Categoria - {formatar_moeda_br(total_geral)}', 
-                        fontsize=14, pad=20)
+            ax.set_title(
+                f'Distribuição Total por Categoria - {formatar_moeda_br(total_geral)}', 
+                fontsize=13, 
+                pad=20,
+                fontweight='bold'
+            )
             
             # Ajustar layout
             fig.tight_layout()
@@ -1271,7 +1415,7 @@ class RelatorioCategoria:
             
             # Filtrar categorias com valor > 0 e ordenar por valor
             totais_filtrados = {k: v for k, v in totais.items() if v > 0}
-            totais_ordenados = dict(sorted(totais_filtrados.items(), key=lambda x: x[1], reverse=True))
+            totais_ordenados = dict(sorted(totais_filtrados.items(), key=lambda x: x[1], reverse=False))
             
             if not totais_ordenados:
                 ax.text(0.5, 0.5, "Não há dados para exibir", 
@@ -1279,38 +1423,96 @@ class RelatorioCategoria:
                     transform=ax.transAxes, fontsize=14)
                 return
             
-            # Preparar dados para o gráfico
+            # Preparar dados
             categorias = list(totais_ordenados.keys())
             valores = list(totais_ordenados.values())
-            labels = [f"{cat} - {self.categorias_despesas[cat]}" for cat in categorias]
             
-            # Cores para o gráfico
-            colors = plt.cm.tab10.colors[:len(categorias)]
+            # Labels curtos (apenas código)
+            labels_curtos = categorias
             
-            # Criar o gráfico de barras
-            bars = ax.barh(labels, valores, color=colors)
+            # Paleta intermediária (Paired)
+            colors = plt.cm.Paired.colors[:len(categorias)]
+            
+            # Criar o gráfico de barras horizontais
+            bars = ax.barh(labels_curtos, valores, color=colors, edgecolor='white', linewidth=1.5)
             
             # Adicionar valores nas barras
             for bar in bars:
                 width = bar.get_width()
-                label_x_pos = width + width * 0.01
+                max_value = max(valores)
+                
+                # Posicionar texto
+                if width > max_value * 0.1:
+                    label_x_pos = width / 2
+                    ha = 'center'
+                    color = 'white'
+                    weight = 'bold'
+                else:
+                    label_x_pos = width + width * 0.02
+                    ha = 'left'
+                    color = 'black'
+                    weight = 'normal'
+                
+                valor_formatado = formatar_moeda_br(width)
                 ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, 
-                    formatar_moeda_br(width), va='center', fontsize=9)
+                    valor_formatado,
+                    va='center', ha=ha, fontsize=9, color=color, fontweight=weight)
             
-            # Ajustar formatação do eixo x (valores)
+            # Formatação do eixo x
             def format_real(x, pos):
-                return f'R$ {x:,.0f}'.replace(',', '.')
+                if x >= 1000000:
+                    return f'R$ {x/1000000:.1f}M'
+                elif x >= 1000:
+                    return f'R$ {x/1000:.0f}k'
+                return f'R$ {x:.0f}'
             
             ax.xaxis.set_major_formatter(mticker.FuncFormatter(format_real))
             
-            # Adicionar títulos e labels
-            total_geral = sum(valores)
-            ax.set_title(f'Totais por Categoria - {formatar_moeda_br(total_geral)}', fontsize=14)
-            ax.set_xlabel('Valor (R$)', fontsize=11)
-            ax.set_ylabel('Categoria de Despesa', fontsize=11)
+            # Criar legenda com descrições completas
+            legend_labels = []
+            categorias_ordenadas_desc = sorted(categorias, key=lambda x: totais_ordenados[x], reverse=True)
             
-            # Adicionar grid
-            ax.grid(axis='x', linestyle='--', alpha=0.7)
+            for cat in categorias_ordenadas_desc:
+                categoria_desc = self.categorias_despesas.get(cat, 'Não classificado')
+                legend_labels.append(f"{cat} - {categoria_desc}")
+            
+            # Cores na ordem da legenda (maior para menor)
+            indices_ordenados = [categorias.index(cat) for cat in categorias_ordenadas_desc]
+            cores_ordenadas = [colors[i] for i in indices_ordenados]
+            
+            # Criar patches para legenda
+            from matplotlib.patches import Patch
+            legend_patches = [Patch(facecolor=cor, edgecolor='white', linewidth=1.5) 
+                            for cor in cores_ordenadas]
+            
+            # Adicionar legenda
+            ax.legend(
+                legend_patches,
+                legend_labels,
+                title="Categorias de Despesa",
+                loc="lower right",
+                fontsize=8,
+                title_fontsize=9,
+                framealpha=0.95
+            )
+            
+            # Adicionar títulos
+            total_geral = sum(valores)
+            ax.set_title(
+                f'Totais por Categoria - {formatar_moeda_br(total_geral)}', 
+                fontsize=13,
+                pad=20,
+                fontweight='bold'
+            )
+            ax.set_xlabel('Valor', fontsize=11, fontweight='bold')
+            ax.set_ylabel('Categoria', fontsize=11, fontweight='bold')
+            
+            # Grid leve
+            ax.grid(axis='x', linestyle='--', alpha=0.3, zorder=0)
+            ax.set_axisbelow(True)
+            
+            # Ajustar margens
+            ax.margins(y=0.02)
             
             # Ajustar layout
             fig.tight_layout()
@@ -1372,10 +1574,11 @@ class RelatorioCategoria:
             # Adicionar legenda
             ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
             
-            # Título
-            data_inicio = self.df_por_data['DATA_REL'].min().strftime('%d/%m/%Y')
-            data_fim = self.df_por_data['DATA_REL'].max().strftime('%d/%m/%Y')
-            ax.set_title(f'Evolução das Despesas por Categoria\n{data_inicio} a {data_fim}', 
+            # **MODIFICAR O TÍTULO:**
+            # Usar mes_ano_vencto do df_por_data
+            mes_inicio = self.df_por_data['mes_ano_vencto'].min().strftime('%m/%Y')
+            mes_fim = self.df_por_data['mes_ano_vencto'].max().strftime('%m/%Y')
+            ax.set_title(f'Evolução das Despesas por Categoria (Mês de Vencimento)\n{mes_inicio} a {mes_fim}', 
                         fontsize=14, pad=20)
             
             # Ajustar layout
@@ -1432,7 +1635,7 @@ class RelatorioCategoria:
             ws_resumo.merge_cells('A3:I3')
             
             # Adicionar cabeçalhos da tabela
-            headers = ["Data"] + list(self.categorias_despesas.keys()) + ["Total (R$)"]
+            headers = ["Data"] + list(self.categorias_despesas.keys()) + ["Total"]
             for col, header in enumerate(headers, start=1):
                 cell = ws_resumo.cell(row=5, column=col, value=header)
                 cell.font = Font(bold=True)
@@ -1441,18 +1644,18 @@ class RelatorioCategoria:
             
             # Adicionar dados
             for i, (_, row) in enumerate(self.df_por_data.iterrows(), start=6):
-                # Data formatada
-                ws_resumo.cell(row=i, column=1, value=row['DATA_REL'])
-                ws_resumo.cell(row=i, column=1).number_format = "dd/mm/yyyy"
+                # Mês/Ano formatado
+                mes_ano_str = row['mes_ano_vencto'].strftime('%m/%Y')
+                ws_resumo.cell(row=i, column=1, value=mes_ano_str)
                 
                 # Valores por categoria
                 for j, categoria in enumerate(self.categorias_despesas.keys(), start=2):
                     ws_resumo.cell(row=i, column=j, value=row[categoria] if categoria in row else 0)
-                    ws_resumo.cell(row=i, column=j).number_format = "R$ #,##0.00"
+                    ws_resumo.cell(row=i, column=j).number_format = "#.##0,00"
                 
                 # Total
                 ws_resumo.cell(row=i, column=len(headers), value=row['total'])
-                ws_resumo.cell(row=i, column=len(headers)).number_format = "R$ #,##0.00"
+                ws_resumo.cell(row=i, column=len(headers)).number_format = "#.##0,00"
             
             # Ajustar largura das colunas
             ws_resumo.column_dimensions['A'].width = 15
@@ -1470,30 +1673,30 @@ class RelatorioCategoria:
                 formula = f"=SUM({get_column_letter(j)}6:{get_column_letter(j)}{total_row-1})"
                 ws_resumo.cell(row=total_row, column=j, value=formula)
                 ws_resumo.cell(row=total_row, column=j).font = Font(bold=True)
-                ws_resumo.cell(row=total_row, column=j).number_format = "R$ #,##0.00"
+                ws_resumo.cell(row=total_row, column=j).number_format = "#.##0,00"
             
             # Total geral
             total_formula = f"=SUM({get_column_letter(len(headers))}6:{get_column_letter(len(headers))}{total_row-1})"
             ws_resumo.cell(row=total_row, column=len(headers), value=total_formula)
             ws_resumo.cell(row=total_row, column=len(headers)).font = Font(bold=True)
-            ws_resumo.cell(row=total_row, column=len(headers)).number_format = "R$ #,##0.00"
+            ws_resumo.cell(row=total_row, column=len(headers)).number_format = "#.##0,00"
             
-            # Criar aba de detalhes se tivermos uma data selecionada
-            if hasattr(self, 'data_selecionada') and self.data_selecionada:
+            # Criar aba de detalhes se tivermos um mês/ano selecionado
+            if hasattr(self, 'mes_ano_selecionado') and self.mes_ano_selecionado:
                 ws_detalhes = wb.create_sheet("Detalhes")
                 
-                # Adicionar cabeçalho
-                data_str_detalhe = self.data_selecionada.strftime('%d/%m/%Y')
-                ws_detalhes['A1'] = f"Detalhes da Data: {data_str_detalhe}"
+                mes_ano_str_detalhe = self.mes_ano_selecionado.strftime('%m/%Y')
+                ws_detalhes['A1'] = f"Detalhes do Mês: {mes_ano_str_detalhe}"
                 ws_detalhes['A1'].font = Font(size=14, bold=True)
                 ws_detalhes.merge_cells('A1:G1')
                 ws_detalhes['A1'].alignment = Alignment(horizontal='center')
                 
-                # Filtrando dados para a data selecionada
-                df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
+                # Filtrar dados para o mês selecionado
+                self.df_despesas['mes_ano_vencto_temp'] = self.df_despesas['DT_VENCTO'].dt.to_period('M')
+                df_filtrado = self.df_despesas[self.df_despesas['mes_ano_vencto_temp'] == self.mes_ano_selecionado].copy()
                 
-                # Adicionar cabeçalhos da tabela
-                headers = ["Data", "Categoria", "Nome", "Referência", "Valor (R$)", "Observação"]
+                # CABEÇALHOS CORRETOS (não repetir do resumo)
+                headers = ["Dt. Vencimento", "Cat", "Nome", "Referência", "Data Relatório", "Valor", "Observação"]
                 for col, header in enumerate(headers, start=1):
                     cell = ws_detalhes.cell(row=3, column=col, value=header)
                     cell.font = Font(bold=True)
@@ -1502,51 +1705,65 @@ class RelatorioCategoria:
                 
                 # Adicionar dados
                 for i, (_, row) in enumerate(df_filtrado.iterrows(), start=4):
-                    # Data formatada
-                    if pd.notna(row['DATA_REL']):
-                        ws_detalhes.cell(row=i, column=1, value=row['DATA_REL'])
+                    # Data de vencimento (coluna A)
+                    if pd.notna(row['DT_VENCTO']):
+                        ws_detalhes.cell(row=i, column=1, value=row['DT_VENCTO'])
                         ws_detalhes.cell(row=i, column=1).number_format = "dd/mm/yyyy"
                     
-                    # Categoria
+                    # Categoria - APENAS CÓDIGO (coluna B)
                     categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
-                    categoria_nome = f"{categoria} - {self.categorias_despesas.get(categoria, 'Não classificado')}"
-                    ws_detalhes.cell(row=i, column=2, value=categoria_nome)
+                    ws_detalhes.cell(row=i, column=2, value=categoria)
                     
-                    # Nome
+                    # Nome (coluna C)
                     if 'NOME' in row and pd.notna(row['NOME']):
                         ws_detalhes.cell(row=i, column=3, value=row['NOME'])
                     
-                    # Referência
+                    # Referência (coluna D)
                     if 'REFERÊNCIA' in row and pd.notna(row['REFERÊNCIA']):
                         ws_detalhes.cell(row=i, column=4, value=row['REFERÊNCIA'])
                     
-                    # Valor
-                    ws_detalhes.cell(row=i, column=5, value=row['VALOR'])
-                    ws_detalhes.cell(row=i, column=5).number_format = "R$ #,##0.00"
+                    # Data relatório (coluna E)
+                    if pd.notna(row['DATA_REL']):
+                        ws_detalhes.cell(row=i, column=5, value=row['DATA_REL'])
+                        ws_detalhes.cell(row=i, column=5).number_format = "dd/mm/yyyy"
                     
-                    # Observação
+                    # Valor SEM R$ (coluna F)
+                    ws_detalhes.cell(row=i, column=6, value=row['VALOR'])
+                    ws_detalhes.cell(row=i, column=6).number_format = "#.##0,00"
+                    
+                    # Observação (coluna G)
                     if 'OBSERVAÇÃO' in row and pd.notna(row['OBSERVAÇÃO']):
-                        ws_detalhes.cell(row=i, column=6, value=row['OBSERVAÇÃO'])
+                        ws_detalhes.cell(row=i, column=7, value=row['OBSERVAÇÃO'])
                 
                 # Ajustar largura das colunas
-                ws_detalhes.column_dimensions['A'].width = 15
-                ws_detalhes.column_dimensions['B'].width = 25
-                ws_detalhes.column_dimensions['C'].width = 30
-                ws_detalhes.column_dimensions['D'].width = 30
-                ws_detalhes.column_dimensions['E'].width = 15
-                ws_detalhes.column_dimensions['F'].width = 40
+                ws_detalhes.column_dimensions['A'].width = 12
+                ws_detalhes.column_dimensions['B'].width = 8
+                ws_detalhes.column_dimensions['C'].width = 25
+                ws_detalhes.column_dimensions['D'].width = 35
+                ws_detalhes.column_dimensions['E'].width = 12
+                ws_detalhes.column_dimensions['F'].width = 12
+                ws_detalhes.column_dimensions['G'].width = 40
                 
                 # Adicionar total
                 total_row = 4 + len(df_filtrado)
                 
-                ws_detalhes.cell(row=total_row, column=4, value="TOTAL")
-                ws_detalhes.cell(row=total_row, column=4).font = Font(bold=True)
-                
-                # Total em R$
-                total_formula = f"=SUM(E4:E{total_row-1})"
-                ws_detalhes.cell(row=total_row, column=5, value=total_formula)
+                ws_detalhes.cell(row=total_row, column=5, value="TOTAL")
                 ws_detalhes.cell(row=total_row, column=5).font = Font(bold=True)
-                ws_detalhes.cell(row=total_row, column=5).number_format = "R$ #,##0.00"
+                
+                total_formula = f"=SUM(F4:F{total_row-1})"
+                ws_detalhes.cell(row=total_row, column=6, value=total_formula)
+                ws_detalhes.cell(row=total_row, column=6).font = Font(bold=True)
+                ws_detalhes.cell(row=total_row, column=6).number_format = "#.##0,00"
+                
+                # LEGENDA DAS CATEGORIAS
+                legenda_row = total_row + 3
+                ws_detalhes.cell(row=legenda_row, column=1, value="Legenda de Categorias:")
+                ws_detalhes.cell(row=legenda_row, column=1).font = Font(bold=True)
+                
+                for i, (codigo, descricao) in enumerate(self.categorias_despesas.items(), start=1):
+                    ws_detalhes.cell(row=legenda_row + i, column=1, value=f"{codigo}:")
+                    ws_detalhes.cell(row=legenda_row + i, column=2, value=descricao)
+                    ws_detalhes.merge_cells(f'B{legenda_row + i}:E{legenda_row + i}')
             
             # Salvar o arquivo
             wb.save(arquivo)
@@ -1615,23 +1832,23 @@ class RelatorioCategoria:
             story.append(Spacer(1, 0.1*inch))
             
             # Cabeçalhos
-            headers = ["Data"] + list(self.categorias_despesas.keys()) + ["Total (R$)"]
+            headers = ["Mês/Ano"] + list(self.categorias_despesas.keys()) + ["Total (R$)"] 
             
             # Dados da tabela de resumo
             table_data = [headers]
             
             for _, row in self.df_por_data.iterrows():
                 # Formatar data
-                data_str = row['DATA_REL'].strftime('%d/%m/%Y')
+                mes_ano_str = row['mes_ano_vencto'].strftime('%m/%Y')
                 
                 # Preparar valores para cada categoria
-                valores = [data_str]
+                valores = [mes_ano_str]  # <-- Usar mes_ano_str em vez de data_str
                 for categoria in self.categorias_despesas.keys():
-                    valor_formatado = f"R$ {row[categoria]:,.2f}".replace(',', '.').replace('.', ',') if categoria in row else "R$ 0,00"
+                    valor_formatado = f"{row[categoria]:,.2f}".replace(',', '.').replace('.', ',') if categoria in row else "0,00"
                     valores.append(valor_formatado)
                 
                 # Adicionar total
-                total_formatado = f"R$ {row['total']:,.2f}".replace(',', '.').replace('.', ',')
+                total_formatado = f"{row['total']:,.2f}".replace(',', '.').replace('.', ',')
                 valores.append(total_formatado)
                 
                 table_data.append(valores)
@@ -1641,12 +1858,12 @@ class RelatorioCategoria:
                 total_row = ["TOTAL"]
                 for categoria in self.categorias_despesas.keys():
                     total_cat = self.df_por_data[categoria].sum() if categoria in self.df_por_data.columns else 0
-                    total_formatado = f"R$ {total_cat:,.2f}".replace(',', '.').replace('.', ',')
+                    total_formatado = f"{total_cat:,.2f}".replace(',', '.').replace('.', ',')
                     total_row.append(total_formatado)
                 
                 # Total geral
                 total_geral = self.df_por_data['total'].sum()
-                total_geral_formatado = f"R$ {total_geral:,.2f}".replace(',', '.').replace('.', ',')
+                total_geral_formatado = f"{total_geral:,.2f}".replace(',', '.').replace('.', ',')
                 total_row.append(total_geral_formatado)
                 
                 table_data.append(total_row)
@@ -1684,66 +1901,93 @@ class RelatorioCategoria:
             story.append(resumo_table)
             story.append(Spacer(1, 0.2*inch))
             
-            # Se tiver uma data selecionada, adicionar detalhes
-            if hasattr(self, 'data_selecionada') and self.data_selecionada:
-                # Detalhes da data selecionada
-                data_str_detalhe = self.data_selecionada.strftime('%d/%m/%Y')
-                story.append(Paragraph(f"Detalhes - Data: {data_str_detalhe}", heading2_style))
+            # Se tiver um mês/ano selecionado, adicionar detalhes
+            if hasattr(self, 'mes_ano_selecionado') and self.mes_ano_selecionado:
+                # Detalhes do mês selecionado
+                mes_ano_str_detalhe = self.mes_ano_selecionado.strftime('%m/%Y')
+                story.append(Paragraph(f"Detalhes - Mês: {mes_ano_str_detalhe}", heading2_style))
                 story.append(Spacer(1, 0.1*inch))
                 
-                # Filtrar dados para a data selecionada
-                df_filtrado = self.df_despesas[self.df_despesas['DATA_REL'].dt.date == self.data_selecionada.date()].copy()
+                # Filtrar dados
+                self.df_despesas['mes_ano_vencto_temp'] = self.df_despesas['DT_VENCTO'].dt.to_period('M')
+                df_filtrado = self.df_despesas[self.df_despesas['mes_ano_vencto_temp'] == self.mes_ano_selecionado].copy()
                 
                 if not df_filtrado.empty:
-                    # Cabeçalhos
-                    headers = ["Categoria", "Nome", "Referência", "Valor (R$)"]
+                    # CABEÇALHOS CORRETOS
+                    headers = ["Dt Venc", "Cat", "Nome", "Referência", "Valor"]
                     
-                    # Dados da tabela de detalhes
                     table_data = [headers]
                     
+                    # Criar estilo com fonte pequena e consistente
+                    style_pequeno = ParagraphStyle('Pequeno', parent=normal_style, fontSize=7, leading=8)
+                    
                     for _, row in df_filtrado.iterrows():
-                        # Obter categoria
-                        categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
-                        categoria_nome = f"{categoria} - {self.categorias_despesas.get(categoria, 'Não classificado')}"
+                        # Data vencimento
+                        dt_vencto = row['DT_VENCTO'].strftime('%d/%m/%y') if pd.notna(row['DT_VENCTO']) else ''
                         
-                        # Obter nome e referência
+                        # Categoria - APENAS CÓDIGO
+                        categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
+                        
+                        # Nome e Referência
                         nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
                         referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
                         
-                        # Formatar valor
-                        valor = f"R$ {row['VALOR']:,.2f}".replace(',', '.').replace('.', ',')
+                        # QUEBRAR TEXTO LONGO com estilo consistente
+                        if len(nome) > 25:
+                            nome = Paragraph(nome, style_pequeno)
+                        if len(referencia) > 30:
+                            referencia = Paragraph(referencia, style_pequeno)
                         
-                        # Adicionar linha
-                        table_data.append([categoria_nome, nome, referencia, valor])
+                        # Valor SEM R$
+                        valor = f"{row['VALOR']:,.2f}".replace(',', '.').replace('.', ',', 1)
+                        
+                        table_data.append([dt_vencto, categoria, nome, referencia, valor])
                     
-                    # Adicionar linha de total
+                    # Total
                     total_data = df_filtrado['VALOR'].sum()
-                    total_formatado = f"R$ {total_data:,.2f}".replace(',', '.').replace('.', ',')
-                    table_data.append(["TOTAL", "", "", total_formatado])
+                    total_formatado = f"{total_data:,.2f}".replace(',', '.').replace('.', ',', 1)
+                    table_data.append(["", "", "", "TOTAL", total_formatado])
                     
-                    # Criar tabela de detalhes
-                    col_widths = [1.8*inch, 1.8*inch, 2.0*inch, 1.0*inch]
+                    # Criar tabela COM QUEBRA DE TEXTO
+                    col_widths = [0.8*inch, 0.5*inch, 1.8*inch, 2.2*inch, 0.9*inch]
                     detalhes_table = Table(table_data, colWidths=col_widths)
                     
-                    # Estilo da tabela
                     table_style = TableStyle([
                         ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
                         ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-                        ('ALIGN', (0, 0), (2, -1), 'LEFT'),
-                        ('ALIGN', (3, 0), (3, -1), 'RIGHT'),
-                        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                        ('ALIGN', (0, 0), (1, -1), 'CENTER'),
+                        ('ALIGN', (2, 0), (3, -1), 'LEFT'),
+                        ('ALIGN', (4, 0), (4, -1), 'RIGHT'),
+                        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('FONTSIZE', (0, 0), (-1, -1), 8),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                        ('FONTSIZE', (0, 0), (-1, -1), 7),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
                         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+                        ('WORDWRAP', (0, 0), (-1, -1), True),
                     ])
                     
-                    # Destacar a linha de total
+                    # Destacar total
                     table_style.add('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey)
                     table_style.add('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold')
                     
                     detalhes_table.setStyle(table_style)
                     story.append(detalhes_table)
+                    story.append(Spacer(1, 0.2*inch))
+                    
+                    # LEGENDA DAS CATEGORIAS
+                    legenda_style = ParagraphStyle(
+                        'Legenda',
+                        parent=normal_style,
+                        fontSize=8,
+                        textColor=colors.grey
+                    )
+                    
+                    story.append(Spacer(1, 0.15*inch))
+                    story.append(Paragraph("Legenda de Categorias:", legenda_style))
+                    story.append(Spacer(1, 0.03*inch))
+                    
+                    legenda_text = " | ".join([f"{cod}: {desc}" for cod, desc in self.categorias_despesas.items()])
+                    story.append(Paragraph(legenda_text, legenda_style))
                     story.append(Spacer(1, 0.2*inch))
                     
                     # Adicionar gráfico
@@ -1772,7 +2016,7 @@ class RelatorioCategoria:
                             wedgeprops={'edgecolor': 'w', 'linewidth': 1}
                         )
                         
-                        plt.title(f'Distribuição por Categoria de Despesa - {data_str_detalhe}', fontsize=12, pad=20)
+                        plt.title(f'Distribuição por Categoria de Despesa - {mes_ano_str_detalhe}', fontsize=12, pad=20)
                         plt.tight_layout()
                         
                         # Salvar o gráfico em um buffer
