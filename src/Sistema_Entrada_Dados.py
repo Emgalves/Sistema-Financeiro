@@ -4122,7 +4122,7 @@ class SistemaEntradaDados:
         )
         self.campos_despesa['etapa_obra'].grid(row=1, column=3, padx=5, pady=5, sticky='ew')
 
-        # NOVO CAMPO: Insumo (row=2)
+        # Insumo (row=2)
         ttk.Label(frame_despesa, text="Insumo:", font=('Arial', 10)).grid(
             row=2, column=2, padx=5, pady=5, sticky='e')
         
@@ -4392,6 +4392,12 @@ class SistemaEntradaDados:
                 self.campos_despesa['dt_vencto'].set_date(
                     datetime.strptime(parcela['dt_vencto'], '%d/%m/%Y')
                 )
+
+                self.campos_despesa['etapa_obra'].delete(0, tk.END)
+                self.campos_despesa['etapa_obra'].insert(0, parcela.get('etapa_obra', ''))
+
+                self.campos_despesa['insumo'].delete(0, tk.END)
+                self.campos_despesa['insumo'].insert(0, parcela.get('insumo', ''))
                 
                 # Adicionar à lista de dados e verificar sucesso
                 if self.adicionar_dados(eh_parcelamento=True):
@@ -4496,6 +4502,12 @@ class SistemaEntradaDados:
                         datetime.strptime(parcela['dt_vencto'], '%d/%m/%Y')
                     )
                     
+                    self.campos_despesa['etapa_obra'].delete(0, tk.END)
+                    self.campos_despesa['etapa_obra'].insert(0, parcela.get('etapa_obra', ''))
+
+                    self.campos_despesa['insumo'].delete(0, tk.END)
+                    self.campos_despesa['insumo'].insert(0, parcela.get('insumo', ''))
+
                     # Adicionar à lista de dados
                     if not self.adicionar_dados(eh_parcelamento=True):
                         print(f"Falha ao adicionar parcela {i}")
@@ -9766,6 +9778,9 @@ class GestaoAdministradores:
         return self.administradores.copy()        
 
 class GestorParcelas:
+    # from src.combobox_autocompletar import ComboboxAutocompletar
+    from src.configuracoes_sistema import GerenciadorConfiguracoes  
+
     def __init__(self, parent):
         print("Inicializando GestorParcelas")  # Debug
         self.parent = parent
@@ -9921,21 +9936,41 @@ class GestorParcelas:
         self.campos_nf = ttk.Entry(frame)
         self.campos_nf.grid(row=9, column=1, padx=5, pady=5, sticky='ew')
 
-        # Adicionar seleção de forma de pagamento (após campo NF)
-        ttk.Label(frame, text="Forma de Pagamento:").grid(row=10, column=0, padx=5, pady=5)
-        self.forma_pagamento_var = tk.StringVar(value="PIX")
-        self.forma_pagamento_combo = ttk.Combobox(
-            frame,
-            textvariable=self.forma_pagamento_var,
-            values=["PIX", "TED", "DINHEIRO"],  # INCLUINDO DINHEIRO
-            state="readonly",
-            width=15
-        )
-        self.forma_pagamento_combo.grid(row=10, column=1, padx=5, pady=5, sticky='w')
+        # Adicionar campos Etapa da Obra e Insumos
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
 
-        # Botões
+        ttk.Label(frame, text="Etapa da Obra:").grid(row=10, column=0, padx=5, pady=5)
+
+        etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()
+
+        self.etapa_obra = ComboboxAutocompletar(
+            frame,
+            values=etapas_obra,
+            config_key='etapas_obra',
+            config_manager=GerenciadorConfiguracoes,
+            width=37,  # Ajustado para combinar com outros campos
+            state='normal'
+        )
+        self.etapa_obra.grid(row=10, column=1, padx=5, pady=5, sticky='ew')
+
+        # Campo Insumos - USANDO COMBOBOX AUTOCOMPLETAR
+        ttk.Label(frame, text="Insumos:").grid(row=11, column=0, padx=5, pady=5)
+
+        insumos = GerenciadorConfiguracoes.get_insumos()
+
+        self.insumo = ComboboxAutocompletar(
+            frame,
+            values=insumos,
+            config_key='insumos',
+            config_manager=GerenciadorConfiguracoes,
+            width=37,
+            state='normal'
+        )
+        self.insumo.grid(row=11, column=1, padx=5, pady=5, sticky='ew')
+
+        # Ajustar row dos botões
         frame_botoes = ttk.Frame(frame)
-        frame_botoes.grid(row=11, column=0, columnspan=2, pady=20)
+        frame_botoes.grid(row=12, column=0, columnspan=2, pady=30)  # era row=11
 
         ttk.Button(frame_botoes, 
                   text="Gerar Parcelas", 
@@ -10355,33 +10390,33 @@ class GestorParcelas:
             nf = self.campos_nf.get().strip()
 
             # Atualizar dados bancários com base na forma de pagamento
-            fornecedor_completo = self.parent.buscar_fornecedor_completo(
-                self.parent.campos_fornecedor['cnpj_cpf'].get()
-            )
-            if fornecedor_completo:
-                forma_pagamento = self.forma_pagamento_var.get()
-                if forma_pagamento == "DINHEIRO":
-                    dados_bancarios = "PAGAMENTO EM DINHEIRO"
-                elif forma_pagamento == "PIX" and fornecedor_completo['chave_pix']:
-                    dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
-                else:
-                    # Construir dados para TED
-                    partes_dados = []
-                    if fornecedor_completo['banco']: partes_dados.append(fornecedor_completo['banco'])
-                    if fornecedor_completo['op']: partes_dados.append(fornecedor_completo['op'])
-                    if fornecedor_completo['agencia']: partes_dados.append(fornecedor_completo['agencia'])
-                    if fornecedor_completo['conta']: partes_dados.append(fornecedor_completo['conta'])
+            # fornecedor_completo = self.parent.buscar_fornecedor_completo(
+            #     self.parent.campos_fornecedor['cnpj_cpf'].get()
+            # )
+            # if fornecedor_completo:
+            #     forma_pagamento = self.forma_pagamento_var.get()
+            #     if forma_pagamento == "DINHEIRO":
+            #         dados_bancarios = "PAGAMENTO EM DINHEIRO"
+            #     elif forma_pagamento == "PIX" and fornecedor_completo['chave_pix']:
+            #         dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
+            #     else:
+            #         # Construir dados para TED
+            #         partes_dados = []
+            #         if fornecedor_completo['banco']: partes_dados.append(fornecedor_completo['banco'])
+            #         if fornecedor_completo['op']: partes_dados.append(fornecedor_completo['op'])
+            #         if fornecedor_completo['agencia']: partes_dados.append(fornecedor_completo['agencia'])
+            #         if fornecedor_completo['conta']: partes_dados.append(fornecedor_completo['conta'])
                     
-                    # SEMPRE adicionar CNPJ/CPF para TED, independente da forma selecionada
-                    partes_dados.append(fornecedor_completo['cnpj_cpf'])
+            #         # SEMPRE adicionar CNPJ/CPF para TED, independente da forma selecionada
+            #         partes_dados.append(fornecedor_completo['cnpj_cpf'])
                     
-                    dados_bancarios = ' - '.join(partes_dados)
+            #         dados_bancarios = ' - '.join(partes_dados)
                     
-                    if not dados_bancarios.strip():
-                        dados_bancarios = 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+            #         if not dados_bancarios.strip():
+            #             dados_bancarios = 'DADOS BANCÁRIOS NÃO CADASTRADOS'
                 
-                # Armazenar para uso nas parcelas
-                self.dados_bancarios = dados_bancarios
+            #     # Armazenar para uso nas parcelas
+            #     self.dados_bancarios = dados_bancarios
 
             # Validar dados
             if not self.validar_dados_entrada(valor_original, num_parcelas, referencia_base, tipo):
@@ -10502,7 +10537,8 @@ class GestorParcelas:
                         'referencia': referencia,
                         'valor': valor,
                         'dt_vencto': data_vencto,
-                        'forma_pagamento': self.forma_pagamento_var.get(),
+                        'etapa_obra': self.etapa_obra.get().strip(),
+                        'insumo': self.insumo.get().strip(),
                         'observacao': observacao
                     }
                     
@@ -10548,7 +10584,7 @@ class GestorParcelas:
         tree_frame.pack(fill='both', expand=True, pady=10)
         
         # Treeview para mostrar as parcelas
-        columns = ('Parcela', 'Valor', 'Vencimento', 'Referência')
+        columns = ('Parcela', 'Valor', 'Vencimento', 'Referência', 'Etapa', 'Insumo')
         tree = ttk.Treeview(tree_frame, columns=columns, show='headings', height=15)
         
         # Configurar colunas
@@ -10556,6 +10592,8 @@ class GestorParcelas:
         tree.column('Valor', width=120, anchor='e')
         tree.column('Vencimento', width=100, anchor='center')
         tree.column('Referência', width=500, anchor='w')
+        tree.column('Etapa', width=150, anchor='w')
+        tree.column('Insumo', width=150, anchor='w')
         
         for col in columns:
             tree.heading(col, text=col)
@@ -10574,7 +10612,9 @@ class GestorParcelas:
                 f"{i}ª",
                 f"R$ {parcela['valor']:,.2f}",
                 parcela['dt_vencto'],
-                parcela['referencia']
+                parcela['referencia'],
+                parcela.get('etapa_obra', ''),
+                parcela.get('insumo', '')
             ))
             total_resumo += parcela['valor']
         
@@ -10586,9 +10626,9 @@ class GestorParcelas:
         ttk.Label(info_frame, text=f"TOTAL: R$ {total_resumo:,.2f}", 
                  font=('Arial', 12, 'bold')).pack()
         
-        # Forma de pagamento
-        ttk.Label(info_frame, text=f"Forma de Pagamento: {self.forma_pagamento_var.get()}", 
-                 font=('Arial', 10)).pack(pady=5)
+        # # Forma de pagamento
+        # ttk.Label(info_frame, text=f"Forma de Pagamento: {self.forma_pagamento_var.get()}", 
+        #          font=('Arial', 10)).pack(pady=5)
         
         # Botões
         frame_botoes = ttk.Frame(main_frame)
@@ -10707,7 +10747,8 @@ class GestorParcelas:
             'valor': valor_parcela,
             'referencia': self.gerar_referencia_parcela(referencia_base, i, num_parcelas, eh_primeira_parcela),
             'nf': nf,
-            'forma_pagamento': self.forma_pagamento_var.get()  # Adicionado forma de pagamento
+            'etapa_obra': self.etapa_obra.get().strip(),
+            'insumo': self.insumo.get().strip()
         }
         self.parcelas.append(parcela)
         
