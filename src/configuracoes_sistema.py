@@ -280,7 +280,7 @@ class GerenciadorConfiguracoes:
     def __init__(self, parent=None):
         self.root = tk.Toplevel(parent) if parent else tk.Tk()
         self.root.title("Configurações do Sistema")
-        self.root.geometry("800x600")
+        self.root.geometry("920x600")
         
         # Usar o caminho da variável de classe 
         self.config_path = GerenciadorConfiguracoes.CONFIG_PATH
@@ -350,7 +350,7 @@ class GerenciadorConfiguracoes:
                         'recorrencia': 'mensal',
                         'valor_estimado': 0.0,
                         'categoria': 'MO',
-                        'tipo_despesa': 7,
+                        'tipo_despesa': 3,
                         'ativo': True,
                         'observacao': ''
                     },
@@ -366,7 +366,7 @@ class GerenciadorConfiguracoes:
                     },
                     {
                         'nome': 'FGTS',
-                        'dia_vencimento': 7,
+                        'dia_vencimento': 20,
                         'recorrencia': 'mensal',
                         'valor_estimado': 0.0,
                         'categoria': 'MO',
