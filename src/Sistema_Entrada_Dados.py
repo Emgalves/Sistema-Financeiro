@@ -17942,6 +17942,21 @@ class GerenciadorAgenda:
         except Exception as e:
             print(f"DEBUG: Erro ao atualizar resumo: {str(e)}")
     
+    def calcular_data_rel(self):
+        """
+        Calcula a data de referência seguindo a regra dos dias 5 e 20
+        (mesmo método usado no Sistema_Entrada_Dados)
+        """
+        hoje = datetime.now()
+        if 6 <= hoje.day <= 20:
+            data_rel = hoje.replace(day=20)
+        else:
+            if hoje.day > 20:
+                data_rel = (hoje + relativedelta(months=1)).replace(day=5)
+            else:
+                data_rel = hoje.replace(day=5)
+        return data_rel
+
     def novo_lancamento(self):
         """Abre interface para novo lançamento diretamente da agenda"""
         try:
@@ -17976,6 +17991,7 @@ class GerenciadorAgenda:
             
             ttk.Label(frame_data, text="Data do Relatório:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
             data_rel = DateEntry(frame_data, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+            data_rel.set_date(self.calcular_data_rel())  # PRÉ-PREENCHER
             data_rel.grid(row=0, column=1, padx=5, pady=5, sticky='w')
             
             # === SEÇÃO: FORNECEDOR ===
@@ -19284,6 +19300,7 @@ class GerenciadorAgenda:
         # Data do relatório
         ttk.Label(frame_form, text="Data do Relatório:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
         data_rel = DateEntry(frame_form, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        data_rel.set_date(self.calcular_data_rel())  # PRÉ-PREENCHER com a regra
         data_rel.grid(row=0, column=1, padx=5, pady=5, sticky='w')
         
         # Tipo de despesa
