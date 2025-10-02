@@ -19423,9 +19423,9 @@ class GerenciadorAgenda:
                 nome.insert(0, fornecedor_dados.get('nome', ''))
                 
                 # Preencher categoria se existir o campo
-                if 'categoria' in locals():
-                    categoria.delete(0, tk.END)
-                    categoria.insert(0, fornecedor_dados.get('categoria', 'FORNECEDOR'))
+                # if 'categoria' in locals():
+                #     categoria.delete(0, tk.END)
+                #     categoria.insert(0, fornecedor_dados.get('categoria', 'FORNECEDOR'))
                 
                 print(f"DEBUG: Campos preenchidos com sucesso")
                 
