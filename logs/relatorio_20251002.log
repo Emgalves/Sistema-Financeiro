@@ -1,0 +1,60 @@
+2025-10-02 08:05:11,425 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-02 08:05:11,456 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-10-02 08:05:11,456 - INFO - Coluna de status: Data Final
+2025-10-02 08:05:11,456 - INFO - Coluna de nome: Nome
+2025-10-02 08:05:11,472 - INFO - Total de clientes ativos encontrados: 15
+2025-10-02 08:05:11,472 - INFO - Lista de clientes atualizada com 16 clientes
+2025-10-02 08:05:11,503 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-02 08:05:11,503 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-02 08:05:11,503 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-10-02 08:05:11,503 - INFO - Coluna de status: Data Final
+2025-10-02 08:05:11,503 - INFO - Coluna de nome: Nome
+2025-10-02 08:05:11,518 - INFO - Total de clientes ativos encontrados: 15
+2025-10-02 08:05:11,518 - INFO - Lista de clientes carregada com 16 itens
+2025-10-02 08:05:14,831 - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-10-02 08:05:14,831 - INFO - 📋 Processando outros relatórios: categoria
+2025-10-02 08:07:31,718 - INFO - Solicitado retorno ao menu principal
+2025-10-02 08:07:31,718 - INFO - Retornando ao menu principal existente
+2025-10-02 08:07:31,774 - INFO - Retorno ao menu principal concluído
+2025-10-02 08:07:33,213 - INFO - Abrindo sistema de entrada de dados
+2025-10-02 08:07:34,088 - INFO - Configurações importadas com sucesso via src.config
+2025-10-02 08:07:34,103 - INFO - Configurações importadas com sucesso
+2025-10-02 08:07:34,103 - INFO - Configurações do sistema importadas com sucesso
+2025-10-02 08:07:35,283 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:07:35,283 - INFO - Concluído: Carregar configurações
+2025-10-02 08:07:35,283 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:07:35,283 - INFO - Concluído: Carregar configurações
+2025-10-02 08:07:44,173 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:07:44,173 - INFO - Concluído: Carregar configurações
+2025-10-02 08:08:21,360 - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2025-10-02 08:08:22,947 - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 1
+2025-10-02 08:08:22,947 - INFO - Iniciando envio de dados - Cliente: JOSE PAULO DE SOUZA PEIXE, Registros: 1
+2025-10-02 08:08:22,947 - INFO - Usando dados_para_incluir existentes
+2025-10-02 08:08:22,947 - INFO - Total de registros a processar: 1
+2025-10-02 08:08:22,954 - INFO - Datas que serão afetadas pela inserção: ['05/10/2025']
+2025-10-02 08:08:22,954 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\JOSE PAULO DE SOUZA PEIXE.xlsx
+2025-10-02 08:08:22,954 - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-02 08:08:23,996 - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-02 08:08:23,996 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-02 08:08:23,996 - INFO - Dados novos: FOLHA DP | FOLHA DP - 10/2025 | R$ 910.80 | 06/10/2025
+2025-10-02 08:08:24,067 - INFO - ✅ Nenhuma duplicata encontrada para: FOLHA DP - FOLHA DP - 10/2025
+2025-10-02 08:08:24,075 - INFO - Lançamento inserido com ID 1208 na linha 1209
+2025-10-02 08:08:24,608 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-02 08:08:25,122 - INFO - Verificando necessidade de recálculo para 2025-10-05
+2025-10-02 08:08:25,685 - INFO - 2025-10-05: Sem taxas na data - recálculo desnecessário
+2025-10-02 08:08:30,181 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:08:30,181 - INFO - Concluído: Carregar configurações
+2025-10-02 08:08:49,271 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:08:49,271 - INFO - Concluído: Carregar configurações
+2025-10-02 08:08:51,536 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:08:51,536 - INFO - Concluído: Carregar configurações
+2025-10-02 08:09:24,348 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:09:24,348 - INFO - Concluído: Carregar configurações
+2025-10-02 08:09:24,348 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:09:24,348 - INFO - Concluído: Carregar configurações
+2025-10-02 08:09:24,348 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:09:24,348 - INFO - Concluído: Carregar configurações
+2025-10-02 08:09:24,348 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:09:24,348 - INFO - Concluído: Carregar configurações
+2025-10-02 08:09:43,629 - INFO - Iniciando: Carregar configurações
+2025-10-02 08:09:43,629 - INFO - Concluído: Carregar configurações

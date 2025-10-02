@@ -1,0 +1,96 @@
+2025-10-02 13:46:45,104 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 13:46:47,809 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 13:46:47,838 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 13:46:47,840 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 13:46:47,842 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 13:46:54,705 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 13:46:54,705 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 13:52:24,276 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 13:52:26,141 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 13:52:26,201 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 13:52:26,201 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 13:52:26,209 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 13:57:16,164 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 13:57:16,164 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 13:57:37,713 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-02 13:57:39,640 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-10-02 13:57:39,640 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-10-02 13:57:39,640 - sistema - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-10-02 13:57:39,640 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-10-02 13:57:39,651 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/10/2025']
+2025-10-02 13:57:39,651 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-02 13:57:39,658 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-02 13:57:40,713 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-02 13:57:40,713 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-02 13:57:40,713 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: MOTOBOY | MOTOBOY - 10/2025 | R$ 146.00 | 06/10/2025
+2025-10-02 13:57:40,747 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MOTOBOY - MOTOBOY - 10/2025
+2025-10-02 13:57:40,752 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 272 na linha 272
+2025-10-02 13:57:41,480 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-02 13:57:41,985 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-10-05
+2025-10-02 13:57:42,264 - sistema - Sistema_Entrada_Dados - INFO - 2025-10-05: Sem taxas na data - recálculo desnecessário
+2025-10-02 13:57:45,725 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 13:57:45,726 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:10:04,546 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 14:10:06,519 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:10:06,519 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:10:06,535 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:10:06,535 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:10:13,446 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:10:13,447 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:12:00,697 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 14:12:02,403 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:12:02,403 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:12:02,403 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:12:02,403 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:12:08,506 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:12:08,507 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:12:47,778 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:12:47,778 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:12:47,778 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:12:47,778 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:12:47,778 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:12:47,778 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:12:47,778 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:12:47,778 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:13:05,427 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:13:05,428 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:31:13,211 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 14:31:15,008 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:31:15,008 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:31:15,008 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:31:15,008 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:31:23,464 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:31:23,465 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:32:04,607 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:32:04,607 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:33:50,501 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 14:33:50,517 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:33:50,541 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:34:40,240 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:34:40,240 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:34:40,240 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:34:40,268 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:34:47,073 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:34:47,074 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:37:33,904 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 14:37:35,455 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:37:35,455 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:37:35,455 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:37:35,455 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:37:42,409 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:37:42,410 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:38:23,860 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:38:23,898 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:40:47,818 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 14:40:47,850 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:40:47,962 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:41:20,665 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 14:41:20,686 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:41:20,750 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:43:36,109 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-02 14:43:37,586 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:43:37,656 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:43:37,658 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:43:37,659 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-02 14:43:43,725 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-02 14:43:43,725 - sistema - logger_config - INFO - Concluído: Carregar configurações
