@@ -10389,35 +10389,6 @@ class GestorParcelas:
             referencia_base = self.referencia_base.get().strip()
             nf = self.campos_nf.get().strip()
 
-            # Atualizar dados bancários com base na forma de pagamento
-            # fornecedor_completo = self.parent.buscar_fornecedor_completo(
-            #     self.parent.campos_fornecedor['cnpj_cpf'].get()
-            # )
-            # if fornecedor_completo:
-            #     forma_pagamento = self.forma_pagamento_var.get()
-            #     if forma_pagamento == "DINHEIRO":
-            #         dados_bancarios = "PAGAMENTO EM DINHEIRO"
-            #     elif forma_pagamento == "PIX" and fornecedor_completo['chave_pix']:
-            #         dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
-            #     else:
-            #         # Construir dados para TED
-            #         partes_dados = []
-            #         if fornecedor_completo['banco']: partes_dados.append(fornecedor_completo['banco'])
-            #         if fornecedor_completo['op']: partes_dados.append(fornecedor_completo['op'])
-            #         if fornecedor_completo['agencia']: partes_dados.append(fornecedor_completo['agencia'])
-            #         if fornecedor_completo['conta']: partes_dados.append(fornecedor_completo['conta'])
-                    
-            #         # SEMPRE adicionar CNPJ/CPF para TED, independente da forma selecionada
-            #         partes_dados.append(fornecedor_completo['cnpj_cpf'])
-                    
-            #         dados_bancarios = ' - '.join(partes_dados)
-                    
-            #         if not dados_bancarios.strip():
-            #             dados_bancarios = 'DADOS BANCÁRIOS NÃO CADASTRADOS'
-                
-            #     # Armazenar para uso nas parcelas
-            #     self.dados_bancarios = dados_bancarios
-
             # Validar dados
             if not self.validar_dados_entrada(valor_original, num_parcelas, referencia_base, tipo):
                 return False
