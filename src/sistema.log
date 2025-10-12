@@ -4326,3 +4326,13 @@
 2025-10-02 14:43:36,136 - INFO - Configurações importadas com sucesso
 2025-10-02 14:43:36,136 - INFO - Configurações do sistema importadas com sucesso
 2025-10-02 14:44:12,907 - INFO - Saída confirmada, finalizando sistema
+2025-10-06 09:36:40,038 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-10-06 09:36:42,127 - INFO - Sistema principal inicializado com sucesso
+2025-10-06 09:36:46,127 - INFO - Saída confirmada, finalizando sistema
+2025-10-12 15:54:08,952 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-10-12 15:54:09,242 - INFO - Sistema principal inicializado com sucesso
+2025-10-12 15:54:11,083 - INFO - Abrindo sistema de entrada de dados
+2025-10-12 15:54:16,049 - INFO - Configurações importadas com sucesso via src.config
+2025-10-12 15:54:16,062 - INFO - Configurações importadas com sucesso
+2025-10-12 15:54:16,063 - INFO - Configurações do sistema importadas com sucesso
+2025-10-12 15:56:36,520 - INFO - Saída confirmada, finalizando sistema
