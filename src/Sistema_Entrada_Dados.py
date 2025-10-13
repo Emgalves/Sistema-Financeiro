@@ -13076,7 +13076,7 @@ class GerenciadorLancamentos:
         
     def criar_interface(self):
         """Cria a interface do gerenciador - VERSÃO COM EXCLUSÃO EM LOTE"""
-        # Frame principal
+        #  Frame principal
         main_frame = ttk.Frame(self.janela, padding="10")
         main_frame.pack(fill='both', expand=True)
         
@@ -13092,6 +13092,8 @@ class GerenciadorLancamentos:
         ttk.Label(frame_filtros, text="Data Fim:").grid(row=0, column=2, padx=5, pady=5)
         self.data_fim = DateEntry(frame_filtros, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.data_fim.grid(row=0, column=3, padx=5, pady=5)
+        
+        self.inicializar_datas_padrao()
         
         # Filtro por status
         ttk.Label(frame_filtros, text="Status:").grid(row=0, column=4, padx=5, pady=5)
@@ -13820,7 +13822,64 @@ class GerenciadorLancamentos:
         except (ValueError, TypeError):
             # Se não conseguir converter, retornar como string
             return str(tp_desp)
-    
+
+    def inicializar_datas_padrao(self):
+        """Inicializa as datas padrão dos filtros baseado no sistema (dias 5 e 20)"""
+        data_inicio_padrao = None
+        data_fim_padrao = None
+
+        try:
+            from datetime import datetime, timedelta
+            from calendar import monthrange
+            
+            # Data de hoje
+            hoje = datetime.now().date()
+            dia_atual = hoje.day
+            mes_atual = hoje.month
+            ano_atual = hoje.year
+            
+            # LÓGICA DO SISTEMA: Data fim baseada nos dias 5 e 20
+            if dia_atual <= 5:
+                # Do dia 1 ao 5: data fim = dia 5 do mês atual
+                data_fim_padrao = hoje.replace(day=5)
+            elif dia_atual <= 20:
+                # Do dia 6 ao 20: data fim = dia 20 do mês atual
+                data_fim_padrao = hoje.replace(day=20)
+            else:
+                # Do dia 21 em diante: data fim = dia 5 do próximo mês
+                if mes_atual == 12:
+                    # Se dezembro, vai para janeiro do próximo ano
+                    data_fim_padrao = datetime(ano_atual + 1, 1, 5).date()
+                else:
+                    # Senão, próximo mês do mesmo ano
+                    data_fim_padrao = datetime(ano_atual, mes_atual + 1, 5).date()
+            
+            # Data de início: 30 dias antes da data fim (mais lógico para o sistema)
+            data_inicio_padrao = data_fim_padrao - timedelta(days=30)
+
+            # Verificar se os widgets existem antes de definir as datas
+            if hasattr(self, 'data_inicio') and self.data_inicio and data_inicio_padrao:
+                self.data_inicio.set_date(data_inicio_padrao)
+            
+            if hasattr(self, 'data_fim') and self.data_fim and data_fim_padrao:
+                self.data_fim.set_date(data_fim_padrao)
+            
+            print(f"DEBUG: Datas padrão definidas - Início: {data_inicio_padrao}, Fim: {data_fim_padrao}")
+            
+            # Definir as datas nos controles
+            self.data_inicio.set_date(data_inicio_padrao)
+            self.data_fim.set_date(data_fim_padrao)
+            
+            print(f"DEBUG: Datas padrão definidas (sistema dias 5/20):")
+            print(f"       Hoje: {hoje} (dia {dia_atual})")
+            print(f"       Data início: {data_inicio_padrao}")
+            print(f"       Data fim: {data_fim_padrao}")
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao inicializar datas padrão: {str(e)}")
+            import traceback
+            traceback.print_exc()
+       
     def carregar_lancamentos(self):
         """Carrega os lançamentos da planilha com correção de IDs duplicados"""
         try:
@@ -13968,10 +14027,8 @@ class GerenciadorLancamentos:
             itens_antes_filtro = len(self.tree_lancamentos.get_children())
             print(f"DEBUG: Itens no tree ANTES do filtro: {itens_antes_filtro}")
             
-            # CORREÇÃO: Inicializar datas padrão se for o primeiro carregamento
-            if not hasattr(self, '_datas_inicializadas'):
-                self.inicializar_datas_padrao()
-                self._datas_inicializadas = True
+            # if hasattr(self, 'data_inicio') and self.data_inicio:
+            #     self.data_inicio.set_date(data_inicio_padrao)
 
             # Aplicar filtros
             self.aplicar_filtros()
@@ -14251,51 +14308,6 @@ class GerenciadorLancamentos:
         except Exception as e:
             print(f"Erro ao restaurar seleção: {str(e)}")
 
-    def inicializar_datas_padrao(self):
-        """Inicializa as datas padrão dos filtros baseado no sistema (dias 5 e 20)"""
-        try:
-            from datetime import datetime, timedelta
-            from calendar import monthrange
-            
-            # Data de hoje
-            hoje = datetime.now().date()
-            dia_atual = hoje.day
-            mes_atual = hoje.month
-            ano_atual = hoje.year
-            
-            # LÓGICA DO SISTEMA: Data fim baseada nos dias 5 e 20
-            if dia_atual <= 5:
-                # Do dia 1 ao 5: data fim = dia 5 do mês atual
-                data_fim_padrao = hoje.replace(day=5)
-            elif dia_atual <= 20:
-                # Do dia 6 ao 20: data fim = dia 20 do mês atual
-                data_fim_padrao = hoje.replace(day=20)
-            else:
-                # Do dia 21 em diante: data fim = dia 5 do próximo mês
-                if mes_atual == 12:
-                    # Se dezembro, vai para janeiro do próximo ano
-                    data_fim_padrao = datetime(ano_atual + 1, 1, 5).date()
-                else:
-                    # Senão, próximo mês do mesmo ano
-                    data_fim_padrao = datetime(ano_atual, mes_atual + 1, 5).date()
-            
-            # Data de início: 30 dias antes da data fim (mais lógico para o sistema)
-            data_inicio_padrao = data_fim_padrao - timedelta(days=30)
-            
-            # Definir as datas nos controles
-            self.data_inicio.set_date(data_inicio_padrao)
-            self.data_fim.set_date(data_fim_padrao)
-            
-            print(f"DEBUG: Datas padrão definidas (sistema dias 5/20):")
-            print(f"       Hoje: {hoje} (dia {dia_atual})")
-            print(f"       Data início: {data_inicio_padrao}")
-            print(f"       Data fim: {data_fim_padrao}")
-            
-        except Exception as e:
-            print(f"DEBUG: Erro ao inicializar datas padrão: {str(e)}")
-            import traceback
-            traceback.print_exc()
-    
     def editar_lancamento(self):
         """Abre editor para o lançamento selecionado - VERSÃO ATUALIZADA"""
         item_selecionado = self.tree_lancamentos.selection()
