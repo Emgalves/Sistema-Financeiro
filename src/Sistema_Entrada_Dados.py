@@ -11072,7 +11072,7 @@ class ImportadorRH:
         if forma_pagto and str(forma_pagto).upper() == "DINHEIRO":
             return ''
             
-         # Se for PIX, usar a chave PIX se estiver disponível
+        # Se for PIX, usar a chave PIX se estiver disponível
         if forma_pagto and str(forma_pagto).upper() == "PIX":
             chave_pix = self.obter_valor_coluna(row, 'Tipo Conta/Chave PIX')
             if chave_pix and not pd.isna(chave_pix):
@@ -11120,18 +11120,38 @@ class ImportadorRH:
             agencia = ''
         
         # Tentar diferentes nomes para o número da conta
-        numero_conta = self.obter_valor_coluna(row, 'N° Conta', '')
-        if not numero_conta:
-            numero_conta = self.obter_valor_coluna(row, 'Conta', '')
+        numero_conta_raw = self.obter_valor_coluna(row, 'N° Conta', '')
+        if not numero_conta_raw:
+            numero_conta_raw = self.obter_valor_coluna(row, 'Conta', '')
+        
+        # CORREÇÃO: Limpar número da conta (remover .0 se vier como float)
+        if numero_conta_raw:
+            try:
+                # Remover possíveis casas decimais
+                numero_conta = str(numero_conta_raw).split('.')[0]
+            except:
+                numero_conta = str(numero_conta_raw)
+        else:
+            numero_conta = ''
         
         # Tentar diferentes nomes para o dígito da conta
-        digito_conta = self.obter_valor_coluna(row, 'Dig. Conta', '')
-        if not digito_conta:
-            digito_conta = self.obter_valor_coluna(row, 'Dígito', '')
+        digito_conta_raw = self.obter_valor_coluna(row, 'Dig. Conta', '')
+        if not digito_conta_raw:
+            digito_conta_raw = self.obter_valor_coluna(row, 'Dígito', '')
+        
+        # CORREÇÃO: Limpar dígito da conta (remover .0 se vier como float)
+        if digito_conta_raw and not pd.isna(digito_conta_raw):
+            try:
+                # Remover possíveis casas decimais
+                digito_conta = str(digito_conta_raw).split('.')[0]
+            except:
+                digito_conta = str(digito_conta_raw)
+        else:
+            digito_conta = ''
             
         # Formatar conta com dígito
         conta = f"{numero_conta}"
-        if digito_conta and not pd.isna(digito_conta):
+        if digito_conta:  # Já verificamos se não é vazio
             conta = f"{numero_conta}-{digito_conta}"
             
         # Obter CPF para incluir nos dados bancários
@@ -11231,6 +11251,14 @@ class ImportadorRH:
         if not arquivo:
             return
 
+        dtypes_para_forcar = {
+            'CPF': str,
+            'N° Conta': str,
+            'Dig. Conta': str,
+            'Conta': str,
+            'Dígito': str
+        }
+        
         # Tentar ler o arquivo
         try:
             # Verificar extensão do arquivo
@@ -11252,7 +11280,7 @@ class ImportadorRH:
                             print(f"Tentando abrir CSV com delimitador: {delim}, encoding: {encoding}")
                             df = pd.read_csv(
                                 arquivo,
-                                dtype={'CPF': str},
+                                dtype=dtypes_para_forcar,  # CORREÇÃO: Adicionar dtype
                                 delimiter=delim,
                                 encoding=encoding
                             )
@@ -11273,7 +11301,7 @@ class ImportadorRH:
                         print(f"Tentando abrir com engine: {engine}")
                         df = pd.read_excel(
                             arquivo,
-                            dtype={'CPF': str},  # Forçar leitura do CPF como string
+                            dtype=dtypes_para_forcar,  # CORREÇÃO: Adicionar dtype
                             engine=engine
                         )
                         print(f"Sucesso ao abrir com engine: {engine}")
