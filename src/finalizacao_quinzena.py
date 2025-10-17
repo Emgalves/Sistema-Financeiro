@@ -14,132 +14,35 @@ from tkcalendar import DateEntry
 from openpyxl import load_workbook, Workbook
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-import calendar
+import pandas as pd
 import os
-import openpyxl
 
-
-from src.Sistema_Entrada_Dados import GestaoTaxasFixas
 from src.config.utils import (
     validar_data,
-    validar_data_quinzena,
-    formatar_moeda,
     ARQUIVO_CLIENTES,
-    ARQUIVO_CONTROLE,
     PASTA_CLIENTES,
-    BASE_PATH,
     buscar_dados_bancarios_fornecedor
 )
 
 
-
-class ControleLancamentosTaxaADM:
-    def __init__(self):
-        self.planilha_controle = ARQUIVO_CONTROLE
-        self.verificar_planilha_controle()
-
-
-    def verificar_planilha_controle(self):
-        """Cria a planilha de controle se não existir"""
-        if not os.path.exists(self.planilha_controle):
-            wb = openpyxl.Workbook()
-            ws = wb.active
-            ws.title = 'Controle'
-            
-
-            headers = ['Cliente', 'Data Referência', 'Data Lançamento', 'Valor', 'Status']
-            for col, header in enumerate(headers, 1):
-                ws.cell(row=1, column=col, value=header)
-         
-            wb.save(self.planilha_controle)
-
-
-    def verificar_lancamento_existente(self, ws_contratos, cliente, data_ref):
-        """Verifica se já existe lançamento na aba de controle"""
-        data_str = data_ref.strftime("%d/%m/%Y")
-        for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-            if (row[22] and  # Tem referência na coluna PARCELAS
-                row[25] == data_str):  # Mesma data
-                return True
-        return False
-
-    def registrar_lancamento(self, cliente, data_ref, valor):
-        """Registra um novo lançamento de taxa"""
-        try:
-            print(f"\nRegistrando lançamento no controle...")
-            print(f"Cliente: {cliente}")
-            print(f"Data: {data_ref}")
-            print(f"Valor: R$ {valor:.2f}")
-            
-            # Se a data for string, converter para datetime
-            if isinstance(data_ref, str):
-                data_ref = datetime.strptime(data_ref, '%d/%m/%Y')
-            
-            # Verificar se já existe
-            existe, detalhes = self.verificar_lancamento_existente(cliente, data_ref)
-            if existe:
-                print("AVISO: Lançamento já existe no controle!")
-                return False
-                    
-            
-            wb = load_workbook(self.planilha_controle)
-            ws = wb['Controle']
-            
-            # Adicionar novo registro
-            proxima_linha = ws.max_row + 1
-            
-            
-            ws.cell(row=proxima_linha, column=1, value=cliente)  # Cliente
-            ws.cell(row=proxima_linha, column=2, value=data_ref)  # Data Referência
-            data_atual = datetime.now()
-            ws.cell(row=proxima_linha, column=3, value=data_atual)  # Data Lançamento
-            ws.cell(row=proxima_linha, column=4, value=float(valor))  # Valor
-            ws.cell(row=proxima_linha, column=5, value='LANÇADO')  # Status
-            
-            # Formatar células
-            ws.cell(row=proxima_linha, column=2).number_format = 'DD/MM/YYYY'
-            ws.cell(row=proxima_linha, column=3).number_format = 'DD/MM/YYYY'
-            ws.cell(row=proxima_linha, column=4).number_format = '#,##0.00'
-            
-            
-            wb.save(self.planilha_controle)
-            print("Registro concluído com sucesso!")
-            return True
-                
-        except Exception as e:
-            print(f"Erro ao registrar lançamento no controle: {str(e)}")
-            if 'wb' in locals():
-                wb.close()
-            raise Exception(f"Erro ao registrar lançamento no controle: {str(e)}")
-
-
 class FinalizacaoQuinzena:
     def __init__(self, parent=None):
-        self.parent = parent  # Guarda referência ao parent
+        self.parent = parent
         self.root = tk.Toplevel(parent) if parent else tk.Tk()
-        self.root.title("Finalização de Quinzena")
-        self.root.geometry("1000x600")
-        self.gestao_taxas = GestaoTaxasFixas(self)
+        self.root.title("Finalização de Quinzena com Compensação Automática")
+        self.root.geometry("1100x650")
         
-        # Variável de controle para logs
-        self.calculando_final = tk.BooleanVar(value=False)
-        
-        # Inicializar controle de taxa ADM
-        self.controle = ControleLancamentosTaxaADM()
-        
-        # Inicializar atributos que serão usados na interface
         self.data_ref_entry = None
         self.tree_clientes = None
+        self._detalhes_divergencia = []
         
-        # Configurar a interface
         self.setup_gui()
         
     def run(self):
         """Inicia a execução do sistema"""
-        # Configurar o comportamento ao fechar a janela
         self.root.protocol("WM_DELETE_WINDOW", self.voltar_menu)
         
-        # Centralizar a janela
+        # Centralizar janela
         self.root.update_idletasks()
         width = self.root.winfo_width()
         height = self.root.winfo_height()
@@ -147,630 +50,932 @@ class FinalizacaoQuinzena:
         y = (self.root.winfo_screenheight() // 2) - (height // 2)
         self.root.geometry(f'{width}x{height}+{x}+{y}')
         
-        # Trazer janela para frente
         self.root.lift()
         self.root.focus_force()
-        
-        # Iniciar loop de eventos
         self.root.mainloop()
 
     def setup_gui(self):
-        # Frame principal com padding
+        """Configura a interface gráfica"""
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.pack(fill='both', expand=True)
 
-        # Frame para seleção de data
-        frame_data = ttk.LabelFrame(main_frame, text="Data de Referência")
-        frame_data.pack(fill='x', pady=5)
+        # Frame superior: Data e busca
+        frame_topo = ttk.LabelFrame(main_frame, text="Período de Referência", padding="10")
+        frame_topo.pack(fill='x', pady=(0, 10))
 
-        ttk.Label(frame_data, text="Data:").pack(side='left', padx=5)
+        ttk.Label(frame_topo, text="Data de Referência:").pack(side='left', padx=5)
         self.data_ref_entry = DateEntry(
-            frame_data,
+            frame_topo,
             format='dd/mm/yyyy',
             locale='pt_BR'
         )
         self.data_ref_entry.pack(side='left', padx=5)
 
-        # Sempre adicionar o botão de carregar clientes
-        ttk.Button(frame_data, 
-                  text="Carregar Clientes",
-                  command=self.carregar_clientes).pack(side='left', padx=5)
+        ttk.Button(
+            frame_topo, 
+            text="Buscar Clientes",
+            command=self.carregar_clientes
+        ).pack(side='left', padx=10)
 
-        # Frame para lista de clientes
-        frame_lista = ttk.LabelFrame(main_frame, text="Clientes")
-        frame_lista.pack(fill='both', expand=True, pady=5)
+        # Frame de clientes
+        frame_lista = ttk.LabelFrame(main_frame, text="Clientes Pendentes", padding="5")
+        frame_lista.pack(fill='both', expand=True, pady=(0, 10))
 
-        # Treeview com todas as colunas necessárias
-        self.tree_clientes = ttk.Treeview(frame_lista, 
-                                        columns=('Cliente', 'Taxa ADM', 'Valor Taxa', 'Status'),
-                                        show='headings')
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(frame_lista)
+        scrollbar.pack(side='right', fill='y')
 
+        # Treeview com colunas expandidas
+        self.tree_clientes = ttk.Treeview(
+            frame_lista,
+            columns=('Cliente', 'Base Atual', 'Taxa %', 'Taxa Calculada', 'Compensação', 'Valor Final'),
+            show='headings',
+            selectmode='extended',
+            yscrollcommand=scrollbar.set
+        )
+
+        scrollbar.config(command=self.tree_clientes.yview)
+
+        # Configurar colunas
         self.tree_clientes.heading('Cliente', text='Cliente')
-        self.tree_clientes.heading('Taxa ADM', text='Taxa ADM (%)')
-        self.tree_clientes.heading('Valor Taxa', text='Valor Taxa')
-        self.tree_clientes.heading('Status', text='Status')
-        self.tree_clientes.column('Cliente', width=300)
-        self.tree_clientes.column('Taxa ADM', width=100)
-        self.tree_clientes.column('Valor Taxa', width=150)
-        self.tree_clientes.column('Status', width=150)
+        self.tree_clientes.heading('Base Atual', text='Base Quinzena')
+        self.tree_clientes.heading('Taxa %', text='Taxa %')
+        self.tree_clientes.heading('Taxa Calculada', text='Taxa Quinzena')
+        self.tree_clientes.heading('Compensação', text='Compensação')
+        self.tree_clientes.heading('Valor Final', text='Valor Final')
+
+        self.tree_clientes.column('Cliente', width=200)
+        self.tree_clientes.column('Base Atual', width=120)
+        self.tree_clientes.column('Taxa %', width=80)
+        self.tree_clientes.column('Taxa Calculada', width=120)
+        self.tree_clientes.column('Compensação', width=120)
+        self.tree_clientes.column('Valor Final', width=120)
+
         self.tree_clientes.pack(fill='both', expand=True)
 
-        # Frame para botões
+        # Frame de botões
         frame_botoes = ttk.Frame(main_frame)
         frame_botoes.pack(fill='x', pady=5)
 
-        ttk.Button(frame_botoes, 
-                  text="Processar Selecionados",
-                  command=self.processar_clientes).pack(side='left', padx=5)
+        ttk.Button(
+            frame_botoes, 
+            text="Processar Selecionados",
+            command=self.processar_clientes_selecionados
+        ).pack(side='left', padx=5)
 
-        ttk.Button(frame_botoes,
-                  text="Voltar ao Menu Principal",
-                  command=self.voltar_menu).pack(side='right', padx=5)
+        ttk.Button(
+            frame_botoes,
+            text="Ver Detalhes Divergências",
+            command=self.ver_detalhes_divergencias
+        ).pack(side='left', padx=5)
 
-    def validar_data(self, data_str):
-        """Valida o formato da data"""
-        return validar_data(data_str)
+        ttk.Button(
+            frame_botoes,
+            text="Voltar ao Menu",
+            command=self.voltar_menu
+        ).pack(side='right', padx=5)
 
     def carregar_clientes(self):
-        """Carrega os clientes com suas informações e status"""
+        """Carrega clientes com cálculo de taxas e compensações"""
         data_ref = self.data_ref_entry.get()
-        if not self.validar_data(data_ref):
+        if not validar_data(data_ref):
             messagebox.showerror("Erro", "Data inválida!")
             return
 
         try:
-            # Limpar lista atual
+            # Limpar tree
             for item in self.tree_clientes.get_children():
                 self.tree_clientes.delete(item)
 
-            wb = load_workbook(ARQUIVO_CLIENTES)
-            ws = wb['Clientes']
-
-            print("\nIniciando carregamento de clientes...")
             data_ref_dt = datetime.strptime(data_ref, '%d/%m/%Y')
+            wb_clientes = load_workbook(ARQUIVO_CLIENTES)
+            ws_clientes = wb_clientes['Clientes']
 
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pula linhas vazias
+            print(f"\n{'='*60}")
+            print(f"BUSCANDO CLIENTES PARA {data_ref}")
+            print(f"{'='*60}\n")
+
+            # Verificar se coluna Tipo Taxa existe
+            headers = [cell.value for cell in ws_clientes[1]]
+            tem_coluna_tipo = 'Tipo Taxa' in headers or 'TIPO TAXA' in [str(h).upper() for h in headers if h]
+            
+            if not tem_coluna_tipo:
+                print("⚠️  Coluna 'Tipo Taxa' não encontrada na planilha Clientes.xlsx")
+                print("💡 Criando coluna automaticamente...\n")
+                self._adicionar_coluna_tipo_taxa(ws_clientes, wb_clientes)
+                # Recarregar após adicionar coluna
+                wb_clientes = load_workbook(ARQUIVO_CLIENTES)
+                ws_clientes = wb_clientes['Clientes']
+
+            # Identificar índice da coluna Tipo Taxa
+            headers = [cell.value for cell in ws_clientes[1]]
+            idx_tipo_taxa = None
+            for idx, header in enumerate(headers):
+                if header and 'TIPO' in str(header).upper() and 'TAXA' in str(header).upper():
+                    idx_tipo_taxa = idx
+                    break
+
+            clientes_processados = 0
+            clientes_com_percentual = 0
+
+            for row in ws_clientes.iter_rows(min_row=2, values_only=True):
+                if not row[0]:
                     continue
 
                 nome_cliente = row[0]
+                
+                # Verificar tipo de taxa (se coluna existir)
+                tipo_taxa = row[idx_tipo_taxa] if idx_tipo_taxa and len(row) > idx_tipo_taxa else None
+                
+                # FILTRO: Só processar clientes com taxa Percentual
+                if tipo_taxa and str(tipo_taxa).upper() != 'PERCENTUAL':
+                    print(f"⏭️  {nome_cliente}: Taxa {tipo_taxa} - IGNORADO")
+                    continue
+
                 arquivo_cliente = PASTA_CLIENTES / f"{nome_cliente}.xlsx"
-
-                print(f"\nVerificando cliente: {nome_cliente}")
-
                 if not os.path.exists(arquivo_cliente):
-                    print(f"Arquivo não encontrado: {arquivo_cliente}")
+                    print(f"⚠️  {nome_cliente}: Arquivo não encontrado")
                     continue
 
                 try:
-                    wb_cliente = load_workbook(arquivo_cliente)
+                    clientes_processados += 1
+                    print(f"\n📋 Processando: {nome_cliente}")
 
-                    if 'Contratos_ADM' not in wb_cliente.sheetnames:
-                        print(f"Aba Contratos_ADM não encontrada para: {nome_cliente}")
-                        wb_cliente.close()
+                    # Verificar se já tem taxa lançada
+                    if self._existe_taxa_na_quinzena(nome_cliente, data_ref_dt):
+                        print(f"  ⏭️  Já tem taxa lançada - IGNORADO")
                         continue
 
-                    ws_contratos = wb_cliente['Contratos_ADM']
-                    ws_dados = wb_cliente['Dados']
-
-                    # Primeiro verificar se já existe lançamento na data
-                    tem_lancamento = False
-                    for row in ws_dados.iter_rows(min_row=2, values_only=True):
-                        if row[0] and isinstance(row[0], datetime):  # Data do lançamento
-                            if (row[0].day == data_ref_dt.day and 
-                                row[0].month == data_ref_dt.month and 
-                                row[0].year == data_ref_dt.year and 
-                                row[1] == 7):  # Tipo 7 = Taxa ADM percentual
-                                
-                                # CORREÇÃO: Verificar também o status do lançamento existente
-                                status_lancamento = row[13] if len(row) > 13 else None
-                                if status_lancamento == "ATIVO":
-                                    tem_lancamento = True
-                                    print(f"Lançamento ATIVO existente encontrado para {data_ref}")
-                                    break
-
-                    # Se já tem lançamento ATIVO, pular este cliente
-                    if tem_lancamento:
-                        print(f"Cliente {nome_cliente} já tem lançamento ATIVO para esta data")
-                        wb_cliente.close()
+                    # Obter percentual
+                    percentual = self._obter_percentual_cliente(nome_cliente)
+                    if percentual == 0:
+                        print(f"  ⚠️  Sem taxa percentual configurada - IGNORADO")
                         continue
 
-                    # Primeiro, encontrar todos os números de contratos ativos
-                    contratos_ativos = set()
-                    for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                        if row[0] and row[3] == 'ATIVO':  # Número do contrato e Status
-                            contratos_ativos.add(row[0])
-
-                    print(f"Contratos ativos encontrados: {contratos_ativos}")
-
-                    # Para cada contrato ativo, procurar administradores com taxa percentual
-                    taxa_adm_total = 0
-                    for num_contrato in contratos_ativos:
-                        for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                            if (row[6] == num_contrato and  # Número do contrato na coluna G
-                                row[9] == 'Percentual'):    # Tipo na coluna J
-                                try:
-                                    taxa_str = str(row[10]).replace(',', '.').replace('%', '').strip()
-                                    percentual = float(taxa_str)
-                                    print(f"Contrato {num_contrato}: Percentual encontrado = {percentual}%")
-                                    taxa_adm_total += percentual
-                                except (ValueError, TypeError) as e:
-                                    print(f"Erro ao processar percentual do contrato {num_contrato}: {e}")
-                                    continue
-
-                    print(f"Taxa ADM total encontrada: {taxa_adm_total:.2f}%")
-
-                    if taxa_adm_total == 0:
-                        print(f"Cliente {nome_cliente} não tem taxa percentual ativa no período")
-                        wb_cliente.close()
+                    # Calcular base da quinzena
+                    base_quinzena = self._calcular_base_quinzena(nome_cliente, data_ref_dt)
+                    if base_quinzena == 0:
+                        print(f"  ⚠️  Base zero - IGNORADO")
                         continue
 
-                    # Calcular valor base usando a MESMA lógica do calcular_taxa_adm
-                    valor_base = 0
-                    lancamentos_encontrados = 0
+                    # Calcular taxa da quinzena
+                    taxa_quinzena = base_quinzena * (percentual / 100)
 
-                    print("Buscando lançamentos do período...")
-                    for row in ws_dados.iter_rows(min_row=2, values_only=True):
-                        data_lancamento = row[0]
-                        if isinstance(data_lancamento, datetime):
-                            if (data_lancamento.day == data_ref_dt.day and 
-                                data_lancamento.month == data_ref_dt.month and 
-                                data_lancamento.year == data_ref_dt.year):
+                    # Calcular divergência histórica
+                    divergencia = self._calcular_divergencia_historica_total(nome_cliente)
 
-                                tipo_desp = row[1]
-                                status = row[13] if len(row) > 13 else None  # Verificar se existe coluna 14
-                                
-                                # CORREÇÃO: Usar a mesma lógica do calcular_taxa_adm
-                                if (isinstance(tipo_desp, (int, float)) and 1 <= tipo_desp <= 6 and 
-                                    status == "ATIVO"):
-                                    valor = row[8]  # Coluna I com o valor
-                                    if valor:
-                                        valor_numeric = float(str(valor).replace(',', '.'))
-                                        valor_base += valor_numeric
-                                        lancamentos_encontrados += 1
-                                        print(f"Lançamento encontrado - Tipo: {tipo_desp}, Valor: R$ {valor_numeric:.2f}, Status: {status}")
+                    # Valor final
+                    valor_final = taxa_quinzena + divergencia
 
-                    print(f"Valor base total: R$ {valor_base:.2f}")
-                    print(f"Total de lançamentos encontrados: {lancamentos_encontrados}")
+                    print(f"  ✅ Base: R$ {base_quinzena:.2f} | Taxa: {percentual}% | "
+                          f"Quinzena: R$ {taxa_quinzena:.2f} | "
+                          f"Comp: R$ {divergencia:+.2f} | Final: R$ {valor_final:.2f}")
 
-                    # Se não tem lançamentos base ATIVOS, pular este cliente
-                    if lancamentos_encontrados == 0:
-                        print(f"Cliente {nome_cliente} não tem lançamentos base ATIVOS para cálculo")
-                        wb_cliente.close()
-                        continue
-
-                    # Calcular valor da taxa
-                    valor_taxa = valor_base * (taxa_adm_total / 100)
-
-                    # Função local para formatar valor em Real
-                    def formatar_valor_br(valor):
-                        return f"{valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-                    print(f"Cliente {nome_cliente}:")
-                    print(f"Base de cálculo: R$ {valor_base:.2f}")
-                    print(f"Taxa total: {taxa_adm_total}%")
-                    print(f"Valor da taxa: R$ {valor_taxa:.2f}")
-
-                    # Adicionar à tree
+                    # Adicionar na tree
                     self.tree_clientes.insert('', 'end', values=(
                         nome_cliente,
-                        f"{taxa_adm_total:.1f}",  # Taxa em porcentagem
-                        formatar_valor_br(valor_taxa),  # Valor formatado no padrão brasileiro
-                        "PENDENTE"
-                    ))
-
-                    wb_cliente.close()
+                        self._formatar_moeda(base_quinzena),
+                        f"{percentual:.1f}%",
+                        self._formatar_moeda(taxa_quinzena),
+                        self._formatar_moeda_com_sinal(divergencia),
+                        self._formatar_moeda(valor_final)
+                    ), tags=(nome_cliente,))
+                    
+                    clientes_com_percentual += 1
 
                 except Exception as e:
-                    print(f"Erro ao processar cliente {nome_cliente}: {str(e)}")
-                    if 'wb_cliente' in locals():
-                        wb_cliente.close()
-            wb.close()
+                    print(f"  ❌ Erro: {str(e)}")
+                    import traceback
+                    print(traceback.format_exc())
+                    continue
+
+            wb_clientes.close()
+            
+            print(f"\n{'='*60}")
+            print(f"BUSCA CONCLUÍDA")
+            print(f"Clientes verificados: {clientes_processados}")
+            print(f"Clientes com taxa percentual encontrados: {clientes_com_percentual}")
+            print(f"{'='*60}\n")
+            
+            if clientes_com_percentual == 0:
+                messagebox.showinfo("Aviso", 
+                    "Nenhum cliente com taxa percentual pendente foi encontrado.\n\n"
+                    "Verifique:\n"
+                    "• Se a coluna 'Tipo Taxa' está preenchida com 'Percentual'\n"
+                    "• Se os clientes têm lançamentos na data selecionada\n"
+                    "• Se já não existe taxa lançada para esta quinzena")
 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
-            if 'wb' in locals():
-                wb.close()
+            import traceback
+            print(traceback.format_exc())
+            if 'wb_clientes' in locals():
+                wb_clientes.close()
 
-    def verificar_lancamento_existente(self, ws_contratos, cliente, data_ref):
-        """Verifica se já existe lançamento para o período"""
-        try:
-            # Se a data_ref é string, converter para datetime
-            if isinstance(data_ref, str):
-                data_ref = datetime.strptime(data_ref, '%d/%m/%Y')
-
-            # Carregar arquivo do cliente
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            wb = load_workbook(arquivo_cliente)
-            ws_dados = wb['Dados']
-
-            # Procurar lançamentos
-            for row in ws_dados.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Data do lançamento
-                    data_lancamento = row[0]
-                    if isinstance(data_lancamento, datetime):
-                        if (data_lancamento.day == data_ref.day and 
-                            data_lancamento.month == data_ref.month and 
-                            data_lancamento.year == data_ref.year):
-
-                            tipo_desp = row[1]
-                            status = row[13]
-                            if tipo_desp == 7 and status == "ATIVO":  # Tipo 7 = Taxa ADM
-                                wb.close()
-                                return True
-
-            wb.close()
-            return False
-
-        except Exception as e:
-            print(f"Erro ao verificar lançamento existente: {str(e)}")
-            if 'wb' in locals():
-                wb.close()
-            return False
-
-    def calcular_taxa_adm(self, cliente, data_ref):
-        """Calcula o valor da taxa de administração para o cliente"""
-        try:
-            print("\n=== Iniciando cálculo de taxa ADM ===")
-            print(f"Cliente: {cliente}")
-            print(f"Data Ref: {data_ref}")
-
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            print(f"Carregando arquivo: {arquivo_cliente}")
-
-            wb = load_workbook(arquivo_cliente)
-            ws_dados = wb["Dados"]
-            ws_contratos = wb["Contratos_ADM"]
-
-            print("\nBuscando contratos ativos com taxa percentual...")
-
-            # Primeiro, encontrar todos os números de contratos ativos
-            contratos_ativos = set()
-            for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                if row[0] and row[3] == 'ATIVO':  # Número do contrato e Status
-                    print(f"\nContrato ativo encontrado: {row[0]}")
-                    contratos_ativos.add(row[0])
-
-            print(f"\nContratos ativos encontrados: {contratos_ativos}")
-
-            # Agora, para cada contrato ativo, procurar administradores com taxa percentual
-            taxa_adm_total = 0
-            for num_contrato in contratos_ativos:
-                for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                    if (row[6] == num_contrato and  # Número do contrato na coluna G
-                        row[9] == 'Percentual'):    # Tipo na coluna J
-                        try:
-                            taxa_str = str(row[10]).replace(',', '.').replace('%', '').strip()
-                            percentual = float(taxa_str)
-                            print(f"Contrato {num_contrato}: Percentual encontrado = {percentual}%")
-                            taxa_adm_total += percentual
-                        except (ValueError, TypeError) as e:
-                            print(f"Erro ao processar percentual do contrato {num_contrato}: {e}")
-                            continue
-
-            print(f"\nTaxa ADM total encontrada: {taxa_adm_total:.2f}%")
-
-            if taxa_adm_total == 0:
-                print("Nenhuma taxa percentual ativa encontrada")
-                wb.close()
-                return 0
-
-            taxa_decimal = taxa_adm_total / 100
-            print(f"Taxa em decimal: {taxa_decimal:.4f}")
-
-            # Converter data de referência
-            data_ref = datetime.strptime(data_ref, '%d/%m/%Y') if isinstance(data_ref, str) else data_ref
-            print(f"\nData de referência convertida: {data_ref.strftime('%d/%m/%Y')}")
-
-            # Calcular valor base
-            valor_base = 0
-            lancamentos_encontrados = 0
-
-            print("\nBuscando lançamentos do período...")
-            for row in ws_dados.iter_rows(min_row=2, values_only=True):
-                data_lancamento = row[0]
-                if isinstance(data_lancamento, datetime):
-                    if (data_lancamento.day == data_ref.day and 
-                        data_lancamento.month == data_ref.month and 
-                        data_lancamento.year == data_ref.year):
-
-                        tipo_desp = row[1]
-                        status = row[13]
-                        if (isinstance(tipo_desp, (int, float)) and 1 <= tipo_desp <= 6 and 
-                            status == "ATIVO"):
-                            valor = row[8]  # Coluna I com o valor
-                            if valor:
-                                valor_numeric = float(str(valor).replace(',', '.'))
-                                valor_base += valor_numeric
-                                lancamentos_encontrados += 1
-                                print(f"Lançamento encontrado - Tipo: {tipo_desp}, Valor: R$ {valor_numeric:.2f}, Status: {status}")
-
-            print(f"\nValor base total: R$ {valor_base:.2f}")
-            print(f"Total de lançamentos encontrados: {lancamentos_encontrados}")
-
-            valor_taxa = valor_base * taxa_decimal
-            print(f"\nValor final da taxa: R$ {valor_taxa:.2f}")
-            wb.close()
-            return valor_taxa
-
-        except Exception as e:
-            print(f"\nERRO: {str(e)}")
-            if 'wb' in locals():
-                wb.close()
-            raise Exception(f"Erro ao calcular taxa: {str(e)}")
-
-    def lancar_taxa_adm(self, cliente, data_ref, valor_total):
-        """Lança a taxa de administração para todos os administradores"""
-        try:
-            print(f"Lançando taxa ADM para {cliente}")
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            wb = load_workbook(arquivo_cliente)
-            ws_contratos = wb['Contratos_ADM']
-            ws_dados = wb["Dados"]
-
-            # Buscar todos os administradores com taxa percentual
-            administradores = {}  # Usar dicionário para evitar duplicatas
-            contratos_ativos = set()
-            # Primeiro identificar contratos ativos
-            for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                if row[0] and row[3] == 'ATIVO':  # Número do contrato e Status
-                    contratos_ativos.add(row[0])
-                    print(f"Contrato ativo encontrado: {row[0]}")
-
-            taxa_total = 0
-            # Para cada contrato ativo, buscar administradores únicos com taxa percentual
-            for num_contrato in contratos_ativos:
-                for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                    if (row[6] == num_contrato and  # Número do contrato na coluna G
-                        row[9] == 'Percentual'):    # Tipo na coluna J
-
-                        cnpj_cpf = row[7]  # CNPJ/CPF na coluna H
-
-                        # Se este administrador já foi processado, pular
-                        if cnpj_cpf in administradores:
-                            continue
-
-                        taxa_str = str(row[10]).replace(',', '.').replace('%', '').strip()
-                        percentual = float(taxa_str)
-                        taxa_total += percentual
-
-                        administradores[cnpj_cpf] = {
-                            'cnpj_cpf': cnpj_cpf,
-                            'nome': row[8],      # Nome na coluna I
-                            'percentual': percentual
-                        }
-                        print(f"Administrador encontrado: {row[8]} - {percentual}%")
-
-            if not administradores:
-                raise Exception("Nenhum administrador com taxa percentual encontrado")
-
-            print(f"\nTotal de administradores: {len(administradores)}")
-            print(f"Taxa total: {taxa_total}%")
-
-            # Determinar data de vencimento conforme as regras
-            data = datetime.strptime(data_ref, '%d/%m/%Y') if isinstance(data_ref, str) else data_ref
-
-            # Se dia 05, vencimento no próximo dia útil
-            if data.day == 5:
-                dt_vencto = data  # Mesmo dia 05
-
-                # Se cair em fim de semana, ajustar para próximo dia útil
-                while dt_vencto.weekday() >= 5:  # 5 = Sábado, 6 = Domingo
-                    dt_vencto += relativedelta(days=1)
-
-            # Se dia 20, vencimento no dia 20 mesmo
-            else:  # data.day == 20
-                dt_vencto = data  # Mantém dia 20 independente do dia da semana
-
-            print(f"Data de vencimento calculada: {dt_vencto.strftime('%d/%m/%Y')}")
-
-            # Determinar quinzena para referência
-            quinzena = "1ª" if data.day == 5 else "2ª"
-
-            # Lançar para cada administrador
-            for cnpj_cpf, adm in administradores.items():
-                # Verificar se já existe lançamento
-                data_str = data.strftime('%d/%m/%Y')
-                lancamentos_existentes = []
-                for row in ws_dados.iter_rows(min_row=2, values_only=True):
-                    if (row[0] and isinstance(row[0], datetime) and
-                        row[0].strftime('%d/%m/%Y') == data_str and
-                        row[1] == 7 and  # Tipo 7 = Taxa ADM percentual
-                        row[2] == cnpj_cpf):  # CNPJ/CPF do administrador
-                        lancamentos_existentes.append(row[2])
-
-                # Pular se já existe lançamento para este administrador
-                if cnpj_cpf in lancamentos_existentes:
-                    print(f"Já existe lançamento para {adm['nome']} nesta data")
-                    continue
-
-                # Calcular valor proporcional
-                valor_adm = (valor_total * adm['percentual']) / taxa_total
-                print(f"\nLançando para {adm['nome']}")
-                print(f"Percentual: {adm['percentual']}%")
-                print(f"Valor: R$ {valor_adm:.2f}")
-
-                proxima_linha = ws_dados.max_row + 1
-
-                # Data
-                ws_dados.cell(row=proxima_linha, column=1, value=data)
-                ws_dados.cell(row=proxima_linha, column=1).number_format = 'DD/MM/YYYY'
-
-                # Tipo 7 para taxa ADM percentual
-                ws_dados.cell(row=proxima_linha, column=2, value=7)
-
-                # CNPJ/CPF e Nome
-                ws_dados.cell(row=proxima_linha, column=3, value=adm['cnpj_cpf'])
-                ws_dados.cell(row=proxima_linha, column=4, value=adm['nome'])
-
-                # Referência
-                referencia = f"ADM. OBRA REF. {quinzena} QUINZ. {data.strftime('%m/%Y')}"
-                ws_dados.cell(row=proxima_linha, column=5, value=referencia)
-                ws_dados.cell(row=proxima_linha, column=6, value='')  # NF
-
-                # Valor unitário e total
-                ws_dados.cell(row=proxima_linha, column=7, value=valor_adm)
-                ws_dados.cell(row=proxima_linha, column=7).number_format = '#,##0.00'
-                ws_dados.cell(row=proxima_linha, column=8, value=1)  # Dias
-                ws_dados.cell(row=proxima_linha, column=9, value=valor_adm)
-                ws_dados.cell(row=proxima_linha, column=9).number_format = '#,##0.00'
-
-                # Data de vencimento
-                ws_dados.cell(row=proxima_linha, column=10, value=dt_vencto)
-                ws_dados.cell(row=proxima_linha, column=10).number_format = 'DD/MM/YYYY'
-
-                # Campos adicionais
-                ws_dados.cell(row=proxima_linha, column=11, value='ADM')  # Categoria
-
-                # Buscar dados bancários do fornecedor
-                dados_bancarios = buscar_dados_bancarios_fornecedor(adm['cnpj_cpf'])
-                ws_dados.cell(row=proxima_linha, column=12, value=dados_bancarios)     # Dados bancários
-                
-                ws_dados.cell(row=proxima_linha, column=13, value='LANÇAMENTO AUTOMÁTICO')  # Observação
-
-            wb.save(arquivo_cliente)
-            print("\nLançamentos concluídos com sucesso!")
-
-        except Exception as e:
-            print(f"Erro durante o lançamento: {str(e)}")
-            if 'wb' in locals():
-                wb.close()
-            raise Exception(f"Erro ao lançar taxa: {str(e)}")
-
-    def obter_dados_fornecedor(self, cliente):
-        """Obtém CNPJ/CPF e nome do administrador do contrato"""
-        try:
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            wb = load_workbook(arquivo_cliente)
-            ws_contratos = wb['Contratos_ADM']
-            print("\nBuscando dados do administrador...")
-
-            # Primeiro encontrar contratos ativos
-            contratos_ativos = []
-            for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                if row[0] and row[3] == 'ATIVO':  # Número do contrato e Status
-                    contratos_ativos.append(row[0])
-                    print(f"Contrato ativo encontrado: {row[0]}")
-
-            # Para cada contrato ativo, buscar administrador com taxa percentual
-            for num_contrato in contratos_ativos:
-                for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                    if (row[6] == num_contrato and  # Número do contrato na coluna G
-                        row[9] == 'Percentual'):    # Tipo na coluna J
-                        cnpj_cpf = row[7]  # CNPJ/CPF na coluna H
-                        nome = row[8]      # Nome na coluna I
-                        print(f"Administrador encontrado:")
-                        print(f"CNPJ/CPF: {cnpj_cpf}")
-                        print(f"Nome: {nome}")
-                        wb.close()
-                        return cnpj_cpf, nome
-
-            wb.close()
-            raise Exception("Nenhum administrador com taxa percentual encontrado")
-
-        except Exception as e:
-            if 'wb' in locals():
-                wb.close()
-            print(f"Erro ao obter dados do fornecedor: {str(e)}")
-            raise Exception(f"Erro ao obter dados do fornecedor: {str(e)}")
-
-    def processar_clientes(self):
-        """Processa os clientes selecionados"""
+    def processar_clientes_selecionados(self):
+        """Processa os clientes selecionados com confirmação individual"""
         selecionados = self.tree_clientes.selection()
+        
         if not selecionados:
             messagebox.showwarning("Aviso", "Selecione pelo menos um cliente!")
             return
 
-        data_ref = self.data_ref_entry.get()
-        data_ref_dt = datetime.strptime(data_ref, '%d/%m/%Y')
+        data_ref = datetime.strptime(self.data_ref_entry.get(), '%d/%m/%Y')
         processados = []
-        ignorados = []
+        erros = []
 
         for item in selecionados:
             valores = self.tree_clientes.item(item)['values']
             cliente = valores[0]
-            tipo = valores[1]
-            status = valores[3]
-
-            if status == "JÁ LANÇADO":
-                ignorados.append(f"{cliente} - Já possui lançamento para o período")
-                continue
 
             try:
-                arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-                wb = load_workbook(arquivo_cliente)
-                ws_contratos = wb['Contratos_ADM']
+                # Recalcular para ter valores precisos
+                percentual = self._obter_percentual_cliente(cliente)
+                base_quinzena = self._calcular_base_quinzena(cliente, data_ref)
+                taxa_quinzena = base_quinzena * (percentual / 100)
+                divergencia = self._calcular_divergencia_historica_total(cliente)
+                valor_final = taxa_quinzena + divergencia
 
-                if tipo == "FIXO":
-                    # Processar pagamento fixo
-                    lancamentos = self.gestao_taxas.processar_lancamentos_fixos(cliente, data_ref_dt)
-                    if lancamentos:
-                        processados.append(f"{cliente} - Taxa Fixa processada")
-                    else:
-                        ignorados.append(f"{cliente} - Erro ao processar taxa fixa")
+                # Preparar mensagem de confirmação
+                mensagem = self._preparar_mensagem_confirmacao(
+                    cliente, data_ref, base_quinzena, percentual,
+                    taxa_quinzena, divergencia, valor_final
+                )
+
+                # Confirmar com usuário
+                if messagebox.askyesno("Confirmar Lançamento", mensagem):
+                    self._criar_lancamento_taxa(cliente, data_ref, valor_final, divergencia)
+                    processados.append(f"✅ {cliente} - R$ {valor_final:.2f}")
+                    print(f"✅ {cliente} processado com sucesso!")
                 else:
-                    # Processar pagamento percentual
-                    valor = self.calcular_taxa_adm(cliente, data_ref)
-                    if valor > 0:
-                        self.lancar_taxa_adm(cliente, data_ref, valor)
-                        processados.append(f"{cliente} - Taxa Percentual processada (R$ {valor:,.2f})")
-                    else:
-                        ignorados.append(f"{cliente} - Valor zero calculado")
-
-                wb.close()
+                    print(f"⏭️  {cliente} ignorado pelo usuário")
 
             except Exception as e:
-                ignorados.append(f"{cliente} - Erro: {str(e)}")
-                if 'wb' in locals():
-                    wb.close()
+                erro_msg = f"❌ {cliente} - {str(e)}"
+                erros.append(erro_msg)
+                print(erro_msg)
 
-        # Atualizar interface
+        # Mostrar resultado
+        self._mostrar_resultado_processamento(processados, erros)
+        
+        # Recarregar lista
         self.carregar_clientes()
-        self.mostrar_resultado_processamento(processados, ignorados)
 
+    # ============================================
+    # MÉTODOS DE CÁLCULO
+    # ============================================
 
-    def mostrar_resultado_processamento(self, processados, ignorados):
-        """Mostra janela com resultado do processamento"""
-        resultado = tk.Toplevel(self.root)
-        resultado.title("Resultado do Processamento")
-        resultado.geometry("600x400")
+    def _adicionar_coluna_tipo_taxa(self, ws_clientes, wb_clientes):
+        """Adiciona coluna 'Tipo Taxa' na planilha Clientes.xlsx e detecta automaticamente o tipo"""
+        try:
+            # Adicionar header na coluna F (após Data Final que está em E)
+            ws_clientes.cell(row=1, column=6, value='Tipo Taxa')
+            
+            print("📝 Analisando tipo de taxa de cada cliente...\n")
+            
+            # Para cada cliente, detectar o tipo
+            for row_idx in range(2, ws_clientes.max_row + 1):
+                nome_cliente = ws_clientes.cell(row=row_idx, column=1).value
+                
+                if not nome_cliente:
+                    continue
+                
+                # Verificar no arquivo do cliente
+                tipo_detectado = self._detectar_tipo_taxa_cliente(nome_cliente)
+                ws_clientes.cell(row=row_idx, column=6, value=tipo_detectado)
+                
+                print(f"  • {nome_cliente}: {tipo_detectado}")
+            
+            # Salvar
+            wb_clientes.save(ARQUIVO_CLIENTES)
+            print(f"\n✅ Coluna 'Tipo Taxa' adicionada com sucesso!\n")
+            
+        except Exception as e:
+            print(f"❌ Erro ao adicionar coluna: {e}")
 
-        # Frame para processados
-        frame_proc = ttk.LabelFrame(resultado, text="Clientes Processados")
-        frame_proc.pack(fill='both', expand=True, padx=5, pady=5)
+    def _detectar_tipo_taxa_cliente(self, cliente):
+        """Detecta automaticamente se cliente tem taxa Fixa ou Percentual"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            
+            if not os.path.exists(arquivo_cliente):
+                return "N/A"
+            
+            wb = load_workbook(arquivo_cliente, data_only=True)
+            
+            if 'Contratos_ADM' not in wb.sheetnames:
+                wb.close()
+                return "N/A"
+            
+            ws = wb['Contratos_ADM']
+            
+            # Buscar contratos ATIVOS
+            contratos_ativos = []
+            for row_idx, row in enumerate(ws.iter_rows(min_row=3, values_only=True), start=3):
+                if not row or len(row) < 4:
+                    continue
+                
+                status = row[3]
+                num_contrato = row[0]
+                
+                if status == 'ATIVO' and num_contrato:
+                    contratos_ativos.append(row_idx)
+            
+            if not contratos_ativos:
+                wb.close()
+                return "Sem Taxa"
+            
+            # Para cada contrato ativo, verificar tipo nas linhas seguintes
+            tem_fixo = False
+            tem_percentual = False
+            
+            for linha_contrato in contratos_ativos:
+                for offset in range(1, 11):
+                    linha_atual = linha_contrato + offset
+                    
+                    if linha_atual > ws.max_row:
+                        break
+                    
+                    row = list(ws.iter_rows(min_row=linha_atual, max_row=linha_atual, values_only=True))[0]
+                    
+                    if not row or len(row) < 11:
+                        continue
+                    
+                    tipo = row[9]  # Coluna J
+                    
+                    if tipo == 'Fixo':
+                        tem_fixo = True
+                        break
+                    elif tipo == 'Percentual':
+                        tem_percentual = True
+                        break
+                    
+                    # Se encontrou outro contrato, parar
+                    status_linha = row[3] if len(row) > 3 else None
+                    if status_linha in ['ATIVO', 'INATIVO']:
+                        break
+            
+            wb.close()
+            
+            # Priorizar Percentual
+            if tem_percentual:
+                return "Percentual"
+            elif tem_fixo:
+                return "Fixo"
+            else:
+                return "Sem Taxa"
+                
+        except Exception as e:
+            print(f"    ⚠️  Erro ao detectar tipo: {e}")
+            return "Erro"
 
-        texto_proc = tk.Text(frame_proc, height=5)
-        texto_proc.pack(fill='both', expand=True)
+    def _diagnosticar_estrutura_contratos(self, cliente):
+        """Método de diagnóstico para entender a estrutura da aba Contratos_ADM"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            wb = load_workbook(arquivo_cliente, data_only=True)
+            
+            if 'Contratos_ADM' not in wb.sheetnames:
+                print(f"  ⚠️  Aba 'Contratos_ADM' não existe!")
+                wb.close()
+                return
+            
+            ws = wb['Contratos_ADM']
+            
+            # Mostrar cabeçalhos (linha 1 ou 2)
+            print(f"  📊 Estrutura da aba Contratos_ADM:")
+            headers_row1 = [cell.value for cell in ws[1]]
+            headers_row2 = [cell.value for cell in ws[2]] if ws.max_row > 1 else []
+            
+            print(f"     Linha 1: {headers_row1[:15]}")  # Primeiras 15 colunas
+            if headers_row2:
+                print(f"     Linha 2: {headers_row2[:15]}")
+            
+            # Mostrar primeira linha de dados (linha 3)
+            if ws.max_row >= 3:
+                primeira_linha = [cell.value for cell in ws[3]]
+                print(f"     Dados linha 3: {primeira_linha[:15]}")
+            
+            # Tentar identificar a coluna "Tipo"
+            for idx, header in enumerate(headers_row1):
+                if header and 'tipo' in str(header).lower():
+                    print(f"  ✅ Coluna 'Tipo' encontrada no índice {idx} (coluna {chr(65+idx)})")
+            
+            for idx, header in enumerate(headers_row2):
+                if header and 'tipo' in str(header).lower():
+                    print(f"  ✅ Coluna 'Tipo' encontrada na linha 2, índice {idx} (coluna {chr(65+idx)})")
+            
+            wb.close()
+            
+        except Exception as e:
+            print(f"  ❌ Erro no diagnóstico: {e}")
+            if 'wb' in locals():
+                wb.close()
 
-        for cliente in processados:
-            texto_proc.insert(tk.END, f"{cliente}\n")
-        texto_proc.config(state='disabled')
+    def _existe_taxa_na_quinzena(self, cliente, data_quinzena):
+        """Verifica se já existe taxa na quinzena"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            
+            # Verificar se coluna DATA_REL existe
+            if 'DATA_REL' not in df.columns:
+                # Tentar primeira coluna
+                df.columns.values[0] = 'DATA_REL'
+            
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            # Verificar se coluna STATUS existe, senão usar filtro alternativo
+            if 'STATUS' in df.columns:
+                taxas = df[
+                    (df['DATA_REL'].dt.date == data_quinzena.date()) & 
+                    (df['TP_DESP'] == 7) & 
+                    (df['STATUS'] == 'ATIVO')
+                ]
+            else:
+                # Sem coluna STATUS, apenas verificar data e tipo
+                taxas = df[
+                    (df['DATA_REL'].dt.date == data_quinzena.date()) & 
+                    (df['TP_DESP'] == 7)
+                ]
+            
+            return not taxas.empty
+            
+        except Exception as e:
+            print(f"  ⚠️  Erro ao verificar taxa existente: {e}")
+            return False
 
-        # Frame para ignorados
-        frame_ign = ttk.LabelFrame(resultado, text="Clientes Ignorados")
-        frame_ign.pack(fill='both', expand=True, padx=5, pady=5)
+    def _obter_percentual_cliente(self, cliente):
+        """Obtém percentual de taxa do cliente"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            wb = load_workbook(arquivo_cliente, data_only=True)
+            
+            if 'Contratos_ADM' not in wb.sheetnames:
+                wb.close()
+                return 0
+            
+            ws = wb['Contratos_ADM']
+            
+            # NOVA LÓGICA: Buscar contratos ATIVOS e depois verificar linha seguinte
+            contratos_ativos = []
+            
+            # Primeiro pass: identificar linhas com contratos ATIVOS
+            for row_idx, row in enumerate(ws.iter_rows(min_row=3, values_only=True), start=3):
+                if not row or len(row) < 4:
+                    continue
+                
+                # Coluna D (índice 3) = Status
+                # Coluna A (índice 0) = Número do Contrato
+                status = row[3] if len(row) > 3 else None
+                num_contrato = row[0] if len(row) > 0 else None
+                
+                if status == 'ATIVO' and num_contrato:
+                    contratos_ativos.append(row_idx)
+                    print(f"    ✓ Contrato ATIVO encontrado na linha {row_idx}: {num_contrato}")
+            
+            if not contratos_ativos:
+                print(f"  ℹ️  Nenhum contrato ATIVO encontrado")
+                wb.close()
+                return 0
+            
+            # Segundo pass: para cada contrato ativo, verificar linhas seguintes
+            percentual_total = 0
+            
+            for linha_contrato in contratos_ativos:
+                # Verificar as próximas 10 linhas após o contrato
+                for offset in range(1, 11):
+                    linha_atual = linha_contrato + offset
+                    
+                    if linha_atual > ws.max_row:
+                        break
+                    
+                    row = list(ws.iter_rows(min_row=linha_atual, max_row=linha_atual, values_only=True))[0]
+                    
+                    if not row or len(row) < 11:
+                        continue
+                    
+                    # Coluna J (índice 9) = Tipo
+                    # Coluna K (índice 10) = Valor/Percentual
+                    tipo = row[9] if len(row) > 9 else None
+                    valor_taxa = row[10] if len(row) > 10 else None
+                    
+                    # Se encontrou um Tipo=Percentual com valor
+                    if tipo == 'Percentual' and valor_taxa:
+                        try:
+                            percentual_str = str(valor_taxa).replace('%', '').replace(',', '.').strip()
+                            percentual = float(percentual_str)
+                            print(f"    ✅ Percentual encontrado na linha {linha_atual}: {percentual}%")
+                            percentual_total += percentual
+                            break  # Encontrou para este contrato, próximo contrato
+                        except (ValueError, TypeError) as e:
+                            print(f"    ⚠️ Erro ao converter '{valor_taxa}': {e}")
+                            continue
+                    
+                    # Se encontrou outro contrato (linha com Status), parar busca
+                    status_linha = row[3] if len(row) > 3 else None
+                    if status_linha in ['ATIVO', 'INATIVO']:
+                        break
+            
+            wb.close()
+            
+            if percentual_total > 0:
+                print(f"  ✅ Percentual TOTAL do cliente: {percentual_total}%")
+                return percentual_total
+            else:
+                print(f"  ℹ️  Nenhum percentual encontrado para contratos ativos")
+                return 0
+            
+        except Exception as e:
+            print(f"  ❌ Erro ao obter percentual: {e}")
+            if 'wb' in locals():
+                wb.close()
+            return 0
 
-        texto_ign = tk.Text(frame_ign, height=5)
-        texto_ign.pack(fill='both', expand=True)
+    def _calcular_base_quinzena(self, cliente, data_quinzena):
+        """Calcula base de cálculo da quinzena"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            
+            # Verificar se coluna DATA_REL existe
+            if 'DATA_REL' not in df.columns:
+                df.columns.values[0] = 'DATA_REL'
+            
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            # Filtrar pela data e tipo diferente de 7 (taxa)
+            if 'STATUS' in df.columns:
+                df_quinzena = df[
+                    (df['DATA_REL'].dt.date == data_quinzena.date()) & 
+                    (df['TP_DESP'] != 7) & 
+                    (df['STATUS'] == 'ATIVO')
+                ]
+            else:
+                # Sem coluna STATUS
+                df_quinzena = df[
+                    (df['DATA_REL'].dt.date == data_quinzena.date()) & 
+                    (df['TP_DESP'] != 7)
+                ]
+            
+            base = df_quinzena['VALOR'].apply(
+                lambda x: float(str(x).replace(',', '.')) if pd.notna(x) else 0
+            ).sum()
+            
+            return base
+            
+        except Exception as e:
+            print(f"  ❌ Erro ao calcular base: {e}")
+            return 0
 
-        for cliente in ignorados:
-            texto_ign.insert(tk.END, f"{cliente}\n")
-        texto_ign.config(state='disabled')
+    def _calcular_divergencia_historica_total(self, cliente):
+        """Calcula divergência acumulada de todas as quinzenas anteriores"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            
+            # Verificar se coluna DATA_REL existe
+            if 'DATA_REL' not in df.columns:
+                df.columns.values[0] = 'DATA_REL'
+            
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            datas_unicas = sorted(df['DATA_REL'].dt.date.dropna().unique())
+            
+            divergencia_total = 0
+            detalhes = []
+            percentual = self._obter_percentual_cliente(cliente)
+            
+            if percentual == 0:
+                return 0
+            
+            tem_status = 'STATUS' in df.columns
+            
+            for data in datas_unicas:
+                df_data = df[df['DATA_REL'].dt.date == data]
+                
+                # Base: tudo exceto taxa
+                if tem_status:
+                    base_data = df_data[
+                        (df_data['TP_DESP'] != 7) & 
+                        (df_data['STATUS'] == 'ATIVO')
+                    ]['VALOR'].apply(lambda x: float(str(x).replace(',', '.')) if pd.notna(x) else 0).sum()
+                    
+                    taxa_cobrada = df_data[
+                        (df_data['TP_DESP'] == 7) & 
+                        (df_data['STATUS'] == 'ATIVO')
+                    ]['VALOR'].apply(lambda x: float(str(x).replace(',', '.')) if pd.notna(x) else 0).sum()
+                else:
+                    base_data = df_data[
+                        df_data['TP_DESP'] != 7
+                    ]['VALOR'].apply(lambda x: float(str(x).replace(',', '.')) if pd.notna(x) else 0).sum()
+                    
+                    taxa_cobrada = df_data[
+                        df_data['TP_DESP'] == 7
+                    ]['VALOR'].apply(lambda x: float(str(x).replace(',', '.')) if pd.notna(x) else 0).sum()
+                
+                if taxa_cobrada > 0:
+                    taxa_devida = base_data * (percentual / 100)
+                    divergencia = taxa_devida - taxa_cobrada
+                    
+                    divergencia_total += divergencia
+                    
+                    if abs(divergencia) > 0.01:
+                        detalhes.append({
+                            'data': data.strftime('%d/%m/%Y'),
+                            'base': base_data,
+                            'taxa_devida': taxa_devida,
+                            'taxa_cobrada': taxa_cobrada,
+                            'divergencia': divergencia
+                        })
+            
+            # Salvar detalhes
+            if not hasattr(self, '_cache_divergencias'):
+                self._cache_divergencias = {}
+            self._cache_divergencias[cliente] = detalhes
+            
+            return divergencia_total
+            
+        except Exception as e:
+            print(f"  ❌ Erro ao calcular divergência: {e}")
+            return 0
 
-                # Botão fechar
-        ttk.Button(resultado, 
-                  text="Fechar", 
-                  command=resultado.destroy).pack(pady=10)
+    def _criar_lancamento_taxa(self, cliente, data_quinzena, valor_taxa, compensacao):
+        """Cria lançamento da taxa na planilha do cliente"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            wb = load_workbook(arquivo_cliente)
+            ws = wb["Dados"]
+            
+            # Obter próximo ID
+            max_id = 0
+            for row in range(2, ws.max_row + 1):
+                id_val = ws.cell(row=row, column=15).value
+                if id_val:
+                    try:
+                        max_id = max(max_id, int(float(id_val)))
+                    except:
+                        pass
+            
+            novo_id = max_id + 1
+            proxima_linha = ws.max_row + 1
+            
+            # Obter administrador
+            administrador = self._obter_administrador_principal(cliente)
+            
+            # Preparar dados
+            quinzena = "1ª" if data_quinzena.day == 5 else "2ª"
+            referencia = f"TAXA ADM - {quinzena} QUINZ. {data_quinzena.strftime('%m/%Y')}"
+            
+            # Observação com compensação
+            observacao = ""
+            if abs(compensacao) > 0.01:
+                if compensacao > 0:
+                    observacao = f"Inclui compensação de R$ {compensacao:.2f}"
+                else:
+                    observacao = f"Com desconto de R$ {abs(compensacao):.2f}"
+            
+            # Gravar lançamento
+            ws.cell(row=proxima_linha, column=1, value=data_quinzena)
+            ws.cell(row=proxima_linha, column=2, value=7)
+            ws.cell(row=proxima_linha, column=3, value=administrador['cnpj_cpf'])
+            ws.cell(row=proxima_linha, column=4, value=administrador['nome'])
+            ws.cell(row=proxima_linha, column=5, value=referencia)
+            ws.cell(row=proxima_linha, column=6, value='')
+            ws.cell(row=proxima_linha, column=7, value=valor_taxa)
+            ws.cell(row=proxima_linha, column=8, value=1)
+            ws.cell(row=proxima_linha, column=9, value=valor_taxa)
+            ws.cell(row=proxima_linha, column=10, value=data_quinzena)
+            ws.cell(row=proxima_linha, column=11, value='TAX')
+            ws.cell(row=proxima_linha, column=12, value=administrador.get('dados_bancarios', 'PIX'))
+            ws.cell(row=proxima_linha, column=13, value=observacao)
+            ws.cell(row=proxima_linha, column=14, value='ATIVO')
+            ws.cell(row=proxima_linha, column=15, value=novo_id)
+            ws.cell(row=proxima_linha, column=16, value=f"Criado em {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+            
+            # Formatar
+            ws.cell(row=proxima_linha, column=1).number_format = 'DD/MM/YYYY'
+            ws.cell(row=proxima_linha, column=7).number_format = '#,##0.00'
+            ws.cell(row=proxima_linha, column=9).number_format = '#,##0.00'
+            ws.cell(row=proxima_linha, column=10).number_format = 'DD/MM/YYYY'
+            
+            wb.save(arquivo_cliente)
+            wb.close()
+            
+        except Exception as e:
+            if 'wb' in locals():
+                wb.close()
+            raise Exception(f"Erro ao criar lançamento: {str(e)}")
+
+    def _obter_administrador_principal(self, cliente):
+        """Obtém dados do administrador principal seguindo estrutura de linhas separadas"""
+        try:
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            wb = load_workbook(arquivo_cliente, data_only=True)
+            
+            if 'Contratos_ADM' not in wb.sheetnames:
+                wb.close()
+                return self._administrador_padrao()
+            
+            ws = wb['Contratos_ADM']
+            
+            # Buscar contratos ATIVOS
+            contratos_ativos = []
+            for row_idx, row in enumerate(ws.iter_rows(min_row=3, values_only=True), start=3):
+                if not row or len(row) < 4:
+                    continue
+                
+                status = row[3]
+                num_contrato = row[0]
+                
+                if status == 'ATIVO' and num_contrato:
+                    contratos_ativos.append(row_idx)
+            
+            # Para cada contrato ativo, buscar dados do administrador
+            for linha_contrato in contratos_ativos:
+                for offset in range(1, 11):
+                    linha_atual = linha_contrato + offset
+                    
+                    if linha_atual > ws.max_row:
+                        break
+                    
+                    row = list(ws.iter_rows(min_row=linha_atual, max_row=linha_atual, values_only=True))[0]
+                    
+                    if not row or len(row) < 11:
+                        continue
+                    
+                    tipo = row[9]  # Coluna J
+                    
+                    if tipo == 'Percentual':
+                        # Colunas: H=CNPJ/CPF, I=Nome
+                        cnpj_cpf = row[7] if len(row) > 7 else None
+                        nome = row[8] if len(row) > 8 else None
+                        
+                        if cnpj_cpf and nome:
+                            administrador = {
+                                'cnpj_cpf': cnpj_cpf,
+                                'nome': nome,
+                                'dados_bancarios': buscar_dados_bancarios_fornecedor(cnpj_cpf) or 'PIX'
+                            }
+                            wb.close()
+                            return administrador
+                        break
+                    
+                    # Se encontrou outro contrato, parar
+                    status_linha = row[3] if len(row) > 3 else None
+                    if status_linha in ['ATIVO', 'INATIVO']:
+                        break
+            
+            wb.close()
+            return self._administrador_padrao()
+            
+        except Exception as e:
+            print(f"Erro ao obter administrador: {e}")
+            if 'wb' in locals():
+                wb.close()
+            return self._administrador_padrao()
+    
+    def _administrador_padrao(self):
+        """Retorna dados padrão de administrador"""
+        return {
+            'cnpj_cpf': '00000000000',
+            'nome': 'ADMINISTRADOR',
+            'dados_bancarios': 'PIX'
+        }
+
+    # ============================================
+    # MÉTODOS DE INTERFACE
+    # ============================================
+
+    def _preparar_mensagem_confirmacao(self, cliente, data_ref, base, percentual, 
+                                       taxa, divergencia, valor_final):
+        """Prepara mensagem de confirmação detalhada"""
+        mensagem = f"📊 FINALIZAÇÃO DE QUINZENA\n"
+        mensagem += f"{'='*40}\n\n"
+        mensagem += f"Cliente: {cliente}\n"
+        mensagem += f"Data: {data_ref.strftime('%d/%m/%Y')}\n\n"
+        
+        mensagem += f"📅 QUINZENA ATUAL:\n"
+        mensagem += f"   Base: R$ {base:,.2f}\n"
+        mensagem += f"   Taxa: {percentual}%\n"
+        mensagem += f"   Valor: R$ {taxa:,.2f}\n\n"
+        
+        if abs(divergencia) > 0.01:
+            mensagem += f"⚠️ COMPENSAÇÃO:\n"
+            mensagem += f"   {('Cobrar' if divergencia > 0 else 'Creditar')}: R$ {abs(divergencia):,.2f}\n\n"
+        
+        mensagem += f"💰 VALOR FINAL: R$ {valor_final:,.2f}\n\n"
+        mensagem += "Confirma o lançamento?"
+        
+        return mensagem
+
+    def ver_detalhes_divergencias(self):
+        """Mostra janela com detalhes das divergências"""
+        selecionados = self.tree_clientes.selection()
+        
+        if not selecionados:
+            messagebox.showinfo("Info", "Selecione um cliente para ver detalhes")
+            return
+        
+        cliente = self.tree_clientes.item(selecionados[0])['values'][0]
+        
+        if not hasattr(self, '_cache_divergencias') or cliente not in self._cache_divergencias:
+            messagebox.showinfo("Info", "Nenhuma divergência encontrada")
+            return
+        
+        detalhes = self._cache_divergencias[cliente]
+        
+        if not detalhes:
+            messagebox.showinfo("Info", f"{cliente}: Todas as taxas estão corretas!")
+            return
+        
+        # Janela de detalhes
+        janela = tk.Toplevel(self.root)
+        janela.title(f"Divergências Históricas - {cliente}")
+        janela.geometry("700x400")
+        
+        frame = ttk.Frame(janela, padding="10")
+        frame.pack(fill='both', expand=True)
+        
+        tree = ttk.Treeview(
+            frame,
+            columns=('Data', 'Base', 'Devida', 'Cobrada', 'Diferença'),
+            show='headings'
+        )
+        
+        tree.heading('Data', text='Data')
+        tree.heading('Base', text='Base')
+        tree.heading('Devida', text='Taxa Devida')
+        tree.heading('Cobrada', text='Taxa Cobrada')
+        tree.heading('Diferença', text='Diferença')
+        
+        for detalhe in detalhes:
+            tree.insert('', 'end', values=(
+                detalhe['data'],
+                self._formatar_moeda(detalhe['base']),
+                self._formatar_moeda(detalhe['taxa_devida']),
+                self._formatar_moeda(detalhe['taxa_cobrada']),
+                self._formatar_moeda_com_sinal(detalhe['divergencia'])
+            ))
+        
+        tree.pack(fill='both', expand=True)
+        
+        ttk.Button(frame, text="Fechar", command=janela.destroy).pack(pady=10)
+
+    def _mostrar_resultado_processamento(self, processados, erros):
+        """Mostra resultado do processamento"""
+        janela = tk.Toplevel(self.root)
+        janela.title("Resultado do Processamento")
+        janela.geometry("600x400")
+        
+        frame = ttk.Frame(janela, padding="10")
+        frame.pack(fill='both', expand=True)
+        
+        if processados:
+            frame_proc = ttk.LabelFrame(frame, text="Processados com Sucesso", padding="5")
+            frame_proc.pack(fill='both', expand=True, pady=5)
+            
+            texto_proc = tk.Text(frame_proc, height=10)
+            texto_proc.pack(fill='both', expand=True)
+            
+            for msg in processados:
+                texto_proc.insert(tk.END, f"{msg}\n")
+            texto_proc.config(state='disabled')
+        
+        if erros:
+            frame_erros = ttk.LabelFrame(frame, text="Erros", padding="5")
+            frame_erros.pack(fill='both', expand=True, pady=5)
+            
+            texto_erros = tk.Text(frame_erros, height=10)
+            texto_erros.pack(fill='both', expand=True)
+            
+            for msg in erros:
+                texto_erros.insert(tk.END, f"{msg}\n")
+            texto_erros.config(state='disabled')
+        
+        ttk.Button(frame, text="Fechar", command=janela.destroy).pack(pady=10)
+
+    def _formatar_moeda(self, valor):
+        """Formata valor em moeda brasileira"""
+        return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+    def _formatar_moeda_com_sinal(self, valor):
+        """Formata valor com sinal + ou -"""
+        sinal = "+" if valor >= 0 else ""
+        return f"{sinal}R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
     def voltar_menu(self):
-        """Fecha a janela e retorna ao menu principal"""
+        """Volta ao menu principal"""
         self.root.destroy()
-
         if self.parent:
-            self.parent.deiconify()  # Mostra a janela principal
-            self.parent.lift()  # Traz a janela principal para frente
+            self.parent.deiconify()
+            self.parent.lift()
+
+
+# ============================================
+# EXECUÇÃO
+# ============================================
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = FinalizacaoQuinzena(root)
-    root.mainloop()
+    app = FinalizacaoQuinzena()
+    app.run()
