@@ -132,5 +132,16 @@
             "Inclusão de Agenda com dados pré-definidos e lançamentos futuros"
         ],
         "timestamp": "2025-09-24T17:51:36.049210"
+    },
+    {
+        "version": "1.4.4",
+        "release_date": "17/10/2025",
+        "changes": [
+            "Correção do filtro de datas do Gerenciador de Lançamentos, que estava trazendo a data do dia se, outras funcionalidades fossem chamadas",
+            "Correção da compensação de Taxa de Administração caso fossem detectados valores errados em períodos anteiores",
+            "Inclusão de edição de Taxa de Administração do tipo Fixo",
+            "Melhoria no Visualizador de Lançamentos de Pendentes, que elimina registros duplicados ao salvar na planilha"
+        ],
+        "timestamp": "2025-10-17T13:57:26.002265"
     }
 ]
