@@ -331,8 +331,17 @@ class VisualizadorLancamentos:
         scrollx.pack(side='bottom', fill='x')
     
     def atualizar_dados(self, dados):
-        """Atualiza os dados na visualização"""
+        """
+        Atualiza os dados na visualização
+        VERSÃO MODIFICADA com suporte aos novos métodos
+        """
         self.dados_para_incluir = dados.copy() if dados else []
+        
+        # Armazenar também em dados_originais
+        if hasattr(self, 'dados_originais'):
+            self.dados_originais = dados.copy() if dados else []
+        else:
+            self.dados_originais = dados.copy() if dados else []
         
         # Limpar dados existentes
         for item in self.tree.get_children():
@@ -342,6 +351,8 @@ class VisualizadorLancamentos:
             # Atualizar resumo para zero quando não houver dados
             self.lbl_total_lancamentos.config(text="Total de Lançamentos: 0")
             self.lbl_valor_total.config(text="Valor Total: R$ 0,00")
+            if hasattr(self, 'janela'):
+                self.janela.title("Visualização de Lançamentos Pendentes - 0 registros")
             return
             
         # Inserir novos dados
@@ -364,11 +375,19 @@ class VisualizadorLancamentos:
                 lancamento['observacao']
             )
             self.tree.insert('', 'end', values=valores)
-            valor_total += float(lancamento['valor'])
+            
+            try:
+                valor_total += float(str(lancamento['valor']).replace(',', '.'))
+            except (ValueError, TypeError):
+                pass
         
         # Atualizar resumo
         self.lbl_total_lancamentos.config(text=f"Total de Lançamentos: {len(dados)}")
         self.lbl_valor_total.config(text=f"Valor Total: R$ {valor_total:,.2f}")
+        
+        # Atualizar título
+        if hasattr(self, 'janela'):
+            self.janela.title(f"Visualização de Lançamentos Pendentes - {len(dados)} registros")
 
     def editar_lancamento(self):
         """Abre a janela de edição para o lançamento selecionado"""
@@ -558,6 +577,192 @@ class VisualizadorLancamentos:
             custom_messagebox("error", "Erro", f"Erro ao carregar rascunho: {str(e)}")
             import traceback
             traceback.print_exc()
+
+    def popular_tree(self, dados_lancamentos):
+        """
+        Popula a TreeView com os dados fornecidos
+        MODIFICADO para armazenar referência aos dados originais
+        """
+        try:
+            # Armazenar dados originais para referência futura
+            self.dados_originais = dados_lancamentos.copy() if dados_lancamentos else []
+            
+            # Limpar tree existente
+            for item in self.tree.get_children():
+                self.tree.delete(item)
+            
+            if not dados_lancamentos:
+                self.atualizar_contador()
+                return
+            
+            # Popular tree
+            valor_total = 0
+            for lancamento in dados_lancamentos:
+                valores = (
+                    lancamento.get('data', ''),
+                    lancamento.get('tp_desp', ''),
+                    lancamento.get('cnpj_cpf', ''),
+                    lancamento.get('nome', ''),
+                    lancamento.get('referencia', ''),
+                    lancamento.get('nf', ''),
+                    lancamento.get('vr_unit', ''),
+                    lancamento.get('dias', '1'),
+                    lancamento.get('valor', ''),
+                    lancamento.get('dt_vencto', ''),
+                    lancamento.get('categoria', ''),
+                    lancamento.get('forma_pagamento', ''),
+                    lancamento.get('dados_bancarios', ''),
+                    lancamento.get('observacao', '')
+                )
+                
+                self.tree.insert('', 'end', values=valores)
+                
+                try:
+                    valor_total += float(str(lancamento.get('valor', 0)).replace(',', '.'))
+                except (ValueError, TypeError):
+                    pass
+            
+            # Atualizar contador e resumo
+            self.atualizar_contador()
+            
+        except Exception as e:
+            print(f"Erro ao popular tree: {str(e)}")
+            import traceback
+            traceback.print_exc()
+
+
+    def remover_itens_especificos(self, indices_para_remover):
+        """
+        Remove itens específicos da TreeView e dos dados
+        Usado para remover duplicatas após salvamento
+        
+        Args:
+            indices_para_remover: Lista de índices (int) dos itens a remover
+        
+        Returns:
+            int: Quantidade de itens removidos
+        """
+        try:
+            # Obter todos os items da tree
+            todos_items = self.tree.get_children()
+            
+            # Validar índices
+            indices_validos = [idx for idx in indices_para_remover 
+                            if 0 <= idx < len(todos_items)]
+            
+            if not indices_validos:
+                return 0
+            
+            # Remover da tree (de trás para frente para não afetar índices)
+            items_removidos = []
+            for idx in sorted(indices_validos, reverse=True):
+                if idx < len(todos_items):
+                    item_id = todos_items[idx]
+                    self.tree.delete(item_id)
+                    items_removidos.append(idx)
+            
+            # Remover dos dados_para_incluir (de trás para frente)
+            novos_dados = []
+            for idx, dados in enumerate(self.dados_para_incluir):
+                if idx not in indices_validos:
+                    novos_dados.append(dados)
+            
+            self.dados_para_incluir = novos_dados
+            
+            # Atualizar dados_originais também
+            if hasattr(self, 'dados_originais'):
+                novos_dados_originais = []
+                for idx, dados in enumerate(self.dados_originais):
+                    if idx not in indices_validos:
+                        novos_dados_originais.append(dados)
+                self.dados_originais = novos_dados_originais
+            
+            # Atualizar contador
+            self.atualizar_contador()
+            
+            return len(items_removidos)
+            
+        except Exception as e:
+            print(f"Erro ao remover itens específicos: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return 0
+
+
+    def atualizar_contador(self):
+        """
+        Atualiza o contador de registros e valor total no visualizador
+        """
+        try:
+            qtd_registros = len(self.tree.get_children())
+            
+            # Calcular valor total
+            valor_total = 0
+            for item in self.tree.get_children():
+                try:
+                    valores = self.tree.item(item)['values']
+                    # Valor está na posição 8
+                    valor_str = str(valores[8]).replace(',', '.')
+                    valor_total += float(valor_str)
+                except (ValueError, TypeError, IndexError):
+                    continue
+            
+            # Atualizar labels
+            if hasattr(self, 'lbl_total_lancamentos'):
+                self.lbl_total_lancamentos.config(
+                    text=f"Total de Lançamentos: {qtd_registros}"
+                )
+            
+            if hasattr(self, 'lbl_valor_total'):
+                self.lbl_valor_total.config(
+                    text=f"Valor Total: R$ {valor_total:,.2f}"
+                )
+            
+            # Atualizar título da janela também
+            if hasattr(self, 'janela') and self.janela:
+                self.janela.title(f"Visualização de Lançamentos Pendentes - {qtd_registros} registros")
+            
+        except Exception as e:
+            print(f"Erro ao atualizar contador: {str(e)}")
+
+
+    def limpar_visualizacao(self):
+        """
+        Limpa completamente a visualização
+        Remove todos os dados da TreeView e das listas
+        """
+        try:
+            # Limpar TreeView
+            for item in self.tree.get_children():
+                self.tree.delete(item)
+            
+            # Limpar dados
+            self.dados_para_incluir.clear()
+            
+            if hasattr(self, 'dados_originais'):
+                self.dados_originais.clear()
+            
+            # Atualizar contador
+            self.atualizar_contador()
+            
+        except Exception as e:
+            print(f"Erro ao limpar visualização: {str(e)}")
+
+
+    def fechar_se_vazio(self):
+        """
+        Fecha o visualizador se não houver mais dados
+        Retorna True se fechou, False se manteve aberto
+        """
+        try:
+            if len(self.dados_para_incluir) == 0:
+                if hasattr(self, 'janela') and self.janela:
+                    self.janela.destroy()
+                return True
+            return False
+        except Exception as e:
+            print(f"Erro ao verificar fechamento: {str(e)}")
+            return False
 
 class EditorLancamento:
     def __init__(self, parent, dados, indice, callback_atualizacao):
