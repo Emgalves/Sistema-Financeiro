@@ -10,12 +10,13 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 4,
-    "patch": 3,
-    "release_date": "24/09/2025",
+    "patch": 4,
+    "release_date": "17/10/2025",
     "changes": [
-        "Inclusão da opção Dinheiro em Dados Bancários na entrada de dados",
-        "Melhorias no parcelamento, permitindo a entrada de parcelas com diferentes valores",
-        "Inclusão de Agenda com dados pré-definidos e lançamentos futuros"
+        "Correção do filtro de datas do Gerenciador de Lançamentos, que estava trazendo a data do dia se, outras funcionalidades fossem chamadas",
+        "Correção da compensação de Taxa de Administração caso fossem detectados valores errados em períodos anteiores",
+        "Inclusão de edição de Taxa de Administração do tipo Fixo",
+        "Melhoria no Visualizador de Lançamentos de Pendentes, que elimina registros duplicados ao salvar na planilha"
     ]
 }
 
