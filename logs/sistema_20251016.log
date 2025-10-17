@@ -1,0 +1,129 @@
+2025-10-16 11:00:48,081 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 11:00:49,704 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:00:49,728 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:00:49,774 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:00:49,808 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:02:54,554 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:02:54,554 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:02:54,554 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:02:54,554 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:02:54,554 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:02:54,554 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:02:54,554 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:02:54,554 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:04:45,115 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:04:45,115 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:04:45,115 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:04:45,115 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:04:45,115 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:04:45,115 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:04:45,115 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:04:45,115 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:07:37,441 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-10-16 11:07:37,442 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-10-16 11:07:37,549 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-16 11:07:37,549 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-16 11:07:37,549 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-16 11:07:37,549 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-16 11:07:37,952 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-16 11:07:37,974 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-10-16 11:07:37,974 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-10-16 11:07:37,980 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-10-16 11:07:37,982 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-10-16 11:07:37,982 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-10-16 11:07:38,005 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-16 11:07:38,030 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final']
+2025-10-16 11:07:38,035 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-10-16 11:07:38,037 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-10-16 11:07:38,037 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-10-16 11:07:38,041 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 16 itens
+2025-10-16 11:07:42,540 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-10-16 11:07:42,540 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-10-16 11:09:02,186 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-10-16 11:09:02,186 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-10-16 11:09:02,234 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-10-16 11:09:03,813 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:09:03,813 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 11:09:03,813 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 11:09:03,828 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 12:16:08,815 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 12:16:10,783 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 12:16:10,783 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 12:16:10,783 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 12:16:10,783 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 12:22:18,869 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 12:26:24,471 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 12:26:26,026 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 12:26:26,026 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 12:26:26,026 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 12:26:26,026 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 12:39:50,113 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 12:39:52,168 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 12:39:52,168 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 12:39:52,184 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 12:39:52,184 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 12:47:36,107 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 12:47:37,812 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 12:47:37,812 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 12:47:37,812 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 12:47:37,812 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 12:49:21,082 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 12:49:21,082 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 14:49:35,954 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 14:49:37,713 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 14:49:37,713 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 14:49:37,713 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 14:49:37,713 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 15:47:37,818 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 15:47:39,640 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 15:47:39,656 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 15:47:39,656 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 15:47:39,656 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 17:03:52,111 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 17:04:55,181 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 17:05:27,503 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 17:05:29,022 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 17:05:29,037 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 17:05:29,037 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 17:05:29,037 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 17:31:04,395 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 17:31:06,269 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 17:31:06,269 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 17:31:06,269 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 17:31:06,269 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 17:46:47,307 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 17:46:49,176 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 17:46:49,176 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 17:46:49,191 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 17:46:49,191 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 17:51:30,754 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 17:51:32,440 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 17:51:32,440 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 17:51:32,440 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 17:51:32,440 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:05:49,425 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 18:05:51,030 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:05:51,030 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:05:51,030 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:05:51,030 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:10:30,982 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:10:30,982 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:10:30,982 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:10:30,982 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:10:30,982 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:10:30,982 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:10:30,982 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:10:30,982 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:13:23,734 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-16 18:13:25,309 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:13:25,324 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:13:25,324 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:13:25,324 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:14:00,267 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:14:00,267 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:14:00,267 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:14:00,267 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:14:00,267 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:14:00,267 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-16 18:14:00,267 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-16 18:14:00,267 - sistema - logger_config - INFO - Concluído: Carregar configurações
