@@ -1438,3 +1438,111 @@
 2025-10-17 14:26:07,793 - sistema - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
 2025-10-17 14:26:07,806 - sistema - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
 2025-10-17 14:26:07,824 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-10-17 17:24:02,714 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-17 17:24:06,045 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:24:06,117 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:24:06,117 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:24:06,117 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:24:06,136 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-17 17:24:09,518 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ELLIAS MAGALHAES E ABREU LIMA
+2025-10-17 17:24:39,430 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:24:39,445 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:24:39,445 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:24:39,445 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:24:39,445 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:24:39,445 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:24:39,445 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:24:39,452 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:32:42,465 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-17 17:32:43,991 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:32:44,014 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:32:44,028 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:32:44,029 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:32:44,042 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-17 17:32:49,274 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ELLIAS MAGALHAES E ABREU LIMA
+2025-10-17 17:33:00,301 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:33:00,301 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:33:00,301 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:33:00,301 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:33:00,301 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:33:00,301 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:33:00,301 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:33:00,301 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:43:30,378 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-17 17:43:32,056 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:43:32,112 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:43:32,114 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-17 17:43:32,114 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-17 17:43:32,129 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-17 17:43:35,949 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ELLIAS MAGALHAES E ABREU LIMA
+2025-10-17 17:44:43,739 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: ELLIAS MAGALHAES E ABREU LIMA, Registros: 4
+2025-10-17 17:44:43,739 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-10-17 17:44:43,739 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 4
+2025-10-17 17:44:43,739 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/10/2025']
+2025-10-17 17:44:43,739 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2025-10-17 17:44:43,739 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-17 17:44:44,142 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-17 17:44:44,142 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-17 17:44:44,142 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: CRISTOFER BARBOSA ROSA | SALÁRIO | R$ 979.60 | 20/10/2025
+2025-10-17 17:44:44,142 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: CRISTOFER BARBOSA ROSA - SALÁRIO
+2025-10-17 17:44:44,158 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-17 17:44:44,159 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-17 17:44:44,160 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: HELIANO FRANCISCO ALVES | SALÁRIO | R$ 1156.00 | 20/10/2025
+2025-10-17 17:44:44,163 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: HELIANO FRANCISCO ALVES - SALÁRIO
+2025-10-17 17:44:44,163 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-17 17:44:44,163 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-17 17:44:44,163 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: EDMAR RIBEIRO | SALÁRIO | R$ 740.00 | 20/10/2025
+2025-10-17 17:44:44,182 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: EDMAR RIBEIRO - SALÁRIO
+2025-10-17 17:44:44,184 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-17 17:44:44,185 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-17 17:44:44,185 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: GERALDO ROSA JUNIOR | SALÁRIO | R$ 2118.26 | 20/10/2025
+2025-10-17 17:44:44,196 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: GERALDO ROSA JUNIOR - SALÁRIO
+2025-10-17 17:44:44,197 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 126 na linha 127
+2025-10-17 17:44:44,197 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 127 na linha 128
+2025-10-17 17:44:44,200 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 128 na linha 129
+2025-10-17 17:44:44,201 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 129 na linha 130
+2025-10-17 17:44:44,416 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-17 17:44:44,921 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-10-20
+2025-10-17 17:44:44,921 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-10-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-10-17 17:44:47,274 - sistema - Sistema_Entrada_Dados - INFO - Limpando 4 registros salvos da visualização
+2025-10-17 17:44:47,302 - sistema - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-10-17 17:44:47,306 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-10-17 17:44:59,328 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-17 17:44:59,329 - sistema_principal - logger_config - INFO - Usuário alterado para: sistema_principal
+2025-10-17 17:44:59,329 - sistema_principal - sistema_principal - INFO - Abrindo sistema de relatórios
+2025-10-17 17:44:59,571 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-17 17:44:59,571 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-17 17:44:59,571 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-17 17:44:59,571 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-17 17:45:01,729 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-17 17:45:01,792 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Unnamed: 5']
+2025-10-17 17:45:01,792 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-10-17 17:45:01,792 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-10-17 17:45:01,792 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 17
+2025-10-17 17:45:01,792 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 18 clientes
+2025-10-17 17:45:01,834 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-17 17:45:01,868 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Unnamed: 5']
+2025-10-17 17:45:01,869 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-10-17 17:45:01,870 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-10-17 17:45:01,870 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 17
+2025-10-17 17:45:01,873 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes carregada com 18 itens
+2025-10-17 17:45:06,664 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/10/2025
+2025-10-17 17:45:06,664 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/10/2025
+2025-10-17 17:45:12,182 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ELLIAS MAGALHAES E ABREU LIMA
+2025-10-17 17:45:12,198 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2025-10-17 17:45:12,198 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2025-10-17 17:45:16,260 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-17 17:45:16,276 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-17 17:45:16,276 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-17 17:45:16,276 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-10-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-17 17:45:16,276 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2025-10-17 17:45:16,276 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2025-10-17 17:45:16,276 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-10-17 17:45:16,283 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2025-10-17 17:45:18,052 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-10-17 17:45:18,052 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-17 17:45:19,004 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-10-17 17:56:46,401 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_ELLIAS_MAGALHAES_E_ABREU_LIMA_20251017_174518.pdf
+2025-10-17 17:56:47,846 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-10-17 17:56:47,846 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-10-17 17:56:47,961 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído

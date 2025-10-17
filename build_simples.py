@@ -51,7 +51,7 @@ def main():
         "--hidden-import=reportlab",
         "--hidden-import=matplotlib",
         "--hidden-import=xlwings",
-        "--hidden-import=src.Sistema_Entrada_Dados",
+        "--hidden-import=Sistema_Entrada_Dados",
         "--hidden-import=src.relatorios_interface",
         "--hidden-import=src.relatorio_despesas_aprimorado",
         "--hidden-import=src.relatorio_despesas_service",
