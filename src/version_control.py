@@ -16,7 +16,8 @@ VERSION_INFO = {
         "Correção do filtro de datas do Gerenciador de Lançamentos, que estava trazendo a data do dia se, outras funcionalidades fossem chamadas",
         "Correção da compensação de Taxa de Administração caso fossem detectados valores errados em períodos anteiores",
         "Inclusão de edição de Taxa de Administração do tipo Fixo",
-        "Melhoria no Visualizador de Lançamentos de Pendentes, que elimina registros duplicados ao salvar na planilha"
+        "Melhoria no Visualizador de Lançamentos de Pendentes, que elimina registros duplicados ao salvar na planilha",
+        "Correção na importação de dados de RH após mudança de versão do Excel na origem do arquivo"
     ]
 }
 
