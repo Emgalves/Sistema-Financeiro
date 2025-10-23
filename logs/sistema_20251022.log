@@ -1,0 +1,304 @@
+2025-10-22 08:43:49,985 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 08:43:51,864 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 08:43:51,897 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 08:43:51,900 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 08:43:51,900 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 08:43:51,913 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 08:43:55,740 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 08:44:19,183 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 08:44:19,183 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 08:44:32,682 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-22 08:44:34,604 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-10-22 08:44:34,604 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-10-22 08:44:34,604 - sistema - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-10-22 08:44:34,604 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-10-22 08:44:34,604 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2025-10-22 08:44:34,604 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-22 08:44:34,614 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-22 08:44:35,149 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-22 08:44:35,149 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-22 08:44:35,149 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: FOLHA DP | FOLHA DP [REL 05/11] | R$ 910.80 | 05/11/2025
+2025-10-22 08:44:35,172 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: FOLHA DP - FOLHA DP [REL 05/11]
+2025-10-22 08:44:35,178 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 276 na linha 276
+2025-10-22 08:44:35,469 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-22 08:44:35,973 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-10-22 08:44:35,973 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-10-22 08:44:37,786 - sistema - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
+2025-10-22 08:44:37,786 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-10-22 08:44:40,008 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 08:44:40,008 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 08:44:56,517 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-22 08:44:58,128 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-10-22 08:44:58,138 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-10-22 08:44:58,138 - sistema - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-10-22 08:44:58,138 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-10-22 08:44:58,138 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2025-10-22 08:44:58,138 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-22 08:44:58,138 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-22 08:44:58,660 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-22 08:44:58,661 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-22 08:44:58,662 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: MOTOBOY | MOTOBOY [REL 05/11] | R$ 146.00 | 05/11/2025
+2025-10-22 08:44:58,682 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MOTOBOY - MOTOBOY [REL 05/11]
+2025-10-22 08:44:58,690 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 277 na linha 277
+2025-10-22 08:44:58,998 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-22 08:44:59,502 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-10-22 08:44:59,502 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-10-22 08:45:01,355 - sistema - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
+2025-10-22 08:45:01,355 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-10-22 08:45:02,529 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 08:45:02,531 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 08:45:20,884 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-22 08:45:22,246 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-10-22 08:45:22,246 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-10-22 08:45:22,253 - sistema - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-10-22 08:45:22,255 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-10-22 08:45:22,259 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2025-10-22 08:45:22,260 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-22 08:45:22,263 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-22 08:45:22,684 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-22 08:45:22,684 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-22 08:45:22,684 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: MHS MENSALIDADE | MHS MENSALIDADE [REL 05/11] | R$ 75.00 | 05/11/2025
+2025-10-22 08:45:22,704 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MHS MENSALIDADE - MHS MENSALIDADE [REL 05/11]
+2025-10-22 08:45:22,706 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 278 na linha 278
+2025-10-22 08:45:23,009 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-22 08:45:23,513 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-10-22 08:45:23,513 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-10-22 08:45:23,915 - sistema - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
+2025-10-22 08:45:23,915 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-10-22 08:45:24,912 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 08:45:24,914 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 08:46:32,554 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 08:46:32,554 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 08:46:54,228 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-22 08:46:55,966 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-10-22 08:47:09,707 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 08:47:09,707 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 08:47:27,488 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-22 08:47:29,955 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-10-22 08:47:36,020 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-10-22 08:47:36,020 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-10-22 08:47:36,020 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-10-22 08:47:36,020 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2025-10-22 08:47:36,020 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-22 08:47:36,020 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-22 08:47:36,557 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-22 08:47:36,558 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-22 08:47:36,559 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: JB CIMENTO | CIMENTO | R$ 2240.00 | 07/11/2025
+2025-10-22 08:47:36,572 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: JB CIMENTO - CIMENTO
+2025-10-22 08:47:36,581 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-22 08:47:36,581 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-22 08:47:36,581 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: ANCORA PAPELARIA | PLOTAGENS | R$ 180.00 | 06/11/2025
+2025-10-22 08:47:36,597 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ANCORA PAPELARIA - PLOTAGENS
+2025-10-22 08:47:36,607 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 280 na linha 280
+2025-10-22 08:47:36,609 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 281 na linha 281
+2025-10-22 08:47:36,904 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-22 08:47:37,413 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-10-22 08:47:37,413 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-10-22 08:47:40,399 - sistema - Sistema_Entrada_Dados - INFO - Limpando 2 registros salvos da visualização
+2025-10-22 08:47:40,399 - sistema - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-10-22 08:47:40,399 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-10-22 09:03:56,266 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 09:03:57,763 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 09:03:57,763 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 09:03:57,771 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 09:03:57,773 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 09:03:57,790 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 09:04:00,440 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 09:04:43,571 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 09:04:43,587 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 09:05:01,872 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-22 09:05:03,479 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-10-22 09:05:13,562 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 09:05:13,562 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 09:05:24,730 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-22 09:05:25,855 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-10-22 09:05:30,121 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-10-22 09:05:30,121 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-10-22 09:05:30,121 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-10-22 09:05:30,121 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2025-10-22 09:05:30,121 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-22 09:05:30,121 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-22 09:05:30,547 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-22 09:05:30,547 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-22 09:05:30,547 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: JB CIMENTO | CIMENTO | R$ 2240.00 | 07/11/2025
+2025-10-22 09:05:30,574 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: JB CIMENTO - CIMENTO
+2025-10-22 09:05:30,576 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-22 09:05:30,576 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-22 09:05:30,577 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: ANCORA PAPELARIA | PLOTAGENS | R$ 180.00 | 06/11/2025
+2025-10-22 09:05:30,591 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ANCORA PAPELARIA - PLOTAGENS
+2025-10-22 09:05:30,594 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 280 na linha 280
+2025-10-22 09:05:30,596 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 281 na linha 281
+2025-10-22 09:05:30,889 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-22 09:05:31,397 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-10-22 09:05:31,426 - sistema - Sistema_Entrada_Dados - WARNING - Erro no recálculo para 2025-11-05: Erro: 'SistemaEntradaDados' object has no attribute '_existe_taxa_na_data'
+2025-10-22 09:05:34,968 - sistema - Sistema_Entrada_Dados - INFO - Limpando 2 registros salvos da visualização
+2025-10-22 09:05:34,968 - sistema - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-10-22 09:05:34,968 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-10-22 09:59:54,661 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 09:59:57,109 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 09:59:57,135 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 09:59:57,137 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 09:59:57,138 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 09:59:57,151 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 10:00:00,703 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 10:10:46,228 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 10:10:47,770 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:10:47,770 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:10:47,770 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:10:47,770 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:10:47,786 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 10:10:50,504 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 10:15:32,892 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 10:15:34,203 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:15:34,203 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:15:34,203 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:15:34,203 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:15:34,218 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 10:15:42,747 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 10:15:56,619 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:15:56,635 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:16:26,802 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-22 10:16:28,222 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-10-22 10:16:45,645 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:16:45,645 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:17:09,093 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-10-22 10:17:10,611 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-10-22 10:17:14,701 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-10-22 10:17:14,701 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-10-22 10:17:14,701 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-10-22 10:17:14,701 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2025-10-22 10:17:14,701 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-22 10:17:14,701 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-22 10:17:15,152 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-22 10:17:15,152 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-22 10:17:15,152 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: VR AREIA E BRITA | AREIA E BRITA | R$ 5480.00 | 07/11/2025
+2025-10-22 10:17:15,173 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: VR AREIA E BRITA - AREIA E BRITA
+2025-10-22 10:17:15,177 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-22 10:17:15,178 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-22 10:17:15,178 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: TIAGO ALMEIDA  AMORIM | REEMBOLSO CHURRASCO | R$ 1045.89 | 07/11/2025
+2025-10-22 10:17:15,193 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: TIAGO ALMEIDA  AMORIM - REEMBOLSO CHURRASCO
+2025-10-22 10:17:15,195 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 282 na linha 282
+2025-10-22 10:17:15,198 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 283 na linha 283
+2025-10-22 10:17:15,536 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-22 10:17:16,038 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-10-22 10:17:16,038 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-10-22 10:17:18,826 - sistema - Sistema_Entrada_Dados - INFO - Limpando 2 registros salvos da visualização
+2025-10-22 10:17:18,850 - sistema - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-10-22 10:17:18,852 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-10-22 10:25:53,841 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 10:25:55,323 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:25:55,323 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:25:55,323 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:25:55,323 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:25:55,346 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 10:25:58,877 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
+2025-10-22 10:27:57,076 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 10:55:57,366 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:55:57,382 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:55:57,382 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:55:57,382 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:55:57,382 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:55:57,382 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 10:55:57,382 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 10:55:57,382 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 11:05:09,738 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
+2025-10-22 11:25:27,350 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 15:03:02,035 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 15:03:04,624 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 15:03:04,639 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 15:03:04,656 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 15:03:04,658 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 15:03:04,668 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 15:03:07,751 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 15:10:57,401 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 15:10:58,888 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 15:10:58,888 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 15:10:58,904 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 15:10:58,904 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 15:10:58,904 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 15:11:01,653 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 16:01:51,479 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 16:01:53,119 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 16:01:53,119 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 16:01:53,135 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 16:01:53,135 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 16:01:53,148 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 16:02:05,103 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 16:06:14,370 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 16:06:14,370 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 16:06:14,386 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 16:06:14,386 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 16:06:14,386 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 16:06:14,386 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 16:06:14,391 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 16:06:14,392 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 16:41:09,329 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 16:41:11,184 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 16:41:11,200 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 16:41:11,200 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 16:41:11,200 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 16:41:11,213 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 16:41:15,379 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 17:01:24,334 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 17:01:26,760 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:01:26,776 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:01:26,783 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:01:26,785 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:01:26,787 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 17:01:29,388 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 17:13:36,264 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 17:13:37,773 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:13:37,773 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:13:37,773 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:13:37,773 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:13:37,798 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 17:13:41,862 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 17:15:14,465 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 17:15:15,774 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:15:15,774 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:15:15,790 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:15:15,790 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:15:15,800 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 17:15:19,609 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 17:20:24,663 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 17:20:25,986 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:20:25,986 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:20:26,002 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:20:26,002 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:20:26,017 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 17:20:30,563 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 17:26:12,763 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 17:26:14,538 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:26:14,593 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:26:14,593 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:26:14,593 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:26:14,639 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 17:26:19,323 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 17:35:58,547 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 17:36:00,097 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:36:00,097 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:36:00,097 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:36:00,097 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:36:00,121 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 17:36:03,745 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 17:47:41,418 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 17:47:44,226 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:47:44,226 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:47:44,226 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 17:47:44,226 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 17:47:44,255 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 17:50:02,495 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 18:41:47,364 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 18:41:49,257 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 18:41:49,273 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 18:41:49,273 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 18:41:49,273 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 18:41:49,286 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 18:41:55,788 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-22 18:49:47,098 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-22 18:49:48,686 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 18:49:48,686 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 18:49:48,686 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-22 18:49:48,686 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-22 18:49:48,715 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-22 18:50:03,803 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
