@@ -6878,7 +6878,93 @@ class SistemaEntradaDados:
             print(f"DEBUG: Erro na verificação: {traceback.format_exc()}")
             custom_messagebox("error", "Erro", f"Erro na verificação: {str(e)}")
 
+    # def chamar_apos_operacao_lancamento(self, data_lancamento, tipo_operacao):
+    #     """
+    #     Método utilitário para chamar após qualquer operação de lançamento
+        
+    #     Args:
+    #         data_lancamento: Data do lançamento afetado
+    #         tipo_operacao: "INCLUSAO", "EXCLUSAO", "ALTERACAO"
+        
+    #     Use este método após:
+    #     - Adicionar novo lançamento
+    #     - Excluir lançamento existente  
+    #     - Alterar valor de lançamento existente
+    #     - Alterar status de lançamento (ATIVO <-> EXCLUIDO)
+    #     """
+    #     try:
+    #         # Só verificar se a data não for None/vazia
+    #         if not data_lancamento:
+    #             print("DEBUG: Data de lançamento não fornecida")
+    #             return {"sucesso": True, "mensagem": "Sem data para verificar"}
+            
+    #         # Normalizar tipo de operação
+    #         operacao_map = {
+    #             "INCLUSAO": "INCLUSÃO",
+    #             "EXCLUSAO": "EXCLUSÃO", 
+    #             "ALTERACAO": "ALTERAÇÃO",
+    #             "INCLUSÃO": "INCLUSÃO",
+    #             "EXCLUSÃO": "EXCLUSÃO",
+    #             "ALTERAÇÃO": "ALTERAÇÃO"
+    #         }
+            
+    #         operacao = operacao_map.get(tipo_operacao.upper(), tipo_operacao)
+            
+    #         print(f"DEBUG: Operação de lançamento: {operacao} em {data_lancamento}")
+            
+    #         # Chamar verificação
+    #         resultado = self.verificar_necessidade_recalculo_apos_nova_despesa(data_lancamento, operacao)
+            
+    #         return resultado
+            
+    #     except Exception as e:
+    #         print(f"DEBUG: Erro ao processar operação de lançamento: {str(e)}")
+    #         return {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
 
+    # def verificar_necessidade_recalculo_apos_nova_despesa(self, data_lancamento, operacao="INCLUSÃO"):
+    #     """
+    #     VERSÃO MELHORADA - Distingue entre quinzena atual e histórico
+        
+    #     Para QUINZENA ATUAL: Mantém comportamento original (exclui e recria)
+    #     Para HISTÓRICO: Sugere ajuste compensatório
+    #     """
+    #     try:
+    #         print(f"DEBUG: Verificando necessidade de recálculo após {operacao} em {data_lancamento}")
+            
+    #         # Converter data se necessário
+    #         if isinstance(data_lancamento, str):
+    #             data_obj = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
+    #         else:
+    #             data_obj = data_lancamento
+            
+    #         # Verificar se existe taxa na data
+    #         if not self._existe_taxa_na_data(data_obj):
+    #             print(f"DEBUG: Nenhuma taxa encontrada em {data_obj.strftime('%d/%m/%Y')}")
+    #             return {"sucesso": True, "mensagem": "Sem taxas na data"}
+            
+    #         # IMPORTANTE: Verificar se é quinzena atual ou histórico
+    #         hoje = datetime.now().date()
+    #         quinzena_atual = self._obter_quinzena_atual()
+            
+    #         # Determinar se a data é da quinzena atual
+    #         eh_quinzena_atual = self._eh_mesma_quinzena(data_obj, quinzena_atual)
+            
+    #         print(f"DEBUG: Data {data_obj} - Quinzena atual: {eh_quinzena_atual}")
+            
+    #         gestor_taxas = GestorTaxasAdministracao(self)
+            
+    #         if eh_quinzena_atual:
+    #             # QUINZENA ATUAL: Usar lógica original (excluir e recriar)
+    #             return self._recalculo_quinzena_atual(data_obj, gestor_taxas, operacao)
+    #         else:
+    #             # HISTÓRICO: Apenas informar, não alterar
+    #             return self._informar_diferenca_historica(data_obj, gestor_taxas, operacao)
+                
+    #     except Exception as e:
+    #         import traceback
+    #         print(f"DEBUG: Erro na verificação: {traceback.format_exc()}")
+    #         return {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
+        
     def configurar_auto_salvamento(self):
         """Configura o auto-salvamento automático - MÉTODO NECESSÁRIO"""
         def executar_auto_salvamento():
@@ -13330,51 +13416,51 @@ class GerenciadorLancamentos:
             print(f"DEBUG: Erro na restauração em lote: {traceback.format_exc()}")
             custom_messagebox("error", "Erro", f"Erro na restauração em lote: {str(e)}")
 
-    def verificar_recalculo_datas_afetadas(self, datas_afetadas, tipo_operacao):
-        """Verifica recálculo de taxas para múltiplas datas afetadas"""
-        try:
-            if not datas_afetadas:
-                return
+    # def verificar_recalculo_datas_afetadas(self, datas_afetadas, tipo_operacao):
+    #     """Verifica recálculo de taxas para múltiplas datas afetadas"""
+    #     try:
+    #         if not datas_afetadas:
+    #             return
             
-            print(f"DEBUG: Verificando recálculo para {len(datas_afetadas)} datas afetadas")
+    #         print(f"DEBUG: Verificando recálculo para {len(datas_afetadas)} datas afetadas")
             
-            # Aguardar um pouco para garantir que as operações foram salvas
-            import time
-            time.sleep(0.5)
+    #         # Aguardar um pouco para garantir que as operações foram salvas
+    #         import time
+    #         time.sleep(0.5)
             
-            resultados = []
+    #         resultados = []
             
-            for data_afetada in sorted(datas_afetadas):
-                try:
-                    print(f"DEBUG: Verificando recálculo para {data_afetada}")
+    #         for data_afetada in sorted(datas_afetadas):
+    #             try:
+    #                 print(f"DEBUG: Verificando recálculo para {data_afetada}")
                     
-                    # Usar o método unificado do sistema
-                    resultado = self.sistema.chamar_apos_operacao_lancamento(data_afetada, tipo_operacao)
+    #                 # Usar o método unificado do sistema
+    #                 resultado = self.sistema.chamar_apos_operacao_lancamento(data_afetada, tipo_operacao)
                     
-                    resultados.append({
-                        'data': data_afetada,
-                        'resultado': resultado
-                    })
+    #                 resultados.append({
+    #                     'data': data_afetada,
+    #                     'resultado': resultado
+    #                 })
                     
-                    if resultado["sucesso"]:
-                        print(f"✅ Verificação para {data_afetada}: {resultado['mensagem']}")
-                    else:
-                        print(f"⚠️ Problema na verificação para {data_afetada}: {resultado['mensagem']}")
+    #                 if resultado["sucesso"]:
+    #                     print(f"✅ Verificação para {data_afetada}: {resultado['mensagem']}")
+    #                 else:
+    #                     print(f"⚠️ Problema na verificação para {data_afetada}: {resultado['mensagem']}")
                         
-                except Exception as e:
-                    print(f"❌ Erro ao verificar {data_afetada}: {str(e)}")
-                    resultados.append({
-                        'data': data_afetada,
-                        'resultado': {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
-                    })
-                    continue
+    #             except Exception as e:
+    #                 print(f"❌ Erro ao verificar {data_afetada}: {str(e)}")
+    #                 resultados.append({
+    #                     'data': data_afetada,
+    #                     'resultado': {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
+    #                 })
+    #                 continue
             
-            # Log consolidado
-            verificacoes_ok = sum(1 for r in resultados if r['resultado']['sucesso'])
-            print(f"DEBUG: Verificações concluídas: {verificacoes_ok}/{len(resultados)} OK")
+    #         # Log consolidado
+    #         verificacoes_ok = sum(1 for r in resultados if r['resultado']['sucesso'])
+    #         print(f"DEBUG: Verificações concluídas: {verificacoes_ok}/{len(resultados)} OK")
             
-        except Exception as e:
-            print(f"DEBUG: Erro geral na verificação de múltiplas datas: {str(e)}")
+    #     except Exception as e:
+    #         print(f"DEBUG: Erro geral na verificação de múltiplas datas: {str(e)}")
 
     def criar_janela_progresso(self, titulo, total_items):
         """Cria janela de progresso para operações em lote"""
@@ -14156,7 +14242,7 @@ class GerenciadorLancamentos:
                                 f"📋 {referencia}\n"
                                 f"💰 {valor}\n"
                                 f"📅 {data_lancamento}\n\n"
-                                f"🔄 As taxas de administração serão verificadas automaticamente."):
+                                f"🔄 As taxas de administração do tipo % deverão ser verificadas."):
                 return
         
         try:
@@ -14177,7 +14263,7 @@ class GerenciadorLancamentos:
             time.sleep(0.5)
             
             # CORREÇÃO: Usar o novo método de verificação
-            resultado_verificacao = self.sistema.chamar_apos_operacao_lancamento(data_para_recalculo, "EXCLUSAO")
+            # resultado_verificacao = self.sistema.chamar_apos_operacao_lancamento(data_para_recalculo, "EXCLUSAO")
             
             # Recarregar lista
             self.carregar_lancamentos()
@@ -14189,19 +14275,19 @@ class GerenciadorLancamentos:
             else:
                 mensagem = "Lançamento excluído com sucesso!"
                 
-                if resultado_verificacao["sucesso"]:
-                    # Verificar se houve recálculo automático baseado no resultado
-                    if ("recalculadas" in resultado_verificacao["mensagem"] or 
-                        "Recálculo Concluído" in str(resultado_verificacao)):
-                        mensagem += f"\n\n✅ Taxas foram recalculadas automaticamente!"
-                    elif "corretas" in resultado_verificacao["mensagem"]:
-                        mensagem += f"\n\n✅ Taxas verificadas - estão corretas"
-                    elif "cancelado" in resultado_verificacao["mensagem"]:
-                        mensagem += f"\n\n⚠️ Recálculo foi oferecido mas cancelado pelo usuário"
-                    else:
-                        mensagem += f"\n\n{resultado_verificacao['mensagem']}"
-                else:
-                    mensagem += f"\n\n⚠️ AVISO: {resultado_verificacao['mensagem']}"
+                # if resultado_verificacao["sucesso"]:
+                #     # Verificar se houve recálculo automático baseado no resultado
+                #     if ("recalculadas" in resultado_verificacao["mensagem"] or 
+                #         "Recálculo Concluído" in str(resultado_verificacao)):
+                #         mensagem += f"\n\n✅ Taxas foram recalculadas automaticamente!"
+                #     elif "corretas" in resultado_verificacao["mensagem"]:
+                #         mensagem += f"\n\n✅ Taxas verificadas - estão corretas"
+                #     elif "cancelado" in resultado_verificacao["mensagem"]:
+                #         mensagem += f"\n\n⚠️ Recálculo foi oferecido mas cancelado pelo usuário"
+                #     else:
+                #         mensagem += f"\n\n{resultado_verificacao['mensagem']}"
+                # else:
+                #     mensagem += f"\n\n⚠️ AVISO: {resultado_verificacao['mensagem']}"
             
             custom_messagebox("info", "Sucesso", mensagem)
             
@@ -14253,7 +14339,7 @@ class GerenciadorLancamentos:
                                 f"📋 {referencia}\n"
                                 f"💰 {valor}\n"
                                 f"📅 {data_lancamento}\n\n"
-                                f"🔄 As taxas de administração serão verificadas automaticamente."):
+                                f"🔄 As taxas de administração do tipo % deverão ser verificadas."):
                 return
         
         try:
@@ -14274,7 +14360,7 @@ class GerenciadorLancamentos:
             time.sleep(0.5)
             
             # CORREÇÃO: Usar o novo método de verificação
-            resultado_verificacao = self.sistema.chamar_apos_operacao_lancamento(data_para_recalculo, "ALTERACAO")
+            # resultado_verificacao = self.sistema.chamar_apos_operacao_lancamento(data_para_recalculo, "ALTERACAO")
             
             # Recarregar lista
             self.carregar_lancamentos()
@@ -14286,19 +14372,19 @@ class GerenciadorLancamentos:
             else:
                 mensagem = "Lançamento restaurado com sucesso!"
                 
-                if resultado_verificacao["sucesso"]:
-                    # Verificar se houve recálculo automático baseado no resultado
-                    if ("recalculadas" in resultado_verificacao["mensagem"] or 
-                        "Recálculo Concluído" in str(resultado_verificacao)):
-                        mensagem += f"\n\n✅ Taxas foram recalculadas automaticamente!"
-                    elif "corretas" in resultado_verificacao["mensagem"]:
-                        mensagem += f"\n\n✅ Taxas verificadas - estão corretas"
-                    elif "cancelado" in resultado_verificacao["mensagem"]:
-                        mensagem += f"\n\n⚠️ Recálculo foi oferecido mas cancelado pelo usuário"
-                    else:
-                        mensagem += f"\n\n{resultado_verificacao['mensagem']}"
-                else:
-                    mensagem += f"\n\n⚠️ AVISO: {resultado_verificacao['mensagem']}"
+                # if resultado_verificacao["sucesso"]:
+                #     # Verificar se houve recálculo automático baseado no resultado
+                #     if ("recalculadas" in resultado_verificacao["mensagem"] or 
+                #         "Recálculo Concluído" in str(resultado_verificacao)):
+                #         mensagem += f"\n\n✅ Taxas foram recalculadas automaticamente!"
+                #     elif "corretas" in resultado_verificacao["mensagem"]:
+                #         mensagem += f"\n\n✅ Taxas verificadas - estão corretas"
+                #     elif "cancelado" in resultado_verificacao["mensagem"]:
+                #         mensagem += f"\n\n⚠️ Recálculo foi oferecido mas cancelado pelo usuário"
+                #     else:
+                #         mensagem += f"\n\n{resultado_verificacao['mensagem']}"
+                # else:
+                #     mensagem += f"\n\n⚠️ AVISO: {resultado_verificacao['mensagem']}"
             
             custom_messagebox("info", "Sucesso", mensagem)
             
@@ -14513,40 +14599,40 @@ class GerenciadorLancamentos:
             time.sleep(0.5)
             
             # Verificar cada data afetada usando o novo sistema
-            resultados_verificacao = []
+            # resultados_verificacao = []
             
-            for data_verificar in datas_para_verificar:
-                try:
-                    print(f"DEBUG: Verificando recálculo para {data_verificar}")
+            # for data_verificar in datas_para_verificar:
+            #     try:
+            #         print(f"DEBUG: Verificando recálculo para {data_verificar}")
                     
-                    # INTEGRAÇÃO: Usar o método unificado
-                    resultado = self.sistema.chamar_apos_operacao_lancamento(data_verificar, "ALTERACAO")
+            #         # INTEGRAÇÃO: Usar o método unificado
+            #         resultado = self.sistema.chamar_apos_operacao_lancamento(data_verificar, "ALTERACAO")
                     
-                    resultados_verificacao.append({
-                        'data': data_verificar,
-                        'resultado': resultado
-                    })
+            #         resultados_verificacao.append({
+            #             'data': data_verificar,
+            #             'resultado': resultado
+            #         })
                     
-                    if resultado["sucesso"]:
-                        print(f"✅ Verificação concluída para {data_verificar}: {resultado['mensagem']}")
-                    else:
-                        print(f"⚠️ Problema na verificação para {data_verificar}: {resultado['mensagem']}")
+            #         if resultado["sucesso"]:
+            #             print(f"✅ Verificação concluída para {data_verificar}: {resultado['mensagem']}")
+            #         else:
+            #             print(f"⚠️ Problema na verificação para {data_verificar}: {resultado['mensagem']}")
                         
-                except Exception as e:
-                    print(f"❌ Erro ao verificar {data_verificar}: {str(e)}")
-                    resultados_verificacao.append({
-                        'data': data_verificar,
-                        'resultado': {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
-                    })
-                    continue
+            #     except Exception as e:
+            #         print(f"❌ Erro ao verificar {data_verificar}: {str(e)}")
+            #         resultados_verificacao.append({
+            #             'data': data_verificar,
+            #             'resultado': {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
+            #         })
+            #         continue
             
             # Recarregar a visualização se existir
             if hasattr(self, 'carregar_lancamentos'):
                 self.carregar_lancamentos()
             
             # Log do resultado final
-            verificacoes_ok = sum(1 for r in resultados_verificacao if r['resultado']['sucesso'])
-            print(f"DEBUG: Edição salva. Verificações: {verificacoes_ok}/{len(resultados_verificacao)} OK")
+            # verificacoes_ok = sum(1 for r in resultados_verificacao if r['resultado']['sucesso'])
+            # print(f"DEBUG: Edição salva. Verificações: {verificacoes_ok}/{len(resultados_verificacao)} OK")
             
             return True
             
@@ -15818,18 +15904,18 @@ class VisualizadorLancamentosFornecedor:
                 wb.close()
             raise Exception(f"Erro ao atualizar status: {str(e)}")
 
-    def verificar_recalculo_apos_alteracao(self, data_lancamento, tipo_operacao):
-        """Verifica se precisa recalcular taxas após alteração"""
-        try:
-            if hasattr(self.sistema, 'chamar_apos_operacao_lancamento'):
-                data_obj = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
-                resultado = self.sistema.chamar_apos_operacao_lancamento(data_obj, tipo_operacao)
+    # def verificar_recalculo_apos_alteracao(self, data_lancamento, tipo_operacao):
+    #     """Verifica se precisa recalcular taxas após alteração"""
+    #     try:
+    #         if hasattr(self.sistema, 'chamar_apos_operacao_lancamento'):
+    #             data_obj = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
+    #             resultado = self.sistema.chamar_apos_operacao_lancamento(data_obj, tipo_operacao)
                 
-                if not resultado["sucesso"] and "Erro" in resultado["mensagem"]:
-                    print(f"Aviso: {resultado['mensagem']}")
+    #             if not resultado["sucesso"] and "Erro" in resultado["mensagem"]:
+    #                 print(f"Aviso: {resultado['mensagem']}")
                     
-        except Exception as e:
-            print(f"Erro ao verificar recálculo: {str(e)}")
+    #     except Exception as e:
+    #         print(f"Erro ao verificar recálculo: {str(e)}")
 
     def visualizar_historico_lancamento(self):
         """Visualiza o histórico de alterações de um lançamento"""
