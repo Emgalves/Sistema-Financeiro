@@ -1575,266 +1575,244 @@ class SistemaEntradaDados:
         print("Calendários configurados para permitir navegação livre.")
 
     def setup_aba_selecao(self):
-        """Configura a aba de seleção de cliente"""
+        """Configura a aba de seleção de cliente - VERSÃO FINAL"""
         # Frame principal para organização
         frame_principal = ttk.Frame(self.aba_selecao)
-        frame_principal.pack(expand=True, fill='both', padx=10, pady=5)
+        frame_principal.pack(expand=True, fill='both', padx=20, pady=10)
 
-        # Frame para seleção de cliente
-        frame_selecao = ttk.LabelFrame(frame_principal, text="Seleção do Cliente")
-        frame_selecao.pack(fill='x', pady=10)
+        # ===== SEÇÃO DE SELEÇÃO DE CLIENTE - MODERNIZADA =====
+        frame_selecao = ttk.LabelFrame(
+            frame_principal, 
+            text="Seleção do Cliente", 
+            padding=(15, 10)
+        )
+        frame_selecao.pack(fill='x', pady=(0, 15))
 
-        # Container para label e combobox
-        frame_cliente = ttk.Frame(frame_selecao)
-        frame_cliente.pack(fill='x', padx=10, pady=10)
+        # Container para label e área de busca
+        frame_busca = ttk.Frame(frame_selecao)
+        frame_busca.pack(fill='x', pady=5)
 
-        # Label alinhado à esquerda
-        ttk.Label(frame_cliente, text="Selecione o Cliente:", font=('Arial', 11)).pack(side='left', pady=5)
-        
-        # Combobox com largura aumentada
-        self.cliente_combobox = ttk.Combobox(frame_cliente, width=60, font=('Arial', 11))  # Aumentado a fonte
-        self.cliente_combobox.pack(side='left', padx=5, fill='x', expand=True)
-        
-        # Botão para mostrar todos os clientes (incluindo finalizados)
-        ttk.Button(frame_cliente, text="Ver Todos", 
-                command=self.mostrar_todos_clientes).pack(side='right', padx=5)
-        
-        # Frame para botões de gerenciamento de clientes
-        frame_gerenciar = ttk.Frame(frame_principal)
-        frame_gerenciar.pack(pady=15)
-        
-        # Estilo para botões maiores
-        style = ttk.Style()
-        style.configure('Big.TButton', font=('Arial', 12, 'bold'), padding=(15, 10))
-        
-        # Primeira linha de botões
-        frame_botoes_linha1 = ttk.Frame(frame_gerenciar)
-        frame_botoes_linha1.pack(fill='x', pady=5)
-        
-        ttk.Button(frame_botoes_linha1, 
-                text="Novo Cliente", 
-                command=self.criar_novo_cliente,
-                style='Big.TButton').pack(side='left', padx=10)
-                
-        ttk.Button(frame_botoes_linha1,
-                text="Editar Cliente",
-                command=self.editar_cliente,
-                style='Big.TButton').pack(side='left', padx=10)
+        # Label com instrução mais clara
+        ttk.Label(
+            frame_busca, 
+            text="Digite ou selecione o cliente:", 
+            font=('Arial', 11, 'bold')
+        ).pack(anchor='w', pady=(0, 5))
 
-        ttk.Button(frame_botoes_linha1, 
-                text="Gerir Contratos",
-                command=self.abrir_gestao_contratos,
-                style='Big.TButton').pack(side='left', padx=10)
+        # Frame para combobox e contador
+        frame_combo = ttk.Frame(frame_busca)
+        frame_combo.pack(fill='x')
 
-        # Segunda linha de botões (apenas para o Continuar)
-        frame_botoes_linha2 = ttk.Frame(frame_gerenciar)
-        frame_botoes_linha2.pack(fill='x', pady=10)
-        
-        # Botão continuar (inicialmente desabilitado)
-        self.btn_continuar = ttk.Button(frame_botoes_linha2,
-                                    text="Continuar →",
-                                    command=self.continuar_para_fornecedor,
-                                    state='disabled',
-                                    style='Big.TButton')
-        self.btn_continuar.pack(side='right', padx=10)
-        
-        # Carregar clientes existentes
-        self.atualizar_lista_clientes()
-        
-        # Binding para seleção de cliente
+        # Combobox com busca melhorada
+        self.cliente_combobox = ttk.Combobox(
+            frame_combo, 
+            font=('Arial', 11),
+            state='normal'
+        )
+        self.cliente_combobox.pack(side='left', fill='x', expand=True, padx=(0, 5))
+
+        # Label contador de resultados
+        self.label_contador = ttk.Label(
+            frame_combo, 
+            text="", 
+            font=('Arial', 9),
+            foreground='gray'
+        )
+        self.label_contador.pack(side='left', padx=5)
+
+        # Botão Ver Todos
+        self.btn_ver_todos = ttk.Button(
+            frame_combo, 
+            text="📋 Ver Todos", 
+            command=self.mostrar_todos_clientes,
+            width=12
+        )
+        self.btn_ver_todos.pack(side='right', padx=(5, 0))
+
+        # ===== BINDINGS =====
+        self.cliente_combobox.bind('<KeyRelease>', self.filtrar_clientes_digitacao)
+        self.cliente_combobox.bind('<Button-1>', self.abrir_dropdown_clientes)
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.selecionar_cliente)
+        self.cliente_combobox.bind('<Return>', self.selecionar_primeiro_resultado)
+        self.cliente_combobox.bind('<Escape>', self.limpar_busca)
 
-        # Frame de botões
-        frame_botoes_selecao = ttk.Frame(frame_principal)
-        frame_botoes_selecao.pack(fill='x', side='bottom', pady=10)
+        # Dica visual
+        frame_dica = ttk.Frame(frame_selecao)
+        frame_dica.pack(fill='x', pady=(5, 0))
+        
+        ttk.Label(
+            frame_dica,
+            text="💡 Dica: Comece a digitar para buscar. Use ↑↓ para navegar, Enter para selecionar, ESC para limpar.",
+            font=('Arial', 9, 'italic'),
+            foreground='#666666'
+        ).pack(anchor='w')
 
-        ttk.Button(frame_botoes_selecao, 
-                text="Voltar ao Menu", 
-                command=self.voltar_menu,
-                style='Big.TButton').pack(side='left', padx=10)
-        ttk.Button(frame_botoes_selecao, 
-                text="Sair", 
-                command=self.sair_sistema,
-                style='Big.TButton').pack(side='left', padx=10)
+        # ===== BOTÕES =====
+        frame_gerenciar = ttk.Frame(frame_principal)
+        frame_gerenciar.pack(pady=10)
 
-    def abrir_gestao_contratos(self):
-        """Abre a gestão de contratos para o cliente atual"""
-        if not self.cliente_atual:
-            custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
-            return
-        
-        # Ocultar temporariamente a janela principal
-        self.root.withdraw()
-        
-        # Criar e configurar a janela de gestão de contratos diretamente aqui
-        # em vez de delegar para outra classe/método
-        janela_gestao = tk.Toplevel(self.root)
-        janela_gestao.title(f"Gestão de Contratos - {self.cliente_atual}")
-        janela_gestao.geometry("800x750")
-        
-        # Centralizar a janela (sem depender de um método da classe GestaoContratos)
-        janela_gestao.update_idletasks()
-        width = janela_gestao.winfo_width()
-        height = janela_gestao.winfo_height()
-        x = (janela_gestao.winfo_screenwidth() // 2) - (width // 2)
-        y = (janela_gestao.winfo_screenheight() // 2) - (height // 2)
-        janela_gestao.geometry(f'{width}x{height}+{x}+{y}')
-        
-        # Colocar a janela em primeiro plano
-        janela_gestao.attributes('-topmost', True)
-        janela_gestao.after(100, lambda: janela_gestao.attributes('-topmost', False))
-        
-        # Definir comportamento quando a janela for fechada
-        def on_close():
-            janela_gestao.destroy()
-            self.root.deiconify()  # Mostrar a janela principal novamente
-            self.root.lift()
-            self.root.focus_force()
-        
-        # Configurar protocolo de fechamento
-        janela_gestao.protocol("WM_DELETE_WINDOW", on_close)
-        
-        # Criar o restante da interface usando o gestor de contratos
-        gestor = GestaoContratos(janela_gestao)  # Passamos a janela_gestao como parent
-        gestor.cliente_atual = self.cliente_atual
-        gestor.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
-        
-        # Criar e preencher a interface dentro da janela_gestao
-        gestor.criar_interface_contratos(janela_gestao, on_close)
+        style = ttk.Style()
+        style.configure('Big.TButton', font=('Arial', 11, 'bold'), padding=(20, 12))
+        style.configure('Action.TButton', font=('Arial', 11, 'bold'), padding=(25, 15))
 
-    def abrir_controle_pagamentos(self):
-        """Abre o módulo de controle de pagamentos"""
-        try:
-            # Importar módulo
-            from controle_pagamentos import ControlePagamentos
-            
-            # Instanciar e abrir janela de controle
-            controle = ControlePagamentos(self.root)
-            controle.abrir_janela_controle()
-        except ImportError as e:
-            custom_messagebox("error", "Erro", f"Não foi possível importar o módulo de Controle de Pagamentos: {str(e)}")
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
+        frame_botoes = ttk.Frame(frame_gerenciar)
+        frame_botoes.pack(pady=5)
 
-    def selecionar_cliente(self, event):
-        """
-        Atualiza seleção de cliente e habilita botão de continuar
-        VERSÃO COM PROTEÇÃO contra perda de dados pendentes
-        """
-        try:
-            # ==========================================
-            # PROTEÇÃO: Verificar dados pendentes ANTES de trocar
-            # ==========================================
-            novo_cliente = self.cliente_combobox.get()
-            
-            # Se já existe um cliente selecionado E está tentando trocar para outro
-            if (hasattr(self, 'cliente_atual') and 
-                self.cliente_atual and 
-                self.cliente_atual != novo_cliente):
+        ttk.Button(
+            frame_botoes, 
+            text="➕ Novo Cliente", 
+            command=self.criar_novo_cliente,
+            style='Big.TButton'
+        ).pack(side='left', padx=8)
                 
-                # Verificar se há dados pendentes
-                if hasattr(self, 'dados_para_incluir') and self.dados_para_incluir:
-                    qtd_pendentes = len(self.dados_para_incluir)
-                    
-                    logger = system_logger.get_logger()
-                    logger.warning(f"Tentativa de trocar cliente com {qtd_pendentes} lançamentos pendentes")
-                    
-                    resposta = custom_messagebox(
-                        "yesno",
-                        "Dados Pendentes - Confirmação Necessária",
-                        f"⚠️ ATENÇÃO: Existem {qtd_pendentes} lançamento(s) pendente(s) de envio!\n\n"
-                        f"Cliente atual: {self.cliente_atual}\n"
-                        f"Novo cliente: {novo_cliente}\n\n"
-                        f"Ao trocar de cliente, estes dados serão PERDIDOS e não poderão "
-                        f"ser recuperados.\n\n"
-                        f"O que deseja fazer?\n\n"
-                        f"• SIM = Trocar de cliente e DESCARTAR os {qtd_pendentes} lançamentos pendentes\n"
-                        f"• NÃO = Cancelar troca e ENVIAR os lançamentos primeiro"
-                    )
-                    
-                    if not resposta:  # Usuário escolheu NÃO
-                        logger.info("Troca de cliente CANCELADA pelo usuário - dados pendentes preservados")
-                        
-                        # Restaurar seleção anterior no combobox
-                        self.cliente_combobox.set(self.cliente_atual)
-                        
-                        # Mensagem informativa
-                        custom_messagebox(
-                            "info", 
-                            "Troca Cancelada", 
-                            f"Troca de cliente cancelada.\n\n"
-                            f"Os {qtd_pendentes} lançamentos pendentes foram preservados.\n\n"
-                            f"Por favor:\n"
-                            f"1. Clique em 'Enviar' para salvar os lançamentos\n"
-                            f"2. Depois selecione o novo cliente"
-                        )
-                        
-                        return  # IMPORTANTE: Interromper aqui sem trocar cliente
-                    
-                    # Se chegou aqui, usuário confirmou descarte (SIM)
-                    logger.warning(f"Usuário CONFIRMOU descarte de {qtd_pendentes} lançamentos pendentes")
-                    
-                    # Limpar dados pendentes
-                    self.limpar_visualizacao_completa()
-                    
-                    logger.info(f"Dados pendentes descartados. Trocando de '{self.cliente_atual}' para '{novo_cliente}'")
-            
-            # ==========================================
-            # Continuar com seleção normal do cliente
-            # ==========================================
-            self.cliente_atual = novo_cliente
-            
-            # Atualiza label na aba de dados
-            self.cliente_label.config(text=f"Cliente: {self.cliente_atual}")
-            
-            # Atualiza também o label na aba de fornecedor
-            if hasattr(self, 'lbl_cliente_fornecedor'):
-                self.lbl_cliente_fornecedor.config(text=f"Cliente: {self.cliente_atual}")
-            
-            # Habilita o botão continuar
-            self.btn_continuar.config(state='normal')
-            
-            # Log de sucesso
-            logger = system_logger.get_logger()
-            logger.info(f"Cliente selecionado com sucesso: {self.cliente_atual}")
-            
-            # Não muda de aba automaticamente
-            
-        except Exception as e:
-            logger = system_logger.get_logger()
-            logger.error(f"Erro ao selecionar cliente: {str(e)}")
-            custom_messagebox("error", "Erro", f"Erro ao selecionar cliente: {str(e)}")
+        ttk.Button(
+            frame_botoes,
+            text="✏️ Editar Cliente",
+            command=self.editar_cliente,
+            style='Big.TButton'
+        ).pack(side='left', padx=8)
 
-    def configurar_protecoes(self):
-        """
-        Configura proteções contra perda de dados
-        Deve ser chamado no __init__ da classe principal
-        """
+        ttk.Button(
+            frame_botoes, 
+            text="📄 Gerir Contratos",
+            command=self.abrir_gestao_contratos,
+            style='Big.TButton'
+        ).pack(side='left', padx=8)
+
+        # Botão Continuar
+        frame_continuar = ttk.Frame(frame_principal)
+        frame_continuar.pack(fill='x', pady=15)
+
+        ttk.Separator(frame_continuar, orient='horizontal').pack(fill='x', pady=(0, 15))
+
+        self.btn_continuar = ttk.Button(
+            frame_continuar,
+            text="Continuar →",
+            command=self.continuar_para_fornecedor,
+            state='disabled',
+            style='Action.TButton'
+        )
+        self.btn_continuar.pack(pady=5)
+
+        # Botões de navegação
+        frame_navegacao = ttk.Frame(frame_principal)
+        frame_navegacao.pack(fill='x', side='bottom', pady=(20, 0))
+
+        ttk.Separator(frame_navegacao, orient='horizontal').pack(fill='x', pady=(0, 10))
+
+        frame_botoes_nav = ttk.Frame(frame_navegacao)
+        frame_botoes_nav.pack()
+
+        ttk.Button(
+            frame_botoes_nav, 
+            text="⬅️ Voltar ao Menu", 
+            command=self.voltar_menu,
+            style='Big.TButton'
+        ).pack(side='left', padx=10)
+        
+        ttk.Button(
+            frame_botoes_nav, 
+            text="❌ Sair", 
+            command=self.sair_sistema,
+            style='Big.TButton'
+        ).pack(side='left', padx=10)
+
+        # Inicialização
+        self.clientes_completos = []
+        self.atualizar_lista_clientes()
+        self.cliente_combobox.focus_set()
+
+    def filtrar_clientes_digitacao(self, event=None):
+        """Filtra clientes em tempo real - VERSÃO FINAL"""
         try:
-            # Vincular evento de fechamento da janela
-            if hasattr(self, 'janela_principal'):
-                self.janela_principal.protocol("WM_DELETE_WINDOW", self.fechar_aplicacao)
+            texto_busca = self.cliente_combobox.get().upper().strip()
             
-            # Vincular evento de mudança no combo de clientes
-            if hasattr(self, 'combo_cliente'):
-                # Remover binding anterior se existir
-                self.combo_cliente.unbind('<<ComboboxSelected>>')
-                # Adicionar novo binding com proteção
-                self.combo_cliente.bind('<<ComboboxSelected>>', self.selecionar_cliente)
+            if not texto_busca:
+                self.cliente_combobox['values'] = self.clientes_completos
+                if hasattr(self, 'atualizar_contador'):
+                    self.atualizar_contador(len(self.clientes_completos))
+                return
             
-            logger = system_logger.get_logger()
-            logger.info("Proteções contra perda de dados configuradas")
+            clientes_filtrados = []
+            for cliente in self.clientes_completos:
+                try:
+                    cliente_str = str(cliente) if cliente is not None else ""
+                    if texto_busca in cliente_str.upper():
+                        clientes_filtrados.append(cliente)
+                except Exception:
+                    continue
             
+            self.cliente_combobox['values'] = clientes_filtrados
+            
+            if hasattr(self, 'atualizar_contador'):
+                self.atualizar_contador(len(clientes_filtrados))
+            
+            if clientes_filtrados and len(texto_busca) >= 2:
+                try:
+                    self.cliente_combobox.event_generate('<Down>')
+                except Exception:
+                    pass
+                    
         except Exception as e:
             logger = system_logger.get_logger()
-            logger.error(f"Erro ao configurar proteções: {str(e)}")
+            logger.error(f"Erro ao filtrar clientes: {str(e)}")
+            try:
+                self.cliente_combobox['values'] = self.clientes_completos
+                if hasattr(self, 'atualizar_contador'):
+                    self.atualizar_contador(len(self.clientes_completos))
+            except Exception:
+                pass
 
-    def continuar_para_fornecedor(self):
-        """Avança para a aba de fornecedor após confirmar seleção"""
-        if self.cliente_atual:
-            self.notebook.select(1)  # Vai para aba de fornecedor
-        else:
-            custom_messagebox("warning",  "Aviso", "Selecione um cliente primeiro!")
+    def abrir_dropdown_clientes(self, event=None):
+        """Abre dropdown automaticamente ao clicar no campo"""
+        # Garantir que mostra todos os clientes se não há filtro
+        if not self.cliente_combobox.get():
+            self.cliente_combobox['values'] = self.clientes_completos
+            self.atualizar_contador(len(self.clientes_completos))
+        
+        # Abrir dropdown
+        self.cliente_combobox.event_generate('<Down>')
+
+    def selecionar_primeiro_resultado(self, event=None):
+        """Seleciona o primeiro resultado quando Enter é pressionado"""
+        valores = self.cliente_combobox['values']
+        
+        if valores:
+            # Definir primeiro valor
+            self.cliente_combobox.set(valores[0])
+            # Disparar evento de seleção
+            self.cliente_combobox.event_generate('<<ComboboxSelected>>')
+
+    def limpar_busca(self, event=None):
+        """Limpa o campo de busca e restaura lista completa"""
+        self.cliente_combobox.set('')
+        self.cliente_combobox['values'] = self.clientes_completos
+        self.atualizar_contador(len(self.clientes_completos))
+        self.btn_continuar.config(state='disabled')
+
+    def atualizar_contador(self, quantidade):
+        """Atualiza contador de resultados"""
+        try:
+            if not hasattr(self, 'label_contador'):
+                return
+                
+            if not hasattr(self, 'clientes_completos'):
+                self.label_contador.config(text=f"({quantidade} clientes)")
+                return
+                
+            if quantidade == len(self.clientes_completos):
+                self.label_contador.config(
+                    text=f"({quantidade} clientes)",
+                    foreground='gray'
+                )
+            else:
+                self.label_contador.config(
+                    text=f"({quantidade} de {len(self.clientes_completos)})",
+                    foreground='#0066cc'
+                )
+        except Exception as e:
+            logger = system_logger.get_logger()
+            logger.debug(f"Erro ao atualizar contador: {str(e)}")
 
     def criar_arquivo_clientes(self):
         """Cria arquivo base de clientes se não existir"""
@@ -1992,6 +1970,113 @@ class SistemaEntradaDados:
 
         ttk.Button(frame, text="Salvar", command=salvar_cliente).pack(pady=10)
         ttk.Button(frame, text="Cancelar", command=janela_cliente.destroy).pack(pady=5)
+
+    def selecionar_cliente(self, event):
+        """
+        Atualiza seleção de cliente e habilita botão de continuar
+        VERSÃO COM PROTEÇÃO contra perda de dados pendentes + FEEDBACK VISUAL MELHORADO
+        """
+        try:
+            # ==========================================
+            # PROTEÇÃO: Verificar dados pendentes ANTES de trocar
+            # ==========================================
+            novo_cliente = self.cliente_combobox.get()
+            
+            # Se já existe um cliente selecionado E está tentando trocar para outro
+            if (hasattr(self, 'cliente_atual') and 
+                self.cliente_atual and 
+                self.cliente_atual != novo_cliente):
+                
+                # Verificar se há dados pendentes
+                if hasattr(self, 'dados_para_incluir') and self.dados_para_incluir:
+                    qtd_pendentes = len(self.dados_para_incluir)
+                    
+                    logger = system_logger.get_logger()
+                    logger.warning(f"Tentativa de trocar cliente com {qtd_pendentes} lançamentos pendentes")
+                    
+                    resposta = custom_messagebox(
+                        "yesno",
+                        "Dados Pendentes - Confirmação Necessária",
+                        f"⚠️ ATENÇÃO: Existem {qtd_pendentes} lançamento(s) pendente(s) de envio!\n\n"
+                        f"Cliente atual: {self.cliente_atual}\n"
+                        f"Novo cliente: {novo_cliente}\n\n"
+                        f"Ao trocar de cliente, estes dados serão PERDIDOS e não poderão "
+                        f"ser recuperados.\n\n"
+                        f"O que deseja fazer?\n\n"
+                        f"• SIM = Trocar de cliente e DESCARTAR os {qtd_pendentes} lançamentos pendentes\n"
+                        f"• NÃO = Cancelar troca e ENVIAR os lançamentos primeiro"
+                    )
+                    
+                    if not resposta:  # Usuário escolheu NÃO
+                        logger.info("Troca de cliente CANCELADA pelo usuário - dados pendentes preservados")
+                        
+                        # Restaurar seleção anterior no combobox
+                        self.cliente_combobox.set(self.cliente_atual)
+                        
+                        # ===== NOVO: Feedback visual de cancelamento =====
+                        if hasattr(self, 'label_contador'):
+                            self.label_contador.config(
+                                text="⚠️ Troca cancelada - dados preservados",
+                                foreground='orange'
+                            )
+                            # Restaurar após 3 segundos
+                            self.root.after(3000, lambda: self.atualizar_contador(len(self.clientes_completos)))
+                        
+                        # Mensagem informativa
+                        custom_messagebox(
+                            "info", 
+                            "Troca Cancelada", 
+                            f"Troca de cliente cancelada.\n\n"
+                            f"Os {qtd_pendentes} lançamentos pendentes foram preservados.\n\n"
+                            f"Por favor:\n"
+                            f"1. Clique em 'Enviar' para salvar os lançamentos\n"
+                            f"2. Depois selecione o novo cliente"
+                        )
+                        
+                        return  # IMPORTANTE: Interromper aqui sem trocar cliente
+                    
+                    # Se chegou aqui, usuário confirmou descarte (SIM)
+                    logger.warning(f"Usuário CONFIRMOU descarte de {qtd_pendentes} lançamentos pendentes")
+                    
+                    # Limpar dados pendentes
+                    self.limpar_visualizacao_completa()
+                    
+                    logger.info(f"Dados pendentes descartados. Trocando de '{self.cliente_atual}' para '{novo_cliente}'")
+            
+            # ==========================================
+            # Continuar com seleção normal do cliente
+            # ==========================================
+            self.cliente_atual = novo_cliente
+            
+            # Atualiza label na aba de dados
+            self.cliente_label.config(text=f"Cliente: {self.cliente_atual}")
+            
+            # Atualiza também o label na aba de fornecedor
+            if hasattr(self, 'lbl_cliente_fornecedor'):
+                self.lbl_cliente_fornecedor.config(text=f"Cliente: {self.cliente_atual}")
+            
+            # Habilita o botão continuar
+            self.btn_continuar.config(state='normal')
+            
+            # ===== NOVO: Feedback visual de sucesso =====
+            if hasattr(self, 'label_contador'):
+                self.label_contador.config(
+                    text="✓ Cliente selecionado",
+                    foreground='green'
+                )
+                # Restaurar contador após 2 segundos
+                self.root.after(2000, lambda: self.atualizar_contador(len(self.clientes_completos)))
+            
+            # Log de sucesso
+            logger = system_logger.get_logger()
+            logger.info(f"Cliente selecionado com sucesso: {self.cliente_atual}")
+            
+            # Não muda de aba automaticamente
+            
+        except Exception as e:
+            logger = system_logger.get_logger()
+            logger.error(f"Erro ao selecionar cliente: {str(e)}")
+            custom_messagebox("error", "Erro", f"Erro ao selecionar cliente: {str(e)}")
 
 
     def editar_cliente(self):
@@ -2194,35 +2279,64 @@ class SistemaEntradaDados:
             messagebox.showerror("Erro", f"Erro ao abrir editor: {str(e)}") 
 
     def atualizar_lista_clientes(self):
-        """Atualiza a lista de clientes baseado nos arquivos Excel disponíveis, filtrando apenas os ativos"""
+        """Atualiza lista de clientes - LÓGICA CORRETA"""
         try:
-            # Carregar arquivo de clientes
-            caminho_base = ARQUIVO_CLIENTES
-            workbook = load_workbook(caminho_base)
-            sheet = workbook['Clientes']  # Assumindo que existe uma aba chamada 'Clientes'
+            if not os.path.exists(ARQUIVO_CLIENTES):
+                self.criar_arquivo_clientes()
+                return
+                
+            workbook = load_workbook(ARQUIVO_CLIENTES)
+            sheet = workbook['Clientes']
             
-            # Limpar lista atual
-            self.cliente_combobox['values'] = []
+            clientes_ativos = []
             
-            # Pegar clientes ativos (sem data final ou com data final vazia)
-            clientes = []
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Nome do cliente está na primeira coluna
-                    # Verificar se a data final está vazia (cliente ativo)
-                    data_final = row[4] if len(row) > 4 else None
+            for row in range(2, sheet.max_row + 1):
+                try:
+                    nome = sheet.cell(row=row, column=1).value
+                    data_final = sheet.cell(row=row, column=5).value  # Coluna E = Data Final
                     
-                    if not data_final:  # Se não tiver data final, é um cliente ativo
-                        clientes.append(row[0])
+                    if not nome or not isinstance(nome, str):
+                        continue
+                    
+                    nome = nome.strip()
+                    if not nome:
+                        continue
+                    
+                    # LÓGICA CORRETA:
+                    # Cliente FINALIZADO = tem Data Final preenchida (qualquer valor não-None)
+                    # Cliente ATIVO = Data Final vazia (None)
+                    is_finalizado = (data_final is not None)
+                    
+                    if not is_finalizado:
+                        clientes_ativos.append(nome)
+                        
+                except Exception as e:
+                    logger = system_logger.get_logger()
+                    logger.warning(f"Erro linha {row}: {str(e)}")
+                    continue
             
-            # Atualizar combobox com lista ordenada
-            self.cliente_combobox['values'] = sorted(clientes)
             workbook.close()
             
-        except FileNotFoundError:
-            # Se o arquivo não existir, criar novo
-            self.criar_arquivo_clientes()
+            clientes_ativos.sort()
+            self.clientes_completos = clientes_ativos
+            self.cliente_combobox['values'] = clientes_ativos
+            
+            if hasattr(self, 'label_contador'):
+                self.atualizar_contador(len(clientes_ativos))
+            
+            if not clientes_ativos and hasattr(self, 'label_contador'):
+                self.label_contador.config(
+                    text="Nenhum cliente cadastrado",
+                    foreground='orange'
+                )
+                
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao carregar clientes: {str(e)}")
+            logger = system_logger.get_logger()
+            logger.error(f"Erro detalhado: {str(e)}")
+            if not hasattr(self, 'clientes_completos'):
+                self.clientes_completos = []
+
 
     def criar_arquivo_clientes(self):
         """Cria arquivo base de clientes se não existir"""
@@ -2252,77 +2366,200 @@ class SistemaEntradaDados:
             custom_messagebox("error", "Erro", f"Erro ao criar arquivo de clientes: {str(e)}")
 
     def mostrar_todos_clientes(self):
-        """Mostra todos os clientes, incluindo os que têm data final"""
+        """Mostra todos os clientes - JANELA CORRIGIDA"""
         try:
-            # Carregar arquivo de clientes
-            caminho_base = ARQUIVO_CLIENTES
-            workbook = load_workbook(caminho_base)
+            if not os.path.exists(ARQUIVO_CLIENTES):
+                custom_messagebox("warning", "Aviso", "Arquivo não encontrado")
+                return
+                
+            workbook = load_workbook(ARQUIVO_CLIENTES)
             sheet = workbook['Clientes']
             
-            # Pegar todos os clientes
-            clientes = []
+            clientes_ativos = []
             clientes_finalizados = []
             
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Nome do cliente está na primeira coluna
-                    # Verificar se tem data final
-                    data_final = row[4] if len(row) > 4 else None
+            for row in range(2, sheet.max_row + 1):
+                try:
+                    nome = sheet.cell(row=row, column=1).value
+                    data_final = sheet.cell(row=row, column=5).value  # Coluna E = Data Final
                     
-                    if data_final:
-                        clientes_finalizados.append(row[0])
+                    if not nome or not isinstance(nome, str):
+                        continue
+                    
+                    nome = nome.strip()
+                    if not nome:
+                        continue
+                    
+                    # LÓGICA CORRETA:
+                    # Cliente FINALIZADO = tem Data Final preenchida
+                    # Cliente ATIVO = Data Final vazia (None)
+                    is_finalizado = (data_final is not None)
+                    
+                    if is_finalizado:
+                        clientes_finalizados.append(nome)
                     else:
-                        clientes.append(row[0])
+                        clientes_ativos.append(nome)
+                        
+                except Exception as e:
+                    logger = system_logger.get_logger()
+                    logger.warning(f"Erro linha {row}: {str(e)}")
+                    continue
             
             workbook.close()
             
-            # Mostrar janela com todos os clientes
+            # ===== JANELA COM DIMENSÕES CORRETAS =====
             janela_todos = tk.Toplevel(self.root)
             janela_todos.title("Todos os Clientes")
-            janela_todos.geometry("600x500")
+            janela_todos.geometry("700x600")  # ← AUMENTADO de 600x500
+            janela_todos.minsize(600, 500)    # ← TAMANHO MÍNIMO
+            janela_todos.transient(self.root)
+            janela_todos.grab_set()
             
-            frame = ttk.Frame(janela_todos, padding="10")
+            # Frame principal com padding adequado
+            frame = ttk.Frame(janela_todos, padding="20")  # ← AUMENTADO padding
             frame.pack(fill='both', expand=True)
             
-            # Lista de clientes ativos
-            frame_ativos = ttk.LabelFrame(frame, text="Clientes Ativos")
-            frame_ativos.pack(fill='both', expand=True, pady=5)
+            # Título
+            ttk.Label(
+                frame, 
+                text="Visualização Completa de Clientes",
+                font=('Arial', 14, 'bold')  # ← FONTE MAIOR
+            ).pack(pady=(0, 20))
             
-            lista_ativos = tk.Listbox(frame_ativos, width=50, height=13)
-            lista_ativos.pack(fill='both', expand=True, padx=5, pady=5)
+            # ===== CLIENTES ATIVOS =====
+            frame_ativos = ttk.LabelFrame(
+                frame, 
+                text=f"Clientes Ativos ({len(clientes_ativos)})",
+                padding=(10, 10)
+            )
+            frame_ativos.pack(fill='both', expand=True, pady=(0, 15))
             
-            for cliente in sorted(clientes):
+            frame_lista_ativos = ttk.Frame(frame_ativos)
+            frame_lista_ativos.pack(fill='both', expand=True)
+            
+            scrollbar_ativos = ttk.Scrollbar(frame_lista_ativos)
+            scrollbar_ativos.pack(side='right', fill='y')
+            
+            lista_ativos = tk.Listbox(
+                frame_lista_ativos,
+                font=('Arial', 10),
+                yscrollcommand=scrollbar_ativos.set,
+                height=10  # ← ALTURA FIXA
+            )
+            lista_ativos.pack(side='left', fill='both', expand=True)
+            scrollbar_ativos.config(command=lista_ativos.yview)
+            
+            for cliente in sorted(clientes_ativos):
                 lista_ativos.insert(tk.END, cliente)
             
-            # Lista de clientes finalizados
-            frame_finalizados = ttk.LabelFrame(frame, text="Clientes Finalizados")
-            frame_finalizados.pack(fill='both', expand=True, pady=5)
+            # ===== CLIENTES FINALIZADOS =====
+            frame_finalizados = ttk.LabelFrame(
+                frame,
+                text=f"Clientes Finalizados ({len(clientes_finalizados)})",
+                padding=(10, 10)
+            )
+            frame_finalizados.pack(fill='both', expand=True, pady=(0, 15))
             
-            lista_finalizados = tk.Listbox(frame_finalizados, width=50, height=7)
-            lista_finalizados.pack(fill='both', expand=True, padx=5, pady=5)
+            frame_lista_fin = ttk.Frame(frame_finalizados)
+            frame_lista_fin.pack(fill='both', expand=True)
+            
+            scrollbar_fin = ttk.Scrollbar(frame_lista_fin)
+            scrollbar_fin.pack(side='right', fill='y')
+            
+            lista_finalizados = tk.Listbox(
+                frame_lista_fin,
+                font=('Arial', 10),
+                foreground='gray',
+                yscrollcommand=scrollbar_fin.set,
+                height=10  # ← ALTURA FIXA
+            )
+            lista_finalizados.pack(side='left', fill='both', expand=True)
+            scrollbar_fin.config(command=lista_finalizados.yview)
             
             for cliente in sorted(clientes_finalizados):
                 lista_finalizados.insert(tk.END, cliente)
             
-            # Botão para selecionar cliente finalizado
+            # ===== BOTÕES COM LAYOUT CORRETO =====
+            frame_botoes = ttk.Frame(frame)
+            frame_botoes.pack(fill='x', pady=(15, 0))
+            
+            # Criar style se não existir
+            style = ttk.Style()
+            style.configure('Botao.TButton', font=('Arial', 10), padding=(10, 8))
+            
+            def selecionar_ativo():
+                try:
+                    selected = lista_ativos.curselection()
+                    if not selected:
+                        custom_messagebox("warning", "Aviso", "Selecione um cliente ativo")
+                        return
+                    cliente = lista_ativos.get(selected[0])
+                    self.cliente_combobox.set(cliente)
+                    self.selecionar_cliente(None)
+                    janela_todos.destroy()
+                except Exception as e:
+                    logger = system_logger.get_logger()
+                    logger.error(f"Erro: {str(e)}")
+            
             def selecionar_finalizado():
-                selected = lista_finalizados.curselection()
-                if not selected:
-                    custom_messagebox("warning",  "Aviso", "Selecione um cliente finalizado")
-                    return
-                    
-                cliente = lista_finalizados.get(selected[0])
-                self.cliente_combobox.set(cliente)
-                self.selecionar_cliente(None)
-                janela_todos.destroy()
+                try:
+                    selected = lista_finalizados.curselection()
+                    if not selected:
+                        custom_messagebox("warning", "Aviso", "Selecione um cliente finalizado")
+                        return
+                    cliente = lista_finalizados.get(selected[0])
+                    self.cliente_combobox.set(cliente)
+                    self.selecionar_cliente(None)
+                    janela_todos.destroy()
+                except Exception as e:
+                    logger = system_logger.get_logger()
+                    logger.error(f"Erro: {str(e)}")
             
-            ttk.Button(frame, text="Selecionar Cliente Finalizado", 
-                    command=selecionar_finalizado).pack(side='left', pady=10)
+            # LAYOUT DE BOTÕES CORRIGIDO - SEM pack(fill='x')
+            # Botões alinhados à esquerda com tamanhos fixos
+            btn_ativo = ttk.Button(
+                frame_botoes,
+                text="✓ Selecionar Cliente Ativo",
+                command=selecionar_ativo,
+                style='Botao.TButton',
+                width=25  # ← LARGURA FIXA
+            )
+            btn_ativo.pack(side='left', padx=(0, 10))
             
-            ttk.Button(frame, text="Fechar", 
-                    command=janela_todos.destroy).pack(side='right', pady=10)
+            btn_finalizado = ttk.Button(
+                frame_botoes,
+                text="✓ Selecionar Cliente Finalizado",
+                command=selecionar_finalizado,
+                style='Botao.TButton',
+                width=28  # ← LARGURA FIXA
+            )
+            btn_finalizado.pack(side='left', padx=(0, 10))
+            
+            # Botão Fechar à direita com largura fixa
+            btn_fechar = ttk.Button(
+                frame_botoes,
+                text="Fechar",
+                command=janela_todos.destroy,
+                style='Botao.TButton',
+                width=15  # ← LARGURA FIXA
+            )
+            btn_fechar.pack(side='right')
+            
+            # Duplo clique
+            lista_ativos.bind('<Double-Button-1>', lambda e: selecionar_ativo())
+            lista_finalizados.bind('<Double-Button-1>', lambda e: selecionar_finalizado())
+            
+            # Centralizar janela na tela
+            janela_todos.update_idletasks()
+            x = (janela_todos.winfo_screenwidth() // 2) - (janela_todos.winfo_width() // 2)
+            y = (janela_todos.winfo_screenheight() // 2) - (janela_todos.winfo_height() // 2)
+            janela_todos.geometry(f"+{x}+{y}")
                     
         except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao carregar todos os clientes: {str(e)}")
+            custom_messagebox("error", "Erro", f"Erro: {str(e)}")
+            logger = system_logger.get_logger()
+            logger.error(f"Erro detalhado: {str(e)}")
+
 
     def criar_arquivo_cliente(self, nome_cliente, endereco):
         """Cria um novo arquivo Excel para o cliente baseado no MODELO.xlsx"""
@@ -2473,6 +2710,98 @@ class SistemaEntradaDados:
             if 'wb_clientes' in locals():
                 wb_clientes.close()
             return False
+
+    
+    def abrir_gestao_contratos(self):
+        """Abre a gestão de contratos para o cliente atual"""
+        if not self.cliente_atual:
+            custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
+            return
+        
+        # Ocultar temporariamente a janela principal
+        self.root.withdraw()
+        
+        # Criar e configurar a janela de gestão de contratos diretamente aqui
+        # em vez de delegar para outra classe/método
+        janela_gestao = tk.Toplevel(self.root)
+        janela_gestao.title(f"Gestão de Contratos - {self.cliente_atual}")
+        janela_gestao.geometry("800x750")
+        
+        # Centralizar a janela (sem depender de um método da classe GestaoContratos)
+        janela_gestao.update_idletasks()
+        width = janela_gestao.winfo_width()
+        height = janela_gestao.winfo_height()
+        x = (janela_gestao.winfo_screenwidth() // 2) - (width // 2)
+        y = (janela_gestao.winfo_screenheight() // 2) - (height // 2)
+        janela_gestao.geometry(f'{width}x{height}+{x}+{y}')
+        
+        # Colocar a janela em primeiro plano
+        janela_gestao.attributes('-topmost', True)
+        janela_gestao.after(100, lambda: janela_gestao.attributes('-topmost', False))
+        
+        # Definir comportamento quando a janela for fechada
+        def on_close():
+            janela_gestao.destroy()
+            self.root.deiconify()  # Mostrar a janela principal novamente
+            self.root.lift()
+            self.root.focus_force()
+        
+        # Configurar protocolo de fechamento
+        janela_gestao.protocol("WM_DELETE_WINDOW", on_close)
+        
+        # Criar o restante da interface usando o gestor de contratos
+        gestor = GestaoContratos(janela_gestao)  # Passamos a janela_gestao como parent
+        gestor.cliente_atual = self.cliente_atual
+        gestor.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
+        
+        # Criar e preencher a interface dentro da janela_gestao
+        gestor.criar_interface_contratos(janela_gestao, on_close)
+
+    def abrir_controle_pagamentos(self):
+        """Abre o módulo de controle de pagamentos"""
+        try:
+            # Importar módulo
+            from controle_pagamentos import ControlePagamentos
+            
+            # Instanciar e abrir janela de controle
+            controle = ControlePagamentos(self.root)
+            controle.abrir_janela_controle()
+        except ImportError as e:
+            custom_messagebox("error", "Erro", f"Não foi possível importar o módulo de Controle de Pagamentos: {str(e)}")
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
+
+    
+    def configurar_protecoes(self):
+        """
+        Configura proteções contra perda de dados
+        Deve ser chamado no __init__ da classe principal
+        """
+        try:
+            # Vincular evento de fechamento da janela
+            if hasattr(self, 'janela_principal'):
+                self.janela_principal.protocol("WM_DELETE_WINDOW", self.fechar_aplicacao)
+            
+            # Vincular evento de mudança no combo de clientes
+            if hasattr(self, 'combo_cliente'):
+                # Remover binding anterior se existir
+                self.combo_cliente.unbind('<<ComboboxSelected>>')
+                # Adicionar novo binding com proteção
+                self.combo_cliente.bind('<<ComboboxSelected>>', self.selecionar_cliente)
+            
+            logger = system_logger.get_logger()
+            logger.info("Proteções contra perda de dados configuradas")
+            
+        except Exception as e:
+            logger = system_logger.get_logger()
+            logger.error(f"Erro ao configurar proteções: {str(e)}")
+
+    def continuar_para_fornecedor(self):
+        """Avança para a aba de fornecedor após confirmar seleção"""
+        if self.cliente_atual:
+            self.notebook.select(1)  # Vai para aba de fornecedor
+        else:
+            custom_messagebox("warning",  "Aviso", "Selecione um cliente primeiro!")
 
     
     def setup_aba_fornecedor(self):
