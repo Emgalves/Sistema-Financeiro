@@ -105,3 +105,82 @@
 2025-10-23 11:28:16,475 - sistema - logger_config - INFO - Concluído: Carregar configurações
 2025-10-23 11:28:16,489 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
 2025-10-23 11:28:20,011 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-23 15:35:57,981 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 15:36:00,434 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 15:36:00,464 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 15:36:00,466 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 15:36:00,466 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 15:36:00,479 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 15:37:14,623 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-23 17:32:54,505 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 17:35:34,638 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 17:35:34,638 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 17:35:34,638 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 17:35:34,653 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 17:35:34,668 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 17:51:17,386 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 17:51:19,232 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 17:51:19,232 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 17:51:19,232 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 17:51:19,232 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 17:51:19,258 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 17:51:33,210 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-23 17:51:50,678 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: FERNANDO HENRIQUE FARIA BARBASSA
+2025-10-23 17:52:25,296 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-23 17:52:53,084 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 17:52:55,129 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 17:52:55,132 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 17:52:55,134 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 17:52:55,137 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 17:52:55,148 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 17:53:14,038 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2025-10-23 17:53:23,651 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RHAUFED RODRIGUES DOS SANTOS
+2025-10-23 17:53:25,626 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RHAUFED RODRIGUES DOS SANTOS
+2025-10-23 17:53:42,547 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-10-23 17:54:06,780 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 17:54:06,780 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 17:54:06,780 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 17:54:06,780 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 17:54:06,780 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 17:54:25,079 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-10-23 18:02:55,382 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 18:02:57,227 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 18:02:57,242 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 18:02:57,242 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 18:02:57,242 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 18:02:57,254 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 18:03:12,405 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: EDIGAR BATISTA FERREIRA
+2025-10-23 18:03:28,906 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 18:03:30,392 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 18:03:30,392 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 18:03:30,392 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 18:03:30,392 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 18:03:30,418 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 18:03:34,443 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
+2025-10-23 18:03:47,142 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2025-10-23 18:20:00,543 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 18:20:02,654 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 18:20:02,654 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 18:20:02,670 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 18:20:02,670 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 18:20:02,685 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 18:54:42,845 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 18:54:44,856 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 18:54:44,856 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 18:54:44,856 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 18:54:44,856 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 18:54:44,881 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 18:55:07,638 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-10-23 18:57:51,914 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: JOVERPI LOCADORA E CONSTRUTORA DE IMOVEIS LTDA
+2025-10-23 19:08:22,726 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 19:08:24,500 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:08:24,500 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:08:24,516 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:08:24,516 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:08:24,541 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 19:13:02,082 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 19:13:05,167 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:13:05,210 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:13:05,213 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:13:05,213 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:13:05,225 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas

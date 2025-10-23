@@ -4555,3 +4555,16 @@
 2025-10-17 17:45:01,833 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
 2025-10-17 17:56:50,995 - INFO - Saída confirmada, finalizando sistema
 2025-10-17 17:56:51,082 - INFO - Ação concluída: Gerar relatório
+2025-10-23 15:37:53,887 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-10-23 15:37:54,204 - INFO - Sistema principal inicializado com sucesso
+2025-10-23 15:38:35,620 - INFO - Saída confirmada, finalizando sistema
+2025-10-23 15:43:55,029 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-10-23 15:43:55,305 - INFO - Sistema principal inicializado com sucesso
+2025-10-23 17:52:44,745 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-10-23 17:52:45,057 - INFO - Sistema principal inicializado com sucesso
+2025-10-23 17:52:48,464 - INFO - Abrindo sistema de entrada de dados
+2025-10-23 17:52:53,100 - INFO - Configurações importadas com sucesso via src.config
+2025-10-23 17:52:53,113 - INFO - Configurações importadas com sucesso
+2025-10-23 17:52:53,114 - INFO - Configurações do sistema importadas com sucesso
+2025-10-23 17:54:06,161 - INFO - Abrindo sistema de entrada de dados
+2025-10-23 17:54:48,606 - INFO - Saída confirmada, finalizando sistema
