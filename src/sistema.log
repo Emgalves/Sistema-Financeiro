@@ -4568,3 +4568,10 @@
 2025-10-23 17:52:53,114 - INFO - Configurações do sistema importadas com sucesso
 2025-10-23 17:54:06,161 - INFO - Abrindo sistema de entrada de dados
 2025-10-23 17:54:48,606 - INFO - Saída confirmada, finalizando sistema
+2025-10-23 19:36:54,116 - INFO - === Iniciando Sistema de Gestão Financeira ===
+2025-10-23 19:36:56,583 - INFO - Sistema principal inicializado com sucesso
+2025-10-23 19:37:00,027 - INFO - Abrindo sistema de entrada de dados
+2025-10-23 19:37:13,806 - INFO - Configurações importadas com sucesso via src.config
+2025-10-23 19:37:13,819 - INFO - Configurações importadas com sucesso
+2025-10-23 19:37:13,820 - INFO - Configurações do sistema importadas com sucesso
+2025-10-23 19:48:29,883 - INFO - Saída confirmada, finalizando sistema

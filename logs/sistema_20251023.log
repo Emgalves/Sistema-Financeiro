@@ -184,3 +184,116 @@
 2025-10-23 19:13:05,213 - sistema - logger_config - INFO - Iniciando: Carregar configurações
 2025-10-23 19:13:05,213 - sistema - logger_config - INFO - Concluído: Carregar configurações
 2025-10-23 19:13:05,225 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 19:37:13,794 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-23 19:37:15,663 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:37:15,717 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:37:15,717 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:37:15,717 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:37:15,739 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-23 19:37:24,817 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ELLIAS MAGALHAES E ABREU LIMA
+2025-10-23 19:37:59,197 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: SERGIO LUCIO PEREIRA
+2025-10-23 19:41:43,574 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:41:43,574 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:42:49,122 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-10-23 19:42:50,700 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 1
+2025-10-23 19:43:01,558 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:43:01,558 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:43:18,196 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-10-23 19:43:19,715 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 2
+2025-10-23 19:43:24,676 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:43:24,676 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:43:42,058 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-10-23 19:43:43,283 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 3
+2025-10-23 19:43:52,550 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:43:52,550 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:44:04,803 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-10-23 19:44:05,997 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 4
+2025-10-23 19:44:15,564 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:44:15,564 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:44:31,022 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-10-23 19:44:32,584 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 5
+2025-10-23 19:44:39,460 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: SERGIO LUCIO PEREIRA, Registros: 5
+2025-10-23 19:44:39,460 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-10-23 19:44:39,460 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 5
+2025-10-23 19:44:39,460 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/10/2025']
+2025-10-23 19:44:39,460 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\SERGIO LUCIO PEREIRA.xlsx
+2025-10-23 19:44:39,460 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-23 19:44:41,955 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-23 19:44:41,955 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-23 19:44:41,955 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: JOSÉ GERALDO LONGUINHO | SALÁRIO | R$ 1156.00 | 20/10/2025
+2025-10-23 19:44:42,190 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: JOSÉ GERALDO LONGUINHO - SALÁRIO
+2025-10-23 19:44:42,190 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-23 19:44:42,190 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-23 19:44:42,190 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: DAVID LOPES DOS SANTOS | SALÁRIO | R$ 1537.62 | 20/10/2025
+2025-10-23 19:44:42,358 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: DAVID LOPES DOS SANTOS - SALÁRIO
+2025-10-23 19:44:42,358 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-23 19:44:42,358 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-23 19:44:42,358 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: MARCIO DAVID SANTOS VIEIRA | SALÁRIO | R$ 854.80 | 20/10/2025
+2025-10-23 19:44:42,525 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MARCIO DAVID SANTOS VIEIRA - SALÁRIO
+2025-10-23 19:44:42,525 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-23 19:44:42,525 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-23 19:44:42,525 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: VITOR MARCOS QUEIROZ DOS SANTOS | SALÁRIO | R$ 1156.00 | 20/10/2025
+2025-10-23 19:44:42,723 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: VITOR MARCOS QUEIROZ DOS SANTOS - SALÁRIO
+2025-10-23 19:44:42,723 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-23 19:44:42,738 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-23 19:44:42,742 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: RIAN RODRIGUES DOS SANTOS | SALÁRIO | R$ 740.00 | 20/10/2025
+2025-10-23 19:44:43,093 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: RIAN RODRIGUES DOS SANTOS - SALÁRIO
+2025-10-23 19:44:43,125 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 2563 na linha 2564
+2025-10-23 19:44:43,146 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 2564 na linha 2565
+2025-10-23 19:44:43,172 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 2565 na linha 2566
+2025-10-23 19:44:43,203 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 2566 na linha 2567
+2025-10-23 19:44:43,230 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 2567 na linha 2568
+2025-10-23 19:44:44,659 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-23 19:44:45,172 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-10-20
+2025-10-23 19:44:45,172 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-10-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-10-23 19:44:47,870 - sistema - Sistema_Entrada_Dados - INFO - Limpando 5 registros salvos da visualização
+2025-10-23 19:44:47,885 - sistema - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-10-23 19:44:47,901 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-10-23 19:45:02,845 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:45:02,845 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:45:29,287 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-10-23 19:45:30,429 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 1
+2025-10-23 19:45:43,387 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:45:43,387 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:46:09,105 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-10-23 19:46:10,292 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 2
+2025-10-23 19:46:22,470 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:46:22,470 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:46:47,986 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-10-23 19:46:49,115 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 3
+2025-10-23 19:47:05,724 - sistema - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-23 19:47:05,724 - sistema - logger_config - INFO - Concluído: Carregar configurações
+2025-10-23 19:47:37,806 - sistema - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: SERGIO LUCIO PEREIRA
+2025-10-23 19:47:38,859 - sistema - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: SERGIO LUCIO PEREIRA, Total: 4
+2025-10-23 19:47:45,756 - sistema - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: SERGIO LUCIO PEREIRA, Registros: 4
+2025-10-23 19:47:45,756 - sistema - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-10-23 19:47:45,756 - sistema - Sistema_Entrada_Dados - INFO - Total de registros a processar: 4
+2025-10-23 19:47:45,756 - sistema - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/10/2025']
+2025-10-23 19:47:45,756 - sistema - Sistema_Entrada_Dados - INFO - Salvando em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes\SERGIO LUCIO PEREIRA.xlsx
+2025-10-23 19:47:45,756 - sistema - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-10-23 19:47:47,938 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-23 19:47:47,938 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-23 19:47:47,938 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS | DISTRIBUIÇÃO REDES PLUVIAIS, CAIXA DE GORDURA, ESGOTO E CAIXA PLUVIAL | R$ 2268.00 | 20/10/2025
+2025-10-23 19:47:48,218 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS - DISTRIBUIÇÃO REDES PLUVIAIS, CAIXA DE GORDURA, ESGOTO E CAIXA PLUVIAL
+2025-10-23 19:47:48,218 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-23 19:47:48,218 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-23 19:47:48,218 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: DANIEL SEVERIANO DA SILVA | REVESTIMENTO EM MARMORE E EM PORCELANATO SUITE E COZINHA | R$ 991.60 | 20/10/2025
+2025-10-23 19:47:48,372 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: DANIEL SEVERIANO DA SILVA - REVESTIMENTO EM MARMORE E EM PORCELANATO SUITE E COZINHA
+2025-10-23 19:47:48,372 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-23 19:47:48,372 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-23 19:47:48,372 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: GUILHERME DAMASCENO GOMES | FINALIZAÇÃO DO SERVIÇO | R$ 3085.00 | 20/10/2025
+2025-10-23 19:47:48,508 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: GUILHERME DAMASCENO GOMES - FINALIZAÇÃO DO SERVIÇO
+2025-10-23 19:47:48,508 - sistema - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-10-23 19:47:48,508 - sistema - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-10-23 19:47:48,508 - sistema - Sistema_Entrada_Dados - INFO - Dados novos: MHS EVENTO SST ESOCIAL | EVENTOS SST E-SOCIAL - 20/10 | R$ 85.96 | 20/10/2025
+2025-10-23 19:47:48,641 - sistema - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MHS EVENTO SST ESOCIAL - EVENTOS SST E-SOCIAL - 20/10
+2025-10-23 19:47:48,657 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 2568 na linha 2569
+2025-10-23 19:47:48,679 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 2569 na linha 2570
+2025-10-23 19:47:48,701 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 2570 na linha 2571
+2025-10-23 19:47:48,717 - sistema - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 2571 na linha 2572
+2025-10-23 19:47:49,773 - sistema - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-10-23 19:47:50,277 - sistema - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-10-20
+2025-10-23 19:47:50,277 - sistema - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-10-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-10-23 19:47:52,091 - sistema - Sistema_Entrada_Dados - INFO - Limpando 4 registros salvos da visualização
+2025-10-23 19:47:52,103 - sistema - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-10-23 19:47:52,112 - sistema - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
