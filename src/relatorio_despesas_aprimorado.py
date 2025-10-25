@@ -116,7 +116,12 @@ class RelatorioUI:
         self.status_label = None
         self.handler = RelatorioHandler()
         self.arquivos_lote = []
-        self.menu_principal = None  # Adicionado aqui, antes do setup_ui
+        self.menu_principal = None
+        
+        # Variáveis para controlar as notas do relatório
+        self.incluir_notas = BooleanVar(value=False)
+        self.texto_notas = StringVar(value="")
+        
         self.setup_ui()
 
     def setup_ui(self):
@@ -304,7 +309,9 @@ class RelatorioUI:
                 'nome_cliente': nome_cliente,
                 'endereco_cliente': ws_resumo['A4'].value,
                 'numero_relatorio': numero_relatorio,
-                'acumulado': valor_acumulado
+                'acumulado': valor_acumulado,
+                'incluir_notas': self.incluir_notas.get(),
+                'texto_notas': self.texto_notas.get()
             }
             
             logger.debug("Verificando dados antes de mostrar preview:")
@@ -383,7 +390,9 @@ class RelatorioUI:
                 'nome_cliente': nome_cliente,
                 'endereco_cliente': ws_resumo['A4'].value,
                 'numero_relatorio': numero_relatorio,
-                'acumulado': valor_acumulado
+                'acumulado': valor_acumulado,
+                'incluir_notas': self.incluir_notas.get(),
+                'texto_notas': self.texto_notas.get()
             }
             
             logger.debug("Verificando dados antes de gerar PDF:")
@@ -626,77 +635,6 @@ class RelatorioUI:
                 command=continuar).pack(pady=5, padx=10, fill='x')
         ttk.Button(btn_frame, text="Voltar ao Menu Principal", 
                 command=voltar_menu).pack(pady=5, padx=10, fill='x')     
-
-    def processar_lancamentos_futuros(self, df, data_relatorio, incluir_excluidos=False):
-        """Versão corrigida que considera status de exclusão"""
-        try:
-            # Converter a data do relatório para datetime usando formato explícito
-            try:
-                self.data_ref = pd.to_datetime(data_relatorio)
-            except:
-                self.data_ref = pd.to_datetime(data_relatorio, format='%d/%m/%Y')
-
-            # Converter a coluna DATA_REL para datetime
-            df = df.copy()
-            
-            # CORREÇÃO: Só filtrar excluídos se incluir_excluidos for False
-            if not incluir_excluidos and 'STATUS' in df.columns:
-                df = df[df['STATUS'] != 'EXCLUIDO'].copy()
-                print(f"Lançamentos futuros - registros após filtrar excluídos: {len(df)}")
-            else:
-                print(f"Lançamentos futuros - incluindo todos os registros: {len(df)}")
-            
-            # Verificar se as colunas necessárias existem
-            if 'DATA_REL' not in df.columns:
-                logger.error("Coluna DATA_REL não encontrada no DataFrame")
-                return pd.DataFrame()
-            
-            if 'DT_VENCTO' not in df.columns:
-                logger.warning("Coluna DT_VENCTO não encontrada, usando DATA_REL como substituto")
-                df['DT_VENCTO'] = df['DATA_REL']
-            
-            # Converter colunas para datetime
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
-            df['DT_VENCTO'] = pd.to_datetime(df['DT_VENCTO'], format='%d/%m/%Y', errors='coerce')
-            
-            # Remover registros com datas inválidas
-            df = df.dropna(subset=['DATA_REL'])
-            
-            # Formatar a data de vencimento para DD/MM/AAAA
-            df['DT_VENCTO'] = df['DT_VENCTO'].dt.strftime('%d/%m/%Y').fillna('')
-
-            # Filtrar apenas lançamentos futuros baseado em DATA_REL
-            df_futuro = df[(df['DATA_REL'] > self.data_ref) & (df['TP_DESP'] != 1)].copy()
-
-            if df_futuro.empty:
-                logger.info("Nenhum lançamento futuro encontrado")
-                return df_futuro
-
-            # Ordenar por data de vencimento
-            df_futuro = df_futuro.sort_values('DATA_REL')
-
-            # Agrupar por período baseado na DATA_REL
-            def classificar_periodo(data_rel):
-                """Classifica o período baseado na diferença de dias"""
-                try:
-                    diff_days = (data_rel - self.data_ref).days
-                    if diff_days <= 30:
-                        return "Próximos 30 dias"
-                    elif diff_days <= 60:
-                        return "31 a 60 dias"
-                    else:
-                        return "Após 60 dias"
-                except:
-                    return "Após 60 dias"
-
-            df_futuro['periodo'] = df_futuro['DATA_REL'].apply(classificar_periodo)
-
-            logger.info(f"Processados {len(df_futuro)} lançamentos futuros")
-            return df_futuro
-            
-        except Exception as e:
-            logger.error(f"Erro ao processar lançamentos futuros: {str(e)}", exc_info=True)
-            return pd.DataFrame()
 
     def adicionar_botao_pendentes(self):
         """
@@ -1394,7 +1332,7 @@ class RelatorioHandler:
     
     def adicionar_lancamentos_futuros(self, elementos, dados):
         """Adiciona a seção de lançamentos futuros ao relatório"""
-        if not dados['df_futuro'].empty:
+        if dados.get('df_futuro') is not None and not dados['df_futuro'].empty:
             elementos.append(PageBreak())
             elementos.append(Paragraph("LANÇAMENTOS FUTUROS", self.config.style_heading))
             
@@ -1467,7 +1405,112 @@ class RelatorioHandler:
                 f"\nTotal Geral de Lançamentos Futuros: {self.formatar_numero(total_geral_futuro)}",
                 self.config.style_heading
             ))
+
+    def processar_lancamentos_futuros(self, df, data_relatorio, incluir_excluidos=False):
+        """Processa lançamentos futuros para o relatório"""
+        try:
+            import pandas as pd
+            
+            # Converter data
+            data_ref = pd.to_datetime(data_relatorio)
+            
+            # Copiar e filtrar DataFrame
+            df = df.copy()
+            
+            # Filtrar excluídos se necessário
+            if not incluir_excluidos and 'STATUS' in df.columns:
+                df = df[df['STATUS'] != 'EXCLUIDO'].copy()
+            
+            # Converter colunas de data
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            # Verificar coluna DT_VENCTO
+            if 'DT_VENCTO' not in df.columns:
+                df['DT_VENCTO'] = df['DATA_REL']
+            df['DT_VENCTO'] = pd.to_datetime(df['DT_VENCTO'], format='%d/%m/%Y', errors='coerce')
+            
+            # Remover datas inválidas
+            df = df.dropna(subset=['DATA_REL'])
+            
+            # Formatar DT_VENCTO
+            df['DT_VENCTO'] = df['DT_VENCTO'].dt.strftime('%d/%m/%Y').fillna('')
+            
+            # Filtrar apenas futuros (DATA_REL > data_relatorio) e excluir TP_DESP = 1
+            df_futuro = df[(df['DATA_REL'] > data_ref) & (df['TP_DESP'] != 1)].copy()
+            
+            if df_futuro.empty:
+                logger.info("Nenhum lançamento futuro encontrado")
+                return df_futuro
+            
+            # Ordenar
+            df_futuro = df_futuro.sort_values('DATA_REL')
+            
+            # Classificar por período
+            def classificar_periodo(data_rel):
+                try:
+                    diff_days = (data_rel - data_ref).days
+                    if diff_days <= 30:
+                        return "Próximos 30 dias"
+                    elif diff_days <= 60:
+                        return "31 a 60 dias"
+                    else:
+                        return "Após 60 dias"
+                except:
+                    return "Após 60 dias"
+            
+            df_futuro['periodo'] = df_futuro['DATA_REL'].apply(classificar_periodo)
+            
+            logger.info(f"Processados {len(df_futuro)} lançamentos futuros")
+            return df_futuro
+            
+        except Exception as e:
+            logger.error(f"Erro ao processar lançamentos futuros: {str(e)}", exc_info=True)
+            return pd.DataFrame()
     
+    def adicionar_notas(self, elementos, dados):
+        """Adiciona a seção de notas ao relatório"""
+        try:
+            # Verificar se deve incluir notas
+            if not dados.get('incluir_notas', False):
+                logger.debug("Notas não serão incluídas (incluir_notas=False)")
+                return
+            
+            # Verificar se há texto de notas
+            texto_notas = dados.get('texto_notas', '').strip()
+            if not texto_notas:
+                logger.debug("Notas não serão incluídas (texto vazio)")
+                return
+            
+            logger.info(f"Adicionando notas ao relatório ({len(texto_notas)} caracteres)")
+            
+            # Adicionar quebra de página
+            elementos.append(PageBreak())
+            
+            # Adicionar título "NOTAS:"
+            elementos.append(Paragraph(
+                "NOTAS:",
+                self.config.style_heading
+            ))
+            
+            elementos.append(Spacer(1, 12))
+            
+            # Adicionar texto das notas
+            # Dividir em parágrafos se houver múltiplas linhas
+            linhas = texto_notas.split('\n')
+            for linha in linhas:
+                if linha.strip():  # Ignorar linhas vazias
+                    elementos.append(Paragraph(
+                        linha.strip(),
+                        self.config.style_normal
+                    ))
+                    elementos.append(Spacer(1, 6))
+            
+            logger.info("Notas adicionadas com sucesso")
+            
+        except Exception as e:
+            logger.error(f"Erro ao adicionar notas: {str(e)}", exc_info=True)
+            # Não propagar o erro para não interromper a geração do relatório
+        
     def formatar_numero(self, valor):
         """Formata valor numérico, tratando possíveis strings e NaN"""
         if pd.isna(valor) or valor == "":
@@ -2382,6 +2425,9 @@ class RelatorioHandler:
             #     df_taxas_processadas = self.processar_taxas_pendentes(df_taxas, dados['data_relatorio'])
             #     if not df_taxas_processadas.empty:
             #         self.adicionar_taxas_administracao(elementos, df_taxas_processadas, self.config)
+
+            # ⭐ ADICIONAR NOTAS SE CONFIGURADO ⭐
+            self.adicionar_notas(elementos, dados)
 
             # Gerar PDF
             doc.build(elementos)
