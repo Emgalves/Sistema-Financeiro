@@ -20,6 +20,28 @@ class RelatoriosDespesasService:
         from relatorio_despesas_aprimorado import RelatorioHandler
         self.handler = RelatorioHandler()
     
+        # 🔍 DEBUG: Verificar métodos disponíveis
+        print("=" * 80)
+        print("🔍 DEBUG: VERIFICANDO MÉTODOS DO HANDLER")
+        print("=" * 80)
+        
+        # Listar todos os métodos que contém "futuro"
+        metodos_futuro = [m for m in dir(self.handler) if 'futuro' in m.lower() and not m.startswith('_')]
+        print(f"Métodos com 'futuro': {metodos_futuro}")
+        
+        # Verificar especificamente os métodos que precisamos
+        tem_processar = hasattr(self.handler, 'processar_lancamentos_futuros')
+        tem_adicionar = hasattr(self.handler, 'adicionar_lancamentos_futuros')
+        
+        print(f"✓ hasattr processar_lancamentos_futuros: {tem_processar}")
+        print(f"✓ hasattr adicionar_lancamentos_futuros: {tem_adicionar}")
+        
+        if tem_processar:
+            metodo = getattr(self.handler, 'processar_lancamentos_futuros')
+            print(f"✓ Tipo do método processar: {type(metodo)}")
+            print(f"✓ Assinatura: {metodo.__code__.co_varnames[:metodo.__code__.co_argcount]}")
+        
+        print("=" * 80)
 
 
     def processar_para_preview(self, config):
@@ -37,36 +59,37 @@ class RelatoriosDespesasService:
             )
             print(f"✅ Dados carregados: {len(df_original)} registros")
             
-            # 2. Processar dados usando método original - JÁ VEM ORDENADO CORRETAMENTE!
+            # 2. Processar dados usando método original
             df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.handler.processar_dados(
                 df_original, config['data'], config['incluir_excluidos']
             )
-            print("✅ Dados processados pelo handler original (JÁ ORDENADOS)")
+            print("✅ Dados processados pelo handler original")
             
-            # 3. Lançamentos futuros - usar método original
-            df_futuro = None
+            # 3. Lançamentos futuros
+            import pandas as pd
+            df_futuro = pd.DataFrame()  # ⚠️ SEMPRE inicializar como DataFrame, NUNCA None
+
             if config['incluir_futuros']:
                 try:
-                    if hasattr(self.handler, 'adicionar_lancamentos_futuros'):
-                        df_futuro = self.handler.adicionar_lancamentos_futuros(
+                    if hasattr(self.handler, 'processar_lancamentos_futuros'):
+                        resultado = self.handler.processar_lancamentos_futuros(
                             df_original, config['data'], config['incluir_excluidos']
                         )
-                        print("✅ Lançamentos futuros processados")
-                    elif hasattr(self.handler, 'processar_lancamentos_futuros'):
-                        df_futuro = self.handler.processar_lancamentos_futuros(
-                            df_original, config['data'], config['incluir_excluidos']
-                        )
-                        print("✅ Lançamentos futuros processados")
+                        # Garantir que é DataFrame, não None
+                        if resultado is not None and isinstance(resultado, pd.DataFrame):
+                            df_futuro = resultado
+                        else:
+                            print(f"⚠️ AVISO: processar_lancamentos_futuros retornou {type(resultado)}")
+                            df_futuro = pd.DataFrame()
                     else:
-                        print("⚠️ Método de lançamentos futuros não encontrado")
-                        import pandas as pd
-                        df_futuro = pd.DataFrame()
+                        print("⚠️ Método processar_lancamentos_futuros não encontrado!")
                 except Exception as e:
-                    print(f"⚠️ Erro ao processar lançamentos futuros: {str(e)}")
-                    import pandas as pd
+                    print(f"❌ ERRO ao processar lançamentos futuros: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
                     df_futuro = pd.DataFrame()
             
-            # 4. Informações do cliente - usar métodos originais
+            # 4. Informações do cliente
             workbook = load_workbook(config['arquivo'], data_only=True)
             ws_resumo = workbook['RESUMO']
             
@@ -75,9 +98,24 @@ class RelatoriosDespesasService:
                 df_original, config['data'], config['incluir_excluidos']
             )
             
-            # 5. Montar dados EXATAMENTE como o handler espera - SEM MODIFICAÇÕES!
+            # ⭐ TRATAMENTO ROBUSTO DE NOTAS ⭐
+            # Garante que texto_notas seja sempre uma string, mesmo que venha como bool ou None
+            incluir_notas = bool(config.get('incluir_notas', False))
+            texto_notas_raw = config.get('texto_notas', '')
+            
+            # Conversão segura para string
+            if texto_notas_raw is None or texto_notas_raw is False:
+                texto_notas = ''
+            elif texto_notas_raw is True:
+                texto_notas = ''
+            elif isinstance(texto_notas_raw, str):
+                texto_notas = texto_notas_raw
+            else:
+                texto_notas = str(texto_notas_raw)
+            
+            # 5. Montar dados completos
             dados_completos = {
-                # DataFrames JÁ PROCESSADOS E ORDENADOS pelo handler original
+                # DataFrames processados
                 'df_filtrado': df_filtrado,
                 'df_diaria': df_diaria,
                 'df_tp_desp_1': df_tp_desp_1,
@@ -94,19 +132,43 @@ class RelatoriosDespesasService:
                 'nome_cliente': ws_resumo['A3'].value,
                 'endereco_cliente': ws_resumo['A4'].value,
                 'numero_relatorio': numero_relatorio,
-                'acumulado': valor_acumulado
+                'acumulado': valor_acumulado,
+                
+                # ⭐ NOTAS TRATADAS ⭐
+                'incluir_notas': incluir_notas,
+                'texto_notas': texto_notas
             }
             
             workbook.close()
             
-            # 6. Log simples
-            print("📊 DADOS PRONTOS (processados pelo handler original):")
-            print(f"   - df_filtrado: {len(df_filtrado)} registros")
-            print(f"   - df_tp_desp_1: {len(df_tp_desp_1)} registros")
-            print(f"   - df_tp_desp_2: {len(df_tp_desp_2)} registros")
-            print(f"   - df_diaria: {len(df_diaria)} registros")
-            print(f"   - df_futuro: {len(df_futuro) if df_futuro is not None else 0} registros")
+            # Debug com verificação de tipo e tamanho
+            print("📊 DADOS PRONTOS:")
+            print(f"   - incluir_notas: {dados_completos['incluir_notas']} (tipo: {type(dados_completos['incluir_notas']).__name__})")
+            print(f"   - texto_notas tipo: {type(dados_completos['texto_notas']).__name__}")
             
+            if dados_completos['incluir_notas'] and dados_completos['texto_notas']:
+                comprimento = len(dados_completos['texto_notas'])
+                if comprimento > 50:
+                    texto_preview = dados_completos['texto_notas'][:50] + "..."
+                else:
+                    texto_preview = dados_completos['texto_notas']
+                print(f"   - texto_notas ({comprimento} caracteres): {texto_preview}")
+            else:
+                print(f"   - texto_notas: (vazio)")
+            
+            # Debug de lançamentos futuros
+            print(f"   - incluir_futuros: {dados_completos['incluir_futuros']}")
+            print(f"   - df_futuro tipo: {type(dados_completos['df_futuro']).__name__}")
+            if dados_completos['df_futuro'] is not None:
+                import pandas as pd
+                if isinstance(dados_completos['df_futuro'], pd.DataFrame):
+                    print(f"   - df_futuro tamanho: {len(dados_completos['df_futuro'])} registros")
+                    print(f"   - df_futuro vazio?: {dados_completos['df_futuro'].empty}")
+                else:
+                    print(f"   - df_futuro: não é DataFrame!")
+            else:
+                print(f"   - df_futuro: None")
+
             return dados_completos
             
         except Exception as e:
