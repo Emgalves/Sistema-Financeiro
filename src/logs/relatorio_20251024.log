@@ -1,0 +1,25 @@
+2025-10-24 17:32:00,475 - INFO - === Iniciando Sistema de Relatórios ===
+2025-10-24 17:32:01,866 - INFO - Iniciando RelatorioUI
+2025-10-24 17:32:01,866 - INFO - RelatorioHandler inicializado
+2025-10-24 17:32:01,866 - INFO - Iniciando configuração da interface
+2025-10-24 17:32:01,928 - INFO - Interface configurada com sucesso
+2025-10-24 17:32:32,794 - INFO - Notas salvas: 8 caracteres
+2025-10-24 17:33:06,407 - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:33:11,897 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:33:11,897 - INFO - Incluir excluídos: False
+2025-10-24 17:33:11,897 - INFO - Carregando dados de: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:33:12,069 - INFO - Dados carregados: 287 registros
+2025-10-24 17:33:12,085 - INFO - Dados processados - Total: 263 registros
+2025-10-24 17:33:12,085 - INFO - Lançamentos futuros: 23
+2025-10-24 17:33:12,303 - INFO - Número do relatório: 1
+2025-10-24 17:33:12,303 - ERROR - Erro ao calcular acumulado: 'STATUS_REL'
+2025-10-24 17:33:12,303 - INFO - Número do relatório: 1
+2025-10-24 17:33:12,303 - INFO - Valor acumulado calculado: 0.00
+2025-10-24 17:33:28,287 - INFO - RelatorioHandler inicializado
+2025-10-24 17:33:28,287 - INFO - Gerando PDF: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes\REL_-_BRUNO SANTANA RINALDI_-_20-10-2025.pdf
+2025-10-24 17:33:28,287 - INFO - Iniciando geração do PDF
+2025-10-24 17:33:28,287 - INFO - Incluindo notas no PDF
+2025-10-24 17:33:28,287 - INFO - Adicionando notas ao relatório
+2025-10-24 17:33:28,287 - INFO - ✅ Notas adicionadas com sucesso (8 caracteres)
+2025-10-24 17:33:28,303 - INFO - PDF construído com sucesso
+2025-10-24 17:33:28,303 - INFO - ✅ PDF gerado com sucesso: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes\REL_-_BRUNO SANTANA RINALDI_-_20-10-2025.pdf

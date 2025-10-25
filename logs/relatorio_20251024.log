@@ -1,0 +1,800 @@
+2025-10-24 15:23:23,843 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 15:23:23,954 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 15:23:23,955 - INFO - Coluna de status: Data Final
+2025-10-24 15:23:23,975 - INFO - Coluna de nome: Nome
+2025-10-24 15:23:23,977 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 15:23:23,979 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 15:23:24,040 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 15:23:24,073 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 15:23:24,126 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 15:23:24,161 - INFO - Coluna de status: Data Final
+2025-10-24 15:23:24,168 - INFO - Coluna de nome: Nome
+2025-10-24 15:23:24,211 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 15:23:24,214 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 15:23:27,681 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 15:23:27,691 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 15:23:52,991 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 15:23:52,991 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 15:23:53,010 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 15:24:06,580 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 15:24:06,580 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 15:24:06,580 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 15:24:06,580 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 15:24:06,580 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 15:24:06,580 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 15:24:06,580 - INFO - ✅ Configurações coletadas
+2025-10-24 15:24:06,589 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 15:24:08,921 - INFO - Modo selecionado: Preview
+2025-10-24 15:24:08,921 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 15:24:09,237 - INFO - df_filtrado final: 14 registros
+2025-10-24 15:24:09,238 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 15:24:09,239 - INFO - Tipos de despesa únicos: [2.0 3.0 4.0 7.0 5.0]
+2025-10-24 15:24:09,511 - INFO - 
+Obtendo número do relatório para data 2025-11-05 00:00:00
+2025-10-24 15:24:09,511 - INFO - Número do relatório calculado: 16
+2025-10-24 15:24:09,511 - INFO - Calculando acumulado para data 2025-11-05 00:00:00
+2025-10-24 15:24:09,511 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 15:24:09,541 - INFO - Valor acumulado calculado (apenas ativos): 1,050,156.84
+2025-10-24 15:24:09,543 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 15:24:09,545 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_152409.pdf
+2025-10-24 15:24:09,545 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 15:24:09,546 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 15:24:09,546 - INFO - Logo carregada com sucesso!
+2025-10-24 15:24:09,546 - INFO - Criando cabeçalho COM logo
+2025-10-24 15:24:09,550 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 15:24:09,551 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 15:24:09,558 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 15:24:09,630 - INFO - Detalhes adicionados com sucesso
+2025-10-24 15:24:09,730 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_152409.pdf
+2025-10-24 15:24:09,730 - INFO - ✅ PDF temporário válido: 48,197 bytes
+2025-10-24 15:24:09,979 - INFO - ✅ Janela de decisão criada
+2025-10-24 15:24:20,497 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_152409.pdf
+2025-10-24 15:24:22,514 - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_152409.pdf
+2025-10-24 15:24:32,668 - INFO - Solicitado retorno ao menu principal
+2025-10-24 15:24:32,668 - INFO - Retornando ao menu principal existente
+2025-10-24 15:24:32,760 - INFO - Retorno ao menu principal concluído
+2025-10-24 15:24:36,410 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 15:24:36,455 - INFO - Ação concluída: Gerar relatório
+2025-10-24 16:06:53,377 - INFO - RelatorioHandler inicializado
+2025-10-24 16:06:53,377 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 16:06:53,438 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 16:06:53,438 - INFO - Coluna de status: Data Final
+2025-10-24 16:06:53,454 - INFO - Coluna de nome: Nome
+2025-10-24 16:06:53,454 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 16:06:53,466 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 16:06:53,492 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 16:06:53,492 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 16:06:53,512 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 16:06:53,513 - INFO - Coluna de status: Data Final
+2025-10-24 16:06:53,516 - INFO - Coluna de nome: Nome
+2025-10-24 16:06:53,517 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 16:06:53,518 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 16:06:55,074 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 16:06:55,074 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 16:09:28,835 - INFO - Solicitado retorno ao menu principal
+2025-10-24 16:09:28,851 - INFO - Retornando ao menu principal existente
+2025-10-24 16:09:28,985 - INFO - Retorno ao menu principal concluído
+2025-10-24 16:09:31,825 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 16:09:31,865 - INFO - Ação concluída: Gerar relatório
+2025-10-24 16:28:39,376 - INFO - RelatorioHandler inicializado
+2025-10-24 16:28:39,392 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 16:28:39,490 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 16:28:39,490 - INFO - Coluna de status: Data Final
+2025-10-24 16:28:39,513 - INFO - Coluna de nome: Nome
+2025-10-24 16:28:39,513 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 16:28:39,513 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 16:28:39,557 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 16:28:39,557 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 16:28:39,575 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 16:28:39,577 - INFO - Coluna de status: Data Final
+2025-10-24 16:28:39,580 - INFO - Coluna de nome: Nome
+2025-10-24 16:28:39,581 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 16:28:39,582 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 16:28:41,375 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 16:28:41,375 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 16:28:53,878 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 16:28:53,878 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 16:28:53,878 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 16:29:31,864 - INFO - Notas salvas: 86 caracteres
+2025-10-24 16:29:34,815 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 16:29:34,815 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 16:29:34,815 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 16:29:34,815 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 16:29:34,815 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 16:29:34,831 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 16:29:34,831 - INFO - ✅ Configurações coletadas
+2025-10-24 16:29:34,831 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 16:29:36,780 - INFO - Modo selecionado: Preview
+2025-10-24 16:29:36,780 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 16:29:36,805 - INFO - Carregando dados de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 16:29:36,986 - INFO - Dados carregados: 287 registros
+2025-10-24 16:29:37,007 - INFO - Dados processados - Total: 280 registros
+2025-10-24 16:29:37,010 - INFO - Lançamentos futuros: 6
+2025-10-24 16:29:37,251 - INFO - Número do relatório: 1
+2025-10-24 16:29:37,253 - ERROR - Erro ao calcular acumulado: 'STATUS_REL'
+2025-10-24 16:29:37,261 - ERROR - 💥 ERRO no preview direto: 'bool' object is not subscriptable
+2025-10-24 17:09:31,304 - INFO - Solicitado retorno ao menu principal
+2025-10-24 17:09:31,304 - INFO - Retornando ao menu principal existente
+2025-10-24 17:09:31,399 - INFO - Retorno ao menu principal concluído
+2025-10-24 17:11:52,537 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 17:11:52,623 - INFO - Ação concluída: Gerar relatório
+2025-10-24 17:12:00,323 - INFO - RelatorioHandler inicializado
+2025-10-24 17:12:00,323 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:12:00,387 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:12:00,387 - INFO - Coluna de status: Data Final
+2025-10-24 17:12:00,387 - INFO - Coluna de nome: Nome
+2025-10-24 17:12:00,387 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:12:00,387 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 17:12:00,425 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 17:12:00,425 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:12:00,447 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:12:00,447 - INFO - Coluna de status: Data Final
+2025-10-24 17:12:00,447 - INFO - Coluna de nome: Nome
+2025-10-24 17:12:00,447 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:12:00,447 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 17:12:02,460 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:12:02,460 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:12:10,483 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 17:12:10,483 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:12:10,483 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:12:40,246 - INFO - Notas salvas: 55 caracteres
+2025-10-24 17:12:42,744 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 17:12:42,744 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 17:12:42,744 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 17:12:42,744 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 17:12:42,744 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:12:42,744 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:12:42,744 - INFO - ✅ Configurações coletadas
+2025-10-24 17:12:42,744 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:12:46,250 - INFO - Modo selecionado: Preview
+2025-10-24 17:12:46,250 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 17:12:46,281 - INFO - Carregando dados de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:12:46,452 - INFO - Dados carregados: 287 registros
+2025-10-24 17:12:46,452 - INFO - Dados processados - Total: 280 registros
+2025-10-24 17:12:46,468 - INFO - Lançamentos futuros: 6
+2025-10-24 17:12:46,679 - INFO - Número do relatório: 1
+2025-10-24 17:12:46,679 - ERROR - Erro ao calcular acumulado: 'STATUS_REL'
+2025-10-24 17:12:46,679 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 17:12:46,679 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171246.pdf
+2025-10-24 17:12:46,679 - INFO - Iniciando geração do PDF
+2025-10-24 17:12:46,707 - INFO - PDF construído com sucesso
+2025-10-24 17:12:46,708 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171246.pdf
+2025-10-24 17:12:46,708 - INFO - ✅ PDF temporário válido: 1,755 bytes
+2025-10-24 17:12:46,992 - INFO - ✅ Janela de decisão criada
+2025-10-24 17:13:15,303 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171246.pdf
+2025-10-24 17:13:17,313 - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171246.pdf'
+2025-10-24 17:13:26,596 - INFO - Solicitado retorno ao menu principal
+2025-10-24 17:13:26,596 - INFO - Retornando ao menu principal existente
+2025-10-24 17:13:26,683 - INFO - Retorno ao menu principal concluído
+2025-10-24 17:13:29,452 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 17:13:29,509 - INFO - Ação concluída: Gerar relatório
+2025-10-24 17:13:48,724 - INFO - RelatorioHandler inicializado
+2025-10-24 17:13:48,724 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:13:48,773 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:13:48,785 - INFO - Coluna de status: Data Final
+2025-10-24 17:13:48,787 - INFO - Coluna de nome: Nome
+2025-10-24 17:13:48,787 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:13:48,787 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 17:13:48,819 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 17:13:48,823 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:13:48,841 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:13:48,841 - INFO - Coluna de status: Data Final
+2025-10-24 17:13:48,843 - INFO - Coluna de nome: Nome
+2025-10-24 17:13:48,844 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:13:48,845 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 17:13:50,483 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:13:50,483 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:13:56,353 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 17:13:56,354 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:13:56,362 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:14:00,157 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 17:14:00,157 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 17:14:00,157 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 17:14:00,157 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 17:14:00,157 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:14:00,157 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:14:00,172 - INFO - ✅ Configurações coletadas
+2025-10-24 17:14:00,172 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:14:02,108 - INFO - Modo selecionado: Preview
+2025-10-24 17:14:02,108 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 17:14:02,108 - INFO - Carregando dados de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:14:02,282 - INFO - Dados carregados: 287 registros
+2025-10-24 17:14:02,282 - INFO - Dados processados - Total: 280 registros
+2025-10-24 17:14:02,298 - INFO - Lançamentos futuros: 6
+2025-10-24 17:14:02,511 - INFO - Número do relatório: 1
+2025-10-24 17:14:02,511 - ERROR - Erro ao calcular acumulado: 'STATUS_REL'
+2025-10-24 17:14:02,511 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 17:14:02,511 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171402.pdf
+2025-10-24 17:14:02,511 - INFO - Iniciando geração do PDF
+2025-10-24 17:14:02,532 - INFO - PDF construído com sucesso
+2025-10-24 17:14:02,532 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171402.pdf
+2025-10-24 17:14:02,536 - INFO - ✅ PDF temporário válido: 1,755 bytes
+2025-10-24 17:14:02,808 - INFO - ✅ Janela de decisão criada
+2025-10-24 17:14:08,460 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171402.pdf
+2025-10-24 17:14:09,681 - INFO - Solicitado retorno ao menu principal
+2025-10-24 17:14:09,681 - INFO - Retornando ao menu principal existente
+2025-10-24 17:14:09,758 - INFO - Retorno ao menu principal concluído
+2025-10-24 17:14:14,256 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 17:14:14,306 - INFO - Ação concluída: Gerar relatório
+2025-10-24 17:15:13,988 - INFO - RelatorioHandler inicializado
+2025-10-24 17:15:13,988 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:15:14,052 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:15:14,053 - INFO - Coluna de status: Data Final
+2025-10-24 17:15:14,055 - INFO - Coluna de nome: Nome
+2025-10-24 17:15:14,056 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:15:14,057 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 17:15:14,087 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 17:15:14,088 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:15:14,103 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:15:14,105 - INFO - Coluna de status: Data Final
+2025-10-24 17:15:14,107 - INFO - Coluna de nome: Nome
+2025-10-24 17:15:14,108 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:15:14,109 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 17:15:15,421 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:15:15,421 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:15:19,895 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 17:15:19,895 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:15:19,910 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:15:21,830 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 17:15:21,830 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 17:15:21,830 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 17:15:21,830 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 17:15:21,830 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:15:21,830 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:15:21,830 - INFO - ✅ Configurações coletadas
+2025-10-24 17:15:21,830 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:15:23,599 - INFO - Modo selecionado: Preview
+2025-10-24 17:15:23,599 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 17:15:23,614 - INFO - Carregando dados de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:15:23,781 - INFO - Dados carregados: 287 registros
+2025-10-24 17:15:23,781 - INFO - Dados processados - Total: 280 registros
+2025-10-24 17:15:23,798 - INFO - Lançamentos futuros: 6
+2025-10-24 17:15:24,011 - INFO - Número do relatório: 1
+2025-10-24 17:15:24,027 - ERROR - Erro ao calcular acumulado: 'STATUS_REL'
+2025-10-24 17:15:24,027 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 17:15:24,027 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171524.pdf
+2025-10-24 17:15:24,027 - INFO - Iniciando geração do PDF
+2025-10-24 17:15:24,040 - INFO - PDF construído com sucesso
+2025-10-24 17:15:24,040 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171524.pdf
+2025-10-24 17:15:24,042 - INFO - ✅ PDF temporário válido: 1,755 bytes
+2025-10-24 17:15:24,247 - INFO - ✅ Janela de decisão criada
+2025-10-24 17:15:33,911 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171524.pdf
+2025-10-24 17:15:35,911 - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171524.pdf
+2025-10-24 17:15:36,862 - INFO - Solicitado retorno ao menu principal
+2025-10-24 17:15:36,862 - INFO - Retornando ao menu principal existente
+2025-10-24 17:15:36,961 - INFO - Retorno ao menu principal concluído
+2025-10-24 17:15:44,557 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 17:15:44,613 - INFO - Ação concluída: Gerar relatório
+2025-10-24 17:17:44,512 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:17:44,568 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:17:44,568 - INFO - Coluna de status: Data Final
+2025-10-24 17:17:44,568 - INFO - Coluna de nome: Nome
+2025-10-24 17:17:44,568 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:17:44,568 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 17:17:44,604 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 17:17:44,604 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:17:44,624 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:17:44,625 - INFO - Coluna de status: Data Final
+2025-10-24 17:17:44,627 - INFO - Coluna de nome: Nome
+2025-10-24 17:17:44,628 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:17:44,629 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 17:17:46,607 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:17:46,607 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:17:50,654 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 17:17:50,654 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:17:50,672 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:17:52,002 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 17:17:52,002 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 17:17:52,002 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 17:17:52,002 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 17:17:52,002 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:17:52,002 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:17:52,002 - INFO - ✅ Configurações coletadas
+2025-10-24 17:17:52,002 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:17:53,616 - INFO - Modo selecionado: Preview
+2025-10-24 17:17:53,616 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 17:17:53,857 - INFO - df_filtrado final: 14 registros
+2025-10-24 17:17:53,857 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 17:17:53,857 - INFO - Tipos de despesa únicos: [2.0 3.0 4.0 7.0 5.0]
+2025-10-24 17:17:54,076 - INFO - 
+Obtendo número do relatório para data 2025-11-05 00:00:00
+2025-10-24 17:17:54,076 - INFO - Número do relatório calculado: 16
+2025-10-24 17:17:54,076 - INFO - Calculando acumulado para data 2025-11-05 00:00:00
+2025-10-24 17:17:54,076 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 17:17:54,101 - INFO - Valor acumulado calculado (apenas ativos): 1,050,156.84
+2025-10-24 17:17:54,102 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 17:17:54,104 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171754.pdf
+2025-10-24 17:17:54,104 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 17:17:54,104 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 17:17:54,104 - INFO - Logo carregada com sucesso!
+2025-10-24 17:17:54,104 - INFO - Criando cabeçalho COM logo
+2025-10-24 17:17:54,104 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 17:17:54,104 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 17:17:54,121 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 17:17:54,203 - INFO - Detalhes adicionados com sucesso
+2025-10-24 17:17:54,322 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171754.pdf
+2025-10-24 17:17:54,323 - INFO - ✅ PDF temporário válido: 48,197 bytes
+2025-10-24 17:17:54,762 - INFO - ✅ Janela de decisão criada
+2025-10-24 17:18:01,907 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171754.pdf
+2025-10-24 17:18:03,923 - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171754.pdf
+2025-10-24 17:18:25,502 - INFO - Notas salvas: 48 caracteres
+2025-10-24 17:18:27,382 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 17:18:27,397 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 17:18:27,397 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 17:18:27,397 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 17:18:27,397 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:18:27,397 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:18:27,397 - INFO - ✅ Configurações coletadas
+2025-10-24 17:18:27,397 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:18:29,325 - INFO - Modo selecionado: Preview
+2025-10-24 17:18:29,325 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 17:18:29,607 - INFO - df_filtrado final: 14 registros
+2025-10-24 17:18:29,607 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 17:18:29,607 - INFO - Tipos de despesa únicos: [2.0 3.0 4.0 7.0 5.0]
+2025-10-24 17:18:29,826 - INFO - 
+Obtendo número do relatório para data 2025-11-05 00:00:00
+2025-10-24 17:18:29,826 - INFO - Número do relatório calculado: 16
+2025-10-24 17:18:29,826 - INFO - Calculando acumulado para data 2025-11-05 00:00:00
+2025-10-24 17:18:29,826 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 17:18:29,850 - INFO - Valor acumulado calculado (apenas ativos): 1,050,156.84
+2025-10-24 17:18:29,852 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 17:18:29,853 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171829.pdf
+2025-10-24 17:18:29,854 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 17:18:29,855 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 17:18:29,855 - INFO - Logo carregada com sucesso!
+2025-10-24 17:18:29,856 - INFO - Criando cabeçalho COM logo
+2025-10-24 17:18:29,860 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 17:18:29,860 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 17:18:29,878 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 17:18:29,958 - INFO - Detalhes adicionados com sucesso
+2025-10-24 17:18:30,062 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171829.pdf
+2025-10-24 17:18:30,063 - INFO - ✅ PDF temporário válido: 48,197 bytes
+2025-10-24 17:18:30,140 - INFO - ✅ Janela de decisão criada
+2025-10-24 17:18:50,912 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171829.pdf
+2025-10-24 17:18:52,922 - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_171829.pdf
+2025-10-24 17:19:38,266 - INFO - Solicitado retorno ao menu principal
+2025-10-24 17:19:38,266 - INFO - Retornando ao menu principal existente
+2025-10-24 17:19:38,339 - INFO - Retorno ao menu principal concluído
+2025-10-24 17:31:36,996 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 17:31:37,058 - INFO - Ação concluída: Gerar relatório
+2025-10-24 17:35:26,896 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:35:26,954 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:35:26,954 - INFO - Coluna de status: Data Final
+2025-10-24 17:35:26,954 - INFO - Coluna de nome: Nome
+2025-10-24 17:35:26,954 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:35:26,965 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 17:35:26,991 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 17:35:26,991 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:35:27,011 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:35:27,011 - INFO - Coluna de status: Data Final
+2025-10-24 17:35:27,011 - INFO - Coluna de nome: Nome
+2025-10-24 17:35:27,011 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:35:27,011 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 17:35:28,416 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:35:28,416 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:35:32,473 - INFO - Modo manual ativado
+2025-10-24 17:35:41,071 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 17:35:41,071 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:35:41,071 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:35:57,232 - INFO - Notas salvas: 8 caracteres
+2025-10-24 17:36:28,619 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 17:36:28,619 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 17:36:28,619 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 17:36:28,634 - INFO - Data final obtida: 2025-10-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 17:36:28,640 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:36:28,647 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:36:28,648 - INFO - ✅ Configurações coletadas
+2025-10-24 17:36:28,649 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:36:31,765 - INFO - Modo selecionado: Preview
+2025-10-24 17:36:31,765 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 17:36:32,084 - INFO - df_filtrado final: 4 registros
+2025-10-24 17:36:32,086 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 17:36:32,086 - INFO - Tipos de despesa únicos: [3.0 7.0]
+2025-10-24 17:36:32,433 - INFO - 
+Obtendo número do relatório para data 2025-10-20 00:00:00
+2025-10-24 17:36:32,434 - INFO - Número do relatório calculado: 15
+2025-10-24 17:36:32,434 - INFO - Calculando acumulado para data 2025-10-20 00:00:00
+2025-10-24 17:36:32,436 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 17:36:32,451 - INFO - Valor acumulado calculado (apenas ativos): 995,114.53
+2025-10-24 17:36:32,455 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 17:36:32,457 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_173632.pdf
+2025-10-24 17:36:32,458 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 17:36:32,461 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 17:36:32,463 - INFO - Logo carregada com sucesso!
+2025-10-24 17:36:32,464 - INFO - Criando cabeçalho COM logo
+2025-10-24 17:36:32,467 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 17:36:32,468 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 17:36:32,479 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 17:36:32,531 - INFO - Detalhes adicionados com sucesso
+2025-10-24 17:36:32,618 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_173632.pdf
+2025-10-24 17:36:32,618 - INFO - ✅ PDF temporário válido: 46,316 bytes
+2025-10-24 17:36:32,908 - INFO - ✅ Janela de decisão criada
+2025-10-24 17:39:30,536 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_173632.pdf
+2025-10-24 17:39:32,542 - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_173632.pdf
+2025-10-24 17:40:00,115 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 17:40:00,115 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 17:40:00,115 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 17:40:00,115 - INFO - Data final obtida: 2025-10-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 17:40:00,115 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:40:00,115 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:40:00,115 - INFO - ✅ Configurações coletadas
+2025-10-24 17:40:00,115 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:40:01,913 - INFO - Modo selecionado: Preview
+2025-10-24 17:40:01,913 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 17:40:02,309 - INFO - df_filtrado final: 4 registros
+2025-10-24 17:40:02,310 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 17:40:02,311 - INFO - Tipos de despesa únicos: [3.0 7.0]
+2025-10-24 17:40:02,647 - INFO - 
+Obtendo número do relatório para data 2025-10-20 00:00:00
+2025-10-24 17:40:02,647 - INFO - Número do relatório calculado: 15
+2025-10-24 17:40:02,647 - INFO - Calculando acumulado para data 2025-10-20 00:00:00
+2025-10-24 17:40:02,647 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 17:40:02,669 - INFO - Valor acumulado calculado (apenas ativos): 995,114.53
+2025-10-24 17:40:02,672 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 17:40:02,673 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_174002.pdf
+2025-10-24 17:40:02,673 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 17:40:02,674 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 17:40:02,674 - INFO - Logo carregada com sucesso!
+2025-10-24 17:40:02,675 - INFO - Criando cabeçalho COM logo
+2025-10-24 17:40:02,677 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 17:40:02,677 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 17:40:02,682 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 17:40:02,715 - INFO - Detalhes adicionados com sucesso
+2025-10-24 17:40:02,806 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_174002.pdf
+2025-10-24 17:40:02,807 - INFO - ✅ PDF temporário válido: 46,316 bytes
+2025-10-24 17:40:02,896 - INFO - ✅ Janela de decisão criada
+2025-10-24 17:40:05,004 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_174002.pdf
+2025-10-24 17:40:07,018 - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_174002.pdf'
+2025-10-24 17:40:13,480 - INFO - Solicitado retorno ao menu principal
+2025-10-24 17:40:13,480 - INFO - Retornando ao menu principal existente
+2025-10-24 17:40:13,555 - INFO - Retorno ao menu principal concluído
+2025-10-24 17:40:20,622 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 17:40:20,670 - INFO - Ação concluída: Gerar relatório
+2025-10-24 17:47:54,573 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:47:54,663 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:47:54,664 - INFO - Coluna de status: Data Final
+2025-10-24 17:47:54,680 - INFO - Coluna de nome: Nome
+2025-10-24 17:47:54,680 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:47:54,684 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 17:47:54,710 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 17:47:54,710 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:47:54,735 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:47:54,736 - INFO - Coluna de status: Data Final
+2025-10-24 17:47:54,736 - INFO - Coluna de nome: Nome
+2025-10-24 17:47:54,736 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:47:54,736 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 17:47:59,313 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:47:59,313 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:48:19,332 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 17:48:19,332 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:48:19,332 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:48:41,208 - INFO - Notas salvas: 8 caracteres
+2025-10-24 17:48:44,936 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 17:48:44,936 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 17:48:44,936 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 17:48:44,951 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 17:48:44,951 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:48:44,951 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:48:44,951 - INFO - ✅ Configurações coletadas
+2025-10-24 17:48:44,951 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:48:47,918 - INFO - Modo selecionado: Preview
+2025-10-24 17:48:47,918 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 17:48:48,309 - INFO - df_filtrado final: 14 registros
+2025-10-24 17:48:48,310 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 17:48:48,311 - INFO - Tipos de despesa únicos: [2.0 3.0 4.0 7.0 5.0]
+2025-10-24 17:48:48,534 - INFO - 
+Obtendo número do relatório para data 2025-11-05 00:00:00
+2025-10-24 17:48:48,534 - INFO - Número do relatório calculado: 16
+2025-10-24 17:48:48,550 - INFO - Calculando acumulado para data 2025-11-05 00:00:00
+2025-10-24 17:48:48,550 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 17:48:48,566 - INFO - Valor acumulado calculado (apenas ativos): 1,050,156.84
+2025-10-24 17:48:48,569 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 17:48:48,572 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_174848.pdf
+2025-10-24 17:48:48,577 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 17:48:48,577 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 17:48:48,577 - INFO - Logo carregada com sucesso!
+2025-10-24 17:48:48,585 - INFO - Criando cabeçalho COM logo
+2025-10-24 17:48:48,587 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 17:48:48,587 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 17:48:48,601 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 17:48:48,686 - INFO - Detalhes adicionados com sucesso
+2025-10-24 17:48:48,793 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_174848.pdf
+2025-10-24 17:48:48,793 - INFO - ✅ PDF temporário válido: 48,197 bytes
+2025-10-24 17:48:49,066 - INFO - ✅ Janela de decisão criada
+2025-10-24 17:49:17,505 - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2025-10-24 17:49:17,505 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 17:49:17,505 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 17:49:17,505 - INFO - Logo carregada com sucesso!
+2025-10-24 17:49:17,521 - INFO - Criando cabeçalho COM logo
+2025-10-24 17:49:17,521 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 17:49:17,521 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 17:49:17,521 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 17:49:17,608 - INFO - Detalhes adicionados com sucesso
+2025-10-24 17:49:17,691 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_174848.pdf
+2025-10-24 17:49:19,714 - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_174848.pdf'
+2025-10-24 17:51:54,959 - INFO - Solicitado retorno ao menu principal
+2025-10-24 17:51:54,959 - INFO - Retornando ao menu principal existente
+2025-10-24 17:51:55,036 - INFO - Retorno ao menu principal concluído
+2025-10-24 17:52:01,095 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 17:52:01,159 - INFO - Ação concluída: Gerar relatório
+2025-10-24 17:52:28,333 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:52:28,391 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:52:28,391 - INFO - Coluna de status: Data Final
+2025-10-24 17:52:28,391 - INFO - Coluna de nome: Nome
+2025-10-24 17:52:28,391 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:52:28,391 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 17:52:28,427 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 17:52:28,427 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:52:28,449 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:52:28,449 - INFO - Coluna de status: Data Final
+2025-10-24 17:52:28,453 - INFO - Coluna de nome: Nome
+2025-10-24 17:52:28,454 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:52:28,454 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 17:52:30,867 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:52:30,867 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:52:37,301 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 17:52:37,316 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:52:37,316 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:53:08,355 - INFO - Notas salvas: 34 caracteres
+2025-10-24 17:53:14,503 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 17:53:14,503 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 17:53:14,503 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 17:53:14,503 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 17:53:14,503 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:53:14,503 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:53:14,503 - INFO - ✅ Configurações coletadas
+2025-10-24 17:53:14,503 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:53:16,700 - INFO - Modo selecionado: Preview
+2025-10-24 17:53:16,700 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 17:53:17,006 - INFO - df_filtrado final: 14 registros
+2025-10-24 17:53:17,009 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 17:53:17,009 - INFO - Tipos de despesa únicos: [2.0 3.0 4.0 7.0 5.0]
+2025-10-24 17:53:17,230 - INFO - 
+Obtendo número do relatório para data 2025-11-05 00:00:00
+2025-10-24 17:53:17,230 - INFO - Número do relatório calculado: 16
+2025-10-24 17:53:17,230 - INFO - Calculando acumulado para data 2025-11-05 00:00:00
+2025-10-24 17:53:17,230 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 17:53:17,257 - INFO - Valor acumulado calculado (apenas ativos): 1,050,156.84
+2025-10-24 17:53:17,259 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 17:53:17,262 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_175317.pdf
+2025-10-24 17:53:17,265 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 17:53:17,267 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 17:53:17,269 - INFO - Logo carregada com sucesso!
+2025-10-24 17:53:17,271 - INFO - Criando cabeçalho COM logo
+2025-10-24 17:53:17,275 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 17:53:17,275 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 17:53:17,293 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 17:53:17,379 - INFO - Detalhes adicionados com sucesso
+2025-10-24 17:53:17,486 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_175317.pdf
+2025-10-24 17:53:17,487 - INFO - ✅ PDF temporário válido: 48,197 bytes
+2025-10-24 17:53:17,730 - INFO - ✅ Janela de decisão criada
+2025-10-24 17:56:41,631 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_175317.pdf
+2025-10-24 17:56:43,643 - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_175317.pdf'
+2025-10-24 17:56:43,742 - INFO - Solicitado retorno ao menu principal
+2025-10-24 17:56:43,743 - INFO - Retornando ao menu principal existente
+2025-10-24 17:56:43,837 - INFO - Retorno ao menu principal concluído
+2025-10-24 17:56:47,225 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 17:56:47,275 - INFO - Ação concluída: Gerar relatório
+2025-10-24 17:58:31,785 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:58:31,868 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:58:31,869 - INFO - Coluna de status: Data Final
+2025-10-24 17:58:31,886 - INFO - Coluna de nome: Nome
+2025-10-24 17:58:31,888 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:58:31,888 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 17:58:31,918 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 17:58:31,918 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 17:58:31,934 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 17:58:31,939 - INFO - Coluna de status: Data Final
+2025-10-24 17:58:31,941 - INFO - Coluna de nome: Nome
+2025-10-24 17:58:31,943 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 17:58:31,943 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 17:58:33,239 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:58:33,239 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 17:58:37,165 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 17:58:37,165 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:58:37,185 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 17:59:08,480 - INFO - Solicitado retorno ao menu principal
+2025-10-24 17:59:08,480 - INFO - Retornando ao menu principal existente
+2025-10-24 17:59:08,572 - INFO - Retorno ao menu principal concluído
+2025-10-24 17:59:13,356 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 17:59:13,416 - INFO - Ação concluída: Gerar relatório
+2025-10-24 18:03:57,743 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 18:03:57,796 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 18:03:57,798 - INFO - Coluna de status: Data Final
+2025-10-24 18:03:57,798 - INFO - Coluna de nome: Nome
+2025-10-24 18:03:57,798 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 18:03:57,808 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 18:03:57,842 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 18:03:57,842 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 18:03:57,857 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 18:03:57,867 - INFO - Coluna de status: Data Final
+2025-10-24 18:03:57,869 - INFO - Coluna de nome: Nome
+2025-10-24 18:03:57,870 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 18:03:57,871 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 18:03:59,606 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 18:03:59,606 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 18:04:03,640 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 18:04:03,640 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:04:03,640 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:04:18,825 - INFO - Notas salvas: 34 caracteres
+2025-10-24 18:04:24,087 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 18:04:24,087 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 18:04:24,087 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 18:04:24,087 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 18:04:24,087 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:04:24,087 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:04:24,087 - INFO - ✅ Configurações coletadas
+2025-10-24 18:04:24,087 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:04:25,896 - INFO - Modo selecionado: Preview
+2025-10-24 18:04:25,896 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 18:04:26,164 - INFO - df_filtrado final: 14 registros
+2025-10-24 18:04:26,165 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 18:04:26,165 - INFO - Tipos de despesa únicos: [2.0 3.0 4.0 7.0 5.0]
+2025-10-24 18:04:26,390 - INFO - 
+Obtendo número do relatório para data 2025-11-05 00:00:00
+2025-10-24 18:04:26,390 - INFO - Número do relatório calculado: 16
+2025-10-24 18:04:26,390 - INFO - Calculando acumulado para data 2025-11-05 00:00:00
+2025-10-24 18:04:26,390 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 18:04:26,415 - INFO - Valor acumulado calculado (apenas ativos): 1,050,156.84
+2025-10-24 18:04:26,417 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 18:04:26,420 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_180426.pdf
+2025-10-24 18:04:26,420 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 18:04:26,421 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 18:04:26,421 - INFO - Logo carregada com sucesso!
+2025-10-24 18:04:26,421 - INFO - Criando cabeçalho COM logo
+2025-10-24 18:04:26,425 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 18:04:26,426 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 18:04:26,436 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 18:04:26,515 - INFO - Detalhes adicionados com sucesso
+2025-10-24 18:04:26,614 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_180426.pdf
+2025-10-24 18:04:26,615 - INFO - ✅ PDF temporário válido: 48,197 bytes
+2025-10-24 18:04:26,824 - INFO - ✅ Janela de decisão criada
+2025-10-24 18:04:43,088 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_180426.pdf
+2025-10-24 18:04:45,098 - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_180426.pdf
+2025-10-24 18:04:46,822 - INFO - Solicitado retorno ao menu principal
+2025-10-24 18:04:46,822 - INFO - Retornando ao menu principal existente
+2025-10-24 18:04:46,909 - INFO - Retorno ao menu principal concluído
+2025-10-24 18:04:51,013 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 18:04:51,057 - INFO - Ação concluída: Gerar relatório
+2025-10-24 18:13:33,522 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 18:13:33,575 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 18:13:33,575 - INFO - Coluna de status: Data Final
+2025-10-24 18:13:33,575 - INFO - Coluna de nome: Nome
+2025-10-24 18:13:33,575 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 18:13:33,575 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 18:13:33,609 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 18:13:33,609 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 18:13:33,625 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 18:13:33,625 - INFO - Coluna de status: Data Final
+2025-10-24 18:13:33,641 - INFO - Coluna de nome: Nome
+2025-10-24 18:13:33,643 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 18:13:33,644 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 18:13:35,615 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 18:13:35,631 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 18:13:40,911 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 18:13:40,911 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:13:40,911 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:13:59,167 - INFO - Notas salvas: 28 caracteres
+2025-10-24 18:14:03,712 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 18:14:03,712 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 18:14:03,712 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 18:14:03,728 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 18:14:03,728 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:14:03,733 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:14:03,736 - INFO - ✅ Configurações coletadas
+2025-10-24 18:14:03,739 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:14:05,706 - INFO - Modo selecionado: Preview
+2025-10-24 18:14:05,706 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 18:14:05,941 - INFO - df_filtrado final: 14 registros
+2025-10-24 18:14:05,941 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 18:14:05,941 - INFO - Tipos de despesa únicos: [2.0 3.0 4.0 7.0 5.0]
+2025-10-24 18:14:06,165 - INFO - 
+Obtendo número do relatório para data 2025-11-05 00:00:00
+2025-10-24 18:14:06,165 - INFO - Número do relatório calculado: 16
+2025-10-24 18:14:06,165 - INFO - Calculando acumulado para data 2025-11-05 00:00:00
+2025-10-24 18:14:06,165 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 18:14:06,190 - INFO - Valor acumulado calculado (apenas ativos): 1,050,156.84
+2025-10-24 18:14:06,191 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 18:14:06,194 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_181406.pdf
+2025-10-24 18:14:06,196 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 18:14:06,197 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 18:14:06,201 - INFO - Logo carregada com sucesso!
+2025-10-24 18:14:06,202 - INFO - Criando cabeçalho COM logo
+2025-10-24 18:14:06,207 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 18:14:06,208 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 18:14:06,221 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 18:14:06,294 - INFO - Detalhes adicionados com sucesso
+2025-10-24 18:14:06,388 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_181406.pdf
+2025-10-24 18:14:06,388 - INFO - ✅ PDF temporário válido: 48,197 bytes
+2025-10-24 18:14:06,631 - INFO - ✅ Janela de decisão criada
+2025-10-24 18:14:29,638 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_181406.pdf
+2025-10-24 18:14:31,645 - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_181406.pdf
+2025-10-24 18:14:35,787 - INFO - Solicitado retorno ao menu principal
+2025-10-24 18:14:35,787 - INFO - Retornando ao menu principal existente
+2025-10-24 18:14:35,900 - INFO - Retorno ao menu principal concluído
+2025-10-24 18:14:39,645 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 18:14:39,698 - INFO - Ação concluída: Gerar relatório
+2025-10-24 18:14:47,135 - INFO - === Iniciando Sistema de Relatórios ===
+2025-10-24 18:14:47,315 - INFO - Iniciando RelatorioUI
+2025-10-24 18:14:47,315 - INFO - RelatorioHandler inicializado
+2025-10-24 18:14:47,315 - INFO - Iniciando configuração da interface
+2025-10-24 18:14:47,410 - INFO - Interface configurada com sucesso
+2025-10-24 18:15:19,125 - INFO - Notas salvas: 15 caracteres
+2025-10-24 18:15:26,565 - WARNING - Tentativa de gerar relatório sem arquivo selecionado
+2025-10-24 18:15:34,780 - INFO - Arquivo selecionado: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:15:38,370 - INFO - Iniciando geração de relatório para arquivo: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:15:38,385 - INFO - Incluir excluídos: False
+2025-10-24 18:15:38,385 - INFO - Carregando dados de: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes/BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:15:38,568 - INFO - Dados carregados: 287 registros
+2025-10-24 18:15:38,584 - INFO - Dados processados - Total: 263 registros
+2025-10-24 18:15:38,589 - INFO - Lançamentos futuros: 23
+2025-10-24 18:15:38,815 - INFO - Número do relatório: 1
+2025-10-24 18:15:38,830 - ERROR - Erro ao calcular acumulado: 'STATUS_REL'
+2025-10-24 18:15:38,830 - INFO - Número do relatório: 1
+2025-10-24 18:15:38,830 - INFO - Valor acumulado calculado: 0.00
+2025-10-24 18:16:20,416 - INFO - RelatorioHandler inicializado
+2025-10-24 18:16:20,418 - INFO - Gerando PDF: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes\REL_-_BRUNO SANTANA RINALDI_-_20-10-2025.pdf
+2025-10-24 18:16:20,419 - INFO - Iniciando geração do PDF
+2025-10-24 18:16:20,419 - INFO - Incluindo notas no PDF
+2025-10-24 18:16:20,422 - INFO - Adicionando notas ao relatório
+2025-10-24 18:16:20,424 - INFO - ✅ Notas adicionadas com sucesso (15 caracteres)
+2025-10-24 18:16:20,440 - INFO - PDF construído com sucesso
+2025-10-24 18:16:20,443 - INFO - ✅ PDF gerado com sucesso: C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes\REL_-_BRUNO SANTANA RINALDI_-_20-10-2025.pdf
+2025-10-24 18:40:14,576 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 18:40:14,659 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 18:40:14,660 - INFO - Coluna de status: Data Final
+2025-10-24 18:40:14,673 - INFO - Coluna de nome: Nome
+2025-10-24 18:40:14,673 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 18:40:14,680 - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-24 18:40:14,715 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
+2025-10-24 18:40:14,719 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-24 18:40:14,722 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-24 18:40:14,737 - INFO - Coluna de status: Data Final
+2025-10-24 18:40:14,740 - INFO - Coluna de nome: Nome
+2025-10-24 18:40:14,741 - INFO - Total de clientes ativos encontrados: 14
+2025-10-24 18:40:14,742 - INFO - Lista de clientes carregada com 15 itens
+2025-10-24 18:40:16,070 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 18:40:16,070 - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-24 18:40:22,812 - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-24 18:40:22,812 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:40:22,812 - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:40:33,818 - INFO - Notas salvas: 17 caracteres
+2025-10-24 18:40:51,064 - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-24 18:40:51,064 - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-24 18:40:51,064 - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-24 18:40:51,064 - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-24 18:40:51,064 - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:40:51,064 - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:40:51,064 - INFO - ✅ Configurações coletadas
+2025-10-24 18:40:51,064 - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-24 18:40:54,072 - INFO - Modo selecionado: Preview
+2025-10-24 18:40:54,072 - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-24 18:40:54,337 - INFO - df_filtrado final: 14 registros
+2025-10-24 18:40:54,337 - INFO - Colunas finais do df_filtrado: ['DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA', 'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO', 'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS', 'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO']
+2025-10-24 18:40:54,337 - INFO - Tipos de despesa únicos: [2.0 3.0 4.0 7.0 5.0]
+2025-10-24 18:40:54,551 - INFO - 
+Obtendo número do relatório para data 2025-11-05 00:00:00
+2025-10-24 18:40:54,566 - INFO - Número do relatório calculado: 16
+2025-10-24 18:40:54,566 - INFO - Calculando acumulado para data 2025-11-05 00:00:00
+2025-10-24 18:40:54,566 - INFO - Acumulado - registros após filtrar excluídos: 279
+2025-10-24 18:40:54,584 - INFO - Valor acumulado calculado (apenas ativos): 1,050,156.84
+2025-10-24 18:40:54,586 - INFO - 🔧 GERANDO PDF TEMPORÁRIO COM ORDENAÇÕES PRESERVADAS
+2025-10-24 18:40:54,588 - INFO - 📄 Criando PDF temporário: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_184054.pdf
+2025-10-24 18:40:54,589 - INFO - === INICIANDO ADIÇÃO DO CABEÇALHO ===
+2025-10-24 18:40:54,595 - INFO - Tentando carregar logo: C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\logo1.png
+2025-10-24 18:40:54,595 - INFO - Logo carregada com sucesso!
+2025-10-24 18:40:54,596 - INFO - Criando cabeçalho COM logo
+2025-10-24 18:40:54,598 - INFO - Informações do cliente adicionadas com sucesso
+2025-10-24 18:40:54,598 - INFO - === CABEÇALHO CONCLUÍDO COM SUCESSO ===
+2025-10-24 18:40:54,612 - INFO - Iniciando adição de detalhes ao relatório
+2025-10-24 18:40:54,697 - INFO - Detalhes adicionados com sucesso
+2025-10-24 18:40:54,799 - INFO - ✅ PDF temporário gerado: C:\Users\Obras\AppData\Local\Temp\PREVIEW_BRUNO_SANTANA_RINALDI_20251024_184054.pdf
+2025-10-24 18:40:54,800 - INFO - ✅ PDF temporário válido: 48,197 bytes
+2025-10-24 18:40:55,013 - INFO - ✅ Janela de decisão criada
+2025-10-24 18:44:30,679 - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_184054.pdf
+2025-10-24 18:44:32,690 - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251024_184054.pdf
+2025-10-24 18:44:33,408 - INFO - Solicitado retorno ao menu principal
+2025-10-24 18:44:33,408 - INFO - Retornando ao menu principal existente
+2025-10-24 18:44:33,501 - INFO - Retorno ao menu principal concluído
+2025-10-24 18:44:37,564 - INFO - Saída confirmada, finalizando sistema
+2025-10-24 18:44:37,625 - INFO - Ação concluída: Gerar relatório
