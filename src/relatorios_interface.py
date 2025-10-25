@@ -1152,13 +1152,13 @@ class SistemaRelatorios:
         data_calculada = self.calcular_data_rel_automatica()
         
         if 6 <= hoje.day <= 20:
-            explicacao = f"📅 Hoje é dia {hoje.day}: período para relatório do dia 20"
+            explicacao = f"📅 Relatório do dia 20"
         elif hoje.day > 20:
-            explicacao = f"📅 Hoje é dia {hoje.day}: período para relatório do dia 5 do próximo mês"
+            explicacao = f"📅 Relatório do dia 5 do próximo mês"
         else:
-            explicacao = f"📅 Hoje é dia {hoje.day}: período para relatório do dia 5"
+            explicacao = f"📅 Relatório do dia 5"
         
-        return f"{explicacao}\n🎯 Data calculada: {data_calculada.strftime('%d/%m/%Y')}"
+        return f"{explicacao}\n🎯 Data: {data_calculada.strftime('%d/%m/%Y')}"
 
     def validar_data_relatorio(self, data_selecionada):
         """Valida se a data selecionada está correta conforme a regra"""
@@ -1309,7 +1309,7 @@ class SistemaRelatorios:
         frame_opcoes.pack(fill='x', padx=10, pady=10)
         
         # Checkbox para incluir lançamentos futuros
-        self.incluir_futuros = tk.BooleanVar(value=True)
+        self.incluir_futuros = tk.BooleanVar(value=False)
         ttk.Checkbutton(
             frame_opcoes,
             text="Incluir lançamentos futuros",
@@ -1323,6 +1323,27 @@ class SistemaRelatorios:
             text="Incluir lançamentos excluídos no relatório",
             variable=self.incluir_excluidos
         ).pack(anchor='w', padx=15, pady=5)
+
+        # Checkbox para incluir notas no relatório
+        self.incluir_notas = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            frame_opcoes,
+            text="Incluir notas no relatório",
+            variable=self.incluir_notas,
+            command=self.abrir_janela_notas_despesas
+        ).pack(anchor='w', padx=15, pady=5)
+
+        # Label de status das notas
+        self.label_notas_status = ttk.Label(
+            frame_opcoes,
+            text="",
+            foreground='green',
+            font=('Arial', 9)
+        )
+        self.label_notas_status.pack(anchor='w', padx=30, pady=2)
+
+        # Variável para armazenar o texto das notas
+        self.texto_notas = tk.StringVar(value="")
         
         # === TIPO DE GERAÇÃO ===
         frame_tipo = ttk.LabelFrame(parent_frame, text="Tipo de Geração")
@@ -1439,7 +1460,7 @@ class SistemaRelatorios:
                 
                 # Atualizar status
                 self.status_cliente_label.config(
-                    text=f"✅ Cliente: {cliente_selecionado} | Arquivo: {os.path.basename(caminho_arquivo)}",
+                    text=f"✅ Arquivo: {os.path.basename(caminho_arquivo)}",
                     foreground='green'
                 )
                 
@@ -1771,6 +1792,163 @@ class SistemaRelatorios:
             logger.error(f"Erro ao selecionar arquivos em lote: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao selecionar arquivos: {str(e)}")
     
+    def abrir_janela_notas_despesas(self):
+        """Abre janela para edição de notas do relatório de despesas"""
+        if not self.incluir_notas.get():
+            # Se desmarcou o checkbox, limpar as notas
+            self.texto_notas.set("")
+            self.label_notas_status.config(text="")
+            return
+        
+        # Criar janela de edição
+        janela_notas = tk.Toplevel(self.root)
+        janela_notas.title("Notas do Relatório")
+        janela_notas.geometry("700x600")
+        janela_notas.transient(self.root)
+        janela_notas.grab_set()
+        
+        # Centralizar janela
+        janela_notas.update_idletasks()
+        x = (janela_notas.winfo_screenwidth() // 2) - (janela_notas.winfo_width() // 2)
+        y = (janela_notas.winfo_screenheight() // 2) - (janela_notas.winfo_height() // 2)
+        janela_notas.geometry(f"+{x}+{y}")
+        
+        # Frame principal com padding
+        frame_principal = ttk.Frame(janela_notas, padding="20")
+        frame_principal.pack(fill='both', expand=True)
+        
+        # Título com instrução
+        label_titulo = ttk.Label(
+            frame_principal, 
+            text="Digite as notas que aparecerão no final do relatório:",
+            font=('Helvetica', 11, 'bold')
+        )
+        label_titulo.pack(pady=(0, 5))
+        
+        # Informação adicional
+        label_info = ttk.Label(
+            frame_principal,
+            text="As notas serão exibidas na seção 'NOTAS:' ao final do relatório PDF",
+            font=('Helvetica', 9),
+            foreground='gray'
+        )
+        label_info.pack(pady=(0, 15))
+        
+        # Frame para texto com scrollbar
+        frame_texto = ttk.Frame(frame_principal)
+        frame_texto.pack(fill='both', expand=True, pady=(0, 15))
+        
+        # Área de texto com scrollbar
+        texto_widget = tk.Text(
+            frame_texto, 
+            wrap='word', 
+            font=('Arial', 10), 
+            relief='solid', 
+            borderwidth=1,
+            padx=10,
+            pady=10
+        )
+        scrollbar = tk.Scrollbar(frame_texto, orient='vertical', command=texto_widget.yview)
+        texto_widget.configure(yscrollcommand=scrollbar.set)
+        
+        texto_widget.pack(side='left', fill='both', expand=True)
+        scrollbar.pack(side='right', fill='y')
+        
+        # Carregar texto existente se houver
+        if self.texto_notas.get():
+            texto_widget.insert('1.0', self.texto_notas.get())
+        else:
+            # Texto de exemplo/placeholder
+            exemplo = (
+                "Exemplo de notas:\n\n"
+                "Aguardando cópia das Notas Fiscais para incluir no caderno físico da quinzena:\n\n"
+                "- LOJA DO PAULO\n"
+                "- LOJA ELÉTRICA\n"
+            )
+            texto_widget.insert('1.0', exemplo)
+            texto_widget.tag_add('exemplo', '1.0', 'end')
+            texto_widget.tag_config('exemplo', foreground='gray')
+            
+            # Remover placeholder ao clicar
+            def limpar_placeholder(event):
+                if texto_widget.tag_ranges('exemplo'):
+                    texto_widget.delete('1.0', 'end')
+                    texto_widget.tag_remove('exemplo', '1.0', 'end')
+                    texto_widget.config(foreground='black')
+            
+            texto_widget.bind('<FocusIn>', limpar_placeholder)
+        
+        # Focar no texto
+        texto_widget.focus_set()
+        
+        # Frame para botões
+        frame_botoes = ttk.Frame(frame_principal)
+        frame_botoes.pack(fill='x')
+        
+        # Função para salvar notas
+        def salvar_notas():
+            """Salva o texto das notas"""
+            texto = texto_widget.get('1.0', 'end-1c').strip()
+            
+            # Ignorar texto de exemplo
+            if texto_widget.tag_ranges('exemplo'):
+                texto = ""
+            
+            self.texto_notas.set(texto)
+            
+            if texto:
+                # Mostrar preview curto no label
+                preview = texto[:60] + "..." if len(texto) > 60 else texto
+                self.label_notas_status.config(
+                    text=f"✓ Notas adicionadas",
+                    foreground='green'
+                )
+                logger.info(f"Notas salvas: {len(texto)} caracteres")
+            else:
+                self.label_notas_status.config(text="")
+                self.incluir_notas.set(False)
+            
+            janela_notas.destroy()
+        
+        # Função para cancelar
+        def cancelar():
+            """Cancela e desmarca o checkbox"""
+            self.incluir_notas.set(False)
+            self.texto_notas.set("")
+            self.label_notas_status.config(text="")
+            janela_notas.destroy()
+        
+        # Botões com ícones
+        btn_salvar = ttk.Button(
+            frame_botoes, 
+            text="✓ Salvar Notas", 
+            command=salvar_notas
+        )
+        btn_salvar.pack(side='left', padx=(0, 10))
+        
+        btn_cancelar = ttk.Button(
+            frame_botoes, 
+            text="✗ Cancelar", 
+            command=cancelar
+        )
+        btn_cancelar.pack(side='left')
+        
+        # Label com dicas de atalhos
+        label_atalhos = ttk.Label(
+            frame_botoes,
+            text="Dica: Ctrl+Enter para salvar | Esc para cancelar",
+            font=('Arial', 8),
+            foreground='gray'
+        )
+        label_atalhos.pack(side='right')
+        
+        # Atalhos de teclado
+        janela_notas.bind('<Control-Return>', lambda e: salvar_notas())
+        janela_notas.bind('<Escape>', lambda e: cancelar())
+        
+        # Configurar fechamento da janela
+        janela_notas.protocol("WM_DELETE_WINDOW", cancelar)
+
     def setup_opcoes_contratos(self, parent_frame):
         """Configura as opções específicas para relatório de contratos e medições"""
         # Frame para data
@@ -2450,6 +2628,8 @@ class SistemaRelatorios:
             'data': datetime.now(),
             'incluir_futuros': True,
             'incluir_excluidos': False,
+            'incluir_notas': False,
+            'texto_notas': False,
             'arquivo': None,  # IMPORTANTE: Inicializar como None
             'tipo_geracao': 'individual',
             'arquivos_lote': [],
@@ -2478,6 +2658,18 @@ class SistemaRelatorios:
                 config['incluir_excluidos'] = self.incluir_excluidos.get()
         except Exception as e:
             logger.debug(f"Erro ao coletar incluir_excluidos: {str(e)}")
+
+        try:
+            if hasattr(self, 'incluir_notas'):
+                config['incluir_notas'] = self.incluir_notas.get()
+        except Exception as e:
+            logger.debug(f"Erro ao coletar incluir_notas: {str(e)}")
+
+        try:
+            if hasattr(self, 'texto_notas'):
+                config['texto_notas'] = self.texto_notas.get()
+        except Exception as e:
+            logger.debug(f"Erro ao coletar texto_notas: {str(e)}")
         
         try:
             # CORREÇÃO: Arquivo individual - verificar múltiplas fontes
