@@ -10,14 +10,11 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 4,
-    "patch": 4,
-    "release_date": "17/10/2025",
+    "patch": 5,
+    "release_date": "XX/11/2025",
     "changes": [
-        "Correção do filtro de datas do Gerenciador de Lançamentos, que estava trazendo a data do dia se, outras funcionalidades fossem chamadas",
-        "Correção da compensação de Taxa de Administração caso fossem detectados valores errados em períodos anteiores",
-        "Inclusão de edição de Taxa de Administração do tipo Fixo",
-        "Melhoria no Visualizador de Lançamentos de Pendentes, que elimina registros duplicados ao salvar na planilha",
-        "Correção na importação de dados de RH após mudança de versão do Excel na origem do arquivo"
+        "Inclusão de campo para Notas no final do relatório",
+        "Correção para inclusão de lançamentos futuros no relatório"
     ]
 }
 
