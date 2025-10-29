@@ -33,6 +33,7 @@ def get_version_info():
 
 def save_version_history():
     """Salva o histórico de versões em um arquivo JSON"""
+    version_file = Path("config") / "version_history.json"
     try:
         # Tentar criar na pasta config/
         version_file = Path("config") / "version_history.json"
@@ -40,6 +41,8 @@ def save_version_history():
         # Se falhar, usar diretório atual
         version_file = Path("version_history.json")
     
+    # Garantir que o diretório existe
+    os.makedirs(version_file.parent, exist_ok=True)
     try:
         # Garantir que o diretório existe
         os.makedirs(version_file.parent, exist_ok=True)
@@ -66,6 +69,8 @@ def save_version_history():
         history.append(version_data)
         
         # Salvar histórico atualizado
+        with open(version_file, 'w', encoding='utf-8') as f:
+            json.dump(history, f, indent=4, ensure_ascii=False)
         try:
             with open(version_file, 'w', encoding='utf-8') as f:
                 json.dump(history, f, indent=4, ensure_ascii=False)
