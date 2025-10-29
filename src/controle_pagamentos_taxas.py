@@ -1,4 +1,4 @@
-# Arquivo: controle_pagamentos.py
+# Arquivo: controle_pagamentos_taxas.py
 # Este arquivo integrará a gestão de eventos aos módulos existentes
 
 from pathlib import Path
