@@ -147,10 +147,11 @@
     {
         "version": "1.4.5",
         "release_date": "27/10/2025",
-        "changes": [
-            "Inclusão de campo para Notas no final do relatório",
-            "Correção para inclusão de lançamentos futuros no relatório"
-        ],
+      "changes": [
+        "Inclusão de campo para Notas no final do relatório",
+        "Correção para inclusão de lançamentos futuros no relatório",
+        "Adição de diferenciação visual entre ambientes TESTE e PRODUÇÃO"
+      ],
         "timestamp": "2025-10-27T08:44:37.948482"
     }
 ]
