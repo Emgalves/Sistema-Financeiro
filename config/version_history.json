@@ -143,5 +143,14 @@
             "Melhoria no Visualizador de Lançamentos de Pendentes, que elimina registros duplicados ao salvar na planilha"
         ],
         "timestamp": "2025-10-17T13:57:26.002265"
+    },
+    {
+        "version": "1.4.5",
+        "release_date": "27/10/2025",
+        "changes": [
+            "Inclusão de campo para Notas no final do relatório",
+            "Correção para inclusão de lançamentos futuros no relatório"
+        ],
+        "timestamp": "2025-10-27T08:44:37.948482"
     }
 ]
