@@ -18,3 +18,173 @@
 2025-10-29 15:18:45,530 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
 2025-10-29 15:20:46,741 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
 2025-10-29 15:20:46,741 - sistema_relatorios - relatorios_interface - INFO - Não há menu principal válido, fechando aplicação
+2025-10-29 16:12:27,462 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:12:27,462 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:12:27,462 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:12:27,462 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:12:27,462 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 16:20:07,700 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-29 16:20:07,845 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-29 16:20:07,845 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-10-29 16:20:07,860 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-10-29 16:20:07,876 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-10-29 16:20:07,880 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-29 16:20:09,464 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-29 16:20:09,464 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-29 16:20:09,698 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-29 16:20:09,716 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-29 16:20:09,718 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-10-29 16:20:09,721 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-10-29 16:20:09,721 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-10-29 16:20:20,859 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-10-29 16:20:20,860 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-10-29 16:20:20,933 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-10-29 16:25:13,957 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:25:13,957 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:25:13,957 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:25:13,957 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:25:13,957 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 16:25:19,952 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-29 16:25:20,009 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-29 16:25:20,009 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-10-29 16:25:20,009 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-10-29 16:25:20,009 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-10-29 16:25:20,009 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-10-29 16:25:21,515 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-29 16:25:21,515 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/11/2025
+2025-10-29 16:25:22,061 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-10-29 16:25:22,085 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-10-29 16:25:22,085 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-10-29 16:25:22,085 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-10-29 16:25:22,085 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-10-29 16:25:27,082 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-10-29 16:25:27,082 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-29 16:25:27,098 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-29 16:25:52,049 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 667 caracteres
+2025-10-29 16:25:55,659 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-10-29 16:25:55,659 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-10-29 16:25:55,659 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-10-29 16:25:55,659 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-10-29 16:25:55,659 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-29 16:25:55,659 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-10-29 16:25:55,659 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-10-29 16:25:55,659 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-10-29 16:25:57,494 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-10-29 16:25:57,496 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-10-29 16:25:58,848 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-10-29 16:26:32,579 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251029_162558.pdf
+2025-10-29 16:26:34,676 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251029_162558.pdf
+2025-10-29 16:26:46,346 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-10-29 16:26:46,346 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: categoria
+2025-10-29 16:27:07,070 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-10-29 16:27:07,070 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-10-29 16:27:42,620 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: fornecedores
+2025-10-29 16:27:42,620 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: fornecedores
+2025-10-29 16:28:28,347 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-10-29 16:28:28,347 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-10-29 16:28:28,436 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-10-29 16:42:29,419 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:42:29,419 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:42:29,419 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:42:29,419 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:42:29,419 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 16:43:59,527 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:43:59,527 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:43:59,527 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:43:59,527 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:43:59,527 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 16:46:35,563 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:46:35,563 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:46:35,563 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:46:35,563 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:46:35,563 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 16:46:40,351 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-29 16:46:40,394 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-10-29 16:49:47,492 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:49:47,492 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:49:47,492 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:49:47,492 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:49:47,492 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 16:50:22,632 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:50:22,632 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:50:22,632 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:50:22,632 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:50:22,632 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 16:50:48,271 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-10-29 16:50:48,277 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-10-29 16:53:09,298 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:53:09,298 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:53:09,298 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:53:09,298 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:53:09,298 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 16:57:05,262 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:57:05,262 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:57:05,262 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:57:05,262 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:57:05,262 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 16:57:10,009 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-10-29 16:59:15,615 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 16:59:15,615 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 16:59:15,615 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 16:59:15,615 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 16:59:15,615 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 17:10:24,804 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-29 17:10:24,820 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-10-29 17:10:24,820 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-29 17:10:24,820 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-10-29 17:10:24,834 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-10-29 17:12:41,224 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 17:12:41,224 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 17:12:41,224 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 17:12:41,224 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 17:12:41,224 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 17:12:45,992 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-29 17:12:45,992 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-10-29 17:13:39,950 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 17:13:39,950 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 17:13:39,950 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 17:13:39,950 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 17:13:39,950 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 17:13:54,680 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-10-29 17:13:54,680 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-10-29 17:14:05,099 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-10-29 17:18:22,328 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 17:18:22,329 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 17:18:22,329 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 17:18:22,330 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 17:18:22,330 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 18:06:22,188 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 18:06:22,188 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 18:06:22,189 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 18:06:22,189 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 18:06:22,190 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 18:34:41,638 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 18:34:41,638 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 18:34:41,638 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 18:34:41,638 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 18:34:41,638 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 18:38:57,572 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 18:38:57,573 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 18:38:57,573 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 18:38:57,574 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 18:38:57,574 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 18:39:19,547 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 18:39:19,548 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 18:39:19,549 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 18:39:19,549 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 18:39:19,549 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 19:02:34,775 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 19:02:34,775 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 19:02:34,775 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 19:02:34,775 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 19:02:34,775 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 19:07:59,692 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 19:07:59,692 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 19:07:59,692 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 19:07:59,692 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 19:07:59,692 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-29 19:10:01,614 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-29 19:10:01,614 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-29 19:10:01,614 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-29 19:10:01,614 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-29 19:10:01,614 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
