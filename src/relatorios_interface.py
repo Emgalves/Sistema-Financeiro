@@ -3556,3 +3556,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
+RelatoriosInterface = SistemaRelatorios
+
+__all__ = ['SistemaRelatorios', 'RelatoriosInterface']
