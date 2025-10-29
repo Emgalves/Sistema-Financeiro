@@ -11,10 +11,11 @@ VERSION_INFO = {
     "major": 1,
     "minor": 4,
     "patch": 5,
-    "release_date": "XX/11/2025",
+    "release_date": "27/10/2025",
     "changes": [
         "Inclusão de campo para Notas no final do relatório",
-        "Correção para inclusão de lançamentos futuros no relatório"
+        "Correção para inclusão de lançamentos futuros no relatório",
+        "Adição de diferenciação visual entre ambientes TESTE e PRODUÇÃO"
     ]
 }
 
@@ -32,10 +33,19 @@ def get_version_info():
 
 def save_version_history():
     """Salva o histórico de versões em um arquivo JSON"""
-    version_file = Path("config") / "version_history.json"
+    try:
+        # Tentar criar na pasta config/
+        version_file = Path("config") / "version_history.json"
+    except:
+        # Se falhar, usar diretório atual
+        version_file = Path("version_history.json")
     
-    # Garantir que o diretório existe
-    os.makedirs(version_file.parent, exist_ok=True)
+    try:
+        # Garantir que o diretório existe
+        os.makedirs(version_file.parent, exist_ok=True)
+    except:
+        # Se não conseguir criar pasta config, usar raiz
+        version_file = Path("version_history.json")
     
     # Carregar histórico existente, se houver
     history = []
@@ -43,7 +53,7 @@ def save_version_history():
         try:
             with open(version_file, 'r', encoding='utf-8') as f:
                 history = json.load(f)
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, FileNotFoundError):
             # Se o arquivo estiver corrompido, começar um novo
             history = []
     
@@ -56,8 +66,12 @@ def save_version_history():
         history.append(version_data)
         
         # Salvar histórico atualizado
-        with open(version_file, 'w', encoding='utf-8') as f:
-            json.dump(history, f, indent=4, ensure_ascii=False)
+        try:
+            with open(version_file, 'w', encoding='utf-8') as f:
+                json.dump(history, f, indent=4, ensure_ascii=False)
+        except Exception as e:
+            # Se falhar ao salvar, apenas continuar
+            print(f"Aviso: Não foi possível salvar histórico de versões: {e}")
     
     return history
 
@@ -166,3 +180,13 @@ def show_version_dialog(parent):
         text="Fechar", 
         command=dialog.destroy
     ).pack(pady=10)
+
+
+# Instância global do controle de versão
+version_control = type('VersionControl', (), {
+    'get_version_string': staticmethod(get_version_string),
+    'get_version_info': staticmethod(get_version_info),
+    'save_version_history': staticmethod(save_version_history),
+    'compare_versions': staticmethod(compare_versions),
+    'show_version_dialog': staticmethod(show_version_dialog)
+})()
