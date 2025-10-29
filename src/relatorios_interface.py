@@ -1204,7 +1204,7 @@ class SistemaRelatorios:
         selecao_frame.pack(fill='x', padx=10, pady=5)
         
         # Opção de usar data automática (padrão)
-        self.usar_data_automatica = tk.BooleanVar(value=True)
+        self.usar_data_automatica = tk.BooleanVar(master=self.root, value=True)
         
         ttk.Checkbutton(
             selecao_frame,
@@ -1309,7 +1309,7 @@ class SistemaRelatorios:
         frame_opcoes.pack(fill='x', padx=10, pady=10)
         
         # Checkbox para incluir lançamentos futuros
-        self.incluir_futuros = tk.BooleanVar(value=False)
+        self.incluir_futuros = tk.BooleanVar(master=self.root, value=False)
         ttk.Checkbutton(
             frame_opcoes,
             text="Incluir lançamentos futuros",
@@ -1317,7 +1317,7 @@ class SistemaRelatorios:
         ).pack(anchor='w', padx=15, pady=5)
         
         # Checkbox para incluir lançamentos excluídos
-        self.incluir_excluidos = tk.BooleanVar(value=False)
+        self.incluir_excluidos = tk.BooleanVar(master=self.root, value=False)
         ttk.Checkbutton(
             frame_opcoes,
             text="Incluir lançamentos excluídos no relatório",
@@ -1325,7 +1325,7 @@ class SistemaRelatorios:
         ).pack(anchor='w', padx=15, pady=5)
 
         # Checkbox para incluir notas no relatório
-        self.incluir_notas = tk.BooleanVar(value=False)
+        self.incluir_notas = tk.BooleanVar(master=self.root, value=False)
         ttk.Checkbutton(
             frame_opcoes,
             text="Incluir notas no relatório",
@@ -1343,13 +1343,13 @@ class SistemaRelatorios:
         self.label_notas_status.pack(anchor='w', padx=30, pady=2)
 
         # Variável para armazenar o texto das notas
-        self.texto_notas = tk.StringVar(value="")
+        self.texto_notas = tk.StringVar(master=self.root, value="")
         
         # === TIPO DE GERAÇÃO ===
         frame_tipo = ttk.LabelFrame(parent_frame, text="Tipo de Geração")
         frame_tipo.pack(fill='x', padx=10, pady=10)
         
-        self.tipo_geracao = tk.StringVar(value="individual")
+        self.tipo_geracao = tk.StringVar(master=self.root, value="individual")
         
         ttk.Radiobutton(
             frame_tipo,
@@ -1400,7 +1400,7 @@ class SistemaRelatorios:
         frame_visualizacao = ttk.LabelFrame(parent_frame, text="Modo de Visualização")
         frame_visualizacao.pack(fill='x', padx=10, pady=10)
         
-        self.modo_visualizacao = tk.StringVar(value="preview")
+        self.modo_visualizacao = tk.StringVar(master=self.root, value="preview")
         ttk.Radiobutton(
             frame_visualizacao,
             text="Gerar com Preview",
@@ -1419,7 +1419,7 @@ class SistemaRelatorios:
         frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
         frame_formato.pack(fill='x', padx=10, pady=10)
         
-        self.formato_saida = tk.StringVar(value="pdf")
+        self.formato_saida = tk.StringVar(master=self.root, value="pdf")
         ttk.Radiobutton(
             frame_formato,
             text="PDF",
@@ -1992,21 +1992,21 @@ class SistemaRelatorios:
         frame_visualizacao.pack(fill='x', padx=10, pady=10)
         
         # Checkboxes para diferentes visualizações
-        self.mostrar_resumo = tk.BooleanVar(value=True)
+        self.mostrar_resumo = tk.BooleanVar(master=self.root, value=True)
         ttk.Checkbutton(
             frame_visualizacao,
             text="Mostrar Resumo",
             variable=self.mostrar_resumo
         ).pack(anchor='w', padx=15, pady=5)
         
-        self.mostrar_detalhes = tk.BooleanVar(value=True)
+        self.mostrar_detalhes = tk.BooleanVar(master=self.root, value=True)
         ttk.Checkbutton(
             frame_visualizacao,
             text="Mostrar Detalhes",
             variable=self.mostrar_detalhes
         ).pack(anchor='w', padx=15, pady=5)
         
-        self.mostrar_grafico = tk.BooleanVar(value=True)
+        self.mostrar_grafico = tk.BooleanVar(master=self.root, value=True)
         ttk.Checkbutton(
             frame_visualizacao,
             text="Incluir Gráficos",
@@ -2017,7 +2017,7 @@ class SistemaRelatorios:
         frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
         frame_formato.pack(fill='x', padx=10, pady=10)
         
-        self.formato_contratos = tk.StringVar(value="excel")
+        self.formato_contratos = tk.StringVar(master=self.root, value="excel")
         ttk.Radiobutton(
             frame_formato,
             text="Excel",
@@ -2062,21 +2062,21 @@ class SistemaRelatorios:
         frame_visualizacao.pack(fill='x', padx=10, pady=10)
         
         # Checkboxes para diferentes visualizações
-        self.mostrar_resumo_td = tk.BooleanVar(value=True)
+        self.mostrar_resumo_td = tk.BooleanVar(master=self.root, value=True)
         ttk.Checkbutton(
             frame_visualizacao,
             text="Mostrar Resumo",
             variable=self.mostrar_resumo_td
         ).pack(anchor='w', padx=15, pady=5)
         
-        self.mostrar_detalhes_td = tk.BooleanVar(value=True)
+        self.mostrar_detalhes_td = tk.BooleanVar(master=self.root, value=True)
         ttk.Checkbutton(
             frame_visualizacao,
             text="Mostrar Detalhes",
             variable=self.mostrar_detalhes_td
         ).pack(anchor='w', padx=15, pady=5)
         
-        self.mostrar_grafico_td = tk.BooleanVar(value=True)
+        self.mostrar_grafico_td = tk.BooleanVar(master=self.root, value=True)
         ttk.Checkbutton(
             frame_visualizacao,
             text="Incluir Gráficos",
@@ -2087,7 +2087,7 @@ class SistemaRelatorios:
         frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
         frame_formato.pack(fill='x', padx=10, pady=10)
         
-        self.formato_categoria = tk.StringVar(value="excel")
+        self.formato_categoria = tk.StringVar(master=self.root, value="excel")
         ttk.Radiobutton(
             frame_formato,
             text="Excel",
@@ -2157,7 +2157,7 @@ class SistemaRelatorios:
         frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
         frame_formato.pack(fill='x', padx=10, pady=10)
         
-        self.formato_tipo_despesa = tk.StringVar(value="excel")
+        self.formato_tipo_despesa = tk.StringVar(master=self.root, value="excel")
         ttk.Radiobutton(
             frame_formato,
             text="Excel",
@@ -2214,21 +2214,21 @@ class SistemaRelatorios:
         frame_visualizacao.pack(fill='x', padx=10, pady=10)
         
         # Checkboxes para diferentes visualizações
-        self.mostrar_resumo = tk.BooleanVar(value=True)
+        self.mostrar_resumo = tk.BooleanVar(master=self.root, value=True)
         ttk.Checkbutton(
             frame_visualizacao,
             text="Mostrar Resumo",
             variable=self.mostrar_resumo
         ).pack(anchor='w', padx=15, pady=5)
         
-        self.mostrar_detalhes = tk.BooleanVar(value=True)
+        self.mostrar_detalhes = tk.BooleanVar(master=self.root, value=True)
         ttk.Checkbutton(
             frame_visualizacao,
             text="Mostrar Detalhes",
             variable=self.mostrar_detalhes
         ).pack(anchor='w', padx=15, pady=5)
         
-        self.mostrar_grafico = tk.BooleanVar(value=True)
+        self.mostrar_grafico = tk.BooleanVar(master=self.root, value=True)
         ttk.Checkbutton(
             frame_visualizacao,
             text="Incluir Gráficos",
@@ -2239,7 +2239,7 @@ class SistemaRelatorios:
         frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
         frame_formato.pack(fill='x', padx=10, pady=10)
         
-        self.formato_contratos = tk.StringVar(value="excel")
+        self.formato_contratos = tk.StringVar(master=self.root, value="excel")
         ttk.Radiobutton(
             frame_formato,
             text="Excel",
