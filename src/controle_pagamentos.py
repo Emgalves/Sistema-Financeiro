@@ -31,7 +31,7 @@ class ControlePagamentos:
             self.is_independent = False  # Marcar como janela secundária
         
         self.root.title("Controle de Pagamentos de Taxas")
-        self.root.geometry("1400x850+50+50")  # Aumentado e reposicionado
+        self.root.geometry("1400x900+50+50")  # Aumentado e reposicionado
         
         # Forçar a janela para frente
         self.root.lift()
