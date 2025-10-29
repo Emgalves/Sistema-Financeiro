@@ -169,12 +169,30 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
-class ControladorTaxas:
-    """Controlador simplificado de taxas"""
-    def __init__(self, root):
-        self.root = root
-        self.ultima_verificacao = None
-        self.eventos_nao_tratados = []
+# Importar módulo de controle de pagamentos
+try:
+    from src.controle_pagamentos_taxas import ControlePagamentos as ControladorTaxas
+except ImportError:
+    try:
+        from controle_pagamentos_taxas import ControlePagamentos as ControladorTaxas
+    except ImportError:
+        simple_logger.warning("Módulo ControlePagamentos não encontrado, criando stub")
+        
+        class ControladorTaxasStub:
+            def __init__(self, parent=None):
+                self.parent = parent
+                
+            def abrir_janela_controle(self):
+                messagebox.showerror("Erro", "Módulo de Controle de Pagamentos não encontrado")
+                
+        ControladorTaxas = ControladorTaxasStub
+
+# class ControladorTaxas:
+#     """Controlador simplificado de taxas"""
+#     def __init__(self, root):
+#         self.root = root
+#         self.ultima_verificacao = None
+#         self.eventos_nao_tratados = []
 
 class SistemaGestaoFinanceira:
     """Sistema principal de gestão financeira"""
@@ -211,15 +229,15 @@ class SistemaGestaoFinanceira:
         self.usuario_atual = None
         self.root = tk.Tk()
         
-        # NOVO: Aplicar estilo de ambiente à janela
+        # Aplicar estilo de ambiente à janela
         aplicar_estilo_ambiente(self.root, 'janela')
         
-        # NOVO: Título com indicação de ambiente
+        # Título com indicação de ambiente
         titulo_base = f"Sistema de Gestão Financeira v{version_control.get_version_string()}"
         titulo_com_ambiente = config_ambiente.get_titulo_janela(titulo_base)
         configurar_janela(self.root, titulo_com_ambiente)
 
-        # NOVO: Criar banner de ambiente (se necessário)
+        # Criar banner de ambiente (se necessário)
         self.banner_ambiente = criar_banner_ambiente(self.root)
         
         # Salvar histórico de versões
@@ -231,7 +249,7 @@ class SistemaGestaoFinanceira:
         # Inicializar gerenciador de taxas
         self.controlador_taxas = ControladorTaxas(self.root)
         
-        # NOVO: Configurar estilos TTK baseados no ambiente
+        # Configurar estilos TTK baseados no ambiente
         configurar_ttk_style_ambiente()
         
         # Configurar estilos e conteúdo
@@ -287,17 +305,6 @@ class SistemaGestaoFinanceira:
         )
         title_label.pack()
         
-        # Subtítulo com ambiente
-        # if config_ambiente.eh_teste():
-        #     subtitle = tk.Label(
-        #         title_frame,
-        #         text=f"{ambiente_emoji} AMBIENTE DE TESTE {ambiente_emoji}",
-        #         font=('Helvetica', 12, 'bold'),
-        #         bg=config_ambiente.get_config_visual()['cor_fundo'],
-        #         fg='#ff6b00'
-        #     )
-        #     subtitle.pack()
-
         # Grid para cards
         grid = ttk.Frame(main_frame)
         grid.pack(expand=True, pady=20)
@@ -417,16 +424,7 @@ class SistemaGestaoFinanceira:
     def abrir_gestao_taxas(self):
         """Abre o sistema de gestão de taxas"""
         try:
-            simple_logger.info("Abrindo sistema de gestão de taxas")
-            
-            try:
-                from src.gestao_taxas import GestaoTaxasInterface
-            except ImportError:
-                from gestao_taxas import GestaoTaxasInterface
-            
-            janela_taxas = tk.Toplevel(self.root)
-            app = GestaoTaxasInterface(janela_taxas)
-            
+            self.controlador_taxas.abrir_janela_controle()
         except Exception as e:
             simple_logger.error(f"Erro ao abrir gestão de taxas: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao abrir gestão de taxas: {str(e)}")
@@ -437,12 +435,12 @@ class SistemaGestaoFinanceira:
             simple_logger.info("Abrindo sistema de despesas rateadas")
             
             try:
-                from src.despesas_rateadas import DespesasRateadas
+                from src.despesas_rateadas import InterfaceDespesasRateadas
             except ImportError:
-                from despesas_rateadas import DespesasRateadas
+                from despesas_rateadas import InterfaceDespesasRateadas
             
             janela_despesas = tk.Toplevel(self.root)
-            app = DespesasRateadas(janela_despesas)
+            app = InterfaceDespesasRateadas(janela_despesas)
             
         except Exception as e:
             simple_logger.error(f"Erro ao abrir despesas rateadas: {str(e)}")
@@ -458,11 +456,11 @@ class SistemaGestaoFinanceira:
             except ImportError:
                 from relatorios_interface import RelatoriosInterface
             
+            # CORREÇÃO: Passar self.root como parent para manter referência
+            app = RelatoriosInterface(parent=self.root)
+            
             # Ocultar menu principal
             self.root.withdraw()
-            
-            # Criar app sem parent (cria própria janela)
-            app = RelatoriosInterface()  # ← SEM ARGUMENTOS!
             
             # Quando fechar, voltar ao menu
             def ao_fechar():
@@ -470,7 +468,10 @@ class SistemaGestaoFinanceira:
                     app.root.destroy()
                 except:
                     pass
-                self.root.deiconify()
+                finally:
+                    self.root.deiconify()
+                    self.root.lift()
+                    self.root.focus_force()
             
             if hasattr(app, 'root'):
                 app.root.protocol("WM_DELETE_WINDOW", ao_fechar)
@@ -478,6 +479,7 @@ class SistemaGestaoFinanceira:
         except Exception as e:
             simple_logger.error(f"Erro ao abrir relatórios: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao abrir relatórios: {str(e)}")
+            self.root.deiconify()
 
     def abrir_gestao_medicoes(self):
         """Abre o sistema de gestão de medições"""
@@ -485,12 +487,12 @@ class SistemaGestaoFinanceira:
             simple_logger.info("Abrindo gestão de medições")
             
             try:
-                from src.gestao_medicoes import GestaoMedicoesInterface
+                from src.gestao_medicoes import GestaoMedicoes
             except ImportError:
-                from gestao_medicoes import GestaoMedicoesInterface
+                from gestao_medicoes import GestaoMedicoes
             
-            janela_medicoes = tk.Toplevel(self.root)
-            app = GestaoMedicoesInterface(janela_medicoes)
+            # janela_medicoes = tk.Toplevel(self.root)
+            app = GestaoMedicoes(parent=self.root)
             
         except Exception as e:
             simple_logger.error(f"Erro ao abrir gestão de medições: {str(e)}")
@@ -502,12 +504,12 @@ class SistemaGestaoFinanceira:
             simple_logger.info("Abrindo configurações do sistema")
             
             try:
-                from src.configuracoes_sistema import ConfiguracoesSistema
+                from src.configuracoes_sistema import GerenciadorConfiguracoes
             except ImportError:
-                from configuracoes_sistema import ConfiguracoesSistema
+                from configuracoes_sistema import GerenciadorConfiguracoes
             
-            janela_config = tk.Toplevel(self.root)
-            app = ConfiguracoesSistema(janela_config)
+            # janela_config = tk.Toplevel(self.root)
+            app = GerenciadorConfiguracoes(parent=self.root)
             
         except Exception as e:
             simple_logger.error(f"Erro ao abrir configurações: {str(e)}")
