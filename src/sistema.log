@@ -5817,3 +5817,10 @@
 2025-10-25 10:47:45,814 - INFO - 🎉 SISTEMA INTEGRADO INICIADO COM SUCESSO!
 2025-10-25 10:48:28,532 - INFO - Saída confirmada, finalizando sistema
 2025-10-25 10:48:28,598 - INFO - Ação concluída: Gerar relatório
+2025-10-27 12:06:56,982 - INFO - Sistema iniciado em modo: PRODUCAO
+2025-10-27 12:07:17,928 - INFO - Sistema encerrado pelo usuário
+2025-10-29 15:18:37,917 - INFO - Configurações importadas com sucesso via src.config
+2025-10-29 15:18:37,935 - INFO - Configurações importadas com sucesso
+2025-10-29 15:18:37,936 - INFO - Configurações do sistema importadas com sucesso
+2025-10-29 15:18:39,290 - INFO - Sistema iniciado em modo: TESTE
+2025-10-29 15:18:42,302 - INFO - Abrindo sistema de relatórios
