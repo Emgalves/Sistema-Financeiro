@@ -1793,10 +1793,13 @@ class InterfaceDespesasRateadas:
     
     def voltar_menu(self):
         """Volta ao menu principal"""
-        if self.menu_principal:
-            self.root.destroy()
-            self.menu_principal.deiconify()
-            self.menu_principal.lift()
+        # if self.menu_principal:
+        #     self.root.destroy()
+        #     self.menu_principal.deiconify()
+        #     self.menu_principal.lift()
+        if hasattr(self, 'menu_principal') and self.menu_principal is not None:
+            self.menu_principal.deiconify()  # Reexibe o menu principal
+        self.root.destroy()  # Fecha a janela de configurações
 
 class GerenciadorDespesasRateadas:
 
