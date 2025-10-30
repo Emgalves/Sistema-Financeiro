@@ -228,7 +228,7 @@ def main():
                 try:
                     idx = int(escolha) - 1
                     if 0 <= idx < len(executaveis):
-                        print("\nTestando... Clique em 'Geração de Relatórios' para verificar!")
+                        print("\nTestando... !")
                         subprocess.Popen([str(executaveis[idx])])
                 except:
                     print("Opção inválida!")
