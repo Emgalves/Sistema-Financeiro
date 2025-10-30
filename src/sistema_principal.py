@@ -187,13 +187,6 @@ except ImportError:
                 
         ControladorTaxas = ControladorTaxasStub
 
-# class ControladorTaxas:
-#     """Controlador simplificado de taxas"""
-#     def __init__(self, root):
-#         self.root = root
-#         self.ultima_verificacao = None
-#         self.eventos_nao_tratados = []
-
 class SistemaGestaoFinanceira:
     """Sistema principal de gestão financeira"""
     
@@ -259,6 +252,14 @@ class SistemaGestaoFinanceira:
         # Log com informação de ambiente
         simple_logger.info(f"Sistema iniciado em modo: {config_ambiente.get_nome_ambiente()}")
         
+        # self.criar_interface()
+        
+        # ⭐ ADICIONAR ESTAS LINHAS AQUI:
+        # Salvar geometria inicial para recuperação posterior
+        self.root.update_idletasks()
+        self.root._geometria_original = self.root.geometry()
+        print(f"💾 Geometria inicial do menu salva: {self.root._geometria_original}")
+
     def login(self, username):
         self.usuario_atual = username
         system_logger.set_user(username)
@@ -400,17 +401,46 @@ class SistemaGestaoFinanceira:
         )
         button.pack(pady=(0, 20))
 
+    # def abrir_entrada_dados(self):
+    #     """Abre o sistema de entrada de dados"""
+    #     try:
+    #         simple_logger.info("Abrindo sistema de entrada de dados")
+            
+    #         try:
+    #             from src.Sistema_Entrada_Dados import SistemaEntradaDados
+    #         except ImportError:
+    #             from Sistema_Entrada_Dados import SistemaEntradaDados
+            
+    #         self.root.withdraw()
+    #         app = SistemaEntradaDados(parent=self.root)
+    #         app.root.lift()
+    #         app.root.focus_force()
+    #         app.root.mainloop()
+
+    #     except Exception as e:
+    #         simple_logger.error(f"Erro ao abrir sistema de entrada de dados: {str(e)}")
+    #         messagebox.showerror("Erro", "Erro ao abrir sistema de entrada de dados.")
+    #         self.root.deiconify()
+
     def abrir_entrada_dados(self):
         """Abre o sistema de entrada de dados"""
         try:
             simple_logger.info("Abrindo sistema de entrada de dados")
             
+            # Importar módulo
             try:
                 from src.Sistema_Entrada_Dados import SistemaEntradaDados
             except ImportError:
                 from Sistema_Entrada_Dados import SistemaEntradaDados
             
+            # CORREÇÃO: Salvar geometria antes de ocultar
+            if not hasattr(self.root, '_geometria_original'):
+                self.root._geometria_original = self.root.geometry()
+            
+            # Ocultar menu principal
             self.root.withdraw()
+            
+            # Criar e abrir sistema de entrada de dados
             app = SistemaEntradaDados(parent=self.root)
             app.root.lift()
             app.root.focus_force()
@@ -419,7 +449,14 @@ class SistemaGestaoFinanceira:
         except Exception as e:
             simple_logger.error(f"Erro ao abrir sistema de entrada de dados: {str(e)}")
             messagebox.showerror("Erro", "Erro ao abrir sistema de entrada de dados.")
+            
+            # CORREÇÃO: Restaurar com geometria em caso de erro
             self.root.deiconify()
+            if hasattr(self.root, '_geometria_original'):
+                self.root.geometry(self.root._geometria_original)
+                print(f"✅ Geometria restaurada após erro: {self.root._geometria_original}")
+            self.root.update_idletasks()
+            self.root.lift()
 
     def abrir_gestao_taxas(self):
         """Abre o sistema de gestão de taxas"""
