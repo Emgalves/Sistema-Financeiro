@@ -1,0 +1,32 @@
+===== RELATÓRIO DE VERIFICAÇÃO DO SISTEMA =====
+Data e hora: 30/10/2025 16:58:01
+Usuário: Obras
+
+=== CONFIGURAÇÕES DE AMBIENTE ===
+SISTEMA_AMBIENTE: producao
+Dotenv carregado: Sim
+Sistema Operacional: Windows (10)
+
+=== GOOGLE DRIVE ===
+Procurando Google Drive...
+Verificando: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios
+✅ Google Drive encontrado em: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios
+✅ Pasta Financeiro encontrada: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro
+✅ Pasta Planilhas_Base encontrada: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Planilhas_Base
+✅ Pasta Clientes encontrada: H:\.shortcut-targets-by-id\195uuohIL_ZKum7lhwu-OzJCH_CGAb97G\Relatórios\Financeiro\Clientes
+
+=== ARQUIVOS LOCAIS ===
+Verificando caminho local: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base
+✅ Caminho base local existe
+✅ Arquivo clientes.xlsx encontrado
+✅ Arquivo MODELO.xlsx encontrado
+
+=== TESTE DE IMPORTAÇÃO ===
+Tentando importar config diretamente...
+✅ Módulo config importado com sucesso
+❌ ERRO ao testar config: module 'config' has no attribute 'ENV'
+
+===== CONCLUSÃO =====
+❌ Foram encontrados ERROS que podem impedir o funcionamento correto do sistema.
+
+Se necessário, compartilhe este relatório com o suporte técnico.
