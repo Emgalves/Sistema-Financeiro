@@ -3,65 +3,30 @@ from pathlib import Path
 import platform
 import os
 
-# CORREÇÃO 1: Verificação mais robusta da variável de ambiente
-def obter_ambiente():
-    """Obtém o ambiente atual com múltiplas verificações"""
+# ============================================================================
+# CORREÇÃO PRINCIPAL: USAR O AMBIENTE_CONFIG.PY
+# ============================================================================
+# Em vez de detectar ambiente de forma independente,
+# vamos IMPORTAR do ambiente_config.py que já funciona!
+# ============================================================================
+
+try:
+    # Importar o ambiente já detectado corretamente
+    from src.ambiente_config import config_ambiente
     
-    # Método 1: Variável de ambiente do sistema
-    env_sistema = os.getenv('SISTEMA_AMBIENTE', '').lower().strip()
-    print(f"🔍 ENV do sistema (SISTEMA_AMBIENTE): '{env_sistema}'")
-    
-    # Método 2: Variável alternativa
-    env_alt = os.getenv('AMBIENTE', '').lower().strip()
-    print(f"🔍 ENV alternativo (AMBIENTE): '{env_alt}'")
-    
-    # Método 3: Verificar arquivo de configuração local
-    try:
-        config_file = Path(__file__).parent / '.env_config'
-        if config_file.exists():
-            with open(config_file, 'r', encoding='utf-8') as f:
-                env_arquivo = f.read().strip().lower()
-                print(f"🔍 ENV do arquivo (.env_config): '{env_arquivo}'")
-        else:
-            env_arquivo = ''
-    except Exception as e:
-        print(f"⚠️ Erro ao ler arquivo de config: {e}")
-        env_arquivo = ''
-    
-    # Priorizar: arquivo > SISTEMA_AMBIENTE > AMBIENTE > padrão
-    if env_arquivo and env_arquivo in ['teste', 'test', 'desenvolvimento', 'dev']:
-        return 'teste'
-    elif env_sistema and env_sistema in ['teste', 'test', 'desenvolvimento', 'dev']:
-        return 'teste'
-    elif env_alt and env_alt in ['teste', 'test', 'desenvolvimento', 'dev']:
-        return 'teste'
+    # Usar a detecção que JÁ FUNCIONA
+    if config_ambiente.eh_producao():
+        ENV = 'producao'
+        print("🟢 AMBIENTE DETECTADO: PRODUÇÃO (via ambiente_config.py)")
     else:
-        return 'producao'
-
-# USAR A FUNÇÃO CORRIGIDA
-ENV = obter_ambiente()
-print(f"🎯 Ambiente determinado: {ENV}")
-
-# CORREÇÃO 2: Adicionar modo de debug para variáveis
-def debug_variaveis_ambiente():
-    """Mostra todas as variáveis de ambiente relacionadas"""
-    print("\n" + "="*50)
-    print("🔧 DEBUG - VARIÁVEIS DE AMBIENTE")
-    print("="*50)
-    
-    variaveis_interesse = [
-        'SISTEMA_AMBIENTE', 'AMBIENTE', 'ENV', 'ENVIRONMENT',
-        'COMPUTERNAME', 'USERNAME', 'USERDOMAIN'
-    ]
-    
-    for var in variaveis_interesse:
-        valor = os.getenv(var, 'NÃO DEFINIDA')
-        print(f"  {var}: {valor}")
-    
-    print("="*50 + "\n")
-
-# Executar debug se necessário
-debug_variaveis_ambiente()
+        ENV = 'teste'
+        print("🟨 AMBIENTE DETECTADO: TESTE (via ambiente_config.py)")
+        
+except ImportError:
+    # Fallback apenas para desenvolvimento (quando executado diretamente)
+    print("⚠️ ambiente_config não disponível - usando fallback")
+    ENV = os.getenv('SISTEMA_AMBIENTE', 'teste').lower()
+    print(f"🎯 Ambiente (fallback): {ENV}")
 
 # Detecta o sistema operacional
 IS_WINDOWS = platform.system() == 'Windows'
@@ -72,7 +37,10 @@ print(f"💻 Sistema operacional: {platform.system()}")
 # Inicializa a variável GOOGLE_DRIVE_PATH como None
 GOOGLE_DRIVE_PATH = None
 
-# CORREÇÃO 3: Configuração mais clara para cada ambiente
+# ============================================================================
+# CONFIGURAÇÃO DE CAMINHOS BASEADA NO AMBIENTE
+# ============================================================================
+
 if ENV == 'teste':
     print("🧪 MODO TESTE ATIVADO")
     
@@ -146,7 +114,7 @@ ARQUIVO_CONTROLE = BASE_PATH / "controle_taxa_adm.xlsx"
 PASTA_RH = BASE_PATH / "Planilhas_RH"
 ARQUIVO_PARAMETROS_MATERIAIS = BASE_PATH / "parametros_materiais.json"
 
-# CORREÇÃO 4: Verificação melhorada dos diretórios
+# Verificação dos diretórios
 print(f"\n📋 VERIFICAÇÃO DE CAMINHOS:")
 print(f"=" * 40)
 
@@ -205,80 +173,6 @@ def verificar_arquivos():
         raise FileNotFoundError(f"{len(erros)} arquivo(s) não encontrado(s)")
     else:
         print(f"\n✅ Todos os arquivos estão acessíveis!")
-
-# CORREÇÃO 5: Funções auxiliares para mudança de ambiente
-def criar_arquivo_ambiente_teste():
-    """Cria arquivo local para forçar ambiente de teste"""
-    try:
-        config_file = Path(__file__).parent / '.env_config'
-        with open(config_file, 'w', encoding='utf-8') as f:
-            f.write('teste')
-        print(f"✅ Arquivo de configuração criado: {config_file}")
-        print(f"💡 Reinicie o sistema para aplicar o ambiente de TESTE")
-        return True
-    except Exception as e:
-        print(f"❌ Erro ao criar arquivo de config: {e}")
-        return False
-
-def criar_arquivo_ambiente_producao():
-    """Cria arquivo local para forçar ambiente de produção"""
-    try:
-        config_file = Path(__file__).parent / '.env_config'
-        with open(config_file, 'w', encoding='utf-8') as f:
-            f.write('producao')
-        print(f"✅ Arquivo de configuração criado: {config_file}")
-        print(f"💡 Reinicie o sistema para aplicar o ambiente de PRODUÇÃO")
-        return True
-    except Exception as e:
-        print(f"❌ Erro ao criar arquivo de config: {e}")
-        return False
-
-def remover_arquivo_ambiente():
-    """Remove arquivo de configuração local"""
-    try:
-        config_file = Path(__file__).parent / '.env_config'
-        if config_file.exists():
-            config_file.unlink()
-            print(f"✅ Arquivo de configuração removido: {config_file}")
-            print(f"💡 Reinicie o sistema - usará variável de ambiente do sistema")
-        else:
-            print(f"ℹ️ Arquivo de configuração não existe")
-        return True
-    except Exception as e:
-        print(f"❌ Erro ao remover arquivo de config: {e}")
-        return False
-
-# CORREÇÃO 6: Mostrar instruções para mudança de ambiente
-def mostrar_instrucoes_ambiente():
-    """Mostra instruções para mudança de ambiente"""
-    print(f"\n" + "="*60)
-    print(f"🎯 COMO MUDAR DE AMBIENTE:")
-    print(f"="*60)
-    print(f"")
-    print(f"OPÇÃO 1 - Via arquivo local (RECOMENDADO):")
-    print(f"   Para TESTE:")
-    print(f"   >>> from src.config.config import criar_arquivo_ambiente_teste")
-    print(f"   >>> criar_arquivo_ambiente_teste()")
-    print(f"")
-    print(f"   Para PRODUÇÃO:")
-    print(f"   >>> from src.config.config import criar_arquivo_ambiente_producao")
-    print(f"   >>> criar_arquivo_ambiente_producao()")
-    print(f"")
-    print(f"OPÇÃO 2 - Via variável do sistema Windows:")
-    print(f"   1. Abra o Prompt como Administrador")
-    print(f"   2. Para TESTE: setx SISTEMA_AMBIENTE \"teste\" /M")
-    print(f"   3. Para PRODUÇÃO: setx SISTEMA_AMBIENTE \"producao\" /M")
-    print(f"   4. Reinicie o computador")
-    print(f"")
-    print(f"OPÇÃO 3 - Via variável da sessão (temporário):")
-    print(f"   No prompt antes de executar:")
-    print(f"   set SISTEMA_AMBIENTE=teste")
-    print(f"   python seu_script.py")
-    print(f"")
-    print(f"="*60)
-
-# Mostrar instruções
-mostrar_instrucoes_ambiente()
 
 print(f"\n🏁 Configuração concluída - Ambiente: {ENV}")
 print(f"="*50)
