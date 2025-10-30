@@ -1528,20 +1528,67 @@ class SistemaEntradaDados:
         """Setter para gestor_parcelas"""
         self._gestor_parcelas = valor        
 
+    # def voltar_menu(self):
+    #     """Retorna ao menu principal verificando dados não salvos"""
+    #     if self.dados_para_incluir and custom_messagebox("yesno", 
+    #         "Confirmação", 
+    #         "Existem dados não salvos. Deseja salvá-los antes de sair?"):
+    #         self.enviar_dados()
+        
+    #     self.root.destroy()  # Fecha a janela atual
+        
+    #     # Se tiver referência ao menu principal, mostra ele
+    #     if self.menu_principal:
+    #         self.menu_principal.deiconify()
+    #         self.menu_principal.lift()
+    #         self.menu_principal.focus_force()
+
     def voltar_menu(self):
-        """Retorna ao menu principal verificando dados não salvos"""
+        """
+        Versão alternativa que força redesenho completo
+        """
         if self.dados_para_incluir and custom_messagebox("yesno", 
             "Confirmação", 
             "Existem dados não salvos. Deseja salvá-los antes de sair?"):
             self.enviar_dados()
         
-        self.root.destroy()  # Fecha a janela atual
+        menu_ref = self.menu_principal
         
-        # Se tiver referência ao menu principal, mostra ele
-        if self.menu_principal:
-            self.menu_principal.deiconify()
-            self.menu_principal.lift()
-            self.menu_principal.focus_force()
+        # Fechar janela atual
+        self.root.destroy()
+        
+        if menu_ref:
+            try:
+                geometria = getattr(menu_ref, '_geometria_original', "900x700+100+50")
+                
+                # ESTRATÉGIA DIFERENTE: Ocultar, configurar, mostrar
+                menu_ref.withdraw()  # Garantir que está oculto
+                
+                # Configurar geometria enquanto oculto
+                menu_ref.geometry(geometria)
+                menu_ref.update_idletasks()
+                menu_ref.update()
+                
+                # Aguardar um ciclo
+                menu_ref.after(10, lambda: None)
+                menu_ref.update()
+                
+                # Mostrar janela configurada
+                menu_ref.deiconify()
+                
+                # Forçar redesenho
+                menu_ref.update_idletasks()
+                menu_ref.update()
+                
+                # Foco
+                menu_ref.lift()
+                menu_ref.focus_force()
+                
+                print(f"✅ Menu restaurado com redesenho completo")
+                
+            except Exception as e:
+                print(f"⚠️ Erro: {e}")
+
 
     def sair_sistema(self):
         """Fecha o sistema verificando dados não salvos"""
@@ -6181,7 +6228,7 @@ class SistemaEntradaDados:
     def verificar_duplicidade_antes_salvar(self, sheet, dados):
         """
         Verifica se um lançamento similar já existe na planilha usando critérios inteligentes
-        VERSÃO SIMPLIFICADA E TESTADA
+        VERSÃO CORRIGIDA - Considera NFs diferentes como NÃO-DUPLICATAS
         """
         # TESTE: Log bem visível
         print("🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!")
@@ -6205,7 +6252,7 @@ class SistemaEntradaDados:
                 return False
             
             logger.info(f"=== INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===")
-            logger.info(f"Dados novos: {nome_novo} | {referencia_nova} | R$ {valor_novo:.2f} | {dt_vencto_nova}")
+            logger.info(f"Dados novos: {nome_novo} | {referencia_nova} | NF: {nf_nova} | R$ {valor_novo:.2f} | {dt_vencto_nova}")
             
             duplicatas_encontradas = 0
             
@@ -6241,7 +6288,7 @@ class SistemaEntradaDados:
                     continue
                 
                 # LOG para debug
-                logger.debug(f"Linha {row_num}: {nome_planilha} | {referencia_planilha} | R$ {valor_planilha:.2f} | {dt_vencto_planilha}")
+                logger.debug(f"Linha {row_num}: {nome_planilha} | {referencia_planilha} | NF: {nf_planilha} | R$ {valor_planilha:.2f} | {dt_vencto_planilha}")
                 
                 # =============================================================
                 # CRITÉRIO 1: DUPLICATA EXATA POR NF
@@ -6262,10 +6309,16 @@ class SistemaEntradaDados:
                 
                 # =============================================================
                 # CRITÉRIO 2: MESMO FORNECEDOR + VALOR + DATA + REFERÊNCIA SIMILAR
+                # (mas apenas se NFs não existirem OU forem iguais)
                 # =============================================================
                 if (nome_planilha == nome_novo and 
                     diferenca_valor < 0.01 and 
                     dt_vencto_planilha == dt_vencto_nova):
+                    
+                    # SE AMBAS AS NFs EXISTEM E SÃO DIFERENTES, NÃO É DUPLICATA
+                    if nf_nova and nf_planilha and nf_nova != nf_planilha:
+                        logger.debug(f"   ✅ NFs diferentes detectadas ('{nf_nova}' vs '{nf_planilha}') - NÃO é duplicata")
+                        continue
                     
                     # Verificar similaridade da referência
                     similaridade = self._calcular_similaridade_simples(referencia_nova, referencia_planilha)
@@ -6280,16 +6333,23 @@ class SistemaEntradaDados:
                         logger.error(f"   Similaridade: {similaridade:.2%}")
                         logger.error(f"   Valor: R$ {valor_novo:.2f}")
                         logger.error(f"   Vencimento: {dt_vencto_nova}")
+                        logger.error(f"   NF nova: '{nf_nova}' | NF existente: '{nf_planilha}'")
                         logger.error(f"   Linha existente: {row_num}")
                         return True
                 
                 # =============================================================
                 # CRITÉRIO 3: MESMO CNPJ + VALOR + DATA (independente da referência)
+                # (mas apenas se NFs não existirem OU forem iguais)
                 # =============================================================
                 if (cnpj_novo and cnpj_planilha and 
                     cnpj_novo == cnpj_planilha and 
                     diferenca_valor < 0.01 and 
                     dt_vencto_planilha == dt_vencto_nova):
+                    
+                    # SE AMBAS AS NFs EXISTEM E SÃO DIFERENTES, NÃO É DUPLICATA
+                    if nf_nova and nf_planilha and nf_nova != nf_planilha:
+                        logger.debug(f"   ✅ NFs diferentes detectadas ('{nf_nova}' vs '{nf_planilha}') - NÃO é duplicata")
+                        continue
                     
                     logger.error(f"🚨 DUPLICATA SUSPEITA DETECTADA (Critério: CNPJ+Valor+Data)!")
                     logger.error(f"   CNPJ: {cnpj_novo}")
@@ -6298,10 +6358,11 @@ class SistemaEntradaDados:
                     logger.error(f"   Vencimento: {dt_vencto_nova}")
                     logger.error(f"   Referência nova: '{referencia_nova}'")
                     logger.error(f"   Referência existente: '{referencia_planilha}'")
+                    logger.error(f"   NF nova: '{nf_nova}' | NF existente: '{nf_planilha}'")
                     logger.error(f"   Linha existente: {row_num}")
                     return True
             
-            logger.info(f"✅ Nenhuma duplicata encontrada para: {nome_novo} - {referencia_nova}")
+            logger.info(f"✅ Nenhuma duplicata encontrada para: {nome_novo} - {referencia_nova} - NF: {nf_nova}")
             return False
             
         except Exception as e:
@@ -6335,7 +6396,6 @@ class SistemaEntradaDados:
             return 0.0
         
         return comum / total
-
     # Correção para o método enviar_dados() - SistemaEntradaDados.py
 
     def enviar_dados(self):
