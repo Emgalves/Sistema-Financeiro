@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Módulo de Configuração de Ambiente - Sistema de Gestão Financeira
-VERSÃO DEBUG - Com logs detalhados para diagnóstico
+VERSÃO CORRIGIDA - Prioriza nome do executável sobre .env
 """
 
 import os
@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Carregar variáveis de ambiente
+# Carregar variáveis de ambiente (mas não usar como prioridade!)
 load_dotenv()
 
 class ConfiguracaoAmbiente:
@@ -25,7 +25,7 @@ class ConfiguracaoAmbiente:
         print("DEBUG - DETECÇÃO DE AMBIENTE")
         print("="*70)
         
-        # MÉTODO 1: Detectar pelo NOME DO EXECUTÁVEL
+        # MÉTODO 1: Detectar pelo NOME DO EXECUTÁVEL (PRIORIDADE MÁXIMA!)
         executavel = self._get_nome_executavel()
         print(f"1. Nome do executável: '{executavel}'")
         
@@ -49,6 +49,11 @@ class ConfiguracaoAmbiente:
         print(f"   - Termina com '_TEST'? {nome_upper.endswith('_TEST')}")
         print(f"   - Contém 'PRODUCAO'? {'PRODUCAO' in nome_upper}")
         print(f"   - Contém 'TESTE'? {'TESTE' in nome_upper}")
+        
+        # ===================================================================
+        # PRIORIDADE MÁXIMA: NOME DO EXECUTÁVEL
+        # Só usar .env se for execução como script Python (desenvolvimento)
+        # ===================================================================
         
         # REGRA 1: Termina com _PRODUCAO ou _PROD
         if nome_upper.endswith("_PRODUCAO") or nome_upper.endswith("_PROD"):
@@ -74,23 +79,28 @@ class ConfiguracaoAmbiente:
             ambiente_detectado = True
             print(f"\n✅ RESULTADO: Detectado como TESTE (contém TESTE)")
         
-        # MÉTODO 2: Tentar .env
+        # MÉTODO 2: Usar .env SOMENTE se for script Python (desenvolvimento)
         if not ambiente_detectado:
-            print(f"\n⚠️ Não detectado pelo nome, tentando .env...")
-            
-            env_value = os.getenv("AMBIENTE_SISTEMA", "").upper()
-            print(f"   AMBIENTE_SISTEMA = '{env_value}'")
-            
-            if not env_value:
-                env_value = os.getenv("SISTEMA_AMBIENTE", "").upper()
-                print(f"   SISTEMA_AMBIENTE = '{env_value}'")
-            
-            if env_value in [self.PRODUCAO, self.TESTE]:
-                self.ambiente = env_value
-                ambiente_detectado = True
-                print(f"\n✅ RESULTADO: Detectado pelo .env como {self.ambiente}")
+            # Só usar .env se NÃO for executável PyInstaller
+            if not getattr(sys, 'frozen', False):
+                print(f"\n⚠️ Script Python: usando .env...")
+                
+                env_value = os.getenv("AMBIENTE_SISTEMA", "").upper()
+                print(f"   AMBIENTE_SISTEMA = '{env_value}'")
+                
+                if not env_value:
+                    env_value = os.getenv("SISTEMA_AMBIENTE", "").upper()
+                    print(f"   SISTEMA_AMBIENTE = '{env_value}'")
+                
+                if env_value in [self.PRODUCAO, self.TESTE]:
+                    self.ambiente = env_value
+                    ambiente_detectado = True
+                    print(f"\n✅ RESULTADO: Detectado pelo .env como {self.ambiente}")
+            else:
+                # Executável PyInstaller sem sufixo no nome
+                print(f"\n⚠️ Executável sem sufixo identificável")
         
-        # MÉTODO 3: Padrão TESTE
+        # MÉTODO 3: Padrão TESTE (apenas para desenvolvimento)
         if not ambiente_detectado:
             self.ambiente = self.TESTE
             print(f"\n⚠️ RESULTADO: Usando padrão TESTE (nenhuma regra aplicou)")
@@ -201,7 +211,7 @@ def criar_banner_ambiente(parent):
     if not config['mostrar_banner']:
         return None
     
-    banner = tk.Frame(parent, bg=config['cor_banner'], height=50)
+    banner = tk.Frame(parent, bg=config['cor_banner'], height=30)
     banner.pack(side='top', fill='x')
     banner.pack_propagate(False)
     
@@ -211,7 +221,7 @@ def criar_banner_ambiente(parent):
         text=texto,
         bg=config['cor_banner'],
         fg=config['cor_texto_banner'],
-        font=('Helvetica', 12, 'bold')
+        font=('Helvetica', 10, 'bold')
     )
     label.pack(expand=True)
     
