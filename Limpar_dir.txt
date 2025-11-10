@@ -1,0 +1,6 @@
+Sequência no Prompt antes de gerar novo executável:
+Cmd
+
+cd \Users\Obras\Documents\GitHub\Sistema-Financeiro
+rmdir /s /q build dist 
+del *.spec
