@@ -1,9 +1,0 @@
-Gerar EXECUTÁVEL:
-
-
-cd\Users\Obras\Documents\GitHub\Sistema-Financeiro
-
-Scripts organizados:
-
-check_before_build.py - Verificação automática
-build_simples.py - Build confiável e repetível
