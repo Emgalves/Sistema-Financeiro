@@ -287,15 +287,18 @@ class GestaoMedicoes:
         # Frame para botões
         frame_botoes = ttk.Frame(frame_principal)
         frame_botoes.pack(fill='x', pady=10)
-        
+
         ttk.Button(frame_botoes, text="Nova Medição", 
-                  command=self.nova_medicao).pack(side='left', padx=5)
+                command=self.nova_medicao).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Editar Medição", 
-                  command=self.editar_medicao).pack(side='left', padx=5)
+                command=self.editar_medicao).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Lançar no Cliente", 
-                  command=self.lancar_medicao).pack(side='left', padx=5)
+                command=self.lancar_medicao).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Vincular a Lançamento", 
+                command=self.vincular_medicao, 
+                style='Accent.TButton').pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Voltar", 
-                  command=lambda: self.notebook.select(1)).pack(side='right', padx=5)
+                command=lambda: self.notebook.select(1)).pack(side='right', padx=5)
         
         # Botão para voltar ao menu principal
         ttk.Button(frame_principal, text="Voltar ao Menu Principal", 
@@ -1811,6 +1814,375 @@ class GestaoMedicoes:
             except:
                 pass
     
+    def vincular_medicao(self):
+        """Vincula uma medição a um lançamento existente na aba Dados"""
+        try:
+            # Verificar se há medição selecionada
+            selecao = self.tree_medicoes.selection()
+            if not selecao:
+                messagebox.showwarning("Aviso", "Selecione uma medição para vincular!")
+                return
+            
+            # Obter dados da medição selecionada
+            item = self.tree_medicoes.item(selecao[0])
+            valores = item['values']
+            id_medicao = valores[0]
+            
+            # Verificar status atual
+            try:
+                wb = load_workbook(self.arquivo_cliente)
+                ws = wb['Medicoes']
+                
+                # Buscar a medição
+                medicao_encontrada = False
+                for row in ws.iter_rows(min_row=2, values_only=True):
+                    if row[0] == self.contrato_atual and row[1] == id_medicao:
+                        status_atual = row[8] if row[8] else ""
+                        
+                        if status_atual in ["LANÇADO", "VINCULADO"]:
+                            wb.close()
+                            messagebox.showwarning(
+                                "Aviso", 
+                                f"Esta medição já está {status_atual}!\\n\\n"
+                                "Não é possível vincular novamente."
+                            )
+                            return
+                        medicao_encontrada = True
+                        break
+                
+                wb.close()
+                
+                if not medicao_encontrada:
+                    messagebox.showerror("Erro", "Medição não encontrada!")
+                    return
+                    
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao verificar status: {str(e)}")
+                return
+            
+            # Buscar dados completos da medição
+            dados_medicao = self.obter_dados_medicao(id_medicao)
+            if not dados_medicao:
+                messagebox.showerror("Erro", "Não foi possível obter dados da medição!")
+                return
+            
+            # Abrir janela de seleção de lançamento
+            self.abrir_janela_selecao_lancamento(id_medicao, dados_medicao)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao vincular medição: {str(e)}")
+
+
+    def abrir_janela_selecao_lancamento(self, id_medicao, dados_medicao):
+        """Abre janela para seleção de lançamento existente"""
+        try:
+            # Criar janela modal
+            janela = tk.Toplevel(self.root)
+            janela.title("Vincular a Lançamento Existente")
+            self.centralizar_janela(janela, largura=1000, altura=600)
+            
+            # Frame de informações da medição
+            frame_info = ttk.LabelFrame(janela, text="Dados da Medição", padding=10)
+            frame_info.pack(fill='x', padx=10, pady=5)
+            
+            info_text = f"""Fornecedor: {dados_medicao['nome']}
+    CNPJ/CPF: {dados_medicao['cnpj']}
+    Valor: R$ {float(dados_medicao['valor']):,.2f}
+    Referência: {dados_medicao['referencia']}
+    Data Medição: {dados_medicao['data_medicao']}"""
+            
+            ttk.Label(frame_info, text=info_text, justify='left').pack()
+            
+            # Frame de filtros
+            frame_filtros = ttk.LabelFrame(janela, text="Filtros de Busca", padding=10)
+            frame_filtros.pack(fill='x', padx=10, pady=5)
+            
+            # Filtro por nome
+            ttk.Label(frame_filtros, text="Buscar por Nome:").grid(row=0, column=0, sticky='w', padx=5)
+            var_filtro_nome = tk.StringVar(value=dados_medicao['nome'])
+            entry_filtro = ttk.Entry(frame_filtros, textvariable=var_filtro_nome, width=40)
+            entry_filtro.grid(row=0, column=1, sticky='ew', padx=5)
+            
+            # Filtro por valor aproximado
+            var_valor_aprox = tk.BooleanVar(value=True)
+            ttk.Checkbutton(
+                frame_filtros, 
+                text="Buscar valor aproximado (±10%)", 
+                variable=var_valor_aprox
+            ).grid(row=0, column=2, sticky='w', padx=10)
+            
+            # Botão de buscar
+            btn_buscar = ttk.Button(
+                frame_filtros, 
+                text="Buscar",
+                command=lambda: self.buscar_lancamentos_existentes(
+                    tree_lancamentos, 
+                    dados_medicao, 
+                    var_filtro_nome.get(),
+                    var_valor_aprox.get()
+                )
+            )
+            btn_buscar.grid(row=0, column=3, padx=5)
+            
+            frame_filtros.columnconfigure(1, weight=1)
+            
+            # Frame para lista de lançamentos
+            frame_lancamentos = ttk.LabelFrame(janela, text="Lançamentos Encontrados na Aba 'Dados'", padding=5)
+            frame_lancamentos.pack(fill='both', expand=True, padx=10, pady=5)
+            
+            # Treeview para lançamentos
+            colunas = ('Linha', 'Data', 'Nome', 'CNPJ/CPF', 'Valor', 'Vencimento', 'Referência', 'Observação')
+            tree_lancamentos = ttk.Treeview(frame_lancamentos, columns=colunas, show='headings', height=12)
+            
+            # Configurar colunas
+            larguras = {'Linha': 60, 'Data': 90, 'Nome': 200, 'CNPJ/CPF': 130, 
+                    'Valor': 100, 'Vencimento': 90, 'Referência': 150, 'Observação': 200}
+            
+            for col in colunas:
+                tree_lancamentos.heading(col, text=col)
+                tree_lancamentos.column(col, width=larguras.get(col, 100))
+            
+            # Scrollbars
+            scrolly = ttk.Scrollbar(frame_lancamentos, orient='vertical', command=tree_lancamentos.yview)
+            scrollx = ttk.Scrollbar(frame_lancamentos, orient='horizontal', command=tree_lancamentos.xview)
+            tree_lancamentos.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
+            
+            tree_lancamentos.pack(side='left', fill='both', expand=True)
+            scrolly.pack(side='right', fill='y')
+            scrollx.pack(side='bottom', fill='x')
+            
+            # Buscar lançamentos automaticamente ao abrir
+            self.buscar_lancamentos_existentes(tree_lancamentos, dados_medicao, 
+                                            var_filtro_nome.get(), var_valor_aprox.get())
+            
+            # Frame para botões de ação
+            frame_botoes = ttk.Frame(janela)
+            frame_botoes.pack(fill='x', padx=10, pady=10)
+            
+            ttk.Button(
+                frame_botoes, 
+                text="Vincular Selecionado",
+                command=lambda: self.confirmar_vinculacao(
+                    janela, id_medicao, tree_lancamentos, dados_medicao
+                ),
+                style='Accent.TButton'
+            ).pack(side='left', padx=5)
+            
+            ttk.Button(
+                frame_botoes, 
+                text="Cancelar",
+                command=janela.destroy
+            ).pack(side='right', padx=5)
+            
+            # Label de instruções
+            ttk.Label(
+                janela, 
+                text="Dica: Selecione o lançamento correspondente e clique em 'Vincular Selecionado'",
+                foreground='#666'
+            ).pack(pady=5)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao abrir janela de seleção: {str(e)}")
+
+
+    def buscar_lancamentos_existentes(self, tree, dados_medicao, filtro_nome, valor_aproximado):
+        """Busca lançamentos existentes que podem corresponder à medição"""
+        try:
+            # Limpar treeview
+            for item in tree.get_children():
+                tree.delete(item)
+            
+            # Carregar planilha
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb['Dados']
+            
+            # Valor da medição
+            valor_medicao = float(dados_medicao['valor'])
+            
+            # Calcular margem de valor (±10%)
+            margem = valor_medicao * 0.10
+            valor_min = valor_medicao - margem
+            valor_max = valor_medicao + margem
+            
+            # Buscar lançamentos
+            encontrados = 0
+            for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                # Extrair dados
+                data_rel = row[0]
+                cnpj_cpf = str(row[2]) if row[2] else ""
+                nome = str(row[3]) if row[3] else ""
+                referencia = str(row[4]) if row[4] else ""
+                valor = row[8] if row[8] else 0
+                dt_vencto = row[9]
+                observacao = str(row[12]) if row[12] else ""
+                
+                # Aplicar filtros
+                # 1. Filtro de nome (case insensitive, busca parcial)
+                if filtro_nome:
+                    filtro_lower = filtro_nome.lower()
+                    nome_lower = nome.lower()
+                    
+                    # Verificar se há correspondência parcial
+                    if filtro_lower not in nome_lower:
+                        continue
+                
+                # 2. Filtro de valor
+                try:
+                    valor_float = float(valor)
+                    if valor_aproximado:
+                        # Buscar valor aproximado (±10%)
+                        if not (valor_min <= valor_float <= valor_max):
+                            continue
+                    else:
+                        # Buscar valor exato
+                        if abs(valor_float - valor_medicao) > 0.01:
+                            continue
+                except:
+                    continue
+                
+                # Formatar dados para exibição
+                data_formatada = data_rel.strftime('%d/%m/%Y') if isinstance(data_rel, datetime) else str(data_rel)
+                vencto_formatado = dt_vencto.strftime('%d/%m/%Y') if isinstance(dt_vencto, datetime) else str(dt_vencto)
+                valor_formatado = f"R$ {valor_float:,.2f}"
+                
+                # Adicionar ao treeview
+                tree.insert('', 'end', values=(
+                    idx,  # Número da linha
+                    data_formatada,
+                    nome,
+                    cnpj_cpf,
+                    valor_formatado,
+                    vencto_formatado,
+                    referencia,
+                    observacao
+                ))
+                encontrados += 1
+            
+            wb.close()
+            
+            # Mensagem se nada foi encontrado
+            if encontrados == 0:
+                messagebox.showinfo(
+                    "Busca", 
+                    "Nenhum lançamento encontrado com os critérios especificados.\\n\\n"
+                    "Dicas:\\n"
+                    "• Experimente remover parte do nome\\n"
+                    "• Verifique se marcou 'valor aproximado'\\n"
+                    "• O fornecedor pode estar com nome diferente (PF/PJ)"
+                )
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao buscar lançamentos: {str(e)}")
+
+
+    def confirmar_vinculacao(self, janela, id_medicao, tree, dados_medicao):
+        """Confirma e executa a vinculação da medição ao lançamento selecionado"""
+        try:
+            # Verificar seleção
+            selecao = tree.selection()
+            if not selecao:
+                messagebox.showwarning("Aviso", "Selecione um lançamento para vincular!")
+                return
+            
+            # Obter dados do lançamento selecionado
+            item = tree.item(selecao[0])
+            valores = item['values']
+            linha_lancamento = valores[0]
+            nome_lancamento = valores[2]
+            valor_lancamento = valores[4]
+            
+            # Confirmar com usuário
+            resposta = messagebox.askyesno(
+                "Confirmar Vinculação",
+                f"Confirma a vinculação?\\n\\n"
+                f"MEDIÇÃO #{id_medicao}\\n"
+                f"Fornecedor: {dados_medicao['nome']}\\n"
+                f"Valor: R$ {float(dados_medicao['valor']):,.2f}\\n\\n"
+                f"SERÁ VINCULADA AO LANÇAMENTO:\\n"
+                f"Linha: {linha_lancamento}\\n"
+                f"Nome: {nome_lancamento}\\n"
+                f"Valor: {valor_lancamento}\\n\\n"
+                f"Esta ação marcará a medição como 'VINCULADO'."
+            )
+            
+            if not resposta:
+                return
+            
+            # Executar vinculação
+            wb = load_workbook(self.arquivo_cliente)
+            ws_medicoes = wb['Medicoes']
+            
+            # Atualizar status e dados da medição
+            hoje = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
+                if row[0] == self.contrato_atual and row[1] == id_medicao:
+                    ws_medicoes.cell(row=idx, column=9, value="VINCULADO")  # Status
+                    ws_medicoes.cell(row=idx, column=10, value=hoje)        # Data_Lancamento
+                    
+                    # Adicionar observação sobre a vinculação
+                    obs_atual = ws_medicoes.cell(row=idx, column=11).value or ""
+                    nova_obs = f"{obs_atual} [VINCULADO À DESPESA DA LINHA {linha_lancamento} DE DADOS]"
+                    ws_medicoes.cell(row=idx, column=11, value=nova_obs)
+                    break
+            
+            # Salvar alterações
+            wb.save(self.arquivo_cliente)
+            wb.close()
+            
+            # Mensagem de sucesso
+            messagebox.showinfo(
+                "Sucesso", 
+                f"Medição #{id_medicao} vinculada com sucesso!\\n\\n"
+                f"Status: VINCULADO\\n"
+                f"Linha do lançamento: {linha_lancamento}"
+            )
+            
+            # Fechar janela e atualizar lista
+            janela.destroy()
+            self.carregar_medicoes()
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao confirmar vinculação: {str(e)}")
+            try:
+                wb.close()
+            except:
+                pass
+
+
+    def obter_dados_medicao(self, id_medicao):
+        """Obtém todos os dados de uma medição específica"""
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb['Medicoes']
+            
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0] == self.contrato_atual and row[1] == id_medicao:
+                    dados = {
+                        'id_medicao': row[1],
+                        'cnpj': row[2],
+                        'nome': row[3],
+                        'data_medicao': row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else str(row[4]),
+                        'data_pagamento': row[5].strftime('%d/%m/%Y') if row[5] and isinstance(row[5], datetime) else "",
+                        'referencia': row[6] or "",
+                        'valor': row[7] or 0,
+                        'status': row[8] or "",
+                        'observacao': row[10] or ""
+                    }
+                    wb.close()
+                    return dados
+            
+            wb.close()
+            return None
+            
+        except Exception as e:
+            logger.error(f"Erro ao obter dados da medição: {str(e)}")
+            try:
+                wb.close()
+            except:
+                pass
+            return None
+
     def obter_dados_bancarios(self, cnpj):
         """Obtém os dados bancários do fornecedor com tratamento robusto para CNPJ/CPF"""
         try:
