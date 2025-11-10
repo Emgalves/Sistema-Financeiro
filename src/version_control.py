@@ -15,6 +15,7 @@ VERSION_INFO = {
     "changes": [
         "Inclusão de campo para Notas no final do relatório",
         "Correção para inclusão de lançamentos futuros no relatório",
+        "Inclusão de vinculação de medições de contratos à despesa lançada",
         "Adição de diferenciação visual entre ambientes TESTE e PRODUÇÃO"
     ]
 }
