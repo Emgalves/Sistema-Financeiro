@@ -1,0 +1,54 @@
+2025-11-10 13:39:39,023 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 13:39:39,023 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-10 13:39:39,023 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-10 13:39:39,023 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-10 13:39:39,023 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-10 13:46:16,609 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-10 15:04:10,417 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-10 15:04:10,553 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-10 15:04:10,554 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-10 15:04:10,600 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-10 15:04:10,600 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-10 15:04:10,600 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-10 15:04:15,210 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-10 15:04:15,227 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-10 15:04:15,229 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-10 15:04:15,232 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-10 15:04:15,234 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-10 15:04:23,006 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-11-10 15:04:23,006 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-11-10 15:11:00,952 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-10 15:11:00,953 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-10 15:11:01,078 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-10 17:45:52,661 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 17:45:52,661 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-10 17:45:52,676 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-10 17:45:52,676 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-10 17:45:52,676 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-10 17:51:42,641 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 17:51:42,641 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-10 17:51:42,641 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-10 17:51:42,641 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-10 17:51:42,641 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-10 17:51:47,802 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-10 18:20:10,088 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-10 18:20:10,119 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-10 18:20:10,121 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-10 18:20:10,142 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-10 18:20:10,143 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-10 18:20:10,146 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-10 18:20:12,240 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-10 18:20:12,255 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-10 18:20:12,256 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-10 18:20:12,260 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-10 18:20:12,260 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-10 18:20:18,712 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-11-10 18:20:18,712 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-11-10 18:24:48,787 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-10 18:24:48,787 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-10 18:24:48,866 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-10 18:26:07,205 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 18:26:07,205 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-10 18:26:07,205 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-10 18:26:07,205 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-10 18:26:07,205 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===

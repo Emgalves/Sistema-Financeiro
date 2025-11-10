@@ -1,0 +1,74 @@
+2025-11-03 16:42:05,046 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-03 16:42:05,061 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-03 16:42:05,061 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-03 16:42:05,061 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-03 16:42:05,061 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-03 16:42:30,116 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-03 16:42:30,138 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-03 16:42:30,148 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-03 16:42:30,149 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-03 16:42:30,154 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-03 16:42:33,314 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-03 16:42:53,982 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-03 16:42:53,982 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-03 16:43:07,118 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-03 16:43:08,698 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-03 16:43:15,035 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-03 16:43:15,035 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-03 16:43:43,934 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-03 16:43:45,611 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-11-03 16:51:26,108 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-11-03 16:51:26,108 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-11-03 16:51:26,108 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-11-03 16:51:26,108 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2025-11-03 16:51:26,108 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-03 16:51:26,124 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-03 16:51:26,608 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-03 16:51:26,608 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-03 16:51:26,608 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ANCORA PAPELARIA | PLOTAGENS | NF:  | R$ 185.00 | 07/11/2025
+2025-11-03 16:51:26,624 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ANCORA PAPELARIA - PLOTAGENS - NF: 
+2025-11-03 16:51:26,624 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-03 16:51:26,624 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-03 16:51:26,624 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ANCORA SOLUCOES CONSTRUTIVAS LTDA | MATERIAIS DIVERSOS | NF: 546645 | R$ 3546.00 | 10/11/2025
+2025-11-03 16:51:26,639 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ANCORA SOLUCOES CONSTRUTIVAS LTDA - MATERIAIS DIVERSOS - NF: 546645
+2025-11-03 16:51:26,655 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 294 na linha 294
+2025-11-03 16:51:26,655 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 295 na linha 295
+2025-11-03 16:51:26,999 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-03 16:51:27,503 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-11-03 16:51:27,503 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-03 16:51:30,084 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 2 registros salvos da visualização
+2025-11-03 16:51:30,093 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-11-03 16:51:30,093 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-03 16:55:57,484 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-03 16:55:57,484 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-03 16:55:57,484 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-03 16:55:57,484 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-03 16:55:57,484 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-03 16:56:09,341 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-03 16:56:09,341 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-03 16:56:09,341 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-03 16:56:09,341 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-03 16:56:09,364 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-03 16:56:14,396 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
+2025-11-03 16:56:44,674 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: CLEVER LUIZ SALVADOR, Registros: 2
+2025-11-03 16:56:44,674 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-11-03 16:56:44,674 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-11-03 16:56:44,674 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2025-11-03 16:56:44,674 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-11-03 16:56:44,674 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-03 16:56:45,598 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-03 16:56:45,614 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-03 16:56:45,614 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: CACAMBAS BOA VISTA LTDA | LOCAÇÃO DE CAÇAMBAS | NF: 3221 | R$ 700.00 | 06/11/2025
+2025-11-03 16:56:45,680 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: CACAMBAS BOA VISTA LTDA - LOCAÇÃO DE CAÇAMBAS - NF: 3221
+2025-11-03 16:56:45,680 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-03 16:56:45,680 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-03 16:56:45,680 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: CLAYTON PABLO DE OLIVEIRA | FRETE CORPO DE PROVAS | NF:  | R$ 120.00 | 06/11/2025
+2025-11-03 16:56:45,746 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: CLAYTON PABLO DE OLIVEIRA - FRETE CORPO DE PROVAS - NF: 
+2025-11-03 16:56:45,747 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1023 na linha 1020
+2025-11-03 16:56:45,757 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1024 na linha 1021
+2025-11-03 16:56:46,221 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-03 16:56:46,727 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-05
+2025-11-03 16:56:46,727 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-03 16:56:48,994 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 2 registros salvos da visualização
+2025-11-03 16:56:49,013 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-11-03 16:56:49,016 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização

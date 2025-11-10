@@ -347,3 +347,13 @@
 2025-10-30 17:43:38,840 - sistema - logger_config - INFO - Sistema de logging inicializado
 2025-10-30 17:58:03,507 - sistema - logger_config - INFO - Sistema de logging inicializado
 2025-10-30 18:00:57,214 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-30 18:35:03,782 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-30 18:35:03,782 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-30 18:35:03,784 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-30 18:35:03,784 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-30 18:35:03,785 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-10-30 18:42:36,747 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-10-30 18:42:36,747 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-10-30 18:42:36,758 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-10-30 18:42:36,765 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-10-30 18:42:36,766 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
