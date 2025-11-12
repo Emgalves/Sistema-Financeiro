@@ -52,3 +52,35 @@
 2025-11-10 18:26:07,205 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
 2025-11-10 18:26:07,205 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
 2025-11-10 18:26:07,205 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-10 18:36:51,206 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 18:39:53,474 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 19:57:27,766 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 19:57:27,766 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-10 19:57:27,766 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-10 19:57:27,766 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-10 19:57:27,766 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-10 19:57:41,255 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-10 19:58:54,911 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 19:58:54,911 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-10 19:58:54,911 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-10 19:58:54,911 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-10 19:58:54,911 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-10 19:58:59,369 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-10 20:06:04,561 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 20:06:04,561 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-10 20:06:04,561 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-10 20:06:04,561 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-10 20:06:04,561 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-10 20:06:09,280 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-10 20:13:15,160 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 20:13:15,160 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-10 20:13:15,160 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-10 20:13:15,160 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-10 20:13:15,160 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-10 20:13:20,476 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-10 20:18:28,791 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-10 20:18:28,791 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-10 20:18:28,791 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-10 20:18:28,791 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-10 20:18:28,791 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-10 20:18:34,025 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
