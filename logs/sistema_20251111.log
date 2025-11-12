@@ -1,0 +1,55 @@
+2025-11-11 14:46:11,828 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-11 14:46:11,828 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-11 14:46:11,828 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-11 14:46:11,848 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-11 14:46:11,851 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-11 14:46:30,834 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-11 14:46:30,873 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-11 14:46:30,876 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-11 14:46:30,876 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-11 14:46:30,881 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-11 14:46:36,301 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-11 14:50:27,327 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-11 14:50:27,327 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-11 15:02:37,623 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-11 15:02:37,623 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-11 15:10:40,339 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-11 15:10:40,363 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-11 15:10:40,364 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-11 15:10:40,369 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-11 15:10:40,369 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-11 15:10:40,374 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-11 15:10:42,633 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-11 15:10:42,633 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-11 15:10:42,795 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-11 15:10:42,808 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-11 15:10:42,809 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-11 15:10:42,812 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-11 15:10:42,813 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-11 15:14:55,126 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-11-11 15:14:55,126 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-11-11 15:16:57,073 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-11-11 15:16:57,073 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: categoria
+2025-11-11 15:21:10,288 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-11 15:21:10,288 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-11 15:21:10,329 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-11 15:29:01,665 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-11 15:29:01,690 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-11 15:29:01,690 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-11 15:29:01,694 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-11 15:29:01,696 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-11 15:29:01,697 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-11 15:29:03,140 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-11 15:29:03,155 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-11 15:29:03,155 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-11 15:29:03,169 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-11 15:29:03,171 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-11 15:29:07,544 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: fornecedores
+2025-11-11 15:29:07,544 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: fornecedores
+2025-11-11 15:30:47,670 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-11-11 15:30:47,670 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-11-11 15:33:06,304 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-11 15:33:06,304 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-11 15:33:06,360 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-11 15:33:07,492 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-11 15:33:07,492 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
