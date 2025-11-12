@@ -305,69 +305,40 @@ class GestaoMedicoes:
                  command=self.voltar_menu).pack(side='bottom', pady=10)
 
     def centralizar_janela(self, janela, largura=600, altura=400):
-        """Centraliza a janela em relação à janela principal"""
-        # Atualizar a geometria para aplicar dimensões
-        janela.geometry(f"{largura}x{altura}")
+        """Centraliza a janela na tela (não relativo à janela pai)"""
+        # Atualizar a geometria
         janela.update_idletasks()
         
-        # Obter as dimensões da janela principal
-        if self.root and self.root.winfo_exists():
-            main_x = self.root.winfo_x()
-            main_y = self.root.winfo_y()
-            main_width = self.root.winfo_width()
-            main_height = self.root.winfo_height()
-            
-            # Calcular posição centralizada
-            x = main_x + (main_width - largura) // 2
-            y = main_y + (main_height - altura) // 2
-        else:
-            # Centralizar na tela se não houver janela principal
-            x = (janela.winfo_screenwidth() - largura) // 2
-            y = (janela.winfo_screenheight() - altura) // 2
-            
-        # Aplicar posição
+        # Obter dimensões da TELA (não da janela pai)
+        tela_largura = janela.winfo_screenwidth()
+        tela_altura = janela.winfo_screenheight()
+        
+        # Calcular posição centralizada na TELA
+        x = (tela_largura - largura) // 2
+        y = (tela_altura - altura) // 2
+        
+        # Garantir que não fique fora da tela
+        x = max(0, x)
+        y = max(0, y)
+        
+        # Aplicar geometria
         janela.geometry(f"{largura}x{altura}+{x}+{y}")
         
-        # Tornar a janela modal
+        # Configurar como janela modal
         janela.transient(self.root)
         janela.grab_set()
-        janela.focus_force()
-        # Atualizar a geometria para aplicar dimensões
-        janela.geometry(f"{largura}x{altura}")
-        janela.update_idletasks()
         
-        # Obter as dimensões da janela principal
-        if self.root and self.root.winfo_exists():
-            main_x = self.root.winfo_x()
-            main_y = self.root.winfo_y()
-            main_width = self.root.winfo_width()
-            main_height = self.root.winfo_height()
-            
-            # Calcular posição centralizada
-            x = main_x + (main_width - largura) // 2
-            y = main_y + (main_height - altura) // 2
-        else:
-            # Centralizar na tela se não houver janela principal
-            x = (janela.winfo_screenwidth() - largura) // 2
-            y = (janela.winfo_screenheight() - altura) // 2
-            
-        # Aplicar posição
-        janela.geometry(f"{largura}x{altura}+{x}+{y}")
-        
-        # Tornar a janela modal
-        janela.transient(self.root)
-        janela.grab_set()
+        # Garantir que fique visível
+        janela.lift()
         janela.focus_force()
-        try:
-            # Obter dados do contrato
-            contrato = self.obter_dados_contrato(self.contrato_atual)
-            if not contrato:
-                return 0
-                
-            return float(contrato['saldo'])
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao verificar saldo: {str(e)}")
-            return 0
+
+    def criar_janela_modal(self, titulo, largura=600, altura=400):
+        """Cria janela modal"""
+        janela = tk.Toplevel(self.root)
+        janela.title(titulo)
+        self.centralizar_janela(janela, largura, altura)
+        return janela
+
 
     def formatar_documento(self, valor):
         """Formata um documento (CNPJ/CPF) preservando zeros à esquerda e adicionando pontuação"""
@@ -592,12 +563,8 @@ class GestaoMedicoes:
             messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
             return
             
-        # Criar janela de cadastro
-        janela = tk.Toplevel(self.root)
-        janela.title("Novo Contrato")
-        
-        # Centralizar a janela em relação à janela principal
-        self.centralizar_janela(janela, 700, 600)
+        # Criar janela
+        janela = self.criar_janela_modal("Novo Contrato", largura=800, altura=600)
         
         # Frame principal com scroll
         canvas = tk.Canvas(janela)
@@ -918,12 +885,8 @@ class GestaoMedicoes:
                 return
                 
             # Criar janela de edição
-            janela = tk.Toplevel(self.root)
-            janela.title("Editar Contrato")
-            
-            # Centralizar a janela em relação à janela principal
-            self.centralizar_janela(janela, 700, 500)
-            
+            janela = self.criar_janela_modal("Editar Contrato", largura=800, altura=600)
+                        
             # Frame principal
             frame = ttk.Frame(janela, padding="10")
             frame.pack(fill='both', expand=True)
@@ -1189,11 +1152,7 @@ class GestaoMedicoes:
             return
             
         # Criar janela de cadastro
-        janela = tk.Toplevel(self.root)
-        janela.title("Nova Medição")
-        
-        # Centralizar a janela em relação à janela principal
-        self.centralizar_janela(janela, 600, 400)
+        janela = self.criar_janela_modal("Nova Medição", largura=700, altura=500)
         
         # Frame principal
         frame = ttk.Frame(janela, padding="10")
@@ -1486,11 +1445,7 @@ class GestaoMedicoes:
                 return
                 
             # Criar janela de edição
-            janela = tk.Toplevel(self.root)
-            janela.title("Editar Medição")
-            
-            # Centralizar a janela em relação à janela principal
-            self.centralizar_janela(janela, 650, 430)
+            janela = self.criar_janela_modal("Editar Medição", largura=700, altura=500)
             
             # Frame principal
             frame = ttk.Frame(janela, padding="10")
