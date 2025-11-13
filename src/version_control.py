@@ -9,14 +9,15 @@ from pathlib import Path
 # Informações da versão atual
 VERSION_INFO = {
     "major": 1,
-    "minor": 4,
-    "patch": 5,
-    "release_date": "27/10/2025",
+    "minor": 5,
+    "patch": 0,
+    "release_date": "13/11/2025",
     "changes": [
-        "Inclusão de campo para Notas no final do relatório",
-        "Correção para inclusão de lançamentos futuros no relatório",
-        "Inclusão de vinculação de medições de contratos à despesa lançada",
-        "Adição de diferenciação visual entre ambientes TESTE e PRODUÇÃO"
+        "Inclusão de Etapa da Obra nas importações de dados de RH - Folha e Transporte & Café",
+        "Inclusão de numeração das páginas nos relatórios PDF gerados",
+        "Inclusão de vinculação de taxa de Administração de contratos à despesa lançada",
+        "Inclusão da opção de remover vários regitros de uma vez só no Visualizador de Lançamentos",
+        "Mudança do botão 'Visualizar Lançamentos' para a seção de Gerenciamento de Dados"
     ]
 }
 
