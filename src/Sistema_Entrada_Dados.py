@@ -11313,6 +11313,7 @@ class ImportadorRH:
         # Mapeamento de cabeçalhos (original -> sistema)
         self.mapeamento_cabecalhos = {
             'Empresa': 'Cliente',
+            'Data Pagto':'Data_Pagamento',
             'Nome Empregado': 'Nome_Empregado',
             'Valor Líquido': 'Valor_Líquido',
             'Tipo Folha': 'Tipo_Folha',
@@ -11338,7 +11339,178 @@ class ImportadorRH:
             '13': '13º SALÁRIO',
             'FERIAS': 'FÉRIAS'
         }
+
+    def solicitar_etapa_obra(self):
+        """
+        Abre um diálogo modal para o usuário selecionar a Etapa da Obra
+        que será aplicada a todos os lançamentos importados.
         
+        Returns:
+            str: A etapa selecionada ou None se o usuário cancelar
+        """
+        import tkinter as tk
+        from tkinter import ttk
+        
+        # Criar janela de diálogo modal
+        dialogo = tk.Toplevel()
+        dialogo.title("Etapa da Obra - Importação de dados de RH")
+        dialogo.geometry("550x220")
+        
+        # Tornar a janela modal
+        if hasattr(self.sistema, 'root'):
+            dialogo.transient(self.sistema.root)
+        dialogo.grab_set()
+        
+        # Centralizar janela na tela
+        dialogo.update_idletasks()
+        largura = dialogo.winfo_width()
+        altura = dialogo.winfo_height()
+        x = (dialogo.winfo_screenwidth() // 2) - (largura // 2)
+        y = (dialogo.winfo_screenheight() // 2) - (altura // 2)
+        dialogo.geometry(f"{largura}x{altura}+{x}+{y}")
+        
+        # Variável para armazenar a etapa selecionada
+        etapa_selecionada = {'valor': None}
+        
+        # Frame principal com padding
+        frame = ttk.Frame(dialogo, padding="25")
+        frame.pack(fill='both', expand=True)
+        
+        # Título explicativo
+        ttk.Label(
+            frame, 
+            text="📋 Selecione a Etapa da Obra",
+            font=('Arial', 12, 'bold')
+        ).pack(pady=(0, 5))
+        
+        ttk.Label(
+            frame, 
+            text="Esta etapa será aplicada a TODOS os lançamentos importados:",
+            font=('Arial', 9)
+        ).pack(pady=(0, 20))
+        
+        # Frame para o combobox
+        frame_combo = ttk.Frame(frame)
+        frame_combo.pack(fill='x', pady=(0, 25))
+        
+        ttk.Label(
+            frame_combo, 
+            text="Etapa:",
+            font=('Arial', 10)
+        ).pack(side='left', padx=(0, 10))
+        
+        # Carregar etapas disponíveis
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
+        etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()
+        
+        # Criar Combobox
+        combo_etapa = ttk.Combobox(
+            frame_combo,
+            values=etapas_obra,
+            font=('Arial', 10),
+            width=45,
+            state='normal'
+        )
+        combo_etapa.pack(side='left', fill='x', expand=True)
+        combo_etapa.focus_set()
+        
+        # ===== FUNCIONALIDADE DE AUTOCOMPLETAR =====
+        def autocompletar(event):
+            """Filtra e completa as opções baseado no que o usuário digitou"""
+            # Ignorar teclas especiais
+            if event.keysym in ['BackSpace', 'Delete', 'Left', 'Right', 'Up', 'Down', 
+                            'Home', 'End', 'Return', 'Tab', 'Escape']:
+                return
+            
+            digitado = combo_etapa.get().upper()
+            
+            if digitado == '':
+                combo_etapa['values'] = etapas_obra
+                return
+            
+            # Filtrar etapas que começam com o texto digitado
+            etapas_filtradas = [
+                etapa for etapa in etapas_obra 
+                if etapa.upper().startswith(digitado)
+            ]
+            
+            if etapas_filtradas:
+                # Atualizar valores
+                combo_etapa['values'] = etapas_filtradas
+                
+                # Completar com a primeira opção
+                primeira_opcao = etapas_filtradas[0]
+                combo_etapa.set(primeira_opcao)
+                
+                # Selecionar apenas a parte que foi autocompletada
+                combo_etapa.icursor(len(digitado))
+                combo_etapa.selection_range(len(digitado), tk.END)
+            else:
+                # Se não houver match no início, buscar em qualquer parte
+                etapas_filtradas = [
+                    etapa for etapa in etapas_obra 
+                    if digitado in etapa.upper()
+                ]
+                combo_etapa['values'] = etapas_filtradas if etapas_filtradas else etapas_obra
+        
+        def restaurar_lista(event):
+            """Restaura a lista completa quando clicar no dropdown"""
+            combo_etapa['values'] = etapas_obra
+        
+        # Bind dos eventos
+        combo_etapa.bind('<KeyRelease>', autocompletar)
+        combo_etapa.bind('<Button-1>', restaurar_lista)
+        # ===== FIM DO AUTOCOMPLETAR =====
+        
+        # Frame para os botões
+        frame_botoes = ttk.Frame(frame)
+        frame_botoes.pack()
+        
+        def confirmar():
+            """Valida e confirma a seleção"""
+            etapa = combo_etapa.get().strip()
+            
+            if not etapa:
+                custom_messagebox("warning", "Atenção", 
+                    "Por favor, selecione ou digite uma etapa da obra.")
+                combo_etapa.focus_set()
+                return
+            
+            etapa_selecionada['valor'] = etapa
+            dialogo.destroy()
+        
+        def cancelar():
+            """Cancela a operação"""
+            etapa_selecionada['valor'] = None
+            dialogo.destroy()
+        
+        # Botões de ação
+        ttk.Button(
+            frame_botoes, 
+            text="✓ Confirmar", 
+            command=confirmar,
+            width=15
+        ).pack(side='left', padx=5)
+        
+        ttk.Button(
+            frame_botoes, 
+            text="✗ Cancelar", 
+            command=cancelar,
+            width=15
+        ).pack(side='left', padx=5)
+        
+        # Atalhos de teclado
+        combo_etapa.bind('<Return>', lambda e: confirmar())
+        dialogo.bind('<Escape>', lambda e: cancelar())
+        
+        # Impedir fechamento pela barra de título sem passar por cancelar
+        dialogo.protocol("WM_DELETE_WINDOW", cancelar)
+        
+        # Aguardar o fechamento da janela
+        dialogo.wait_window()
+        
+        return etapa_selecionada['valor']
+            
     def selecionar_arquivo(self):
         """Permite ao usuário selecionar um arquivo Excel de RH para importar"""
         arquivo = filedialog.askopenfilename(
@@ -11913,6 +12085,7 @@ class ImportadorRH:
                 nome = self.obter_valor_coluna(row, 'Nome Empregado', '').strip().upper()
                 cpf = self.obter_valor_coluna(row, 'CPF', '').strip()
                 valor_liquido = self.obter_valor_coluna(row, 'Valor Líquido')
+                dt_pagto = self.obter_valor_coluna(row, 'Data Pagto')
                 
                 # Verificar se parece ser uma linha de cabeçalho
                 if "NOME EMPREGADO" in nome or "FUNCIONARIO" in nome or "FUNCIONÁRIO" in nome:
@@ -11958,7 +12131,7 @@ class ImportadorRH:
                             data_rel = hoje.replace(day=5).strftime('%d/%m/%Y')
                 
                 # Calcular data de vencimento
-                dt_vencto = data_rel
+                dt_vencto = dt_pagto.strftime('%d/%m/%Y')
                 
                 # Obter referência com base no tipo de folha
                 referencia = self.obter_referencia(row)
@@ -11990,6 +12163,9 @@ class ImportadorRH:
                     'categoria': 'MO',
                     'tp_desp': '1',
                     'referencia': referencia,
+                    'etapa_obra': '',  
+                    'insumo': '',
+                    'nf': '',
                     'nf': '',
                     'vr_unit': f"{valor:.2f}",
                     'dias': 1,
@@ -12006,9 +12182,28 @@ class ImportadorRH:
             
             # Relatório final
             if registros_processados > 0:
+                # Solicitar etapa da obra antes de finalizar
+                etapa_obra = self.solicitar_etapa_obra()
+                
+                if etapa_obra is None:
+                    # Usuário cancelou - remover todos os registros adicionados
+                    self.sistema.dados_para_incluir = [
+                        r for r in self.sistema.dados_para_incluir 
+                        if r.get('observacao', '').find('IMPORTADO RH') == -1
+                    ]
+                    custom_messagebox("info", "Importação Cancelada", 
+                        "A importação foi cancelada. Nenhum dado foi salvo.")
+                    return
+                
+                # Aplicar etapa_obra a todos os registros importados
+                for registro in self.sistema.dados_para_incluir:
+                    if 'IMPORTADO RH' in registro.get('observacao', ''):
+                        registro['etapa_obra'] = etapa_obra
+                
                 mensagem = (
                     f"Importação concluída!\n\n"
                     f"Registros processados: {registros_processados} para {cliente_alvo}\n"
+                    f"Etapa da Obra: {etapa_obra}\n"
                 )
                 
                 if erros:
@@ -12102,6 +12297,26 @@ class ImportadorRH:
             registros_processados = self.processar_dados_transporte(df, cliente_alvo)
             
             if registros_processados > 0:
+                # Solicitar etapa da obra antes de finalizar
+                etapa_obra = self.solicitar_etapa_obra()
+                
+                if etapa_obra is None:
+                    # Usuário cancelou - remover todos os registros adicionados
+                    self.sistema.dados_para_incluir = [
+                        r for r in self.sistema.dados_para_incluir 
+                        if (r.get('observacao', '').find('IMPORTADO TRANSPORTE') == -1 and
+                            r.get('observacao', '').find('IMPORTADO CAFÉ') == -1)
+                    ]
+                    custom_messagebox("info", "Importação Cancelada", 
+                        "A importação foi cancelada. Nenhum dado foi salvo.")
+                    return
+                
+                # Aplicar etapa_obra a todos os registros de transporte e café
+                for registro in self.sistema.dados_para_incluir:
+                    obs = registro.get('observacao', '')
+                    if 'IMPORTADO TRANSPORTE' in obs or 'IMPORTADO CAFÉ' in obs:
+                        registro['etapa_obra'] = etapa_obra
+                
                 # Calcular totais
                 total_transporte = len([r for r in self.sistema.dados_para_incluir 
                                      if r.get('referencia') == 'TRANSPORTE'])
@@ -12114,7 +12329,8 @@ class ImportadorRH:
                     f"• Lançamentos de TRANSPORTE: {total_transporte}\n"
                     f"• Lançamentos de CAFÉ (automático): {total_cafe}\n"
                     f"• Total de registros: {total_transporte + total_cafe}\n\n"
-                    f"👤 Cliente: {cliente_alvo}"
+                    f"👤 Cliente: {cliente_alvo}\n"
+                    f"🏗️ Etapa: {etapa_obra}"
                 )
                 
                 custom_messagebox("info", "Sucesso na Importação", mensagem)
@@ -12125,6 +12341,7 @@ class ImportadorRH:
                     "Deseja visualizar os lançamentos antes de salvar?"
                 ):
                     self.sistema.visualizar_lancamentos()
+
             else:
                 custom_messagebox("warning", 
                     "Nenhum Registro", 
@@ -12219,14 +12436,16 @@ class ImportadorRH:
                     'categoria': 'MO',
                     'tp_desp': '1',
                     'referencia': 'TRANSPORTE',
+                    'etapa_obra': '',  # Será preenchido após seleção do usuário
+                    'insumo': '',
                     'nf': '',
-                    'vr_unit': f"{vr_unit_float:.2f}",          # Valor unitário da planilha
-                    'dias': dias_int,                           # Número de dias
-                    'valor': f"{valor_total:.2f}",             # TOTAL = vr_unit * dias
-                    'dt_vencto': data_rel,  # dt_vencto = data
+                    'vr_unit': f"{vr_unit_float:.2f}",
+                    'dias': dias_int,
+                    'valor': f"{valor_total:.2f}",
+                    'dt_vencto': data_rel,
                     'dados_bancarios': '',
                     'observacao': f"IMPORTADO TRANSPORTE - {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}",
-                    'forma_pagamento': 'PIX'  # Padrão
+                    'forma_pagamento': 'PIX'
                 }
                 
                 # Adicionar registro de transporte
