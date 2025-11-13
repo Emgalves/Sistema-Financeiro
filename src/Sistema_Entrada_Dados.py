@@ -215,8 +215,8 @@ from src.config.utils import buscar_dados_bancarios_fornecedor
 
 class VisualizadorLancamentos:
     def __init__(self, sistema_principal):
-        self.sistema = sistema_principal  # referência ao sistema principal
-        self.janela = tk.Toplevel(sistema_principal.root)  # usar .root para o Toplevel
+        self.sistema = sistema_principal
+        self.janela = tk.Toplevel(sistema_principal.root)
         configurar_janela(self.janela, "Visualização de Lançamentos Pendentes", 1000, 400)
 
         # Registrar esta janela para os diálogos
@@ -228,16 +228,15 @@ class VisualizadorLancamentos:
 
         self.alteracoes = False
         self.dados_para_incluir = []
-        
-        # Adicionar um flag para controlar comportamento de foco
-        self.focus_locked = False
+        self._fechando = False
+        self._dialogo_aberto = False
         
         # Configurar comportamento quando a janela é fechada
         self.janela.protocol("WM_DELETE_WINDOW", self.on_close)
         
-        # Vincular evento de foco para manter a janela na frente quando necessário
-        self.janela.bind("<FocusIn>", self.on_focus_in)
-        self.janela.bind("<Map>", self.on_map)  # Quando janela é mapeada (mostrada)
+        # ESTRATÉGIA BALANCEADA
+        self.janela.lift()
+        self.janela.focus_force()
 
         # Frame principal
         self.frame_principal = ttk.Frame(self.janela)
@@ -256,59 +255,101 @@ class VisualizadorLancamentos:
         self.lbl_valor_total = ttk.Label(self.frame_resumo, text="Valor Total: R$ 0,00")
         self.lbl_valor_total.pack(side='left', padx=5)
         
-        # Frame para botões
+        self.lbl_selecionados = ttk.Label(self.frame_resumo, text="Marcados: 0", 
+                                         foreground='blue', font=('TkDefaultFont', 9, 'bold'))
+        self.lbl_selecionados.pack(side='left', padx=5)
+        
+        # Frame para botões de seleção
+        self.frame_selecao = ttk.Frame(self.frame_principal)
+        self.frame_selecao.pack(fill='x', pady=5)
+        
+        ttk.Label(self.frame_selecao, text="Marcar:").pack(side='left', padx=5)
+        ttk.Button(self.frame_selecao, text="✓ Todos", 
+                  command=self.selecionar_todos).pack(side='left', padx=2)
+        ttk.Button(self.frame_selecao, text="✗ Nenhum", 
+                  command=self.desmarcar_todos).pack(side='left', padx=2)
+        ttk.Button(self.frame_selecao, text="⇄ Inverter", 
+                  command=self.inverter_selecao).pack(side='left', padx=2)
+        
+        # Frame para botões principais
         self.frame_botoes = ttk.Frame(self.frame_principal)
         self.frame_botoes.pack(fill='x', pady=5)
         
-        ttk.Button(self.frame_botoes, text="Editar", command=self.editar_lancamento).pack(side='left', padx=5)
-        ttk.Button(self.frame_botoes, text="Remover", command=self.remover_lancamento).pack(side='left', padx=5)
+        ttk.Button(self.frame_botoes, text="✏️ Editar", 
+                  command=self.editar_lancamento).pack(side='left', padx=5)
+        
+        # Botão de exclusão único - funciona para 1 ou vários
+        self.btn_excluir = tk.Button(self.frame_botoes, text="🗑️ Excluir Marcados", 
+                                     command=self.excluir_marcados,
+                                     bg='#dc3545', fg='white', 
+                                     font=('TkDefaultFont', 9, 'bold'),
+                                     relief='raised', bd=2, cursor='hand2')
+        self.btn_excluir.pack(side='left', padx=5)
+        
         ttk.Button(self.frame_botoes, text="📂 Carregar Rascunho", 
                   command=self.carregar_rascunho).pack(side='left', padx=5)
-        ttk.Button(self.frame_botoes, text="Salvar na Planilha", command=self.salvar_na_planilha).pack(side='left', padx=5)
-        ttk.Button(self.frame_botoes, text="Fechar", command=self.janela.destroy).pack(side='right', padx=5)
-
+        ttk.Button(self.frame_botoes, text="💾 Salvar na Planilha", 
+                  command=self.salvar_na_planilha).pack(side='left', padx=5)
+        ttk.Button(self.frame_botoes, text="Fechar", 
+                  command=self.fechar_janela).pack(side='right', padx=5)
+        
+        # Monitorar perda de foco
+        self.janela.bind('<FocusOut>', self._on_focus_out)
     
-        # Variável para rastrear se houve alterações
-        self.alteracoes = False
+    def _on_focus_out(self, event):
+        """Quando janela perde foco, verifica se deve trazer de volta"""
+        if not self._dialogo_aberto and not self._fechando:
+            self.janela.after(200, self._verificar_trazer_frente)
     
-    def on_close(self):
-        """Manipula o fechamento da janela"""
+    def _verificar_trazer_frente(self):
+        """Verifica se deve trazer janela para frente"""
+        try:
+            if (self.janela and self.janela.winfo_exists() and 
+                not self._dialogo_aberto and not self._fechando):
+                if not self._tem_dialogo_filho():
+                    self.janela.lift()
+                    self.janela.focus_force()
+        except:
+            pass
+    
+    def _tem_dialogo_filho(self):
+        """Verifica se há algum diálogo filho aberto"""
+        try:
+            widget_com_foco = self.janela.focus_get()
+            if widget_com_foco:
+                parent = widget_com_foco.winfo_toplevel()
+                if parent != self.janela and isinstance(parent, tk.Toplevel):
+                    return True
+            return False
+        except:
+            return False
+    
+    def fechar_janela(self):
+        """Fecha a janela de forma segura"""
+        self._fechando = True
         if hasattr(self.sistema, 'on_visualizador_close'):
             self.sistema.on_visualizador_close()
         else:
             self.janela.destroy()
     
-    def on_focus_in(self, event=None):
-        """Quando a janela recebe foco"""
-        if self.focus_locked:
-            self.janela.lift()
-    
-    def on_map(self, event=None):
-        """Quando a janela é mapeada (tornada visível)"""
-        # Trazer para frente e forçar foco
-        self.janela.lift()
-        self.janela.focus_force()
-    
-    def travar_foco(self, travar=True):
-        """Define se a janela deve ser mantida à frente"""
-        self.focus_locked = travar
-        if travar:
-            # Trazer para frente imediatamente
-            self.janela.lift()
-            self.janela.focus_force()        
+    def on_close(self):
+        """Manipula o fechamento da janela"""
+        self.fechar_janela()
 
     def criar_treeview(self):
-        # Alterar a lista de colunas para incluir forma de pagamento
-        colunas = ('Data', 'Tipo', 'CNPJ/CPF', 'Nome', 'Referência', 'NF', 'Vr. Unit.', 
-                   'Dias', 'Valor', 'Vencimento', 'Categoria', 'Forma Pagamento', 'Dados Bancários', 'Observação')
+        """Cria a TreeView com coluna de checkbox CLICÁVEL"""
+        colunas = ('☑', 'Data', 'Tipo', 'CNPJ/CPF', 'Nome', 'Referência', 'NF', 'Vr. Unit.', 
+                   'Dias', 'Valor', 'Vencimento', 'Categoria', 'Forma Pagamento', 
+                   'Dados Bancários', 'Observação')
         
         self.tree = ttk.Treeview(self.frame_principal, columns=colunas, show='headings')
         
-        # Configurar cabeçalhos
         for col in colunas:
             self.tree.heading(col, text=col)
-            # Ajustar largura baseado no conteúdo
-            if col in ['CNPJ/CPF', 'Nome', 'Referência', 'Dados Bancários', 'Observação']:
+            
+            if col == '☑':
+                width = 30
+            elif col in ['CNPJ/CPF', 'Nome', 'Referência', 'Dados Bancários', 'Observação']:
                 width = 150
             elif col in ['Data', 'Vencimento']:
                 width = 100
@@ -320,45 +361,243 @@ class VisualizadorLancamentos:
                 width = 80
             self.tree.column(col, width=width)
 
-        # Adicionar scrollbars
         scrolly = ttk.Scrollbar(self.frame_principal, orient='vertical', command=self.tree.yview)
         scrollx = ttk.Scrollbar(self.frame_principal, orient='horizontal', command=self.tree.xview)
         self.tree.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
         
-        # Posicionar elementos
         self.tree.pack(fill='both', expand=True)
         scrolly.pack(side='right', fill='y')
         scrollx.pack(side='bottom', fill='x')
+        
+        # Clique simples marca/desmarca checkbox
+        self.tree.bind('<Button-1>', self.on_tree_click)
+    
+    def on_tree_click(self, event):
+        """Detecta clique na coluna do checkbox e alterna"""
+        region = self.tree.identify_region(event.x, event.y)
+        if region == "cell":
+            column = self.tree.identify_column(event.x)
+            if column == '#1':
+                item = self.tree.identify_row(event.y)
+                if item:
+                    self.toggle_checkbox(item)
+                    return "break"
+    
+    def toggle_checkbox(self, item_id):
+        """Alterna o estado do checkbox de um item"""
+        valores = list(self.tree.item(item_id)['values'])
+        if valores[0] in ['☐', '']:
+            valores[0] = '☑'
+        else:
+            valores[0] = '☐'
+        self.tree.item(item_id, values=valores)
+        self.atualizar_contador_selecionados()
+    
+    def selecionar_todos(self):
+        """Marca todos os checkboxes"""
+        for item in self.tree.get_children():
+            valores = list(self.tree.item(item)['values'])
+            valores[0] = '☑'
+            self.tree.item(item, values=valores)
+        self.atualizar_contador_selecionados()
+    
+    def desmarcar_todos(self):
+        """Desmarca todos os checkboxes"""
+        for item in self.tree.get_children():
+            valores = list(self.tree.item(item)['values'])
+            valores[0] = '☐'
+            self.tree.item(item, values=valores)
+        self.atualizar_contador_selecionados()
+    
+    def inverter_selecao(self):
+        """Inverte a seleção dos checkboxes"""
+        for item in self.tree.get_children():
+            valores = list(self.tree.item(item)['values'])
+            valores[0] = '☑' if valores[0] == '☐' else '☐'
+            self.tree.item(item, values=valores)
+        self.atualizar_contador_selecionados()
+    
+    def obter_indices_marcados(self):
+        """Retorna lista de índices dos itens marcados"""
+        indices_marcados = []
+        todos_items = self.tree.get_children()
+        
+        for idx, item in enumerate(todos_items):
+            valores = self.tree.item(item)['values']
+            if valores[0] == '☑':
+                indices_marcados.append(idx)
+        
+        return indices_marcados
+    
+    def excluir_marcados(self):
+        """
+        Exclui todos os lançamentos marcados PERMANENTEMENTE
+        Funciona para 1 ou vários itens marcados
+        """
+        indices_marcados = self.obter_indices_marcados()
+        
+        if not indices_marcados:
+            self._dialogo_aberto = True
+            custom_messagebox("warning", "⚠️ Nenhum Item Marcado", 
+                            "Para excluir lançamentos:\n\n"
+                            "1. Clique no ☑ para marcar os itens desejados\n"
+                            "2. Clique em 'Excluir Marcados'\n\n"
+                            "💡 Dica: Use os botões 'Todos', 'Nenhum' ou 'Inverter' "
+                            "para facilitar a seleção!")
+            self._dialogo_aberto = False
+            self.janela.lift()
+            return
+        
+        # MARCAR que há diálogo aberto
+        self._dialogo_aberto = True
+        
+        # Mensagem personalizada para singular/plural
+        qtd = len(indices_marcados)
+        if qtd == 1:
+            titulo = "⚠️ Excluir 1 Lançamento"
+            mensagem = (f"Você está prestes a EXCLUIR PERMANENTEMENTE "
+                       f"1 lançamento!\n\n"
+                       f"❌ Esta ação NÃO PODE ser desfeita!\n"
+                       f"❌ O dado será removido IMEDIATAMENTE!\n"
+                       f"❌ O rascunho será atualizado AGORA!\n\n"
+                       f"Confirma a EXCLUSÃO DEFINITIVA?")
+        else:
+            titulo = f"⚠️ Excluir {qtd} Lançamentos"
+            mensagem = (f"Você está prestes a EXCLUIR PERMANENTEMENTE "
+                       f"{qtd} lançamentos!\n\n"
+                       f"❌ Esta ação NÃO PODE ser desfeita!\n"
+                       f"❌ Os dados serão removidos IMEDIATAMENTE!\n"
+                       f"❌ O rascunho será atualizado AGORA!\n\n"
+                       f"Confirma a EXCLUSÃO DEFINITIVA?")
+        
+        resposta = custom_messagebox("yesno", titulo, mensagem)
+        
+        # MARCAR que diálogo foi fechado
+        self._dialogo_aberto = False
+        
+        if resposta:
+            try:
+                # REMOVER IMEDIATAMENTE
+                itens_removidos = self.remover_itens_especificos(indices_marcados)
+                
+                # ATUALIZAR SISTEMA PRINCIPAL
+                self.sistema.dados_para_incluir = self.dados_para_incluir.copy()
+                
+                # SALVAR RASCUNHO ATUALIZADO
+                self.salvar_rascunho_imediatamente()
+                
+                # Verificar se ainda há dados
+                self._dialogo_aberto = True
+                if len(self.dados_para_incluir) == 0:
+                    if qtd == 1:
+                        msg = "1 lançamento EXCLUÍDO PERMANENTEMENTE!"
+                    else:
+                        msg = f"{itens_removidos} lançamentos EXCLUÍDOS PERMANENTEMENTE!"
+                    
+                    custom_messagebox("info", "✅ Exclusão Concluída", 
+                                    f"{msg}\n\n"
+                                    f"✅ Rascunho ELIMINADO!\n"
+                                    f"✅ Não há mais lançamentos pendentes.")
+                    self._dialogo_aberto = False
+                    self.fechar_janela()
+                    return
+                else:
+                    if qtd == 1:
+                        msg = "1 lançamento EXCLUÍDO PERMANENTEMENTE!"
+                    else:
+                        msg = f"{itens_removidos} lançamentos EXCLUÍDOS PERMANENTEMENTE!"
+                    
+                    custom_messagebox("info", "✅ Exclusão Concluída", 
+                                    f"{msg}\n\n✅ Rascunho ATUALIZADO!")
+                self._dialogo_aberto = False
+                
+            except Exception as e:
+                self._dialogo_aberto = True
+                custom_messagebox("error", "Erro", 
+                                f"Erro ao excluir lançamentos:\n{str(e)}")
+                self._dialogo_aberto = False
+                import traceback
+                traceback.print_exc()
+        
+        # Trazer janela de volta
+        self.janela.lift()
+        self.janela.focus_force()
+    
+    def salvar_rascunho_imediatamente(self):
+        """SALVA ou REMOVE o rascunho IMEDIATAMENTE"""
+        try:
+            temp_file = os.path.join(os.path.expanduser("~"), "Desktop", 
+                                    "backup_lancamentos.json")
+            
+            if not self.dados_para_incluir or len(self.dados_para_incluir) == 0:
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+                    print(f"✅ Rascunho DELETADO: {temp_file}")
+                return
+            
+            backup_data = {
+                'cliente': self.sistema.cliente_atual if hasattr(self.sistema, 'cliente_atual') else '',
+                'total_lancamentos': len(self.dados_para_incluir),
+                'data_sessao': datetime.now().isoformat(),
+                'lancamentos': self.dados_para_incluir
+            }
+            
+            with open(temp_file, 'w', encoding='utf-8') as f:
+                json.dump(backup_data, f, ensure_ascii=False, indent=2)
+            
+            print(f"✅ Rascunho SALVO: {temp_file} ({len(self.dados_para_incluir)} lançamentos)")
+                
+        except Exception as e:
+            print(f"❌ Erro ao salvar rascunho: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    def atualizar_contador_selecionados(self):
+        """Atualiza o contador de itens selecionados"""
+        qtd_selecionados = len(self.obter_indices_marcados())
+        
+        if qtd_selecionados == 1:
+            texto = "Marcado: 1"
+        else:
+            texto = f"Marcados: {qtd_selecionados}"
+        
+        self.lbl_selecionados.config(text=texto)
+        
+        # Mudar cor do botão baseado na seleção
+        if qtd_selecionados > 0:
+            self.btn_excluir.config(bg='#ff0000', state='normal')
+            if qtd_selecionados == 1:
+                self.btn_excluir.config(text='🗑️ Excluir Marcado')
+            else:
+                self.btn_excluir.config(text='🗑️ Excluir Marcados')
+        else:
+            self.btn_excluir.config(bg='#dc3545', state='normal', 
+                                   text='🗑️ Excluir Marcados')
     
     def atualizar_dados(self, dados):
-        """
-        Atualiza os dados na visualização
-        VERSÃO MODIFICADA com suporte aos novos métodos
-        """
+        """Atualiza os dados na visualização"""
         self.dados_para_incluir = dados.copy() if dados else []
         
-        # Armazenar também em dados_originais
         if hasattr(self, 'dados_originais'):
             self.dados_originais = dados.copy() if dados else []
         else:
             self.dados_originais = dados.copy() if dados else []
         
-        # Limpar dados existentes
         for item in self.tree.get_children():
             self.tree.delete(item)
             
         if not dados:
-            # Atualizar resumo para zero quando não houver dados
             self.lbl_total_lancamentos.config(text="Total de Lançamentos: 0")
             self.lbl_valor_total.config(text="Valor Total: R$ 0,00")
+            self.lbl_selecionados.config(text="Marcados: 0")
             if hasattr(self, 'janela'):
                 self.janela.title("Visualização de Lançamentos Pendentes - 0 registros")
             return
             
-        # Inserir novos dados
         valor_total = 0
         for lancamento in self.dados_para_incluir:
             valores = (
+                '☐',
                 lancamento['data'],
                 lancamento['tp_desp'],
                 lancamento['cnpj_cpf'],
@@ -370,7 +609,7 @@ class VisualizadorLancamentos:
                 lancamento['valor'],
                 lancamento['dt_vencto'],
                 lancamento['categoria'],
-                lancamento.get('forma_pagamento', ''),  
+                lancamento.get('forma_pagamento', ''),
                 lancamento['dados_bancarios'],
                 lancamento['observacao']
             )
@@ -381,60 +620,61 @@ class VisualizadorLancamentos:
             except (ValueError, TypeError):
                 pass
         
-        # Atualizar resumo
         self.lbl_total_lancamentos.config(text=f"Total de Lançamentos: {len(dados)}")
         self.lbl_valor_total.config(text=f"Valor Total: R$ {valor_total:,.2f}")
+        self.lbl_selecionados.config(text="Marcados: 0")
         
-        # Atualizar título
         if hasattr(self, 'janela'):
             self.janela.title(f"Visualização de Lançamentos Pendentes - {len(dados)} registros")
 
     def editar_lancamento(self):
-        """Abre a janela de edição para o lançamento selecionado"""
+        """Abre a janela de edição para o lançamento selecionado na TreeView"""
         item_selecionado = self.tree.selection()
         if not item_selecionado:
-            custom_messagebox("warning",  "Aviso", "Selecione um lançamento para editar")
+            self._dialogo_aberto = True
+            custom_messagebox("warning", "Aviso", 
+                            "Para editar um lançamento:\n\n"
+                            "Clique na LINHA desejada para selecioná-la\n"
+                            "(não é o checkbox ☑, é a linha inteira)")
+            self._dialogo_aberto = False
+            self.janela.lift()
             return
 
-        # Obter índice do item selecionado
         todos_items = self.tree.get_children()
         indice = todos_items.index(item_selecionado[0])
         
-        # Obter valores atuais
         valores = self.tree.item(item_selecionado)['values']
         dados = {
-            'data': valores[0],
-            'tp_desp': valores[1],
-            'cnpj_cpf': valores[2],
-            'nome': valores[3],
-            'referencia': valores[4],
-            'nf': valores[5],
-            'vr_unit': valores[6],
-            'dias': valores[7],
-            'valor': valores[8],
-            'dt_vencto': valores[9],
-            'categoria': valores[10],
-            'forma_pagamento': valores[11],
-        'dados_bancarios': valores[12],
-        'observacao': valores[13] if len(valores) > 13 else ''
-    }
+            'data': valores[1],
+            'tp_desp': valores[2],
+            'cnpj_cpf': valores[3],
+            'nome': valores[4],
+            'referencia': valores[5],
+            'nf': valores[6],
+            'vr_unit': valores[7],
+            'dias': valores[8],
+            'valor': valores[9],
+            'dt_vencto': valores[10],
+            'categoria': valores[11],
+            'forma_pagamento': valores[12],
+            'dados_bancarios': valores[13],
+            'observacao': valores[14] if len(valores) > 14 else ''
+        }
         
-        # Criar editor
         editor = EditorLancamento(self.janela, dados, indice, self.atualizar_lancamento)
 
     def atualizar_lancamento(self, indice, novos_dados):
         """Atualiza os dados de um lançamento específico"""
         try:
-            # Formatar CNPJ/CPF baseado no número de dígitos
             cnpj_cpf = str(novos_dados['cnpj_cpf']).replace('.', '').replace('-', '').replace('/', '')
             novos_dados['cnpj_cpf'] = formatar_cnpj_cpf(cnpj_cpf)
-
-            # Converter observação para maiúsculas
             novos_dados['observacao'] = novos_dados['observacao'].upper()
 
-            # Atualizar na treeview
             item = self.tree.get_children()[indice]
+            valores_atuais = self.tree.item(item)['values']
+            
             valores = (
+                valores_atuais[0],
                 novos_dados['data'],
                 novos_dados['tp_desp'],
                 novos_dados['cnpj_cpf'],
@@ -446,88 +686,81 @@ class VisualizadorLancamentos:
                 novos_dados['valor'],
                 novos_dados['dt_vencto'],
                 novos_dados['categoria'],
+                novos_dados.get('forma_pagamento', ''),
                 novos_dados['dados_bancarios'],
                 novos_dados['observacao']
             )
             
-            # Atualizar dados na lista
             self.dados_para_incluir[indice] = novos_dados.copy()
-            
-            # Atualizar treeview
             self.tree.item(item, values=valores)
-            
-            # Atualizar resumo
             self.atualizar_resumo()
+            
+            self.sistema.dados_para_incluir = self.dados_para_incluir.copy()
+            self.salvar_rascunho_imediatamente()
             
             return True
         except Exception as e:
             print(f"Erro ao atualizar lançamento: {str(e)}")
             return False
 
-    def remover_lancamento(self):
-        item_selecionado = self.tree.selection()
-        if not item_selecionado:
-            custom_messagebox("warning",  "Aviso", "Selecione um lançamento para remover")
-            return
-        
-        # Travar o foco durante a operação
-        self.travar_foco(True)
-            
-        if custom_messagebox("yesno", "Confirmação", "Deseja realmente remover este lançamento?"):
-            # Obter índice do item selecionado
-            todos_items = self.tree.get_children()
-            indice = todos_items.index(item_selecionado[0])
-            
-            # Remover da lista de dados
-            if 0 <= indice < len(self.dados_para_incluir):
-                self.dados_para_incluir.pop(indice)
-            
-            # Remover da visualização
-            self.tree.delete(item_selecionado)
-            
-            # Atualizar contadores e totais
-            self.atualizar_resumo()
-
-        # Destravar o foco após a operação
-        self.travar_foco(False)
-        
-        # Garantir que a janela volte a ter foco após o diálogo
-        self.janela.after(100, lambda: self.janela.focus_force())
-
     def salvar_na_planilha(self):
         """Salva os dados diretamente na planilha"""
+        if not self.dados_para_incluir:
+            self._dialogo_aberto = True
+            custom_messagebox("warning", "Aviso", "Não há dados para salvar!")
+            self._dialogo_aberto = False
+            self.janela.lift()
+            return
+
         try:
-            if not self.dados_para_incluir:
-                custom_messagebox("warning",  "Aviso", "Não há dados para salvar!")
-                return
-
-            # Travar o foco durante a operação
-            self.travar_foco(True)
-
-            # Atualizar dados do sistema principal
             self.sistema.dados_para_incluir = self.dados_para_incluir.copy()
+            self._fechando = True
             
-            # Chamar o método enviar_dados do sistema principal
             if self.sistema:
                 self.sistema.enviar_dados()
-                self.janela.destroy()  # Fecha o visualizador após salvar
+                
+                try:
+                    temp_file = os.path.join(os.path.expanduser("~"), "Desktop", 
+                                            "backup_lancamentos.json")
+                    if os.path.exists(temp_file):
+                        os.remove(temp_file)
+                        print("✅ Rascunho DELETADO após salvamento na planilha")
+                except:
+                    pass
+                
+                if self.janela and self.janela.winfo_exists():
+                    self.janela.destroy()
             else:
-                custom_messagebox("error", "Erro", "Referência ao sistema principal não encontrada")
-
-            # Destravar o foco após a operação
-            self.travar_foco(False)
+                self._fechando = False
+                self._dialogo_aberto = True
+                custom_messagebox("error", "Erro", 
+                                "Referência ao sistema principal não encontrada")
+                self._dialogo_aberto = False
+                self.janela.lift()
 
         except Exception as e:
+            self._fechando = False
+            self._dialogo_aberto = True
             custom_messagebox("error", "Erro", f"Erro ao salvar dados: {str(e)}")
-            print(f"Erro detalhado ao salvar: {str(e)}")  # Log para debug
+            self._dialogo_aberto = False
+            self.janela.lift()
+            print(f"Erro detalhado ao salvar: {str(e)}")
 
     def atualizar_resumo(self):
+        """Atualiza os totais e resumo"""
         items = self.tree.get_children()
         total_lancamentos = len(items)
-        valor_total = sum(float(self.tree.item(item)['values'][8]) for item in items)
+        valor_total = 0
+        
+        for item in items:
+            try:
+                valor_total += float(self.tree.item(item)['values'][9])
+            except (ValueError, TypeError, IndexError):
+                pass
         
         self.lbl_total_lancamentos.config(text=f"Total de Lançamentos: {total_lancamentos}")
         self.lbl_valor_total.config(text=f"Valor Total: R$ {valor_total:,.2f}")
+        self.atualizar_contador_selecionados()
 
     def get_dados_atualizados(self):
         """Retorna todos os dados atualizados"""
@@ -536,13 +769,16 @@ class VisualizadorLancamentos:
     def carregar_rascunho(self):
         """Carrega dados do arquivo de backup"""
         try:
-            temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
+            temp_file = os.path.join(os.path.expanduser("~"), "Desktop", 
+                                    "backup_lancamentos.json")
             
             if os.path.exists(temp_file):
                 with open(temp_file, 'r', encoding='utf-8') as f:
                     backup_data = json.load(f)
                 
                 data_backup = datetime.fromisoformat(backup_data['data_sessao'])
+                
+                self._dialogo_aberto = True
                 
                 resposta = custom_messagebox("yesno", 
                     "📂 Carregar Rascunho",
@@ -554,15 +790,12 @@ class VisualizadorLancamentos:
                     "(Os dados atuais serão substituídos)")
                 
                 if resposta:
-                    # Atualizar dados no sistema
                     self.sistema.dados_para_incluir = backup_data['lancamentos']
                     self.sistema.cliente_atual = backup_data['cliente']
                     
-                    # Atualizar dados no visualizador
                     self.dados_para_incluir = backup_data['lancamentos'].copy()
                     self.atualizar_dados(backup_data['lancamentos'])
                     
-                    # Atualizar interface principal se necessário
                     if hasattr(self.sistema, 'cliente_combobox'):
                         self.sistema.cliente_combobox.set(backup_data['cliente'])
                         self.sistema.selecionar_cliente(None)
@@ -570,24 +803,29 @@ class VisualizadorLancamentos:
                     custom_messagebox("info", "✅ Rascunho Carregado", 
                                     f"Dados carregados com sucesso!\n"
                                     f"{len(backup_data['lancamentos'])} lançamentos carregados.")
+                
+                self._dialogo_aberto = False
+                self.janela.lift()
             else:
-                custom_messagebox("info", "📂 Rascunho", "Nenhum rascunho encontrado no Desktop.")
+                self._dialogo_aberto = True
+                custom_messagebox("info", "📂 Rascunho", 
+                                "Nenhum rascunho encontrado no Desktop.")
+                self._dialogo_aberto = False
+                self.janela.lift()
                 
         except Exception as e:
+            self._dialogo_aberto = True
             custom_messagebox("error", "Erro", f"Erro ao carregar rascunho: {str(e)}")
+            self._dialogo_aberto = False
+            self.janela.lift()
             import traceback
             traceback.print_exc()
 
     def popular_tree(self, dados_lancamentos):
-        """
-        Popula a TreeView com os dados fornecidos
-        MODIFICADO para armazenar referência aos dados originais
-        """
+        """Popula a TreeView com os dados fornecidos"""
         try:
-            # Armazenar dados originais para referência futura
             self.dados_originais = dados_lancamentos.copy() if dados_lancamentos else []
             
-            # Limpar tree existente
             for item in self.tree.get_children():
                 self.tree.delete(item)
             
@@ -595,10 +833,10 @@ class VisualizadorLancamentos:
                 self.atualizar_contador()
                 return
             
-            # Popular tree
             valor_total = 0
             for lancamento in dados_lancamentos:
                 valores = (
+                    '☐',
                     lancamento.get('data', ''),
                     lancamento.get('tp_desp', ''),
                     lancamento.get('cnpj_cpf', ''),
@@ -622,7 +860,6 @@ class VisualizadorLancamentos:
                 except (ValueError, TypeError):
                     pass
             
-            # Atualizar contador e resumo
             self.atualizar_contador()
             
         except Exception as e:
@@ -630,30 +867,17 @@ class VisualizadorLancamentos:
             import traceback
             traceback.print_exc()
 
-
     def remover_itens_especificos(self, indices_para_remover):
-        """
-        Remove itens específicos da TreeView e dos dados
-        Usado para remover duplicatas após salvamento
-        
-        Args:
-            indices_para_remover: Lista de índices (int) dos itens a remover
-        
-        Returns:
-            int: Quantidade de itens removidos
-        """
+        """Remove itens específicos da TreeView e dos dados"""
         try:
-            # Obter todos os items da tree
             todos_items = self.tree.get_children()
             
-            # Validar índices
             indices_validos = [idx for idx in indices_para_remover 
                             if 0 <= idx < len(todos_items)]
             
             if not indices_validos:
                 return 0
             
-            # Remover da tree (de trás para frente para não afetar índices)
             items_removidos = []
             for idx in sorted(indices_validos, reverse=True):
                 if idx < len(todos_items):
@@ -661,7 +885,6 @@ class VisualizadorLancamentos:
                     self.tree.delete(item_id)
                     items_removidos.append(idx)
             
-            # Remover dos dados_para_incluir (de trás para frente)
             novos_dados = []
             for idx, dados in enumerate(self.dados_para_incluir):
                 if idx not in indices_validos:
@@ -669,7 +892,6 @@ class VisualizadorLancamentos:
             
             self.dados_para_incluir = novos_dados
             
-            # Atualizar dados_originais também
             if hasattr(self, 'dados_originais'):
                 novos_dados_originais = []
                 for idx, dados in enumerate(self.dados_originais):
@@ -677,7 +899,6 @@ class VisualizadorLancamentos:
                         novos_dados_originais.append(dados)
                 self.dados_originais = novos_dados_originais
             
-            # Atualizar contador
             self.atualizar_contador()
             
             return len(items_removidos)
@@ -688,26 +909,20 @@ class VisualizadorLancamentos:
             traceback.print_exc()
             return 0
 
-
     def atualizar_contador(self):
-        """
-        Atualiza o contador de registros e valor total no visualizador
-        """
+        """Atualiza o contador de registros e valor total"""
         try:
             qtd_registros = len(self.tree.get_children())
-            
-            # Calcular valor total
             valor_total = 0
+            
             for item in self.tree.get_children():
                 try:
                     valores = self.tree.item(item)['values']
-                    # Valor está na posição 8
-                    valor_str = str(valores[8]).replace(',', '.')
+                    valor_str = str(valores[9]).replace(',', '.')
                     valor_total += float(valor_str)
                 except (ValueError, TypeError, IndexError):
                     continue
             
-            # Atualizar labels
             if hasattr(self, 'lbl_total_lancamentos'):
                 self.lbl_total_lancamentos.config(
                     text=f"Total de Lançamentos: {qtd_registros}"
@@ -718,52 +933,41 @@ class VisualizadorLancamentos:
                     text=f"Valor Total: R$ {valor_total:,.2f}"
                 )
             
-            # Atualizar título da janela também
             if hasattr(self, 'janela') and self.janela:
                 self.janela.title(f"Visualização de Lançamentos Pendentes - {qtd_registros} registros")
+            
+            self.atualizar_contador_selecionados()
             
         except Exception as e:
             print(f"Erro ao atualizar contador: {str(e)}")
 
-
     def limpar_visualizacao(self):
-        """
-        Limpa completamente a visualização
-        Remove todos os dados da TreeView e das listas
-        """
+        """Limpa completamente a visualização"""
         try:
-            # Limpar TreeView
             for item in self.tree.get_children():
                 self.tree.delete(item)
             
-            # Limpar dados
             self.dados_para_incluir.clear()
             
             if hasattr(self, 'dados_originais'):
                 self.dados_originais.clear()
             
-            # Atualizar contador
             self.atualizar_contador()
             
         except Exception as e:
             print(f"Erro ao limpar visualização: {str(e)}")
 
-
     def fechar_se_vazio(self):
-        """
-        Fecha o visualizador se não houver mais dados
-        Retorna True se fechou, False se manteve aberto
-        """
+        """Fecha o visualizador se não houver mais dados"""
         try:
             if len(self.dados_para_incluir) == 0:
-                if hasattr(self, 'janela') and self.janela:
-                    self.janela.destroy()
+                self.fechar_janela()
                 return True
             return False
         except Exception as e:
             print(f"Erro ao verificar fechamento: {str(e)}")
             return False
-
+        
 class EditorLancamento:
     def __init__(self, parent, dados, indice, callback_atualizacao):
         self.janela = tk.Toplevel(parent)
@@ -3007,11 +3211,6 @@ class SistemaEntradaDados:
         frame_botoes_fornecedor = ttk.Frame(self.aba_fornecedor)
         frame_botoes_fornecedor.pack(fill='x', padx=10, pady=10, side='bottom')
         
-        ttk.Button(frame_botoes_fornecedor, 
-                text="Visualizar Lançamentos", 
-                command=self.visualizar_lancamentos,
-                style='Medium.TButton').pack(side='left', padx=5)
-        
         ttk.Button(
             frame_botoes_fornecedor, 
             text="🚛 Importar Transporte", 
@@ -5031,6 +5230,13 @@ class SistemaEntradaDados:
             frame_botoes_ger, 
             text="Gerenciar Lançamentos",
             command=self.abrir_gerenciador_lancamentos,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
+        ttk.Button(
+            frame_botoes_ger, 
+            text="📋 Visualizar Lançamentos",
+            command=self.visualizar_lancamentos,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
 
