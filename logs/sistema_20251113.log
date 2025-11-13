@@ -1,0 +1,108 @@
+2025-11-13 13:51:06,450 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-13 13:51:06,450 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-13 13:51:06,450 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-13 13:51:06,450 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-13 13:51:06,450 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-13 13:51:12,309 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 13:51:12,338 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 13:51:12,338 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 13:51:12,338 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 13:51:12,357 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-13 13:51:17,937 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2025-11-13 13:59:17,730 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-13 13:59:17,780 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-13 13:59:17,782 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-13 13:59:17,787 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-13 13:59:17,790 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-13 13:59:22,822 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 13:59:22,822 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 13:59:22,838 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 13:59:22,838 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 13:59:22,850 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-13 13:59:35,057 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2025-11-13 14:52:41,357 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-13 14:52:41,357 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-13 14:52:41,357 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-13 14:52:41,357 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-13 14:52:41,357 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-13 14:52:46,117 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 14:52:46,121 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 14:52:46,125 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 14:52:46,128 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 14:52:46,150 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-13 14:52:53,389 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2025-11-13 14:53:12,028 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 14:53:12,032 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 14:53:57,870 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: RONALDO ROLIM DE OLIVEIRA, Registros: 4
+2025-11-13 14:53:57,870 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-11-13 14:53:57,870 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 4
+2025-11-13 14:53:57,870 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/11/2025']
+2025-11-13 14:53:57,870 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\RONALDO ROLIM DE OLIVEIRA.xlsx
+2025-11-13 14:53:57,870 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-13 14:54:00,660 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-13 14:54:00,660 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-13 14:54:00,660 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: DAVID ROMUALDO DE SOUZA | SALÁRIO | NF:  | R$ 1493.80 | 06/11/2025
+2025-11-13 14:54:00,933 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: DAVID ROMUALDO DE SOUZA - SALÁRIO - NF: 
+2025-11-13 14:54:00,933 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-13 14:54:00,933 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-13 14:54:00,933 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ELENALTO ANTONIO DE ASSIS | SALÁRIO | NF:  | R$ 1493.80 | 06/11/2025
+2025-11-13 14:54:01,087 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ELENALTO ANTONIO DE ASSIS - SALÁRIO - NF: 
+2025-11-13 14:54:01,087 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-13 14:54:01,087 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-13 14:54:01,087 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: HELIO ROMUALDO DOS ANJOS | SALÁRIO | NF:  | R$ 2371.87 | 06/11/2025
+2025-11-13 14:54:01,238 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: HELIO ROMUALDO DOS ANJOS - SALÁRIO - NF: 
+2025-11-13 14:54:01,238 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-13 14:54:01,238 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-13 14:54:01,238 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: JOSE ANGELO FERREIRA | SALÁRIO | NF:  | R$ 966.27 | 06/11/2025
+2025-11-13 14:54:01,418 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: JOSE ANGELO FERREIRA - SALÁRIO - NF: 
+2025-11-13 14:54:01,440 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 3359 na linha 3360
+2025-11-13 14:54:01,464 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 3360 na linha 3361
+2025-11-13 14:54:01,490 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 3361 na linha 3362
+2025-11-13 14:54:01,509 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 3362 na linha 3363
+2025-11-13 14:54:02,969 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-13 14:54:03,472 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-20
+2025-11-13 14:54:03,472 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-13 14:54:05,590 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 4 registros salvos da visualização
+2025-11-13 14:54:05,608 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-11-13 14:54:05,609 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-13 15:02:33,095 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-13 15:02:33,096 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-13 15:02:33,097 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-13 15:02:33,097 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-13 15:02:33,099 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-13 15:02:35,011 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 15:02:35,011 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 15:02:35,011 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 15:02:35,011 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 15:02:35,039 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-13 15:02:53,940 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2025-11-13 15:05:11,690 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2025-11-13 15:05:13,250 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2025-11-13 15:05:29,850 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 15:05:29,852 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 15:19:42,956 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-13 15:19:42,956 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-13 15:19:42,956 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-13 15:19:42,956 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-13 15:19:42,956 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-13 15:19:48,031 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 15:19:48,031 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 15:19:48,039 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 15:19:48,040 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 15:19:48,049 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-13 15:19:56,953 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2025-11-13 15:20:06,989 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 15:20:07,006 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 15:26:21,003 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-13 15:26:21,003 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-13 15:26:21,003 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-13 15:26:21,003 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-13 15:26:21,003 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-13 15:26:25,643 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 15:26:25,643 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 15:26:25,643 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 15:26:25,643 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 15:26:25,667 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-13 15:26:31,181 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2025-11-13 15:26:40,952 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 15:26:40,967 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
