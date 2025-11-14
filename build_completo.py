@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Script de build FINAL - COM TODOS OS MÓDULOS
-Inclui TUDO que o sistema precisa
 
-Sequência no Prompt antes de gerar novo executável:
-Cmd
+# Script de build FINAL - COM TODOS OS MÓDULOS
+# Inclui TUDO que o sistema precisa
+# Sequência no Prompt antes de gerar novo executável:
+# Cmd
+# cd \Users\Obras\Documents\GitHub\Sistema-Financeiro
+# rmdir /s /q build dist 
+# del *.spec
 
-cd \Users\Obras\Documents\GitHub\Sistema-Financeiro
-rmdir /s /q build dist 
-del *.spec
-"""
 
 import os
 import sys
