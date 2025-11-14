@@ -14,8 +14,7 @@ VERSION_INFO = {
     "release_date": "13/11/2025",
     "changes": [
         "Inclusão de Etapa da Obra nas importações de dados de RH - Folha e Transporte & Café",
-        "Inclusão de numeração das páginas nos relatórios PDF gerados",
-        "Inclusão de vinculação de taxa de Administração de contratos à despesa lançada",
+        "Correção dos dados bancários na Agenda",
         "Inclusão da opção de remover vários regitros de uma vez só no Visualizador de Lançamentos",
         "Mudança do botão 'Visualizar Lançamentos' para a seção de Gerenciamento de Dados"
     ]
