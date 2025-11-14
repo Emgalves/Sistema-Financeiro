@@ -16,6 +16,7 @@ VERSION_INFO = {
         "Inclusão de Etapa da Obra nas importações de dados de RH - Folha e Transporte & Café",
         "Correção dos dados bancários na Agenda",
         "Inclusão da opção de remover vários regitros de uma vez só no Visualizador de Lançamentos",
+        "Inclusão da opção de vincular parcelas do contrato de administração de obra a lançamentos efetuados",
         "Mudança do botão 'Visualizar Lançamentos' para a seção de Gerenciamento de Dados"
     ]
 }
