@@ -5906,9 +5906,8 @@ class SistemaEntradaDados:
                 if not row[0]:  # Pular linhas vazias
                     continue
                     
-                cnpj_cpf = str(row[0]).strip()
-                nome = str(row[3] or '').strip().upper()  # Coluna D = Nome
-                categoria = str(row[11] or '').strip()    # Coluna L = Categoria
+                cnpj_cpf = str(row[0]).strip()           # Coluna A
+                nome = str(row[3] or '').strip().upper() # Coluna D = Nome
                 
                 # Verificar correspondência
                 if nome_busca in nome:
@@ -5921,12 +5920,15 @@ class SistemaEntradaDados:
                         fornecedor_encontrado = {
                             'cnpj_cpf': cnpj_cpf,
                             'nome': nome,
-                            'categoria': categoria,
-                            'banco': str(row[4] or '').strip(),      # Coluna E
-                            'op': str(row[5] or '').strip(),         # Coluna F  
-                            'agencia': str(row[6] or '').strip(),    # Coluna G
-                            'conta': str(row[7] or '').strip(),      # Coluna H
-                            'chave_pix': str(row[8] or '').strip()   # Coluna I
+                            'categoria': str(row[11] or '').strip(),      # Coluna L = CATEGORIA
+                            'telefone': str(row[4] or '').strip(),        # Coluna E = TELEFONE
+                            'email': str(row[5] or '').strip(),           # Coluna F = EMAIL
+                            'banco': str(row[6] or '').strip(),           # Coluna G = BANCO
+                            'op': str(row[7] or '').strip(),              # Coluna H = OP
+                            'agencia': str(row[8] or '').strip(),         # Coluna I = AGENC
+                            'conta': str(row[9] or '').strip(),           # Coluna J = CONTA
+                            'chave_pix': str(row[10] or '').strip(),      # Coluna K = Chave_PIX ← CORRIGIDO!
+                            'dados_bancarios': str(row[14] or '').strip() # Coluna O = DADOS BANCÁRIOS
                         }
                         
                         # Se for match exato, parar a busca
@@ -5937,6 +5939,8 @@ class SistemaEntradaDados:
             
             if fornecedor_encontrado:
                 print(f"DEBUG: Fornecedor encontrado: {fornecedor_encontrado['nome']} - {fornecedor_encontrado['cnpj_cpf']}")
+                print(f"DEBUG: Chave PIX: {fornecedor_encontrado['chave_pix']}")
+                print(f"DEBUG: Dados bancários: {fornecedor_encontrado['dados_bancarios']}")
             else:
                 print(f"DEBUG: Nenhum fornecedor encontrado para: {nome_fornecedor}")
             
@@ -5944,6 +5948,8 @@ class SistemaEntradaDados:
             
         except Exception as e:
             print(f"DEBUG: Erro ao buscar fornecedor por nome: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def buscar_fornecedor_por_cnpj_agenda(self, cnpj_cpf):
@@ -5968,18 +5974,23 @@ class SistemaEntradaDados:
                 
                 if cnpj_limpo == cnpj_planilha:
                     fornecedor = {
-                        'cnpj_cpf': str(row[0]).strip(),
-                        'nome': str(row[3] or '').strip().upper(),
-                        'categoria': str(row[11] or '').strip(),
-                        'banco': str(row[4] or '').strip(),
-                        'op': str(row[5] or '').strip(),
-                        'agencia': str(row[6] or '').strip(),
-                        'conta': str(row[7] or '').strip(),
-                        'chave_pix': str(row[8] or '').strip()
+                        'cnpj_cpf': str(row[0]).strip(),              # Coluna A
+                        'nome': str(row[3] or '').strip().upper(),    # Coluna D = NOME
+                        'categoria': str(row[11] or '').strip(),      # Coluna L = CATEGORIA
+                        'telefone': str(row[4] or '').strip(),        # Coluna E = TELEFONE
+                        'email': str(row[5] or '').strip(),           # Coluna F = EMAIL
+                        'banco': str(row[6] or '').strip(),           # Coluna G = BANCO
+                        'op': str(row[7] or '').strip(),              # Coluna H = OP
+                        'agencia': str(row[8] or '').strip(),         # Coluna I = AGENC
+                        'conta': str(row[9] or '').strip(),           # Coluna J = CONTA
+                        'chave_pix': str(row[10] or '').strip(),      # Coluna K = Chave_PIX ← CORRIGIDO!
+                        'dados_bancarios': str(row[14] or '').strip() # Coluna O = DADOS BANCÁRIOS
                     }
                     
                     wb.close()
                     print(f"DEBUG: Fornecedor encontrado por CNPJ: {fornecedor['nome']}")
+                    print(f"DEBUG: Chave PIX: {fornecedor['chave_pix']}")
+                    print(f"DEBUG: Dados bancários: {fornecedor['dados_bancarios']}")
                     return fornecedor
             
             wb.close()
@@ -5988,21 +5999,45 @@ class SistemaEntradaDados:
             
         except Exception as e:
             print(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
+            import traceback
+            traceback.print_exc()
             return None
 
     def obter_dados_bancarios_fornecedor(self, cnpj_cpf, forma_pagamento_preferida="PIX"):
         """Obtém dados bancários formatados do fornecedor"""
+        print(f"DEBUG ===== obter_dados_bancarios_fornecedor =====")
+        print(f"DEBUG: cnpj_cpf recebido: '{cnpj_cpf}'")
+        print(f"DEBUG: forma_pagamento: '{forma_pagamento_preferida}'")
+        
         try:
             fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
             
+            print(f"DEBUG: Fornecedor retornado: {fornecedor}")
+            
             if not fornecedor:
-                return "DADOS BANCÁRIOS NÃO CADASTRADOS"
+                print(f"DEBUG: Fornecedor não encontrado - retornando vazio")
+                return ""
             
-            if forma_pagamento_preferida == "PIX" and fornecedor.get('chave_pix'):
-                return f"PIX: {fornecedor['chave_pix']}"
+            # PRIORIDADE 1: Usar coluna DADOS BANCÁRIOS se já estiver preenchida
+            dados_bancarios_coluna = fornecedor.get('dados_bancarios', '').strip()
+            if dados_bancarios_coluna:
+                print(f"DEBUG: Usando dados da coluna DADOS BANCÁRIOS: '{dados_bancarios_coluna}'")
+                return dados_bancarios_coluna
             
-            # Construir dados para TED
+            # PRIORIDADE 2: Construir dados baseado na forma de pagamento PIX
+            if forma_pagamento_preferida == "PIX":
+                chave_pix = fornecedor.get('chave_pix', '').strip()
+                if chave_pix:
+                    resultado = f"PIX: {chave_pix}"
+                    print(f"DEBUG: Construindo dados PIX: '{resultado}'")
+                    return resultado
+                else:
+                    print(f"DEBUG: Chave PIX não cadastrada - retornando vazio")
+                    return ""
+            
+            # PRIORIDADE 3: Construir dados para TED (apenas se houver dados completos)
             partes_dados = []
+            
             if fornecedor.get('banco'): 
                 partes_dados.append(fornecedor['banco'])
             if fornecedor.get('op'): 
@@ -6012,15 +6047,23 @@ class SistemaEntradaDados:
             if fornecedor.get('conta'): 
                 partes_dados.append(fornecedor['conta'])
             
-            # Sempre adicionar CNPJ/CPF
-            partes_dados.append(fornecedor['cnpj_cpf'])
-            
-            return ' - '.join(partes_dados) if partes_dados else "DADOS BANCÁRIOS INCOMPLETOS"
+            # Só adicionar CNPJ/CPF se houver pelo menos um dado bancário
+            if partes_dados:
+                partes_dados.append(fornecedor['cnpj_cpf'])
+                resultado = ' - '.join(partes_dados)
+                print(f"DEBUG: Construindo dados TED: '{resultado}'")
+                return resultado
+            else:
+                # Se não houver nenhum dado bancário, retornar vazio
+                print(f"DEBUG: Nenhum dado bancário cadastrado - retornando vazio")
+                return ""
             
         except Exception as e:
-            print(f"DEBUG: Erro ao obter dados bancários: {str(e)}")
-            return "ERRO AO OBTER DADOS BANCÁRIOS"
-
+            print(f"DEBUG: ERRO em obter_dados_bancarios_fornecedor: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return ""
+    
     def buscar_fornecedor_por_cnpj_agenda_manual(self, cnpj_cpf):
         """Método auxiliar para buscar e preencher dados do fornecedor"""
         try:
@@ -18588,19 +18631,12 @@ class GerenciadorAgenda:
                 elif item['origem'] == 'BASICO':
                     tipo_display += " (BAS)"
                 
-                # Adicionar informação de DATA_REL na referência para clareza
-                referencia_display = item['referencia']
-                if 'data_rel' in item and item['origem'] != 'EXISTENTE':
-                    data_rel_str = item['data_rel'].strftime('%d/%m')
-                    if f"REL {data_rel_str}" not in referencia_display:
-                        referencia_display = f"{referencia_display} [REL {data_rel_str}]"
-                
                 # Inserir no tree
                 valores = (
                     item['vencimento'].strftime('%d/%m/%Y'),
                     item['status'],
                     item['fornecedor'],
-                    referencia_display,
+                    item['referencia'],
                     f"R$ {item['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
                     tipo_display,
                     item['observacao'],
@@ -18840,17 +18876,22 @@ class GerenciadorAgenda:
                     categoria.delete(0, tk.END)
                     categoria.insert(0, fornecedor_dados.get('categoria', 'FORNECEDOR'))
                     
-                    # Preencher dados bancários
-                    dados_bancarios = self.sistema.obter_dados_bancarios_fornecedor(fornecedor_dados.get('cnpj_cpf', ''))
+                    # CORREÇÃO: Preencher dados bancários usando o método do sistema com forma de pagamento
+                    dados_bancarios_texto = self.sistema.obter_dados_bancarios_fornecedor(
+                        fornecedor_dados.get('cnpj_cpf', ''),
+                        forma_pagamento_preferida='PIX'
+                    )
                     dados_bancarios_entry.config(state='normal')
                     dados_bancarios_entry.delete(0, tk.END)
-                    dados_bancarios_entry.insert(0, dados_bancarios)
+                    dados_bancarios_entry.insert(0, dados_bancarios_texto)
                     dados_bancarios_entry.config(state='readonly')
                     
-                    print(f"DEBUG: Campos preenchidos com sucesso")
+                    print(f"DEBUG: Dados bancários preenchidos: {dados_bancarios_texto}")
                     
                 except Exception as e:
                     print(f"DEBUG: Erro ao preencher dados: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
             
             def navegar_lista_com_teclado(event):
                 """Navega na lista com teclado e seleciona com Enter"""
@@ -18916,6 +18957,9 @@ class GerenciadorAgenda:
             lista_sugestoes.bind('<FocusIn>', lambda e: print("DEBUG: Lista recebeu foco"))
             lista_sugestoes.bind('<FocusOut>', ocultar_sugestoes_ao_sair_foco)
             
+            # Atualizar dados bancários quando CNPJ for alterado E quando forma de pagamento mudar
+            # cnpj_cpf.bind('<FocusOut>', lambda e: janela_confirm.after(200, atualizar_dados_bancarios))
+
             # Categoria
             ttk.Label(frame_fornecedor, text="Categoria:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
             categoria = ttk.Entry(frame_fornecedor, width=20)
@@ -20138,10 +20182,34 @@ class GerenciadorAgenda:
                 print(f"DEBUG: Erro: {e}")
         
         def preencher_dados_fornecedor(fornecedor_dados):
-            cnpj_cpf.delete(0, tk.END)
-            cnpj_cpf.insert(0, fornecedor_dados.get('cnpj_cpf', ''))
-            nome.delete(0, tk.END)
-            nome.insert(0, fornecedor_dados.get('nome', ''))
+            """Preenche campos com dados do fornecedor - SEM duplicação"""
+            try:
+                print(f"DEBUG preencher_dados_fornecedor CHAMADA")
+                print(f"DEBUG: Dados recebidos: {fornecedor_dados}")
+                
+                # CRÍTICO: Limpar campos ANTES de preencher
+                cnpj_cpf.delete(0, tk.END)
+                nome.delete(0, tk.END)
+                
+                # Preencher CNPJ/CPF
+                cnpj_valor = fornecedor_dados.get('cnpj_cpf', '').strip()
+                print(f"DEBUG: Preenchendo CNPJ: '{cnpj_valor}'")
+                cnpj_cpf.insert(0, cnpj_valor)
+                
+                # Preencher Nome
+                nome_valor = fornecedor_dados.get('nome', '').strip()
+                print(f"DEBUG: Preenchendo Nome: '{nome_valor}'")
+                nome.insert(0, nome_valor)
+                
+                # Aguardar um momento e então atualizar dados bancários
+                janela_confirm.after(200, atualizar_dados_bancarios)
+                
+                print(f"DEBUG: Campos preenchidos com sucesso")
+                
+            except Exception as e:
+                print(f"DEBUG: ERRO em preencher_dados_fornecedor: {str(e)}")
+                import traceback
+                traceback.print_exc()
         
         # Bindings
         cnpj_cpf.bind('<KeyRelease>', buscar_fornecedor_por_cnpj)
@@ -20150,16 +20218,39 @@ class GerenciadorAgenda:
         lista_sugestoes.bind('<Double-Button-1>', selecionar_fornecedor_da_lista)
         
         # Preencher dados iniciais
+        print(f"DEBUG: Tentando buscar fornecedor: {valores_item[2]}")
+
+        # Limpar campos antes de preencher
+        cnpj_cpf.delete(0, tk.END)
+        nome.delete(0, tk.END)
+
         try:
+            # Tentar buscar fornecedor pelo nome da agenda
             fornecedor_dados = self.sistema.buscar_fornecedor_por_nome_agenda(valores_item[2])
+            
             if fornecedor_dados:
+                print(f"DEBUG: Fornecedor encontrado: {fornecedor_dados}")
                 preencher_dados_fornecedor(fornecedor_dados)
             else:
+                print(f"DEBUG: Fornecedor não encontrado, preenchendo com dados da agenda")
+                # Se não encontrar, preencher apenas o nome (sem CNPJ)
                 nome.insert(0, valores_item[2])
-                cnpj_cpf.insert(0, "00.000.000/0001-00")
-        except:
+                # Deixar CNPJ vazio para o usuário preencher
+                custom_messagebox("warning", "Atenção", 
+                    f"Fornecedor '{valores_item[2]}' não encontrado no cadastro.\n"
+                    f"Por favor, preencha o CNPJ/CPF manualmente.")
+                cnpj_cpf.focus()
+                
+        except Exception as e:
+            print(f"DEBUG: Erro ao buscar fornecedor: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            # Em caso de erro, preencher apenas o nome
             nome.insert(0, valores_item[2])
-            cnpj_cpf.insert(0, "00.000.000/0001-00")
+            custom_messagebox("error", "Erro", 
+                f"Erro ao buscar dados do fornecedor: {str(e)}\n"
+                f"Preencha os dados manualmente.")
+            cnpj_cpf.focus()
         
         # Referência
         ttk.Label(frame_form, text="Referência:").grid(row=5, column=0, padx=5, pady=5, sticky='w')
@@ -20189,6 +20280,62 @@ class GerenciadorAgenda:
             observacao.insert(0, "CONFIRMADO DA AGENDA")
         observacao.grid(row=7, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
         
+        # Forma de pagamento
+        ttk.Label(frame_form, text="Forma Pagamento:").grid(row=8, column=0, padx=5, pady=5, sticky='w')
+        forma_pagamento = ttk.Combobox(frame_form, values=['PIX', 'TED', 'DINHEIRO'], 
+                                    state='readonly', width=15)
+        forma_pagamento.set('PIX')
+        forma_pagamento.grid(row=8, column=1, padx=5, pady=5, sticky='w')
+
+        # Dados bancários (atualizado dinamicamente)
+        ttk.Label(frame_form, text="Dados Bancários:").grid(row=8, column=2, padx=5, pady=5, sticky='w')
+        dados_bancarios_entry = ttk.Entry(frame_form, width=40, state='readonly')
+        dados_bancarios_entry.grid(row=8, column=3, padx=5, pady=5, sticky='ew')
+
+        # Função para atualizar dados bancários quando mudar fornecedor ou forma de pagamento
+        def atualizar_dados_bancarios():
+            """Atualiza dados bancários baseado no CNPJ e forma de pagamento"""
+            try:
+                cnpj_atual = cnpj_cpf.get().strip()
+                forma_atual = forma_pagamento.get()
+                
+                print(f"DEBUG: Atualizando dados bancários - CNPJ: {cnpj_atual}, Forma: {forma_atual}")
+                
+                # Validar CNPJ antes de buscar
+                if not cnpj_atual or len(cnpj_atual) < 11:
+                    print(f"DEBUG: CNPJ inválido ou vazio: {cnpj_atual}")
+                    dados_bancarios_entry.config(state='normal')
+                    dados_bancarios_entry.delete(0, tk.END)
+                    dados_bancarios_entry.insert(0, "PREENCHA O CNPJ/CPF PRIMEIRO")
+                    dados_bancarios_entry.config(state='readonly')
+                    return
+                
+                # Buscar dados bancários usando o método do sistema
+                dados_banc = self.sistema.obter_dados_bancarios_fornecedor(
+                    cnpj_atual, 
+                    forma_pagamento_preferida=forma_atual
+                )
+                
+                print(f"DEBUG: Dados bancários obtidos: {dados_banc}")
+                
+                # Atualizar campo
+                dados_bancarios_entry.config(state='normal')
+                dados_bancarios_entry.delete(0, tk.END)
+                dados_bancarios_entry.insert(0, dados_banc)
+                dados_bancarios_entry.config(state='readonly')
+                
+            except Exception as e:
+                print(f"DEBUG: Erro ao atualizar dados bancários: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                dados_bancarios_entry.config(state='normal')
+                dados_bancarios_entry.delete(0, tk.END)
+                dados_bancarios_entry.insert(0, f"ERRO: {str(e)}")
+                dados_bancarios_entry.config(state='readonly')
+
+        # Atualizar quando mudar a forma de pagamento
+        forma_pagamento.bind('<<ComboboxSelected>>', lambda e: atualizar_dados_bancarios())
+
         frame_form.columnconfigure(1, weight=1)
         
         # Botões
@@ -20216,7 +20363,9 @@ class GerenciadorAgenda:
                     'nf': nf.get().strip().upper(),
                     'valor': float(valor.get().replace(',', '.')),
                     'dt_vencto': dt_vencto.get_date(),
-                    'observacao': observacao.get().strip().upper()
+                    'observacao': observacao.get().strip().upper(),
+                    'forma_pagamento': forma_pagamento.get(), 
+                    'dados_bancarios': dados_bancarios_entry.get()
                 }
                 
                 print(f"DEBUG: Lançamento - DATA_REL: {data_rel_usar} | DT_VENCTO: {dt_vencto.get_date()}")
@@ -20239,37 +20388,6 @@ class GerenciadorAgenda:
         ttk.Button(frame_botoes, text="Confirmar e Lançar", command=confirmar).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Cancelar", command=janela_confirm.destroy).pack(side='left', padx=5)
   
-    def obter_dados_bancarios_fornecedor(self, cnpj_cpf, forma_pagamento_preferida="PIX"):
-        """Obtém dados bancários formatados do fornecedor"""
-        try:
-            fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
-            
-            if not fornecedor:
-                return "DADOS BANCÁRIOS NÃO CADASTRADOS"
-            
-            if forma_pagamento_preferida == "PIX" and fornecedor.get('chave_pix'):
-                return f"PIX: {fornecedor['chave_pix']}"
-            
-            # Construir dados para TED
-            partes_dados = []
-            if fornecedor.get('banco'): 
-                partes_dados.append(fornecedor['banco'])
-            if fornecedor.get('op'): 
-                partes_dados.append(fornecedor['op'])
-            if fornecedor.get('agencia'): 
-                partes_dados.append(fornecedor['agencia'])
-            if fornecedor.get('conta'): 
-                partes_dados.append(fornecedor['conta'])
-            
-            # Sempre adicionar CNPJ/CPF
-            partes_dados.append(fornecedor['cnpj_cpf'])
-            
-            return ' - '.join(partes_dados) if partes_dados else "DADOS BANCÁRIOS INCOMPLETOS"
-            
-        except Exception as e:
-            print(f"DEBUG: Erro ao obter dados bancários: {str(e)}")
-            return "ERRO AO OBTER DADOS BANCÁRIOS"
-
     def importar_template_agenda(self):
         """Importa compromissos de um template/arquivo de agenda"""
         try:
