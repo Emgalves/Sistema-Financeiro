@@ -828,6 +828,7 @@ class IndentedFlowable:
 class RelatorioHandler:
     def __init__(self):
         self.config = RelatorioConfig()
+        self.numero_paginas = 0  # Contador para armazenar total de páginas
         self.tipos_despesas = {
             1: "1) DESPESAS COM COLABORADORES",
             2: "2) TRANSF. PROGR. - MATERIAIS, LOCAÇÕES E PREST.SERVIÇOS",
@@ -844,6 +845,21 @@ class RelatorioHandler:
         if not os.path.exists(self.logo_path):
             self.logo_path = None
             print("Aviso: Logomarca não encontrada na pasta do script.")
+    
+    def adicionar_numeracao_pagina(self, canvas, doc):
+        """Adiciona numeração de páginas no formato 1/n no canto inferior direito"""
+        canvas.saveState()
+        # Posição: canto inferior direito
+        x = doc.pagesize[0] - 60  # 60 pontos da borda direita
+        y = 20  # 20 pontos da borda inferior
+        
+        # Texto da numeração
+        texto = f"{canvas.getPageNumber()}/{self.numero_paginas}"
+        
+        # Desenhar o texto
+        canvas.setFont('Helvetica', 9)
+        canvas.drawRightString(x, y, texto)
+        canvas.restoreState()
         
         self.tipos_despesas_futuras = {
             "Próximos 30 dias": lambda x: x <= self.data_ref + pd.Timedelta(days=30),
@@ -1467,7 +1483,139 @@ class RelatorioHandler:
             logger.error(f"Erro ao processar lançamentos futuros: {str(e)}", exc_info=True)
             return pd.DataFrame()
     
-    def adicionar_notas(self, elementos, dados):
+    def salvar_notas_no_excel(self, arquivo_excel, numero_relatorio, data_relatorio, texto_notas):
+        """Salva as notas do relatório no arquivo Excel do cliente
+        
+        Args:
+            arquivo_excel: Caminho do arquivo Excel
+            numero_relatorio: Número do relatório
+            data_relatorio: Data do relatório
+            texto_notas: Texto das notas a serem salvas
+        """
+        try:
+            from openpyxl import load_workbook
+            from openpyxl.styles import Font, Alignment
+            from datetime import datetime
+            
+            logger.info(f"Salvando notas no Excel: {arquivo_excel}")
+            
+            # Carregar workbook
+            wb = load_workbook(arquivo_excel)
+            
+            # Verificar se a aba "Notas" existe, se não, criar
+            if 'Notas' not in wb.sheetnames:
+                wb.create_sheet('Notas')
+                logger.info("Aba 'Notas' criada")
+            
+            ws = wb['Notas']
+            
+            # Se a planilha estiver vazia, adicionar cabeçalhos
+            if ws.max_row == 1 and ws.cell(1, 1).value is None:
+                headers = ['Data do Relatório', 'Nº Relatório', 'Data de Registro', 'Notas']
+                for col, header in enumerate(headers, 1):
+                    cell = ws.cell(1, col)
+                    cell.value = header
+                    cell.font = Font(bold=True)
+                    cell.alignment = Alignment(horizontal='center')
+                
+                # Ajustar largura das colunas
+                ws.column_dimensions['A'].width = 18
+                ws.column_dimensions['B'].width = 15
+                ws.column_dimensions['C'].width = 20
+                ws.column_dimensions['D'].width = 80
+            
+            # Formatar data do relatório
+            if isinstance(data_relatorio, str):
+                data_formatada = data_relatorio
+            else:
+                data_formatada = data_relatorio.strftime('%d/%m/%Y')
+            
+            # Adicionar nova linha com as notas
+            nova_linha = ws.max_row + 1
+            ws.cell(nova_linha, 1).value = data_formatada
+            ws.cell(nova_linha, 2).value = numero_relatorio
+            ws.cell(nova_linha, 3).value = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            ws.cell(nova_linha, 4).value = texto_notas
+            
+            # Aplicar wrap text na célula de notas
+            ws.cell(nova_linha, 4).alignment = Alignment(wrap_text=True, vertical='top')
+            
+            # Salvar workbook
+            wb.save(arquivo_excel)
+            logger.info(f"Notas salvas com sucesso na linha {nova_linha}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Erro ao salvar notas no Excel: {str(e)}", exc_info=True)
+            return False
+    
+    def carregar_notas_do_excel(self, arquivo_excel, numero_relatorio=None):
+        """Carrega notas do arquivo Excel do cliente
+        
+        Args:
+            arquivo_excel: Caminho do arquivo Excel
+            numero_relatorio: Número do relatório (opcional). Se fornecido, retorna apenas as notas deste relatório
+        
+        Returns:
+            Se numero_relatorio fornecido: string com as notas ou None
+            Se numero_relatorio não fornecido: lista de dicionários com todas as notas
+        """
+        try:
+            from openpyxl import load_workbook
+            
+            logger.info(f"Carregando notas do Excel: {arquivo_excel}")
+            
+            # Carregar workbook
+            wb = load_workbook(arquivo_excel, data_only=True)
+            
+            # Verificar se a aba "Notas" existe
+            if 'Notas' not in wb.sheetnames:
+                logger.info("Aba 'Notas' não existe no arquivo")
+                return None if numero_relatorio else []
+            
+            ws = wb['Notas']
+            
+            # Se a planilha estiver vazia
+            if ws.max_row <= 1:
+                logger.info("Aba 'Notas' está vazia")
+                return None if numero_relatorio else []
+            
+            # Ler todas as notas
+            notas = []
+            for row in range(2, ws.max_row + 1):
+                data_rel = ws.cell(row, 1).value
+                num_rel = ws.cell(row, 2).value
+                data_reg = ws.cell(row, 3).value
+                texto = ws.cell(row, 4).value
+                
+                nota = {
+                    'data_relatorio': data_rel,
+                    'numero_relatorio': num_rel,
+                    'data_registro': data_reg,
+                    'texto': texto
+                }
+                notas.append(nota)
+            
+            logger.info(f"Carregadas {len(notas)} notas do Excel")
+            
+            # Se foi especificado um número de relatório, retornar apenas essa nota
+            if numero_relatorio is not None:
+                for nota in notas:
+                    if nota['numero_relatorio'] == numero_relatorio:
+                        logger.info(f"Nota encontrada para relatório nº {numero_relatorio}")
+                        return nota['texto']
+                logger.info(f"Nenhuma nota encontrada para relatório nº {numero_relatorio}")
+                return None
+            
+            # Caso contrário, retornar todas as notas
+            return notas
+            
+        except Exception as e:
+            logger.error(f"Erro ao carregar notas do Excel: {str(e)}", exc_info=True)
+            return None if numero_relatorio else []
+    
+    def adicionar_notas(self, elementos, dados, incluir_quebra_pagina=True):
         """Adiciona a seção de notas ao relatório"""
         try:
             # Verificar se deve incluir notas
@@ -1483,16 +1631,43 @@ class RelatorioHandler:
             
             logger.info(f"Adicionando notas ao relatório ({len(texto_notas)} caracteres)")
             
-            # Adicionar quebra de página
-            elementos.append(PageBreak())
+            # Adicionar quebra de página apenas se solicitado
+            if incluir_quebra_pagina:
+                elementos.append(PageBreak())
+            
+            # Espaço antes das notas
+            elementos.append(Spacer(1, 8))
+            
+            # Criar estilo ULTRA-COMPACTO específico para o título das notas
+            style_notas_titulo = ParagraphStyle(
+                'NotasTitulo',
+                parent=self.config.styles['Normal'],
+                fontSize=12,
+                leading=12,  # Mínimo necessário
+                alignment=TA_LEFT,
+                spaceBefore=0,
+                spaceAfter=0  # Zero espaço depois
+            )
+            
+            # Criar estilo ULTRA-COMPACTO específico para o texto das notas
+            style_notas_texto = ParagraphStyle(
+                'NotasTexto',
+                parent=self.config.styles['Normal'],
+                fontSize=10,
+                leading=11,  # Mínimo possível (fontSize + 1)
+                textColor=colors.black,
+                spaceBefore=0,  # ZERO espaço antes
+                spaceAfter=0    # ZERO espaço depois
+            )
             
             # Adicionar título "NOTAS:"
             elementos.append(Paragraph(
                 "NOTAS:",
-                self.config.style_heading
+                style_notas_titulo
             ))
             
-            elementos.append(Spacer(1, 12))
+            # Espaço mínimo após título
+            elementos.append(Spacer(1, 4))
             
             # Adicionar texto das notas
             # Dividir em parágrafos se houver múltiplas linhas
@@ -1501,9 +1676,9 @@ class RelatorioHandler:
                 if linha.strip():  # Ignorar linhas vazias
                     elementos.append(Paragraph(
                         linha.strip(),
-                        self.config.style_normal
+                        style_notas_texto
                     ))
-                    elementos.append(Spacer(1, 6))
+                    # NÃO adicionar Spacer - o leading do estilo já controla o espaçamento
             
             logger.info("Notas adicionadas com sucesso")
             
@@ -1511,6 +1686,71 @@ class RelatorioHandler:
             logger.error(f"Erro ao adicionar notas: {str(e)}", exc_info=True)
             # Não propagar o erro para não interromper a geração do relatório
         
+    def salvar_notas_no_excel(self, arquivo_excel, dados):
+        """Salva as notas do relatório no arquivo Excel do cliente"""
+        try:
+            if not arquivo_excel or not os.path.exists(arquivo_excel):
+                logger.warning("Arquivo Excel não encontrado para salvar notas")
+                return
+            
+            texto_notas = dados.get('texto_notas', '').strip()
+            if not texto_notas:
+                logger.debug("Não há notas para salvar")
+                return
+            
+            logger.info(f"Salvando notas no arquivo Excel: {arquivo_excel}")
+            
+            # Carregar o workbook
+            wb = load_workbook(arquivo_excel)
+            
+            # Verificar se existe aba "HISTÓRICO_NOTAS", senão criar
+            if "HISTÓRICO_NOTAS" not in wb.sheetnames:
+                ws_notas = wb.create_sheet("HISTÓRICO_NOTAS")
+                # Criar cabeçalhos
+                ws_notas['A1'] = 'DATA_RELATÓRIO'
+                ws_notas['B1'] = 'DATA_REGISTRO'
+                ws_notas['C1'] = 'NOTAS'
+                
+                # Formatar cabeçalhos
+                for col in ['A', 'B', 'C']:
+                    cell = ws_notas[f'{col}1']
+                    cell.font = Font(bold=True)
+                    cell.alignment = Alignment(horizontal='center', vertical='center')
+                
+                # Ajustar larguras
+                ws_notas.column_dimensions['A'].width = 15
+                ws_notas.column_dimensions['B'].width = 20
+                ws_notas.column_dimensions['C'].width = 80
+            else:
+                ws_notas = wb["HISTÓRICO_NOTAS"]
+            
+            # Encontrar próxima linha vazia
+            proxima_linha = ws_notas.max_row + 1
+            
+            # Adicionar nova entrada
+            data_relatorio = dados.get('data_relatorio')
+            if isinstance(data_relatorio, str):
+                data_relatorio_str = data_relatorio
+            else:
+                data_relatorio_str = data_relatorio.strftime('%d/%m/%Y')
+            
+            ws_notas[f'A{proxima_linha}'] = data_relatorio_str
+            ws_notas[f'B{proxima_linha}'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            ws_notas[f'C{proxima_linha}'] = texto_notas
+            
+            # Formatar células
+            ws_notas[f'A{proxima_linha}'].alignment = Alignment(horizontal='center', vertical='top')
+            ws_notas[f'B{proxima_linha}'].alignment = Alignment(horizontal='center', vertical='top')
+            ws_notas[f'C{proxima_linha}'].alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+            
+            # Salvar workbook
+            wb.save(arquivo_excel)
+            logger.info(f"Notas salvas com sucesso na linha {proxima_linha} da aba HISTÓRICO_NOTAS")
+            
+        except Exception as e:
+            logger.error(f"Erro ao salvar notas no Excel: {str(e)}", exc_info=True)
+            # Não propagar o erro para não interromper a geração do relatório
+    
     def formatar_numero(self, valor):
         """Formata valor numérico, tratando possíveis strings e NaN"""
         if pd.isna(valor) or valor == "":
@@ -1610,7 +1850,7 @@ class RelatorioHandler:
             raise
 
     def consolidar_despesas_colaboradores1(self, df):
-        """Consolida as despesas  13º, férias e rescisão dos colaboradores"""
+        """Consolida as despesas  13º, férias e rescisão dos colaboradores COM VENCIMENTOS"""
         try:
             # Criar cópia e tratar valores nulos
             df = df.copy()
@@ -1637,10 +1877,25 @@ class RelatorioHandler:
                 linha = {'NOME': nome}
                     
                 for coluna, referencias in agregacoes1.items():
-                    valores_grupo = grupo[grupo['REFERÊNCIA'].isin(referencias)]['VALOR']
-                    valor = pd.to_numeric(valores_grupo, errors='coerce').sum()
+                    registros = grupo[grupo['REFERÊNCIA'].isin(referencias)]
+                    valor = pd.to_numeric(registros['VALOR'], errors='coerce').sum()
                     linha[coluna] = valor if not pd.isna(valor) else 0.0
                     total_colunas[coluna] += linha[coluna]
+                    
+                    # NOVO: Capturar data de vencimento
+                    if not registros.empty and 'DT_VENCTO' in registros.columns:
+                        vencimento = registros['DT_VENCTO'].iloc[0]
+                        # Formatar data se necessário
+                        if pd.notna(vencimento) and vencimento != '':
+                            # Se for datetime, formatar
+                            if hasattr(vencimento, 'strftime'):
+                                linha[f'VENC_{coluna}'] = vencimento.strftime('%d/%m/%Y')
+                            else:
+                                linha[f'VENC_{coluna}'] = str(vencimento)
+                        else:
+                            linha[f'VENC_{coluna}'] = ''
+                    else:
+                        linha[f'VENC_{coluna}'] = ''
                         
                     
                 linha['DADOS BANCÁRIOS'] = grupo['DADOS BANCÁRIOS'].iloc[0] if not grupo['DADOS BANCÁRIOS'].empty else ''
@@ -1651,12 +1906,15 @@ class RelatorioHandler:
             # Criar DataFrame com os resultados
             df_result1 = pd.DataFrame(resultados1)
                 
-            # Definir ordem das colunas
-            colunas_ordem = ['NOME', '13º SALÁRIO', 'FÉRIAS', 
-                            'RESCISÃO', 'TOTAL', 'DADOS BANCÁRIOS']
+            # Definir ordem das colunas COM VENCIMENTOS
+            colunas_ordem = ['NOME', '13º SALÁRIO', 'VENC_13º SALÁRIO', 
+                            'FÉRIAS', 'VENC_FÉRIAS', 
+                            'RESCISÃO', 'VENC_RESCISÃO', 
+                            'TOTAL', 'DADOS BANCÁRIOS']
                 
-            # Reordenar colunas
-            df_result1 = df_result1.reindex(columns=colunas_ordem)
+            # Reordenar colunas (ignorar colunas que não existem)
+            colunas_existentes = [col for col in colunas_ordem if col in df_result1.columns]
+            df_result1 = df_result1.reindex(columns=colunas_existentes)
             
             # ADICIONAR ESTA LINHA:
             df_result1 = df_result1.sort_values('TOTAL', ascending=False)
@@ -1666,6 +1924,162 @@ class RelatorioHandler:
         except Exception as e:
             print(f"Erro ao consolidar despesas: {str(e)}")
             raise
+
+    def criar_tabela_despesas_com_cabecalho_customizado(self, dados, colunas_dados, colunas_exibicao, larguras, incluir_total=True):
+        """Cria tabela com cabeçalhos customizados (diferentes dos nomes das colunas internas)
+        
+        Args:
+            dados: DataFrame com os dados
+            colunas_dados: Lista com nomes das colunas no DataFrame
+            colunas_exibicao: Lista com nomes a serem exibidos no cabeçalho
+            larguras: Lista com larguras das colunas
+            incluir_total: Se deve incluir linha de subtotal
+        """
+        dados_formatados = dados.copy()
+        dados_formatados = dados_formatados.fillna("")
+        dados_formatados = dados_formatados.infer_objects()
+
+        # Estilo para o cabeçalho com quebra de linha
+        estilo_cabecalho = ParagraphStyle(
+            'CabecalhoTabela',
+            parent=self.config.style_normal,
+            fontSize=8,
+            leading=10,
+            alignment=1,
+            textColor=colors.whitesmoke
+        )
+
+        # Estilo para células com quebra de texto
+        estilo_celula = ParagraphStyle(
+            'CelulaTabela',
+            parent=self.config.style_normal,
+            fontSize=8,
+            leading=10,
+            alignment=0
+        )
+
+        # Converter cabeçalhos de EXIBIÇÃO em Paragraphs
+        cabecalhos_formatados = []
+        for coluna in colunas_exibicao:
+            if '/' in coluna:
+                texto_formatado = Paragraph(coluna.replace('/', '<br/>'), estilo_cabecalho)
+            elif ' - ' in coluna:
+                texto_formatado = Paragraph(coluna.replace(' - ', '<br/>'), estilo_cabecalho)
+            else:
+                texto_formatado = Paragraph(coluna, estilo_cabecalho)
+            cabecalhos_formatados.append(texto_formatado)
+
+        colunas_numericas = ['VALOR', 'TOTAL', 'SALÁRIO', 'RESCISÃO', '13º SALÁRIO', 
+                            'TRANSPORTE', 'CAFÉ', 'FÉRIAS', 'DIÁRIA', 'DIAS']
+
+        # Colunas para centralizar (baseado no nome interno)
+        colunas_centralizadas = ['DT_VENCTO', 'VENCIMENTO', 'STATUS', 
+                                 'VENC_13º SALÁRIO', 'VENC_FÉRIAS', 'VENC_RESCISÃO']
+
+        # Processar dados linha por linha
+        dados_tabela = [cabecalhos_formatados]
+        for _, linha in dados_formatados.iterrows():
+            linha_formatada = []
+            for i, coluna in enumerate(colunas_dados):
+                valor = linha[coluna] if coluna in linha.index else ""
+                
+                # Formatar números
+                if coluna in colunas_numericas:
+                    valor = pd.to_numeric(valor, errors='coerce')
+                    valor = 0 if pd.isna(valor) else valor
+                    if coluna == 'DIAS':
+                        valor = str(int(valor))
+                    else:
+                        valor = self.formatar_numero(valor)
+                    linha_formatada.append(valor)
+                
+                # Formatar datas (colunas de vencimento)
+                elif coluna in colunas_centralizadas or 'VENC' in coluna:
+                    try:
+                        if valor and valor != '':
+                            valor = pd.to_datetime(valor, dayfirst=True).strftime('%d/%m/%Y')
+                        else:
+                            valor = ''
+                    except:
+                        valor = str(valor) if valor else ''
+                    linha_formatada.append(valor)
+                
+                # Adicionar quebra de texto para a coluna Referência
+                elif coluna == 'REFERÊNCIA':
+                    valor = str(valor)
+                    linha_formatada.append(Paragraph(valor, estilo_celula))
+                
+                # Tratar coluna STATUS
+                elif coluna == 'STATUS':
+                    valor = str(valor) if valor else "ATIVO"
+                    linha_formatada.append(valor)
+                
+                # Outras colunas
+                else:
+                    linha_formatada.append(str(valor))
+                    
+            dados_tabela.append(linha_formatada)
+
+        # Adicionar linha de total se necessário
+        if incluir_total:
+            coluna_valor = next((i for i, col in enumerate(colunas_dados) 
+                            if col in ['VALOR', 'TOTAL']), -1)
+            if coluna_valor >= 0:
+                if '13º SALÁRIO' in colunas_dados and 'FÉRIAS' in colunas_dados:
+                    linha_total = [''] * len(colunas_dados)
+                    linha_total[0] = 'Subtotal'
+                    
+                    for i, col in enumerate(colunas_dados):
+                        if col in ['SALÁRIO', 'FÉRIAS', 'RESCISÃO', '13º SALÁRIO', 'TRANSPORTE', 'CAFÉ', 'TOTAL']:
+                            total = dados[col].sum()
+                            linha_total[i] = self.formatar_numero(total)
+                        elif col == 'DIAS':
+                            linha_total[i] = ''
+                            
+                    dados_tabela.append(linha_total)
+                
+                else:
+                    total = dados[colunas_dados[coluna_valor]].sum()
+                    linha_total = [''] * len(colunas_dados)
+                    linha_total[coluna_valor-1] = 'Subtotal'
+                    linha_total[coluna_valor] = self.formatar_numero(total)
+                    dados_tabela.append(linha_total)
+
+        # Criar tabela com os dados formatados
+        tabela = Table(dados_tabela, colWidths=larguras, repeatRows=1)
+        
+        # Definir estilos da tabela
+        estilo_tabela = [
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+            ('ALIGN', (0, 1), (0, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('BOTTOMPADDING', (0, 1), (-1, -1), 4),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]
+        
+        # Alinhar valores à direita (colunas numéricas)
+        for i, col in enumerate(colunas_dados):
+            if col in colunas_numericas:
+                estilo_tabela.append(('ALIGN', (i, 1), (i, -1), 'RIGHT'))
+            elif col in colunas_centralizadas or 'VENC' in col:
+                estilo_tabela.append(('ALIGN', (i, 1), (i, -1), 'CENTER'))
+        
+        # Destacar linha de subtotal
+        if incluir_total and len(dados_tabela) > 1:
+            estilo_tabela.extend([
+                ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+                ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
+            ])
+        
+        tabela.setStyle(TableStyle(estilo_tabela))
+        
+        return tabela
 
     def criar_tabela_despesas(self, dados, colunas, larguras, incluir_total=True):
         """Versão modificada que pode mostrar status dos lançamentos"""
@@ -2254,11 +2668,19 @@ class RelatorioHandler:
                 df_consolidado1 = self.consolidar_despesas_colaboradores1(df_tp_desp_2)
                 logger.debug(f"Total de funcionários processados: {len(df_consolidado1)}")
 
-                tabela = self.criar_tabela_despesas(
+                # Criar tabela customizada com cabeçalhos renomeados para VENCIMENTO
+                # Mas mantendo as colunas internas com nomes únicos
+                colunas_dados = ['NOME', '13º SALÁRIO', 'VENC_13º SALÁRIO', 'FÉRIAS', 'VENC_FÉRIAS', 
+                                 'RESCISÃO', 'VENC_RESCISÃO', 'TOTAL', 'DADOS BANCÁRIOS']
+                colunas_exibicao = ['NOME', '13º SALÁRIO', 'VENCTO', 'FÉRIAS', 'VENCTO', 
+                                    'RESCISÃO', 'VENCTO', 'TOTAL', 'DADOS BANCÁRIOS']
+                larguras = [190, 65, 55, 65, 55, 65, 55, 65, 175]  # Total: 790
+                
+                tabela = self.criar_tabela_despesas_com_cabecalho_customizado(
                     df_consolidado1,
-                    ['NOME', '13º SALÁRIO', 'FÉRIAS', 'RESCISÃO',  
-                    'TOTAL', 'DADOS BANCÁRIOS'],
-                    [240, 70, 70, 70, 70, 240]
+                    colunas_dados,
+                    colunas_exibicao,
+                    larguras
                 )
                 elementos.append(tabela)
                 elementos.append(Spacer(1, 12))
@@ -2410,6 +2832,9 @@ class RelatorioHandler:
         
             elementos.append(tabela_resumo)
             
+            # ⭐ ADICIONAR NOTAS NA PRIMEIRA PÁGINA (após o resumo) ⭐
+            self.adicionar_notas(elementos, dados, incluir_quebra_pagina=False)
+            
             # Adicionar quebra de página
             elementos.append(PageBreak())
             
@@ -2426,11 +2851,56 @@ class RelatorioHandler:
             #     if not df_taxas_processadas.empty:
             #         self.adicionar_taxas_administracao(elementos, df_taxas_processadas, self.config)
 
-            # ⭐ ADICIONAR NOTAS SE CONFIGURADO ⭐
-            self.adicionar_notas(elementos, dados)
 
-            # Gerar PDF
-            doc.build(elementos)
+            # ⭐ SALVAR NOTAS NO EXCEL SE HOUVER ⭐
+            if dados.get('incluir_notas', False) and dados.get('texto_notas', '').strip():
+                self.salvar_notas_no_excel(arquivo_excel, dados)
+
+            # ⭐ PRIMEIRA PASSAGEM: Contar número de páginas ⭐
+            # IMPORTANTE: Criar cópia dos elementos porque o build() consome a lista
+            import copy
+            elementos_copia = copy.deepcopy(elementos)
+            
+            # Usar um contador interno do ReportLab
+            class ContadorPaginas:
+                def __init__(self):
+                    self.numero_paginas = 0
+                
+                def contar(self, canvas, doc):
+                    self.numero_paginas = max(self.numero_paginas, canvas.getPageNumber())
+            
+            contador = ContadorPaginas()
+            
+            # Criar PDF temporário para contar páginas
+            temp_output = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+            temp_path = temp_output.name
+            temp_output.close()
+            
+            doc_temp = SimpleDocTemplate(
+                temp_path,
+                pagesize=landscape(A4),
+                rightMargin=30,
+                leftMargin=30,
+                topMargin=40,
+                bottomMargin=30
+            )
+            
+            # Construir PDF temporário para contar páginas (usa a cópia)
+            doc_temp.build(elementos_copia, onFirstPage=contador.contar, onLaterPages=contador.contar)
+            
+            # Armazenar o número total de páginas
+            self.numero_paginas = contador.numero_paginas
+            logger.info(f"Total de páginas calculado: {self.numero_paginas}")
+            
+            # Remover arquivo temporário
+            try:
+                os.unlink(temp_path)
+            except Exception as e:
+                logger.warning(f"Não foi possível remover arquivo temporário: {str(e)}")
+            
+            # ⭐ SEGUNDA PASSAGEM: Gerar PDF final com numeração (usa elementos originais) ⭐
+            doc.build(elementos, onFirstPage=self.adicionar_numeracao_pagina, 
+                     onLaterPages=self.adicionar_numeracao_pagina)
 
         except Exception as e:
             logger.error(f"Erro na geração do relatório: {str(e)}", exc_info=True)
