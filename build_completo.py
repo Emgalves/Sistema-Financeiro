@@ -3,6 +3,13 @@
 """
 Script de build FINAL - COM TODOS OS MÓDULOS
 Inclui TUDO que o sistema precisa
+
+Sequência no Prompt antes de gerar novo executável:
+Cmd
+
+cd \Users\Obras\Documents\GitHub\Sistema-Financeiro
+rmdir /s /q build dist 
+del *.spec
 """
 
 import os
