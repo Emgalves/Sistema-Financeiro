@@ -3016,7 +3016,6 @@ class SistemaEntradaDados:
             
             # Instanciar e abrir janela de controle
             controle = ControlePagamentos(self.root)
-            controle.abrir_janela_controle()
         except ImportError as e:
             custom_messagebox("error", "Erro", f"Não foi possível importar o módulo de Controle de Pagamentos: {str(e)}")
         except Exception as e:
