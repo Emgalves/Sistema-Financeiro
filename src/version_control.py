@@ -17,6 +17,9 @@ VERSION_INFO = {
         "Correção dos dados bancários na Agenda",
         "Inclusão da opção de remover vários regitros de uma vez só no Visualizador de Lançamentos",
         "Inclusão da opção de vincular parcelas do contrato de administração de obra a lançamentos efetuados",
+        "Relatório de Despesas Aprimorado: adição de numeração de páginas",
+        "Relatório de Despesas Aprimorado: mudança de Notas para a primeira página e arquivada na planilha do cliente",
+        "Relatório de Despesas Aprimorado: adição de data de vencimento para 13º, Férias e Rescisão",
         "Mudança do botão 'Visualizar Lançamentos' para a seção de Gerenciamento de Dados"
     ]
 }
