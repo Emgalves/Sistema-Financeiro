@@ -301,3 +301,145 @@
 2025-11-13 18:08:58,728 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
 2025-11-13 18:59:33,938 - sistema - logger_config - INFO - Sistema de logging inicializado
 2025-11-13 19:02:54,144 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-13 19:18:53,722 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-13 19:18:53,722 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-13 19:18:53,722 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-13 19:18:53,722 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-13 19:18:53,722 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-13 19:18:56,115 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:18:56,115 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:18:56,131 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:18:56,131 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:18:56,144 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-13 19:18:59,302 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-13 19:19:03,854 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:19:03,854 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:20:09,124 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-13 19:20:10,756 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-13 19:20:10,756 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-11-13 19:20:10,756 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-11-13 19:20:10,756 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-11-13 19:20:10,766 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/11/2025']
+2025-11-13 19:20:10,766 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-13 19:20:10,766 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-13 19:20:11,209 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-13 19:20:11,209 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-13 19:20:11,209 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: MHS EVENTO SST ESOCIAL | MHS EVENTO SST ESOCIAL | NF:  | R$ 344.00 | 20/11/2025
+2025-11-13 19:20:11,229 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MHS EVENTO SST ESOCIAL - MHS EVENTO SST ESOCIAL - NF: 
+2025-11-13 19:20:11,236 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 297 na linha 297
+2025-11-13 19:20:11,776 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-13 19:20:12,280 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-20
+2025-11-13 19:20:12,280 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-13 19:20:14,021 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
+2025-11-13 19:20:14,021 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-13 19:20:15,945 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:20:15,945 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:20:38,226 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:20:38,226 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:20:38,226 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:20:38,226 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:20:38,226 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:20:38,226 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:20:38,226 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:20:38,237 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:24:27,295 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:24:27,295 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:24:27,295 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:24:27,295 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:24:27,295 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:24:27,295 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:24:27,311 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:24:27,311 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:27:13,048 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:27:13,064 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:27:33,372 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-13 19:27:34,967 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-13 19:27:54,349 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:27:54,349 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:28:46,650 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-13 19:28:48,753 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-11-13 19:28:48,753 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 2
+2025-11-13 19:28:48,763 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-11-13 19:28:48,763 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 2
+2025-11-13 19:28:48,763 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/11/2025']
+2025-11-13 19:28:48,763 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-13 19:28:48,763 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-13 19:28:49,190 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-13 19:28:49,190 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-13 19:28:49,190 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: MHS EVENTO SST ESOCIAL | TESTE | NF:  | R$ 1234.00 | 20/11/2025
+2025-11-13 19:28:49,218 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MHS EVENTO SST ESOCIAL - TESTE - NF: 
+2025-11-13 19:28:49,220 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-13 19:28:49,221 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-13 19:28:49,221 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: MOTOBOY | OBRA | NF:  | R$ 146.00 | 20/11/2025
+2025-11-13 19:28:49,236 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MOTOBOY - OBRA - NF: 
+2025-11-13 19:28:49,238 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 298 na linha 298
+2025-11-13 19:28:49,238 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 299 na linha 299
+2025-11-13 19:28:49,566 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-13 19:28:50,067 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-20
+2025-11-13 19:28:50,067 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-13 19:28:54,215 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 2 registros salvos da visualização
+2025-11-13 19:28:54,215 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-13 19:28:56,436 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:28:56,437 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:29:26,227 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:29:26,227 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:29:26,227 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:29:26,227 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:29:26,227 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:29:26,242 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:29:26,242 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:29:26,242 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:41:07,661 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:41:07,661 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:41:59,123 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-13 19:42:01,142 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-13 19:42:01,142 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-11-13 19:42:01,142 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-11-13 19:42:01,142 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-11-13 19:42:01,142 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/11/2025']
+2025-11-13 19:42:01,152 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-13 19:42:01,152 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-13 19:42:01,576 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-13 19:42:01,576 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-13 19:42:01,576 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ADALMO ANTONIO DA SILVA | LIMPEZA | NF:  | R$ 180.00 | 20/11/2025
+2025-11-13 19:42:01,597 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ADALMO ANTONIO DA SILVA - LIMPEZA - NF: 
+2025-11-13 19:42:01,601 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 300 na linha 300
+2025-11-13 19:42:01,963 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-13 19:42:02,465 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-20
+2025-11-13 19:42:02,465 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-13 19:42:04,613 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
+2025-11-13 19:42:04,613 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-13 19:42:06,070 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:42:06,071 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:42:20,122 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:42:20,122 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:42:20,122 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:42:20,138 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:42:20,138 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:42:20,138 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:42:20,138 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:42:20,138 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:00,055 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:00,070 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:00,070 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:00,070 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:00,070 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:00,070 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:00,070 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:00,076 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:11,362 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:11,362 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:11,362 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:11,362 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:11,362 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:11,362 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:11,362 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:11,362 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:17,927 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:17,942 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:17,942 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:17,942 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:17,942 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:17,942 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-13 19:43:17,950 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-13 19:43:17,951 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações

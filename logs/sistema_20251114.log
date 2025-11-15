@@ -1,0 +1,883 @@
+2025-11-14 09:36:59,419 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 09:36:59,419 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 09:36:59,419 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 09:36:59,419 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 09:36:59,419 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 09:37:05,614 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:37:05,631 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 09:37:05,635 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:37:05,636 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 09:37:05,640 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 09:37:46,179 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 09:37:52,741 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:37:52,752 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 09:43:04,117 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:43:04,117 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 09:43:41,090 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:43:41,090 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 09:44:20,025 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:44:20,026 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 09:45:17,868 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:45:17,869 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 09:53:38,574 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 09:53:38,574 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 09:53:38,574 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 09:53:38,574 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 09:53:38,574 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 09:53:43,102 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:53:43,102 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 09:53:43,102 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:53:43,102 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 09:53:43,120 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 09:53:48,023 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 09:53:53,509 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 09:53:53,509 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:05:21,733 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 10:05:21,735 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 10:05:21,735 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 10:05:21,735 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 10:05:21,735 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 10:05:26,508 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:05:26,508 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:05:26,508 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:05:26,508 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:05:26,524 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 10:05:31,728 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 10:05:37,234 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:05:37,234 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:26:31,287 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 10:26:31,287 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 10:26:31,287 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 10:26:31,287 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 10:26:31,287 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 10:26:36,100 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:26:36,100 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:26:36,100 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:26:36,100 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:26:36,121 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 10:26:52,839 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 10:26:57,135 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:26:57,135 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:46:08,672 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 10:46:08,672 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 10:46:08,672 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 10:46:08,672 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 10:46:08,672 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 10:46:13,114 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:46:13,114 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:46:13,114 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:46:13,114 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:46:13,131 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 10:46:59,333 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 10:47:05,305 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:47:05,305 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:48:21,310 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-14 10:48:23,000 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-14 10:48:23,010 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-11-14 10:48:23,010 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-11-14 10:48:23,010 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-11-14 10:48:23,010 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/12/2025']
+2025-11-14 10:48:23,010 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 10:48:23,016 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-14 10:48:23,471 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 10:48:23,471 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 10:48:23,471 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: FOLHA DP | FOLHA DP 13º SALÁRIO | NF:  | R$ 910.80 | 20/11/2025
+2025-11-14 10:48:23,494 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: FOLHA DP - FOLHA DP 13º SALÁRIO - NF: 
+2025-11-14 10:48:23,494 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 301 na linha 301
+2025-11-14 10:48:24,182 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-14 10:48:24,687 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-12-05
+2025-11-14 10:48:24,687 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-12-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-14 10:48:26,265 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
+2025-11-14 10:48:26,275 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-14 10:48:28,500 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:48:28,500 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:48:55,886 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:48:55,886 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:48:55,886 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:48:55,886 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:48:55,886 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:48:55,886 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:48:55,886 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:48:55,886 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:49:14,019 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:49:14,020 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:50:16,598 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-14 10:53:58,054 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-14 10:53:58,070 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-11-14 10:53:58,070 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-11-14 10:53:58,070 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-11-14 10:53:58,076 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/12/2025']
+2025-11-14 10:53:58,082 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 10:53:58,082 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-14 10:53:58,668 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 10:53:58,684 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 10:53:58,684 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: MHS MENSALIDADE | MHS MENSALIDADE - 13º SALÁRIO | NF:  | R$ 344.00 | 20/11/2025
+2025-11-14 10:53:58,704 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MHS MENSALIDADE - MHS MENSALIDADE - 13º SALÁRIO - NF: 
+2025-11-14 10:53:58,708 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 302 na linha 302
+2025-11-14 10:53:59,019 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-14 10:53:59,524 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-12-05
+2025-11-14 10:53:59,524 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-12-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-14 10:54:01,203 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
+2025-11-14 10:54:01,208 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-14 10:54:03,869 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:54:03,869 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:54:23,747 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:54:23,747 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:54:23,747 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:54:23,747 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:54:23,747 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:54:23,747 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:54:23,747 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:54:23,747 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:57:29,557 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 10:57:29,559 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 10:57:29,559 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 10:57:29,561 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 10:57:29,562 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 10:57:34,389 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:57:34,389 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:57:34,389 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:57:34,412 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 10:57:34,502 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 10:57:40,440 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 10:57:45,314 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 10:57:45,328 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:07:07,057 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 11:07:07,057 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 11:07:07,057 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 11:07:07,057 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 11:07:07,057 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 11:07:11,751 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:07:11,751 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:07:11,751 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:07:11,751 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:07:11,775 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 11:07:18,779 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 11:07:23,691 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:07:23,691 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:07:55,229 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-14 11:07:56,715 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-14 11:07:56,715 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-11-14 11:07:56,715 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-11-14 11:07:56,715 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-11-14 11:07:56,715 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/11/2025']
+2025-11-14 11:07:56,715 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 11:07:56,715 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-14 11:07:57,275 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 11:07:57,275 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 11:07:57,275 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: FGTS | FGTS | NF:  | R$ 1550.00 | 20/11/2025
+2025-11-14 11:07:57,295 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: FGTS - FGTS - NF: 
+2025-11-14 11:07:57,300 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 303 na linha 303
+2025-11-14 11:07:59,043 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-14 11:07:59,548 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-20
+2025-11-14 11:07:59,548 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-14 11:08:00,914 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
+2025-11-14 11:08:00,916 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-14 11:08:02,622 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:08:02,623 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:08:23,844 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:08:23,844 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:08:23,844 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:08:23,844 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:08:23,860 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:08:23,860 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:08:23,860 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:08:23,860 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:21:14,496 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 11:21:14,496 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 11:21:14,518 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 11:21:14,518 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 11:21:14,535 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 11:21:18,941 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:21:18,941 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:21:18,956 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:21:18,956 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:21:18,971 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 11:21:22,690 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 11:21:26,596 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:21:26,597 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:21:53,088 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-14 11:21:55,002 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-14 11:21:55,002 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-11-14 11:21:55,002 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Usando dados_para_incluir existentes
+2025-11-14 11:21:55,012 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 1
+2025-11-14 11:21:55,012 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/11/2025']
+2025-11-14 11:21:55,012 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 11:21:55,019 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-14 11:21:55,617 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 11:21:55,617 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 11:21:55,617 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: INSS/IRRF | INSS/IRRF | NF:  | R$ 2546.32 | 20/11/2025
+2025-11-14 11:21:55,637 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: INSS/IRRF - INSS/IRRF - NF: 
+2025-11-14 11:21:55,642 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 304 na linha 304
+2025-11-14 11:21:57,247 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-14 11:21:57,761 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-20
+2025-11-14 11:21:57,761 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-14 11:21:59,468 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 1 registros salvos da visualização
+2025-11-14 11:21:59,468 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-14 11:22:01,496 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:22:01,497 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:22:12,863 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:22:12,863 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:22:12,863 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:22:12,863 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:22:12,863 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:22:12,863 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:22:12,863 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 11:22:12,863 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 11:31:39,858 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 11:34:41,279 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 14:07:38,150 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 14:07:38,150 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 14:07:38,150 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 14:07:38,150 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 14:07:38,150 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 14:07:58,816 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 14:07:58,835 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 14:07:58,837 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 14:07:58,839 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 14:07:58,844 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 14:08:06,289 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-11-14 14:47:39,072 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 14:47:39,072 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 14:47:39,072 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 14:47:39,072 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 14:47:39,072 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 15:34:20,082 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 15:34:20,089 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 15:34:20,091 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 15:34:20,093 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 15:34:20,124 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 15:34:23,004 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-11-14 15:40:41,698 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 15:40:41,698 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 15:40:41,698 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 15:40:41,698 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 15:40:41,698 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 15:51:19,494 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 15:51:19,509 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 15:51:19,509 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 15:51:19,509 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 15:51:19,509 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 15:52:18,509 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 15:52:18,525 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 15:52:18,525 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 15:52:18,525 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 15:52:18,539 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 15:52:23,808 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-11-14 16:06:02,119 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 16:06:02,134 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 16:06:02,134 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 16:06:02,134 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 16:06:02,134 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 16:06:08,533 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 16:06:08,533 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 16:06:08,533 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 16:06:08,533 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 16:06:08,551 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 16:06:11,575 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-11-14 16:08:58,031 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 16:08:58,031 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 16:08:58,032 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 16:08:58,032 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 16:08:58,033 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 16:09:03,815 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 16:09:03,831 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 16:09:03,831 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 16:09:03,831 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 16:09:03,842 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 16:09:08,432 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-11-14 16:17:03,005 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 16:17:03,005 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 16:17:03,005 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 16:17:03,005 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 16:17:03,005 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 16:17:11,124 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 16:17:11,124 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 16:17:11,124 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 16:17:11,124 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 16:17:11,148 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 16:17:15,464 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-11-14 16:20:58,219 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 16:20:58,219 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 16:20:58,219 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 16:20:58,219 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 16:20:58,219 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 16:21:08,140 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 16:21:08,155 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 16:21:08,155 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 16:21:08,155 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 16:21:08,168 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 16:21:11,658 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-14 16:44:06,629 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 16:44:06,629 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 16:44:06,629 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 16:44:06,629 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 16:44:06,629 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 16:44:13,189 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 16:44:13,277 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 16:44:13,277 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 16:44:13,297 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 16:44:13,299 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 16:44:13,299 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 16:44:14,380 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 16:44:14,380 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 16:44:14,994 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 16:44:15,014 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 16:44:15,015 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 16:44:15,018 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 16:44:15,019 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 16:44:19,130 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 16:44:19,130 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:44:19,130 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:44:52,429 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 67 caracteres
+2025-11-14 16:44:54,998 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 16:44:54,998 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 16:44:54,998 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 16:44:54,998 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 16:44:54,998 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:44:54,998 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:44:54,998 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 16:44:54,998 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:44:56,962 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 16:44:56,963 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 16:44:59,053 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 16:52:16,512 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_164457.pdf
+2025-11-14 16:52:17,570 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 16:52:17,570 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 16:52:17,686 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 16:52:24,984 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 16:52:24,984 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 16:52:24,984 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 16:52:24,984 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 16:52:24,984 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 16:52:31,335 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 16:52:31,421 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 16:52:31,422 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 16:52:31,437 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 16:52:31,438 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 16:52:31,441 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 16:52:33,540 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 16:52:33,555 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 16:52:34,172 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 16:52:34,189 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 16:52:34,190 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 16:52:34,193 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 16:52:34,194 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 16:52:38,275 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 16:52:38,275 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:52:38,290 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:53:30,590 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 74 caracteres
+2025-11-14 16:53:32,911 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 16:53:32,911 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 16:53:32,911 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 16:53:32,911 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 16:53:32,911 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:53:32,911 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:53:32,911 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 16:53:32,911 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:53:34,825 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 16:53:34,844 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 16:53:36,906 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 16:54:25,198 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_165335.pdf
+2025-11-14 16:54:27,213 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_165335.pdf
+2025-11-14 16:54:36,963 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 16:54:36,963 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 16:54:40,136 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 16:54:40,136 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:54:40,136 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:55:57,149 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 92 caracteres
+2025-11-14 16:56:00,019 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 16:56:00,019 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 16:56:00,019 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 16:56:00,019 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 16:56:00,019 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:56:00,019 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:56:00,026 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 16:56:00,027 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 16:56:02,024 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 16:56:02,024 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 16:56:03,471 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 16:56:45,609 - sistema_relatorios - relatorios_interface - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2025-11-14 16:56:46,377 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_165602.pdf
+2025-11-14 16:56:48,392 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251114_165602.pdf'
+2025-11-14 16:56:59,282 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 16:56:59,282 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 16:56:59,386 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 17:07:07,659 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 17:07:07,659 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 17:07:07,659 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 17:07:07,659 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 17:07:07,659 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 17:07:17,890 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:07:17,965 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:07:17,966 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:07:17,983 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:07:17,984 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:07:17,985 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 17:08:15,182 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:08:15,182 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:08:15,920 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:08:15,951 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:08:15,952 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:08:15,952 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:08:15,952 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:08:19,030 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 17:08:19,046 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:08:19,046 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:08:56,599 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 35 caracteres
+2025-11-14 17:08:59,415 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 17:08:59,415 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 17:08:59,415 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 17:08:59,415 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 17:08:59,415 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:08:59,431 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:08:59,431 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 17:08:59,431 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:09:01,239 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 17:09:01,239 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 17:09:03,119 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 17:09:24,054 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_170901.pdf
+2025-11-14 17:09:25,177 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 17:09:25,177 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 17:09:25,277 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 17:10:45,219 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 17:10:45,219 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 17:10:45,219 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 17:10:45,219 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 17:10:45,219 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 17:10:50,957 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:10:51,026 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:10:51,026 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:10:51,046 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:10:51,047 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:10:51,048 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 17:10:52,862 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:10:52,862 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:10:53,461 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:10:53,476 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:10:53,476 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:10:53,476 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:10:53,490 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:10:56,783 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 17:10:56,783 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:10:56,783 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:11:21,860 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 35 caracteres
+2025-11-14 17:11:23,600 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 17:11:23,600 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 17:11:23,600 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 17:11:23,600 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 17:11:23,600 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:11:23,600 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:11:23,600 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 17:11:23,600 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:11:25,458 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 17:11:25,458 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 17:11:27,403 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 17:12:01,178 - sistema_relatorios - relatorios_interface - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2025-11-14 17:12:02,107 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_171126.pdf
+2025-11-14 17:12:04,115 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251114_171126.pdf'
+2025-11-14 17:12:12,265 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 17:12:12,265 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 17:12:12,356 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 17:13:25,354 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 17:13:25,354 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 17:13:25,354 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 17:13:25,354 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 17:13:25,370 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 17:13:30,583 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:13:30,642 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:13:30,643 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:13:30,645 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:13:30,646 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:13:30,646 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 17:13:31,881 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:13:31,881 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:13:32,459 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:13:32,474 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:13:32,474 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:13:32,490 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:13:32,492 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:13:35,264 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 17:13:35,264 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:13:35,282 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:14:11,655 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 35 caracteres
+2025-11-14 17:14:17,116 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 17:14:17,116 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 17:14:17,116 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 17:14:17,116 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 17:14:17,116 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:14:17,116 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:14:17,116 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 17:14:17,116 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:14:19,310 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 17:14:19,310 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 17:14:21,213 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 17:14:44,012 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_171419.pdf
+2025-11-14 17:14:46,019 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_171419.pdf
+2025-11-14 17:15:39,901 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 17:15:39,902 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 17:15:39,990 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 17:19:58,334 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 17:19:58,334 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 17:19:58,334 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 17:19:58,334 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 17:19:58,334 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 17:20:04,605 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:20:04,727 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:20:04,737 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:20:04,737 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:20:04,757 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:20:04,774 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 17:20:06,199 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:20:06,215 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:20:06,804 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:20:06,820 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:20:06,820 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:20:06,832 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:20:06,833 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:20:09,343 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 17:20:09,343 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:20:09,359 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:20:18,953 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 7 caracteres
+2025-11-14 17:20:23,397 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 17:20:23,397 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 17:20:23,412 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 17:20:23,412 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 17:20:23,412 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:20:23,412 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:20:23,412 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 17:20:23,412 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:20:26,889 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 17:20:26,890 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 17:20:28,730 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 17:20:45,325 - sistema_relatorios - relatorios_interface - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2025-11-14 17:20:46,569 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_172027.pdf
+2025-11-14 17:20:48,582 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251114_172027.pdf'
+2025-11-14 17:20:56,027 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 17:20:56,038 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 17:20:56,164 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 17:36:46,247 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 17:36:46,247 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 17:36:46,263 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 17:36:46,263 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 17:36:46,263 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 17:36:52,018 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:36:52,104 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:36:52,105 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:36:52,121 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:36:52,123 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:36:52,124 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 17:36:53,304 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:36:53,304 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:36:53,940 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:36:53,963 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:36:53,963 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:36:53,969 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:36:53,970 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:36:56,340 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 17:36:56,340 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:36:56,356 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:37:20,895 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 35 caracteres
+2025-11-14 17:37:23,141 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 17:37:23,141 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 17:37:23,141 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 17:37:23,141 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 17:37:23,141 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:37:23,141 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:37:23,141 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 17:37:23,156 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:37:24,894 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 17:37:24,895 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 17:37:27,666 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 17:37:41,300 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_173725.pdf
+2025-11-14 17:37:43,097 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 17:37:43,097 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 17:37:43,097 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 17:37:43,113 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 17:37:43,113 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:37:43,113 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:37:43,113 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 17:37:43,113 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:37:43,319 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_173725.pdf
+2025-11-14 17:37:44,624 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 17:37:44,624 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 17:37:46,314 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 17:38:04,095 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_173745.pdf
+2025-11-14 17:38:06,107 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251114_173745.pdf'
+2025-11-14 17:38:06,398 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 17:38:06,399 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 17:38:06,477 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 17:38:48,737 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 17:38:48,737 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 17:38:48,737 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 17:38:48,737 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 17:38:48,753 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 17:38:54,702 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:38:54,790 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:38:54,791 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:38:54,807 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:38:54,808 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:38:54,810 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 17:38:56,518 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:38:56,518 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:38:57,156 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:38:57,177 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:38:57,177 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:38:57,179 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:38:57,179 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:39:00,493 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 17:39:00,493 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:39:00,493 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:39:13,606 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 35 caracteres
+2025-11-14 17:39:16,331 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 17:39:16,331 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 17:39:16,331 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 17:39:16,331 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 17:39:16,331 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:39:16,331 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:39:16,331 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 17:39:16,347 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:39:18,314 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 17:39:18,314 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 17:39:20,298 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 17:39:42,784 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_173919.pdf
+2025-11-14 17:39:44,296 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 17:39:44,296 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 17:39:44,397 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 17:40:18,001 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 17:40:18,001 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 17:40:18,001 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 17:40:18,001 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 17:40:18,001 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 17:40:24,186 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:40:24,261 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:40:24,262 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:40:24,280 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:40:24,287 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:40:24,289 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 17:40:25,951 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:40:25,951 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 17:40:26,541 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 17:40:26,558 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 17:40:26,559 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 17:40:26,562 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 17:40:26,563 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 17:40:29,079 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 17:40:29,079 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:40:29,094 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:40:39,924 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 35 caracteres
+2025-11-14 17:40:44,333 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 17:40:44,333 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 17:40:44,333 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 17:40:44,333 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 17:40:44,333 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:40:44,333 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:40:44,333 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 17:40:44,333 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 17:40:45,829 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 17:40:45,829 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 17:40:47,597 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 17:41:18,617 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_174046.pdf
+2025-11-14 17:41:20,629 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251114_174046.pdf'
+2025-11-14 17:41:20,629 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 17:41:20,629 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 17:41:20,731 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 18:52:19,775 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 18:52:19,775 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 18:52:19,775 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 18:52:19,775 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 18:52:19,775 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 18:52:28,485 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 18:52:28,485 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 18:52:28,485 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 18:52:28,485 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 18:52:28,512 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 18:52:32,141 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 18:59:49,134 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 18:59:49,134 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 18:59:49,149 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 18:59:49,149 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 18:59:49,150 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 18:59:55,429 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 18:59:55,429 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 18:59:55,444 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 18:59:55,444 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 18:59:55,457 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-14 18:59:57,735 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-14 19:00:05,359 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-14 19:00:05,359 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-14 19:00:47,464 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 11
+2025-11-14 19:00:47,464 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-11-14 19:00:47,464 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 11
+2025-11-14 19:00:47,480 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/11/2025']
+2025-11-14 19:00:47,480 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:00:47,480 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-14 19:00:47,989 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:47,989 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:47,989 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: DAVID LOPES DOS SANTOS | SALÁRIO | NF:  | R$ 1470.00 | 30/11/2025
+2025-11-14 19:00:48,022 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: DAVID LOPES DOS SANTOS - SALÁRIO - NF: 
+2025-11-14 19:00:48,023 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,023 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,023 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: JOSE GERALDO LONGUINHO | SALÁRIO | NF:  | R$ 1104.80 | 30/11/2025
+2025-11-14 19:00:48,040 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: JOSE GERALDO LONGUINHO - SALÁRIO - NF: 
+2025-11-14 19:00:48,044 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,045 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,045 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: SONEANDERSON DE JESUS SOUZA | SALÁRIO | NF:  | R$ 642.80 | 30/11/2025
+2025-11-14 19:00:48,057 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: SONEANDERSON DE JESUS SOUZA - SALÁRIO - NF: 
+2025-11-14 19:00:48,066 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,067 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,067 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: DAVID LOPES DOS SANTOS | 13º SALÁRIO | NF:  | R$ 1684.38 | 30/11/2025
+2025-11-14 19:00:48,086 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: DAVID LOPES DOS SANTOS - 13º SALÁRIO - NF: 
+2025-11-14 19:00:48,090 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,091 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,091 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: JOSE GERALDO LONGUINHO | 13º SALÁRIO | NF:  | R$ 1265.92 | 30/11/2025
+2025-11-14 19:00:48,109 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: JOSE GERALDO LONGUINHO - 13º SALÁRIO - NF: 
+2025-11-14 19:00:48,110 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,110 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,110 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: SONEANDERSON DE JESUS SOUZA | 13º SALÁRIO | NF:  | R$ 602.63 | 30/11/2025
+2025-11-14 19:00:48,128 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: SONEANDERSON DE JESUS SOUZA - 13º SALÁRIO - NF: 
+2025-11-14 19:00:48,129 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,129 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,131 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ITALO RAFAEL PINHO SANTOS | 13º SALÁRIO | NF:  | R$ 954.17 | 30/11/2025
+2025-11-14 19:00:48,150 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ITALO RAFAEL PINHO SANTOS - 13º SALÁRIO - NF: 
+2025-11-14 19:00:48,150 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,150 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,150 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: MARCOS VIANA FREITAS | RESCISÃO | NF:  | R$ 1603.83 | 13/11/2025
+2025-11-14 19:00:48,168 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MARCOS VIANA FREITAS - RESCISÃO - NF: 
+2025-11-14 19:00:48,170 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,170 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,171 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: PEDRO HENRIQUE LOPES DOS SANTOS | RESCISÃO | NF:  | R$ 6047.20 | 19/11/2025
+2025-11-14 19:00:48,189 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: PEDRO HENRIQUE LOPES DOS SANTOS - RESCISÃO - NF: 
+2025-11-14 19:00:48,190 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,190 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,190 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: RODOLFO DIAS DA SILVA | RESCISÃO | NF:  | R$ 6347.08 | 19/11/2025
+2025-11-14 19:00:48,209 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: RODOLFO DIAS DA SILVA - RESCISÃO - NF: 
+2025-11-14 19:00:48,212 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-14 19:00:48,213 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-14 19:00:48,213 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ITALO RAFAEL PINHO SANTOS | RESCISÃO | NF:  | R$ 5199.13 | 09/12/2025
+2025-11-14 19:00:48,232 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ITALO RAFAEL PINHO SANTOS - RESCISÃO - NF: 
+2025-11-14 19:00:48,236 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 305 na linha 305
+2025-11-14 19:00:48,238 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 306 na linha 306
+2025-11-14 19:00:48,241 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 307 na linha 307
+2025-11-14 19:00:48,244 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 308 na linha 308
+2025-11-14 19:00:48,246 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 309 na linha 309
+2025-11-14 19:00:48,249 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 310 na linha 310
+2025-11-14 19:00:48,252 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 311 na linha 311
+2025-11-14 19:00:48,255 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 312 na linha 312
+2025-11-14 19:00:48,258 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 313 na linha 313
+2025-11-14 19:00:48,260 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 314 na linha 314
+2025-11-14 19:00:48,261 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 315 na linha 315
+2025-11-14 19:00:48,772 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-14 19:00:49,277 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-20
+2025-11-14 19:00:49,277 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-14 19:00:51,408 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 11 registros salvos da visualização
+2025-11-14 19:00:51,444 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-11-14 19:00:51,455 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-14 19:00:55,975 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 19:00:56,004 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 19:00:56,005 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 19:00:56,018 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 19:00:56,020 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 19:00:56,020 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 19:00:57,367 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 19:00:57,367 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 19:00:57,545 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 19:00:57,545 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 19:00:57,545 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 19:00:57,563 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 19:00:57,564 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 19:01:00,683 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 19:01:00,683 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:01:00,683 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:01:51,247 - sistema_relatorios - relatorios_interface - INFO - Notas salvas: 93 caracteres
+2025-11-14 19:01:53,552 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 19:01:53,552 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 19:01:53,552 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 19:01:53,552 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 19:01:53,552 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:01:53,568 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:01:53,568 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 19:01:53,568 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:01:55,380 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 19:01:55,380 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 19:01:57,346 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 19:02:56,508 - sistema_relatorios - relatorios_interface - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2025-11-14 19:02:57,447 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_190156.pdf
+2025-11-14 19:02:59,454 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_BRUNO_SANTANA_RINALDI_20251114_190156.pdf'
+2025-11-14 19:03:59,933 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 19:03:59,933 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 19:04:00,023 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 19:09:13,141 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 19:09:13,141 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 19:09:13,141 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 19:09:13,141 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 19:09:13,141 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 19:09:19,153 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 19:09:19,227 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 19:09:19,227 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 19:09:19,249 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 19:09:19,249 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 19:09:19,254 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 19:09:20,406 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 19:09:20,406 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 19:09:21,042 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 19:09:21,058 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 19:09:21,058 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 19:09:21,076 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 19:09:21,077 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 19:09:23,364 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 19:09:23,364 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:09:23,380 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:09:28,431 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 19:09:28,431 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 19:09:28,431 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 19:09:28,431 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 19:09:28,431 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:09:28,431 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:09:28,431 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 19:09:28,431 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:09:30,146 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 19:09:30,146 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 19:09:31,600 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 19:10:49,802 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_190930.pdf
+2025-11-14 19:10:51,802 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_190930.pdf
+2025-11-14 19:10:52,815 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 19:10:52,815 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 19:10:52,905 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-14 19:11:31,520 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-14 19:11:31,520 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-14 19:11:31,520 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-14 19:11:31,520 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-14 19:11:31,520 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-14 19:11:37,353 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 19:11:37,424 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 19:11:37,425 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 19:11:37,430 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 19:11:37,431 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 19:11:37,432 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-14 19:11:39,432 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 19:11:39,432 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-14 19:11:40,025 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-14 19:11:40,025 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-14 19:11:40,025 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-14 19:11:40,043 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-14 19:11:40,044 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-14 19:11:42,703 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: BRUNO SANTANA RINALDI
+2025-11-14 19:11:42,703 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:11:42,703 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:11:45,196 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-14 19:11:45,197 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-14 19:11:45,198 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-14 19:11:45,198 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-14 19:11:45,200 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:11:45,201 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:11:45,202 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-14 19:11:45,203 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: BRUNO SANTANA RINALDI.xlsx
+2025-11-14 19:11:46,940 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-14 19:11:46,940 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-14 19:11:48,201 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-14 19:12:20,558 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_191147.pdf
+2025-11-14 19:12:22,566 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_BRUNO_SANTANA_RINALDI_20251114_191147.pdf
+2025-11-14 19:12:23,424 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-14 19:12:23,424 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-14 19:12:23,524 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
