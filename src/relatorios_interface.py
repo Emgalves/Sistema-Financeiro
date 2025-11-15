@@ -1820,7 +1820,7 @@ class SistemaRelatorios:
         # Título com instrução
         label_titulo = ttk.Label(
             frame_principal, 
-            text="Digite as notas que aparecerão no final do relatório:",
+            text="Digite as notas que aparecerão no relatório:",
             font=('Helvetica', 11, 'bold')
         )
         label_titulo.pack(pady=(0, 5))
@@ -1828,7 +1828,7 @@ class SistemaRelatorios:
         # Informação adicional
         label_info = ttk.Label(
             frame_principal,
-            text="As notas serão exibidas na seção 'NOTAS:' ao final do relatório PDF",
+            text="As notas serão exibidas na seção 'NOTAS:' do relatório PDF",
             font=('Helvetica', 9),
             foreground='gray'
         )
