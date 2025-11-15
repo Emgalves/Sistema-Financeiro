@@ -1248,104 +1248,7 @@ class RelatorioHandler:
                 logger.error("ERRO FINAL: TP_DESP não está presente no df_filtrado!")
         
         return df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2
-    
-    # def processar_dados(self, df, data_relatorio, incluir_excluidos=False):
-    #     """Versão corrigida do processar_dados com debug melhorado"""
         
-    #     # CORREÇÃO: Garantir formato correto da data
-    #     from datetime import datetime, date
-    #     import pandas as pd
-        
-    #     if isinstance(data_relatorio, str):
-    #         data_rel = pd.to_datetime(data_relatorio)
-    #     elif isinstance(data_relatorio, date) and not isinstance(data_relatorio, datetime):
-    #         data_rel = pd.to_datetime(datetime.combine(data_relatorio, datetime.min.time()))
-    #     else:
-    #         data_rel = pd.to_datetime(data_relatorio)
-        
-    #     logger.info(f"Data de referência para processamento: {data_rel}")
-    #     logger.info(f"Tipo da data de referência: {type(data_rel)}")
-        
-    #     # Criar cópia do DataFrame
-    #     df = df.copy()
-        
-    #     # Log para debug
-    #     logger.debug(f"Colunas do DataFrame original: {df.columns.tolist()}")
-    #     logger.info(f"Total de registros originais: {len(df)}")
-        
-    #     # Filtrar excluídos se necessário
-    #     if not incluir_excluidos and 'STATUS' in df.columns:
-    #         df = df[df['STATUS'] != 'EXCLUIDO'].copy()
-    #         logger.info(f"Processando dados - registros após filtrar excluídos: {len(df)}")
-    #     else:
-    #         logger.info(f"Processando dados - incluindo todos os registros: {len(df)}")
-        
-    #     # CORREÇÃO: Converter DATA_REL para datetime ANTES de comparar
-    #     df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
-        
-    #     # Remover registros com datas inválidas
-    #     registros_antes = len(df)
-    #     df = df.dropna(subset=['DATA_REL'])
-    #     registros_depois = len(df)
-        
-    #     if registros_antes != registros_depois:
-    #         logger.warning(f"Removidos {registros_antes - registros_depois} registros com DATA_REL inválida")
-        
-    #     # DEBUG: Mostrar datas únicas disponíveis
-    #     datas_unicas = sorted(df['DATA_REL'].dt.date.unique())
-    #     logger.info(f"Datas únicas disponíveis no arquivo: {datas_unicas}")
-        
-    #     # DEBUG: Verificar se a data procurada existe
-    #     data_procurada = data_rel.date()
-    #     logger.info(f"Data procurada: {data_procurada}")
-        
-    #     if data_procurada not in datas_unicas:
-    #         logger.warning(f"Data {data_procurada} não encontrada no arquivo!")
-    #         logger.info("Datas próximas disponíveis:")
-    #         for data_disp in datas_unicas:
-    #             diff = abs((data_disp - data_procurada).days)
-    #             logger.info(f"  {data_disp} (diferença: {diff} dias)")
-        
-    #     # Aplicar filtros
-    #     df_filtrado = df[
-    #         (df['DATA_REL'].dt.date == data_rel.date()) & 
-    #         (df['TP_DESP'] != 1)
-    #     ].copy()
-        
-    #     df_diaria = df[
-    #         (df['DATA_REL'].dt.date == data_rel.date()) & 
-    #         (df['TP_DESP'] == 1) & 
-    #         (df['REFERÊNCIA'] == 'DIÁRIA')
-    #     ].copy()
-        
-    #     df_tp_desp_1 = df[
-    #         (df['DATA_REL'].dt.date == data_rel.date()) & 
-    #         (df['TP_DESP'] == 1) & 
-    #         (df['REFERÊNCIA'].isin(['SALÁRIO', 'TRANSPORTE', 'CAFÉ']))
-    #     ].copy()
-
-    #     df_tp_desp_2 = df[
-    #         (df['DATA_REL'].dt.date == data_rel.date()) & 
-    #         (df['TP_DESP'] == 1) & 
-    #         (df['REFERÊNCIA'].isin(['FÉRIAS', 'RESCISÃO', '13º SALÁRIO']))
-    #     ].copy()
-        
-    #     # Log dos resultados
-    #     logger.info(f"Resultados do processamento:")
-    #     logger.info(f"  - df_filtrado: {len(df_filtrado)} registros")
-    #     logger.info(f"  - df_diaria: {len(df_diaria)} registros")
-    #     logger.info(f"  - df_tp_desp_1: {len(df_tp_desp_1)} registros")
-    #     logger.info(f"  - df_tp_desp_2: {len(df_tp_desp_2)} registros")
-        
-    #     # DEBUG: Se não encontrou nada, mostrar amostra dos dados
-    #     if len(df_filtrado) == 0 and len(df_diaria) == 0 and len(df_tp_desp_1) == 0 and len(df_tp_desp_2) == 0:
-    #         logger.warning("NENHUM DADO ENCONTRADO! Mostrando amostra dos dados:")
-    #         amostra = df.head(10)[['DATA_REL', 'TP_DESP', 'REFERÊNCIA', 'VALOR']].copy()
-    #         amostra['DATA_REL_DATE'] = amostra['DATA_REL'].dt.date
-    #         logger.info(f"Amostra dos dados:\n{amostra}")
-        
-    #     return df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2
-    
     def adicionar_lancamentos_futuros(self, elementos, dados):
         """Adiciona a seção de lançamentos futuros ao relatório"""
         if dados.get('df_futuro') is not None and not dados['df_futuro'].empty:
@@ -1636,7 +1539,7 @@ class RelatorioHandler:
                 elementos.append(PageBreak())
             
             # Espaço antes das notas
-            elementos.append(Spacer(1, 8))
+            elementos.append(Spacer(1, 16))
             
             # Criar estilo ULTRA-COMPACTO específico para o título das notas
             style_notas_titulo = ParagraphStyle(
@@ -1645,8 +1548,8 @@ class RelatorioHandler:
                 fontSize=12,
                 leading=12,  # Mínimo necessário
                 alignment=TA_LEFT,
-                spaceBefore=0,
-                spaceAfter=0  # Zero espaço depois
+                spaceBefore=16,
+                spaceAfter=4  # Zero espaço depois
             )
             
             # Criar estilo ULTRA-COMPACTO específico para o texto das notas
@@ -2651,7 +2554,7 @@ class RelatorioHandler:
                     df_consolidado,
                     ['NOME', 'SALÁRIO', 'DIAS', 
                     'TRANSPORTE', 'CAFÉ', 'TOTAL', 'DADOS BANCÁRIOS'],
-                    [220, 80, 40, 70, 70, 80, 210]
+                    [220, 80, 40, 70, 70, 90, 220]
                 )
                 elementos.append(tabela)
                 elementos.append(Spacer(1, 12))
@@ -2705,7 +2608,7 @@ class RelatorioHandler:
                 tabela = self.criar_tabela_despesas(
                     df_diaria_formatado,
                     ['NOME', 'DIÁRIA', 'DIAS', 'TOTAL', 'DADOS BANCÁRIOS'],
-                    [284, 80, 50, 90, 280]
+                    [280, 90, 50, 100, 270]
                 )
                 elementos.append(tabela)
                 elementos.append(Spacer(1, 12))
@@ -2844,14 +2747,7 @@ class RelatorioHandler:
             if dados.get('incluir_futuros', True) and dados.get('df_futuro') is not None:
                 self.adicionar_lancamentos_futuros(elementos, dados)
 
-            # Carregar e processar taxas de administração
-            # df_taxas = self.carregar_taxas_administracao(arquivo_excel)
-            # if not df_taxas.empty:
-            #     df_taxas_processadas = self.processar_taxas_pendentes(df_taxas, dados['data_relatorio'])
-            #     if not df_taxas_processadas.empty:
-            #         self.adicionar_taxas_administracao(elementos, df_taxas_processadas, self.config)
-
-
+           
             # ⭐ SALVAR NOTAS NO EXCEL SE HOUVER ⭐
             if dados.get('incluir_notas', False) and dados.get('texto_notas', '').strip():
                 self.salvar_notas_no_excel(arquivo_excel, dados)
