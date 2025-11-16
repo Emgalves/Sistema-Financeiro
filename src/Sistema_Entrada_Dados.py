@@ -16760,19 +16760,6 @@ class VisualizadorLancamentosFornecedor:
                 wb.close()
             raise Exception(f"Erro ao atualizar status: {str(e)}")
 
-    # def verificar_recalculo_apos_alteracao(self, data_lancamento, tipo_operacao):
-    #     """Verifica se precisa recalcular taxas após alteração"""
-    #     try:
-    #         if hasattr(self.sistema, 'chamar_apos_operacao_lancamento'):
-    #             data_obj = datetime.strptime(data_lancamento, '%d/%m/%Y').date()
-    #             resultado = self.sistema.chamar_apos_operacao_lancamento(data_obj, tipo_operacao)
-                
-    #             if not resultado["sucesso"] and "Erro" in resultado["mensagem"]:
-    #                 print(f"Aviso: {resultado['mensagem']}")
-                    
-    #     except Exception as e:
-    #         print(f"Erro ao verificar recálculo: {str(e)}")
-
     def visualizar_historico_lancamento(self):
         """Visualiza o histórico de alterações de um lançamento"""
         try:
@@ -17432,7 +17419,7 @@ class VisualizadorLancamentosFornecedor:
                 title="Salvar Lista de Lançamentos",
                 defaultextension=".xlsx",
                 filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
-                initialname=f"lancamentos_{self.dados_fornecedor['nome'].replace(' ', '_')}.xlsx"
+                initialfile=f"lancamentos_{self.dados_fornecedor['nome'].replace(' ', '_')}.xlsx"
             )
             
             if arquivo:
