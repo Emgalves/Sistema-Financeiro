@@ -6290,3 +6290,15 @@
 2025-11-15 11:53:04,544 - INFO - Sistema iniciado em modo: TESTE
 2025-11-15 11:53:32,814 - INFO - Abrindo sistema de relatórios
 2025-11-15 12:01:09,685 - INFO - Sistema encerrado pelo usuário
+2025-11-16 10:58:33,872 - INFO - Configurações importadas com sucesso via src.config
+2025-11-16 10:58:33,886 - INFO - Configurações importadas com sucesso
+2025-11-16 10:58:33,887 - INFO - Configurações do sistema importadas com sucesso
+2025-11-16 10:58:35,658 - INFO - Sistema iniciado em modo: TESTE
+2025-11-16 11:00:07,529 - INFO - Abrindo sistema de entrada de dados
+2025-11-16 11:12:44,875 - INFO - Sistema encerrado pelo usuário
+2025-11-16 11:13:40,229 - INFO - Configurações importadas com sucesso via src.config
+2025-11-16 11:13:40,243 - INFO - Configurações importadas com sucesso
+2025-11-16 11:13:40,243 - INFO - Configurações do sistema importadas com sucesso
+2025-11-16 11:13:40,979 - INFO - Sistema iniciado em modo: TESTE
+2025-11-16 11:13:43,358 - INFO - Abrindo sistema de entrada de dados
+2025-11-16 12:29:48,486 - INFO - Sistema encerrado pelo usuário
