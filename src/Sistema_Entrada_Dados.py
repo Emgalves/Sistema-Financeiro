@@ -141,6 +141,9 @@ except ImportError:
             logger.error(f"Erro ao importar configurações: {str(e)}")
             # Não raise aqui para permitir definições alternativas
 
+# Gestão de Locações
+from src.gestao_locacoes import GerenciadorLocacoes
+
 # from src.nfe.sistema_nfe_unificado import substituir_sistemas_nfe_por_unificado
 from src.materiais.gerenciador_materiais import inicializar_sistema_materiais_completo
 
@@ -1732,21 +1735,6 @@ class SistemaEntradaDados:
         """Setter para gestor_parcelas"""
         self._gestor_parcelas = valor        
 
-    # def voltar_menu(self):
-    #     """Retorna ao menu principal verificando dados não salvos"""
-    #     if self.dados_para_incluir and custom_messagebox("yesno", 
-    #         "Confirmação", 
-    #         "Existem dados não salvos. Deseja salvá-los antes de sair?"):
-    #         self.enviar_dados()
-        
-    #     self.root.destroy()  # Fecha a janela atual
-        
-    #     # Se tiver referência ao menu principal, mostra ele
-    #     if self.menu_principal:
-    #         self.menu_principal.deiconify()
-    #         self.menu_principal.lift()
-    #         self.menu_principal.focus_force()
-
     def voltar_menu(self):
         """
         Versão alternativa que força redesenho completo
@@ -3223,6 +3211,13 @@ class SistemaEntradaDados:
             command=self.importar_folha_rh,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
+
+        ttk.Button(
+            frame_botoes_fornecedor, 
+            text="🔧 Gestão de Locações", 
+            command=self.abrir_gestao_locacoes,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
        
         ttk.Button(frame_botoes_fornecedor, 
                 text="Voltar ao Menu", 
@@ -3234,7 +3229,7 @@ class SistemaEntradaDados:
                 style='Medium.TButton').pack(side='right', padx=5)
         
         # self.adicionar_secao_materiais_fornecedor()
-        
+  
     def buscar_fornecedor(self):
         """Busca fornecedores baseado no termo digitado"""
         try:
@@ -5556,6 +5551,20 @@ class SistemaEntradaDados:
                 self.notebook.select(1)  # Volta para aba fornecedor
         else:
             self.notebook.select(1)  # Volta para aba fornecedor
+    
+    def abrir_gestao_locacoes(self):
+        """Abre o módulo de gestão de locações"""
+        if not self.cliente_atual:
+            custom_messagebox("warning", "Aviso", "Selecione um cliente primeiro!")
+            return
+        
+        try:
+            gerenciador = GerenciadorLocacoes(self)
+            gerenciador.abrir_gestao_locacoes()
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir gestão de locações: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
     def abrir_agenda(self):
         """Abre o gerenciador de agenda"""
