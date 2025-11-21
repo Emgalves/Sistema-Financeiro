@@ -2,7 +2,7 @@ import os
 import sys
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from tkcalendar import DateEntry
 import pandas as pd
@@ -47,7 +47,7 @@ except ImportError as e:
 # Importar o utils.py
 from src.config.utils import atualizar_combobox_clientes, cliente_esta_ativo, obter_info_cliente
 
-
+from src.modules.gerador_contrato import GeradorContrato
 from src.config.window_config import configurar_janela
 print("window_config importado pelo caminho alternativo")
     
@@ -86,6 +86,9 @@ class GestaoMedicoes:
         
         # Configurar interface
         self.setup_gui()
+
+        self.gerador_contrato = GeradorContrato()
+        self.servicos_selecionados = []
         
     def setup_gui(self):
         """Configuração da interface gráfica"""
@@ -102,6 +105,11 @@ class GestaoMedicoes:
         self.notebook.add(self.aba_contratos, text='Contratos')
         self.notebook.add(self.aba_medicoes, text='Medições')
         
+        # Aba para Contrato
+        self.aba_contratos_emissao = ttk.Frame(self.notebook)
+        self.notebook.add(self.aba_contratos_emissao, text='Emitir Contrato')
+        self.setup_aba_emissao_contrato()
+
         # Configurar cada aba
         self.setup_aba_selecao()
         self.setup_aba_contratos()
@@ -304,6 +312,214 @@ class GestaoMedicoes:
         ttk.Button(frame_principal, text="Voltar ao Menu Principal", 
                  command=self.voltar_menu).pack(side='bottom', pady=10)
 
+    def setup_aba_emissao_contrato(self):
+        """Configura a aba de emissão de contratos"""
+        
+        # Frame principal com scroll
+        main_frame = ttk.Frame(self.aba_contratos_emissao)
+        main_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        
+        # Canvas para scroll
+        canvas = tk.Canvas(main_frame)
+        scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # --- SEÇÃO 1: DADOS DO CLIENTE ---
+        frame_cliente = ttk.LabelFrame(scrollable_frame, text="Dados do Cliente", padding=10)
+        frame_cliente.pack(fill='x', pady=5)
+        
+        self.lbl_cliente_contrato = ttk.Label(frame_cliente, text="Cliente: Nenhum selecionado", 
+                                            font=('Arial', 10, 'bold'), foreground='#0056b3')
+        self.lbl_cliente_contrato.pack(anchor='w', pady=5)
+        
+        # Grid para dados do cliente
+        dados_cliente_frame = ttk.Frame(frame_cliente)
+        dados_cliente_frame.pack(fill='x', pady=5)
+        
+        row = 0
+        ttk.Label(dados_cliente_frame, text="CNO:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_cno = ttk.Entry(dados_cliente_frame, state='readonly', width=20)
+        self.ent_cno.grid(row=row, column=1, sticky='w', padx=5, pady=2)
+        
+        ttk.Label(dados_cliente_frame, text="CPF:").grid(row=row, column=2, sticky='w', padx=5, pady=2)
+        self.ent_cpf_cliente = ttk.Entry(dados_cliente_frame, state='readonly', width=20)
+        self.ent_cpf_cliente.grid(row=row, column=3, sticky='w', padx=5, pady=2)
+        
+        row += 1
+        ttk.Label(dados_cliente_frame, text="Estado Civil:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_estado_civil = ttk.Entry(dados_cliente_frame, state='readonly', width=20)
+        self.ent_estado_civil.grid(row=row, column=1, sticky='w', padx=5, pady=2)
+        
+        ttk.Label(dados_cliente_frame, text="Cidade:").grid(row=row, column=2, sticky='w', padx=5, pady=2)
+        self.ent_cidade = ttk.Entry(dados_cliente_frame, state='readonly', width=20)
+        self.ent_cidade.grid(row=row, column=3, sticky='w', padx=5, pady=2)
+        
+        row += 1
+        ttk.Label(dados_cliente_frame, text="Endereço:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_endereco_cliente = ttk.Entry(dados_cliente_frame, state='readonly', width=60)
+        self.ent_endereco_cliente.grid(row=row, column=1, columnspan=3, sticky='ew', padx=5, pady=2)
+        
+        # --- SEÇÃO 2: DADOS DO FORNECEDOR ---
+        frame_fornecedor = ttk.LabelFrame(scrollable_frame, text="Dados do Fornecedor", padding=10)
+        frame_fornecedor.pack(fill='x', pady=5)
+        
+        # === CAMPO DE BUSCA  ===
+        busca_frame = ttk.Frame(frame_fornecedor)
+        busca_frame.pack(fill='x', pady=5)
+        
+        ttk.Label(busca_frame, text="Buscar Fornecedor:").pack(side='left', padx=5)
+        
+        self.ent_busca_fornecedor = ttk.Entry(busca_frame, width=40)
+        self.ent_busca_fornecedor.pack(side='left', padx=5, fill='x', expand=True)
+        self.ent_busca_fornecedor.bind('<KeyRelease>', self.buscar_fornecedor_contrato)
+        
+        ttk.Button(busca_frame, text="🔍 Buscar", 
+                command=lambda: self.buscar_fornecedor_contrato()).pack(side='left', padx=2)
+        
+        ttk.Button(busca_frame, text="↻ Todos",
+                command=self.atualizar_lista_fornecedores_contrato).pack(side='left', padx=2)
+        
+        # === SELEÇÃO DE FORNECEDOR  ===
+        sel_forn_frame = ttk.Frame(frame_fornecedor)
+        sel_forn_frame.pack(fill='x', pady=5)
+        
+        ttk.Label(sel_forn_frame, text="Selecionar:").pack(side='left', padx=5)
+        self.cmb_fornecedor_contrato = ttk.Combobox(sel_forn_frame, width=60, state='readonly')
+        self.cmb_fornecedor_contrato.pack(side='left', padx=5, fill='x', expand=True)
+        self.cmb_fornecedor_contrato.bind('<<ComboboxSelected>>', self.carregar_dados_fornecedor_contrato)
+        
+        
+        ttk.Button(sel_forn_frame, text="Atualizar", 
+                command=self.atualizar_lista_fornecedores_contrato).pack(side='left', padx=5)
+        
+        # Dados do fornecedor
+        dados_forn_frame = ttk.Frame(frame_fornecedor)
+        dados_forn_frame.pack(fill='x', pady=5)
+        
+        row = 0
+        ttk.Label(dados_forn_frame, text="CNPJ/CPF:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_cnpj_fornecedor = ttk.Entry(dados_forn_frame, state='readonly', width=25)
+        self.ent_cnpj_fornecedor.grid(row=row, column=1, sticky='w', padx=5, pady=2)
+        
+        row += 1
+        ttk.Label(dados_forn_frame, text="Endereço:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_endereco_fornecedor = ttk.Entry(dados_forn_frame, state='readonly', width=60)
+        self.ent_endereco_fornecedor.grid(row=row, column=1, columnspan=3, sticky='ew', padx=5, pady=2)
+        
+        row += 1
+        ttk.Label(dados_forn_frame, text="Dados Bancários:").grid(row=row, column=0, sticky='nw', padx=5, pady=5)
+        self.txt_dados_bancarios = tk.Text(dados_forn_frame, height=3, width=60, state='disabled', wrap='word')
+        self.txt_dados_bancarios.grid(row=row, column=1, columnspan=3, sticky='ew', padx=5, pady=5)
+        
+        # --- SEÇÃO 3: DADOS DO CONTRATO ---
+        frame_dados_contrato = ttk.LabelFrame(scrollable_frame, text="Dados do Contrato", padding=10)
+        frame_dados_contrato.pack(fill='x', pady=5)
+        
+        # Grid para dados do contrato
+        dados_contrato_grid = ttk.Frame(frame_dados_contrato)
+        dados_contrato_grid.pack(fill='x', pady=5)
+        
+        row = 0
+        ttk.Label(dados_contrato_grid, text="Data do Contrato:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_data_contrato = DateEntry(dados_contrato_grid, width=15, 
+                                        date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.ent_data_contrato.grid(row=row, column=1, sticky='w', padx=5, pady=2)
+        self.ent_data_contrato.set_date(datetime.now())
+        self.ent_data_contrato.bind('<<DateEntrySelected>>', self.ao_mudar_data_contrato)
+        
+        row += 1
+        ttk.Label(dados_contrato_grid, text="Data Início:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_data_inicio = DateEntry(dados_contrato_grid, width=15, 
+                                        date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.ent_data_inicio.grid(row=row, column=1, sticky='w', padx=5, pady=2)
+        self.ent_data_inicio.bind('<<DateEntrySelected>>', self.ao_mudar_data_inicio)
+        
+        ttk.Label(dados_contrato_grid, text="Data Fim:").grid(row=row, column=2, sticky='w', padx=5, pady=2)
+        self.ent_data_fim = DateEntry(dados_contrato_grid, width=15, 
+                                    date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.ent_data_fim.grid(row=row, column=3, sticky='w', padx=5, pady=2)
+        self.ent_data_fim.bind('<<DateEntrySelected>>', self.calcular_prazo_contrato)
+        
+        row += 1
+        ttk.Label(dados_contrato_grid, text="Prazo (dias):").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_prazo_dias = ttk.Entry(dados_contrato_grid, width=15)
+        self.ent_prazo_dias.bind('<KeyRelease>', self.ao_mudar_dias)
+        self.ent_prazo_dias.bind('<FocusOut>', self.ao_mudar_dias)
+        self.ent_prazo_dias.grid(row=row, column=1, sticky='w', padx=5, pady=2)
+        
+        row += 1
+        ttk.Label(dados_contrato_grid, text="Valor Global:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_valor_global = ttk.Entry(dados_contrato_grid, width=20)
+        self.ent_valor_global.grid(row=row, column=1, sticky='w', padx=5, pady=2)
+        self.ent_valor_global.insert(0, "R$ 0,00")
+        self.ent_valor_global.bind('<FocusOut>', self.formatar_valor_global)
+        
+        ttk.Label(dados_contrato_grid, text="Multa:").grid(row=row, column=2, sticky='w', padx=5, pady=2)
+        self.ent_multa = ttk.Entry(dados_contrato_grid, width=20)
+        self.ent_multa.grid(row=row, column=3, sticky='w', padx=5, pady=2)
+        self.ent_multa.insert(0, "R$ 4.000,00")
+        
+        row += 1
+        ttk.Label(dados_contrato_grid, text="Endereço da Obra:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.ent_endereco_obra = ttk.Entry(dados_contrato_grid, width=60)
+        self.ent_endereco_obra.grid(row=row, column=1, columnspan=3, sticky='ew', padx=5, pady=2)
+        
+        # --- SEÇÃO 4: DESCRIÇÃO DOS SERVIÇOS ---
+        frame_servicos = ttk.LabelFrame(scrollable_frame, text="Descrição dos Serviços", padding=10)
+        frame_servicos.pack(fill='both', expand=True, pady=5)
+        
+        ttk.Button(frame_servicos, text="📋 Selecionar Serviços", 
+                command=self.abrir_selecao_servicos).pack(pady=5)
+        
+        # Lista de serviços selecionados
+        servicos_frame = ttk.Frame(frame_servicos)
+        servicos_frame.pack(fill='both', expand=True, pady=5)
+        
+        ttk.Label(servicos_frame, text="Serviços selecionados:", 
+                font=('Arial', 9, 'bold')).pack(anchor='w')
+        
+        self.txt_servicos_selecionados = tk.Text(servicos_frame, height=5, width=70, wrap='word')
+        self.txt_servicos_selecionados.pack(fill='both', expand=True, pady=5)
+        
+        # Scrollbar para texto de serviços
+        scrollbar_servicos = ttk.Scrollbar(self.txt_servicos_selecionados)
+        scrollbar_servicos.pack(side='right', fill='y')
+        self.txt_servicos_selecionados.config(yscrollcommand=scrollbar_servicos.set)
+        scrollbar_servicos.config(command=self.txt_servicos_selecionados.yview)
+        
+        # --- SEÇÃO 5: BOTÕES DE AÇÃO ---
+        frame_botoes = ttk.Frame(scrollable_frame)
+        frame_botoes.pack(fill='x', pady=10)
+        
+        style = ttk.Style()
+        style.configure('Action.TButton', font=('Arial', 10, 'bold'))
+        
+        ttk.Button(frame_botoes, text="📄 Gerar Contrato", 
+                command=self.gerar_contrato_final, 
+                style='Action.TButton').pack(side='left', padx=5)
+        
+        ttk.Button(frame_botoes, text="🔄 Limpar Formulário", 
+                command=self.limpar_formulario_contrato).pack(side='left', padx=5)
+        
+        ttk.Button(frame_botoes, text="📂 Abrir Pasta de Contratos", 
+                command=self.abrir_pasta_contratos).pack(side='left', padx=5)
+        
+        # Empacotar canvas e scrollbar
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Bind de mudança de aba para carregar dados
+        self.notebook.bind('<<NotebookTabChanged>>', self.on_tab_changed_contrato)
+
+
     def centralizar_janela(self, janela, largura=600, altura=400):
         """Centraliza a janela na tela (não relativo à janela pai)"""
         # Atualizar a geometria
@@ -340,25 +556,143 @@ class GestaoMedicoes:
         return janela
 
 
-    def formatar_documento(self, valor):
-        """Formata um documento (CNPJ/CPF) preservando zeros à esquerda e adicionando pontuação"""
-        # Garantir que estamos trabalhando com string
-        valor_str = str(valor)
+    def formatar_documento(self, documento):
         
-        # Limpar a string, removendo caracteres não numéricos
-        valor_limpo = ''.join(filter(str.isdigit, valor_str))
+        try:
+            if not documento:
+                return ''
+            
+            # Converter para string e limpar
+            doc_str = str(documento).strip()
+            
+            # Remover .0 de floats
+            if doc_str.endswith('.0'):
+                doc_str = doc_str[:-2]
+            
+            # Extrair apenas dígitos
+            digitos = ''.join(filter(str.isdigit, doc_str))
+            
+            if not digitos:
+                return doc_str
+            
+            # Formatar baseado no tamanho
+            if len(digitos) == 11:  # CPF
+                return f"{digitos[:3]}.{digitos[3:6]}.{digitos[6:9]}-{digitos[9:]}"
+            elif len(digitos) == 14:  # CNPJ
+                return f"{digitos[:2]}.{digitos[2:5]}.{digitos[5:8]}/{digitos[8:12]}-{digitos[12:]}"
+            else:
+                # Retornar sem formatação se tamanho inválido
+                return digitos
+                
+        except Exception as e:
+            logger.warning(f"Erro ao formatar documento: {e}")
+            return str(documento)
+    
+    def adicionar_busca_fornecedores(self, frame_fornecedor):
+                
+        # Frame de busca
+        busca_frame = ttk.Frame(frame_fornecedor)
+        busca_frame.pack(fill='x', pady=5)
         
-        # Determinar se é CPF (11 dígitos) ou CNPJ (14 dígitos)
-        if len(valor_limpo) <= 11:
-            # É um CPF, garantir 11 dígitos
-            documento = valor_limpo.zfill(11)
-            # Formatar como XXX.XXX.XXX-XX
-            return f"{documento[:3]}.{documento[3:6]}.{documento[6:9]}-{documento[9:]}"
-        else:
-            # É um CNPJ, garantir 14 dígitos
-            documento = valor_limpo.zfill(14)
-            # Formatar como XX.XXX.XXX/XXXX-XX
-            return f"{documento[:2]}.{documento[2:5]}.{documento[5:8]}/{documento[8:12]}-{documento[12:]}"
+        ttk.Label(busca_frame, text="Buscar:").pack(side='left', padx=5)
+        
+        # Campo de busca
+        self.ent_busca_fornecedor = ttk.Entry(busca_frame, width=40)
+        self.ent_busca_fornecedor.pack(side='left', padx=5, fill='x', expand=True)
+        
+        # Bind para busca ao digitar
+        self.ent_busca_fornecedor.bind('<KeyRelease>', self.buscar_fornecedor_contrato)
+        
+        ttk.Button(busca_frame, text="🔍 Buscar", 
+                command=lambda: self.buscar_fornecedor_contrato()).pack(side='left', padx=5)
+        
+        ttk.Button(busca_frame, text="↻ Mostrar Todos",
+                command=self.atualizar_lista_fornecedores_contrato).pack(side='left', padx=5)
+    
+    def buscar_fornecedor_contrato(self, event=None):
+        
+        try:
+            termo = self.ent_busca_fornecedor.get().strip()
+            
+            if not termo:
+                # Se vazio, mostrar todos
+                self.atualizar_lista_fornecedores_contrato()
+                return
+            
+            logger.info(f"Buscando fornecedores com termo: {termo}")
+            
+            from openpyxl import load_workbook
+            
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+            
+            # Normalizar termo de busca
+            termo_upper = termo.upper()
+            termo_numerico = ''.join(filter(str.isdigit, termo))
+            
+            fornecedores_encontrados = []
+            
+            # Iterar pelas linhas
+            for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    if not row[0]:  # Pular sem CNPJ/CPF
+                        continue
+                    
+                    # Dados da linha
+                    cnpj_cpf_raw = row[0]
+                    razao_social = row[2] if len(row) > 2 else ''
+                    nome_fantasia = row[3] if len(row) > 3 else ''
+                    
+                    # Converter CNPJ/CPF para comparação
+                    row_cnpj = ''.join(filter(str.isdigit, str(cnpj_cpf_raw)))
+                    
+                    # Verificar se termo está em:
+                    # 1. CNPJ/CPF (dígitos)
+                    # 2. Nome Fantasia
+                    # 3. Razão Social
+                    match = False
+                    
+                    if termo_numerico and termo_numerico in row_cnpj:
+                        match = True
+                    elif nome_fantasia and termo_upper in str(nome_fantasia).upper():
+                        match = True
+                    elif razao_social and termo_upper in str(razao_social).upper():
+                        match = True
+                    
+                    if match:
+                        # Formatar CNPJ/CPF
+                        cnpj_formatado = self.formatar_documento(cnpj_cpf_raw)
+                        
+                        # Escolher nome a exibir
+                        if nome_fantasia and not pd.isna(nome_fantasia):
+                            nome = str(nome_fantasia).strip()
+                        elif razao_social and not pd.isna(razao_social):
+                            nome = str(razao_social).strip()
+                        else:
+                            nome = f'Fornecedor_Linha_{row_idx}'
+                        
+                        fornecedores_encontrados.append(nome)
+                    
+                except Exception as e:
+                    logger.error(f"Erro ao processar linha {row_idx}: {e}")
+                    continue
+            
+            wb.close()
+            
+            # Atualizar combobox com resultados
+            if fornecedores_encontrados:
+                self.cmb_fornecedor_contrato['values'] = sorted(fornecedores_encontrados)
+                logger.info(f"✅ {len(fornecedores_encontrados)} fornecedores encontrados")
+            else:
+                self.cmb_fornecedor_contrato['values'] = []
+                logger.warning(f"⚠️ Nenhum fornecedor encontrado com '{termo}'")
+                messagebox.showinfo("Busca", f"Nenhum fornecedor encontrado com '{termo}'")
+            
+        except Exception as e:
+            logger.error(f"❌ Erro ao buscar fornecedores: {e}")
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Erro", f"Erro ao buscar:\n{str(e)}")
 
     # Funções da aba Cliente
     def atualizar_lista_clientes(self):
@@ -1088,6 +1422,733 @@ class GestaoMedicoes:
         # Mudar para a aba de medições
         self.notebook.select(2)  # Índice da aba de medições
     
+    def on_tab_changed_contrato(self, event):
+        """Chamado quando a aba é alterada"""
+        if self.notebook.index(self.notebook.select()) == 3:  # Aba de emissão de contrato
+            self.carregar_dados_cliente_contrato()
+            self.atualizar_lista_fornecedores_contrato()
+
+    def carregar_dados_cliente_contrato(self):
+        """Carrega dados do cliente selecionado na aba de contrato"""
+        if not self.cliente_atual:
+            self.lbl_cliente_contrato.config(text="Cliente: Nenhum selecionado")
+            return
+        
+        try:
+            dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
+            
+            if dados_cliente:
+                self.lbl_cliente_contrato.config(text=f"Cliente: {dados_cliente['nome']}")
+                
+                # Preencher campos
+                self.ent_cno.config(state='normal')
+                self.ent_cno.delete(0, tk.END)
+                self.ent_cno.insert(0, dados_cliente.get('cno', ''))
+                self.ent_cno.config(state='readonly')
+                
+                self.ent_cpf_cliente.config(state='normal')
+                self.ent_cpf_cliente.delete(0, tk.END)
+                self.ent_cpf_cliente.insert(0, dados_cliente.get('cnpj_cpf', ''))
+                self.ent_cpf_cliente.config(state='readonly')
+                
+                self.ent_estado_civil.config(state='normal')
+                self.ent_estado_civil.delete(0, tk.END)
+                self.ent_estado_civil.insert(0, dados_cliente.get('estado_civil', ''))
+                self.ent_estado_civil.config(state='readonly')
+                
+                self.ent_cidade.config(state='normal')
+                self.ent_cidade.delete(0, tk.END)
+                self.ent_cidade.insert(0, dados_cliente.get('cidade', ''))
+                self.ent_cidade.config(state='readonly')
+                
+                self.ent_endereco_cliente.config(state='normal')
+                self.ent_endereco_cliente.delete(0, tk.END)
+                self.ent_endereco_cliente.insert(0, dados_cliente.get('endereco', ''))
+                self.ent_endereco_cliente.config(state='readonly')
+                
+                # Pré-preencher endereço da obra com endereço do cliente
+                self.ent_endereco_obra.delete(0, tk.END)
+                self.ent_endereco_obra.insert(0, dados_cliente.get('endereco', ''))
+                
+                logger.info(f"Dados do cliente carregados na aba de contrato: {self.cliente_atual}")
+            else:
+                messagebox.showwarning("Aviso", "Não foi possível carregar os dados do cliente.")
+        except Exception as e:
+            logger.error(f"Erro ao carregar dados do cliente para contrato: {e}")
+            messagebox.showerror("Erro", f"Erro ao carregar dados do cliente: {str(e)}")
+
+    def atualizar_lista_fornecedores_contrato(self):
+        
+        try:
+            logger.info("Carregando lista de fornecedores...")
+            
+            # Usar openpyxl igual ao método buscar_fornecedor
+            from openpyxl import load_workbook
+            
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+            
+            fornecedores = []
+            fornecedores_com_problema = []
+            
+            # Iterar pelas linhas (começando da linha 2, pulando cabeçalho)
+            for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    # row[0] = CNPJ/CPF
+                    # row[2] = Razão Social  
+                    # row[3] = Nome Fantasia
+                    
+                    if not row[0]:  # Pular linhas sem CNPJ/CPF
+                        continue
+                    
+                    # === OBTER CNPJ/CPF ===
+                    cnpj_cpf_raw = row[0]
+                    
+                    # Converter e limpar
+                    if pd.isna(cnpj_cpf_raw) or cnpj_cpf_raw == '':
+                        cnpj_cpf_formatado = 'Sem CPF/CNPJ'
+                        fornecedores_com_problema.append(f"Linha {row_idx}")
+                    else:
+                        # Usar o mesmo método de formatação
+                        cnpj_cpf_formatado = self.formatar_documento(cnpj_cpf_raw)
+                    
+                    # === OBTER NOME (priorizar Nome Fantasia, depois Razão Social) ===
+                    nome_fantasia = row[3] if len(row) > 3 else None
+                    razao_social = row[2] if len(row) > 2 else None
+                    
+                    # Escolher qual nome usar
+                    if nome_fantasia and not pd.isna(nome_fantasia) and str(nome_fantasia).strip():
+                        nome = str(nome_fantasia).strip()
+                    elif razao_social and not pd.isna(razao_social) and str(razao_social).strip():
+                        nome = str(razao_social).strip()
+                    else:
+                        nome = f'Fornecedor_Linha_{row_idx}'
+                        fornecedores_com_problema.append(nome)
+                    
+                    # Adicionar à lista: "NOME FANTASIA - CPF/CNPJ"
+                    fornecedores.append(nome)
+                    
+                except Exception as e:
+                    logger.error(f"Erro ao processar fornecedor linha {row_idx}: {e}")
+                    continue
+            
+            wb.close()
+            
+            # Atualizar combobox (ordenado)
+            self.cmb_fornecedor_contrato['values'] = sorted(fornecedores)
+            
+            # Logs informativos
+            logger.info(f"✅ {len(fornecedores)} fornecedores carregados")
+            
+            if fornecedores_com_problema:
+                logger.warning(
+                    f"⚠️ {len(fornecedores_com_problema)} fornecedores com dados incompletos"
+                )
+            
+        except Exception as e:
+            logger.error(f"❌ Erro ao carregar fornecedores: {e}")
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Erro", f"Erro ao carregar fornecedores:\n{str(e)}")
+
+
+    def carregar_dados_fornecedor_contrato(self, event=None):
+        
+        fornecedor_nome = self.cmb_fornecedor_contrato.get().strip()
+        
+        if not fornecedor_nome:
+            return
+        
+        try:
+            logger.info(f"Carregando dados do fornecedor: {fornecedor_nome}")
+            
+            from openpyxl import load_workbook
+            
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+            
+            # Buscar fornecedor pelo NOME
+            fornecedor_encontrado = None
+            
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Pular sem CNPJ/CPF
+                    continue
+                
+                # Obter nomes
+                razao_social = row[2] if len(row) > 2 else ''
+                nome_fantasia = row[3] if len(row) > 3 else ''
+                
+                # Verificar se é o fornecedor procurado
+                if (nome_fantasia and str(nome_fantasia).strip() == fornecedor_nome) or \
+                (razao_social and str(razao_social).strip() == fornecedor_nome):
+                    fornecedor_encontrado = row
+                    break
+            
+            wb.close()
+            
+            if not fornecedor_encontrado:
+                messagebox.showwarning(
+                    "Aviso",
+                    f"Fornecedor '{fornecedor_nome}' não encontrado na planilha."
+                )
+                return
+            
+            # Extrair dados do fornecedor
+            cnpj_cpf_raw = fornecedor_encontrado[0]
+            endereco_raw = fornecedor_encontrado[15] if len(fornecedor_encontrado) > 15 else ''  
+            dados_banc_raw = fornecedor_encontrado[14] if len(fornecedor_encontrado) > 14 else ''
+            
+            # Formatar CNPJ/CPF
+            cnpj_cpf_formatado = self.formatar_documento(cnpj_cpf_raw)
+            
+            # === PREENCHER CNPJ/CPF ===
+            self.ent_cnpj_fornecedor.config(state='normal')
+            self.ent_cnpj_fornecedor.delete(0, tk.END)
+            self.ent_cnpj_fornecedor.insert(0, cnpj_cpf_formatado)
+            self.ent_cnpj_fornecedor.config(state='readonly')
+            
+            # === PREENCHER ENDEREÇO ===
+            if pd.isna(endereco_raw) or not str(endereco_raw).strip():
+                endereco = '[ENDEREÇO NÃO CADASTRADO]'
+                logger.warning(f"Fornecedor '{fornecedor_nome}' sem endereço cadastrado")
+            else:
+                endereco = str(endereco_raw).strip()
+            
+            self.ent_endereco_fornecedor.config(state='normal')
+            self.ent_endereco_fornecedor.delete(0, tk.END)
+            self.ent_endereco_fornecedor.insert(0, endereco)
+            self.ent_endereco_fornecedor.config(state='readonly')
+            
+            # === BUSCAR DADOS BANCÁRIOS ===
+            try:
+                dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_cpf_formatado, "PIX")
+                
+                if not dados_bancarios or dados_bancarios.strip() == '':
+                    dados_bancarios = (
+                        f"⚠️ Dados bancários não encontrados para:\n"
+                        f"{fornecedor_nome}\n"
+                        f"CPF/CNPJ: {cnpj_cpf_formatado}\n\n"
+                        f"Por favor, cadastre os dados bancários."
+                    )
+                    logger.warning(f"Dados bancários não encontrados para {fornecedor_nome}")
+                
+            except Exception as e:
+                logger.error(f"Erro ao buscar dados bancários: {e}")
+                dados_bancarios = f"❌ Erro ao buscar dados bancários: {str(e)}"
+            
+            self.txt_dados_bancarios.config(state='normal')
+            self.txt_dados_bancarios.delete('1.0', tk.END)
+            self.txt_dados_bancarios.insert('1.0', dados_bancarios)
+            self.txt_dados_bancarios.config(state='disabled')
+            
+            logger.info(f"✅ Dados do fornecedor '{fornecedor_nome}' carregados")
+            
+        except Exception as e:
+            logger.error(f"❌ Erro ao carregar dados do fornecedor: {e}")
+            import traceback
+            traceback.print_exc()
+            messagebox.showerror("Erro", f"Erro ao carregar dados do fornecedor:\n{str(e)}")
+
+
+
+
+    def ao_mudar_data_contrato(self, event=None):
+        """Quando Data do Contrato mudar, atualiza Data Início"""
+        try:
+            # Sincronizar Data Início com Data do Contrato
+            data_contrato = self.ent_data_contrato.get_date()
+            self.ent_data_inicio.set_date(data_contrato)
+            
+            logger.info(f"Data do Contrato/Início sincronizadas: {data_contrato}")
+        except Exception as e:
+            logger.error(f"Erro ao sincronizar data contrato: {e}")
+    
+    def ao_mudar_data_inicio(self, event=None):
+        """Quando Data Início mudar, atualiza Data do Contrato"""
+        try:
+            # Sincronizar Data do Contrato com Data Início
+            data_inicio = self.ent_data_inicio.get_date()
+            self.ent_data_contrato.set_date(data_inicio)
+            
+            # Calcular prazo
+            self.calcular_prazo_contrato(event)
+        except Exception as e:
+            logger.error(f"Erro ao sincronizar datas: {e}")
+    
+
+    def ao_mudar_dias(self, event=None):
+        """Quando usuário digitar dias, recalcula Data Fim"""
+        try:
+            dias_str = self.ent_prazo_dias.get().strip()
+            if not dias_str or not dias_str.isdigit():
+                return
+            
+            dias_uteis = int(dias_str)
+            data_inicio = self.ent_data_inicio.get_date()
+            
+            # CORREÇÃO: Data início é DIA 0 (não conta)
+            # Calcular data_fim somando dias úteis A PARTIR do dia seguinte
+            data_atual = data_inicio
+            dias_contados = 0
+            
+            # Começar contando do dia SEGUINTE à data início
+            while dias_contados < dias_uteis:
+                data_atual += pd.Timedelta(days=1)
+                if data_atual.weekday() < 5:  # Segunda a Sexta
+                    dias_contados += 1
+            
+            # Atualizar Data Fim
+            self.ent_data_fim.set_date(data_atual)
+            
+            logger.info(f"Data Fim calculada: {data_atual.strftime('%d/%m/%Y')} ({dias_uteis} dias úteis, excluindo data início)")
+        except Exception as e:
+            logger.error(f"Erro ao calcular data fim: {e}")
+    
+    
+    def calcular_prazo_contrato(self, event=None):
+        """Calcula o prazo em DIAS ÚTEIS entre Data Início e Data Fim"""
+        try:
+            data_inicio = self.ent_data_inicio.get_date()
+            data_fim = self.ent_data_fim.get_date()
+            
+            if data_inicio and data_fim:
+                # Verificar se data fim é fim de semana
+                if data_fim.weekday() >= 5:  # Sábado ou Domingo
+                    dia_semana = 'sábado' if data_fim.weekday() == 5 else 'domingo'
+                    logger.warning(f"⚠️ Data final cai em {dia_semana}: {data_fim.strftime('%d/%m/%Y')}")
+                    
+                # CORREÇÃO: Calcular dias úteis EXCLUINDO a data de início
+                # Data início = DIA 0 (não conta)
+                dias_uteis = 0
+                data_atual = data_inicio + pd.Timedelta(days=1)  # Começa no dia seguinte
+                
+                while data_atual <= data_fim:
+                    # 0 = Segunda, 6 = Domingo
+                    if data_atual.weekday() < 5:  # Segunda a Sexta
+                        dias_uteis += 1
+                    data_atual += pd.Timedelta(days=1)
+                
+                self.ent_prazo_dias.delete(0, tk.END)
+                self.ent_prazo_dias.insert(0, str(dias_uteis))
+                
+                logger.info(f"Prazo calculado: {dias_uteis} dias úteis (excluindo data início)")
+        except Exception as e:
+            logger.error(f"Erro ao calcular prazo: {e}")
+
+    def abrir_selecao_servicos(self):
+        """Abre janela para seleção de serviços - VERSÃO COM COMBOBOX"""
+        janela = tk.Toplevel(self.root)
+        janela.title("Seleção de Serviços")
+        janela.geometry("700x650")
+        
+        # Frame principal
+        main_frame = ttk.Frame(janela, padding=10)
+        main_frame.pack(fill='both', expand=True)
+        
+        # ========================================
+        # NOVA SEÇÃO: ADICIONAR SERVIÇO RÁPIDO
+        # ========================================
+        add_frame = ttk.LabelFrame(main_frame, text="➕ Adicionar Novo Serviço", padding=10)
+        add_frame.pack(fill='x', pady=(0, 10))
+        
+        ttk.Label(add_frame, text="Serviço:").pack(side='left', padx=5)
+        
+        # Combobox com autocompletar
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
+        
+        combo_novo = ttk.Combobox(add_frame, width=40)
+        combo_novo.pack(side='left', padx=5, fill='x', expand=True)
+        
+        def atualizar_combo():
+            servicos = GerenciadorConfiguracoes.listar_todos_servicos()
+            combo_novo['values'] = servicos
+        
+        atualizar_combo()
+        
+        # Autocompletar
+        def autocompletar(event):
+            valor = combo_novo.get()
+            if not valor:
+                atualizar_combo()
+                return
+            
+            todos = GerenciadorConfiguracoes.listar_todos_servicos()
+            filtrados = [s for s in todos if valor.lower() in s.lower()]
+            combo_novo['values'] = filtrados
+        
+        combo_novo.bind('<KeyRelease>', autocompletar)
+        
+        def adicionar_novo_servico():
+            nome = combo_novo.get().strip()
+            if not nome:
+                messagebox.showwarning("Aviso", "Digite o nome do serviço!")
+                return
+            
+            existentes = GerenciadorConfiguracoes.listar_todos_servicos()
+            
+            if nome not in existentes:
+                if messagebox.askyesno("Novo Serviço", 
+                                    f"O serviço '{nome}' não existe.\n\nDeseja adicioná-lo?"):
+                    if GerenciadorConfiguracoes.adicionar_servico_rapido(nome):
+                        messagebox.showinfo("Sucesso", f"Serviço '{nome}' adicionado!")
+                        atualizar_combo()
+                        # Recarregar lista abaixo
+                        if categoria_nomes:
+                            cmb_categoria.current(0)
+                            on_categoria_changed(None)
+                    else:
+                        messagebox.showerror("Erro", "Não foi possível adicionar!")
+                        return
+            
+            # Adicionar à lista de selecionados
+            if nome not in self.servicos_selecionados:
+                self.servicos_selecionados.append(nome)
+                atualizar_texto_servicos()
+                combo_novo.set('')
+        
+        ttk.Button(add_frame, text="➕ Adicionar", 
+                command=adicionar_novo_servico).pack(side='left', padx=5)
+        
+        # ========================================
+        # SEÇÃO ORIGINAL: SELEÇÃO POR CATEGORIA
+        # ========================================
+        
+        ttk.Label(main_frame, text="Ou selecione da lista por categoria:", 
+                font=('Arial', 10, 'bold')).pack(pady=5)
+        
+        # Frame para categoria
+        cat_frame = ttk.Frame(main_frame)
+        cat_frame.pack(fill='x', pady=5)
+        
+        ttk.Label(cat_frame, text="Categoria:").pack(side='left', padx=5)
+        cmb_categoria = ttk.Combobox(cat_frame, width=40, state='readonly')
+        cmb_categoria.pack(side='left', padx=5, fill='x', expand=True)
+        
+        # Frame para lista de serviços com scroll
+        list_frame = ttk.Frame(main_frame)
+        list_frame.pack(fill='both', expand=True, pady=10)
+        
+        scrollbar = ttk.Scrollbar(list_frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        listbox_servicos = tk.Listbox(list_frame, selectmode='multiple', 
+                                    yscrollcommand=scrollbar.set, height=15)
+        listbox_servicos.pack(side='left', fill='both', expand=True)
+        scrollbar.config(command=listbox_servicos.yview)
+        
+        # Dicionário para armazenar serviços por categoria
+        servicos_por_categoria = {}
+        
+        # Carregar categorias
+        categorias = self.gerador_contrato.listar_categorias_servicos()
+        categoria_nomes = [f"{cat['nome']} ({cat['qtd_servicos']} serviços)" for cat in categorias]
+        cmb_categoria['values'] = categoria_nomes
+        
+        # Armazenar mapping de categorias
+        for i, cat in enumerate(categorias):
+            servicos_por_categoria[categoria_nomes[i]] = {
+                'id': cat['id'],
+                'servicos': self.gerador_contrato.listar_servicos_categoria(cat['id'])
+            }
+        
+        def on_categoria_changed(event):
+            """Atualiza lista de serviços ao mudar categoria"""
+            cat_selecionada = cmb_categoria.get()
+            if cat_selecionada:
+                servicos = servicos_por_categoria[cat_selecionada]['servicos']
+                listbox_servicos.delete(0, tk.END)
+                for servico in servicos:
+                    listbox_servicos.insert(tk.END, servico)
+        
+        cmb_categoria.bind('<<ComboboxSelected>>', on_categoria_changed)
+        
+        # Selecionar primeira categoria por padrão
+        if categoria_nomes:
+            cmb_categoria.current(0)
+            on_categoria_changed(None)
+        
+        # Frame para botões de seleção
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(fill='x', pady=5)
+        
+        def selecionar_todos():
+            listbox_servicos.select_set(0, tk.END)
+        
+        def limpar_selecao():
+            listbox_servicos.selection_clear(0, tk.END)
+        
+        ttk.Button(btn_frame, text="Selecionar Todos", 
+                command=selecionar_todos).pack(side='left', padx=5)
+        ttk.Button(btn_frame, text="Limpar Seleção", 
+                command=limpar_selecao).pack(side='left', padx=5)
+        
+        # Label contador
+        lbl_contador = ttk.Label(btn_frame, text="0 serviços selecionados")
+        lbl_contador.pack(side='right', padx=5)
+        
+        def atualizar_contador(event=None):
+            qtd = len(listbox_servicos.curselection())
+            lbl_contador.config(text=f"{qtd} serviços selecionados")
+        
+        listbox_servicos.bind('<<ListboxSelect>>', atualizar_contador)
+        
+        # Frame para botões finais
+        final_frame = ttk.Frame(main_frame)
+        final_frame.pack(fill='x', pady=10)
+        
+        def atualizar_texto_servicos():
+            """Atualiza o texto de serviços no campo principal"""
+            descricao = self.gerador_contrato.concatenar_servicos(self.servicos_selecionados)
+            self.txt_servicos_selecionados.delete('1.0', tk.END)
+            self.txt_servicos_selecionados.insert('1.0', descricao)
+        
+        def confirmar_selecao():
+            """Confirma seleção de serviços"""
+            indices = listbox_servicos.curselection()
+            servicos_da_lista = [listbox_servicos.get(i) for i in indices]
+            
+            # Adicionar aos já selecionados
+            for servico in servicos_da_lista:
+                if servico not in self.servicos_selecionados:
+                    self.servicos_selecionados.append(servico)
+            
+            if not self.servicos_selecionados:
+                messagebox.showwarning("Aviso", "Selecione ao menos um serviço!")
+                return
+            
+            # Atualizar texto
+            atualizar_texto_servicos()
+            
+            logger.info(f"{len(self.servicos_selecionados)} serviços selecionados")
+            janela.destroy()
+        
+        ttk.Button(final_frame, text="✓ Confirmar", 
+                command=confirmar_selecao, 
+                style='Action.TButton').pack(side='left', padx=5)
+        
+        ttk.Button(final_frame, text="✗ Cancelar", 
+                command=janela.destroy).pack(side='left', padx=5)
+
+
+
+    def formatar_valor_global(self, event=None):
+        """Formata o valor global para padrão brasileiro"""
+        try:
+            valor_str = self.ent_valor_global.get().strip()
+            if not valor_str or valor_str == "R$ 0,00":
+                return
+            
+            # Remover tudo exceto dígitos e vírgula/ponto
+            valor_limpo = valor_str.replace('R$', '').replace('.', '').replace(',', '.').strip()
+            
+            # Converter para float
+            valor_float = float(valor_limpo)
+            
+            # Formatar como moeda brasileira
+            valor_formatado = f"R$ {valor_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+            
+            # Atualizar campo
+            self.ent_valor_global.delete(0, tk.END)
+            self.ent_valor_global.insert(0, valor_formatado)
+            
+        except Exception as e:
+            logger.error(f"Erro ao formatar valor: {e}")
+    
+    def ajustar_data_util(self, data):
+        """Ajusta uma data para o próximo dia útil se cair em fim de semana"""
+        # Se for sábado (5), avançar 2 dias para segunda
+        if data.weekday() == 5:
+            data = data + pd.Timedelta(days=2)
+            logger.info(f"Data ajustada de sábado para segunda: {data.strftime('%d/%m/%Y')}")
+        # Se for domingo (6), avançar 1 dia para segunda
+        elif data.weekday() == 6:
+            data = data + pd.Timedelta(days=1)
+            logger.info(f"Data ajustada de domingo para segunda: {data.strftime('%d/%m/%Y')}")
+        return data
+
+    def gerar_contrato_final(self):
+        """Gera o contrato final em DOCX"""
+        
+        # Validar cliente selecionado
+        if not self.cliente_atual:
+            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+            return
+        
+        # Validar fornecedor selecionado
+        if not self.cmb_fornecedor_contrato.get():
+            messagebox.showwarning("Aviso", "Selecione um fornecedor!")
+            return
+        
+        # Validar serviços selecionados
+        if not self.servicos_selecionados:
+            messagebox.showwarning("Aviso", "Selecione ao menos um serviço!")
+            return
+        
+        # Validar campos obrigatórios
+        if not self.ent_valor_global.get() or self.ent_valor_global.get() == "R$ 0,00":
+            messagebox.showwarning("Aviso", "Informe o valor global do contrato!")
+            return
+        
+        if not self.ent_endereco_obra.get():
+            messagebox.showwarning("Aviso", "Informe o endereço da obra!")
+            return
+        
+        try:
+            # Obter dados do cliente
+            dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
+            
+            # Obter dados do fornecedor
+            nome_fornecedor = self.cmb_fornecedor_contrato.get().strip()
+            dados_fornecedor = self.gerador_contrato.obter_dados_fornecedor_por_nome(nome_fornecedor)
+            
+            # Validar se fornecedor foi encontrado
+            if not dados_fornecedor:
+                messagebox.showerror(
+                    "Erro",
+                    f"Não foi possível carregar os dados do fornecedor '{nome_fornecedor}'."
+                    f"Verifique se o fornecedor está cadastrado corretamente."
+                )
+                return
+            
+            # Obter dados bancários
+            dados_bancarios = self.txt_dados_bancarios.get('1.0', tk.END).strip()
+            
+            # Ajustar data fim se cair em fim de semana
+            data_fim = self.ent_data_fim.get_date()
+            data_fim_ajustada = self.ajustar_data_util(data_fim)
+            
+            # Se a data foi ajustada, atualizar o campo
+            if data_fim_ajustada != data_fim:
+                self.ent_data_fim.set_date(data_fim_ajustada)
+                messagebox.showinfo(
+                    "Data Ajustada",
+                    f"A data final foi ajustada de {data_fim.strftime('%d/%m/%Y')} "
+                    f"para {data_fim_ajustada.strftime('%d/%m/%Y')}\n\n"
+                    "Contratos devem terminar em dias úteis."
+                )
+                # Recalcular o número de dias úteis
+                self.calcular_prazo_contrato()
+            
+            # Preparar dados do contrato
+            dados_contrato = {
+                'data': self.ent_data_contrato.get_date().strftime('%d/%m/%Y'),
+                'cidade': dados_cliente['cidade'],
+                'cliente_nome': dados_cliente['nome'],
+                'cliente_cno': dados_cliente['cno'],
+                'cliente_cpf': dados_cliente['cnpj_cpf'],
+                'cliente_estado_civil': dados_cliente['estado_civil'],
+                'cliente_endereco': dados_cliente['endereco'],
+                'fornecedor_nome': dados_fornecedor['nome'],
+                'fornecedor_cnpj_cpf': dados_fornecedor['cnpj_cpf'],
+                'fornecedor_endereco': dados_fornecedor['endereco'],
+                'descricao': self.gerador_contrato.concatenar_servicos(self.servicos_selecionados),
+                'endereco_obra': self.ent_endereco_obra.get(),
+                'dias': self.ent_prazo_dias.get() or '0',
+                'data_inicio': self.ent_data_inicio.get_date().strftime('%d/%m/%Y'),
+                'data_fim': self.ent_data_fim.get_date().strftime('%d/%m/%Y'),
+                'valor': self.ent_valor_global.get(),
+                'multa': self.ent_multa.get(),
+                'dados_bancarios': dados_bancarios
+            }
+            
+            if hasattr(self, 'servicos_selecionados') and self.servicos_selecionados:
+                servicos_texto = self.gerador_contrato.concatenar_servicos(self.servicos_selecionados)
+                dados_contrato['descricao'] = servicos_texto  # OU outro campo
+            else:
+                dados_contrato['descricao'] = '[SERVIÇOS A DEFINIR]'
+            
+            # Gerar contrato
+            arquivo_gerado = self.gerador_contrato.gerar_contrato(dados_contrato)
+            
+            if arquivo_gerado:
+                messagebox.showinfo(
+                    "Sucesso",
+                    f"Contrato gerado com sucesso!\n\n"
+                    f"Arquivo: {Path(arquivo_gerado).name}\n"
+                    f"Local: {self.gerador_contrato.PASTA_CONTRATOS}"
+                )
+                
+                # Perguntar se quer abrir a pasta
+                if messagebox.askyesno("Abrir pasta?", "Deseja abrir a pasta de contratos?"):
+                    self.abrir_pasta_contratos()
+            else:
+                messagebox.showerror("Erro", "Falha ao gerar o contrato. Verifique os logs.")
+                
+        except Exception as e:
+            logger.error(f"Erro ao gerar contrato: {e}")
+            messagebox.showerror("Erro", f"Erro ao gerar contrato:\n{str(e)}")
+
+    def limpar_formulario_contrato(self):
+        """Limpa todos os campos do formulário de contrato"""
+        try:
+            # Limpar combobox de fornecedor
+            self.cmb_fornecedor_contrato.set('')
+            
+            # Limpar campos de fornecedor
+            self.ent_cnpj_fornecedor.config(state='normal')
+            self.ent_cnpj_fornecedor.delete(0, tk.END)
+            self.ent_cnpj_fornecedor.config(state='readonly')
+            
+            self.ent_endereco_fornecedor.config(state='normal')
+            self.ent_endereco_fornecedor.delete(0, tk.END)
+            self.ent_endereco_fornecedor.config(state='readonly')
+            
+            self.txt_dados_bancarios.config(state='normal')
+            self.txt_dados_bancarios.delete('1.0', tk.END)
+            self.txt_dados_bancarios.config(state='disabled')
+            
+            # Resetar datas
+            self.ent_data_contrato.set_date(datetime.now())
+            self.ent_data_contrato.bind('<<DateEntrySelected>>', self.ao_mudar_data_contrato)
+            self.ent_data_inicio.set_date(datetime.now())
+            self.ent_data_fim.set_date(datetime.now() + timedelta(days=30))
+            
+            # Limpar valores
+            self.ent_valor_global.delete(0, tk.END)
+            self.ent_valor_global.insert(0, "R$ 0,00")
+            self.ent_valor_global.bind('<FocusOut>', self.formatar_valor_global)
+            
+            self.ent_multa.delete(0, tk.END)
+            self.ent_multa.insert(0, "R$ 4.000,00")
+            
+            self.ent_endereco_obra.delete(0, tk.END)
+            
+            # Limpar serviços
+            self.servicos_selecionados = []
+            self.txt_servicos_selecionados.delete('1.0', tk.END)
+            
+            # Recalcular prazo
+            self.calcular_prazo_contrato()
+            
+            logger.info("Formulário de contrato limpo")
+            
+        except Exception as e:
+            logger.error(f"Erro ao limpar formulário: {e}")
+
+    def abrir_pasta_contratos(self):
+        """Abre a pasta de contratos no explorador de arquivos"""
+        try:
+            import subprocess
+            import platform
+            
+            pasta = self.gerador_contrato.PASTA_CONTRATOS
+            
+            if not pasta.exists():
+                pasta.mkdir(parents=True, exist_ok=True)
+            
+            if platform.system() == 'Windows':
+                os.startfile(str(pasta))
+            elif platform.system() == 'Darwin':  # macOS
+                subprocess.run(['open', str(pasta)])
+            else:  # Linux
+                subprocess.run(['xdg-open', str(pasta)])
+                
+            logger.info(f"Pasta de contratos aberta: {pasta}")
+            
+        except Exception as e:
+            logger.error(f"Erro ao abrir pasta de contratos: {e}")
+            messagebox.showerror("Erro", f"Erro ao abrir pasta: {str(e)}")
+
     # Funções da aba Medições
     def carregar_medicoes(self):
         """Carrega as medições do contrato selecionado"""
@@ -2272,6 +3333,67 @@ class GestaoMedicoes:
             self.menu_principal.lift()
             self.menu_principal.focus_force()
 
+class ComboboxServicosSimples(ttk.Combobox):
+    """Combobox com autocompletar para serviços"""
+    
+    def __init__(self, parent, **kwargs):
+        kwargs['state'] = 'normal'  # Permite digitação
+        super().__init__(parent, **kwargs)
+        
+        self.atualizar_valores()
+        self.bind('<KeyRelease>', self.autocompletar)
+        self.bind('<FocusOut>', self.validar_novo)
+    
+    def atualizar_valores(self):
+        """Atualiza lista de serviços"""
+        try:
+            from src.configuracoes_sistema import GerenciadorConfiguracoes
+            servicos = GerenciadorConfiguracoes.listar_todos_servicos()
+            self['values'] = servicos
+        except Exception as e:
+            print(f"Erro ao carregar serviços: {e}")
+            self['values'] = []
+    
+    def autocompletar(self, event):
+        """Autocompletar enquanto digita"""
+        valor = self.get()
+        if not valor:
+            self.atualizar_valores()
+            return
+        
+        # Filtrar
+        try:
+            from src.configuracoes_sistema import GerenciadorConfiguracoes
+            todos = GerenciadorConfiguracoes.listar_todos_servicos()
+            filtrados = [s for s in todos if valor.lower() in s.lower()]
+            self['values'] = filtrados
+        except:
+            pass
+    
+    def validar_novo(self, event=None):
+        """Valida e oferece adicionar novo serviço"""
+        valor = self.get().strip()
+        if not valor:
+            return
+        
+        try:
+            from src.configuracoes_sistema import GerenciadorConfiguracoes
+            existentes = GerenciadorConfiguracoes.listar_todos_servicos()
+            
+            if valor not in existentes:
+                resposta = messagebox.askyesno(
+                    "Novo Serviço",
+                    f"O serviço '{valor}' não existe.\n\nDeseja adicioná-lo?"
+                )
+                
+                if resposta:
+                    if GerenciadorConfiguracoes.adicionar_servico_rapido(valor):
+                        messagebox.showinfo("Sucesso", f"Serviço '{valor}' adicionado!")
+                        self.atualizar_valores()
+                    else:
+                        messagebox.showerror("Erro", "Não foi possível adicionar!")
+        except Exception as e:
+            print(f"Erro na validação: {e}")
 
 def main():
     """Função principal para executar o módulo de forma independente"""
