@@ -16,6 +16,7 @@ class GerenciadorConfiguracoes:
     # Definir o caminho do arquivo de configurações no mesmo local das planilhas base
     CONFIG_PATH = BASE_PATH / "parametros_sistema.json"
     MATERIAIS_CONFIG_PATH = BASE_PATH / "parametros_materiais.json"
+    SERVICOS_JSON_PATH = BASE_PATH / "servicos_construcao.json"
     
     # Cache de configurações para acesso rápido
     _config_cache = None
@@ -506,6 +507,7 @@ class GerenciadorConfiguracoes:
         self.setup_aba_insumos()
         self.setup_aba_indices_correcao()
         self.setup_aba_materiais()
+        self.criar_aba_servicos_construcao()
         
         # Botões globais
         frame_botoes = ttk.Frame(self.root)
@@ -1928,6 +1930,335 @@ class GerenciadorConfiguracoes:
         self.listbox_unidades.delete(0, tk.END)
         for unidade in sorted(self.materiais_config['unidades']):
             self.listbox_unidades.insert(tk.END, unidade)
+
+    def criar_aba_servicos_construcao(self):
+        """Cria a aba de gerenciamento de serviços de construção"""
+        from pathlib import Path
+        import json
+        
+        frame = ttk.Frame(self.notebook, padding="10")
+        self.notebook.add(frame, text="Serviços de Construção")
+        
+        # Título
+        ttk.Label(frame, text="Gerenciamento de Serviços de Construção", 
+                font=('Arial', 14, 'bold')).grid(row=0, column=0, columnspan=2, pady=(0, 20))
+        
+        # Frame principal dividido em duas colunas
+        main_container = ttk.Frame(frame)
+        main_container.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
+        
+        # ===== COLUNA ESQUERDA: CATEGORIAS =====
+        left_frame = ttk.LabelFrame(main_container, text="Categorias", padding="10")
+        left_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 5))
+        
+        # Treeview de categorias
+        cols_cat = ('ID', 'Nome', 'Qtd')
+        self.tree_servicos_cat = ttk.Treeview(left_frame, columns=cols_cat, show='headings', height=15)
+        
+        self.tree_servicos_cat.heading('ID', text='ID')
+        self.tree_servicos_cat.heading('Nome', text='Nome')
+        self.tree_servicos_cat.heading('Qtd', text='Serviços')
+        
+        self.tree_servicos_cat.column('ID', width=120)
+        self.tree_servicos_cat.column('Nome', width=180)
+        self.tree_servicos_cat.column('Qtd', width=60)
+        
+        scrollbar_cat = ttk.Scrollbar(left_frame, orient=tk.VERTICAL, command=self.tree_servicos_cat.yview)
+        self.tree_servicos_cat.configure(yscrollcommand=scrollbar_cat.set)
+        
+        self.tree_servicos_cat.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        scrollbar_cat.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        
+        # Botões de categoria
+        btn_frame_cat = ttk.Frame(left_frame)
+        btn_frame_cat.grid(row=1, column=0, columnspan=2, pady=(10, 0))
+        
+        ttk.Button(btn_frame_cat, text="Nova Categoria", 
+                command=self.nova_categoria_servico).pack(side=tk.LEFT, padx=2)
+        ttk.Button(btn_frame_cat, text="Editar", 
+                command=self.editar_categoria_servico).pack(side=tk.LEFT, padx=2)
+        ttk.Button(btn_frame_cat, text="Excluir", 
+                command=self.excluir_categoria_servico).pack(side=tk.LEFT, padx=2)
+        
+        left_frame.columnconfigure(0, weight=1)
+        left_frame.rowconfigure(0, weight=1)
+        
+        # ===== COLUNA DIREITA: SERVIÇOS =====
+        right_frame = ttk.LabelFrame(main_container, text="Serviços", padding="10")
+        right_frame.grid(row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(5, 0))
+        
+        # Treeview de serviços
+        cols_serv = ('Nome', 'Ambientes')
+        self.tree_servicos_list = ttk.Treeview(right_frame, columns=cols_serv, show='headings', height=15)
+        
+        self.tree_servicos_list.heading('Nome', text='Nome do Serviço')
+        self.tree_servicos_list.heading('Ambientes', text='Ambientes')
+        
+        self.tree_servicos_list.column('Nome', width=250)
+        self.tree_servicos_list.column('Ambientes', width=200)
+        
+        scrollbar_serv = ttk.Scrollbar(right_frame, orient=tk.VERTICAL, command=self.tree_servicos_list.yview)
+        self.tree_servicos_list.configure(yscrollcommand=scrollbar_serv.set)
+        
+        self.tree_servicos_list.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        scrollbar_serv.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        
+        # Botões de serviços
+        btn_frame_serv = ttk.Frame(right_frame)
+        btn_frame_serv.grid(row=1, column=0, columnspan=2, pady=(10, 0))
+        
+        ttk.Button(btn_frame_serv, text="Novo Serviço", 
+                command=self.novo_servico_construcao).pack(side=tk.LEFT, padx=2)
+        ttk.Button(btn_frame_serv, text="Editar", 
+                command=self.editar_servico_construcao).pack(side=tk.LEFT, padx=2)
+        ttk.Button(btn_frame_serv, text="Excluir", 
+                command=self.excluir_servico_construcao).pack(side=tk.LEFT, padx=2)
+        
+        right_frame.columnconfigure(0, weight=1)
+        right_frame.rowconfigure(0, weight=1)
+        
+        # Configurar grid do container principal
+        main_container.columnconfigure(0, weight=1)
+        main_container.columnconfigure(1, weight=2)
+        main_container.rowconfigure(0, weight=1)
+        
+        frame.columnconfigure(0, weight=1)
+        frame.rowconfigure(1, weight=1)
+        
+        # Bind para seleção de categoria
+        self.tree_servicos_cat.bind('<<TreeviewSelect>>', self.on_categoria_servico_selecionada)
+        
+        # Carregar dados iniciais
+        self.carregar_servicos_config()
+        self.atualizar_lista_categorias_servicos()
+
+    # =================================
+    # MÉTODOS PARA SERVIÇOS - CONTRATO
+    # =================================
+
+    def carregar_servicos_config(self):
+        """Carrega configurações de serviços"""
+        if self.SERVICOS_JSON_PATH.exists():
+            try:
+                with open(self.SERVICOS_JSON_PATH, 'r', encoding='utf-8') as f:
+                    self.servicos_config = json.load(f)
+            except Exception as e:
+                logger.error(f"Erro ao carregar serviços: {e}")
+                self.servicos_config = {"categorias": {}}
+        else:
+            self.servicos_config = {"categorias": {}}
+        
+        # Garantir estrutura
+        self._garantir_estrutura_servicos()
+    
+    def _garantir_estrutura_servicos(self):
+        """Garante estrutura completa dos serviços"""
+        if 'categorias' not in self.servicos_config:
+            self.servicos_config['categorias'] = {}
+        
+        for cat_id, cat_data in self.servicos_config['categorias'].items():
+            if 'nome' not in cat_data:
+                cat_data['nome'] = cat_id.title()
+            
+            if 'servicos' not in cat_data:
+                cat_data['servicos'] = []
+            
+            # Converter serviços antigos (string) para novo formato (dict)
+            servicos_atualizados = []
+            for servico in cat_data['servicos']:
+                if isinstance(servico, str):
+                    servicos_atualizados.append({
+                        'nome': servico,
+                        'ambientes': [],
+                        'descricao': ''
+                    })
+                elif isinstance(servico, dict):
+                    if 'nome' not in servico:
+                        continue
+                    if 'ambientes' not in servico:
+                        servico['ambientes'] = []
+                    if 'descricao' not in servico:
+                        servico['descricao'] = ''
+                    servicos_atualizados.append(servico)
+            
+            cat_data['servicos'] = servicos_atualizados
+    
+    def salvar_servicos_config(self):
+        """Salva configurações de serviços"""
+        try:
+            self.SERVICOS_JSON_PATH.parent.mkdir(parents=True, exist_ok=True)
+            with open(self.SERVICOS_JSON_PATH, 'w', encoding='utf-8') as f:
+                json.dump(self.servicos_config, f, indent=2, ensure_ascii=False)
+            logger.info("Serviços salvos com sucesso")
+            return True
+        except Exception as e:
+            logger.error(f"Erro ao salvar serviços: {e}")
+            messagebox.showerror("Erro", f"Erro ao salvar serviços: {e}")
+            return False
+    
+    @staticmethod
+    def listar_todos_servicos():
+        """Método estático para listar serviços - usado pelo combobox"""
+        try:
+            from src.config.config import BASE_PATH
+            json_path = BASE_PATH / "servicos_construcao.json"
+            
+            if not json_path.exists():
+                return []
+            
+            with open(json_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            
+            servicos = []
+            for cat_data in config.get('categorias', {}).values():
+                for servico in cat_data.get('servicos', []):
+                    if isinstance(servico, dict):
+                        servicos.append(servico['nome'])
+                    elif isinstance(servico, str):
+                        servicos.append(servico)
+            
+            return sorted(set(servicos))
+        except Exception as e:
+            print(f"Erro ao listar serviços: {e}")
+            return []
+    
+    @staticmethod
+    def adicionar_servico_rapido(nome_servico):
+        """Adiciona serviço rapidamente - usado pelo combobox"""
+        try:
+            from src.config.config import BASE_PATH
+            json_path = BASE_PATH / "servicos_construcao.json"
+            
+            # Carregar ou criar config
+            if json_path.exists():
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+            else:
+                config = {"categorias": {}}
+            
+            # Adicionar em "diversos" se não especificado
+            if "diversos" not in config['categorias']:
+                config['categorias']['diversos'] = {
+                    'nome': 'Serviços Diversos',
+                    'servicos': []
+                }
+            
+            # Adicionar serviço
+            novo_servico = {
+                'nome': nome_servico,
+                'descricao': '',
+                'ambientes': []
+            }
+            
+            config['categorias']['diversos']['servicos'].append(novo_servico)
+            
+            # Salvar
+            json_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=2, ensure_ascii=False)
+            
+            return True
+        except Exception as e:
+            print(f"Erro ao adicionar serviço: {e}")
+            return False
+
+
+# ==============================================================================
+# 4. ADICIONE ESTA NOVA ABA NO MÉTODO criar_interface()
+#    (Procure onde cria as outras abas e adicione esta junto)
+# ==============================================================================
+
+    def criar_aba_servicos_construcao(self):
+        """Cria aba simplificada para gerenciar serviços"""
+        frame = ttk.Frame(self.notebook, padding="10")
+        self.notebook.add(frame, text="Serviços")
+        
+        # Carregar dados
+        self.carregar_servicos_config()
+        
+        ttk.Label(frame, text="Gerenciamento Rápido de Serviços", 
+                 font=('Arial', 12, 'bold')).pack(pady=10)
+        
+        # Frame para adicionar
+        add_frame = ttk.LabelFrame(frame, text="Adicionar Serviço", padding="10")
+        add_frame.pack(fill=tk.X, padx=10, pady=10)
+        
+        ttk.Label(add_frame, text="Nome do Serviço:").grid(row=0, column=0, sticky=tk.W, padx=5)
+        self.entry_servico = ttk.Entry(add_frame, width=50)
+        self.entry_servico.grid(row=0, column=1, padx=5, pady=5)
+        
+        ttk.Button(add_frame, text="➕ Adicionar", 
+                  command=self.add_servico_simples).grid(row=0, column=2, padx=5)
+        
+        # Lista de serviços
+        lista_frame = ttk.LabelFrame(frame, text="Serviços Cadastrados", padding="10")
+        lista_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        self.listbox_servicos = tk.Listbox(lista_frame, height=15)
+        scrollbar = ttk.Scrollbar(lista_frame, orient=tk.VERTICAL, 
+                                  command=self.listbox_servicos.yview)
+        self.listbox_servicos.config(yscrollcommand=scrollbar.set)
+        
+        self.listbox_servicos.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        # Botão remover
+        ttk.Button(frame, text="➖ Remover Selecionado", 
+                  command=self.remover_servico_simples).pack(pady=5)
+        
+        # Atualizar lista
+        self.atualizar_lista_servicos_simples()
+    
+    def add_servico_simples(self):
+        """Adiciona serviço simples"""
+        nome = self.entry_servico.get().strip()
+        if not nome:
+            messagebox.showwarning("Aviso", "Digite o nome do serviço!")
+            return
+        
+        # Verificar duplicado
+        servicos_existentes = self.listar_todos_servicos()
+        if nome in servicos_existentes:
+            messagebox.showwarning("Aviso", "Este serviço já existe!")
+            return
+        
+        # Adicionar
+        if self.adicionar_servico_rapido(nome):
+            self.entry_servico.delete(0, tk.END)
+            self.carregar_servicos_config()
+            self.atualizar_lista_servicos_simples()
+            messagebox.showinfo("Sucesso", f"Serviço '{nome}' adicionado!")
+        else:
+            messagebox.showerror("Erro", "Não foi possível adicionar o serviço!")
+    
+    def remover_servico_simples(self):
+        """Remove serviço selecionado"""
+        sel = self.listbox_servicos.curselection()
+        if not sel:
+            messagebox.showwarning("Aviso", "Selecione um serviço!")
+            return
+        
+        nome_servico = self.listbox_servicos.get(sel[0])
+        
+        if not messagebox.askyesno("Confirmar", f"Remover '{nome_servico}'?"):
+            return
+        
+        # Remover do JSON
+        for cat_data in self.servicos_config['categorias'].values():
+            cat_data['servicos'] = [
+                s for s in cat_data['servicos'] 
+                if s.get('nome') != nome_servico
+            ]
+        
+        if self.salvar_servicos_config():
+            self.atualizar_lista_servicos_simples()
+            messagebox.showinfo("Sucesso", "Serviço removido!")
+    
+    def atualizar_lista_servicos_simples(self):
+        """Atualiza lista de serviços"""
+        self.listbox_servicos.delete(0, tk.END)
+        for servico in sorted(self.listar_todos_servicos()):
+            self.listbox_servicos.insert(tk.END, servico)
 
     def voltar_menu_local(self):  
         if hasattr(self, 'menu_principal') and self.menu_principal is not None:
