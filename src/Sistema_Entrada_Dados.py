@@ -281,6 +281,9 @@ class VisualizadorLancamentos:
         ttk.Button(self.frame_botoes, text="✏️ Editar", 
                   command=self.editar_lancamento).pack(side='left', padx=5)
         
+        ttk.Button(self.frame_botoes, text="📝 Editar em Massa", 
+                    command=self.editar_em_massa).pack(side='left', padx=5)
+        
         # Botão de exclusão único - funciona para 1 ou vários
         self.btn_excluir = tk.Button(self.frame_botoes, text="🗑️ Excluir Marcados", 
                                      command=self.excluir_marcados,
@@ -526,6 +529,46 @@ class VisualizadorLancamentos:
         self.janela.lift()
         self.janela.focus_force()
     
+    def editar_em_massa(self):
+        """Abre editor para alteração em massa dos lançamentos marcados"""
+        indices_marcados = self.obter_indices_marcados()
+        
+        if not indices_marcados:
+            self._dialogo_aberto = True
+            custom_messagebox("warning", "⚠️ Nenhum Item Marcado", 
+                            "Para editar em massa:\n\n"
+                            "1. Marque os lançamentos desejados com ☑\n"
+                            "2. Clique em 'Editar em Massa'\n\n"
+                            "💡 Use os botões auxiliares para marcar múltiplos itens!")
+            self._dialogo_aberto = False
+            self.janela.lift()
+            return
+        
+        if len(indices_marcados) == 1:
+            self._dialogo_aberto = True
+            resposta = custom_messagebox("yesno", 
+                "Edição Individual ou em Massa?",
+                "Você marcou apenas 1 lançamento.\n\n"
+                "Deseja usar o editor em massa mesmo assim?\n"
+                "(Não = abrirá o editor individual normal)")
+            self._dialogo_aberto = False
+            
+            if not resposta:
+                # Abrir editor individual
+                item = self.tree.get_children()[indices_marcados[0]]
+                self.tree.selection_set(item)
+                self.editar_lancamento()
+                return
+        
+        # Coletar dados dos lançamentos marcados
+        dados_selecionados = [self.dados_para_incluir[idx] for idx in indices_marcados]
+        
+        # Abrir editor em massa
+        self._dialogo_aberto = True
+        editor = EditorEmMassa(self.janela, dados_selecionados, indices_marcados, 
+                            self.atualizar_lancamento)
+        self._dialogo_aberto = False
+
     def salvar_rascunho_imediatamente(self):
         """SALVA ou REMOVE o rascunho IMEDIATAMENTE"""
         try:
@@ -975,7 +1018,12 @@ class EditorLancamento:
     def __init__(self, parent, dados, indice, callback_atualizacao):
         self.janela = tk.Toplevel(parent)
         self.janela.title("Editar Lançamento")
-        self.janela.geometry("600x550")  # Aumentado para acomodar novos campos
+        self.janela.geometry("600x550")  
+        
+        self._fechando = False
+        self.janela.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.janela.transient(parent)
+        self.janela.grab_set()
         
         self.dados = dados
         self.indice = indice
@@ -1084,7 +1132,7 @@ class EditorLancamento:
         frame_botoes.pack(fill='x', pady=10)
         
         ttk.Button(frame_botoes, text="Salvar", command=self.salvar).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Cancelar", command=self.janela.destroy).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Cancelar", command=self.janela.self.on_close).pack(side='left', padx=5)
         
         # Preencher dados existentes
         self.preencher_dados()
@@ -1092,6 +1140,12 @@ class EditorLancamento:
         # Vincular eventos
         self.vr_unit.bind('<KeyRelease>', self.calcular_valor_total)
         self.dias.bind('<KeyRelease>', self.calcular_valor_total)
+
+    def on_close(self):
+        """Fecha a janela de forma segura"""
+        self._fechando = True
+        self.janela.grab_release()
+        self.janela.destroy()
         
     def preencher_dados(self):
         """Preenche os campos com os dados atuais"""
@@ -1224,12 +1278,264 @@ class EditorLancamento:
             # Chamar callback de atualização e verificar sucesso
             if self.callback_atualizacao(self.indice, dados_atualizados):
                 custom_messagebox("info", "Sucesso", "Alterações salvas com sucesso!")
-                self.janela.destroy()
+                self.on_close()
             else:
                 custom_messagebox("error", "Erro", "Não foi possível salvar as alterações!")
             
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao salvar alterações: {str(e)}")
+
+
+class EditorEmMassa:
+    """Editor para alteração em massa de lançamentos marcados"""
+    
+    def __init__(self, parent, dados_selecionados, indices_selecionados, callback_atualizacao):
+        self.janela = tk.Toplevel(parent)
+        self.janela.title(f"Edição em Massa - {len(indices_selecionados)} lançamentos")
+        self.janela.geometry("500x500")
+        
+        # Gerenciamento de foco
+        self._fechando = False
+        self.janela.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.janela.transient(parent)
+        self.janela.grab_set()
+        
+        self.dados_selecionados = dados_selecionados
+        self.indices_selecionados = indices_selecionados
+        self.callback_atualizacao = callback_atualizacao
+        
+        self._criar_interface()
+    
+    def _criar_interface(self):
+        frame = ttk.Frame(self.janela, padding="10")
+        frame.pack(fill='both', expand=True)
+        
+        info_frame = ttk.LabelFrame(frame, text="Informações")
+        info_frame.pack(fill='x', pady=5)
+        
+        ttk.Label(info_frame, 
+                 text=f"Você está editando {len(self.indices_selecionados)} lançamentos simultaneamente.",
+                 font=('TkDefaultFont', 9, 'bold')).pack(padx=10, pady=5)
+        ttk.Label(info_frame, 
+                 text="Marque apenas os campos que deseja alterar.",
+                 foreground='blue').pack(padx=10, pady=2)
+        
+        campos_frame = ttk.LabelFrame(frame, text="Campos para Edição em Massa")
+        campos_frame.pack(fill='both', expand=True, pady=10)
+        
+        self.campos_vars = {}
+        self.campos_widgets = {}
+        
+        # TODOS OS 7 CAMPOS
+        self._criar_campo_checkbox(campos_frame, 0, "data_rel", "Data do Relatório:", 
+                                   DateEntry, date_pattern='dd/mm/yyyy', locale='pt_BR', width=20)
+        
+        self._criar_campo_checkbox(campos_frame, 1, "tp_desp", "Tipo de Despesa:", 
+                                   ttk.Entry, width=30)
+        
+        self._criar_campo_checkbox(campos_frame, 2, "referencia", "Referência:", 
+                                   ttk.Entry, width=30)
+        
+        self._criar_campo_checkbox(campos_frame, 3, "etapa_obra", "Etapa da Obra:", 
+                                   ttk.Entry, width=30)
+        
+        self._criar_campo_checkbox(campos_frame, 4, "dt_vencto", "Data de Vencimento:", 
+                                   DateEntry, date_pattern='dd/mm/yyyy', locale='pt_BR', width=20)
+        
+        # self._criar_campo_checkbox(campos_frame, 5, "forma_pagamento", "Forma de Pagamento:", 
+        #                            ttk.Combobox, values=['PIX', 'TED', 'DINHEIRO'], 
+        #                            state='readonly', width=20)
+        
+        # self._criar_campo_checkbox(campos_frame, 6, "observacao", "Observação:", 
+        #                            ttk.Entry, width=30)
+        
+        # Frame de atalhos
+        atalhos_frame = ttk.Frame(campos_frame)
+        atalhos_frame.grid(row=7, column=0, columnspan=3, pady=10, sticky='ew')
+        
+        ttk.Label(atalhos_frame, text="Marcar:").pack(side='left', padx=5)
+        ttk.Button(atalhos_frame, text="✓ Todos os Campos", 
+                  command=self.marcar_todos).pack(side='left', padx=2)
+        ttk.Button(atalhos_frame, text="✗ Nenhum Campo", 
+                  command=self.desmarcar_todos).pack(side='left', padx=2)
+        
+        # Botões de ação
+        botoes_frame = ttk.Frame(frame)
+        botoes_frame.pack(fill='x', pady=10)
+        
+        ttk.Button(botoes_frame, text="💾 Aplicar Alterações", 
+                  command=self.aplicar_alteracoes).pack(side='left', padx=5)
+        ttk.Button(botoes_frame, text="❌ Cancelar", 
+                  command=self.on_close).pack(side='left', padx=5)
+        
+        ttk.Label(botoes_frame, 
+                 text="⚠️ As alterações serão aplicadas imediatamente",
+                 foreground='red', font=('TkDefaultFont', 8)).pack(side='right', padx=10)
+    
+    def _criar_campo_checkbox(self, parent, row, nome_campo, label, widget_class, **widget_kwargs):
+        """Cria um campo com checkbox de habilitação"""
+        var = tk.BooleanVar(value=False)
+        self.campos_vars[nome_campo] = var
+        
+        chk = ttk.Checkbutton(parent, variable=var, 
+                             command=lambda: self._toggle_campo(nome_campo))
+        chk.grid(row=row, column=0, padx=5, pady=5)
+        
+        lbl = ttk.Label(parent, text=label, state='disabled')
+        lbl.grid(row=row, column=1, sticky='w', padx=5, pady=5)
+        
+        # Criar o widget
+        if widget_class == DateEntry:
+            widget = widget_class(parent, **widget_kwargs)
+            # ✅ CORREÇÃO: Não usar widget._entry diretamente
+        elif widget_class == ttk.Combobox:
+            widget = widget_class(parent, **widget_kwargs)
+        else:
+            widget = widget_class(parent, **widget_kwargs)
+        
+        widget.grid(row=row, column=2, padx=5, pady=5, sticky='ew')
+        widget.config(state='disabled')
+        
+        self.campos_widgets[nome_campo] = {'label': lbl, 'widget': widget}
+        parent.columnconfigure(2, weight=1)
+    
+    def _toggle_campo(self, nome_campo):
+        """Habilita/desabilita um campo baseado no checkbox"""
+        habilitado = self.campos_vars[nome_campo].get()
+        estado = 'normal' if habilitado else 'disabled'
+        
+        self.campos_widgets[nome_campo]['label'].config(state=estado)
+        
+        widget = self.campos_widgets[nome_campo]['widget']
+        
+        # Tratamento especial para cada tipo
+        if isinstance(widget, DateEntry):
+            if habilitado:
+                widget.config(state='normal')
+                # ✅ CORREÇÃO: Acessar entry interno de forma segura
+                try:
+                    for child in widget.winfo_children():
+                        if isinstance(child, tk.Entry):
+                            child.config(state='normal')
+                            break
+                except:
+                    pass
+            else:
+                widget.config(state='disabled')
+        elif isinstance(widget, ttk.Combobox):
+            if habilitado:
+                widget.config(state='readonly')
+            else:
+                widget.config(state='disabled')
+        else:
+            widget.config(state=estado)
+    
+    def marcar_todos(self):
+        """Marca todos os checkboxes e habilita todos os campos"""
+        for nome_campo in self.campos_vars:
+            self.campos_vars[nome_campo].set(True)
+            self._toggle_campo(nome_campo)
+    
+    def desmarcar_todos(self):
+        """Desmarca todos os checkboxes e desabilita todos os campos"""
+        for nome_campo in self.campos_vars:
+            self.campos_vars[nome_campo].set(False)
+            self._toggle_campo(nome_campo)
+    
+    def aplicar_alteracoes(self):
+        """Aplica as alterações em todos os lançamentos marcados"""
+        try:
+            try:
+                from src.config.dialogs import custom_messagebox
+            except ImportError:
+                from config.dialogs import custom_messagebox
+            
+            campos_marcados = [campo for campo, var in self.campos_vars.items() if var.get()]
+            
+            if not campos_marcados:
+                custom_messagebox("warning", "⚠️ Atenção", 
+                                "Você precisa marcar pelo menos um campo para editar!")
+                return
+            
+            qtd = len(self.indices_selecionados)
+            
+            traducao_campos = {
+                'data_rel': 'Data do Relatório',
+                'tp_desp': 'Tipo de Despesa',
+                'referencia': 'Referência',
+                'etapa_obra': 'Etapa da Obra',
+                'dt_vencto': 'Data de Vencimento',
+                'forma_pagamento': 'Forma de Pagamento',
+                'observacao': 'Observação'
+            }
+            
+            campos_texto = "\n• ".join([traducao_campos.get(c, c) for c in campos_marcados])
+            
+            resposta = custom_messagebox("yesno", 
+                "⚠️ Confirmar Edição em Massa",
+                f"Você está prestes a alterar {qtd} lançamentos!\n\n"
+                f"Campos que serão alterados:\n• {campos_texto}\n\n"
+                f"Esta operação não pode ser desfeita.\n\n"
+                f"Confirma a alteração?")
+            
+            if not resposta:
+                return
+            
+            valores_alteracao = {}
+            for campo in campos_marcados:
+                widget = self.campos_widgets[campo]['widget']
+                
+                if isinstance(widget, DateEntry):
+                    valores_alteracao[campo] = widget.get()
+                elif isinstance(widget, (ttk.Entry, ttk.Combobox)):
+                    valores_alteracao[campo] = widget.get()
+            
+            alteracoes_realizadas = 0
+            erros = []
+            
+            for idx, dados_originais in zip(self.indices_selecionados, self.dados_selecionados):
+                try:
+                    dados_atualizados = dados_originais.copy()
+                    
+                    for campo, valor in valores_alteracao.items():
+                        if campo == 'data_rel':
+                            dados_atualizados['data'] = valor
+                        else:
+                            dados_atualizados[campo] = valor
+                    
+                    if self.callback_atualizacao(idx, dados_atualizados):
+                        alteracoes_realizadas += 1
+                    else:
+                        erros.append(f"Lançamento {idx+1}")
+                        
+                except Exception as e:
+                    erros.append(f"Lançamento {idx+1}: {str(e)}")
+            
+            if alteracoes_realizadas > 0:
+                mensagem = f"✅ {alteracoes_realizadas} lançamentos alterados com sucesso!"
+                
+                if erros:
+                    mensagem += f"\n\n⚠️ {len(erros)} lançamentos com erro:\n" + "\n".join(erros[:5])
+                    if len(erros) > 5:
+                        mensagem += f"\n... e mais {len(erros)-5} erros"
+                
+                custom_messagebox("info", "Resultado da Edição em Massa", mensagem)
+                self.on_close()
+            else:
+                custom_messagebox("error", "Erro", 
+                                "Nenhuma alteração foi realizada.\n\n" + 
+                                "Erros:\n" + "\n".join(erros[:10]))
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao aplicar alterações: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    def on_close(self):
+        """Fecha a janela de forma segura"""
+        self._fechando = True
+        self.janela.grab_release()
+        self.janela.destroy()
 
 class GerenciadorCPFsCriados:
     def __init__(self):
@@ -2076,7 +2382,7 @@ class SistemaEntradaDados:
         """Abre janela para cadastro de novo cliente"""
         janela_cliente = tk.Toplevel(self.root)
         janela_cliente.title("Novo Cliente")
-        janela_cliente.geometry("700x500")  # Aumentado para incluir novo campo
+        janela_cliente.geometry("700x700")  # Aumentado para incluir novo campo
 
         # Frame principal
         frame = ttk.Frame(janela_cliente, padding="10")
@@ -2134,6 +2440,55 @@ class SistemaEntradaDados:
         obs_entry = ttk.Entry(frame, width=80)
         obs_entry.pack(pady=5)
 
+        # CPF
+        ttk.Label(frame, text="CPF:").pack(pady=5)
+        cpf_entry = ttk.Entry(frame, width=80)
+        cpf_entry.pack(pady=5)
+
+        # CNO
+        ttk.Label(frame, text="CNO:").pack(pady=5)
+        cno_entry = ttk.Entry(frame, width=80)
+        cno_entry.pack(pady=5)
+
+        # Estado civil
+        ttk.Label(frame, text="Estado Civil:").pack(pady=5)
+        estado_civil_var = tk.StringVar(value="Casado(a)")
+        frame_estado_civil = ttk.Frame(frame)
+        frame_estado_civil.pack(pady=5)
+        
+        ttk.Radiobutton(
+            frame_estado_civil, 
+            text="Casado(a)", 
+            variable=estado_civil_var, 
+            value="Casado(a)"
+        ).pack(side='left', padx=10)
+        
+        ttk.Radiobutton(
+            frame_estado_civil, 
+            text="Solteiro(a)", 
+            variable=estado_civil_var, 
+            value="Solteiro(a)"
+        ).pack(side='left', padx=10)
+        
+        ttk.Radiobutton(
+            frame_estado_civil, 
+            text="Divorciado(a)", 
+            variable=estado_civil_var, 
+            value="Divorciado(a)"
+        ).pack(side='left', padx=10)    
+        
+        ttk.Radiobutton(
+            frame_estado_civil, 
+            text="Viúvo(a)", 
+            variable=estado_civil_var, 
+            value="Viúvo(a)"
+        ).pack(side='left', padx=10)
+
+        # Cidade
+        ttk.Label(frame, text="Cidade:").pack(pady=5)
+        cid_entry = ttk.Entry(frame, width=80)
+        cid_entry.pack(pady=5)
+
         def validar_data(*args):
             """Valida se a data selecionada é dia 5 ou 20"""
             data = data_entry.get_date()
@@ -2163,6 +2518,10 @@ class SistemaEntradaDados:
             data = data_entry.get()
             observacoes = obs_entry.get().strip()
             tipo_taxa = tipo_taxa_var.get()
+            cpf = cpf_entry.get().strip()
+            cno = cno_entry.get().strip()
+            estado_civil = estado_civil_var.get()
+            cidade = cid_entry.get().strip()
             
             if not nome or not endereco:
                 messagebox.showerror("Erro", "Nome e Endereço são obrigatórios!")
@@ -2195,6 +2554,10 @@ class SistemaEntradaDados:
                 ws.cell(row=proxima_linha, column=4, value=observacoes.upper())
                 ws.cell(row=proxima_linha, column=5, value=None)  # Data Final
                 ws.cell(row=proxima_linha, column=6, value=tipo_taxa)  # NOVO: Tipo Taxa
+                ws.cell(row=proxima_linha, column=7, value=cpf)  # CPF
+                ws.cell(row=proxima_linha, column=8, value=cno)  # CNO
+                ws.cell(row=proxima_linha, column=9, value=estado_civil)  # Estado Civil
+                ws.cell(row=proxima_linha, column=10, value=cidade)  # Cidade
 
                 wb.save(ARQUIVO_CLIENTES)
 
@@ -2341,7 +2704,11 @@ class SistemaEntradaDados:
                         'data_inicial': row[2],
                         'observacoes': row[3],
                         'data_final': row[4] if len(row) > 4 else None,
-                        'tipo_taxa': row[5] if len(row) > 5 else 'Percentual'  # NOVO
+                        'tipo_taxa': row[5] if len(row) > 5 else 'Percentual',
+                        'cpf': row[6] if len(row) > 6 else '',
+                        'cno': row[7] if len(row) > 7 else '',
+                        'estado_civil': row[8] if len(row) > 8 else '',
+                        'cidade': row[9] if len(row) > 9 else ''
                     }
                     break
             
@@ -2354,7 +2721,7 @@ class SistemaEntradaDados:
             # Criar janela de edição
             janela_edicao = tk.Toplevel(self.root)
             janela_edicao.title(f"Editar Cliente - {cliente_selecionado}")
-            janela_edicao.geometry("760x350")
+            janela_edicao.geometry("600x430")
 
             frame = ttk.Frame(janela_edicao, padding="10")
             frame.pack(fill='both', expand=True)
@@ -2422,27 +2789,80 @@ class SistemaEntradaDados:
                 text="Percentual", 
                 variable=tipo_taxa_var, 
                 value="Percentual"
-            ).pack(side='left', padx=5)
+            ).grid(row=5, column=1, padx=5, pady=5, sticky='w')
             
             ttk.Radiobutton(
                 frame_tipo, 
                 text="Fixo", 
                 variable=tipo_taxa_var, 
                 value="Fixo"
-            ).pack(side='left', padx=5)
+            ).grid(row=5, column=2, padx=5, pady=5, sticky='w')
             
             ttk.Radiobutton(
                 frame_tipo, 
                 text="Sem Taxa", 
                 variable=tipo_taxa_var, 
                 value="Sem Taxa"
-            ).pack(side='left', padx=5)
+            ).grid(row=5, column=3, padx=5, pady=5, sticky='w')
 
             # Observações
             ttk.Label(frame, text="Observações:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
             obs_entry = ttk.Entry(frame, width=70)
             obs_entry.insert(0, dados_cliente['observacoes'] or '')
             obs_entry.grid(row=6, column=1, padx=5, pady=5)
+
+            # CPF
+            ttk.Label(frame, text="CPF:").grid(row=7, column=0, padx=5, pady=5, sticky='w')
+            cpf_entry = ttk.Entry(frame, width=70)
+            cpf_entry.insert(0, dados_cliente['cpf'] or '')
+            cpf_entry.grid(row=7, column=1, padx=5, pady=5)
+
+            # CNO
+            ttk.Label(frame, text="CNO:").grid(row=8, column=0, padx=5, pady=5, sticky='w')
+            cno_entry = ttk.Entry(frame, width=70)
+            cno_entry.insert(0, dados_cliente['cno'] or '')
+            cno_entry.grid(row=8, column=1, padx=5, pady=5) 
+
+            # Estado civil
+            ttk.Label(frame, text="Estado Civil:").grid(row=9, column=0, padx=5, pady=5, sticky='w')
+            estado_civil_var = tk.StringVar(value="Casado(a)")
+            frame_estado_civil = ttk.Frame(frame)
+            frame_estado_civil.grid(row=9, column=1, padx=5, pady=5, sticky='w')
+            
+            ttk.Radiobutton(
+                frame_estado_civil, 
+                text="Casado(a)", 
+                variable=estado_civil_var, 
+                value="Casado(a)"
+            ).grid(row=9, column=1, padx=5, pady=5, sticky='w')
+            
+            ttk.Radiobutton(
+                frame_estado_civil, 
+                text="Solteiro(a)", 
+                variable=estado_civil_var, 
+                value="Solteiro(a)"
+            ).grid(row=9, column=2, padx=5, pady=5, sticky='w')
+            
+            ttk.Radiobutton(
+                frame_estado_civil, 
+                text="Divorciado(a)", 
+                variable=estado_civil_var, 
+                value="Divorciado(a)"
+            ).grid(row=9, column=3, padx=5, pady=5, sticky='w')    
+            
+            ttk.Radiobutton(
+                frame_estado_civil, 
+                text="Viúvo(a)", 
+                variable=estado_civil_var, 
+                value="Viúvo(a)"
+            ).grid(row=9, column=4, padx=5, pady=5, sticky='w') 
+
+            # Cidade
+            ttk.Label(frame, text="Cidade:").grid(row=10, column=0, padx=5, pady=5, sticky='w')
+            cid_entry = ttk.Entry(frame, width=70)
+            cid_entry.insert(0, dados_cliente['cidade'] or '')
+            cid_entry.grid(row=10, column=1, padx=5, pady=5)
+
 
             def toggle_data_final():
                 if tem_data_final.get():
@@ -2490,6 +2910,10 @@ class SistemaEntradaDados:
                     
                     # NOVO: Salvar Tipo Taxa
                     ws.cell(row=proxima_linha, column=6, value=tipo_taxa_var.get())
+                    ws.cell(row=proxima_linha, column=7, value=cpf_entry.get().strip())
+                    ws.cell(row=proxima_linha, column=8, value=cno_entry.get().strip())
+                    ws.cell(row=proxima_linha, column=9, value=estado_civil_var.get())
+                    ws.cell(row=proxima_linha, column=10, value=cid_entry.get().strip())
 
                     wb.save(ARQUIVO_CLIENTES)
                     
@@ -2509,7 +2933,7 @@ class SistemaEntradaDados:
 
             # Botões
             frame_botoes = ttk.Frame(frame)
-            frame_botoes.grid(row=7, column=0, columnspan=2, pady=20)
+            frame_botoes.grid(row=11, column=0, columnspan=2, pady=20)
 
             ttk.Button(frame_botoes, text="Salvar", command=salvar_alteracoes).pack(side='left', padx=5)
             ttk.Button(frame_botoes, text="Cancelar", command=janela_edicao.destroy).pack(side='left', padx=5)
@@ -3443,6 +3867,7 @@ class SistemaEntradaDados:
                 
             self.campos_form['especificacao'].insert(0, fornecedor['especificacao'] or '')
             self.campos_form['vinculo'].insert(0, fornecedor['vinculo'] or '')
+            self.campos_form['endereco'].insert(0, fornecedor['endereco'] or '')
 
             # Centralizar a janela
             self.janela_fornecedor.update_idletasks()
@@ -3587,6 +4012,7 @@ class SistemaEntradaDados:
                         'categoria': row[11],
                         'especificacao': row[12],
                         'vinculo': row[13],
+                        'endereco': row[15]
                     }
                     wb.close()
                     return fornecedor
@@ -3767,6 +4193,10 @@ class SistemaEntradaDados:
         tk.Label(campos_class, text="Vínculo:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
         self.campos_form['vinculo'] = tk.Entry(campos_class, width=40)
         self.campos_form['vinculo'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
+
+        tk.Label(campos_class, text="Endereço:").grid(row=3, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['endereco'] = tk.Entry(campos_class, width=80)
+        self.campos_form['endereco'].grid(row=3, column=1, padx=5, pady=2, sticky='ew')
 
         # Botões de ação
         frame_botoes = ttk.Frame(formulario)
@@ -4099,7 +4529,8 @@ class SistemaEntradaDados:
             'categoria': str(self.campos_form['categoria'].get().upper()),
             'especificacao': str(self.campos_form['especificacao'].get().upper()),
             'vinculo': str(self.campos_form['vinculo'].get().upper()),
-            'dados_bancarios': str(dados_bancarios)
+            'dados_bancarios': str(dados_bancarios),
+            'endereco': str(self.campos_form['endereco'].get().upper())
         }
 
         try:
@@ -4642,7 +5073,8 @@ class SistemaEntradaDados:
                         'categoria': str(row[11]) if row[11] is not None else '',
                         'especificacao': str(row[12]) if row[12] is not None else '',
                         'vinculo': str(row[13]) if row[13] is not None else '',
-                        'dados_bancarios': str(row[14]) if row[14] is not None else ''
+                        'dados_bancarios': str(row[14]) if row[14] is not None else '',
+                        'endereco': str(row[15]) if row[15] is not None else ''
                     }
                     fornecedores.append(fornecedor)
             
@@ -4699,6 +5131,7 @@ class SistemaEntradaDados:
                 ws.cell(row=i, column=13, value=fornecedor.get('especificacao', ''))
                 ws.cell(row=i, column=14, value=fornecedor.get('vinculo', ''))
                 ws.cell(row=i, column=15, value=fornecedor.get('dados_bancarios', ''))
+                ws.cell(row=i, column=16, value=fornecedor.get('endereco', ''))
             
             wb.save(ARQUIVO_FORNECEDORES)
             
@@ -4722,6 +5155,7 @@ class SistemaEntradaDados:
         row[12].value = dados['especificacao']
         row[13].value = dados['vinculo']
         row[14].value = dados['dados_bancarios']
+        row[15].value = dados['endereco']
 
     def adicionar_linha_fornecedor(self, ws, linha, dados):
         """Adiciona uma nova linha com os dados do fornecedor"""
@@ -4740,6 +5174,7 @@ class SistemaEntradaDados:
         ws.cell(row=linha, column=13, value=dados['especificacao'])
         ws.cell(row=linha, column=14, value=dados['vinculo'])
         ws.cell(row=linha, column=15, value=dados['dados_bancarios'])
+        ws.cell(row=linha, column=16, value=dados['endereco'])
       
     def atualizar_fornecedor(self):
         """Atualiza dados do fornecedor existente"""
@@ -4772,6 +5207,7 @@ class SistemaEntradaDados:
                     row[12].value = self.campos_form['especificacao'].get().upper()
                     row[13].value = self.campos_form['vinculo'].get().upper()
                     row[14].value = self.campos_form['dados_bancarios'].get().upper()
+                    row[15].value = self.campos_form['endereco'].get().upper()
                     break
 
             wb.save(ARQUIVO_FORNECEDORES)
