@@ -328,7 +328,7 @@ class SistemaGestaoFinanceira:
                         "Visualização de relatórios",
                         self.abrir_relatorios, 1, 1)
                         
-        self.create_card(grid, "Gestão de Medições",
+        self.create_card(grid, "Gestão de Empreiteiros",
                         "Gerenciar contratos com empreiteros e por entregas",
                         self.abrir_gestao_medicoes, 2, 0)
                         
