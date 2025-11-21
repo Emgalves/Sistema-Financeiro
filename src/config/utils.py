@@ -403,7 +403,7 @@ def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_f
     Busca os dados bancários do fornecedor conforme a forma de pagamento
     
     Args:
-        cnpj_cpf (str): CNPJ ou CPF do fornecedor
+        cnpj_cpf (str): CNPJ ou CPF do fornecedor (com ou sem máscara)
         forma_pagamento (str): Forma de pagamento (PIX ou TED)
         arquivo_fornecedores (str, optional): Caminho para o arquivo de fornecedores
             Se não informado, usa o ARQUIVO_FORNECEDORES da configuração
@@ -419,16 +419,31 @@ def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_f
             
         from openpyxl import load_workbook
         
-        # Garantir que o CNPJ/CPF está formatado corretamente
-        cnpj_cpf = str(cnpj_cpf).strip()
+        # Limpar CNPJ/CPF (remover máscara: pontos, traços, barras)
+        cnpj_cpf_limpo = ''.join(filter(str.isdigit, str(cnpj_cpf).strip()))
         
         # Abrir arquivo de fornecedores
         wb = load_workbook(arquivo_fornecedores, data_only=True)
         ws = wb['Fornecedores']
     
         for row in ws.iter_rows(min_row=2, values_only=True):
-            if row[0] == cnpj_cpf:
+            if not row[0]:  # Pular se não tem CNPJ/CPF
+                continue
+                
+            # Limpar CNPJ/CPF da planilha também para comparação
+            cnpj_cpf_planilha = ''.join(filter(str.isdigit, str(row[0]).strip()))
+            
+            if cnpj_cpf_planilha == cnpj_cpf_limpo:
                 # Encontrou o fornecedor
+                dados_bancarios = None
+                
+                # PRIMEIRO: Verificar se existe dado na coluna O (DADOS BANCÁRIOS) - índice 14
+                if len(row) > 14 and row[14] and str(row[14]).strip():
+                    dados_bancarios = str(row[14]).strip()
+                    wb.close()
+                    return dados_bancarios
+                
+                # SEGUNDO: Se coluna O estiver em branco, continuar com o processo existente
                 if forma_pagamento == "PIX" and row[10]:  # Chave PIX está na coluna K
                     dados_bancarios = f"PIX: {row[10]}"
                 else:
@@ -612,6 +627,3 @@ TIPOS_DESPESA = {
     6: "Pagamentos Caixa",
     7: "Administração"
 }
-
-
-
