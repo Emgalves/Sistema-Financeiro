@@ -1,0 +1,911 @@
+2025-11-19 09:50:27,088 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 09:50:27,088 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 09:50:27,088 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 09:50:27,104 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 09:50:27,106 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 09:50:49,732 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-19 09:50:49,984 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-19 09:50:49,984 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-19 09:50:50,009 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-19 09:50:50,013 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-19 09:50:50,014 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 15 clientes
+2025-11-19 09:50:51,274 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-19 09:50:51,274 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-19 09:50:52,292 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-19 09:50:52,317 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-19 09:50:52,317 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-19 09:50:52,317 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-19 09:50:52,325 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 14
+2025-11-19 09:50:54,831 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2025-11-19 09:51:01,629 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2025-11-19 09:51:01,629 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-11-19 09:51:01,629 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-11-19 09:51:03,663 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-11-19 09:51:03,663 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-11-19 09:51:03,663 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-11-19 09:51:03,663 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-11-24 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-11-19 09:51:03,663 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-11-19 09:51:03,663 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-11-19 09:51:03,663 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-11-19 09:51:03,663 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-11-19 09:51:05,524 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-11-19 09:51:05,524 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-11-19 09:51:06,981 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-11-19 09:51:31,827 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20251119_095106.pdf
+2025-11-19 09:51:33,849 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20251119_095106.pdf'
+2025-11-19 09:51:40,393 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/11/2025
+2025-11-19 09:51:40,393 - sistema_relatorios - relatorios_interface - INFO - Modo automático ativado: 20/11/2025
+2025-11-19 09:51:42,241 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-19 09:51:42,241 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-19 09:51:42,308 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-19 09:51:45,553 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 09:51:45,575 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 09:51:45,582 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 09:51:45,583 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 09:51:45,595 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 09:51:48,330 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-11-19 09:55:37,483 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 09:55:37,483 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 09:55:37,483 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 09:55:37,483 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 09:55:37,483 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 09:55:46,115 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 09:55:46,115 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 09:55:46,115 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 09:55:46,115 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 09:55:46,143 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 09:55:49,781 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: FREDERICO LAVORATO ARANTES
+2025-11-19 09:56:07,256 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 09:56:07,256 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 09:57:10,922 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: FREDERICO LAVORATO ARANTES, Registros: 3
+2025-11-19 09:57:10,922 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-11-19 09:57:10,922 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 3
+2025-11-19 09:57:10,922 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['20/11/2025']
+2025-11-19 09:57:10,922 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FREDERICO LAVORATO ARANTES.xlsx
+2025-11-19 09:57:10,922 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-19 09:57:11,290 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-19 09:57:11,290 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-19 09:57:11,290 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: DEIWSON MENEZES DE SOUZA | 13º SALÁRIO | NF:  | R$ 178.08 | 29/11/2025
+2025-11-19 09:57:11,305 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: DEIWSON MENEZES DE SOUZA - 13º SALÁRIO - NF: 
+2025-11-19 09:57:11,316 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-19 09:57:11,317 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-19 09:57:11,318 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: GLAUBER CARDOSO LIMA | 13º SALÁRIO | NF:  | R$ 625.00 | 29/11/2025
+2025-11-19 09:57:11,321 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: GLAUBER CARDOSO LIMA - 13º SALÁRIO - NF: 
+2025-11-19 09:57:11,321 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-19 09:57:11,321 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-19 09:57:11,321 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: LAZARO ALVES TEIXEIRA | 13º SALÁRIO | NF:  | R$ 240.83 | 29/11/2025
+2025-11-19 09:57:11,343 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: LAZARO ALVES TEIXEIRA - 13º SALÁRIO - NF: 
+2025-11-19 09:57:11,344 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 170 na linha 170
+2025-11-19 09:57:11,346 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 171 na linha 171
+2025-11-19 09:57:11,348 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 172 na linha 172
+2025-11-19 09:57:11,659 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-19 09:57:12,173 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-20
+2025-11-19 09:57:12,173 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-19 09:57:13,892 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 3 registros salvos da visualização
+2025-11-19 09:57:13,908 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-11-19 09:57:13,912 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-19 09:57:18,659 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-19 09:57:18,679 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-19 09:57:18,679 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-19 09:57:18,689 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-19 09:57:18,690 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-11-19 09:57:18,691 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2025-11-19 09:57:20,334 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-19 09:57:20,350 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-19 09:57:20,351 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-19 09:57:20,353 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-19 09:57:20,354 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-11-19 09:57:25,563 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-11-19 09:57:25,563 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-11-19 09:58:05,460 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-11-19 09:58:05,476 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: categoria
+2025-11-19 09:58:40,546 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-11-19 09:58:40,546 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-11-19 10:00:10,381 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-19 10:00:10,381 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-19 10:00:10,462 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-19 10:00:13,174 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 10:00:13,184 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 10:00:13,184 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 10:00:13,184 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 10:00:13,198 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 10:00:18,761 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: NOEL COUTO SANTOS
+2025-11-19 10:00:31,493 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 10:00:31,494 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 10:02:21,329 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: NOEL COUTO SANTOS, Registros: 6
+2025-11-19 10:02:21,345 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-11-19 10:02:21,345 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 6
+2025-11-19 10:02:21,345 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['24/11/2025']
+2025-11-19 10:02:21,345 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\NOEL COUTO SANTOS.xlsx
+2025-11-19 10:02:21,345 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-11-19 10:02:21,766 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-19 10:02:21,766 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-19 10:02:21,766 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ANTONIO JOCIVALDO DA SILVA | 13º SALÁRIO | NF:  | R$ 267.13 | 29/11/2025
+2025-11-19 10:02:21,782 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ANTONIO JOCIVALDO DA SILVA - 13º SALÁRIO - NF: 
+2025-11-19 10:02:21,796 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-19 10:02:21,797 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-19 10:02:21,799 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ANTONIO TRINDADE FERNANDES | 13º SALÁRIO | NF:  | R$ 481.67 | 29/11/2025
+2025-11-19 10:02:21,816 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ANTONIO TRINDADE FERNANDES - 13º SALÁRIO - NF: 
+2025-11-19 10:02:21,816 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-19 10:02:21,821 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-19 10:02:21,822 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: BRENO DAVID DOS SANTOS | 13º SALÁRIO | NF:  | R$ 89.04 | 29/11/2025
+2025-11-19 10:02:21,838 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: BRENO DAVID DOS SANTOS - 13º SALÁRIO - NF: 
+2025-11-19 10:02:21,840 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-19 10:02:21,840 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-19 10:02:21,841 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: FABRICIO MELQUIADES DA CRUZ | 13º SALÁRIO | NF:  | R$ 408.17 | 29/11/2025
+2025-11-19 10:02:21,858 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: FABRICIO MELQUIADES DA CRUZ - 13º SALÁRIO - NF: 
+2025-11-19 10:02:21,858 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-19 10:02:21,858 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-19 10:02:21,858 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: FORTUNATO CECILIO DE JESUS | 13º SALÁRIO | NF:  | R$ 361.25 | 29/11/2025
+2025-11-19 10:02:21,882 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: FORTUNATO CECILIO DE JESUS - 13º SALÁRIO - NF: 
+2025-11-19 10:02:21,882 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-11-19 10:02:21,882 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-11-19 10:02:21,882 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: JOSE RODRIGO DO CARMO DE OLIVEIRA | 13º SALÁRIO | NF:  | R$ 800.00 | 29/11/2025
+2025-11-19 10:02:21,907 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: JOSE RODRIGO DO CARMO DE OLIVEIRA - 13º SALÁRIO - NF: 
+2025-11-19 10:02:21,913 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 258 na linha 259
+2025-11-19 10:02:21,916 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 259 na linha 260
+2025-11-19 10:02:21,920 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 260 na linha 261
+2025-11-19 10:02:21,923 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 261 na linha 262
+2025-11-19 10:02:21,927 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 262 na linha 263
+2025-11-19 10:02:21,929 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 263 na linha 264
+2025-11-19 10:02:22,191 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-11-19 10:02:22,693 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-11-24
+2025-11-19 10:02:22,693 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-11-24: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-11-19 10:02:24,521 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 6 registros salvos da visualização
+2025-11-19 10:02:24,538 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-11-19 10:02:24,540 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-11-19 10:02:29,315 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-19 10:02:29,340 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-19 10:02:29,341 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-19 10:02:29,344 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-19 10:02:29,346 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-11-19 10:02:29,346 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2025-11-19 10:02:30,903 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-19 10:02:30,923 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa']
+2025-11-19 10:02:30,924 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-19 10:02:30,925 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-19 10:02:30,925 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-11-19 10:02:34,039 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-11-19 10:02:34,039 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-11-19 10:03:00,796 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: categoria
+2025-11-19 10:03:00,796 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: categoria
+2025-11-19 10:06:10,629 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-19 10:06:10,629 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-19 10:06:10,705 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-19 10:59:22,683 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 10:59:22,774 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 10:59:22,829 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 10:59:22,843 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 10:59:22,846 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:01:42,288 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:01:42,303 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:01:42,303 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:01:42,303 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:01:42,317 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:02:13,526 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 11:02:29,626 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:02:29,626 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:14:09,606 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 11:14:09,606 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 11:14:09,606 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 11:14:09,606 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 11:14:09,606 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:14:20,174 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:14:20,174 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:14:20,193 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:14:20,194 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:14:20,199 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:14:35,064 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 11:14:54,298 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:14:54,298 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:21:31,431 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 11:21:31,431 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 11:21:31,431 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 11:21:31,431 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 11:21:31,431 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:21:38,611 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:21:38,611 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:21:38,611 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:21:38,611 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:21:38,638 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:21:42,177 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 11:21:56,231 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:21:56,231 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:24:28,642 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 11:24:28,645 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 11:24:28,646 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 11:24:28,654 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 11:24:28,656 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:24:34,616 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:24:34,619 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:24:34,621 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:24:34,622 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:24:34,635 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:24:37,070 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 11:24:45,227 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:24:45,228 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:24:57,622 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 11:24:59,319 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: GILMAR ALMEIDA PORTUGAL, Total: 1
+2025-11-19 11:27:36,083 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 11:27:36,085 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 11:27:36,086 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 11:27:36,087 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 11:27:36,091 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:27:41,469 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:27:41,485 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:27:41,485 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:27:41,485 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:27:41,503 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:27:45,876 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-19 11:27:54,727 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:27:54,727 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:28:04,917 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-19 11:28:06,604 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-19 11:30:41,873 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 11:30:41,873 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 11:30:41,873 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 11:30:41,873 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 11:30:41,873 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:30:46,100 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:30:46,100 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:30:46,100 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:30:46,100 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:30:46,123 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:30:48,300 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-19 11:30:58,171 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:30:58,171 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:31:07,429 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-19 11:31:08,828 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-19 11:38:55,716 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 11:38:55,716 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 11:38:55,716 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 11:38:55,716 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 11:38:55,716 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:39:00,343 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:39:00,343 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:39:00,343 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:39:00,343 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:39:00,359 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:39:02,546 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-19 11:39:15,587 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:39:15,587 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:39:24,465 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-19 11:39:25,974 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-19 11:41:03,198 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 11:41:03,198 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 11:41:03,198 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 11:41:03,198 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 11:41:03,198 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:41:07,525 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:41:07,525 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:41:07,525 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:41:07,525 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:41:07,540 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:41:11,337 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-19 11:41:19,337 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:41:19,337 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:41:27,821 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-19 11:41:29,112 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-19 11:43:51,148 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 11:43:51,148 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 11:43:51,148 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 11:43:51,148 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 11:43:51,148 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:43:55,708 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:43:55,723 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:43:55,723 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:43:55,723 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:43:55,736 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:43:57,828 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-19 11:44:08,101 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:44:08,101 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:44:28,540 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-19 11:44:30,072 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-19 11:56:07,522 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 11:56:07,522 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 11:56:07,522 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 11:56:07,522 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 11:56:07,522 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 11:56:11,996 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:56:11,996 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:56:11,996 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:56:11,996 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 11:56:12,014 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 11:56:14,996 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 11:56:27,439 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 11:56:27,456 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:05:01,950 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 12:05:01,950 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 12:05:01,950 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 12:05:01,950 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 12:05:01,950 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 12:05:08,258 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:05:08,258 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:05:08,258 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:05:08,258 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:05:08,272 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 12:05:12,804 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 12:05:25,082 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:05:25,082 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:15:00,808 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 12:15:00,808 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 12:15:00,808 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 12:15:00,808 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 12:15:00,823 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 12:15:06,451 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:15:06,451 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:15:06,451 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:15:06,451 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:15:06,474 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 12:15:10,483 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 12:15:20,525 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:15:20,525 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:18:04,390 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 12:18:04,390 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 12:18:04,390 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 12:18:04,390 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 12:18:04,390 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 12:18:09,734 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:18:09,734 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:18:09,734 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:18:09,734 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:18:09,757 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 12:18:11,904 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-19 12:18:21,076 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:18:21,076 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:18:34,735 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-19 12:18:38,198 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-19 12:18:40,749 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:18:40,749 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:18:56,508 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:18:56,508 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:19:06,271 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-19 12:19:07,921 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-11-19 12:30:40,381 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 12:30:40,381 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 12:30:40,381 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 12:30:40,381 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 12:30:40,381 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 12:30:46,140 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:30:46,140 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:30:46,140 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:30:46,140 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:30:46,157 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 12:32:59,669 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-19 12:33:08,399 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:33:08,399 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:33:19,724 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-19 12:33:21,036 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-11-19 12:33:23,281 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 12:33:23,281 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 12:33:32,705 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-11-19 12:33:34,122 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2025-11-19 14:06:31,064 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 14:06:31,064 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 14:06:31,064 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 14:06:31,064 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 14:06:31,064 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 14:06:33,156 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 14:06:33,172 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 14:06:33,172 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 14:06:33,172 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 14:06:33,190 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 14:06:36,249 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-11-19 15:13:33,931 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 15:13:33,931 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 15:13:33,931 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 15:13:33,931 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 15:13:33,931 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 15:13:40,596 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 15:45:54,173 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 15:45:54,173 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 15:45:54,173 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 15:45:54,173 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 15:45:54,173 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 15:46:00,073 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 16:50:16,630 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 16:50:16,630 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 16:50:16,630 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 16:50:16,630 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 16:50:16,630 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 16:50:25,264 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 16:52:57,494 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 16:52:57,502 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 16:52:57,504 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 16:52:57,505 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 16:52:57,507 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 16:53:03,447 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 18:37:24,096 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 18:37:24,097 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 18:37:24,097 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 18:37:24,097 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 18:37:24,098 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 18:37:35,806 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 18:45:25,310 - sistema_relatorios - gestao_medicoes - ERROR - Erro ao carregar fornecedores: object of type 'int' has no len()
+2025-11-19 18:48:38,352 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 18:48:38,354 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 18:48:38,354 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 18:48:38,355 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 18:48:38,355 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 18:48:44,356 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 18:48:45,749 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 18:48:45,799 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 18:48:45,799 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 18:48:45,799 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 18:48:57,572 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 18:48:57,592 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 18:48:57,606 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 18:48:57,609 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 18:48:58,061 - sistema_relatorios - gestao_medicoes - ERROR - Erro ao carregar fornecedores: object of type 'int' has no len()
+2025-11-19 19:01:52,589 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:01:52,589 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:01:52,589 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:01:52,589 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:01:52,589 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:01:58,966 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:01:58,966 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:01:58,979 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:01:58,979 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:01:58,998 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 19:02:09,819 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:02:26,505 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:02:26,505 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:02:26,520 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:02:26,520 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:02:26,520 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:02:26,520 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:02:26,520 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:02:26,520 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:04:28,787 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:04:28,787 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:04:28,804 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:04:28,804 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:04:28,809 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:04:33,530 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:04:33,530 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:04:33,530 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:04:33,530 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:04:33,553 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 19:04:36,984 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:04:45,291 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:04:45,291 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:04:45,291 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:04:45,291 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:04:45,291 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:04:45,291 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:04:45,310 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:04:45,311 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:06:06,738 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:06:06,738 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:06:06,738 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:06:06,738 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:06:06,738 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:06:11,711 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:06:11,711 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:06:11,711 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:06:11,724 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:06:11,746 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 19:06:14,660 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:06:26,956 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:06:26,956 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:06:26,956 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:06:26,956 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:06:26,972 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:06:26,972 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:06:26,988 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:06:26,988 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:08:27,560 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:08:27,562 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:08:27,563 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:08:27,564 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:08:27,564 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:08:32,211 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:08:32,211 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:08:32,211 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:08:32,211 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:08:32,227 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 19:08:35,541 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:08:45,652 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:08:45,652 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:08:45,652 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:08:45,652 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:08:45,652 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:08:45,667 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:08:45,667 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:08:45,667 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:19:54,495 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:19:54,495 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:19:54,495 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:19:54,495 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:19:54,495 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:19:59,137 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:19:59,153 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:19:59,153 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:19:59,153 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:19:59,171 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 19:20:02,955 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:20:10,607 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:20:10,607 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:20:10,607 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:20:10,607 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:20:10,607 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:20:10,607 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:20:10,625 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:20:10,626 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:24:29,657 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:24:29,657 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:24:29,657 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:24:29,657 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:24:29,657 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:24:34,299 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:24:34,315 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:24:34,315 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:24:34,315 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:24:34,327 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 19:24:38,350 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:24:46,879 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:24:46,879 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:24:46,879 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:24:46,879 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:24:46,894 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:24:46,894 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:24:46,894 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:24:46,894 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:28:05,006 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:28:05,007 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:28:05,007 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:28:05,007 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:28:05,007 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:28:09,546 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:28:09,546 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:28:09,546 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:28:09,546 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:28:09,576 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 19:28:13,313 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:28:21,326 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:28:21,326 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:28:21,326 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:28:21,326 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:28:21,326 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:28:21,326 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:28:21,342 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:28:21,342 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:34:36,948 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:34:36,948 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:34:36,948 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:34:36,964 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:34:36,964 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:34:39,525 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:34:39,525 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:34:39,525 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:34:39,525 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:34:39,556 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-19 19:34:54,923 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:35:01,673 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:35:01,673 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:35:01,673 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:35:01,673 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:35:01,673 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:35:01,673 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:35:01,673 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-19 19:35:01,673 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-19 19:36:29,714 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:36:29,729 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:36:29,729 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:36:29,729 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:36:29,729 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:36:34,841 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 19:36:36,137 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 19:36:36,137 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 19:36:36,137 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 19:36:36,137 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 19:36:46,216 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:36:46,236 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 19:36:46,258 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 19:36:46,262 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:36:46,755 - sistema_relatorios - gestao_medicoes - ERROR - Erro ao carregar fornecedores: object of type 'int' has no len()
+2025-11-19 19:46:58,012 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:46:58,012 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:46:58,012 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:46:58,012 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:46:58,012 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:47:06,643 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 19:47:08,026 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 19:47:08,026 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 19:47:08,026 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 19:47:08,026 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 19:47:18,266 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:47:18,282 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 19:47:18,310 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 19:47:18,310 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 19:47:18,310 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 19:47:18,909 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 19:49:17,640 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:49:17,655 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:49:17,656 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:49:17,657 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:49:17,657 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:51:34,881 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:51:34,881 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:51:34,881 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:51:34,881 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:51:34,897 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:51:39,246 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 19:51:40,668 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 19:51:40,668 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 19:51:40,668 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 19:51:40,668 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 19:53:05,702 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 19:53:05,702 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 19:53:05,702 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 19:53:05,702 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 19:53:05,702 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 19:53:35,920 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 19:53:37,306 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 19:53:37,306 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 19:53:37,306 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 19:53:37,306 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 21:11:24,394 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 21:11:24,394 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 21:11:24,394 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 21:11:24,394 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 21:11:24,394 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 21:11:31,020 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 21:11:32,430 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 21:11:32,446 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 21:11:32,446 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 21:11:32,446 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 21:11:42,360 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:11:42,375 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 21:11:42,406 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 21:11:42,408 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:11:42,408 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:11:43,000 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:21:23,431 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 21:21:23,431 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 21:21:23,431 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 21:21:23,431 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 21:21:23,431 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 21:21:29,220 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 21:21:30,669 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 21:21:30,669 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 21:21:30,669 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 21:21:30,669 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 21:21:40,438 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:21:40,454 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 21:21:40,477 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 21:21:40,477 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:21:40,477 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:21:41,483 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:21:46,386 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-19 21:21:47,446 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-19 21:21:47,446 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-19 21:21:48,449 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-19 21:21:48,449 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-19 21:21:49,466 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-19 21:21:49,466 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:21:50,466 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:21:52,216 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:21:53,216 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:22:11,195 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES - 048.854.356-84
+2025-11-19 21:22:11,684 - sistema_relatorios - gerador_contrato - WARNING - Fornecedor não encontrado: 048.854.356-84
+2025-11-19 21:34:03,390 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 21:34:03,390 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 21:34:03,390 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 21:34:03,390 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 21:34:03,390 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 21:34:11,294 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 21:34:12,823 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 21:34:12,823 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 21:34:12,823 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 21:34:12,823 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 21:34:21,031 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:34:21,046 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 21:34:21,070 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 21:34:21,070 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:34:21,070 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:34:22,105 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:34:24,733 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-19 21:34:25,773 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-19 21:34:25,788 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-19 21:34:26,759 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-19 21:34:26,775 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-19 21:34:27,789 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-19 21:34:27,789 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:34:28,775 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:34:30,711 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:34:31,739 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:34:33,239 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:34:34,272 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:34:39,336 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-19 21:34:40,340 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ERILTON NEVES RODRIGUES' sem endereço cadastrado
+2025-11-19 21:34:41,278 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-19 21:34:41,430 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:34:42,456 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:45:45,799 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 21:45:45,799 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 21:45:45,799 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 21:45:45,799 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 21:45:45,799 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 21:45:51,516 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 21:45:52,984 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 21:45:52,984 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 21:45:52,984 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 21:45:52,984 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 21:46:00,373 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:46:00,389 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 21:46:00,413 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 21:46:00,419 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:46:00,419 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:46:01,480 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:46:04,231 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-19 21:46:05,311 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-19 21:46:05,311 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-19 21:46:06,331 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-19 21:46:06,331 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-19 21:46:07,395 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-19 21:46:07,410 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:46:08,806 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:46:08,806 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:46:09,831 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:46:09,831 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:46:10,848 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:46:11,723 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:46:12,748 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:46:15,842 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:46:16,865 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:46:18,178 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:46:19,213 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:46:35,700 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:46:36,730 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:46:36,965 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:46:38,091 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:46:38,348 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:46:39,349 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:46:41,989 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-19 21:46:43,967 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-19 21:46:45,683 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-19 21:46:47,729 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-19 21:48:31,128 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 21:48:31,128 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 21:48:31,128 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 21:48:31,128 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 21:48:31,128 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 21:48:37,256 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 21:48:38,756 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 21:48:38,758 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 21:48:38,759 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 21:48:38,760 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 21:48:48,204 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:48:48,220 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 21:48:48,247 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 21:48:48,249 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:48:48,249 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:48:49,263 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:48:52,468 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-19 21:48:53,527 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-19 21:48:53,527 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-19 21:48:54,530 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-19 21:48:54,530 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-19 21:48:55,546 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-19 21:48:55,546 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:48:56,547 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:48:56,547 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:48:57,547 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:48:59,282 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:49:00,296 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:49:02,234 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-19 21:49:04,137 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-19 21:49:04,397 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:49:05,429 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:55:16,612 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 21:55:16,628 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 21:55:16,628 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 21:55:16,628 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 21:55:16,628 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 21:55:24,425 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 21:55:25,852 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 21:55:25,868 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 21:55:25,868 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 21:55:25,868 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 21:55:33,866 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:55:33,887 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 21:55:33,891 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 21:55:33,893 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:55:33,893 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:55:34,876 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:55:41,375 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-19 21:55:42,455 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-19 21:55:42,455 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-19 21:55:43,443 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-19 21:55:43,459 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-19 21:55:44,443 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-19 21:55:44,443 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:55:45,459 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:55:46,974 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:55:47,991 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:55:48,851 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:55:49,875 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:55:50,671 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:55:51,692 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:55:55,535 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:55:56,542 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:55:58,136 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-19 21:55:59,111 - sistema_relatorios - gestao_medicoes - ERROR - Erro ao buscar dados bancários: name 'buscar_dados_bancarios_fornecedor' is not defined
+2025-11-19 21:55:59,126 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-19 21:58:36,205 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-19 21:58:36,205 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-19 21:58:36,205 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-19 21:58:36,205 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-19 21:58:36,205 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-19 21:58:41,308 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-19 21:58:42,698 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 21:58:42,698 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 21:58:42,698 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 21:58:42,698 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 21:58:54,066 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:58:54,066 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 21:58:54,085 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 21:58:54,086 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 21:58:54,087 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:58:55,120 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:58:58,169 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-19 21:58:59,235 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-19 21:58:59,235 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-19 21:59:00,257 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-19 21:59:00,257 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-19 21:59:01,257 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-19 21:59:01,257 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:59:02,273 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:59:04,085 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:59:05,089 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:59:09,354 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:59:10,356 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:59:14,322 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:59:15,401 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:59:15,401 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 21:59:16,437 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 21:59:18,392 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:59:19,390 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:59:20,077 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 21:59:21,090 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 21:59:22,309 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-19 21:59:24,291 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-19 22:01:34,365 - sistema_relatorios - gestao_medicoes - INFO - 1 serviços selecionados
+2025-11-19 22:02:22,859 - sistema_relatorios - gestao_medicoes - INFO - 1 serviços selecionados
+2025-11-19 22:02:58,666 - sistema_relatorios - gestao_medicoes - INFO - 2 serviços selecionados
+2025-11-19 22:03:02,982 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 22:03:02,998 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 22:03:03,010 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 22:03:03,474 - sistema_relatorios - gerador_contrato - WARNING - Fornecedor não encontrado: ERILTON NEVES RODRIGUES
+2025-11-19 22:03:03,474 - sistema_relatorios - gestao_medicoes - ERROR - Erro ao gerar contrato: 'NoneType' object is not subscriptable
+2025-11-19 22:04:54,177 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-19 22:04:54,177 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-19 22:04:54,177 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-19 22:04:54,177 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-19 22:04:56,059 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 22:04:57,100 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 22:05:06,476 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 22:05:06,503 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 22:05:06,505 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 22:05:06,507 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-19 22:05:06,508 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-19 22:05:07,488 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-19 22:05:11,221 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-19 22:05:12,235 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-19 22:05:12,235 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-19 22:05:13,236 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-19 22:05:13,236 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-19 22:05:14,236 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-19 22:05:14,236 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 22:05:15,314 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 22:05:17,052 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-19 22:05:18,052 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-19 22:05:21,630 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-19 22:05:23,573 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-19 22:06:12,302 - sistema_relatorios - gestao_medicoes - INFO - 2 serviços selecionados
+2025-11-19 22:06:14,567 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-19 22:06:14,589 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-19 22:06:14,592 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-19 22:06:15,054 - sistema_relatorios - gerador_contrato - WARNING - Fornecedor não encontrado: ERILTON NEVES RODRIGUES
+2025-11-19 22:06:15,054 - sistema_relatorios - gestao_medicoes - ERROR - Erro ao gerar contrato: 'NoneType' object is not subscriptable

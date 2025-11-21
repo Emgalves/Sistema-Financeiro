@@ -1,0 +1,34 @@
+2025-11-21 11:07:15,099 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-21 11:07:15,149 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-21 11:07:15,150 - INFO - Coluna de status: Data Final
+2025-11-21 11:07:15,163 - INFO - Coluna de nome: Nome
+2025-11-21 11:07:15,165 - INFO - Total de clientes ativos encontrados: 16
+2025-11-21 11:07:15,166 - INFO - Lista de clientes atualizada com 17 clientes
+2025-11-21 11:07:17,551 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-21 11:07:17,566 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-21 11:07:17,567 - INFO - Coluna de status: Data Final
+2025-11-21 11:07:17,571 - INFO - Coluna de nome: Nome
+2025-11-21 11:07:17,573 - INFO - Total de clientes ativos encontrados: 16
+2025-11-21 11:07:19,793 - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-11-21 11:07:19,794 - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-11-21 11:07:47,961 - INFO - Solicitado retorno ao menu principal
+2025-11-21 11:07:47,962 - INFO - Retornando ao menu principal existente
+2025-11-21 11:07:48,041 - INFO - Retorno ao menu principal concluído
+2025-11-21 11:07:50,719 - INFO - Sistema encerrado pelo usuário
+2025-11-21 11:10:09,060 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-21 11:10:09,112 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-21 11:10:09,114 - INFO - Coluna de status: Data Final
+2025-11-21 11:10:09,131 - INFO - Coluna de nome: Nome
+2025-11-21 11:10:09,132 - INFO - Total de clientes ativos encontrados: 16
+2025-11-21 11:10:09,132 - INFO - Lista de clientes atualizada com 17 clientes
+2025-11-21 11:10:10,582 - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-21 11:10:10,601 - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-21 11:10:10,604 - INFO - Coluna de status: Data Final
+2025-11-21 11:10:10,606 - INFO - Coluna de nome: Nome
+2025-11-21 11:10:10,607 - INFO - Total de clientes ativos encontrados: 16
+2025-11-21 11:10:12,511 - INFO - 🔍 INICIANDO gerar_relatorio para: tipo_despesa
+2025-11-21 11:10:12,512 - INFO - 📋 Processando outros relatórios: tipo_despesa
+2025-11-21 11:31:07,563 - INFO - Solicitado retorno ao menu principal
+2025-11-21 11:31:07,575 - INFO - Retornando ao menu principal existente
+2025-11-21 11:31:07,639 - INFO - Retorno ao menu principal concluído
+2025-11-21 11:31:11,345 - INFO - Sistema encerrado pelo usuário

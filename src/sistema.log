@@ -6302,3 +6302,293 @@
 2025-11-16 11:13:40,979 - INFO - Sistema iniciado em modo: TESTE
 2025-11-16 11:13:43,358 - INFO - Abrindo sistema de entrada de dados
 2025-11-16 12:29:48,486 - INFO - Sistema encerrado pelo usuário
+2025-11-19 09:50:44,166 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 09:50:44,205 - INFO - Configurações importadas com sucesso
+2025-11-19 09:50:44,207 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 09:50:47,196 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 09:50:48,954 - INFO - Abrindo sistema de relatórios
+2025-11-19 09:51:44,816 - INFO - Abrindo sistema de entrada de dados
+2025-11-19 09:55:40,508 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 09:55:40,523 - INFO - Configurações importadas com sucesso
+2025-11-19 09:55:40,525 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 09:55:41,173 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 09:55:44,790 - INFO - Abrindo sistema de entrada de dados
+2025-11-19 09:57:18,338 - INFO - Abrindo sistema de relatórios
+2025-11-19 10:00:12,604 - INFO - Abrindo sistema de entrada de dados
+2025-11-19 10:02:29,266 - INFO - Abrindo sistema de relatórios
+2025-11-19 10:06:46,437 - INFO - Sistema encerrado pelo usuário
+2025-11-19 10:59:37,521 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 10:59:37,665 - INFO - Configurações importadas com sucesso
+2025-11-19 10:59:37,667 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 10:59:39,618 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 11:01:40,971 - INFO - Abrindo sistema de entrada de dados
+2025-11-19 11:08:07,338 - INFO - Sistema encerrado pelo usuário
+2025-11-19 11:14:15,960 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 11:14:15,986 - INFO - Configurações importadas com sucesso
+2025-11-19 11:14:15,986 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 11:14:16,809 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 11:14:18,451 - INFO - Abrindo sistema de entrada de dados
+2025-11-19 15:13:37,315 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 15:13:37,332 - INFO - Configurações importadas com sucesso
+2025-11-19 15:13:37,332 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 15:13:38,091 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 15:13:40,580 - INFO - Abrindo gestão de medições
+2025-11-19 15:30:52,238 - INFO - Sistema encerrado pelo usuário
+2025-11-19 15:45:57,596 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 15:45:57,614 - INFO - Configurações importadas com sucesso
+2025-11-19 15:45:57,615 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 15:45:58,393 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 15:46:00,058 - INFO - Abrindo gestão de medições
+2025-11-19 16:48:08,373 - INFO - Sistema encerrado pelo usuário
+2025-11-19 16:50:21,119 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 16:50:21,134 - INFO - Configurações importadas com sucesso
+2025-11-19 16:50:21,140 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 16:50:23,078 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 16:50:25,200 - INFO - Abrindo gestão de medições
+2025-11-19 16:50:25,336 - ERROR - Erro ao abrir gestão de medições: 'GestaoMedicoes' object has no attribute 'setup_aba_emissao_contrato'
+2025-11-19 16:51:43,273 - INFO - Sistema encerrado pelo usuário
+2025-11-19 16:53:00,873 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 16:53:00,900 - INFO - Configurações importadas com sucesso
+2025-11-19 16:53:00,901 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 16:53:01,600 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 16:53:03,390 - INFO - Abrindo gestão de medições
+2025-11-19 16:53:03,532 - ERROR - Erro ao abrir gestão de medições: 'GestaoMedicoes' object has no attribute 'carregar_dados_fornecedor_contrato'
+2025-11-19 18:37:08,558 - INFO - Sistema encerrado pelo usuário
+2025-11-19 18:37:27,328 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 18:37:27,343 - INFO - Configurações importadas com sucesso
+2025-11-19 18:37:27,343 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 18:37:27,774 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 18:37:35,720 - INFO - Abrindo gestão de medições
+2025-11-19 18:45:30,476 - INFO - Sistema encerrado pelo usuário
+2025-11-19 18:48:41,561 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 18:48:41,594 - INFO - Configurações importadas com sucesso
+2025-11-19 18:48:41,594 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 18:48:42,324 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 18:48:44,340 - INFO - Abrindo gestão de medições
+2025-11-19 19:01:28,995 - INFO - Sistema encerrado pelo usuário
+2025-11-19 19:36:32,542 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 19:36:32,556 - INFO - Configurações importadas com sucesso
+2025-11-19 19:36:32,556 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 19:36:33,191 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 19:36:34,841 - INFO - Abrindo gestão de medições
+2025-11-19 19:41:00,547 - INFO - Sistema encerrado pelo usuário
+2025-11-19 19:47:01,332 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 19:47:01,348 - INFO - Configurações importadas com sucesso
+2025-11-19 19:47:01,349 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 19:47:02,087 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 19:47:06,554 - INFO - Abrindo gestão de medições
+2025-11-19 19:49:12,927 - INFO - Sistema encerrado pelo usuário
+2025-11-19 19:49:23,385 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 19:49:23,403 - INFO - Configurações importadas com sucesso
+2025-11-19 19:49:23,404 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 19:49:24,167 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 19:49:44,445 - INFO - Sistema encerrado pelo usuário
+2025-11-19 19:51:37,354 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 19:51:37,364 - INFO - Configurações importadas com sucesso
+2025-11-19 19:51:37,364 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 19:51:37,707 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 19:51:39,199 - INFO - Abrindo gestão de medições
+2025-11-19 19:52:37,191 - INFO - Sistema encerrado pelo usuário
+2025-11-19 19:53:08,445 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 19:53:08,460 - INFO - Configurações importadas com sucesso
+2025-11-19 19:53:08,460 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 19:53:09,110 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 19:53:35,905 - INFO - Abrindo gestão de medições
+2025-11-19 19:54:09,361 - INFO - Sistema encerrado pelo usuário
+2025-11-19 21:11:28,133 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 21:11:28,153 - INFO - Configurações importadas com sucesso
+2025-11-19 21:11:28,154 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 21:11:28,915 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 21:11:31,020 - INFO - Abrindo gestão de medições
+2025-11-19 21:11:57,269 - INFO - Sistema encerrado pelo usuário
+2025-11-19 21:21:26,691 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 21:21:26,711 - INFO - Configurações importadas com sucesso
+2025-11-19 21:21:26,712 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 21:21:27,562 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 21:21:29,132 - INFO - Abrindo gestão de medições
+2025-11-19 21:33:57,593 - INFO - Sistema encerrado pelo usuário
+2025-11-19 21:34:08,380 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 21:34:08,409 - INFO - Configurações importadas com sucesso
+2025-11-19 21:34:08,410 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 21:34:09,554 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 21:34:11,205 - INFO - Abrindo gestão de medições
+2025-11-19 21:41:21,385 - INFO - Sistema encerrado pelo usuário
+2025-11-19 21:45:49,052 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 21:45:49,060 - INFO - Configurações importadas com sucesso
+2025-11-19 21:45:49,060 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 21:45:50,065 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 21:45:51,414 - INFO - Abrindo gestão de medições
+2025-11-19 21:46:59,415 - INFO - Sistema encerrado pelo usuário
+2025-11-19 21:48:34,509 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 21:48:34,523 - INFO - Configurações importadas com sucesso
+2025-11-19 21:48:34,525 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 21:48:35,272 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 21:48:37,111 - INFO - Abrindo gestão de medições
+2025-11-19 21:55:08,873 - INFO - Sistema encerrado pelo usuário
+2025-11-19 21:55:19,174 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 21:55:19,189 - INFO - Configurações importadas com sucesso
+2025-11-19 21:55:19,190 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 21:55:19,819 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 21:55:24,327 - INFO - Abrindo gestão de medições
+2025-11-19 21:58:17,029 - INFO - Sistema encerrado pelo usuário
+2025-11-19 21:58:39,114 - INFO - Configurações importadas com sucesso via src.config
+2025-11-19 21:58:39,119 - INFO - Configurações importadas com sucesso
+2025-11-19 21:58:39,119 - INFO - Configurações do sistema importadas com sucesso
+2025-11-19 21:58:39,785 - INFO - Sistema iniciado em modo: TESTE
+2025-11-19 21:58:41,219 - INFO - Abrindo gestão de medições
+2025-11-19 22:04:53,040 - INFO - Abrindo gestão de medições
+2025-11-19 22:06:46,573 - INFO - Sistema encerrado pelo usuário
+2025-11-20 11:52:55,199 - INFO - Configurações importadas com sucesso via src.config
+2025-11-20 11:52:55,215 - INFO - Configurações importadas com sucesso
+2025-11-20 11:52:55,218 - INFO - Configurações do sistema importadas com sucesso
+2025-11-20 11:52:56,797 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 11:53:06,033 - INFO - Sistema encerrado pelo usuário
+2025-11-20 12:41:15,963 - INFO - Configurações importadas com sucesso via src.config
+2025-11-20 12:41:15,979 - INFO - Configurações importadas com sucesso
+2025-11-20 12:41:15,979 - INFO - Configurações do sistema importadas com sucesso
+2025-11-20 12:41:16,708 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 12:41:21,417 - INFO - Abrindo gestão de medições
+2025-11-20 12:57:02,683 - INFO - Sistema encerrado pelo usuário
+2025-11-20 12:57:13,998 - INFO - Configurações importadas com sucesso via src.config
+2025-11-20 12:57:14,012 - INFO - Configurações importadas com sucesso
+2025-11-20 12:57:14,013 - INFO - Configurações do sistema importadas com sucesso
+2025-11-20 12:57:14,628 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 12:57:17,434 - INFO - Abrindo gestão de medições
+2025-11-20 13:10:49,590 - INFO - Sistema encerrado pelo usuário
+2025-11-20 13:11:00,939 - INFO - Configurações importadas com sucesso via src.config
+2025-11-20 13:11:00,957 - INFO - Configurações importadas com sucesso
+2025-11-20 13:11:00,958 - INFO - Configurações do sistema importadas com sucesso
+2025-11-20 13:11:01,627 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 13:11:20,298 - INFO - Sistema encerrado pelo usuário
+2025-11-20 13:12:03,604 - INFO - Configurações importadas com sucesso via src.config
+2025-11-20 13:12:03,620 - INFO - Configurações importadas com sucesso
+2025-11-20 13:12:03,620 - INFO - Configurações do sistema importadas com sucesso
+2025-11-20 13:12:03,988 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 13:12:06,727 - INFO - Abrindo gestão de medições
+2025-11-20 13:12:06,783 - ERROR - Erro ao abrir gestão de medições: unterminated f-string literal (detected at line 1825) (gestao_medicoes.py, line 1825)
+2025-11-20 13:15:05,131 - INFO - Sistema encerrado pelo usuário
+2025-11-20 13:15:12,798 - INFO - Configurações importadas com sucesso via src.config
+2025-11-20 13:15:12,823 - INFO - Configurações importadas com sucesso
+2025-11-20 13:15:12,823 - INFO - Configurações do sistema importadas com sucesso
+2025-11-20 13:15:13,284 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 13:15:17,213 - INFO - Abrindo gestão de medições
+2025-11-20 13:18:10,307 - INFO - Sistema encerrado pelo usuário
+2025-11-20 13:27:28,691 - INFO - Configurações importadas com sucesso via src.config
+2025-11-20 13:27:28,799 - INFO - Configurações importadas com sucesso
+2025-11-20 13:27:28,806 - INFO - Configurações do sistema importadas com sucesso
+2025-11-20 13:27:29,498 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 13:27:31,455 - INFO - Abrindo gestão de medições
+2025-11-20 13:29:27,887 - INFO - Sistema encerrado pelo usuário
+2025-11-20 14:49:12,564 - INFO - Configurações importadas com sucesso via src.config
+2025-11-20 14:49:12,582 - INFO - Configurações importadas com sucesso
+2025-11-20 14:49:12,583 - INFO - Configurações do sistema importadas com sucesso
+2025-11-20 14:49:14,357 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 14:49:19,142 - INFO - Abrindo gestão de medições
+2025-11-20 14:50:35,766 - INFO - Sistema encerrado pelo usuário
+2025-11-20 15:02:09,361 - WARNING - Módulo ControlePagamentos não encontrado, criando stub
+2025-11-20 15:02:10,835 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 15:02:12,322 - INFO - Abrindo gestão de medições
+2025-11-20 15:02:12,426 - ERROR - Erro ao abrir gestão de medições: No module named 'dateutil'
+2025-11-20 15:10:07,824 - INFO - Sistema encerrado pelo usuário
+2025-11-20 15:11:59,020 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 15:12:02,508 - INFO - Abrindo gestão de medições
+2025-11-20 15:15:21,480 - INFO - Sistema encerrado pelo usuário
+2025-11-20 15:19:34,456 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 15:21:08,330 - INFO - Abrindo gestão de medições
+2025-11-20 15:23:50,278 - INFO - Sistema encerrado pelo usuário
+2025-11-20 15:40:28,728 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 15:40:45,957 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 15:40:47,417 - INFO - Abrindo gestão de medições
+2025-11-20 15:44:22,221 - INFO - Sistema encerrado pelo usuário
+2025-11-20 15:44:31,193 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 15:44:45,967 - INFO - Sistema encerrado pelo usuário
+2025-11-20 15:47:50,724 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 15:47:52,500 - INFO - Abrindo gestão de medições
+2025-11-20 16:21:16,350 - INFO - Sistema encerrado pelo usuário
+2025-11-20 16:28:43,625 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 16:28:45,435 - INFO - Abrindo gestão de medições
+2025-11-20 16:28:45,499 - ERROR - Erro ao abrir gestão de medições: unterminated f-string literal (detected at line 1846) (gestao_medicoes.py, line 1846)
+2025-11-20 16:29:50,258 - INFO - Sistema encerrado pelo usuário
+2025-11-20 16:30:01,930 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 16:30:03,530 - INFO - Abrindo gestão de medições
+2025-11-20 16:35:10,735 - INFO - Sistema encerrado pelo usuário
+2025-11-20 16:35:19,669 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 16:35:20,846 - INFO - Abrindo gestão de medições
+2025-11-20 16:49:57,429 - INFO - Sistema encerrado pelo usuário
+2025-11-20 16:54:35,089 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 16:54:41,634 - INFO - Abrindo gestão de medições
+2025-11-20 16:54:41,696 - ERROR - Erro ao abrir gestão de medições: unterminated f-string literal (detected at line 1914) (gestao_medicoes.py, line 1914)
+2025-11-20 16:54:47,465 - INFO - Sistema encerrado pelo usuário
+2025-11-20 16:55:23,194 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 16:55:24,842 - INFO - Abrindo gestão de medições
+2025-11-20 16:55:24,956 - ERROR - Erro ao abrir gestão de medições: expected 'except' or 'finally' block (gestao_medicoes.py, line 1986)
+2025-11-20 16:55:31,338 - INFO - Abrindo gestão de medições
+2025-11-20 16:55:31,447 - ERROR - Erro ao abrir gestão de medições: expected 'except' or 'finally' block (gestao_medicoes.py, line 1986)
+2025-11-20 16:58:45,257 - INFO - Sistema iniciado em modo: TESTE
+2025-11-20 16:58:47,824 - INFO - Abrindo gestão de medições
+2025-11-20 17:04:34,202 - INFO - Sistema encerrado pelo usuário
+2025-11-21 10:24:02,944 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 10:24:04,596 - INFO - Abrindo gestão de medições
+2025-11-21 10:35:37,268 - INFO - Sistema encerrado pelo usuário
+2025-11-21 10:36:15,379 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 10:36:17,941 - INFO - Abrindo gestão de medições
+2025-11-21 10:40:29,858 - INFO - Sistema encerrado pelo usuário
+2025-11-21 10:55:23,946 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 10:55:27,472 - INFO - Abrindo gestão de medições
+2025-11-21 11:03:37,475 - INFO - Abrindo sistema de relatórios
+2025-11-21 11:03:37,484 - ERROR - Erro ao abrir relatórios: No module named 'psutil'
+2025-11-21 11:03:44,347 - INFO - Abrindo sistema de relatórios
+2025-11-21 11:03:44,354 - ERROR - Erro ao abrir relatórios: No module named 'psutil'
+2025-11-21 11:05:30,419 - INFO - Sistema encerrado pelo usuário
+2025-11-21 11:05:38,496 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 11:05:39,930 - INFO - Abrindo sistema de relatórios
+2025-11-21 11:05:40,142 - ERROR - Erro ao abrir relatórios: No module named 'reportlab'
+2025-11-21 11:06:28,976 - INFO - Sistema encerrado pelo usuário
+2025-11-21 11:07:12,725 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 11:07:14,769 - INFO - Abrindo sistema de relatórios
+2025-11-21 11:07:50,719 - INFO - Sistema encerrado pelo usuário
+2025-11-21 11:10:07,030 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 11:10:08,727 - INFO - Abrindo sistema de relatórios
+2025-11-21 11:31:11,345 - INFO - Sistema encerrado pelo usuário
+2025-11-21 11:33:20,955 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 11:33:53,304 - INFO - Abrindo sistema de entrada de dados
+2025-11-21 11:33:53,323 - ERROR - Erro ao abrir sistema de entrada de dados: No module named 'requests'
+2025-11-21 11:35:47,758 - INFO - Sistema encerrado pelo usuário
+2025-11-21 16:14:56,010 - INFO - Configurações importadas com sucesso via src.config
+2025-11-21 16:14:56,092 - INFO - Configurações importadas com sucesso
+2025-11-21 16:14:56,094 - INFO - Configurações do sistema importadas com sucesso
+2025-11-21 16:14:56,753 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 16:14:58,497 - INFO - Abrindo gestão de medições
+2025-11-21 16:19:40,173 - INFO - Abrindo configurações do sistema
+2025-11-21 16:20:01,147 - INFO - Sistema encerrado pelo usuário
+2025-11-21 16:29:08,765 - INFO - Configurações importadas com sucesso via src.config
+2025-11-21 16:29:08,778 - INFO - Configurações importadas com sucesso
+2025-11-21 16:29:08,779 - INFO - Configurações do sistema importadas com sucesso
+2025-11-21 16:29:09,231 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 16:40:29,790 - INFO - Sistema encerrado pelo usuário
+2025-11-21 16:46:16,477 - INFO - Configurações importadas com sucesso via src.config
+2025-11-21 16:46:16,555 - INFO - Configurações importadas com sucesso
+2025-11-21 16:46:16,557 - INFO - Configurações do sistema importadas com sucesso
+2025-11-21 16:46:17,130 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 16:46:19,612 - INFO - Abrindo configurações do sistema
+2025-11-21 16:47:05,291 - INFO - Sistema encerrado pelo usuário
+2025-11-21 17:45:43,093 - INFO - Configurações importadas com sucesso via src.config
+2025-11-21 17:45:43,109 - INFO - Configurações importadas com sucesso
+2025-11-21 17:45:43,109 - INFO - Configurações do sistema importadas com sucesso
+2025-11-21 17:45:43,898 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 17:45:45,430 - INFO - Abrindo gestão de medições
+2025-11-21 17:50:01,860 - INFO - Abrindo configurações do sistema
+2025-11-21 17:50:58,803 - INFO - Sistema encerrado pelo usuário
+2025-11-21 17:54:39,954 - INFO - Configurações importadas com sucesso via src.config
+2025-11-21 17:54:39,971 - INFO - Configurações importadas com sucesso
+2025-11-21 17:54:39,972 - INFO - Configurações do sistema importadas com sucesso
+2025-11-21 17:54:40,600 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 17:54:46,049 - INFO - Abrindo configurações do sistema
+2025-11-21 17:56:37,064 - INFO - Abrindo configurações do sistema
+2025-11-21 17:56:50,934 - INFO - Sistema encerrado pelo usuário
+2025-11-21 17:57:05,653 - INFO - Configurações importadas com sucesso via src.config
+2025-11-21 17:57:05,725 - INFO - Configurações importadas com sucesso
+2025-11-21 17:57:05,726 - INFO - Configurações do sistema importadas com sucesso
+2025-11-21 17:57:06,156 - INFO - Sistema iniciado em modo: TESTE
+2025-11-21 17:57:07,991 - INFO - Abrindo configurações do sistema
+2025-11-21 17:57:19,351 - INFO - Sistema encerrado pelo usuário
