@@ -6592,3 +6592,57 @@
 2025-11-21 17:57:06,156 - INFO - Sistema iniciado em modo: TESTE
 2025-11-21 17:57:07,991 - INFO - Abrindo configurações do sistema
 2025-11-21 17:57:19,351 - INFO - Sistema encerrado pelo usuário
+2025-11-25 09:05:45,392 - INFO - Configurações importadas com sucesso via src.config
+2025-11-25 09:05:45,415 - INFO - Configurações importadas com sucesso
+2025-11-25 09:05:45,417 - INFO - Configurações do sistema importadas com sucesso
+2025-11-25 09:05:46,608 - INFO - Sistema iniciado em modo: TESTE
+2025-11-25 09:05:53,858 - INFO - Abrindo sistema de entrada de dados
+2025-11-25 09:07:55,417 - INFO - Sistema encerrado pelo usuário
+2025-11-25 10:33:20,075 - INFO - Configurações importadas com sucesso via src.config
+2025-11-25 10:33:20,216 - INFO - Configurações importadas com sucesso
+2025-11-25 10:33:20,217 - INFO - Configurações do sistema importadas com sucesso
+2025-11-25 10:33:21,905 - INFO - Sistema iniciado em modo: TESTE
+2025-11-25 10:33:27,851 - INFO - Abrindo sistema de entrada de dados
+2025-11-25 10:33:34,947 - INFO - Abrindo gestão de medições
+2025-11-25 10:54:26,798 - INFO - Sistema encerrado pelo usuário
+2025-11-25 11:15:08,650 - INFO - Configurações importadas com sucesso via src.config
+2025-11-25 11:15:08,663 - INFO - Configurações importadas com sucesso
+2025-11-25 11:15:08,664 - INFO - Configurações do sistema importadas com sucesso
+2025-11-25 11:15:09,332 - INFO - Sistema iniciado em modo: TESTE
+2025-11-25 11:15:11,740 - INFO - Abrindo gestão de medições
+2025-11-25 11:15:11,924 - ERROR - Erro ao abrir gestão de medições: expected an indented block after function definition on line 3335 (gestao_medicoes.py, line 3338)
+2025-11-25 11:41:16,375 - INFO - Sistema encerrado pelo usuário
+2025-11-25 11:41:22,967 - INFO - Configurações importadas com sucesso via src.config
+2025-11-25 11:41:22,980 - INFO - Configurações importadas com sucesso
+2025-11-25 11:41:22,981 - INFO - Configurações do sistema importadas com sucesso
+2025-11-25 11:41:23,277 - INFO - Sistema iniciado em modo: TESTE
+2025-11-25 11:41:25,212 - INFO - Abrindo gestão de medições
+2025-11-25 11:54:56,571 - INFO - Sistema encerrado pelo usuário
+2025-11-25 12:03:39,407 - INFO - Configurações importadas com sucesso via src.config
+2025-11-25 12:03:39,422 - INFO - Configurações importadas com sucesso
+2025-11-25 12:03:39,423 - INFO - Configurações do sistema importadas com sucesso
+2025-11-25 12:03:40,017 - INFO - Sistema iniciado em modo: TESTE
+2025-11-25 12:05:38,812 - INFO - Abrindo gestão de medições
+2025-11-25 12:14:18,797 - INFO - Sistema encerrado pelo usuário
+2025-11-25 12:22:22,573 - INFO - Configurações importadas com sucesso via src.config
+2025-11-25 12:22:22,586 - INFO - Configurações importadas com sucesso
+2025-11-25 12:22:22,587 - INFO - Configurações do sistema importadas com sucesso
+2025-11-25 12:22:23,140 - INFO - Sistema iniciado em modo: TESTE
+2025-11-25 12:22:24,906 - INFO - Abrindo gestão de medições
+2025-11-25 16:58:12,834 - INFO - Sistema encerrado pelo usuário
+2025-11-25 16:58:27,008 - INFO - Configurações importadas com sucesso via src.config
+2025-11-25 16:58:27,022 - INFO - Configurações importadas com sucesso
+2025-11-25 16:58:27,023 - INFO - Configurações do sistema importadas com sucesso
+2025-11-25 16:58:27,675 - INFO - Sistema iniciado em modo: TESTE
+2025-11-25 16:58:29,268 - INFO - Abrindo gestão de medições
+2025-11-25 17:03:27,161 - INFO - Sistema encerrado pelo usuário
+2025-11-25 17:07:00,771 - INFO - Configurações importadas com sucesso via src.config
+2025-11-25 17:07:00,787 - INFO - Configurações importadas com sucesso
+2025-11-25 17:07:00,789 - INFO - Configurações do sistema importadas com sucesso
+2025-11-25 17:07:01,514 - INFO - Sistema iniciado em modo: TESTE
+2025-11-25 17:07:20,534 - INFO - Abrindo gestão de medições
+2025-11-25 17:13:28,531 - INFO - Abrindo sistema de relatórios
+2025-11-25 17:38:08,029 - INFO - Abrindo gestão de medições
+2025-11-25 18:31:35,418 - INFO - Abrindo sistema de entrada de dados
+2025-11-25 18:38:25,573 - INFO - Abrindo sistema de relatórios
+2025-11-25 18:38:57,355 - INFO - Sistema encerrado pelo usuário
