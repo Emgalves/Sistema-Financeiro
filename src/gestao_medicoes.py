@@ -505,6 +505,11 @@ class GestaoMedicoes:
         ttk.Button(frame_botoes, text="📄 Gerar Contrato", 
                 command=self.gerar_contrato_final, 
                 style='Action.TButton').pack(side='left', padx=5)
+
+        # MELHORIA 1: Botão para incluir contrato na aba Contratos
+        ttk.Button(frame_botoes, text="➕ Incluir como Novo Contrato", 
+                command=self.incluir_contrato_na_aba, 
+                style='Action.TButton').pack(side='left', padx=5)
         
         ttk.Button(frame_botoes, text="🔄 Limpar Formulário", 
                 command=self.limpar_formulario_contrato).pack(side='left', padx=5)
@@ -521,11 +526,11 @@ class GestaoMedicoes:
 
 
     def centralizar_janela(self, janela, largura=600, altura=400):
-        """Centraliza a janela na tela (não relativo à janela pai)"""
+        """Centraliza a janela na tela e mantém visível - CORRIGIDO v3"""
         # Atualizar a geometria
         janela.update_idletasks()
         
-        # Obter dimensões da TELA (não da janela pai)
+        # Obter dimensões da TELA
         tela_largura = janela.winfo_screenwidth()
         tela_altura = janela.winfo_screenheight()
         
@@ -540,13 +545,44 @@ class GestaoMedicoes:
         # Aplicar geometria
         janela.geometry(f"{largura}x{altura}+{x}+{y}")
         
-        # Configurar como janela modal
-        janela.transient(self.root)
-        janela.grab_set()
-        
-        # Garantir que fique visível
-        janela.lift()
-        janela.focus_force()
+        # CORREÇÃO CRÍTICA: Configuração que NÃO bloqueia campos
+        try:
+            # 1. Configurar hierarquia primeiro
+            janela.transient(self.root)
+            
+            # 2. Forçar para frente COM topmost
+            janela.attributes('-topmost', True)
+            janela.lift()
+            janela.focus_force()
+            janela.update()
+            
+            # 3. IMPORTANTE: Desabilitar topmost DEPOIS para permitir interação
+            # mas manter a janela modal
+            janela.after(200, lambda: janela.attributes('-topmost', False))
+            
+            # 4. Aplicar grab_set para modalidade
+            janela.grab_set()
+            
+            # 5. Garantir que volte ao topo se clicar na janela pai
+            def trazer_de_volta(event):
+                try:
+                    janela.lift()
+                    janela.focus_force()
+                except:
+                    pass
+            
+            # Bind apenas no clique da janela pai
+            self.root.bind('<Button-1>', trazer_de_volta, add='+')
+            
+            # Garantir visibilidade inicial
+            janela.lift()
+            janela.focus_force()
+            
+        except Exception as e:
+            # Fallback simples
+            janela.lift()
+            janela.focus_force()
+            janela.grab_set()
 
     def criar_janela_modal(self, titulo, largura=600, altura=400):
         """Cria janela modal"""
@@ -1167,7 +1203,10 @@ class GestaoMedicoes:
             wb.close()
             
             messagebox.showinfo("Sucesso", "Contrato cadastrado com sucesso!")
-            janela.destroy()
+            
+            # CORREÇÃO: Só fechar janela se foi passada
+            if janela:
+                janela.destroy()
             
             # Atualizar lista de contratos
             self.carregar_contratos()
@@ -1979,9 +2018,10 @@ class GestaoMedicoes:
             messagebox.showwarning("Aviso", "Selecione um fornecedor!")
             return
         
-        # Validar serviços selecionados
-        if not self.servicos_selecionados:
-            messagebox.showwarning("Aviso", "Selecione ao menos um serviço!")
+        # CORREÇÃO MELHORIA 2: Validar serviços - aceita lista OU campo de texto
+        servicos_texto = self.txt_servicos_selecionados.get('1.0', tk.END).strip()
+        if not self.servicos_selecionados and not servicos_texto:
+            messagebox.showwarning("Aviso", "Selecione ao menos um serviço ou digite a descrição!")
             return
         
         # Validar campos obrigatórios
@@ -2041,7 +2081,6 @@ class GestaoMedicoes:
                 'fornecedor_nome': dados_fornecedor['nome'],
                 'fornecedor_cnpj_cpf': dados_fornecedor['cnpj_cpf'],
                 'fornecedor_endereco': dados_fornecedor['endereco'],
-                'descricao': self.gerador_contrato.concatenar_servicos(self.servicos_selecionados),
                 'endereco_obra': self.ent_endereco_obra.get(),
                 'dias': self.ent_prazo_dias.get() or '0',
                 'data_inicio': self.ent_data_inicio.get_date().strftime('%d/%m/%Y'),
@@ -2051,10 +2090,18 @@ class GestaoMedicoes:
                 'dados_bancarios': dados_bancarios
             }
             
-            if hasattr(self, 'servicos_selecionados') and self.servicos_selecionados:
+            # CORREÇÃO MELHORIA 2: Priorizar texto do campo sobre lista
+            servicos_texto_campo = self.txt_servicos_selecionados.get('1.0', tk.END).strip()
+            
+            if servicos_texto_campo:
+                # Se há texto no campo (digitado ou selecionado), usar esse
+                dados_contrato['descricao'] = servicos_texto_campo
+            elif hasattr(self, 'servicos_selecionados') and self.servicos_selecionados:
+                # Se não há texto mas tem lista, concatenar lista
                 servicos_texto = self.gerador_contrato.concatenar_servicos(self.servicos_selecionados)
-                dados_contrato['descricao'] = servicos_texto  # OU outro campo
+                dados_contrato['descricao'] = servicos_texto
             else:
+                # Fallback (não deveria chegar aqui por causa da validação)
                 dados_contrato['descricao'] = '[SERVIÇOS A DEFINIR]'
             
             # Gerar contrato
@@ -3317,6 +3364,52 @@ class GestaoMedicoes:
                 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao processar dados: {str(e)}")
+    
+    # MELHORIA 1: Método para incluir contrato na aba Contratos
+    def incluir_contrato_na_aba(self):
+        """Inclui os dados do contrato da aba 'Emitir Contrato' na aba 'Contratos'"""
+        try:
+            # Validar cliente selecionado
+            if not self.cliente_atual:
+                messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+                return
+            
+            # Validar fornecedor selecionado
+            if not self.cmb_fornecedor_contrato.get():
+                messagebox.showwarning("Aviso", "Selecione um fornecedor!")
+                return
+            
+            # Validar campos obrigatórios
+            if not self.ent_valor_global.get() or self.ent_valor_global.get() == "R$ 0,00":
+                messagebox.showwarning("Aviso", "Informe o valor global do contrato!")
+                return
+            
+            # Obter dados do formulário
+            nome_fornecedor = self.cmb_fornecedor_contrato.get().strip()
+            cnpj_fornecedor = self.ent_cnpj_fornecedor.get().strip()
+            
+            # Obter descrição dos serviços (agora editável - MELHORIA 2)
+            descricao = self.txt_servicos_selecionados.get('1.0', tk.END).strip()
+            if not descricao:
+                messagebox.showwarning("Aviso", "Informe a descrição dos serviços!")
+                return
+            
+            data_inicio = self.ent_data_inicio.get_date().strftime('%d/%m/%Y')
+            valor_global = self.ent_valor_global.get()
+            
+            # Remover formatação do valor
+            valor_limpo = valor_global.replace('R$', '').replace('.', '').replace(',', '.').strip()
+            
+            # Obter observações
+            observacoes = f"Contrato de {descricao[:50]}..."  # Primeira parte da descrição
+            
+            # Salvar contrato diretamente na planilha
+            self.salvar_contrato(None, cnpj_fornecedor, nome_fornecedor, descricao, data_inicio, valor_limpo, observacoes)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao incluir contrato: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     def voltar_menu(self):
         """Volta ao menu principal"""
