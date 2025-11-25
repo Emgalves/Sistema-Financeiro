@@ -1,0 +1,273 @@
+2025-11-25 09:05:38,548 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 09:05:38,556 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-25 09:05:38,558 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-25 09:05:38,561 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-25 09:05:38,565 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-25 09:05:55,362 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-25 09:05:55,369 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-25 09:05:55,379 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-25 09:05:55,386 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-25 09:05:55,437 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-25 09:06:01,897 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-11-25 09:48:51,653 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 09:51:53,279 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 10:22:57,752 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 10:26:08,111 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 10:33:07,066 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 10:33:07,067 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-25 10:33:07,068 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-25 10:33:07,068 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-25 10:33:07,068 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-25 10:33:29,129 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-25 10:33:29,132 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-25 10:33:29,135 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-25 10:33:29,135 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-25 10:33:29,148 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-25 10:33:35,063 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-25 10:33:35,904 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-25 10:33:35,923 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-25 10:33:35,927 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-25 10:33:35,953 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-11-25 10:33:35,954 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-25 10:33:49,799 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-25 10:33:49,818 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 10:33:49,836 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-25 10:33:49,838 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-25 10:33:49,839 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-25 10:33:51,145 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-25 10:33:54,507 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-25 10:33:55,762 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-25 10:33:55,764 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-25 10:33:57,068 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-25 10:33:57,363 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-25 10:33:58,601 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-25 10:33:58,604 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-25 10:33:59,890 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-25 10:34:00,451 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-25 10:34:01,693 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-25 10:34:02,869 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-25 10:34:04,904 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-25 10:34:45,100 - sistema_relatorios - gestao_medicoes - INFO - Data do Contrato/Início sincronizadas: 2025-08-04
+2025-11-25 10:34:49,669 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 12/08/2025 (6 dias úteis, excluindo data início)
+2025-11-25 10:34:49,884 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 03/11/2025 (65 dias úteis, excluindo data início)
+2025-11-25 10:34:51,795 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 03/11/2025 (65 dias úteis, excluindo data início)
+2025-11-25 10:35:59,066 - sistema_relatorios - gestao_medicoes - INFO - 1 serviços selecionados
+2025-11-25 10:36:23,066 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-25 10:36:23,088 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 10:36:23,093 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-25 10:36:23,094 - sistema_relatorios - gerador_contrato - INFO - Buscando fornecedor por nome: ERILTON NEVES RODRIGUES
+2025-11-25 10:36:24,301 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-25 10:36:24,302 - sistema_relatorios - logger_config - INFO - Iniciando: Gerar contrato
+2025-11-25 10:36:24,306 - sistema_relatorios - gerador_contrato - INFO - Valor formatado: R$ 55.000,00 (cinquenta e cinco mil reais)
+2025-11-25 10:36:24,307 - sistema_relatorios - gerador_contrato - INFO - Multa formatada: R$ 4.000,00 (quatro mil reais)
+2025-11-25 10:36:24,309 - sistema_relatorios - gerador_contrato - INFO - Gerando contrato: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_GILMAR_ALMEIDA_PORTUGAL_2025-08-04.docx
+2025-11-25 10:36:24,314 - sistema_relatorios - gerador_contrato - INFO - Executando Node.js: node
+2025-11-25 10:36:26,152 - sistema_relatorios - gerador_contrato - INFO - Contrato gerado com sucesso: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_GILMAR_ALMEIDA_PORTUGAL_2025-08-04.docx
+2025-11-25 10:36:26,153 - sistema_relatorios - logger_config - INFO - Concluído: Gerar contrato
+2025-11-25 10:36:30,510 - sistema_relatorios - gestao_medicoes - INFO - Pasta de contratos aberta: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-25 10:41:00,277 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-25 10:41:00,296 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 10:41:00,299 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-25 10:41:00,301 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-25 10:41:00,305 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-25 10:41:01,564 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-25 11:15:05,845 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 11:15:05,846 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-25 11:15:05,846 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-25 11:15:05,847 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-25 11:15:05,847 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-25 11:41:20,887 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 11:41:20,888 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-25 11:41:20,888 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-25 11:41:20,889 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-25 11:41:20,889 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-25 11:41:25,333 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-25 11:41:26,729 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-25 11:41:26,732 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-25 11:41:26,733 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-25 11:41:26,767 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-11-25 11:41:26,768 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-25 11:41:38,446 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-25 11:41:38,465 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 11:41:38,483 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-25 11:41:38,485 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-25 11:41:38,486 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-25 11:41:39,655 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-25 11:41:48,659 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-25 11:41:50,069 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-25 11:41:50,071 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-25 11:41:51,284 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-25 11:41:51,286 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-25 11:41:52,452 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-25 11:41:52,454 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-25 11:41:53,631 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-25 11:41:55,539 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-25 11:41:56,738 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-25 11:42:00,013 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-25 11:42:01,945 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-25 11:42:07,228 - sistema_relatorios - gestao_medicoes - INFO - Data do Contrato/Início sincronizadas: 2025-08-04
+2025-11-25 11:42:10,998 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 12/08/2025 (6 dias úteis, excluindo data início)
+2025-11-25 11:42:11,204 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 03/11/2025 (65 dias úteis, excluindo data início)
+2025-11-25 11:42:15,292 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 03/11/2025 (65 dias úteis, excluindo data início)
+2025-11-25 12:03:37,289 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 12:03:37,290 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-25 12:03:37,291 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-25 12:03:37,291 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-25 12:03:37,291 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-25 12:05:38,934 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-25 12:05:40,589 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-25 12:05:40,592 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-25 12:05:40,593 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-25 12:05:40,620 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-11-25 12:05:40,621 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-25 12:05:51,818 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-25 12:05:51,840 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 12:05:51,858 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-25 12:05:51,860 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-25 12:05:51,861 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-25 12:05:52,968 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-25 12:05:57,028 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-25 12:05:58,294 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-25 12:05:58,296 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-25 12:05:59,467 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-25 12:05:59,469 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-25 12:06:00,759 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-25 12:06:00,801 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-25 12:06:02,154 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-25 12:06:04,612 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-25 12:06:05,915 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-25 12:06:08,069 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-25 12:06:10,301 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-25 12:06:20,829 - sistema_relatorios - gestao_medicoes - INFO - Data do Contrato/Início sincronizadas: 2025-08-04
+2025-11-25 12:06:23,775 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 12/08/2025 (6 dias úteis, excluindo data início)
+2025-11-25 12:06:23,997 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 03/11/2025 (65 dias úteis, excluindo data início)
+2025-11-25 12:06:24,757 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 03/11/2025 (65 dias úteis, excluindo data início)
+2025-11-25 12:07:12,827 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-25 12:07:12,846 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 12:07:12,849 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-25 12:07:12,852 - sistema_relatorios - gerador_contrato - INFO - Buscando fornecedor por nome: ERILTON NEVES RODRIGUES
+2025-11-25 12:07:14,009 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-25 12:07:14,010 - sistema_relatorios - logger_config - INFO - Iniciando: Gerar contrato
+2025-11-25 12:07:14,011 - sistema_relatorios - gerador_contrato - INFO - Valor formatado: R$ 55.000,00 (cinquenta e cinco mil reais)
+2025-11-25 12:07:14,012 - sistema_relatorios - gerador_contrato - INFO - Multa formatada: R$ 4.000,00 (quatro mil reais)
+2025-11-25 12:07:14,012 - sistema_relatorios - gerador_contrato - INFO - Gerando contrato: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_GILMAR_ALMEIDA_PORTUGAL_2025-08-04.docx
+2025-11-25 12:07:14,019 - sistema_relatorios - gerador_contrato - INFO - Executando Node.js: node
+2025-11-25 12:07:16,858 - sistema_relatorios - gerador_contrato - INFO - Contrato gerado com sucesso: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_GILMAR_ALMEIDA_PORTUGAL_2025-08-04.docx
+2025-11-25 12:07:16,858 - sistema_relatorios - logger_config - INFO - Concluído: Gerar contrato
+2025-11-25 12:07:22,262 - sistema_relatorios - gestao_medicoes - INFO - Pasta de contratos aberta: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-25 12:22:20,409 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 12:22:20,410 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-25 12:22:20,410 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-25 12:22:20,411 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-25 12:22:20,412 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-25 12:22:25,025 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-25 12:22:26,542 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-25 12:22:26,545 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-25 12:22:26,546 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-25 12:22:26,573 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-11-25 12:22:26,576 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-25 12:22:39,631 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-25 12:22:39,647 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 12:22:39,652 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-25 12:22:39,654 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-25 12:22:39,655 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-25 12:22:40,743 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-25 12:22:44,761 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-11-25 12:22:46,012 - sistema_relatorios - gestao_medicoes - INFO - ✅ 739 fornecedores encontrados
+2025-11-25 12:22:46,014 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-11-25 12:22:47,164 - sistema_relatorios - gestao_medicoes - INFO - ✅ 295 fornecedores encontrados
+2025-11-25 12:22:47,166 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-11-25 12:22:48,300 - sistema_relatorios - gestao_medicoes - INFO - ✅ 28 fornecedores encontrados
+2025-11-25 12:22:48,302 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-25 12:22:49,535 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-25 12:22:50,833 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-11-25 12:22:52,056 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-11-25 12:22:56,643 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERILTON NEVES RODRIGUES
+2025-11-25 12:22:58,504 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-25 12:23:05,507 - sistema_relatorios - gestao_medicoes - INFO - Data do Contrato/Início sincronizadas: 2025-08-04
+2025-11-25 12:23:07,573 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 12/08/2025 (6 dias úteis, excluindo data início)
+2025-11-25 12:23:07,778 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 03/11/2025 (65 dias úteis, excluindo data início)
+2025-11-25 12:23:09,034 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 03/11/2025 (65 dias úteis, excluindo data início)
+2025-11-25 12:24:07,425 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-25 12:24:07,442 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 12:24:07,445 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-25 12:24:07,446 - sistema_relatorios - gerador_contrato - INFO - Buscando fornecedor por nome: ERILTON NEVES RODRIGUES
+2025-11-25 12:24:08,550 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do fornecedor 'ERILTON NEVES RODRIGUES' carregados
+2025-11-25 12:24:08,551 - sistema_relatorios - logger_config - INFO - Iniciando: Gerar contrato
+2025-11-25 12:24:08,552 - sistema_relatorios - gerador_contrato - INFO - Valor formatado: R$ 55.000,00 (cinquenta e cinco mil reais)
+2025-11-25 12:24:08,553 - sistema_relatorios - gerador_contrato - INFO - Multa formatada: R$ 4.000,00 (quatro mil reais)
+2025-11-25 12:24:08,553 - sistema_relatorios - gerador_contrato - INFO - Gerando contrato: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_GILMAR_ALMEIDA_PORTUGAL_2025-08-04.docx
+2025-11-25 12:24:08,557 - sistema_relatorios - gerador_contrato - INFO - Executando Node.js: node
+2025-11-25 12:24:08,918 - sistema_relatorios - gerador_contrato - INFO - Contrato gerado com sucesso: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_GILMAR_ALMEIDA_PORTUGAL_2025-08-04.docx
+2025-11-25 12:24:08,919 - sistema_relatorios - logger_config - INFO - Concluído: Gerar contrato
+2025-11-25 16:46:36,090 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2025-11-25 16:46:36,254 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 16:46:36,281 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'GILMAR ALMEIDA PORTUGAL' carregados com sucesso
+2025-11-25 16:46:36,285 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GILMAR ALMEIDA PORTUGAL
+2025-11-25 16:46:36,286 - sistema_relatorios - gestao_medicoes - INFO - Carregando lista de fornecedores...
+2025-11-25 16:46:37,684 - sistema_relatorios - gestao_medicoes - INFO - ✅ 830 fornecedores carregados
+2025-11-25 16:58:24,395 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 16:58:24,397 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-25 16:58:24,397 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-25 16:58:24,398 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-25 16:58:24,398 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-25 16:58:29,274 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-25 16:58:30,596 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-25 16:58:30,599 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-25 16:58:30,600 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-25 16:58:30,630 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-11-25 16:58:30,631 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-25 17:06:57,149 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-25 17:06:57,155 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-25 17:06:57,157 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-25 17:06:57,159 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-25 17:06:57,160 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-25 17:07:20,658 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-11-25 17:07:22,004 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-25 17:07:22,006 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-25 17:07:22,008 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-25 17:07:22,047 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-11-25 17:07:22,048 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-25 17:13:29,246 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-25 17:13:29,266 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 17:13:29,267 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-25 17:13:29,288 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-25 17:13:29,292 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-11-25 17:13:29,293 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2025-11-25 17:13:32,403 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-25 17:13:32,420 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 17:13:32,421 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-25 17:13:32,424 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-25 17:13:32,425 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-11-25 17:13:34,843 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-11-25 17:13:34,844 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-11-25 17:38:06,374 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-25 17:38:06,400 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-25 17:38:06,506 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-11-25 17:38:09,329 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-11-25 17:38:09,341 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-11-25 17:38:09,345 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-11-25 17:38:09,385 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-11-25 17:38:09,386 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-11-25 18:31:36,257 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-25 18:31:36,260 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-25 18:31:36,262 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-25 18:31:36,263 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-25 18:31:36,274 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-25 18:31:41,316 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-25 18:38:25,615 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-25 18:38:25,641 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 18:38:25,643 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-25 18:38:25,652 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-25 18:38:25,654 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-11-25 18:38:25,654 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2025-11-25 18:38:27,611 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-11-25 18:38:27,631 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade']
+2025-11-25 18:38:27,632 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-11-25 18:38:27,634 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-11-25 18:38:27,635 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-11-25 18:38:29,381 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-11-25 18:38:29,382 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-11-25 18:38:53,893 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-11-25 18:38:53,894 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-11-25 18:38:53,986 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
