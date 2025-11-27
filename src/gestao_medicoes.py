@@ -64,6 +64,38 @@ from src.config.utils import (
 
 class GestaoMedicoes:
     """Classe principal para gestão de medições"""
+    
+    @staticmethod
+    def formatar_nome_cidade(cidade):
+        """
+        Formata o nome da cidade como nome próprio.
+        Primeira letra maiúscula, resto minúscula, exceto elementos de ligação.
+        
+        Args:
+            cidade (str): Nome da cidade a ser formatado
+            
+        Returns:
+            str: Nome da cidade formatado
+        """
+        if not cidade:
+            return ""
+        
+        # Elementos de ligação que devem permanecer em minúscula
+        elementos_ligacao = ['de', 'da', 'do', 'das', 'dos', 'e']
+        
+        # Dividir em palavras
+        palavras = cidade.lower().split()
+        
+        # Formatar cada palavra
+        palavras_formatadas = []
+        for palavra in palavras:
+            if palavra in elementos_ligacao:
+                palavras_formatadas.append(palavra)
+            else:
+                palavras_formatadas.append(palavra.capitalize())
+        
+        return ' '.join(palavras_formatadas)
+    
     def __init__(self, parent=None):
         """Inicializa a interface de gestão de medições"""
         self.parent = parent
@@ -391,10 +423,29 @@ class GestaoMedicoes:
         sel_forn_frame = ttk.Frame(frame_fornecedor)
         sel_forn_frame.pack(fill='x', pady=5)
         
-        ttk.Label(sel_forn_frame, text="Selecionar:").pack(side='left', padx=5)
-        self.cmb_fornecedor_contrato = ttk.Combobox(sel_forn_frame, width=60, state='readonly')
-        self.cmb_fornecedor_contrato.pack(side='left', padx=5, fill='x', expand=True)
-        self.cmb_fornecedor_contrato.bind('<<ComboboxSelected>>', self.carregar_dados_fornecedor_contrato)
+        ttk.Label(sel_forn_frame, text="Selecionar:").pack(side='left', anchor='n', padx=5, pady=2)
+        
+        # Frame para Listbox e Scrollbar
+        listbox_frame = ttk.Frame(sel_forn_frame)
+        listbox_frame.pack(side='left', fill='both', expand=True, padx=5)
+        
+        # Criar Listbox para mostrar fornecedores (4 linhas visíveis)
+        self.lst_fornecedor_contrato = tk.Listbox(listbox_frame, height=4, width=60, 
+                                                   selectmode='single', exportselection=False)
+        self.lst_fornecedor_contrato.pack(side='left', fill='both', expand=True)
+        
+        # Adicionar mensagem placeholder inicial (será removida ao buscar)
+        self.lst_fornecedor_contrato.insert(tk.END, "👆 Clique em 'Buscar' ou '↻ Todos' para listar fornecedores")
+        self.lst_fornecedor_contrato.config(state='disabled')  # Desabilitar seleção do placeholder
+        
+        # Scrollbar para a Listbox
+        scrollbar_fornecedor = ttk.Scrollbar(listbox_frame, orient='vertical', 
+                                             command=self.lst_fornecedor_contrato.yview)
+        scrollbar_fornecedor.pack(side='right', fill='y')
+        self.lst_fornecedor_contrato.config(yscrollcommand=scrollbar_fornecedor.set)
+        
+        # Bind para seleção (quando clicar em um item)
+        self.lst_fornecedor_contrato.bind('<<ListboxSelect>>', self.carregar_dados_fornecedor_contrato)
         
         
         ttk.Button(sel_forn_frame, text="Atualizar", 
@@ -416,7 +467,7 @@ class GestaoMedicoes:
         
         row += 1
         ttk.Label(dados_forn_frame, text="Dados Bancários:").grid(row=row, column=0, sticky='nw', padx=5, pady=5)
-        self.txt_dados_bancarios = tk.Text(dados_forn_frame, height=3, width=60, state='disabled', wrap='word')
+        self.txt_dados_bancarios = tk.Text(dados_forn_frame, height=1, width=60, state='disabled', wrap='word')
         self.txt_dados_bancarios.grid(row=row, column=1, columnspan=3, sticky='ew', padx=5, pady=5)
         
         # --- SEÇÃO 3: DADOS DO CONTRATO ---
@@ -516,6 +567,9 @@ class GestaoMedicoes:
         
         ttk.Button(frame_botoes, text="📂 Abrir Pasta de Contratos", 
                 command=self.abrir_pasta_contratos).pack(side='left', padx=5)
+        
+        ttk.Button(frame_botoes, text="Voltar", 
+                  command=lambda: self.notebook.select(0)).pack(side='right', padx=5)
         
         # Empacotar canvas e scrollbar
         canvas.pack(side="left", fill="both", expand=True)
@@ -715,12 +769,16 @@ class GestaoMedicoes:
             
             wb.close()
             
-            # Atualizar combobox com resultados
+            # Habilitar e limpar listbox (removendo placeholder se houver)
+            self.lst_fornecedor_contrato.config(state='normal')
+            self.lst_fornecedor_contrato.delete(0, tk.END)
+            
+            # Atualizar listbox com resultados
             if fornecedores_encontrados:
-                self.cmb_fornecedor_contrato['values'] = sorted(fornecedores_encontrados)
+                for fornecedor in sorted(fornecedores_encontrados):
+                    self.lst_fornecedor_contrato.insert(tk.END, fornecedor)
                 logger.info(f"✅ {len(fornecedores_encontrados)} fornecedores encontrados")
             else:
-                self.cmb_fornecedor_contrato['values'] = []
                 logger.warning(f"⚠️ Nenhum fornecedor encontrado com '{termo}'")
                 messagebox.showinfo("Busca", f"Nenhum fornecedor encontrado com '{termo}'")
             
@@ -1465,7 +1523,7 @@ class GestaoMedicoes:
         """Chamado quando a aba é alterada"""
         if self.notebook.index(self.notebook.select()) == 3:  # Aba de emissão de contrato
             self.carregar_dados_cliente_contrato()
-            self.atualizar_lista_fornecedores_contrato()
+            # Lista de fornecedores começa vazia - usuário deve buscar manualmente
 
     def carregar_dados_cliente_contrato(self):
         """Carrega dados do cliente selecionado na aba de contrato"""
@@ -1497,7 +1555,8 @@ class GestaoMedicoes:
                 
                 self.ent_cidade.config(state='normal')
                 self.ent_cidade.delete(0, tk.END)
-                self.ent_cidade.insert(0, dados_cliente.get('cidade', ''))
+                cidade_formatada = self.formatar_nome_cidade(dados_cliente.get('cidade', ''))
+                self.ent_cidade.insert(0, cidade_formatada)
                 self.ent_cidade.config(state='readonly')
                 
                 self.ent_endereco_cliente.config(state='normal')
@@ -1573,8 +1632,13 @@ class GestaoMedicoes:
             
             wb.close()
             
-            # Atualizar combobox (ordenado)
-            self.cmb_fornecedor_contrato['values'] = sorted(fornecedores)
+            # Habilitar e limpar listbox (removendo placeholder se houver)
+            self.lst_fornecedor_contrato.config(state='normal')
+            self.lst_fornecedor_contrato.delete(0, tk.END)
+            
+            # Atualizar listbox (ordenado)
+            for fornecedor in sorted(fornecedores):
+                self.lst_fornecedor_contrato.insert(tk.END, fornecedor)
             
             # Logs informativos
             logger.info(f"✅ {len(fornecedores)} fornecedores carregados")
@@ -1593,7 +1657,13 @@ class GestaoMedicoes:
 
     def carregar_dados_fornecedor_contrato(self, event=None):
         
-        fornecedor_nome = self.cmb_fornecedor_contrato.get().strip()
+        # Obter item selecionado do Listbox
+        selection = self.lst_fornecedor_contrato.curselection()
+        if not selection:
+            return
+        
+        # Pegar o nome do fornecedor selecionado
+        fornecedor_nome = self.lst_fornecedor_contrato.get(selection[0]).strip()
         
         if not fornecedor_nome:
             return
@@ -2014,7 +2084,8 @@ class GestaoMedicoes:
             return
         
         # Validar fornecedor selecionado
-        if not self.cmb_fornecedor_contrato.get():
+        selection = self.lst_fornecedor_contrato.curselection()
+        if not selection:
             messagebox.showwarning("Aviso", "Selecione um fornecedor!")
             return
         
@@ -2038,7 +2109,8 @@ class GestaoMedicoes:
             dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
             
             # Obter dados do fornecedor
-            nome_fornecedor = self.cmb_fornecedor_contrato.get().strip()
+            selection = self.lst_fornecedor_contrato.curselection()
+            nome_fornecedor = self.lst_fornecedor_contrato.get(selection[0]).strip()
             dados_fornecedor = self.gerador_contrato.obter_dados_fornecedor_por_nome(nome_fornecedor)
             
             # Validar se fornecedor foi encontrado
@@ -2072,7 +2144,7 @@ class GestaoMedicoes:
             # Preparar dados do contrato
             dados_contrato = {
                 'data': self.ent_data_contrato.get_date().strftime('%d/%m/%Y'),
-                'cidade': dados_cliente['cidade'],
+                'cidade': self.formatar_nome_cidade(dados_cliente['cidade']),
                 'cliente_nome': dados_cliente['nome'],
                 'cliente_cno': dados_cliente['cno'],
                 'cliente_cpf': dados_cliente['cnpj_cpf'],
@@ -2128,8 +2200,11 @@ class GestaoMedicoes:
     def limpar_formulario_contrato(self):
         """Limpa todos os campos do formulário de contrato"""
         try:
-            # Limpar combobox de fornecedor
-            self.cmb_fornecedor_contrato.set('')
+            # Limpar e restaurar placeholder na listbox de fornecedores
+            self.lst_fornecedor_contrato.config(state='normal')
+            self.lst_fornecedor_contrato.delete(0, tk.END)
+            self.lst_fornecedor_contrato.insert(tk.END, "👆 Clique em 'Buscar' ou '↻ Todos' para listar fornecedores")
+            self.lst_fornecedor_contrato.config(state='disabled')
             
             # Limpar campos de fornecedor
             self.ent_cnpj_fornecedor.config(state='normal')
@@ -3375,7 +3450,8 @@ class GestaoMedicoes:
                 return
             
             # Validar fornecedor selecionado
-            if not self.cmb_fornecedor_contrato.get():
+            selection = self.lst_fornecedor_contrato.curselection()
+            if not selection:
                 messagebox.showwarning("Aviso", "Selecione um fornecedor!")
                 return
             
@@ -3385,7 +3461,7 @@ class GestaoMedicoes:
                 return
             
             # Obter dados do formulário
-            nome_fornecedor = self.cmb_fornecedor_contrato.get().strip()
+            nome_fornecedor = self.lst_fornecedor_contrato.get(selection[0]).strip()
             cnpj_fornecedor = self.ent_cnpj_fornecedor.get().strip()
             
             # Obter descrição dos serviços (agora editável - MELHORIA 2)
