@@ -2410,7 +2410,7 @@ class SistemaEntradaDados:
 
         # NOVO: Tipo de Taxa
         ttk.Label(frame, text="Tipo de Taxa de Administração:*").pack(pady=5)
-        tipo_taxa_var = tk.StringVar(value="Percentual")
+        tipo_taxa_var = tk.StringVar(value=" ")
         frame_tipo = ttk.Frame(frame)
         frame_tipo.pack(pady=5)
         
@@ -2435,11 +2435,6 @@ class SistemaEntradaDados:
             value="Sem Taxa"
         ).pack(side='left', padx=10)
 
-        # Observações
-        ttk.Label(frame, text="Observações:").pack(pady=5)
-        obs_entry = ttk.Entry(frame, width=80)
-        obs_entry.pack(pady=5)
-
         # CPF
         ttk.Label(frame, text="CPF:").pack(pady=5)
         cpf_entry = ttk.Entry(frame, width=80)
@@ -2452,7 +2447,7 @@ class SistemaEntradaDados:
 
         # Estado civil
         ttk.Label(frame, text="Estado Civil:").pack(pady=5)
-        estado_civil_var = tk.StringVar(value="Casado(a)")
+        estado_civil_var = tk.StringVar(value=" ")
         frame_estado_civil = ttk.Frame(frame)
         frame_estado_civil.pack(pady=5)
         
@@ -2489,6 +2484,45 @@ class SistemaEntradaDados:
         cid_entry = ttk.Entry(frame, width=80)
         cid_entry.pack(pady=5)
 
+        # Grupo de obra
+        ttk.Label(frame, text="Grupo:").pack(pady=5)
+        grupo_var = tk.StringVar(value=" ")
+        frame_grupo = ttk.Frame(frame)
+        frame_grupo.pack(pady=5)
+        
+        ttk.Radiobutton(
+            frame_grupo, 
+            text="Grupo 1", 
+            variable=grupo_var, 
+            value="Grupo 1"
+        ).pack(side='left', padx=10)
+        
+        ttk.Radiobutton(
+            frame_grupo, 
+            text="Grupo 2", 
+            variable=grupo_var, 
+            value="Grupo 2"
+        ).pack(side='left', padx=10)
+        
+        ttk.Radiobutton(
+            frame_grupo, 
+            text="Grupo 3", 
+            variable=grupo_var, 
+            value="Grupo 3"
+        ).pack(side='left', padx=10)    
+        
+        ttk.Radiobutton(
+            frame_grupo, 
+            text="Grupo 4", 
+            variable=grupo_var, 
+            value="Grupo 4"
+        ).pack(side='left', padx=10)
+        
+        # Observações
+        ttk.Label(frame, text="Observações:").pack(pady=5)
+        obs_entry = ttk.Entry(frame, width=80)
+        obs_entry.pack(pady=5)
+
         def validar_data(*args):
             """Valida se a data selecionada é dia 5 ou 20"""
             data = data_entry.get_date()
@@ -2522,6 +2556,7 @@ class SistemaEntradaDados:
             cno = cno_entry.get().strip()
             estado_civil = estado_civil_var.get()
             cidade = cid_entry.get().strip()
+            grupo = grupo_var.get()
             
             if not nome or not endereco:
                 messagebox.showerror("Erro", "Nome e Endereço são obrigatórios!")
@@ -2558,6 +2593,7 @@ class SistemaEntradaDados:
                 ws.cell(row=proxima_linha, column=8, value=cno)  # CNO
                 ws.cell(row=proxima_linha, column=9, value=estado_civil)  # Estado Civil
                 ws.cell(row=proxima_linha, column=10, value=cidade)  # Cidade
+                ws.cell(row=proxima_linha, column=11, value=grupo)  # Grupo
 
                 wb.save(ARQUIVO_CLIENTES)
 
@@ -2708,7 +2744,8 @@ class SistemaEntradaDados:
                         'cpf': row[6] if len(row) > 6 else '',
                         'cno': row[7] if len(row) > 7 else '',
                         'estado_civil': row[8] if len(row) > 8 else '',
-                        'cidade': row[9] if len(row) > 9 else ''
+                        'cidade': row[9] if len(row) > 9 else '',
+                        'grupo': row[10] if len(row) > 10 else ''
                     }
                     break
             
@@ -2721,7 +2758,7 @@ class SistemaEntradaDados:
             # Criar janela de edição
             janela_edicao = tk.Toplevel(self.root)
             janela_edicao.title(f"Editar Cliente - {cliente_selecionado}")
-            janela_edicao.geometry("600x430")
+            janela_edicao.geometry("600x480")
 
             frame = ttk.Frame(janela_edicao, padding="10")
             frame.pack(fill='both', expand=True)
@@ -2777,7 +2814,7 @@ class SistemaEntradaDados:
             
             data_final_entry.grid(row=4, column=1, padx=5, pady=5, sticky='w')
 
-            # NOVO: Tipo de Taxa
+            # Tipo de Taxa
             ttk.Label(frame, text="Tipo de Taxa:*").grid(row=5, column=0, padx=5, pady=5, sticky='w')
             tipo_taxa_var = tk.StringVar(value=dados_cliente['tipo_taxa'])
             
@@ -2805,64 +2842,97 @@ class SistemaEntradaDados:
                 value="Sem Taxa"
             ).grid(row=5, column=3, padx=5, pady=5, sticky='w')
 
-            # Observações
-            ttk.Label(frame, text="Observações:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
-            obs_entry = ttk.Entry(frame, width=70)
-            obs_entry.insert(0, dados_cliente['observacoes'] or '')
-            obs_entry.grid(row=6, column=1, padx=5, pady=5)
-
             # CPF
-            ttk.Label(frame, text="CPF:").grid(row=7, column=0, padx=5, pady=5, sticky='w')
+            ttk.Label(frame, text="CPF:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
             cpf_entry = ttk.Entry(frame, width=70)
             cpf_entry.insert(0, dados_cliente['cpf'] or '')
-            cpf_entry.grid(row=7, column=1, padx=5, pady=5)
+            cpf_entry.grid(row=6, column=1, padx=5, pady=5)
 
             # CNO
-            ttk.Label(frame, text="CNO:").grid(row=8, column=0, padx=5, pady=5, sticky='w')
+            ttk.Label(frame, text="CNO:").grid(row=7, column=0, padx=5, pady=5, sticky='w')
             cno_entry = ttk.Entry(frame, width=70)
             cno_entry.insert(0, dados_cliente['cno'] or '')
-            cno_entry.grid(row=8, column=1, padx=5, pady=5) 
+            cno_entry.grid(row=7, column=1, padx=5, pady=5) 
 
             # Estado civil
-            ttk.Label(frame, text="Estado Civil:").grid(row=9, column=0, padx=5, pady=5, sticky='w')
-            estado_civil_var = tk.StringVar(value="Casado(a)")
+            ttk.Label(frame, text="Estado Civil:").grid(row=8, column=0, padx=5, pady=5, sticky='w')
+            estado_civil_var = tk.StringVar(value=dados_cliente['estado_civil'])
             frame_estado_civil = ttk.Frame(frame)
-            frame_estado_civil.grid(row=9, column=1, padx=5, pady=5, sticky='w')
+            frame_estado_civil.grid(row=8, column=1, padx=5, pady=5, sticky='w')
             
             ttk.Radiobutton(
                 frame_estado_civil, 
                 text="Casado(a)", 
                 variable=estado_civil_var, 
                 value="Casado(a)"
-            ).grid(row=9, column=1, padx=5, pady=5, sticky='w')
+            ).grid(row=8, column=1, padx=5, pady=5, sticky='w')
             
             ttk.Radiobutton(
                 frame_estado_civil, 
                 text="Solteiro(a)", 
                 variable=estado_civil_var, 
                 value="Solteiro(a)"
-            ).grid(row=9, column=2, padx=5, pady=5, sticky='w')
+            ).grid(row=8, column=2, padx=5, pady=5, sticky='w')
             
             ttk.Radiobutton(
                 frame_estado_civil, 
                 text="Divorciado(a)", 
                 variable=estado_civil_var, 
                 value="Divorciado(a)"
-            ).grid(row=9, column=3, padx=5, pady=5, sticky='w')    
+            ).grid(row=8, column=3, padx=5, pady=5, sticky='w')    
             
             ttk.Radiobutton(
                 frame_estado_civil, 
                 text="Viúvo(a)", 
                 variable=estado_civil_var, 
                 value="Viúvo(a)"
-            ).grid(row=9, column=4, padx=5, pady=5, sticky='w') 
+            ).grid(row=8, column=4, padx=5, pady=5, sticky='w') 
 
             # Cidade
-            ttk.Label(frame, text="Cidade:").grid(row=10, column=0, padx=5, pady=5, sticky='w')
+            ttk.Label(frame, text="Cidade:").grid(row=9, column=0, padx=5, pady=5, sticky='w')
             cid_entry = ttk.Entry(frame, width=70)
             cid_entry.insert(0, dados_cliente['cidade'] or '')
-            cid_entry.grid(row=10, column=1, padx=5, pady=5)
+            cid_entry.grid(row=9, column=1, padx=5, pady=5)
 
+            # Grupo
+            ttk.Label(frame, text="Grupo:").grid(row=10, column=0, padx=5, pady=5, sticky='w')
+            grupo_var = tk.StringVar(value=dados_cliente['grupo'])
+            frame_grupo = ttk.Frame(frame)
+            frame_grupo.grid(row=10, column=1, padx=5, pady=5, sticky='w')
+            
+            ttk.Radiobutton(
+                frame_grupo, 
+                text="Grupo 1", 
+                variable=grupo_var, 
+                value="Grupo 1"
+            ).grid(row=10, column=1, padx=5, pady=5, sticky='w')
+            
+            ttk.Radiobutton(
+                frame_grupo, 
+                text="Grupo 2", 
+                variable=grupo_var, 
+                value="Grupo 2"
+            ).grid(row=10, column=2, padx=5, pady=5, sticky='w')
+            
+            ttk.Radiobutton(
+                frame_grupo, 
+                text="Grupo 3", 
+                variable=grupo_var, 
+                value="Grupo 3"
+            ).grid(row=10, column=3, padx=5, pady=5, sticky='w')    
+            
+            ttk.Radiobutton(
+                frame_grupo, 
+                text="Grupo 4", 
+                variable=grupo_var, 
+                value="Grupo 4"
+            ).grid(row=10, column=4, padx=5, pady=5, sticky='w') 
+
+            # Observações
+            ttk.Label(frame, text="Observações:").grid(row=11, column=0, padx=5, pady=5, sticky='w')
+            obs_entry = ttk.Entry(frame, width=70)
+            obs_entry.insert(0, dados_cliente['observacoes'] or '')
+            obs_entry.grid(row=11, column=1, padx=5, pady=5)
 
             def toggle_data_final():
                 if tem_data_final.get():
@@ -2914,6 +2984,8 @@ class SistemaEntradaDados:
                     ws.cell(row=proxima_linha, column=8, value=cno_entry.get().strip())
                     ws.cell(row=proxima_linha, column=9, value=estado_civil_var.get())
                     ws.cell(row=proxima_linha, column=10, value=cid_entry.get().strip())
+                    ws.cell(row=proxima_linha, column=10, value=cid_entry.get().strip())
+                    ws.cell(row=proxima_linha, column=11, value=grupo_var.get())
 
                     wb.save(ARQUIVO_CLIENTES)
                     
@@ -2933,7 +3005,7 @@ class SistemaEntradaDados:
 
             # Botões
             frame_botoes = ttk.Frame(frame)
-            frame_botoes.grid(row=11, column=0, columnspan=2, pady=20)
+            frame_botoes.grid(row=12, column=0, columnspan=2, pady=20)
 
             ttk.Button(frame_botoes, text="Salvar", command=salvar_alteracoes).pack(side='left', padx=5)
             ttk.Button(frame_botoes, text="Cancelar", command=janela_edicao.destroy).pack(side='left', padx=5)
