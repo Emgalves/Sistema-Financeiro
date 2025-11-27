@@ -568,9 +568,6 @@ class GestaoMedicoes:
         ttk.Button(frame_botoes, text="📂 Abrir Pasta de Contratos", 
                 command=self.abrir_pasta_contratos).pack(side='left', padx=5)
         
-        ttk.Button(frame_botoes, text="Voltar", 
-                  command=lambda: self.notebook.select(0)).pack(side='right', padx=5)
-        
         # Empacotar canvas e scrollbar
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
@@ -761,7 +758,9 @@ class GestaoMedicoes:
                         else:
                             nome = f'Fornecedor_Linha_{row_idx}'
                         
-                        fornecedores_encontrados.append(nome)
+                        # Adicionar à lista: "NOME - CNPJ/CPF"
+                        item_lista = f"{nome} - {cnpj_formatado}"
+                        fornecedores_encontrados.append(item_lista)
                     
                 except Exception as e:
                     logger.error(f"Erro ao processar linha {row_idx}: {e}")
@@ -1623,8 +1622,9 @@ class GestaoMedicoes:
                         nome = f'Fornecedor_Linha_{row_idx}'
                         fornecedores_com_problema.append(nome)
                     
-                    # Adicionar à lista: "NOME FANTASIA - CPF/CNPJ"
-                    fornecedores.append(nome)
+                    # Adicionar à lista: "NOME - CNPJ/CPF"
+                    item_lista = f"{nome} - {cnpj_cpf_formatado}"
+                    fornecedores.append(item_lista)
                     
                 except Exception as e:
                     logger.error(f"Erro ao processar fornecedor linha {row_idx}: {e}")
@@ -1662,36 +1662,57 @@ class GestaoMedicoes:
         if not selection:
             return
         
-        # Pegar o nome do fornecedor selecionado
-        fornecedor_nome = self.lst_fornecedor_contrato.get(selection[0]).strip()
+        # Pegar o item selecionado no formato "NOME - CNPJ"
+        item_selecionado = self.lst_fornecedor_contrato.get(selection[0]).strip()
         
-        if not fornecedor_nome:
+        if not item_selecionado or item_selecionado.startswith("👆"):
             return
         
         try:
-            logger.info(f"Carregando dados do fornecedor: {fornecedor_nome}")
+            # Extrair CNPJ do formato "NOME - CNPJ"
+            if " - " in item_selecionado:
+                partes = item_selecionado.rsplit(" - ", 1)  # Split da direita para evitar problemas com " - " no nome
+                fornecedor_nome = partes[0].strip()
+                cnpj_busca = partes[1].strip()
+            else:
+                # Fallback: se não tiver o formato esperado, usar o item todo como nome
+                fornecedor_nome = item_selecionado
+                cnpj_busca = None
+            
+            logger.info(f"Carregando dados do fornecedor: {fornecedor_nome} (CNPJ: {cnpj_busca})")
             
             from openpyxl import load_workbook
             
             wb = load_workbook(ARQUIVO_FORNECEDORES)
             ws = wb['Fornecedores']
             
-            # Buscar fornecedor pelo NOME
+            # Buscar fornecedor pelo CNPJ (mais preciso) ou pelo NOME
             fornecedor_encontrado = None
             
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not row[0]:  # Pular sem CNPJ/CPF
                     continue
                 
-                # Obter nomes
-                razao_social = row[2] if len(row) > 2 else ''
-                nome_fantasia = row[3] if len(row) > 3 else ''
+                # Obter CNPJ formatado da linha
+                cnpj_cpf_raw = row[0]
+                cnpj_linha = self.formatar_documento(cnpj_cpf_raw)
                 
-                # Verificar se é o fornecedor procurado
-                if (nome_fantasia and str(nome_fantasia).strip() == fornecedor_nome) or \
-                (razao_social and str(razao_social).strip() == fornecedor_nome):
+                # Buscar por CNPJ (mais confiável) ou por nome
+                if cnpj_busca and cnpj_linha == cnpj_busca:
+                    # Encontrou pelo CNPJ - método preferencial
                     fornecedor_encontrado = row
                     break
+                
+                # Fallback: buscar por nome se CNPJ não disponível
+                if not cnpj_busca:
+                    razao_social = row[2] if len(row) > 2 else ''
+                    nome_fantasia = row[3] if len(row) > 3 else ''
+                    
+                    # Verificar se é o fornecedor procurado
+                    if (nome_fantasia and str(nome_fantasia).strip() == fornecedor_nome) or \
+                       (razao_social and str(razao_social).strip() == fornecedor_nome):
+                        fornecedor_encontrado = row
+                        break
             
             wb.close()
             
@@ -2110,7 +2131,14 @@ class GestaoMedicoes:
             
             # Obter dados do fornecedor
             selection = self.lst_fornecedor_contrato.curselection()
-            nome_fornecedor = self.lst_fornecedor_contrato.get(selection[0]).strip()
+            item_selecionado = self.lst_fornecedor_contrato.get(selection[0]).strip()
+            
+            # Extrair nome do formato "NOME - CNPJ"
+            if " - " in item_selecionado:
+                nome_fornecedor = item_selecionado.rsplit(" - ", 1)[0].strip()
+            else:
+                nome_fornecedor = item_selecionado
+            
             dados_fornecedor = self.gerador_contrato.obter_dados_fornecedor_por_nome(nome_fornecedor)
             
             # Validar se fornecedor foi encontrado
@@ -3461,7 +3489,14 @@ class GestaoMedicoes:
                 return
             
             # Obter dados do formulário
-            nome_fornecedor = self.lst_fornecedor_contrato.get(selection[0]).strip()
+            item_selecionado = self.lst_fornecedor_contrato.get(selection[0]).strip()
+            
+            # Extrair nome do formato "NOME - CNPJ"
+            if " - " in item_selecionado:
+                nome_fornecedor = item_selecionado.rsplit(" - ", 1)[0].strip()
+            else:
+                nome_fornecedor = item_selecionado
+            
             cnpj_fornecedor = self.ent_cnpj_fornecedor.get().strip()
             
             # Obter descrição dos serviços (agora editável - MELHORIA 2)
