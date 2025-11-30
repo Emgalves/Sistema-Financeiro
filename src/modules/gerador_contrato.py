@@ -1,12 +1,3 @@
-"""
-Módulo de Geração de Contratos de Prestação de Serviços
-Integrado ao sistema de Gestão de Medições
-
-VERSÃO 2.1 - Corrigida com tratamento robusto de colunas
-
-LOCALIZAÇÃO: src/modules/gerador_contrato.py
-"""
-
 import os
 import json
 import subprocess
