@@ -567,6 +567,9 @@ class GestaoMedicoes:
         
         ttk.Button(frame_botoes, text="📂 Abrir Pasta de Contratos", 
                 command=self.abrir_pasta_contratos).pack(side='left', padx=5)
+
+        ttk.Button(frame_botoes, text="Voltar", 
+                command=lambda: self.notebook.select(1)).pack(side='right', padx=5)
         
         # Empacotar canvas e scrollbar
         canvas.pack(side="left", fill="both", expand=True)
