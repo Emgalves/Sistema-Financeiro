@@ -3405,7 +3405,7 @@ class SistemaEntradaDados:
                      "ADMINISTRADORES_CONTRATO", "", "", "", "", "", "",
                      "ADITIVOS", "", "", "",
                      "ADMINISTRADORES_ADITIVO", "", "", "", "", "", "",
-                     "PARCELAS", "", "", "", "", "", "", ""]
+                     "PARCELAS", "", "", "", "", "", "", "", "", ""]
             
             for col, valor in enumerate(blocos, 1):
                 contratos_sheet.cell(row=1, column=col, value=valor)
@@ -3421,7 +3421,7 @@ class SistemaEntradaDados:
                 # ADMINISTRADORES_ADITIVO
                 "Nº Contrato", "Nº Aditivo", "CNPJ/CPF", "Nome/Razão Social", "Tipo", "Valor/Percentual", "Valor Total",
                 # PARCELAS
-                "Referência", "Número", "CNPJ/CPF", "Nome", "Data Vencimento", "Valor", "Status", "Data Pagamento", "Eventos/Fases", "Percentual"
+                "Referência", "Número", "CNPJ/CPF", "Nome", "Data Vencimento", "Valor", "Status", "Data Pagamento", "Eventos/Fases", "Percentual %"
             ]
             
             for col, header in enumerate(headers, 1):
@@ -3857,7 +3857,7 @@ class SistemaEntradaDados:
         """Abre janela para cadastro de novo fornecedor - VERSÃO CORRIGIDA"""
         self.janela_fornecedor = tk.Toplevel(self.root)
         self.janela_fornecedor.title("Novo Fornecedor")
-        self.janela_fornecedor.geometry("800x700")
+        self.janela_fornecedor.geometry("800x750")
         
         self.janela_fornecedor.transient(self.root)  # Definir como janela filha
         self.janela_fornecedor.grab_set()  # Tornar modal
@@ -3865,7 +3865,7 @@ class SistemaEntradaDados:
         
         # Calcular posição central
         largura = 800
-        altura = 700
+        altura = 750
         pos_x = (self.janela_fornecedor.winfo_screenwidth() // 2) - (largura // 2)
         pos_y = (self.janela_fornecedor.winfo_screenheight() // 2) - (altura // 2)
         
@@ -4156,7 +4156,7 @@ class SistemaEntradaDados:
 
         # Razão Social e Nome
         tk.Label(campos_principais, text="Razão Social:*").grid(row=1, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['razao_social'] = tk.Entry(campos_principais, width=50)
+        self.campos_form['razao_social'] = tk.Entry(campos_principais, width=80)
         self.campos_form['razao_social'].grid(row=1, column=1, columnspan=3, padx=5, pady=2, sticky='ew')
         self.campos_form['razao_social'].bind('<FocusOut>', self.copiar_para_nome)
 
@@ -4188,8 +4188,43 @@ class SistemaEntradaDados:
         self.campos_form['email'] = tk.Entry(campos_contato, width=50)
         self.campos_form['email'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
 
+        # ===== NOVA SEÇÃO: RESUMO DOS DADOS BANCÁRIOS =====
+        frame_resumo_bancario = ttk.LabelFrame(formulario, text="📋 Resumo dos Dados Bancários")
+        frame_resumo_bancario.pack(fill='x', pady=5)
+
+        frame_resumo_interno = ttk.Frame(frame_resumo_bancario)
+        frame_resumo_interno.pack(fill='x', padx=10, pady=10)
+
+        tk.Label(frame_resumo_interno, text="Dados Consolidados:", 
+                font=('Arial', 9, 'bold')).grid(row=0, column=0, padx=5, pady=2, sticky='w')
+        
+        self.campos_form['dados_bancarios_display'] = tk.Entry(frame_resumo_interno, 
+                                                            width=60, 
+                                                            state='readonly',
+                                                            font=('Arial', 9))
+        self.campos_form['dados_bancarios_display'].grid(row=0, column=1, padx=5, pady=2, sticky='ew')
+        
+        # Botão para limpar todos os dados bancários
+        btn_limpar_bancarios = ttk.Button(frame_resumo_interno, 
+                                        text="🗑️ Limpar Dados Bancários", 
+                                        command=self.limpar_todos_dados_bancarios,
+                                        width=22)
+        btn_limpar_bancarios.grid(row=0, column=2, padx=5, pady=2)
+
+        frame_resumo_interno.columnconfigure(1, weight=1)
+
+        # Label informativa
+        # lbl_info_bancario = tk.Label(frame_resumo_bancario, 
+        #                             text="💡 Este campo mostra a consolidação dos dados bancários. "
+        #                                 "Use o botão 'Limpar' para remover todos os dados bancários de uma vez.",
+        #                             font=('Arial', 8),
+        #                             fg='gray',
+        #                             wraplength=700,
+        #                             justify='left')
+        # lbl_info_bancario.pack(padx=10, pady=(0, 10))
+
         # Dados Bancários
-        campos_bancarios = ttk.LabelFrame(formulario, text="Dados Bancários")
+        campos_bancarios = ttk.LabelFrame(formulario, text="Dados Bancários Detalhados")
         campos_bancarios.pack(fill='x', pady=5)
 
         # Carregar configurações
@@ -4207,18 +4242,23 @@ class SistemaEntradaDados:
             state='readonly'
         )
         self.campos_form['banco'].grid(row=0, column=1, padx=5, pady=2, sticky='ew')
+        # Bind para atualizar resumo quando banco mudar
+        self.campos_form['banco'].bind('<<ComboboxSelected>>', self.atualizar_resumo_dados_bancarios)
 
         tk.Label(campos_bancarios, text="Operação:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
         self.campos_form['op'] = tk.Entry(campos_bancarios)
         self.campos_form['op'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
+        self.campos_form['op'].bind('<KeyRelease>', self.atualizar_resumo_dados_bancarios)
 
         tk.Label(campos_bancarios, text="Agência:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
         self.campos_form['agencia'] = tk.Entry(campos_bancarios)
         self.campos_form['agencia'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
+        self.campos_form['agencia'].bind('<KeyRelease>', self.atualizar_resumo_dados_bancarios)
 
         tk.Label(campos_bancarios, text="Conta:").grid(row=3, column=0, padx=5, pady=2, sticky='w')
         self.campos_form['conta'] = tk.Entry(campos_bancarios)
         self.campos_form['conta'].grid(row=3, column=1, padx=5, pady=2, sticky='ew')
+        self.campos_form['conta'].bind('<KeyRelease>', self.atualizar_resumo_dados_bancarios)
 
         # PIX
         campos_pix = ttk.LabelFrame(formulario, text="Chave PIX")
@@ -4233,13 +4273,12 @@ class SistemaEntradaDados:
         )
         self.tipo_pix.grid(row=0, column=1, padx=5, pady=2)
         self.tipo_pix.set('Telefone')  # Padrão para prestadores
+        self.tipo_pix.bind('<<ComboboxSelected>>', self.atualizar_chave_pix)
 
         ttk.Label(campos_pix, text="Chave:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
         self.campos_form['chave_pix'] = ttk.Entry(campos_pix, width=40)
         self.campos_form['chave_pix'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
-
-        # Binding para atualização automática
-        self.tipo_pix.bind('<<ComboboxSelected>>', self.atualizar_chave_pix)
+        self.campos_form['chave_pix'].bind('<KeyRelease>', self.atualizar_resumo_dados_bancarios)
 
         # Classificação
         campos_class = ttk.LabelFrame(formulario, text="Classificação")
@@ -4267,7 +4306,7 @@ class SistemaEntradaDados:
         self.campos_form['vinculo'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
 
         tk.Label(campos_class, text="Endereço:").grid(row=3, column=0, padx=5, pady=2, sticky='w')
-        self.campos_form['endereco'] = tk.Entry(campos_class, width=80)
+        self.campos_form['endereco'] = tk.Entry(campos_class, width=100)
         self.campos_form['endereco'].grid(row=3, column=1, padx=5, pady=2, sticky='ew')
 
         # Botões de ação
@@ -4280,6 +4319,90 @@ class SistemaEntradaDados:
         ttk.Button(frame_botoes, 
                 text="Cancelar", 
                 command=self.janela_fornecedor.destroy).pack(side='left', padx=5)
+
+        # Atualizar resumo inicial (caso esteja em modo edição)
+        if modo_edicao:
+            self.janela_fornecedor.after(100, self.atualizar_resumo_dados_bancarios)
+
+    def atualizar_resumo_dados_bancarios(self, event=None):
+        """Atualiza o campo de resumo dos dados bancários em tempo real"""
+        try:
+            # Verificar se tem chave PIX
+            chave_pix = self.campos_form['chave_pix'].get().strip()
+            
+            if chave_pix:
+                dados_consolidados = f"PIX: {chave_pix}"
+            else:
+                # Montar dados bancários tradicionais
+                banco = self.campos_form['banco'].get().strip()
+                op = self.campos_form['op'].get().strip()
+                agencia = self.campos_form['agencia'].get().strip()
+                conta = self.campos_form['conta'].get().strip()
+                
+                # Construir string
+                partes = []
+                if banco:
+                    partes.append(banco)
+                if op:
+                    partes.append(f"Op: {op}")
+                if agencia:
+                    partes.append(f"Ag: {agencia}")
+                if conta:
+                    partes.append(f"Conta: {conta}")
+                
+                if partes:
+                    dados_consolidados = " | ".join(partes)
+                else:
+                    dados_consolidados = "NENHUM DADO BANCÁRIO CADASTRADO"
+            
+            # Atualizar campo display
+            self.campos_form['dados_bancarios_display'].config(state='normal')
+            self.campos_form['dados_bancarios_display'].delete(0, tk.END)
+            self.campos_form['dados_bancarios_display'].insert(0, dados_consolidados)
+            self.campos_form['dados_bancarios_display'].config(state='readonly')
+            
+        except Exception as e:
+            print(f"Erro ao atualizar resumo bancário: {str(e)}")
+
+    def limpar_todos_dados_bancarios(self):
+        """Limpa todos os campos de dados bancários de uma vez, evitando inconsistências"""
+        resposta = messagebox.askyesno(
+            "Confirmação",
+            "⚠️ Deseja realmente limpar TODOS os dados bancários?\n\n"
+            "Isso incluirá:\n"
+            "• Banco\n"
+            "• Operação\n"
+            "• Agência\n"
+            "• Conta\n"
+            "• Chave PIX\n\n"
+            "Esta ação não pode ser desfeita!",
+            icon='warning'
+        )
+        
+        if resposta:
+            # Limpar todos os campos bancários
+            self.campos_form['banco'].set('')
+            self.campos_form['op'].delete(0, tk.END)
+            self.campos_form['agencia'].delete(0, tk.END)
+            self.campos_form['conta'].delete(0, tk.END)
+            self.campos_form['chave_pix'].delete(0, tk.END)
+            self.tipo_pix.set('Selecione')
+            
+            # Atualizar resumo
+            self.atualizar_resumo_dados_bancarios()
+            
+            custom_messagebox("info", "Dados Limpos", 
+                            "✅ Todos os dados bancários foram removidos!")
+
+    def validar_cnpj_cpf_numeros(self, numeros):
+        """Valida CNPJ/CPF usando apenas os números"""
+        if len(numeros) == 11:
+            # Validar CPF
+            return validar_cnpj_cpf(f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:9]}-{numeros[9:]}")
+        elif len(numeros) == 14:
+            # Validar CNPJ
+            return validar_cnpj_cpf(f"{numeros[:2]}.{numeros[2:5]}.{numeros[5:8]}/{numeros[8:12]}-{numeros[12:]}")
+        return False
 
     def usar_cpf_criado_auto(self):
         """Busca e usa automaticamente o próximo CPF criado disponível - VERSÃO MELHORADA"""
@@ -4523,6 +4646,9 @@ class SistemaEntradaDados:
             self.campos_form['chave_pix'].insert(0, self.campos_form['telefone'].get())
         elif tipo_selecionado == 'Email':
             self.campos_form['chave_pix'].insert(0, self.campos_form['email'].get())
+        
+        # Atualizar resumo após alterar PIX
+        self.atualizar_resumo_dados_bancarios()
 
     def atualizar_tipo_pessoa(self, event=None):
         """Determina automaticamente o tipo de pessoa baseado no CNPJ/CPF"""
@@ -8929,7 +9055,7 @@ class GestaoContratos:
                         "ADMINISTRADORES_CONTRATO", "", "", "", "", "", "",
                         "ADITIVOS", "", "", "",
                         "ADMINISTRADORES_ADITIVO", "", "", "", "", "", "",
-                        "PARCELAS", "", "", "", "", "", "", "", ""]
+                         "PARCELAS", "", "", "", "", "", "", "", "", ""]
                 
                 for col, valor in enumerate(blocos, 1):
                     ws.cell(row=1, column=col, value=valor)
@@ -9106,12 +9232,36 @@ class GestaoContratos:
                     else:
                         data_inicial = ''
                         
+                    valor_percentual = row[10] or ''  # Coluna K
+                    if valor_percentual:
+                        valor_percentual_str = str(valor_percentual)
+                        if '%' in valor_percentual_str:
+                            # Já é percentual, manter como está
+                            valor_perc_formatado = valor_percentual_str
+                        else:
+                            # É valor numérico, formatar como percentual
+                            try:
+                                perc_num = float(str(valor_percentual).replace(',', '.'))
+                                valor_perc_formatado = f"{perc_num:.2f}%"
+                            except:
+                                valor_perc_formatado = str(valor_percentual)
+                    else:
+                        valor_perc_formatado = ''
+                    
+                    # ✅ CORREÇÃO: Formatar valor total
+                    valor_total = row[11] or 0  # Coluna L
+                    try:
+                        valor_total_num = float(str(valor_total).replace(',', '.'))
+                        valor_total_formatado = f"R$ {valor_total_num:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                    except:
+                        valor_total_formatado = str(valor_total)
+                        
                     self.tree_adm_contrato.insert('', 'end', values=(
                         row[7],   # CNPJ/CPF
                         row[8],   # Nome
                         row[9],   # Tipo
-                        row[10],  # Valor/Percentual
-                        row[11],  # Valor Total
+                        valor_perc_formatado,  # ✅ Valor/Percentual formatado
+                        valor_total_formatado,  # ✅ Valor Total formatado
                         row[12],  # Nº Parcelas
                         data_inicial  # Data Inicial de Pagamento
                     ))
@@ -9210,9 +9360,437 @@ class GestaoContratos:
         scroll_y.pack(side='right', fill='y')
         scroll_x.pack(side='bottom', fill='x')
         
-        # Botões para administradores
+        # ✅ NOVO: Frame para botões de administradores
         frame_botoes_adm = ttk.Frame(frame_adm)
         frame_botoes_adm.pack(fill='x', pady=5)
+
+        # ✅ FUNCIONALIDADE NOVA: Copiar eventos entre gestores
+        def copiar_eventos_entre_gestores():
+            """Copia eventos/descrições de um gestor para outro(s) DURANTE a criação do contrato"""
+            
+            # Verificar se há gestores cadastrados
+            if not self.tree_adm.get_children():
+                custom_messagebox("warning", "Aviso", "Adicione pelo menos um gestor primeiro!")
+                return
+            
+            # ✅ ALTERAÇÃO: Aceitar tanto Eventos/Fases quanto Valor Fixo em Parcelas
+            metodo = metodo_pagamento.get()
+            if metodo not in ["Eventos/Fases", "Valor Fixo em Parcelas"]:
+                custom_messagebox("warning", "Aviso", 
+                                "Esta função funciona apenas para:\n" +
+                                "• Eventos/Fases\n" +
+                                "• Valor Fixo em Parcelas\n\n" +
+                                f"Método atual: {metodo}")
+                return
+            
+            # Criar janela de cópia
+            janela_copia = tk.Toplevel(janela)
+            janela_copia.title("Copiar Descrições Entre Gestores")
+            janela_copia.geometry("700x650")
+            janela_copia.transient(janela)
+            janela_copia.grab_set()
+            
+            frame_copia = ttk.Frame(janela_copia, padding="10")
+            frame_copia.pack(fill='both', expand=True)
+            
+            # Título
+            ttk.Label(frame_copia, 
+                    text="Copiar Descrições de Parcelas/Eventos", 
+                    font=('Arial', 12, 'bold')).pack(pady=10)
+            
+            # ✅ Mensagem adaptada ao método
+            if metodo == "Eventos/Fases":
+                msg_explicativa = "Esta ferramenta copia os eventos (com descrições e percentuais) de um gestor para outro(s)."
+            else:  # Valor Fixo em Parcelas
+                msg_explicativa = "Esta ferramenta copia as descrições das parcelas de um gestor para outro(s)."
+            
+            ttk.Label(frame_copia, 
+                    text=msg_explicativa,
+                    wraplength=650,
+                    font=('Arial', 9, 'italic')).pack(pady=5)
+            
+            # ✅ ETAPA 1: Selecionar gestor de ORIGEM
+            frame_origem = ttk.LabelFrame(frame_copia, text="1. Gestor de Origem (copiar DE)")
+            frame_origem.pack(fill='x', pady=10, padx=10)
+            
+            if metodo == "Eventos/Fases":
+                label_origem = "Selecione o gestor que já possui os eventos configurados:"
+            else:
+                label_origem = "Selecione o gestor que já possui as descrições das parcelas configuradas:"
+            
+            ttk.Label(frame_origem, text=label_origem).pack(anchor='w', padx=10, pady=5)
+            
+            # ✅ Listar gestores com descrições (funciona para ambos os métodos)
+            gestores_com_descricoes = []
+            gestores_info = {}
+            
+            for item in self.tree_adm.get_children():
+                valores = self.tree_adm.item(item)['values']
+                tags = self.tree_adm.item(item)['tags']
+                
+                cnpj_cpf = valores[0]
+                nome = valores[1]
+                
+                tem_descricoes = False
+                descricoes_info = {}
+                
+                if metodo == "Eventos/Fases":
+                    # Buscar eventos nas tags
+                    for tag in tags:
+                        if tag.startswith('eventos:'):
+                            tem_descricoes = True
+                            eventos_str = tag.replace('eventos:', '')
+                            eventos_parts = eventos_str.split('|')
+                            
+                            eventos_list = []
+                            for evento_str in eventos_parts:
+                                partes = evento_str.split(':')
+                                if len(partes) == 3:
+                                    eventos_list.append({
+                                        'descricao': partes[0],
+                                        'percentual': float(partes[1]),
+                                        'valor': float(partes[2])
+                                    })
+                            
+                            descricoes_info = {
+                                'tipo': 'eventos',
+                                'dados': eventos_list
+                            }
+                            break
+                
+                else:  # Valor Fixo em Parcelas
+                    # Buscar descrições de parcelas nas tags
+                    DELIMITADOR = "|||"
+                    for tag in tags:
+                        if tag.startswith('descricoes:'):
+                            tem_descricoes = True
+                            descricoes_str = tag.replace('descricoes:', '')
+                            descricoes_list = descricoes_str.split(DELIMITADOR)
+                            
+                            descricoes_info = {
+                                'tipo': 'parcelas',
+                                'dados': descricoes_list
+                            }
+                            break
+                
+                if tem_descricoes:
+                    num_itens = len(descricoes_info['dados'])
+                    tipo_texto = "eventos" if metodo == "Eventos/Fases" else "parcelas"
+                    
+                    gestores_com_descricoes.append(
+                        f"{cnpj_cpf} - {nome} ({num_itens} {tipo_texto})"
+                    )
+                    
+                    gestores_info[cnpj_cpf] = {
+                        'nome': nome,
+                        'descricoes_info': descricoes_info,
+                        'item': item,
+                        'valores': valores,
+                        'tags': tags
+                    }
+            
+            if not gestores_com_descricoes:
+                tipo_config = "eventos" if metodo == "Eventos/Fases" else "descrições de parcelas"
+                custom_messagebox("warning", "Aviso", 
+                                f"Nenhum gestor com {tipo_config} encontrado!\n\n" +
+                                f"Configure {tipo_config} para pelo menos um gestor antes de copiar.")
+                janela_copia.destroy()
+                return
+            
+            origem_var = tk.StringVar()
+            combo_origem = ttk.Combobox(frame_origem, 
+                                    textvariable=origem_var,
+                                    values=gestores_com_descricoes,
+                                    state='readonly',
+                                    width=80)
+            combo_origem.pack(padx=10, pady=10, fill='x')
+            
+            # ✅ ETAPA 2: Selecionar gestores de DESTINO
+            frame_destino = ttk.LabelFrame(frame_copia, text="2. Gestores de Destino (copiar PARA)")
+            frame_destino.pack(fill='both', expand=True, pady=10, padx=10)
+            
+            tipo_texto = "eventos" if metodo == "Eventos/Fases" else "descrições"
+            ttk.Label(frame_destino, 
+                    text=f"Marque os gestores que receberão a cópia das {tipo_texto}:").pack(
+                        anchor='w', padx=10, pady=5)
+            
+            # Frame scrollável para checkboxes
+            canvas_dest = tk.Canvas(frame_destino, height=200)
+            scrollbar_dest = ttk.Scrollbar(frame_destino, orient="vertical", command=canvas_dest.yview)
+            frame_checks = ttk.Frame(canvas_dest)
+            
+            frame_checks.bind(
+                "<Configure>",
+                lambda e: canvas_dest.configure(scrollregion=canvas_dest.bbox("all"))
+            )
+            
+            canvas_dest.create_window((0, 0), window=frame_checks, anchor="nw")
+            canvas_dest.configure(yscrollcommand=scrollbar_dest.set)
+            
+            canvas_dest.pack(side="left", fill="both", expand=True, padx=5)
+            scrollbar_dest.pack(side="right", fill="y")
+            
+            # Criar checkbox para cada gestor
+            gestores_destino_vars = {}
+            
+            for item in self.tree_adm.get_children():
+                valores = self.tree_adm.item(item)['values']
+                cnpj_cpf = valores[0]
+                nome = valores[1]
+                
+                var = tk.BooleanVar()
+                check = ttk.Checkbutton(frame_checks, 
+                                    text=f"{cnpj_cpf} - {nome}",
+                                    variable=var)
+                check.pack(anchor='w', padx=10, pady=2)
+                
+                gestores_destino_vars[cnpj_cpf] = {
+                    'var': var,
+                    'item': item,
+                    'nome': nome,
+                    'valores': valores
+                }
+            
+            # ✅ ETAPA 3: Opções de cópia (adaptadas ao método)
+            frame_opcoes = ttk.LabelFrame(frame_copia, text="3. Opções de Cópia")
+            frame_opcoes.pack(fill='x', pady=10, padx=10)
+            
+            if metodo == "Eventos/Fases":
+                var_ajustar_valores = tk.BooleanVar(value=True)
+                ttk.Checkbutton(frame_opcoes, 
+                            text="Ajustar valores dos eventos proporcionalmente ao valor total de cada gestor",
+                            variable=var_ajustar_valores).pack(anchor='w', padx=10, pady=5)
+                
+                ttk.Label(frame_opcoes, 
+                        text="📝 Os percentuais serão mantidos, mas os valores serão recalculados.",
+                        font=('Arial', 8, 'italic'),
+                        foreground='gray').pack(anchor='w', padx=25, pady=2)
+            
+            else:  # Valor Fixo em Parcelas
+                var_copiar_entrada = tk.BooleanVar(value=True)
+                ttk.Checkbutton(frame_opcoes, 
+                            text="Copiar também a descrição da entrada (se houver)",
+                            variable=var_copiar_entrada).pack(anchor='w', padx=10, pady=5)
+                
+                ttk.Label(frame_opcoes, 
+                        text="📝 As descrições das parcelas serão copiadas na mesma ordem.",
+                        font=('Arial', 8, 'italic'),
+                        foreground='gray').pack(anchor='w', padx=25, pady=2)
+            
+            # ✅ ETAPA 4: Executar cópia (lógica adaptada)
+            def executar_copia_eventos():
+                """Executa a cópia dos eventos/descrições entre gestores"""
+                try:
+                    # Validar origem
+                    if not origem_var.get():
+                        custom_messagebox("error", "Erro", "Selecione o gestor de origem!")
+                        return
+                    
+                    # ✅ CORREÇÃO: Extrair CNPJ corretamente (pode ter espaços ou formatação)
+                    origem_selecionada = origem_var.get()
+                    
+                    # Extrair CNPJ (antes do primeiro " - ")
+                    cnpj_origem_raw = origem_selecionada.split(' - ')[0].strip()
+                    
+                    # ✅ Normalizar CNPJ removendo formatação
+                    cnpj_origem = cnpj_origem_raw.replace('.', '').replace('/', '').replace('-', '').strip()
+                    
+                    # ✅ DEBUG: Verificar se encontra o gestor
+                    print(f"DEBUG: CNPJ origem selecionado: '{cnpj_origem}'")
+                    print(f"DEBUG: CNPJs disponíveis em gestores_info: {list(gestores_info.keys())}")
+                    
+                    # ✅ Buscar o CNPJ correto no dicionário (comparando normalizados)
+                    cnpj_origem_encontrado = None
+                    for cnpj_key in gestores_info.keys():
+                        cnpj_key_normalizado = str(cnpj_key).replace('.', '').replace('/', '').replace('-', '').strip()
+                        if cnpj_key_normalizado == cnpj_origem:
+                            cnpj_origem_encontrado = cnpj_key
+                            break
+                    
+                    if not cnpj_origem_encontrado:
+                        custom_messagebox("error", "Erro", 
+                                        f"Gestor de origem não encontrado!\n\n" +
+                                        f"CNPJ buscado: {cnpj_origem}\n" +
+                                        f"CNPJs disponíveis: {list(gestores_info.keys())}")
+                        return
+                    
+                    print(f"DEBUG: CNPJ origem encontrado: '{cnpj_origem_encontrado}'")
+                    
+                    # Validar destinos
+                    destinos_selecionados = []
+                    for cnpj, dados in gestores_destino_vars.items():
+                        if dados['var'].get():
+                            # ✅ Normalizar CNPJ do destino também
+                            cnpj_normalizado = str(cnpj).replace('.', '').replace('/', '').replace('-', '').strip()
+                            cnpj_origem_normalizado = str(cnpj_origem_encontrado).replace('.', '').replace('/', '').replace('-', '').strip()
+                            
+                            if cnpj_normalizado != cnpj_origem_normalizado:
+                                destinos_selecionados.append({
+                                    'cnpj': cnpj,
+                                    'item': dados['item'],
+                                    'nome': dados['nome'],
+                                    'valores': dados['valores']
+                                })
+                    
+                    if not destinos_selecionados:
+                        custom_messagebox("error", "Erro", 
+                                        "Selecione pelo menos um gestor de destino!\n" +
+                                        "(Diferente do gestor de origem)")
+                        return
+                    
+                    # ✅ Usar cnpj_origem_encontrado ao invés de cnpj_origem
+                    descricoes_origem = gestores_info[cnpj_origem_encontrado]['descricoes_info']
+                    
+                    # Confirmar
+                    num_itens = len(descricoes_origem['dados'])
+                    tipo_item = "evento(s)" if metodo == "Eventos/Fases" else "descrição(ões)"
+                    
+                    msg = f"Copiar {num_itens} {tipo_item} para {len(destinos_selecionados)} gestor(es)?\n\n"
+                    
+                    if metodo == "Eventos/Fases" and var_ajustar_valores.get():
+                        msg += "✓ Valores serão ajustados proporcionalmente\n"
+                    elif metodo == "Eventos/Fases":
+                        msg += "⚠️ Valores serão copiados exatamente iguais\n"
+                    
+                    if not custom_messagebox("yesno", "Confirmação", msg):
+                        return
+                    
+                    # ✅ EXECUTAR CÓPIA - Lógica diferente por método
+                    valor_global_float = float(valor_global.get().replace(',', '.'))
+                    DELIMITADOR = "|||"
+                    
+                    for destino in destinos_selecionados:
+                        item_destino = destino['item']
+                        valores_destino = destino['valores']
+                        
+                        # Obter tags atuais do destino
+                        tags_destino = list(self.tree_adm.item(item_destino)['tags'])
+                        
+                        if metodo == "Eventos/Fases":
+                            # ===== CÓPIA DE EVENTOS =====
+                            
+                            # Remover tag de eventos existente
+                            tags_destino = [tag for tag in tags_destino if not tag.startswith('eventos:')]
+                            
+                            eventos_destino = []
+                            
+                            for evento_orig in descricoes_origem['dados']:
+                                if var_ajustar_valores.get():
+                                    # Ajustar valor baseado no percentual e valor total do gestor
+                                    if valores_destino[2] == 'Percentual':
+                                        perc_gestor = float(str(valores_destino[3]).replace('%', '').replace(',', '.'))
+                                        valor_total_gestor = (perc_gestor / 100) * valor_global_float
+                                    else:  # Fixo
+                                        valor_total_gestor = float(str(valores_destino[4]).replace(',', '.'))
+                                    
+                                    valor_evento = (evento_orig['percentual'] / 100) * valor_total_gestor
+                                else:
+                                    valor_evento = evento_orig['valor']
+                                
+                                eventos_destino.append(
+                                    f"{evento_orig['descricao']}:{evento_orig['percentual']}:{valor_evento}"
+                                )
+                            
+                            # Adicionar nova tag de eventos
+                            nova_tag_eventos = f"eventos:{'|'.join(eventos_destino)}"
+                            tags_destino.append(nova_tag_eventos)
+                            
+                            # Atualizar número de parcelas
+                            valores_atualizados = list(valores_destino)
+                            valores_atualizados[5] = str(len(descricoes_origem['dados']))
+                        
+                        else:  # Valor Fixo em Parcelas
+                            # ===== CÓPIA DE DESCRIÇÕES DE PARCELAS =====
+                            
+                            # Remover tag de descrições existente
+                            tags_destino = [tag for tag in tags_destino 
+                                        if not tag.startswith('descricoes:')]
+                            
+                            # Copiar descrições
+                            descricoes_list = descricoes_origem['dados'].copy()
+                            nova_tag_descricoes = f"descricoes:{DELIMITADOR.join(descricoes_list)}"
+                            tags_destino.append(nova_tag_descricoes)
+                            
+                            # ✅ Copiar descrição da entrada se solicitado
+                            if var_copiar_entrada.get():
+                                # ✅ Usar cnpj_origem_encontrado
+                                tags_origem = gestores_info[cnpj_origem_encontrado]['tags']
+                                
+                                for tag in tags_origem:
+                                    if tag.startswith('desc_entrada:'):
+                                        # Remover tag antiga se existir
+                                        tags_destino = [t for t in tags_destino 
+                                                    if not t.startswith('desc_entrada:')]
+                                        # Adicionar nova
+                                        tags_destino.append(tag)
+                                        break
+                                
+                                # Buscar entrada nas tags de origem
+                                for tag in tags_origem:
+                                    if tag.startswith('entrada:'):
+                                        # Remover tag antiga se existir
+                                        tags_destino = [t for t in tags_destino 
+                                                    if not t.startswith('entrada:')]
+                                        # Adicionar nova
+                                        tags_destino.append(tag)
+                                        break
+                            
+                            # Manter número de parcelas original do destino
+                            valores_atualizados = list(valores_destino)
+                        
+                        # Atualizar item na tree
+                        self.tree_adm.item(item_destino, tags=tuple(tags_destino))
+                        self.tree_adm.item(item_destino, values=tuple(valores_atualizados))
+                    
+                    tipo_copiado = "Eventos" if metodo == "Eventos/Fases" else "Descrições"
+                    custom_messagebox("info", "Sucesso", 
+                                    f"{tipo_copiado} copiado(s) com sucesso para {len(destinos_selecionados)} gestor(es)!\n\n" +
+                                    f"Total de itens por gestor: {num_itens}")
+                    
+                    janela_copia.destroy()
+                    
+                except Exception as e:
+                    import traceback
+                    traceback.print_exc()
+                    custom_messagebox("error", "Erro", f"Erro ao copiar: {str(e)}")
+            
+            # Botões finais
+            frame_botoes_copia = ttk.Frame(frame_copia)
+            frame_botoes_copia.pack(fill='x', pady=10)
+            
+            ttk.Button(frame_botoes_copia, 
+                    text="✓ Executar Cópia", 
+                    command=executar_copia_eventos).pack(side='right', padx=5)
+            
+            ttk.Button(frame_botoes_copia, 
+                    text="Cancelar", 
+                    command=janela_copia.destroy).pack(side='right', padx=5)
+        
+        # Botões para administradores - ATUALIZADO
+        ttk.Button(
+            frame_botoes_adm, 
+            text="➕ Adicionar Administrador",
+            command=lambda: self.adicionar_administrador_modificado(self.tree_adm, valor_global, metodo_pagamento)
+        ).pack(side='left', padx=5)
+
+        ttk.Button(
+            frame_botoes_adm, 
+            text="➖ Remover Administrador",
+            command=lambda: self.remover_administrador(self.tree_adm)
+        ).pack(side='left', padx=5)
+        
+        # ✅ NOVO BOTÃO: Copiar eventos entre gestores
+        ttk.Button(
+            frame_botoes_adm, 
+            text="📋 Copiar Descrições Entre Gestores",
+            command=copiar_eventos_entre_gestores
+        ).pack(side='left', padx=5)
+        
+        # ✅ Dica visual atualizada
+        ttk.Label(frame_botoes_adm, 
+                text="💡 Configure um gestor primeiro, depois use 'Copiar' para replicar",
+                font=('Arial', 8, 'italic'),
+                foreground='gray').pack(side='left', padx=20)
 
         # Botões para administradores - explicitamente configurados
         ttk.Button(
@@ -9299,79 +9877,826 @@ class GestaoContratos:
                 ws.cell(row=proxima_linha, column=34, value=f"{percentual:.2f}%")  # Percentual do evento
        
     def editar_contrato(self):
-        """Edita o contrato selecionado"""
+        """VERSÃO CORRIGIDA - Edita o contrato com acesso completo a gestores e eventos"""
         selecionado = self.tree_contratos.selection()
         if not selecionado:
-            custom_messagebox("warning",  "Aviso", "Selecione um contrato para editar")
+            custom_messagebox("warning", "Aviso", "Selecione um contrato para editar")
             return
 
         try:
             dados_contrato = self.tree_contratos.item(selecionado)['values']
+            num_contrato = dados_contrato[0]
             
             janela = tk.Toplevel(self.parent)
             janela.title(f"Editar Contrato - {self.cliente_atual}")
-            janela.geometry("600x500")
+            janela.geometry("1000x700")
 
-            # Frame principal
-            frame = ttk.Frame(janela, padding="10")
+            # Frame principal com scrollbar
+            main_frame = ttk.Frame(janela)
+            main_frame.pack(fill='both', expand=True)
+            
+            canvas = tk.Canvas(main_frame)
+            scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
+            scroll_frame = ttk.Frame(canvas)
+            
+            scroll_frame.bind(
+                "<Configure>",
+                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            )
+            
+            canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+            canvas.configure(yscrollcommand=scrollbar.set)
+            
+            canvas.pack(side="left", fill="both", expand=True)
+            scrollbar.pack(side="right", fill="y")
+            
+            frame = ttk.Frame(scroll_frame, padding="10")
             frame.pack(fill='both', expand=True)
 
-            # Dados do Contrato
+            # === DADOS DO CONTRATO ===
             frame_contrato = ttk.LabelFrame(frame, text="Dados do Contrato")
             frame_contrato.pack(fill='x', pady=5)
 
             # Número do Contrato (readonly)
-            ttk.Label(frame_contrato, text="Nº Contrato:").grid(row=0, column=0, padx=5, pady=2)
-            num_contrato = ttk.Entry(frame_contrato, state='readonly')
-            num_contrato.grid(row=0, column=1, padx=5, pady=2)
-            num_contrato.insert(0, dados_contrato[0])
+            ttk.Label(frame_contrato, text="Nº Contrato:").grid(row=0, column=0, padx=5, pady=2, sticky='w')
+            num_contrato_entry = ttk.Entry(frame_contrato, state='readonly', width=30)
+            num_contrato_entry.grid(row=0, column=1, padx=5, pady=2, sticky='w')
+            num_contrato_entry.insert(0, num_contrato)
 
             # Datas
-            ttk.Label(frame_contrato, text="Data Início:").grid(row=1, column=0, padx=5, pady=2)
+            ttk.Label(frame_contrato, text="Data Início:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
             data_inicio = DateEntry(frame_contrato, width=20, date_pattern='dd/mm/yyyy', locale='pt_BR')
-            data_inicio.grid(row=1, column=1, padx=5, pady=2)
+            data_inicio.grid(row=1, column=1, padx=5, pady=2, sticky='w')
             data_inicio.set_date(datetime.strptime(dados_contrato[1], '%d/%m/%Y'))
 
-            ttk.Label(frame_contrato, text="Data Fim:").grid(row=2, column=0, padx=5, pady=2)
+            ttk.Label(frame_contrato, text="Data Fim:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
             data_fim = DateEntry(frame_contrato, width=20, date_pattern='dd/mm/yyyy', locale='pt_BR')
-            data_fim.grid(row=2, column=1, padx=5, pady=2)
+            data_fim.grid(row=2, column=1, padx=5, pady=2, sticky='w')
             data_fim.set_date(datetime.strptime(dados_contrato[2], '%d/%m/%Y'))
 
             # Status
-            ttk.Label(frame_contrato, text="Status:").grid(row=3, column=0, padx=5, pady=2)
-            status_combo = ttk.Combobox(frame_contrato, values=['ATIVO', 'INATIVO'], state='readonly')
-            status_combo.grid(row=3, column=1, padx=5, pady=2)
+            ttk.Label(frame_contrato, text="Status:").grid(row=3, column=0, padx=5, pady=2, sticky='w')
+            status_combo = ttk.Combobox(frame_contrato, values=['ATIVO', 'INATIVO'], state='readonly', width=28)
+            status_combo.grid(row=3, column=1, padx=5, pady=2, sticky='w')
             status_combo.set(dados_contrato[3])
 
+            # === GESTORES/ADMINISTRADORES ===
+            frame_gestores = ttk.LabelFrame(frame, text="Gestores/Administradores")
+            frame_gestores.pack(fill='both', expand=True, pady=5)
+
+            # Treeview para gestores
+            colunas_gestores = ('CNPJ/CPF', 'Nome', 'Tipo', 'Valor Total')
+            tree_gestores = ttk.Treeview(frame_gestores, columns=colunas_gestores, show='headings', height=4)
+            for col in colunas_gestores:
+                tree_gestores.heading(col, text=col)
+                tree_gestores.column(col, width=150)
+            
+            tree_gestores.pack(fill='both', expand=True, padx=5, pady=5)
+
+            # Botões para gestores
+            frame_btn_gestores = ttk.Frame(frame_gestores)
+            frame_btn_gestores.pack(fill='x', pady=5)
+            
+            def carregar_gestores():
+                """Carrega gestores do contrato"""
+                tree_gestores.delete(*tree_gestores.get_children())
+                wb = load_workbook(self.arquivo_cliente)
+                ws = wb['Contratos_ADM']
+                
+                for row in ws.iter_rows(min_row=3, values_only=True):
+                    if row[6] == num_contrato:  # Coluna G - Nº Contrato
+                        # ✅ CORREÇÃO: Formatar valor total
+                        valor_total = row[11] or 0  # Coluna L
+                        try:
+                            valor_total_num = float(str(valor_total).replace(',', '.'))
+                            valor_total_formatado = f"R$ {valor_total_num:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                        except:
+                            valor_total_formatado = str(valor_total)
+                        
+                        tree_gestores.insert('', 'end', values=(
+                            row[7],   # CNPJ/CPF
+                            row[8],   # Nome
+                            row[9],   # Tipo
+                            valor_total_formatado  # ✅ Valor Total formatado
+                        ))
+                wb.close()
+            
+            def excluir_gestor():
+                """Exclui gestor selecionado"""
+                selecionado_gest = tree_gestores.selection()
+                if not selecionado_gest:
+                    custom_messagebox("warning", "Aviso", "Selecione um gestor para excluir")
+                    return
+                
+                if custom_messagebox("yesno", "Confirmação", "Deseja realmente excluir este gestor?"):
+                    valores = tree_gestores.item(selecionado_gest)['values']
+                    cnpj_cpf = valores[0]
+                    
+                    wb = load_workbook(self.arquivo_cliente)
+                    ws = wb['Contratos_ADM']
+                    
+                    # Encontrar e deletar linha
+                    linhas_deletar = []
+                    for idx, row in enumerate(ws.iter_rows(min_row=3), start=3):
+                        if row[6].value == num_contrato and row[7].value == cnpj_cpf:
+                            linhas_deletar.append(idx)
+                    
+                    for linha in reversed(linhas_deletar):
+                        ws.delete_rows(linha)
+                    
+                    wb.save(self.arquivo_cliente)
+                    wb.close()
+                    carregar_gestores()
+                    carregar_eventos()  # Recarregar eventos também
+            
+            ttk.Button(frame_btn_gestores, text="Excluir Gestor", 
+                    command=excluir_gestor).pack(side='left', padx=5)
+
+            # === EVENTOS/PARCELAS ===
+            frame_eventos = ttk.LabelFrame(frame, text="Eventos/Parcelas")
+            frame_eventos.pack(fill='both', expand=True, pady=5)
+
+            # Treeview para eventos
+            colunas_eventos = ('Nº', 'CNPJ/CPF', 'Nome', 'Valor', 'Descrição')
+            tree_eventos = ttk.Treeview(frame_eventos, columns=colunas_eventos, show='headings', height=8)
+            
+            tree_eventos.column('Nº', width=50)
+            tree_eventos.column('CNPJ/CPF', width=120)
+            tree_eventos.column('Nome', width=150)
+            tree_eventos.column('Valor', width=100)
+            tree_eventos.column('Descrição', width=400)
+            
+            for col in colunas_eventos:
+                tree_eventos.heading(col, text=col)
+            
+            scroll_y_eventos = ttk.Scrollbar(frame_eventos, orient='vertical', command=tree_eventos.yview)
+            tree_eventos.configure(yscrollcommand=scroll_y_eventos.set)
+            
+            tree_eventos.pack(side='left', fill='both', expand=True, padx=5, pady=5)
+            scroll_y_eventos.pack(side='right', fill='y')
+
+            # ✅ NOVO: Frame para botões de eventos (em coluna ao invés de linha)
+            frame_btn_eventos = ttk.Frame(frame_eventos)
+            frame_btn_eventos.pack(side='right', fill='y', padx=5, pady=5)
+            
+            def carregar_eventos():
+                """Carrega eventos do contrato"""
+                tree_eventos.delete(*tree_eventos.get_children())
+                wb = load_workbook(self.arquivo_cliente)
+                ws = wb['Contratos_ADM']
+                
+                for row in ws.iter_rows(min_row=3, values_only=True):
+                    if row[24] == num_contrato:  # Coluna Y - Referência (contrato)
+                        num_parcela = row[25]  # Número
+                        
+                        # Formatar exibição do número
+                        if num_parcela == 0:
+                            num_display = "ENTRADA"
+                        else:
+                            num_display = str(num_parcela)
+                        
+                        # ✅ CORREÇÃO: Formatar valor
+                        valor = row[29] or 0  # Coluna AD - Valor
+                        try:
+                            valor_num = float(str(valor).replace(',', '.'))
+                            valor_formatado = f"R$ {valor_num:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                        except:
+                            valor_formatado = str(valor)
+                        
+                        descricao = row[32] if len(row) > 32 else ''
+            
+                        tree_eventos.insert('', 'end', values=(
+                            num_display,
+                            row[26],  # CNPJ/CPF
+                            row[27],  # Nome
+                            valor_formatado,  # Valor
+                            descricao[:80] + '...' if descricao and len(str(descricao)) > 80 else descricao
+                        ))
+                wb.close()
+            
+            # ✅ NOVA FUNCIONALIDADE: Copiar eventos entre gestores
+            def copiar_eventos_para_gestor():
+                """Copia eventos de um gestor para outro(s)"""
+                # Criar janela de seleção
+                janela_copiar = tk.Toplevel(janela)
+                janela_copiar.title("Copiar Eventos Entre Gestores")
+                janela_copiar.geometry("600x500")
+                
+                frame_copiar = ttk.Frame(janela_copiar, padding="10")
+                frame_copiar.pack(fill='both', expand=True)
+                
+                # Título e instruções
+                ttk.Label(frame_copiar, text="Copiar Eventos Entre Gestores", 
+                        font=('Arial', 12, 'bold')).pack(pady=10)
+                
+                ttk.Label(frame_copiar, 
+                        text="Selecione o gestor de origem e os gestores de destino.",
+                        wraplength=550).pack(pady=5)
+                
+                # ✅ PASSO 1: Selecionar gestor de origem
+                frame_origem = ttk.LabelFrame(frame_copiar, text="Gestor de Origem (copiar DE)")
+                frame_origem.pack(fill='x', pady=10, padx=10)
+                
+                # Listar gestores com eventos
+                gestores_com_eventos = {}
+                wb = load_workbook(self.arquivo_cliente)
+                ws = wb['Contratos_ADM']
+                
+                for row in ws.iter_rows(min_row=3, values_only=True):
+                    if row[24] == num_contrato:  # Este contrato
+                        cnpj_cpf = row[26]
+                        nome = row[27]
+                        
+                        if cnpj_cpf not in gestores_com_eventos:
+                            gestores_com_eventos[cnpj_cpf] = {
+                                'nome': nome,
+                                'eventos': []
+                            }
+                        
+                        # Adicionar evento à lista
+                        gestores_com_eventos[cnpj_cpf]['eventos'].append({
+                            'numero': row[25],
+                            'valor': row[29],
+                            'descricao': row[32] if len(row) > 32 else '',
+                            'status': row[30] if len(row) > 30 else 'PENDENTE'
+                        })
+                
+                wb.close()
+                
+                if not gestores_com_eventos:
+                    custom_messagebox("warning", "Aviso", "Nenhum gestor com eventos encontrado!")
+                    janela_copiar.destroy()
+                    return
+                
+                # ComboBox para selecionar gestor de origem
+                gestor_origem_var = tk.StringVar()
+                
+                gestores_opcoes = [f"{cnpj} - {dados['nome']} ({len(dados['eventos'])} eventos)" 
+                                for cnpj, dados in gestores_com_eventos.items()]
+                
+                combo_origem = ttk.Combobox(frame_origem, textvariable=gestor_origem_var, 
+                                        values=gestores_opcoes, state='readonly', width=70)
+                combo_origem.pack(padx=10, pady=10, fill='x')
+                
+                # ✅ PASSO 2: Selecionar gestores de destino
+                frame_destino = ttk.LabelFrame(frame_copiar, text="Gestores de Destino (copiar PARA)")
+                frame_destino.pack(fill='both', expand=True, pady=10, padx=10)
+                
+                ttk.Label(frame_destino, 
+                        text="Marque os gestores que receberão a cópia dos eventos:",
+                        font=('Arial', 9, 'italic')).pack(pady=5)
+                
+                # Frame scrollável para checkboxes
+                canvas_dest = tk.Canvas(frame_destino, height=150)
+                scrollbar_dest = ttk.Scrollbar(frame_destino, orient="vertical", command=canvas_dest.yview)
+                frame_checks = ttk.Frame(canvas_dest)
+                
+                frame_checks.bind(
+                    "<Configure>",
+                    lambda e: canvas_dest.configure(scrollregion=canvas_dest.bbox("all"))
+                )
+                
+                canvas_dest.create_window((0, 0), window=frame_checks, anchor="nw")
+                canvas_dest.configure(yscrollcommand=scrollbar_dest.set)
+                
+                canvas_dest.pack(side="left", fill="both", expand=True, padx=5)
+                scrollbar_dest.pack(side="right", fill="y")
+                
+                # Criar checkboxes para cada gestor
+                gestores_destino_vars = {}
+                
+                # Buscar TODOS os gestores do contrato
+                wb = load_workbook(self.arquivo_cliente)
+                ws = wb['Contratos_ADM']
+                
+                todos_gestores = set()
+                for row in ws.iter_rows(min_row=3, values_only=True):
+                    if row[6] == num_contrato:  # Coluna G - gestores do contrato
+                        cnpj_cpf = row[7]
+                        nome = row[8]
+                        todos_gestores.add((cnpj_cpf, nome))
+                
+                wb.close()
+                
+                for cnpj_cpf, nome in sorted(todos_gestores):
+                    var = tk.BooleanVar()
+                    check = ttk.Checkbutton(frame_checks, 
+                                        text=f"{cnpj_cpf} - {nome}",
+                                        variable=var)
+                    check.pack(anchor='w', padx=10, pady=2)
+                    gestores_destino_vars[cnpj_cpf] = var
+                
+                # ✅ PASSO 3: Opções de cópia
+                frame_opcoes = ttk.LabelFrame(frame_copiar, text="Opções de Cópia")
+                frame_opcoes.pack(fill='x', pady=10, padx=10)
+                
+                var_substituir = tk.BooleanVar(value=False)
+                ttk.Checkbutton(frame_opcoes, 
+                            text="Substituir eventos existentes nos gestores de destino",
+                            variable=var_substituir).pack(anchor='w', padx=10, pady=5)
+                
+                var_ajustar_valores = tk.BooleanVar(value=False)
+                ttk.Checkbutton(frame_opcoes, 
+                            text="Ajustar valores proporcionalmente ao valor total de cada gestor",
+                            variable=var_ajustar_valores).pack(anchor='w', padx=10, pady=5)
+                
+                # ✅ PASSO 4: Executar cópia
+                def executar_copia():
+                    """Executa a cópia dos eventos"""
+                    try:
+                        # Validar seleção
+                        if not gestor_origem_var.get():
+                            custom_messagebox("error", "Erro", "Selecione o gestor de origem!")
+                            return
+                        
+                        # Extrair CNPJ do gestor de origem
+                        cnpj_origem = gestor_origem_var.get().split(' - ')[0]
+                        
+                        # Verificar gestores de destino selecionados
+                        destinos_selecionados = [cnpj for cnpj, var in gestores_destino_vars.items() 
+                                                if var.get() and cnpj != cnpj_origem]
+                        
+                        if not destinos_selecionados:
+                            custom_messagebox("error", "Erro", "Selecione pelo menos um gestor de destino!")
+                            return
+                        
+                        # Confirmar ação
+                        msg_confirmacao = f"Copiar {len(gestores_com_eventos[cnpj_origem]['eventos'])} evento(s) "
+                        msg_confirmacao += f"para {len(destinos_selecionados)} gestor(es)?\n\n"
+                        
+                        if var_substituir.get():
+                            msg_confirmacao += "⚠️ ATENÇÃO: Eventos existentes serão SUBSTITUÍDOS!"
+                        
+                        if not custom_messagebox("yesno", "Confirmação", msg_confirmacao):
+                            return
+                        
+                        # Executar cópia
+                        wb = load_workbook(self.arquivo_cliente)
+                        ws = wb['Contratos_ADM']
+                        
+                        eventos_origem = gestores_com_eventos[cnpj_origem]['eventos']
+                        eventos_copiados = 0
+                        
+                        for cnpj_destino in destinos_selecionados:
+                            # Buscar nome do gestor de destino
+                            nome_destino = None
+                            valor_total_destino = 0
+                            
+                            for row in ws.iter_rows(min_row=3, values_only=True):
+                                if row[6] == num_contrato and row[7] == cnpj_destino:
+                                    nome_destino = row[8]
+                                    # Pegar valor total do gestor
+                                    try:
+                                        valor_total_destino = float(str(row[11]).replace(',', '.'))
+                                    except:
+                                        valor_total_destino = 0
+                                    break
+                            
+                            if not nome_destino:
+                                continue
+                            
+                            # Se deve substituir, marcar eventos existentes como excluídos
+                            if var_substituir.get():
+                                for idx, row in enumerate(ws.iter_rows(min_row=3), start=3):
+                                    if (row[24].value == num_contrato and 
+                                        row[26].value == cnpj_destino):
+                                        ws.cell(row=idx, column=31, value='EXCLUIDO')  # Status
+                            
+                            # Copiar cada evento
+                            for evento in eventos_origem:
+                                proxima_linha = ws.max_row + 1
+                                
+                                # Calcular valor (ajustar se necessário)
+                                valor_evento = evento['valor']
+                                
+                                if var_ajustar_valores.get() and valor_total_destino > 0:
+                                    # Buscar valor total do gestor de origem
+                                    valor_total_origem = 0
+                                    for row in ws.iter_rows(min_row=3, values_only=True):
+                                        if row[6] == num_contrato and row[7] == cnpj_origem:
+                                            try:
+                                                valor_total_origem = float(str(row[11]).replace(',', '.'))
+                                            except:
+                                                pass
+                                            break
+                                    
+                                    if valor_total_origem > 0:
+                                        # Ajustar proporcionalmente
+                                        proporcao = valor_total_destino / valor_total_origem
+                                        valor_evento = evento['valor'] * proporcao
+                                
+                                # Inserir evento copiado
+                                ws.cell(proxima_linha, 25, value=num_contrato)
+                                ws.cell(proxima_linha, 26, value=evento['numero'])
+                                ws.cell(proxima_linha, 27, value=cnpj_destino)
+                                ws.cell(proxima_linha, 28, value=nome_destino)
+                                ws.cell(proxima_linha, 29, value=None)  # Data vencimento
+                                ws.cell(proxima_linha, 30, value=valor_evento)
+                                ws.cell(proxima_linha, 31, value='PENDENTE')
+                                ws.cell(proxima_linha, 32, value=None)  # Data pagamento
+                                ws.cell(proxima_linha, 33, value=evento['descricao'])
+                                
+                                eventos_copiados += 1
+                        
+                        wb.save(self.arquivo_cliente)
+                        wb.close()
+                        
+                        custom_messagebox("info", "Sucesso", 
+                                        f"{eventos_copiados} evento(s) copiado(s) com sucesso!")
+                        
+                        janela_copiar.destroy()
+                        carregar_eventos()
+                        
+                    except Exception as e:
+                        import traceback
+                        traceback.print_exc()
+                        custom_messagebox("error", "Erro", f"Erro ao copiar eventos: {str(e)}")
+                
+                # Botões
+                frame_botoes_copiar = ttk.Frame(frame_copiar)
+                frame_botoes_copiar.pack(fill='x', pady=10)
+                
+                ttk.Button(frame_botoes_copiar, text="Executar Cópia", 
+                        command=executar_copia).pack(side='right', padx=5)
+                ttk.Button(frame_botoes_copiar, text="Cancelar", 
+                        command=janela_copiar.destroy).pack(side='right', padx=5)
+            
+            def editar_evento():
+                """CORRIGIDO - Edita evento selecionado usando identificação completa"""
+                selecionado_ev = tree_eventos.selection()
+                if not selecionado_ev:
+                    custom_messagebox("warning", "Aviso", "Selecione um evento para editar")
+                    return
+                
+                valores = tree_eventos.item(selecionado_ev)['values']
+                num_evento = valores[0]
+                cnpj_cpf_evento = valores[1]  # ✅ CORREÇÃO: Adicionar CNPJ/CPF na busca
+                
+                # Buscar dados completos do evento
+                wb = load_workbook(self.arquivo_cliente)
+                ws = wb['Contratos_ADM']
+                
+                linha_evento = None
+                for idx, row in enumerate(ws.iter_rows(min_row=3), start=3):
+                    # ✅ CORREÇÃO: Buscar por CONTRATO + NÚMERO + CNPJ/CPF
+                    if (row[24].value == num_contrato and 
+                        row[25].value == num_evento and 
+                        str(row[26].value) == str(cnpj_cpf_evento)):  # Coluna AA - CNPJ/CPF
+                        linha_evento = idx
+                        break
+                
+                if linha_evento:
+                    janela_editar = tk.Toplevel(janela)
+                    janela_editar.title(f"Editar Evento {num_evento} - {valores[2]}")  # Mostrar nome do gestor
+                    janela_editar.geometry("700x450")
+                    
+                    frame_ed = ttk.Frame(janela_editar, padding="10")
+                    frame_ed.pack(fill='both', expand=True)
+                    
+                    # Mostrar informações do gestor (readonly)
+                    ttk.Label(frame_ed, text="Gestor:", font=('Arial', 10, 'bold')).grid(
+                        row=0, column=0, padx=5, pady=5, sticky='w')
+                    ttk.Label(frame_ed, text=f"{valores[2]} ({cnpj_cpf_evento})").grid(
+                        row=0, column=1, padx=5, pady=5, sticky='w')
+                    
+                    # Campos editáveis
+                    ttk.Label(frame_ed, text="Valor:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+                    valor_entry = ttk.Entry(frame_ed, width=20)
+                    valor_entry.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+                    valor_entry.insert(0, ws.cell(linha_evento, 30).value or '')  # Coluna AD
+                    
+                    ttk.Label(frame_ed, text="Status:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
+                    status_evento = ttk.Combobox(frame_ed, values=['PENDENTE', 'PAGO', 'CANCELADO'], 
+                                                state='readonly', width=18)
+                    status_evento.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+                    status_evento.set(ws.cell(linha_evento, 31).value or 'PENDENTE')  # Coluna AE
+                    
+                    ttk.Label(frame_ed, text="Descrição do Evento:").grid(row=3, column=0, padx=5, pady=5, sticky='nw')
+                    
+                    # Frame para text com scrollbar
+                    frame_text = ttk.Frame(frame_ed)
+                    frame_text.grid(row=3, column=1, padx=5, pady=5, sticky='nsew')
+                    
+                    desc_text = tk.Text(frame_text, width=60, height=12, wrap='word')
+                    scroll_desc = ttk.Scrollbar(frame_text, orient='vertical', command=desc_text.yview)
+                    desc_text.configure(yscrollcommand=scroll_desc.set)
+                    
+                    desc_text.pack(side='left', fill='both', expand=True)
+                    scroll_desc.pack(side='right', fill='y')
+                    
+                    desc_atual = ws.cell(linha_evento, 33).value or ''  # Coluna AG
+                    desc_text.insert('1.0', desc_atual)
+                    
+                    # Configurar grid para expansão
+                    frame_ed.grid_rowconfigure(3, weight=1)
+                    frame_ed.grid_columnconfigure(1, weight=1)
+                    
+                    def salvar_evento():
+                        try:
+                            novo_valor = float(valor_entry.get().replace(',', '.'))
+                            ws.cell(linha_evento, 30, value=novo_valor)
+                            ws.cell(linha_evento, 31, value=status_evento.get())
+                            
+                            # Garantir que a descrição seja salva como texto único
+                            nova_desc = desc_text.get('1.0', 'end-1c').strip()
+                            nova_desc_upper = nova_desc.upper()
+                            ws.cell(linha_evento, 33, value=nova_desc_upper)
+                            
+                            wb.save(self.arquivo_cliente)
+                            wb.close()
+                            janela_editar.destroy()
+                            carregar_eventos()
+                            custom_messagebox("info", "Sucesso", "Evento atualizado!")
+                        except ValueError as e:
+                            custom_messagebox("error", "Erro", f"Valor inválido: {str(e)}")
+                        except Exception as e:
+                            custom_messagebox("error", "Erro", f"Erro ao salvar: {str(e)}")
+                    
+                    frame_btn = ttk.Frame(frame_ed)
+                    frame_btn.grid(row=4, column=0, columnspan=2, pady=10)
+                    
+                    ttk.Button(frame_btn, text="Salvar", command=salvar_evento).pack(side='left', padx=5)
+                    ttk.Button(frame_btn, text="Cancelar", command=janela_editar.destroy).pack(side='left', padx=5)
+                else:
+                    wb.close()
+                    custom_messagebox("error", "Erro", "Evento não encontrado!")
+            
+            def excluir_evento():
+                """CORRIGIDO - Exclui evento selecionado usando identificação completa"""
+                selecionado_ev = tree_eventos.selection()
+                if not selecionado_ev:
+                    custom_messagebox("warning", "Aviso", "Selecione um evento para excluir")
+                    return
+                
+                valores = tree_eventos.item(selecionado_ev)['values']
+                num_evento = valores[0]
+                cnpj_cpf_evento = valores[1]  # ✅ CORREÇÃO: Adicionar CNPJ/CPF na busca
+                nome_gestor = valores[2]
+                
+                # Confirmação mais específica
+                if custom_messagebox("yesno", "Confirmação", 
+                                    f"Deseja realmente excluir o evento {num_evento} do gestor {nome_gestor}?"):
+                    wb = load_workbook(self.arquivo_cliente)
+                    ws = wb['Contratos_ADM']
+                    
+                    # ✅ CORREÇÃO: Buscar por CONTRATO + NÚMERO + CNPJ/CPF
+                    linhas_deletar = []
+                    for idx, row in enumerate(ws.iter_rows(min_row=3), start=3):
+                        if (row[24].value == num_contrato and 
+                            row[25].value == num_evento and 
+                            str(row[26].value) == str(cnpj_cpf_evento)):  # Coluna AA - CNPJ/CPF
+                            linhas_deletar.append(idx)
+                    
+                    if linhas_deletar:
+                        for linha in reversed(linhas_deletar):
+                            ws.delete_rows(linha)
+                        
+                        wb.save(self.arquivo_cliente)
+                        wb.close()
+                        carregar_eventos()
+                        custom_messagebox("info", "Sucesso", f"Evento {num_evento} do gestor {nome_gestor} excluído!")
+                    else:
+                        wb.close()
+                        custom_messagebox("error", "Erro", "Evento não encontrado!")
+            
+            def adicionar_novo_evento():
+                """Adiciona um novo evento ao contrato"""
+                janela_novo = tk.Toplevel(janela)
+                janela_novo.title(f"Adicionar Novo Evento - {num_contrato}")
+                janela_novo.geometry("700x500")
+                
+                frame_novo = ttk.Frame(janela_novo, padding="10")
+                frame_novo.pack(fill='both', expand=True)
+                
+                # Título
+                ttk.Label(frame_novo, text="Novo Evento", 
+                        font=('Arial', 12, 'bold')).grid(row=0, column=0, columnspan=2, pady=10)
+                
+                # Selecionar Gestor
+                ttk.Label(frame_novo, text="Gestor:*").grid(row=1, column=0, padx=5, pady=5, sticky='w')
+                
+                # Buscar gestores do contrato
+                wb_temp = load_workbook(self.arquivo_cliente)
+                ws_temp = wb_temp['Contratos_ADM']
+                
+                gestores_disponiveis = []
+                for row in ws_temp.iter_rows(min_row=3, values_only=True):
+                    if row[6] == num_contrato:  # Coluna G - Nº Contrato
+                        gestor_info = f"{row[8]} ({row[7]})"  # Nome (CNPJ/CPF)
+                        if gestor_info not in gestores_disponiveis:
+                            gestores_disponiveis.append(gestor_info)
+                
+                wb_temp.close()
+                
+                combo_gestor = ttk.Combobox(frame_novo, values=gestores_disponiveis, 
+                                            state='readonly', width=50)
+                combo_gestor.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+                if gestores_disponiveis:
+                    combo_gestor.current(0)
+                
+                # Número do Evento
+                ttk.Label(frame_novo, text="Número da Parcela:*").grid(row=2, column=0, padx=5, pady=5, sticky='w')
+                numero_entry = ttk.Entry(frame_novo, width=10)
+                numero_entry.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+                
+                # Calcular próximo número automaticamente
+                wb_temp = load_workbook(self.arquivo_cliente)
+                ws_temp = wb_temp['Contratos_ADM']
+                max_num = 0
+                for row in ws_temp.iter_rows(min_row=3, values_only=True):
+                    if row[24] == num_contrato and row[25]:  # Tem número
+                        try:
+                            num_atual = int(row[25])
+                            if num_atual > max_num:
+                                max_num = num_atual
+                        except:
+                            pass
+                wb_temp.close()
+                
+                proximo_num = max_num + 1
+                numero_entry.insert(0, str(proximo_num))
+                
+                ttk.Label(frame_novo, text=f"(Sugestão: próximo número disponível)", 
+                        font=('Arial', 8, 'italic')).grid(row=2, column=2, padx=5, pady=5, sticky='w')
+                
+                # Valor
+                ttk.Label(frame_novo, text="Valor:*").grid(row=3, column=0, padx=5, pady=5, sticky='w')
+                valor_entry = ttk.Entry(frame_novo, width=20)
+                valor_entry.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+                
+                # Status
+                ttk.Label(frame_novo, text="Status:").grid(row=4, column=0, padx=5, pady=5, sticky='w')
+                status_combo = ttk.Combobox(frame_novo, values=['PENDENTE', 'PAGO', 'CANCELADO'], 
+                                        state='readonly', width=18)
+                status_combo.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+                status_combo.set('PENDENTE')
+                
+                # Descrição
+                ttk.Label(frame_novo, text="Descrição:*").grid(row=5, column=0, padx=5, pady=5, sticky='nw')
+                
+                frame_text = ttk.Frame(frame_novo)
+                frame_text.grid(row=5, column=1, columnspan=2, padx=5, pady=5, sticky='nsew')
+                
+                desc_text = tk.Text(frame_text, width=60, height=10, wrap='word')
+                scroll_desc = ttk.Scrollbar(frame_text, orient='vertical', command=desc_text.yview)
+                desc_text.configure(yscrollcommand=scroll_desc.set)
+                
+                desc_text.pack(side='left', fill='both', expand=True)
+                scroll_desc.pack(side='right', fill='y')
+                
+                # Configurar grid para expansão
+                frame_novo.grid_rowconfigure(5, weight=1)
+                frame_novo.grid_columnconfigure(1, weight=1)
+                
+                def salvar_novo_evento():
+                    try:
+                        # Validações
+                        if not combo_gestor.get():
+                            custom_messagebox("error", "Erro", "Selecione um gestor!")
+                            return
+                        
+                        if not numero_entry.get():
+                            custom_messagebox("error", "Erro", "Informe o número da parcela!")
+                            return
+                        
+                        if not valor_entry.get():
+                            custom_messagebox("error", "Erro", "Informe o valor!")
+                            return
+                        
+                        descricao = desc_text.get('1.0', 'end-1c').strip()
+                        descricao_upper = descricao.upper()
+                        if not descricao:
+                            custom_messagebox("error", "Erro", "Informe a descrição!")
+                            return
+                        
+                        # Extrair CNPJ/CPF do gestor selecionado
+                        gestor_texto = combo_gestor.get()
+                        cnpj_cpf = gestor_texto.split('(')[1].split(')')[0]
+                        nome_gestor = gestor_texto.split('(')[0].strip()
+                        
+                        numero = int(numero_entry.get())
+                        valor = float(valor_entry.get().replace(',', '.'))
+                        
+                        # Salvar na planilha
+                        wb = load_workbook(self.arquivo_cliente)
+                        ws = wb['Contratos_ADM']
+                        
+                        # Verificar se já existe evento com mesmo número e gestor
+                        existe = False
+                        for row in ws.iter_rows(min_row=3, values_only=True):
+                            if (row[24] == num_contrato and 
+                                row[25] == numero and 
+                                str(row[26]) == str(cnpj_cpf)):
+                                existe = True
+                                break
+                        
+                        if existe:
+                            if not custom_messagebox("yesno", "Confirmação", 
+                                f"Já existe evento {numero} para o gestor {nome_gestor}. Deseja criar mesmo assim?"):
+                                wb.close()
+                                return
+                        
+                        # Adicionar nova linha
+                        proxima_linha = ws.max_row + 1
+                        
+                        # Preencher dados do evento
+                        ws.cell(proxima_linha, 25, value=num_contrato)  # Coluna Y - Referência
+                        ws.cell(proxima_linha, 26, value=numero)        # Coluna Z - Número
+                        ws.cell(proxima_linha, 27, value=cnpj_cpf)      # Coluna AA - CNPJ/CPF
+                        ws.cell(proxima_linha, 28, value=nome_gestor)   # Coluna AB - Nome
+                        ws.cell(proxima_linha, 29, value=None)          # Coluna AC - Data Vencimento
+                        ws.cell(proxima_linha, 30, value=valor)         # Coluna AD - Valor
+                        ws.cell(proxima_linha, 31, value=status_combo.get())  # Coluna AE - Status
+                        ws.cell(proxima_linha, 32, value=None)          # Coluna AF - Data Pagamento
+                        ws.cell(proxima_linha, 33, value=descricao_upper) # Coluna AG - Eventos/Fases
+                        
+                        wb.save(self.arquivo_cliente)
+                        wb.close()
+                        
+                        janela_novo.destroy()
+                        carregar_eventos()
+                        custom_messagebox("info", "Sucesso", f"Evento {numero} adicionado com sucesso!")
+                        
+                    except ValueError as e:
+                        custom_messagebox("error", "Erro", f"Valor inválido: {str(e)}")
+                    except Exception as e:
+                        import traceback
+                        traceback.print_exc()
+                        custom_messagebox("error", "Erro", f"Erro ao salvar: {str(e)}")
+                
+                # Botões
+                frame_btn = ttk.Frame(frame_novo)
+                frame_btn.grid(row=6, column=0, columnspan=3, pady=10)
+                
+                ttk.Button(frame_btn, text="Salvar", command=salvar_novo_evento).pack(side='left', padx=5)
+                ttk.Button(frame_btn, text="Cancelar", command=janela_novo.destroy).pack(side='left', padx=5)
+            
+            # Botões para eventos
+            ttk.Button(frame_btn_eventos, text="Editar Evento", 
+                    command=editar_evento, width=20).pack(pady=2, fill='x')
+            ttk.Button(frame_btn_eventos, text="Excluir Evento", 
+                    command=excluir_evento, width=20).pack(pady=2, fill='x')
+            ttk.Button(frame_btn_eventos, text="➕ Adicionar Evento", 
+                    command=adicionar_novo_evento, width=20).pack(pady=2, fill='x')
+
+            # ✅ Copiar eventos
+            ttk.Button(frame_btn_eventos, text="📋 Copiar Eventos", 
+                    command=copiar_eventos_para_gestor, width=20).pack(pady=2, fill='x')
+
+            # Separador visual
+            ttk.Separator(frame_btn_eventos, orient='horizontal').pack(fill='x', pady=10)
+            
+            # Informação útil
+            ttk.Label(frame_btn_eventos, 
+                    text="💡 Dica:\nDuplo clique\npara editar",
+                    font=('Arial', 8, 'italic'),
+                    justify='center').pack(pady=5)
+    
+            # ✅ DUPLO CLIQUE PARA EDITAR
+            tree_eventos.bind('<Double-Button-1>', lambda e: editar_evento())
+
+            # Carregar dados iniciais
+            carregar_gestores()
+            carregar_eventos()
+
+            # === BOTÕES FINAIS ===
             def salvar_alteracoes():
                 try:
                     wb = load_workbook(self.arquivo_cliente)
                     ws = wb['Contratos_ADM']
                     
-                    # Atualizar dados do contrato
-                    for row in ws.iter_rows(min_row=2):
-                        if row[0].value == dados_contrato[0]:
+                    # Atualizar dados básicos do contrato
+                    for row in ws.iter_rows(min_row=3):
+                        if row[0].value == num_contrato:
                             row[1].value = data_inicio.get_date()
                             row[2].value = data_fim.get_date()
                             row[3].value = status_combo.get()
+                            break
                     
                     wb.save(self.arquivo_cliente)
+                    wb.close()
                     custom_messagebox("info", "Sucesso", "Contrato atualizado com sucesso!")
                     janela.destroy()
                     self.carregar_contratos()
                     
                 except Exception as e:
-                    custom_messagebox("error", "Erro", f"Erro ao salvar alterações: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
+                    custom_messagebox("error", "Erro", f"Erro ao salvar: {str(e)}")
 
-            # Botões
             frame_botoes = ttk.Frame(frame)
             frame_botoes.pack(fill='x', pady=10)
 
-            ttk.Button(frame_botoes, text="Salvar", command=salvar_alteracoes).pack(side='left', padx=5)
-            ttk.Button(frame_botoes, text="Cancelar", command=janela.destroy).pack(side='left', padx=5)
+            ttk.Button(frame_botoes, text="Salvar Alterações", 
+                    command=salvar_alteracoes).pack(side='left', padx=5)
+            ttk.Button(frame_botoes, text="Fechar", 
+                    command=janela.destroy).pack(side='right', padx=5)
 
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             custom_messagebox("error", "Erro", f"Erro ao abrir edição: {str(e)}")
+
 
     def adicionar_administrador_modificado(self, tree, valor_global_entry, metodo_pagamento_combo):
         """Versão modificada para incluir os detalhes de parcelas/eventos na tela do administrador"""
@@ -9398,9 +10723,13 @@ class GestaoContratos:
         
         # Ajustar tamanho baseado no método (maior para eventos)
         if metodo == "Eventos/Fases":
-            janela_admin.geometry("800x700")
+            altura_inicial = 700
+        elif metodo == "Valor Fixo em Parcelas":
+            altura_inicial = 700  # ✅ Aumentado para acomodar entrada
         else:
-            janela_admin.geometry("600x650")
+            altura_inicial = 650
+        
+        janela_admin.geometry(f"600x{altura_inicial}")
         
         # Frame principal com scrollbar para permitir mais conteúdo
         main_frame = ttk.Frame(janela_admin)
@@ -9571,12 +10900,43 @@ class GestaoContratos:
             # Ocultar frame de entrada inicialmente
             frame_entrada.grid_remove()
             
-            # Função para mostrar/ocultar frame de entrada
+            # ✅ CORREÇÃO 3: Função para mostrar/ocultar E ajustar tamanho da janela
             def toggle_entrada():
                 if var_tem_entrada.get():
+                    # Mostrar campos de entrada
                     frame_entrada.grid()
+                    
+                    # ✅ Expandir janela para acomodar os campos
+                    janela_admin.update_idletasks()  # Atualizar para pegar dimensões reais
+                    
+                    # Calcular nova altura necessária
+                    nova_altura = 750  # Altura para acomodar entrada
+                    
+                    # Obter dimensões e posição atuais
+                    largura_atual = janela_admin.winfo_width()
+                    x_atual = janela_admin.winfo_x()
+                    y_atual = janela_admin.winfo_y()
+                    
+                    # Redimensionar mantendo posição horizontal, mas ajustando vertical se necessário
+                    # Para manter centralizado, ajustar Y
+                    altura_tela = janela_admin.winfo_screenheight()
+                    novo_y = max(50, min(y_atual, altura_tela - nova_altura - 50))
+                    
+                    janela_admin.geometry(f"{largura_atual}x{nova_altura}+{x_atual}+{novo_y}")
+                    
                 else:
+                    # Ocultar campos de entrada
                     frame_entrada.grid_remove()
+                    
+                    # ✅ Reduzir janela ao tamanho original
+                    janela_admin.update_idletasks()
+                    
+                    altura_reduzida = 650
+                    largura_atual = janela_admin.winfo_width()
+                    x_atual = janela_admin.winfo_x()
+                    y_atual = janela_admin.winfo_y()
+                    
+                    janela_admin.geometry(f"{largura_atual}x{altura_reduzida}+{x_atual}+{y_atual}")
             
             # Configurar checkbox para chamar a função
             check_entrada.config(command=toggle_entrada)
@@ -9606,7 +10966,7 @@ class GestaoContratos:
                     # Criar janela para configurar descrições
                     janela_descricoes = tk.Toplevel(janela_admin)
                     janela_descricoes.title("Descrições Individuais das Parcelas")
-                    janela_descricoes.geometry("500x600")
+                    janela_descricoes.geometry("500x700")
                     
                     # Frame com scrollbar
                     frame_scroll = ttk.Frame(janela_descricoes)
@@ -9882,7 +11242,12 @@ class GestaoContratos:
                 # Capturar a forma de pagamento para os dados bancários
                 forma_pagto_selecionada = forma_pagamento.get()
                 
+                # ✅ CORREÇÃO: Inicializar tags_extra no início da função
+                tags_extra = []
+                
                 # Verificar configuração específica do método
+                metodo = metodo_pagamento_combo.get()
+                
                 if metodo == "Valor Fixo em Parcelas":
                     # Validar número de parcelas
                     if not num_parcelas_entry.get():
@@ -9926,6 +11291,7 @@ class GestaoContratos:
                                             f"O total de percentuais é {total_percentual:.2f}% ao invés de 100%. Deseja continuar mesmo assim?"):
                             return
             
+                # ✅ PROCESSAMENTO DOS TIPOS
                 if tipo_combo.get() == 'Percentual':
                     # Validar percentual
                     if not percentual_entry.get():
@@ -9938,18 +11304,17 @@ class GestaoContratos:
                             custom_messagebox("error", "Erro", "Percentual deve estar entre 0 e 100!")
                             return
                             
+                        # Obter valor global
+                        valor_global_float = float(valor_global_entry.get().replace(',', '.'))
+                        
                         # Configurar campos adicionais conforme método
                         if metodo == "Percentual da Quinzena":
-                            # Simples percentual da quinzena
                             num_parcelas = ""
                             data_inicial = ""
                         elif metodo == "Valor Fixo em Parcelas":
-                            # Número de parcelas informado no contrato
                             num_parcelas = num_parcelas_entry.get()
-                            # Data inicial se houver entrada
                             data_inicial = data_entrada.get() if var_tem_entrada.get() else ""
                         else:  # Eventos/Fases
-                            # Número de eventos
                             num_parcelas = str(len(eventos))
                             data_inicial = ""
                             
@@ -9958,22 +11323,21 @@ class GestaoContratos:
                             cnpj_cpf_entry.get(),
                             nome_entry.get(),
                             tipo_combo.get(),
-                            f"{perc:.2f}%",  # Formatação com %
-                            f"{valor_global_float:.2f}",  # Valor Total
-                            num_parcelas,  # Número de parcelas conforme método
-                            data_inicial  # Data inicial conforme método
+                            f"{perc:.2f}%",
+                            f"{valor_global_float:.2f}",
+                            num_parcelas,
+                            data_inicial
                         )
                         
-                        # Preparar tags adicionais
-                        tags_extra = []
-                        
-                        # Adicionar descrições individuais como tag se for Valor Fixo em Parcelas
+                        # ✅ Adicionar descrições individuais como tag se for Valor Fixo em Parcelas
                         if metodo == "Valor Fixo em Parcelas" and descricoes_parcelas:
-                            tags_extra.append(f"descricoes:{','.join(descricoes_parcelas)}")
+                            DELIMITADOR = "|||"
+                            tags_extra.append(f"descricoes:{DELIMITADOR.join(descricoes_parcelas)}")
                             
-                        # Adicionar informações de entrada se necessário
+                        # ✅ Adicionar informações de entrada se necessário
                         if metodo == "Valor Fixo em Parcelas" and var_tem_entrada.get():
-                            tags_extra.append(f"desc_entrada:{descricao_entrada.get()}")
+                            desc_entrada_safe = descricao_entrada.get().replace("|||", " ")
+                            tags_extra.append(f"desc_entrada:{desc_entrada_safe}")
                         
                         # Tags finais incluem tipo de percentual, forma de pagamento e tags extras
                         tags_finais = ['percentual', forma_pagto_selecionada, *tags_extra]
@@ -10000,17 +11364,11 @@ class GestaoContratos:
                     
                     # Configurar campos adicionais conforme método
                     if metodo == "Valor Fixo em Parcelas":
-                        # Número de parcelas informado no contrato
                         num_parcelas = num_parcelas_entry.get()
-                        # Data inicial se houver entrada
                         data_inicial = data_entrada.get() if var_tem_entrada.get() else ""
-                        # Descrição da entrada
-                        desc_entrada = descricao_entrada.get() if var_tem_entrada.get() else ""
                     else:  # Eventos/Fases
-                        # Número de eventos
                         num_parcelas = str(len(eventos))
                         data_inicial = ""
-                        desc_entrada = ""
                         
                     # Adicionar registro de valor fixo
                     valores_fixo = (
@@ -10023,30 +11381,29 @@ class GestaoContratos:
                         data_inicial
                     )
                     
-                    # Adicionar tags extras para armazenar informações
-                    tags_extras = []
-                    
-                    # Valores específicos para parcelas fixas
+                    # ✅ Valores específicos para parcelas fixas
                     if metodo == "Valor Fixo em Parcelas":
                         # Valor e descrição de entrada se houver
                         if var_tem_entrada.get():
-                            tags_extras.append(f"entrada:{valor_entrada_entry.get()}")
-                            tags_extras.append(f"desc_entrada:{descricao_entrada.get()}")
+                            tags_extra.append(f"entrada:{valor_entrada_entry.get()}")
+                            desc_entrada_safe = descricao_entrada.get().replace("|||", " ")
+                            tags_extra.append(f"desc_entrada:{desc_entrada_safe}")
                         
                         # Adicionar descrições individuais
                         if descricoes_parcelas:
-                            tags_extras.append(f"descricoes:{','.join(descricoes_parcelas)}")
+                            DELIMITADOR = "|||"
+                            tags_extra.append(f"descricoes:{DELIMITADOR.join(descricoes_parcelas)}")
                     
                     # Tags completas: tipo fixo, forma de pagamento e extras
                     tags = [
                         'fixo', 
                         forma_pagto_selecionada,
-                        *tags_extras
+                        *tags_extra
                     ]
                     
                     tree.insert('', 'end', values=valores_fixo, tags=tags)
                 
-                # Se tiver eventos, registrá-los na lista global
+                # ✅ Se tiver eventos, registrá-los na lista global
                 if metodo == "Eventos/Fases":
                     # Armazenar eventos como tags adicionais no item
                     eventos_serializados = []
@@ -10066,7 +11423,6 @@ class GestaoContratos:
                 janela_admin.destroy()
                 
                 # Garantir que a janela do contrato seja trazida para frente
-                # Usar after para garantir que a janela tenha tempo de ser destruída primeiro
                 if metodo_pagamento_combo.winfo_toplevel().winfo_exists():
                     metodo_pagamento_combo.winfo_toplevel().after(100, lambda: (
                         metodo_pagamento_combo.winfo_toplevel().lift(),
@@ -10074,6 +11430,8 @@ class GestaoContratos:
                     ))
                 
             except Exception as e:
+                import traceback
+                traceback.print_exc()
                 custom_messagebox("error", "Erro", f"Erro ao confirmar: {str(e)}")
                 
         # Botões
@@ -10092,7 +11450,7 @@ class GestaoContratos:
             num_parcelas = int(opcoes.get('num_parcelas', 0))
             tem_entrada = opcoes.get('tem_entrada', False)
             descricoes_parcelas = opcoes.get('descricoes_parcelas', {})  # Dicionário com descrições por admin
-            
+            DELIMITADOR = "|||"
             print(f"Processando {num_parcelas} parcelas, entrada: {tem_entrada}")
             
             if num_parcelas <= 0:
@@ -10114,7 +11472,9 @@ class GestaoContratos:
                 descricoes_individuais = []
                 for tag in tags_adm:
                     if tag.startswith('descricoes:'):
-                        descricoes_individuais = tag.replace('descricoes:', '').split(',')
+                        # Usar DELIMITADOR ao invés de vírgula
+                        descricoes_str = tag.replace('descricoes:', '')
+                        descricoes_individuais = descricoes_str.split(DELIMITADOR)
                         print(f"Descrições individuais: {descricoes_individuais}")
                         break
                 
@@ -10189,40 +11549,52 @@ class GestaoContratos:
                         # Usar o valor específico
                         valor_entrada_adm = valor_entrada
                         
-                    data_entrada = opcoes.get('data_entrada')
-                    print(f"Data da entrada: {data_entrada}")
+                    data_entrada_obj = opcoes.get('data_entrada')
+            
+                    # Garantir que é um objeto datetime sem hora
+                    if isinstance(data_entrada_obj, str):
+                        try:
+                            data_entrada_obj = datetime.strptime(data_entrada_obj, '%d/%m/%Y')
+                        except:
+                            data_entrada_obj = datetime.now()
                     
-                    # Registrar entrada como primeira parcela
+                    # ✅ Converter para date (apenas data, sem hora)
+                    if isinstance(data_entrada_obj, datetime):
+                        data_entrada_obj = data_entrada_obj.date()
+                    
+                    # ✅ Registrar entrada como parcela 0
                     proxima_linha = ws.max_row + 1
-                    ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())  # Contrato
-                    ws.cell(row=proxima_linha, column=26, value=1)  # Número da parcela (entrada = 1)
-                    ws.cell(row=proxima_linha, column=27, value=cnpj_cpf_adm)  # CNPJ/CPF
-                    ws.cell(row=proxima_linha, column=28, value=nome_adm)  # Nome
-                    ws.cell(row=proxima_linha, column=29, value=data_entrada)  # Data vencimento
-                    ws.cell(row=proxima_linha, column=30, value=valor_entrada_adm)  # Valor
-                    ws.cell(row=proxima_linha, column=31, value='PENDENTE')  # Status
-                    ws.cell(row=proxima_linha, column=32, value="")  # Sem evento
-                    ws.cell(row=proxima_linha, column=33, value=descricao_entrada.upper())  # Descrição personalizada da entrada
+                    ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())
+                    ws.cell(row=proxima_linha, column=26, value=0)  # Número 0 para entrada
+                    ws.cell(row=proxima_linha, column=27, value=cnpj_cpf_adm)
+                    ws.cell(row=proxima_linha, column=28, value=nome_adm)
                     
-                    print(f"Registrada entrada com valor {valor_entrada_adm}")
+                    # ✅ Gravar data como date e aplicar formato
+                    ws.cell(row=proxima_linha, column=29, value=data_entrada_obj)
+                    ws.cell(row=proxima_linha, column=29).number_format = 'DD/MM/YYYY'
+                    
+                    ws.cell(row=proxima_linha, column=30, value=valor_entrada_adm)
+                    ws.cell(row=proxima_linha, column=31, value='PENDENTE')
+                    ws.cell(row=proxima_linha, column=32, value="")
+                    ws.cell(row=proxima_linha, column=33, value=descricao_entrada.upper())
+                    
+                    print(f"Registrada entrada (parcela 0) com valor {valor_entrada_adm} e data {data_entrada_obj}")
                     
                     # Ajustar valor restante para as demais parcelas
                     valor_restante = valor_total_adm - valor_entrada_adm
                     valor_parcela = valor_restante / num_parcelas if num_parcelas > 0 else 0
                     
-                    print(f"Valor de cada parcela após entrada: {valor_parcela}")
-                    
-                    # Registrar as demais parcelas
+                    # Registrar parcelas começando em 1
                     for i in range(1, num_parcelas + 1):
                         proxima_linha = ws.max_row + 1
-                        ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())  # Contrato
-                        ws.cell(row=proxima_linha, column=26, value=i + 1)  # Número da parcela (após entrada)
-                        ws.cell(row=proxima_linha, column=27, value=cnpj_cpf_adm)  # CNPJ/CPF
-                        ws.cell(row=proxima_linha, column=28, value=nome_adm)  # Nome
-                        ws.cell(row=proxima_linha, column=29, value=None)  # Data vencimento (a definir)
-                        ws.cell(row=proxima_linha, column=30, value=valor_parcela)  # Valor
-                        ws.cell(row=proxima_linha, column=31, value='PENDENTE')  # Status
-                        ws.cell(row=proxima_linha, column=32, value="")  # Sem evento
+                        ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())
+                        ws.cell(row=proxima_linha, column=26, value=i)  # Parcelas de 1 a N
+                        ws.cell(row=proxima_linha, column=27, value=cnpj_cpf_adm)
+                        ws.cell(row=proxima_linha, column=28, value=nome_adm)
+                        ws.cell(row=proxima_linha, column=29, value=None)
+                        ws.cell(row=proxima_linha, column=30, value=valor_parcela)
+                        ws.cell(row=proxima_linha, column=31, value='PENDENTE')
+                        ws.cell(row=proxima_linha, column=32, value="")
                         
                         # Usar descrição individual se disponível
                         if i-1 < len(descricoes_individuais) and descricoes_individuais[i-1]:
@@ -10230,19 +11602,17 @@ class GestaoContratos:
                         else:
                             descricao = f"PARCELA {i}"
                             
-                        ws.cell(row=proxima_linha, column=33, value=descricao.upper())  # Descrição individual ou genérica
+                        ws.cell(row=proxima_linha, column=33, value=descricao.upper())
                         print(f"Registrada parcela {i} com valor {valor_parcela} e descrição '{descricao}'")
-                            
+                
                 else:
-                    # Sem entrada, distribuir igualmente
+                    # Sem entrada, parcelas começam em 1 normalmente
                     valor_parcela = valor_total_adm / num_parcelas if num_parcelas > 0 else 0
-                    print(f"Valor de cada parcela (sem entrada): {valor_parcela}")
                     
-                    # Registrar parcelas
                     for i in range(1, num_parcelas + 1):
                         proxima_linha = ws.max_row + 1
-                        ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())  # Contrato
-                        ws.cell(row=proxima_linha, column=26, value=i)  # Número da parcela
+                        ws.cell(row=proxima_linha, column=25, value=num_contrato.upper())
+                        ws.cell(row=proxima_linha, column=26, value=i)  # Parcelas de 1 a N
                         ws.cell(row=proxima_linha, column=27, value=cnpj_cpf_adm)  # CNPJ/CPF
                         ws.cell(row=proxima_linha, column=28, value=nome_adm)  # Nome
                         ws.cell(row=proxima_linha, column=29, value=None)  # Data vencimento (a definir)
@@ -10290,9 +11660,26 @@ class GestaoContratos:
             ws.cell(row=proxima_linha, column=12, value=valores[4])           # Valor Total
             ws.cell(row=proxima_linha, column=13, value=valores[5])           # Número de parcelas
             
-            # Data inicial para casos que têm entrada
+            # Usar data da entrada das opções, não data atual
+            data_inicial_gravacao = None
+            
             if valores[6] and metodo_pagamento == "Valor Fixo em Parcelas" and opcoes.get('tem_entrada'):
-                ws.cell(row=proxima_linha, column=14, value=opcoes.get('data_entrada'))  # Data inicial
+                # Pegar a data informada pelo usuário
+                data_entrada_usuario = opcoes.get('data_entrada')
+                
+                if data_entrada_usuario:
+                    # Se for string, converter para datetime
+                    if isinstance(data_entrada_usuario, str):
+                        try:
+                            data_inicial_gravacao = data_entrada_usuario.date()
+                        except:
+                            data_inicial_gravacao = data_entrada_usuario
+                    else:
+                        data_inicial_gravacao = data_entrada_usuario
+                
+                if data_inicial_gravacao:
+                    ws.cell(row=proxima_linha, column=14, value=data_inicial_gravacao)
+                    ws.cell(row=proxima_linha, column=14).number_format = 'DD/MM/YYYY'
 
     def salvar_contrato_com_opcoes(self, num_contrato, data_inicio, data_fim, observacoes, valor_global, metodo_pagamento, opcoes, janela):
         """Salva os dados do contrato com diferentes opções de pagamento"""
@@ -10314,8 +11701,17 @@ class GestaoContratos:
             # Salvar dados do contrato
             proxima_linha = ws.max_row + 1
             ws.cell(row=proxima_linha, column=1, value=num_contrato.upper())
-            ws.cell(row=proxima_linha, column=2, value=data_inicio)
-            ws.cell(row=proxima_linha, column=3, value=data_fim)
+
+            # Data de início como date
+            data_inicio_date = data_inicio.date() if isinstance(data_inicio, datetime) else data_inicio
+            ws.cell(row=proxima_linha, column=2, value=data_inicio_date)
+            ws.cell(row=proxima_linha, column=2).number_format = 'DD/MM/YYYY'
+            
+            # Data de fim como date
+            data_fim_date = data_fim.date() if isinstance(data_fim, datetime) else data_fim
+            ws.cell(row=proxima_linha, column=3, value=data_fim_date)
+            ws.cell(row=proxima_linha, column=3).number_format = 'DD/MM/YYYY'
+        
             ws.cell(row=proxima_linha, column=4, value='ATIVO')
             ws.cell(row=proxima_linha, column=5, value=observacoes)
             ws.cell(row=proxima_linha, column=6, value=valor_global)  # Valor global do contrato
@@ -10354,7 +11750,26 @@ class GestaoContratos:
                     
                     # Extrair data de entrada
                     if valores[6] and not data_entrada:
-                        data_entrada = valores[6]
+                        data_entrada_str = valores[6]
+                        
+                        # ✅ Converter para datetime se necessário
+                        if isinstance(data_entrada_str, str):
+                            try:
+                                # Tentar formato dd/mm/yyyy
+                                data_entrada = datetime.strptime(data_entrada_str, '%d/%m/%Y').date()
+                            except ValueError:
+                                try:
+                                    # Tentar outros formatos possíveis
+                                    data_entrada = datetime.strptime(data_entrada_str, '%Y-%m-%d').date()
+                                except:
+                                    # Fallback: data atual
+                                    data_entrada = datetime.now().date()
+                        elif isinstance(data_entrada_str, datetime):
+                            # ✅ Se já for datetime, extrair apenas a data
+                            data_entrada = data_entrada_str.date()
+                        else:
+                            # Se já for date, usar diretamente
+                            data_entrada = data_entrada_str
 
                 # Adicionar ao dicionário de opções
                 opcoes_processadas['num_parcelas'] = num_parcelas
@@ -10374,7 +11789,7 @@ class GestaoContratos:
                 # Extrair descricoes das tags, se existirem
                 for tag in tags:
                     if tag.startswith('descricoes:'):
-                        admin_descricoes[cnpj_cpf] = tag.replace('descricoes:', '').split(',')
+                        admin_descricoes[cnpj_cpf] = tag.replace('descricoes:', '').split('|||')
                         print(f"Descrições para {cnpj_cpf}: {admin_descricoes[cnpj_cpf]}")
                         break
             
@@ -12067,6 +13482,875 @@ class GestorParcelas:
         """Inicia a execução do sistema"""
         self.root.mainloop()
 
+class GestorTaxasAdministracao:
+    def __init__(self, sistema_principal):
+        self.sistema = sistema_principal
+                
+    def recalcular_taxas_afetadas(self, data_referencia, cliente=None, mostrar_detalhes=True):
+        """
+        VERSÃO CORRIGIDA do recálculo de taxas usando a lógica validada do finalizacao_quinzena.py
+        """
+        try:
+            if not cliente:
+                cliente = self.sistema.cliente_atual
+            
+            if not cliente:
+                return {"sucesso": False, "mensagem": "Nenhum cliente especificado"}
+            
+            print(f"DEBUG: Iniciando recálculo de taxas para {cliente} em {data_referencia}")
+            
+            # CORREÇÃO 1: Chamar o método corretamente (sem parâmetro self extra)
+            novo_valor_base = self.calcular_base_calculo_taxa(data_referencia)
+            print(f"DEBUG: Nova base calculada: R$ {novo_valor_base:.2f}")
+            
+            if novo_valor_base == 0:
+                return {"sucesso": True, "mensagem": "Sem lançamentos base para recálculo"}
+            
+            # 2. Obter percentual usando método corrigido
+            percentual_taxa = self.obter_percentual_taxa_cliente(cliente)
+            print(f"DEBUG: Percentual encontrado: {percentual_taxa}%")
+            
+            if percentual_taxa == 0:
+                return {"sucesso": True, "mensagem": "Sem taxa percentual configurada"}
+            
+            # 3. Calcular novo valor da taxa
+            novo_valor_taxa = novo_valor_base * (percentual_taxa / 100)
+            print(f"DEBUG: Novo valor da taxa: R$ {novo_valor_taxa:.2f}")
+            
+            # 4. Verificar valor atual das taxas na planilha
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            wb = load_workbook(arquivo_cliente)
+            ws_dados = wb["Dados"]
+            
+            # Converter data
+            if isinstance(data_referencia, str):
+                data_ref = datetime.strptime(data_referencia, '%d/%m/%Y')
+            else:
+                data_ref = data_referencia
+            
+            # Buscar taxas existentes (tipo 7) na data
+            valor_atual_total = 0
+            linhas_taxa = []
+            
+            for idx, row in enumerate(ws_dados.iter_rows(min_row=2, values_only=True), start=2):
+                data_lancamento = row[0]
+                if isinstance(data_lancamento, datetime):
+                    if (data_lancamento.day == data_ref.day and 
+                        data_lancamento.month == data_ref.month and 
+                        data_lancamento.year == data_ref.year):
+                        
+                        tipo_desp = row[1]
+                        if tipo_desp == 7:  # Taxa ADM
+                            # CORREÇÃO 2: Verificar status antes de incluir no valor atual
+                            status = row[13] if len(row) > 13 else "ATIVO"  # Coluna N (STATUS)
+                            
+                            if status == "ATIVO":  # Só considerar taxas ativas
+                                valor = row[8]  # Coluna I
+                                if valor:
+                                    valor_numeric = float(str(valor).replace(',', '.'))
+                                    valor_atual_total += valor_numeric
+                                    linhas_taxa.append(idx)
+            
+            print(f"DEBUG: Valor atual total das taxas ATIVAS: R$ {valor_atual_total:.2f}")
+            
+            # 5. Verificar se precisa recalcular
+            diferenca = abs(novo_valor_taxa - valor_atual_total)
+            
+            if diferenca < 0.01:  # Diferença menor que 1 centavo
+                wb.close()
+                return {"sucesso": True, "mensagem": f"Taxas já estão corretas (R$ {valor_atual_total:.2f})"}
+            
+            # 6. Se chegou aqui, precisa recalcular
+            print(f"DEBUG: Diferença detectada: R$ {diferenca:.2f}")
+            
+            # CORREÇÃO 3: Marcar como excluído ao invés de deletar fisicamente
+            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            
+            for linha in linhas_taxa:
+                # Marcar como EXCLUIDO
+                ws_dados.cell(row=linha, column=14, value='EXCLUIDO')  # STATUS
+                
+                # Atualizar histórico
+                historico_atual = ws_dados.cell(row=linha, column=16).value or ""
+                novo_historico = f"{historico_atual} | EXCLUÍDA P/ RECÁLCULO EM: {timestamp}" if historico_atual else f"EXCLUÍDA P/ RECÁLCULO EM: {timestamp}"
+                ws_dados.cell(row=linha, column=16, value=novo_historico)
+            
+            print(f"DEBUG: {len(linhas_taxa)} linhas de taxa marcadas como excluídas")
+            
+            # 7. Obter administradores e lançar novas taxas
+            administradores = self.sistema.obter_administradores_cliente_CORRIGIDO(cliente)
+            
+            if not administradores:
+                wb.close()
+                return {"sucesso": False, "mensagem": "Nenhum administrador encontrado"}
+            
+            # 8. Lançar novas taxas (usar a mesma lógica do finalizacao_quinzena.py)
+            taxa_total_percentual = sum(adm['percentual'] for adm in administradores)
+            
+            for adm in administradores:
+                valor_adm = (novo_valor_taxa * adm['percentual']) / taxa_total_percentual
+                
+                # Determinar data de vencimento e quinzena
+                if data_ref.day == 5:
+                    dt_vencto = data_ref
+                    while dt_vencto.weekday() >= 5:  # Ajustar fim de semana
+                        dt_vencto += relativedelta(days=1)
+                    quinzena = "1ª"
+                else:
+                    dt_vencto = data_ref
+                    quinzena = "2ª"
+                
+                # Inserir nova linha
+                proxima_linha = ws_dados.max_row + 1
+                
+                # CORREÇÃO 4: Gerar ID sequencial consistente
+                id_lancamento = self._obter_proximo_id_sequencial(ws_dados)
+                
+                # Preencher dados (mesma estrutura do finalizacao_quinzena.py)
+                ws_dados.cell(row=proxima_linha, column=1, value=data_ref)
+                ws_dados.cell(row=proxima_linha, column=1).number_format = 'DD/MM/YYYY'
+                ws_dados.cell(row=proxima_linha, column=2, value=7)  # Tipo taxa ADM
+                ws_dados.cell(row=proxima_linha, column=3, value=adm['cnpj_cpf'])
+                ws_dados.cell(row=proxima_linha, column=4, value=adm['nome'])
+                
+                referencia = f"ADM. OBRA REF. {quinzena} QUINZ. {data_ref.strftime('%m/%Y')}"
+                ws_dados.cell(row=proxima_linha, column=5, value=referencia)
+                ws_dados.cell(row=proxima_linha, column=6, value='')  # NF
+                
+                ws_dados.cell(row=proxima_linha, column=7, value=valor_adm)
+                ws_dados.cell(row=proxima_linha, column=7).number_format = '#,##0.00'
+                ws_dados.cell(row=proxima_linha, column=8, value=1)  # Dias
+                ws_dados.cell(row=proxima_linha, column=9, value=valor_adm)
+                ws_dados.cell(row=proxima_linha, column=9).number_format = '#,##0.00'
+                
+                ws_dados.cell(row=proxima_linha, column=10, value=dt_vencto)
+                ws_dados.cell(row=proxima_linha, column=10).number_format = 'DD/MM/YYYY'
+                ws_dados.cell(row=proxima_linha, column=11, value='ADM')
+                
+                # Buscar dados bancários
+                from src.config.utils import buscar_dados_bancarios_fornecedor
+                dados_bancarios = buscar_dados_bancarios_fornecedor(adm['cnpj_cpf'])
+                ws_dados.cell(row=proxima_linha, column=12, value=dados_bancarios)
+                
+                # CORREÇÃO 5: Observação mais detalhada
+                obs = f"RECÁLCULO AUTO - BASE: R$ {novo_valor_base:.2f} - {timestamp}"
+                ws_dados.cell(row=proxima_linha, column=13, value=obs)
+                
+                # CORREÇÃO 6: Status e ID
+                ws_dados.cell(row=proxima_linha, column=14, value='ATIVO')  # STATUS
+                ws_dados.cell(row=proxima_linha, column=15, value=id_lancamento)  # ID_LANCAMENTO
+                
+                # Histórico inicial
+                historico_inicial = f"CRIADO POR RECÁLCULO EM: {timestamp}"
+                ws_dados.cell(row=proxima_linha, column=16, value=historico_inicial)
+                
+                print(f"DEBUG: Taxa lançada para {adm['nome']}: R$ {valor_adm:.2f} (ID: {id_lancamento})")
+            
+            # Salvar arquivo
+            wb.save(arquivo_cliente)
+            
+            mensagem = f"Taxas recalculadas com sucesso! "
+            mensagem += f"Base: R$ {novo_valor_base:.2f} | "
+            mensagem += f"Taxa: {percentual_taxa}% | "
+            mensagem += f"Valor total: R$ {novo_valor_taxa:.2f}"
+            
+            return {"sucesso": True, "mensagem": mensagem}
+            
+        except Exception as e:
+            if 'wb' in locals():
+                wb.close()
+            print(f"DEBUG: Erro no recálculo: {str(e)}")
+            import traceback
+            print(f"DEBUG: Traceback completo: {traceback.format_exc()}")
+            return {"sucesso": False, "mensagem": f"Erro no recálculo: {str(e)}"}
+ 
+    def _obter_proximo_id_sequencial(self, worksheet):
+        """
+        Obtém o próximo ID sequencial disponível (compatível com sistema principal)
+        """
+        try:
+            max_id = 0
+            
+            # Percorrer coluna 15 (ID_LANCAMENTO) para encontrar o maior ID
+            for row in range(2, worksheet.max_row + 1):
+                id_valor = worksheet.cell(row=row, column=15).value
+                if id_valor is not None:
+                    try:
+                        id_int = int(float(id_valor))
+                        if id_int > max_id:
+                            max_id = id_int
+                    except (ValueError, TypeError):
+                        continue
+            
+            return max_id + 1
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao obter próximo ID: {str(e)}")
+            # Fallback: usar número da linha como ID
+            return worksheet.max_row
+    
+    def identificar_lancamentos_taxa_admin(self, df):
+        """
+        Identifica lançamentos de taxa de administração com padrões mais amplos
+        """
+        if df.empty:
+            return pd.DataFrame()
+            
+        mask_taxa = df['TP_DESP'] == 7
+    
+        taxas = df[mask_taxa].copy()
+        print(f"DEBUG: Taxas encontradas (tp_desp=7): {len(taxas)} registros")
+        
+        if not taxas.empty:
+            print(f"DEBUG: Referências das taxas: {taxas['REFERÊNCIA'].tolist()}")
+        
+        return taxas
+
+    def calcular_base_calculo_taxa(self, data_referencia, df=None):
+        """
+        VERSÃO UNIFICADA - Calcula valor base seguindo a lógica corrigida do finalizacao_quinzena.py
+        
+        Parâmetros:
+        - data_referencia: Data para cálculo (str ou datetime)
+        - df: DataFrame opcional (para compatibilidade com código existente)
+            Se não fornecido, lê diretamente da planilha
+        """
+        try:
+            print(f"DEBUG: Calculando valor base para {data_referencia}")
+            
+            # Se DataFrame foi fornecido, usar lógica compatível
+            if df is not None:
+                return self._calcular_base_por_dataframe(df, data_referencia)
+            
+            # Caso contrário, usar lógica corrigida da planilha
+            return self._calcular_base_por_planilha(data_referencia)
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao calcular valor base: {str(e)}")
+            return 0
+
+    def _calcular_base_por_planilha(self, data_referencia):
+        """
+        Método interno - Calcula base lendo diretamente da planilha
+        (Lógica corrigida do finalizacao_quinzena.py)
+        """
+        try:
+            cliente_atual = self.sistema.cliente_atual
+            
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente_atual}.xlsx"
+            wb = load_workbook(arquivo_cliente)
+            ws_dados = wb["Dados"]
+            
+            # Converter data de referência se necessário
+            if isinstance(data_referencia, str):
+                data_ref = datetime.strptime(data_referencia, '%d/%m/%Y')
+            else:
+                data_ref = data_referencia
+            
+            print(f"DEBUG: Data de referência (planilha): {data_ref.strftime('%d/%m/%Y')}")
+            
+            valor_base = 0
+            lancamentos_encontrados = 0
+            
+            # Usar a mesma lógica do finalizacao_quinzena.py
+            for row in ws_dados.iter_rows(min_row=2, values_only=True):
+                data_lancamento = row[0]  # Coluna A
+                
+                if isinstance(data_lancamento, datetime):
+                    # Verificar se é da mesma data (dia, mês, ano)
+                    if (data_lancamento.day == data_ref.day and 
+                        data_lancamento.month == data_ref.month and 
+                        data_lancamento.year == data_ref.year):
+                        
+                        tipo_desp = row[1]  # Coluna B (TP_DESP)
+                        status = row[13] if len(row) > 13 else "ATIVO"  # Coluna N (STATUS)
+                        
+                        # Incluir apenas tipos 1 a 6 e status ATIVO
+                        if (isinstance(tipo_desp, (int, float)) and 1 <= tipo_desp <= 6 and 
+                            status == "ATIVO"):
+                            valor = row[8]  # Coluna I (VALOR)
+                            
+                            if valor:
+                                try:
+                                    valor_numeric = float(str(valor).replace(',', '.'))
+                                    valor_base += valor_numeric
+                                    lancamentos_encontrados += 1
+                                    
+                                    print(f"DEBUG: Lançamento incluído - Tipo: {tipo_desp}, Valor: R$ {valor_numeric:.2f}")
+                                    
+                                except (ValueError, TypeError) as e:
+                                    print(f"DEBUG: Erro ao processar valor '{valor}': {e}")
+                                    continue
+            
+            print(f"DEBUG: Valor base total (planilha): R$ {valor_base:.2f}")
+            print(f"DEBUG: Total de lançamentos incluídos: {lancamentos_encontrados}")
+            
+            wb.close()
+            return valor_base
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao calcular valor base por planilha: {str(e)}")
+            if 'wb' in locals():
+                wb.close()
+            return 0
+
+    def _calcular_base_por_dataframe(self, df, data_referencia):
+        """
+        Método interno - Calcula base usando DataFrame fornecido
+        (Para compatibilidade com verificações existentes)
+        """
+        try:
+            # Converter data de referência
+            if isinstance(data_referencia, str):
+                data_ref = pd.to_datetime(data_referencia, format='%d/%m/%Y')
+            else:
+                data_ref = pd.to_datetime(data_referencia)
+            
+            print(f"DEBUG: Data de referência (DataFrame): {data_ref.strftime('%d/%m/%Y')}")
+            
+            # Garantir que DATA_REL existe e está em formato datetime
+            if 'DATA_REL' not in df.columns:
+                print("DEBUG: Coluna DATA_REL não encontrada no DataFrame")
+                return 0
+            
+            df = df.copy()
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            # Filtrar dados para a data específica
+            df_data = df[df['DATA_REL'].dt.date == data_ref.date()].copy()
+            
+            if df_data.empty:
+                print(f"DEBUG: Nenhum lançamento encontrado para {data_ref.strftime('%d/%m/%Y')}")
+                return 0
+            
+            # Garantir que STATUS existe
+            if 'STATUS' not in df_data.columns:
+                df_data['STATUS'] = 'ATIVO'
+            
+            # Filtrar apenas lançamentos ativos e tipos 1-6
+            df_base = df_data[
+                (df_data['STATUS'] == 'ATIVO') & 
+                (df_data['TP_DESP'].isin([1, 2, 3, 4, 5, 6]))
+            ].copy()
+            
+            if df_base.empty:
+                print("DEBUG: Nenhum lançamento ativo dos tipos 1-6 encontrado")
+                return 0
+            
+            # Converter valores para numérico
+            df_base['VALOR_NUM'] = pd.to_numeric(
+                df_base['VALOR'].astype(str).str.replace('R$', '').str.replace(',', '.'),
+                errors='coerce'
+            ).fillna(0)
+            
+            valor_base = df_base['VALOR_NUM'].sum()
+            
+            print(f"DEBUG: Valor base total (DataFrame): R$ {valor_base:.2f}")
+            print(f"DEBUG: Lançamentos incluídos: {len(df_base)}")
+            
+            return valor_base
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao calcular valor base por DataFrame: {str(e)}")
+            return 0
+    
+    def excluir_taxas_base_zerada(self, arquivo_cliente, taxas_existentes):
+        """
+        Marca taxas como excluídas quando a base for zerada
+        """
+        try:
+            wb = load_workbook(arquivo_cliente)
+            ws = wb['Dados']
+            
+            taxas_excluidas = []
+            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            
+            for _, taxa in taxas_existentes.iterrows():
+                id_taxa = taxa.get('ID_LANCAMENTO')
+                if pd.isna(id_taxa):
+                    continue
+                
+                # Encontrar linha na planilha
+                for row_num in range(2, ws.max_row + 1):
+                    if ws.cell(row=row_num, column=15).value == id_taxa:
+                        # Marcar como excluído
+                        ws.cell(row=row_num, column=14, value='EXCLUIDO')  # STATUS
+                        
+                        # Atualizar histórico
+                        historico_atual = ws.cell(row=row_num, column=16).value or ""
+                        novo_historico = f"{historico_atual} | EXCLUÍDA (BASE ZERADA) EM: {timestamp}" if historico_atual else f"EXCLUÍDA (BASE ZERADA) EM: {timestamp}"
+                        ws.cell(row=row_num, column=16, value=novo_historico)
+                        
+                        taxas_excluidas.append({
+                            'id': id_taxa,
+                            'referencia': taxa.get('REFERÊNCIA', ''),
+                            'valor': taxa.get('VALOR', 0)
+                        })
+                        break
+            
+            wb.save(arquivo_cliente)
+            
+            return {
+                "sucesso": True,
+                "mensagem": f"Taxas excluídas por base zerada: {len(taxas_excluidas)} itens",
+                "detalhes": taxas_excluidas,
+                "nova_base": 0,
+                "novo_valor_total": 0
+            }
+            
+        except Exception as e:
+            return {"sucesso": False, "mensagem": f"Erro ao excluir taxas: {str(e)}"}
+    
+    def atualizar_taxas_na_planilha(self, arquivo_cliente, taxas_existentes, novo_valor, nova_base, percentual):
+        """
+        Atualiza os valores das taxas EXISTENTES na planilha com histórico detalhado
+        
+        IMPORTANTE: Este método ATUALIZA taxas já lançadas, não cria novas!
+        Quando uma taxa já foi lançada e a base muda, ajustamos o valor da taxa existente.
+        """
+        try:
+            wb = load_workbook(arquivo_cliente)
+            ws = wb['Dados']
+            
+            taxas_atualizadas = []
+            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            
+            print(f"DEBUG: Atualizando {len(taxas_existentes)} taxas já lançadas")
+            print(f"DEBUG: Novo valor total a distribuir: R$ {novo_valor:,.2f}")
+            
+            # Se há múltiplas taxas, distribuir proporcionalmente
+            if len(taxas_existentes) > 1:
+                print(f"DEBUG: Distribuindo entre {len(taxas_existentes)} taxas existentes")
+                
+                # Calcular total atual das taxas ATIVAS para proporção
+                total_atual = 0
+                taxas_ativas = []
+                
+                for _, taxa in taxas_existentes.iterrows():
+                    status = taxa.get('STATUS', 'ATIVO')
+                    if status != 'EXCLUIDO':
+                        try:
+                            valor_atual = float(str(taxa.get('VALOR', 0)).replace(',', '.'))
+                            total_atual += valor_atual
+                            taxas_ativas.append((taxa, valor_atual))
+                        except:
+                            taxas_ativas.append((taxa, 0))
+                
+                if total_atual == 0:
+                    # Se total atual é zero, dividir igualmente entre taxas ativas
+                    valor_por_taxa = novo_valor / len(taxas_ativas) if taxas_ativas else 0
+                    proporcoes = [valor_por_taxa] * len(taxas_ativas)
+                    print(f"DEBUG: Divisão igual: R$ {valor_por_taxa:,.2f} por taxa")
+                else:
+                    # Calcular proporcionalmente ao valor atual
+                    proporcoes = []
+                    for taxa, valor_atual in taxas_ativas:
+                        proporcao = (valor_atual / total_atual) * novo_valor
+                        proporcoes.append(proporcao)
+                        print(f"DEBUG: Taxa {taxa.get('ID_LANCAMENTO')}: R$ {valor_atual:,.2f} → R$ {proporcao:,.2f}")
+                
+                # Usar apenas taxas ativas para atualização
+                taxas_para_processar = [(taxa, prop) for (taxa, _), prop in zip(taxas_ativas, proporcoes)]
+            else:
+                # Apenas uma taxa - usar valor total
+                taxa_unica = taxas_existentes.iloc[0]
+                if taxa_unica.get('STATUS', 'ATIVO') != 'EXCLUIDO':
+                    taxas_para_processar = [(taxa_unica, novo_valor)]
+                    print(f"DEBUG: Taxa única: R$ {novo_valor:,.2f}")
+                else:
+                    taxas_para_processar = []
+                    print(f"DEBUG: Taxa única está excluída, não atualizando")
+            
+            # Atualizar cada taxa EXISTENTE na planilha
+            for taxa, valor_novo in taxas_para_processar:
+                id_taxa = taxa.get('ID_LANCAMENTO')
+                if pd.isna(id_taxa):
+                    print(f"DEBUG: Taxa sem ID, pulando")
+                    continue
+                
+                print(f"DEBUG: Procurando taxa ID {id_taxa} na planilha")
+                
+                # Encontrar linha na planilha pelo ID
+                linha_encontrada = False
+                for row_num in range(2, ws.max_row + 1):
+                    id_na_planilha = ws.cell(row=row_num, column=15).value  # ID_LANCAMENTO
+                    
+                    if id_na_planilha == id_taxa:
+                        linha_encontrada = True
+                        valor_antigo = ws.cell(row=row_num, column=9).value or 0  # VALOR
+                        
+                        print(f"DEBUG: Encontrada linha {row_num}, atualizando valor: R$ {valor_antigo:,.2f} → R$ {valor_novo:,.2f}")
+                        
+                        # ATUALIZAR O VALOR DA TAXA EXISTENTE
+                        ws.cell(row=row_num, column=9, value=round(valor_novo, 2))
+                        
+                        # Se for tipo 1 (com dias), atualizar valor unitário também
+                        tp_desp = ws.cell(row=row_num, column=2).value
+                        if tp_desp == 1:
+                            dias = ws.cell(row=row_num, column=8).value or 1
+                            if dias > 0:
+                                vr_unit_novo = round(valor_novo / dias, 2)
+                                ws.cell(row=row_num, column=7, value=vr_unit_novo)
+                                print(f"DEBUG: Valor unitário atualizado: R$ {vr_unit_novo:,.2f}")
+                        
+                        # Garantir que status seja ATIVO (caso tenha sido excluído por engano)
+                        status_atual = ws.cell(row=row_num, column=14).value
+                        if status_atual != 'ATIVO':
+                            ws.cell(row=row_num, column=14, value='ATIVO')
+                            print(f"DEBUG: Status corrigido de {status_atual} para ATIVO")
+                        
+                        # Atualizar observação com informações detalhadas do recálculo
+                        obs_atual = ws.cell(row=row_num, column=13).value or ""
+                        # Limpar observações de recálculos anteriores para evitar texto muito longo
+                        if "RECALC:" in obs_atual:
+                            obs_base = obs_atual.split(" - RECALC:")[0]
+                        else:
+                            obs_base = obs_atual
+                        
+                        nova_obs = f"{obs_base} - TAXA ADM {percentual}% - BASE: R$ {nova_base:,.2f} - RECALC: {timestamp}".strip()
+                        ws.cell(row=row_num, column=13, value=nova_obs)
+                        
+                        # Atualizar histórico de alterações
+                        historico_atual = ws.cell(row=row_num, column=16).value or ""
+                        acao = f"RECALC AUTO: R$ {valor_antigo:,.2f} → R$ {valor_novo:,.2f} (Base: R$ {nova_base:,.2f}) - {timestamp}"
+                        
+                        if historico_atual:
+                            # Limitar histórico para não ficar muito longo (manter últimas 5 ações)
+                            historico_partes = historico_atual.split(' | ')
+                            if len(historico_partes) >= 5:
+                                historico_partes = historico_partes[-4:]  # Manter últimas 4
+                            novo_historico = ' | '.join(historico_partes) + ' | ' + acao
+                        else:
+                            novo_historico = acao
+                        
+                        ws.cell(row=row_num, column=16, value=novo_historico)
+                        
+                        taxas_atualizadas.append({
+                            'id': id_taxa,
+                            'linha': row_num,
+                            'referencia': taxa.get('REFERÊNCIA', ''),
+                            'valor_antigo': valor_antigo,
+                            'valor_novo': valor_novo,
+                            'diferenca': valor_novo - float(valor_antigo),
+                        })
+                        
+                        print(f"✅ Taxa ID {id_taxa} atualizada com sucesso na linha {row_num}")
+                        break
+                
+                if not linha_encontrada:
+                    print(f"❌ ERRO: Taxa ID {id_taxa} não encontrada na planilha!")
+                    # Isso é um problema - taxa existe no DataFrame mas não na planilha
+                    # Pode indicar inconsistência nos dados
+            
+            # Salvar alterações na planilha
+            wb.save(arquivo_cliente)
+            print(f"✅ Planilha salva com {len(taxas_atualizadas)} taxas atualizadas")
+            
+            return {
+                "sucesso": True,
+                "mensagem": f"Taxas EXISTENTES recalculadas: {len(taxas_atualizadas)} itens atualizados",
+                "detalhes": taxas_atualizadas,
+                "nova_base": nova_base,
+                "novo_valor_total": novo_valor,
+                "percentual": percentual,
+                "observacao": "ATUALIZAÇÃO de taxas já lançadas, não criação de novas taxas"
+            }
+            
+        except Exception as e:
+            import traceback
+            print(f"DEBUG: Erro ao atualizar taxas existentes: {traceback.format_exc()}")
+            return {"sucesso": False, "mensagem": f"Erro ao atualizar taxas na planilha: {str(e)}"}
+
+    def criar_nova_taxa_se_necessario(self, data_referencia, cliente=None):
+        """
+        MÉTODO SEPARADO: Cria nova taxa apenas quando não existe nenhuma para a data
+        
+        Este método deve ser usado apenas quando:
+        1. Não existe nenhuma taxa para a data/quinzena
+        2. O usuário está finalizando a quinzena pela primeira vez
+        
+        NÃO usar este método quando já existem taxas lançadas!
+        """
+        try:
+            if not cliente:
+                cliente = self.sistema.cliente_atual
+                
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            
+            # Verificar se já existem taxas para esta data
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            if isinstance(data_referencia, str):
+                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
+            else:
+                data_ref_dt = pd.to_datetime(data_referencia)
+            
+            df_data = df[df['DATA_REL'].dt.date == data_ref_dt.date()]
+            taxas_existentes = self.identificar_lancamentos_taxa_admin(df_data)
+            
+            if not taxas_existentes.empty:
+                return {
+                    "sucesso": False, 
+                    "mensagem": f"Já existem {len(taxas_existentes)} taxa(s) para esta data. Use o recálculo ao invés de criar nova."
+                }
+            
+            # Calcular base e valor da nova taxa
+            base_calculo = self.calcular_base_calculo_taxa(df, data_ref_dt.date())
+            
+            if base_calculo <= 0:
+                return {
+                    "sucesso": False,
+                    "mensagem": "Base de cálculo zerada. Não é possível criar taxa de administração."
+                }
+            
+            percentual = self.obter_percentual_taxa_cliente(cliente) # or self.percentual_padrao
+            valor_taxa = base_calculo * (percentual / 100)
+            
+            # Aqui você implementaria a lógica para criar um novo lançamento de taxa
+            # (Similar ao que já existe no sistema para criar lançamentos normais)
+            
+            return {
+                "sucesso": True,
+                "mensagem": f"Nova taxa criada: R$ {valor_taxa:,.2f} ({percentual}% de R$ {base_calculo:,.2f})",
+                "valor_taxa": valor_taxa,
+                "base_calculo": base_calculo,
+                "percentual": percentual
+            }
+            
+        except Exception as e:
+            return {"sucesso": False, "mensagem": f"Erro ao criar nova taxa: {str(e)}"}
+
+    def distinguir_cenarios_taxa(self, data_referencia, cliente=None):
+        """
+        MÉTODO UTILITÁRIO: Distingue entre diferentes cenários de taxa
+        
+        Retorna:
+        - "sem_taxa": Não há taxa para esta data (primeira finalização)
+        - "taxa_existente": Há taxa que pode ser recalculada
+        - "taxa_excluida": Há taxa mas está excluída
+        - "multiplas_taxas": Há múltiplas taxas (situação complexa)
+        """
+        try:
+            if not cliente:
+                cliente = self.sistema.cliente_atual
+                
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            
+            if isinstance(data_referencia, str):
+                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
+            else:
+                data_ref_dt = pd.to_datetime(data_referencia)
+            
+            df_data = df[df['DATA_REL'].dt.date == data_ref_dt.date()]
+            taxas_todas = self.identificar_lancamentos_taxa_admin(df_data)
+            
+            if taxas_todas.empty:
+                return "sem_taxa", "Nenhuma taxa encontrada para esta data"
+            
+            # Adicionar coluna STATUS se não existir
+            if 'STATUS' not in taxas_todas.columns:
+                taxas_todas['STATUS'] = 'ATIVO'
+            
+            taxas_ativas = taxas_todas[taxas_todas['STATUS'] != 'EXCLUIDO']
+            taxas_excluidas = taxas_todas[taxas_todas['STATUS'] == 'EXCLUIDO']
+            
+            if len(taxas_ativas) > 1:
+                return "multiplas_taxas", f"{len(taxas_ativas)} taxas ativas encontradas"
+            elif len(taxas_ativas) == 1:
+                return "taxa_existente", f"1 taxa ativa encontrada (ID: {taxas_ativas.iloc[0].get('ID_LANCAMENTO', 'N/A')})"
+            elif len(taxas_excluidas) > 0:
+                return "taxa_excluida", f"{len(taxas_excluidas)} taxa(s) excluída(s) encontrada(s)"
+            else:
+                return "sem_taxa", "Nenhuma taxa ativa encontrada"
+                
+        except Exception as e:
+            return "erro", f"Erro ao analisar cenário: {str(e)}"
+
+    def obter_percentual_taxa_cliente(self, cliente):
+        """
+        VERSÃO CORRIGIDA - Busca percentual de taxa seguindo a mesma lógica do finalizacao_quinzena.py
+        """
+        try:
+            print(f"DEBUG: Buscando percentual da taxa para cliente {cliente}")
+            
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            wb = load_workbook(arquivo_cliente)
+            
+            if 'Contratos_ADM' not in wb.sheetnames:
+                print("DEBUG: Aba 'Contratos_ADM' não encontrada")
+                wb.close()
+                return 0
+            
+            ws_contratos = wb['Contratos_ADM']
+            print(f"DEBUG: Aba 'Contratos_ADM' carregada")
+            
+            # CORREÇÃO 1: Usar a mesma lógica do finalizacao_quinzena.py
+            # 1º Passo: Encontrar contratos ativos
+            contratos_ativos = set()
+            for row in ws_contratos.iter_rows(min_row=3, values_only=True):  # Começar da linha 3
+                if row[0] and row[3] == 'ATIVO':  # Coluna A (Nº Contrato) e Coluna D (Status)
+                    contratos_ativos.add(row[0])
+                    print(f"DEBUG: Contrato ativo encontrado: {row[0]}")
+            
+            print(f"DEBUG: Contratos ativos: {contratos_ativos}")
+            
+            if not contratos_ativos:
+                print("DEBUG: Nenhum contrato ativo encontrado")
+                wb.close()
+                return 0
+            
+            # CORREÇÃO 2: Para cada contrato ativo, buscar administradores com taxa percentual
+            taxa_total = 0
+            administradores_encontrados = []
+            
+            for num_contrato in contratos_ativos:
+                print(f"DEBUG: Verificando administradores do contrato {num_contrato}")
+                
+                for row in ws_contratos.iter_rows(min_row=3, values_only=True):
+                    # CORREÇÃO 3: Verificar se pertence ao contrato (coluna G) e é do tipo Percentual (coluna J)
+                    if (row[6] == num_contrato and          # Coluna G (Nº Contrato)
+                        row[9] == 'Percentual'):            # Coluna J (Tipo)
+                        
+                        # CORREÇÃO 4: Extrair percentual da coluna K
+                        percentual_raw = row[10]  # Coluna K (Valor/Percentual)
+                        
+                        print(f"DEBUG: Administrador encontrado:")
+                        print(f"  - CNPJ/CPF: {row[7]}")     # Coluna H
+                        print(f"  - Nome: {row[8]}")         # Coluna I
+                        print(f"  - Tipo: {row[9]}")         # Coluna J
+                        print(f"  - Percentual bruto: '{percentual_raw}'")  # Coluna K
+                        
+                        try:
+                            # CORREÇÃO 5: Processar o percentual corretamente
+                            if percentual_raw:
+                                # Converter para string e limpar
+                                percentual_str = str(percentual_raw).strip()
+                                
+                                # Remover % se existir e converter vírgula para ponto
+                                percentual_limpo = percentual_str.replace('%', '').replace(',', '.')
+                                
+                                percentual_float = float(percentual_limpo)
+                                taxa_total += percentual_float
+                                
+                                administradores_encontrados.append({
+                                    'cnpj_cpf': row[7],
+                                    'nome': row[8],
+                                    'percentual': percentual_float
+                                })
+                                
+                                print(f"DEBUG: Percentual processado: {percentual_float}%")
+                            
+                        except (ValueError, TypeError) as e:
+                            print(f"DEBUG: Erro ao processar percentual '{percentual_raw}': {e}")
+                            continue
+            
+            print(f"DEBUG: Taxa total encontrada: {taxa_total}%")
+            print(f"DEBUG: Administradores encontrados: {len(administradores_encontrados)}")
+            
+            wb.close()
+            return taxa_total
+            
+        except Exception as e:
+            print(f"DEBUG: Erro ao obter percentual: {str(e)}")
+            if 'wb' in locals():
+                wb.close()
+            return 0
+        
+    def verificar_necessidade_recalculo(self, data_referencia, cliente=None):
+        """
+        VERSÃO CORRIGIDA - Verifica se há necessidade de recálculo usando os métodos unificados
+        """
+        try:
+            if not cliente:
+                cliente = self.sistema.cliente_atual
+                
+            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+            
+            if not os.path.exists(arquivo_cliente):
+                return False, "Arquivo do cliente não encontrado"
+            
+            print(f"DEBUG: Verificando necessidade de recálculo para {cliente} em {data_referencia}")
+            
+            # Ler dados da planilha
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = df.fillna("")
+            
+            # Converter data
+            if isinstance(data_referencia, str):
+                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
+            else:
+                data_ref_dt = pd.to_datetime(data_referencia)
+            
+            # Filtrar para a data específica
+            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+            df_data = df[df['DATA_REL'].dt.date == data_ref_dt.date()].copy()
+            
+            # Verificar se há taxas existentes
+            taxas_existentes = self.identificar_lancamentos_taxa_admin(df_data)
+            
+            if taxas_existentes.empty:
+                return False, "Nenhuma taxa encontrada para esta data"
+            
+            print(f"DEBUG: {len(taxas_existentes)} taxa(s) encontrada(s)")
+            
+            # CORREÇÃO: Usar o método unificado para calcular base
+            # Primeiro tentar com DataFrame (mais rápido)
+            base_atual = self.calcular_base_calculo_taxa(data_referencia, df=df)
+            
+            print(f"DEBUG: Base atual calculada: R$ {base_atual:.2f}")
+            
+            # Obter percentual da taxa
+            percentual = self.obter_percentual_taxa_cliente(cliente)
+            
+            if percentual == 0:
+                return False, "Percentual de taxa não configurado"
+            
+            print(f"DEBUG: Percentual de taxa: {percentual}%")
+            
+            # Calcular valor esperado da taxa
+            valor_esperado = base_atual * (percentual / 100)
+            print(f"DEBUG: Valor esperado da taxa: R$ {valor_esperado:.2f}")
+            
+            # Somar valor atual das taxas ATIVAS
+            valor_atual_taxas = 0
+            taxas_ativas = 0
+            
+            for _, taxa in taxas_existentes.iterrows():
+                status = taxa.get('STATUS', 'ATIVO')
+                if status != 'EXCLUIDO':
+                    try:
+                        valor_taxa = float(str(taxa.get('VALOR', 0)).replace(',', '.'))
+                        valor_atual_taxas += valor_taxa
+                        taxas_ativas += 1
+                        print(f"DEBUG: Taxa ativa ID {taxa.get('ID_LANCAMENTO', 'N/A')}: R$ {valor_taxa:.2f}")
+                    except (ValueError, TypeError):
+                        print(f"DEBUG: Erro ao processar valor da taxa: {taxa.get('VALOR', 'N/A')}")
+                        pass
+            
+            print(f"DEBUG: Valor atual total das taxas ativas: R$ {valor_atual_taxas:.2f}")
+            print(f"DEBUG: Taxas ativas encontradas: {taxas_ativas}")
+            
+            # Calcular diferença
+            diferenca = abs(valor_esperado - valor_atual_taxas)
+            tolerancia = 0.01 # R$ 0,01
+            
+            print(f"DEBUG: Diferença: R$ {diferenca:.2f} (tolerância: R$ {tolerancia:.2f})")
+            
+            if diferenca > tolerancia:
+                mensagem = f"Recálculo necessário - Base: R$ {base_atual:.2f} ({percentual}%) = R$ {valor_esperado:.2f}, Atual: R$ {valor_atual_taxas:.2f}, Diferença: R$ {diferenca:.2f}"
+                return True, mensagem
+            
+            mensagem = f"Taxas consistentes - Base: R$ {base_atual:.2f} ({percentual}%) = R$ {valor_esperado:.2f}"
+            return False, mensagem
+            
+        except Exception as e:
+            import traceback
+            print(f"DEBUG: Erro na verificação: {traceback.format_exc()}")
+            return False, f"Erro na verificação: {str(e)}"
+
 class ImportadorRH:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
@@ -13375,875 +15659,6 @@ class ImportadorRH:
             print(f"Erro ao buscar dados bancários para {cpf}: {str(e)}")
             return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
 
-class GestorTaxasAdministracao:
-    def __init__(self, sistema_principal):
-        self.sistema = sistema_principal
-                
-    def recalcular_taxas_afetadas(self, data_referencia, cliente=None, mostrar_detalhes=True):
-        """
-        VERSÃO CORRIGIDA do recálculo de taxas usando a lógica validada do finalizacao_quinzena.py
-        """
-        try:
-            if not cliente:
-                cliente = self.sistema.cliente_atual
-            
-            if not cliente:
-                return {"sucesso": False, "mensagem": "Nenhum cliente especificado"}
-            
-            print(f"DEBUG: Iniciando recálculo de taxas para {cliente} em {data_referencia}")
-            
-            # CORREÇÃO 1: Chamar o método corretamente (sem parâmetro self extra)
-            novo_valor_base = self.calcular_base_calculo_taxa(data_referencia)
-            print(f"DEBUG: Nova base calculada: R$ {novo_valor_base:.2f}")
-            
-            if novo_valor_base == 0:
-                return {"sucesso": True, "mensagem": "Sem lançamentos base para recálculo"}
-            
-            # 2. Obter percentual usando método corrigido
-            percentual_taxa = self.obter_percentual_taxa_cliente(cliente)
-            print(f"DEBUG: Percentual encontrado: {percentual_taxa}%")
-            
-            if percentual_taxa == 0:
-                return {"sucesso": True, "mensagem": "Sem taxa percentual configurada"}
-            
-            # 3. Calcular novo valor da taxa
-            novo_valor_taxa = novo_valor_base * (percentual_taxa / 100)
-            print(f"DEBUG: Novo valor da taxa: R$ {novo_valor_taxa:.2f}")
-            
-            # 4. Verificar valor atual das taxas na planilha
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            wb = load_workbook(arquivo_cliente)
-            ws_dados = wb["Dados"]
-            
-            # Converter data
-            if isinstance(data_referencia, str):
-                data_ref = datetime.strptime(data_referencia, '%d/%m/%Y')
-            else:
-                data_ref = data_referencia
-            
-            # Buscar taxas existentes (tipo 7) na data
-            valor_atual_total = 0
-            linhas_taxa = []
-            
-            for idx, row in enumerate(ws_dados.iter_rows(min_row=2, values_only=True), start=2):
-                data_lancamento = row[0]
-                if isinstance(data_lancamento, datetime):
-                    if (data_lancamento.day == data_ref.day and 
-                        data_lancamento.month == data_ref.month and 
-                        data_lancamento.year == data_ref.year):
-                        
-                        tipo_desp = row[1]
-                        if tipo_desp == 7:  # Taxa ADM
-                            # CORREÇÃO 2: Verificar status antes de incluir no valor atual
-                            status = row[13] if len(row) > 13 else "ATIVO"  # Coluna N (STATUS)
-                            
-                            if status == "ATIVO":  # Só considerar taxas ativas
-                                valor = row[8]  # Coluna I
-                                if valor:
-                                    valor_numeric = float(str(valor).replace(',', '.'))
-                                    valor_atual_total += valor_numeric
-                                    linhas_taxa.append(idx)
-            
-            print(f"DEBUG: Valor atual total das taxas ATIVAS: R$ {valor_atual_total:.2f}")
-            
-            # 5. Verificar se precisa recalcular
-            diferenca = abs(novo_valor_taxa - valor_atual_total)
-            
-            if diferenca < 0.01:  # Diferença menor que 1 centavo
-                wb.close()
-                return {"sucesso": True, "mensagem": f"Taxas já estão corretas (R$ {valor_atual_total:.2f})"}
-            
-            # 6. Se chegou aqui, precisa recalcular
-            print(f"DEBUG: Diferença detectada: R$ {diferenca:.2f}")
-            
-            # CORREÇÃO 3: Marcar como excluído ao invés de deletar fisicamente
-            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            
-            for linha in linhas_taxa:
-                # Marcar como EXCLUIDO
-                ws_dados.cell(row=linha, column=14, value='EXCLUIDO')  # STATUS
-                
-                # Atualizar histórico
-                historico_atual = ws_dados.cell(row=linha, column=16).value or ""
-                novo_historico = f"{historico_atual} | EXCLUÍDA P/ RECÁLCULO EM: {timestamp}" if historico_atual else f"EXCLUÍDA P/ RECÁLCULO EM: {timestamp}"
-                ws_dados.cell(row=linha, column=16, value=novo_historico)
-            
-            print(f"DEBUG: {len(linhas_taxa)} linhas de taxa marcadas como excluídas")
-            
-            # 7. Obter administradores e lançar novas taxas
-            administradores = self.sistema.obter_administradores_cliente_CORRIGIDO(cliente)
-            
-            if not administradores:
-                wb.close()
-                return {"sucesso": False, "mensagem": "Nenhum administrador encontrado"}
-            
-            # 8. Lançar novas taxas (usar a mesma lógica do finalizacao_quinzena.py)
-            taxa_total_percentual = sum(adm['percentual'] for adm in administradores)
-            
-            for adm in administradores:
-                valor_adm = (novo_valor_taxa * adm['percentual']) / taxa_total_percentual
-                
-                # Determinar data de vencimento e quinzena
-                if data_ref.day == 5:
-                    dt_vencto = data_ref
-                    while dt_vencto.weekday() >= 5:  # Ajustar fim de semana
-                        dt_vencto += relativedelta(days=1)
-                    quinzena = "1ª"
-                else:
-                    dt_vencto = data_ref
-                    quinzena = "2ª"
-                
-                # Inserir nova linha
-                proxima_linha = ws_dados.max_row + 1
-                
-                # CORREÇÃO 4: Gerar ID sequencial consistente
-                id_lancamento = self._obter_proximo_id_sequencial(ws_dados)
-                
-                # Preencher dados (mesma estrutura do finalizacao_quinzena.py)
-                ws_dados.cell(row=proxima_linha, column=1, value=data_ref)
-                ws_dados.cell(row=proxima_linha, column=1).number_format = 'DD/MM/YYYY'
-                ws_dados.cell(row=proxima_linha, column=2, value=7)  # Tipo taxa ADM
-                ws_dados.cell(row=proxima_linha, column=3, value=adm['cnpj_cpf'])
-                ws_dados.cell(row=proxima_linha, column=4, value=adm['nome'])
-                
-                referencia = f"ADM. OBRA REF. {quinzena} QUINZ. {data_ref.strftime('%m/%Y')}"
-                ws_dados.cell(row=proxima_linha, column=5, value=referencia)
-                ws_dados.cell(row=proxima_linha, column=6, value='')  # NF
-                
-                ws_dados.cell(row=proxima_linha, column=7, value=valor_adm)
-                ws_dados.cell(row=proxima_linha, column=7).number_format = '#,##0.00'
-                ws_dados.cell(row=proxima_linha, column=8, value=1)  # Dias
-                ws_dados.cell(row=proxima_linha, column=9, value=valor_adm)
-                ws_dados.cell(row=proxima_linha, column=9).number_format = '#,##0.00'
-                
-                ws_dados.cell(row=proxima_linha, column=10, value=dt_vencto)
-                ws_dados.cell(row=proxima_linha, column=10).number_format = 'DD/MM/YYYY'
-                ws_dados.cell(row=proxima_linha, column=11, value='ADM')
-                
-                # Buscar dados bancários
-                from src.config.utils import buscar_dados_bancarios_fornecedor
-                dados_bancarios = buscar_dados_bancarios_fornecedor(adm['cnpj_cpf'])
-                ws_dados.cell(row=proxima_linha, column=12, value=dados_bancarios)
-                
-                # CORREÇÃO 5: Observação mais detalhada
-                obs = f"RECÁLCULO AUTO - BASE: R$ {novo_valor_base:.2f} - {timestamp}"
-                ws_dados.cell(row=proxima_linha, column=13, value=obs)
-                
-                # CORREÇÃO 6: Status e ID
-                ws_dados.cell(row=proxima_linha, column=14, value='ATIVO')  # STATUS
-                ws_dados.cell(row=proxima_linha, column=15, value=id_lancamento)  # ID_LANCAMENTO
-                
-                # Histórico inicial
-                historico_inicial = f"CRIADO POR RECÁLCULO EM: {timestamp}"
-                ws_dados.cell(row=proxima_linha, column=16, value=historico_inicial)
-                
-                print(f"DEBUG: Taxa lançada para {adm['nome']}: R$ {valor_adm:.2f} (ID: {id_lancamento})")
-            
-            # Salvar arquivo
-            wb.save(arquivo_cliente)
-            
-            mensagem = f"Taxas recalculadas com sucesso! "
-            mensagem += f"Base: R$ {novo_valor_base:.2f} | "
-            mensagem += f"Taxa: {percentual_taxa}% | "
-            mensagem += f"Valor total: R$ {novo_valor_taxa:.2f}"
-            
-            return {"sucesso": True, "mensagem": mensagem}
-            
-        except Exception as e:
-            if 'wb' in locals():
-                wb.close()
-            print(f"DEBUG: Erro no recálculo: {str(e)}")
-            import traceback
-            print(f"DEBUG: Traceback completo: {traceback.format_exc()}")
-            return {"sucesso": False, "mensagem": f"Erro no recálculo: {str(e)}"}
- 
-    def _obter_proximo_id_sequencial(self, worksheet):
-        """
-        Obtém o próximo ID sequencial disponível (compatível com sistema principal)
-        """
-        try:
-            max_id = 0
-            
-            # Percorrer coluna 15 (ID_LANCAMENTO) para encontrar o maior ID
-            for row in range(2, worksheet.max_row + 1):
-                id_valor = worksheet.cell(row=row, column=15).value
-                if id_valor is not None:
-                    try:
-                        id_int = int(float(id_valor))
-                        if id_int > max_id:
-                            max_id = id_int
-                    except (ValueError, TypeError):
-                        continue
-            
-            return max_id + 1
-            
-        except Exception as e:
-            print(f"DEBUG: Erro ao obter próximo ID: {str(e)}")
-            # Fallback: usar número da linha como ID
-            return worksheet.max_row
-    
-    def identificar_lancamentos_taxa_admin(self, df):
-        """
-        Identifica lançamentos de taxa de administração com padrões mais amplos
-        """
-        if df.empty:
-            return pd.DataFrame()
-            
-        mask_taxa = df['TP_DESP'] == 7
-    
-        taxas = df[mask_taxa].copy()
-        print(f"DEBUG: Taxas encontradas (tp_desp=7): {len(taxas)} registros")
-        
-        if not taxas.empty:
-            print(f"DEBUG: Referências das taxas: {taxas['REFERÊNCIA'].tolist()}")
-        
-        return taxas
-
-    def calcular_base_calculo_taxa(self, data_referencia, df=None):
-        """
-        VERSÃO UNIFICADA - Calcula valor base seguindo a lógica corrigida do finalizacao_quinzena.py
-        
-        Parâmetros:
-        - data_referencia: Data para cálculo (str ou datetime)
-        - df: DataFrame opcional (para compatibilidade com código existente)
-            Se não fornecido, lê diretamente da planilha
-        """
-        try:
-            print(f"DEBUG: Calculando valor base para {data_referencia}")
-            
-            # Se DataFrame foi fornecido, usar lógica compatível
-            if df is not None:
-                return self._calcular_base_por_dataframe(df, data_referencia)
-            
-            # Caso contrário, usar lógica corrigida da planilha
-            return self._calcular_base_por_planilha(data_referencia)
-            
-        except Exception as e:
-            print(f"DEBUG: Erro ao calcular valor base: {str(e)}")
-            return 0
-
-    def _calcular_base_por_planilha(self, data_referencia):
-        """
-        Método interno - Calcula base lendo diretamente da planilha
-        (Lógica corrigida do finalizacao_quinzena.py)
-        """
-        try:
-            cliente_atual = self.sistema.cliente_atual
-            
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente_atual}.xlsx"
-            wb = load_workbook(arquivo_cliente)
-            ws_dados = wb["Dados"]
-            
-            # Converter data de referência se necessário
-            if isinstance(data_referencia, str):
-                data_ref = datetime.strptime(data_referencia, '%d/%m/%Y')
-            else:
-                data_ref = data_referencia
-            
-            print(f"DEBUG: Data de referência (planilha): {data_ref.strftime('%d/%m/%Y')}")
-            
-            valor_base = 0
-            lancamentos_encontrados = 0
-            
-            # Usar a mesma lógica do finalizacao_quinzena.py
-            for row in ws_dados.iter_rows(min_row=2, values_only=True):
-                data_lancamento = row[0]  # Coluna A
-                
-                if isinstance(data_lancamento, datetime):
-                    # Verificar se é da mesma data (dia, mês, ano)
-                    if (data_lancamento.day == data_ref.day and 
-                        data_lancamento.month == data_ref.month and 
-                        data_lancamento.year == data_ref.year):
-                        
-                        tipo_desp = row[1]  # Coluna B (TP_DESP)
-                        status = row[13] if len(row) > 13 else "ATIVO"  # Coluna N (STATUS)
-                        
-                        # Incluir apenas tipos 1 a 6 e status ATIVO
-                        if (isinstance(tipo_desp, (int, float)) and 1 <= tipo_desp <= 6 and 
-                            status == "ATIVO"):
-                            valor = row[8]  # Coluna I (VALOR)
-                            
-                            if valor:
-                                try:
-                                    valor_numeric = float(str(valor).replace(',', '.'))
-                                    valor_base += valor_numeric
-                                    lancamentos_encontrados += 1
-                                    
-                                    print(f"DEBUG: Lançamento incluído - Tipo: {tipo_desp}, Valor: R$ {valor_numeric:.2f}")
-                                    
-                                except (ValueError, TypeError) as e:
-                                    print(f"DEBUG: Erro ao processar valor '{valor}': {e}")
-                                    continue
-            
-            print(f"DEBUG: Valor base total (planilha): R$ {valor_base:.2f}")
-            print(f"DEBUG: Total de lançamentos incluídos: {lancamentos_encontrados}")
-            
-            wb.close()
-            return valor_base
-            
-        except Exception as e:
-            print(f"DEBUG: Erro ao calcular valor base por planilha: {str(e)}")
-            if 'wb' in locals():
-                wb.close()
-            return 0
-
-    def _calcular_base_por_dataframe(self, df, data_referencia):
-        """
-        Método interno - Calcula base usando DataFrame fornecido
-        (Para compatibilidade com verificações existentes)
-        """
-        try:
-            # Converter data de referência
-            if isinstance(data_referencia, str):
-                data_ref = pd.to_datetime(data_referencia, format='%d/%m/%Y')
-            else:
-                data_ref = pd.to_datetime(data_referencia)
-            
-            print(f"DEBUG: Data de referência (DataFrame): {data_ref.strftime('%d/%m/%Y')}")
-            
-            # Garantir que DATA_REL existe e está em formato datetime
-            if 'DATA_REL' not in df.columns:
-                print("DEBUG: Coluna DATA_REL não encontrada no DataFrame")
-                return 0
-            
-            df = df.copy()
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
-            
-            # Filtrar dados para a data específica
-            df_data = df[df['DATA_REL'].dt.date == data_ref.date()].copy()
-            
-            if df_data.empty:
-                print(f"DEBUG: Nenhum lançamento encontrado para {data_ref.strftime('%d/%m/%Y')}")
-                return 0
-            
-            # Garantir que STATUS existe
-            if 'STATUS' not in df_data.columns:
-                df_data['STATUS'] = 'ATIVO'
-            
-            # Filtrar apenas lançamentos ativos e tipos 1-6
-            df_base = df_data[
-                (df_data['STATUS'] == 'ATIVO') & 
-                (df_data['TP_DESP'].isin([1, 2, 3, 4, 5, 6]))
-            ].copy()
-            
-            if df_base.empty:
-                print("DEBUG: Nenhum lançamento ativo dos tipos 1-6 encontrado")
-                return 0
-            
-            # Converter valores para numérico
-            df_base['VALOR_NUM'] = pd.to_numeric(
-                df_base['VALOR'].astype(str).str.replace('R$', '').str.replace(',', '.'),
-                errors='coerce'
-            ).fillna(0)
-            
-            valor_base = df_base['VALOR_NUM'].sum()
-            
-            print(f"DEBUG: Valor base total (DataFrame): R$ {valor_base:.2f}")
-            print(f"DEBUG: Lançamentos incluídos: {len(df_base)}")
-            
-            return valor_base
-            
-        except Exception as e:
-            print(f"DEBUG: Erro ao calcular valor base por DataFrame: {str(e)}")
-            return 0
-    
-    def excluir_taxas_base_zerada(self, arquivo_cliente, taxas_existentes):
-        """
-        Marca taxas como excluídas quando a base for zerada
-        """
-        try:
-            wb = load_workbook(arquivo_cliente)
-            ws = wb['Dados']
-            
-            taxas_excluidas = []
-            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            
-            for _, taxa in taxas_existentes.iterrows():
-                id_taxa = taxa.get('ID_LANCAMENTO')
-                if pd.isna(id_taxa):
-                    continue
-                
-                # Encontrar linha na planilha
-                for row_num in range(2, ws.max_row + 1):
-                    if ws.cell(row=row_num, column=15).value == id_taxa:
-                        # Marcar como excluído
-                        ws.cell(row=row_num, column=14, value='EXCLUIDO')  # STATUS
-                        
-                        # Atualizar histórico
-                        historico_atual = ws.cell(row=row_num, column=16).value or ""
-                        novo_historico = f"{historico_atual} | EXCLUÍDA (BASE ZERADA) EM: {timestamp}" if historico_atual else f"EXCLUÍDA (BASE ZERADA) EM: {timestamp}"
-                        ws.cell(row=row_num, column=16, value=novo_historico)
-                        
-                        taxas_excluidas.append({
-                            'id': id_taxa,
-                            'referencia': taxa.get('REFERÊNCIA', ''),
-                            'valor': taxa.get('VALOR', 0)
-                        })
-                        break
-            
-            wb.save(arquivo_cliente)
-            
-            return {
-                "sucesso": True,
-                "mensagem": f"Taxas excluídas por base zerada: {len(taxas_excluidas)} itens",
-                "detalhes": taxas_excluidas,
-                "nova_base": 0,
-                "novo_valor_total": 0
-            }
-            
-        except Exception as e:
-            return {"sucesso": False, "mensagem": f"Erro ao excluir taxas: {str(e)}"}
-    
-    def atualizar_taxas_na_planilha(self, arquivo_cliente, taxas_existentes, novo_valor, nova_base, percentual):
-        """
-        Atualiza os valores das taxas EXISTENTES na planilha com histórico detalhado
-        
-        IMPORTANTE: Este método ATUALIZA taxas já lançadas, não cria novas!
-        Quando uma taxa já foi lançada e a base muda, ajustamos o valor da taxa existente.
-        """
-        try:
-            wb = load_workbook(arquivo_cliente)
-            ws = wb['Dados']
-            
-            taxas_atualizadas = []
-            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            
-            print(f"DEBUG: Atualizando {len(taxas_existentes)} taxas já lançadas")
-            print(f"DEBUG: Novo valor total a distribuir: R$ {novo_valor:,.2f}")
-            
-            # Se há múltiplas taxas, distribuir proporcionalmente
-            if len(taxas_existentes) > 1:
-                print(f"DEBUG: Distribuindo entre {len(taxas_existentes)} taxas existentes")
-                
-                # Calcular total atual das taxas ATIVAS para proporção
-                total_atual = 0
-                taxas_ativas = []
-                
-                for _, taxa in taxas_existentes.iterrows():
-                    status = taxa.get('STATUS', 'ATIVO')
-                    if status != 'EXCLUIDO':
-                        try:
-                            valor_atual = float(str(taxa.get('VALOR', 0)).replace(',', '.'))
-                            total_atual += valor_atual
-                            taxas_ativas.append((taxa, valor_atual))
-                        except:
-                            taxas_ativas.append((taxa, 0))
-                
-                if total_atual == 0:
-                    # Se total atual é zero, dividir igualmente entre taxas ativas
-                    valor_por_taxa = novo_valor / len(taxas_ativas) if taxas_ativas else 0
-                    proporcoes = [valor_por_taxa] * len(taxas_ativas)
-                    print(f"DEBUG: Divisão igual: R$ {valor_por_taxa:,.2f} por taxa")
-                else:
-                    # Calcular proporcionalmente ao valor atual
-                    proporcoes = []
-                    for taxa, valor_atual in taxas_ativas:
-                        proporcao = (valor_atual / total_atual) * novo_valor
-                        proporcoes.append(proporcao)
-                        print(f"DEBUG: Taxa {taxa.get('ID_LANCAMENTO')}: R$ {valor_atual:,.2f} → R$ {proporcao:,.2f}")
-                
-                # Usar apenas taxas ativas para atualização
-                taxas_para_processar = [(taxa, prop) for (taxa, _), prop in zip(taxas_ativas, proporcoes)]
-            else:
-                # Apenas uma taxa - usar valor total
-                taxa_unica = taxas_existentes.iloc[0]
-                if taxa_unica.get('STATUS', 'ATIVO') != 'EXCLUIDO':
-                    taxas_para_processar = [(taxa_unica, novo_valor)]
-                    print(f"DEBUG: Taxa única: R$ {novo_valor:,.2f}")
-                else:
-                    taxas_para_processar = []
-                    print(f"DEBUG: Taxa única está excluída, não atualizando")
-            
-            # Atualizar cada taxa EXISTENTE na planilha
-            for taxa, valor_novo in taxas_para_processar:
-                id_taxa = taxa.get('ID_LANCAMENTO')
-                if pd.isna(id_taxa):
-                    print(f"DEBUG: Taxa sem ID, pulando")
-                    continue
-                
-                print(f"DEBUG: Procurando taxa ID {id_taxa} na planilha")
-                
-                # Encontrar linha na planilha pelo ID
-                linha_encontrada = False
-                for row_num in range(2, ws.max_row + 1):
-                    id_na_planilha = ws.cell(row=row_num, column=15).value  # ID_LANCAMENTO
-                    
-                    if id_na_planilha == id_taxa:
-                        linha_encontrada = True
-                        valor_antigo = ws.cell(row=row_num, column=9).value or 0  # VALOR
-                        
-                        print(f"DEBUG: Encontrada linha {row_num}, atualizando valor: R$ {valor_antigo:,.2f} → R$ {valor_novo:,.2f}")
-                        
-                        # ATUALIZAR O VALOR DA TAXA EXISTENTE
-                        ws.cell(row=row_num, column=9, value=round(valor_novo, 2))
-                        
-                        # Se for tipo 1 (com dias), atualizar valor unitário também
-                        tp_desp = ws.cell(row=row_num, column=2).value
-                        if tp_desp == 1:
-                            dias = ws.cell(row=row_num, column=8).value or 1
-                            if dias > 0:
-                                vr_unit_novo = round(valor_novo / dias, 2)
-                                ws.cell(row=row_num, column=7, value=vr_unit_novo)
-                                print(f"DEBUG: Valor unitário atualizado: R$ {vr_unit_novo:,.2f}")
-                        
-                        # Garantir que status seja ATIVO (caso tenha sido excluído por engano)
-                        status_atual = ws.cell(row=row_num, column=14).value
-                        if status_atual != 'ATIVO':
-                            ws.cell(row=row_num, column=14, value='ATIVO')
-                            print(f"DEBUG: Status corrigido de {status_atual} para ATIVO")
-                        
-                        # Atualizar observação com informações detalhadas do recálculo
-                        obs_atual = ws.cell(row=row_num, column=13).value or ""
-                        # Limpar observações de recálculos anteriores para evitar texto muito longo
-                        if "RECALC:" in obs_atual:
-                            obs_base = obs_atual.split(" - RECALC:")[0]
-                        else:
-                            obs_base = obs_atual
-                        
-                        nova_obs = f"{obs_base} - TAXA ADM {percentual}% - BASE: R$ {nova_base:,.2f} - RECALC: {timestamp}".strip()
-                        ws.cell(row=row_num, column=13, value=nova_obs)
-                        
-                        # Atualizar histórico de alterações
-                        historico_atual = ws.cell(row=row_num, column=16).value or ""
-                        acao = f"RECALC AUTO: R$ {valor_antigo:,.2f} → R$ {valor_novo:,.2f} (Base: R$ {nova_base:,.2f}) - {timestamp}"
-                        
-                        if historico_atual:
-                            # Limitar histórico para não ficar muito longo (manter últimas 5 ações)
-                            historico_partes = historico_atual.split(' | ')
-                            if len(historico_partes) >= 5:
-                                historico_partes = historico_partes[-4:]  # Manter últimas 4
-                            novo_historico = ' | '.join(historico_partes) + ' | ' + acao
-                        else:
-                            novo_historico = acao
-                        
-                        ws.cell(row=row_num, column=16, value=novo_historico)
-                        
-                        taxas_atualizadas.append({
-                            'id': id_taxa,
-                            'linha': row_num,
-                            'referencia': taxa.get('REFERÊNCIA', ''),
-                            'valor_antigo': valor_antigo,
-                            'valor_novo': valor_novo,
-                            'diferenca': valor_novo - float(valor_antigo),
-                        })
-                        
-                        print(f"✅ Taxa ID {id_taxa} atualizada com sucesso na linha {row_num}")
-                        break
-                
-                if not linha_encontrada:
-                    print(f"❌ ERRO: Taxa ID {id_taxa} não encontrada na planilha!")
-                    # Isso é um problema - taxa existe no DataFrame mas não na planilha
-                    # Pode indicar inconsistência nos dados
-            
-            # Salvar alterações na planilha
-            wb.save(arquivo_cliente)
-            print(f"✅ Planilha salva com {len(taxas_atualizadas)} taxas atualizadas")
-            
-            return {
-                "sucesso": True,
-                "mensagem": f"Taxas EXISTENTES recalculadas: {len(taxas_atualizadas)} itens atualizados",
-                "detalhes": taxas_atualizadas,
-                "nova_base": nova_base,
-                "novo_valor_total": novo_valor,
-                "percentual": percentual,
-                "observacao": "ATUALIZAÇÃO de taxas já lançadas, não criação de novas taxas"
-            }
-            
-        except Exception as e:
-            import traceback
-            print(f"DEBUG: Erro ao atualizar taxas existentes: {traceback.format_exc()}")
-            return {"sucesso": False, "mensagem": f"Erro ao atualizar taxas na planilha: {str(e)}"}
-
-    def criar_nova_taxa_se_necessario(self, data_referencia, cliente=None):
-        """
-        MÉTODO SEPARADO: Cria nova taxa apenas quando não existe nenhuma para a data
-        
-        Este método deve ser usado apenas quando:
-        1. Não existe nenhuma taxa para a data/quinzena
-        2. O usuário está finalizando a quinzena pela primeira vez
-        
-        NÃO usar este método quando já existem taxas lançadas!
-        """
-        try:
-            if not cliente:
-                cliente = self.sistema.cliente_atual
-                
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            
-            # Verificar se já existem taxas para esta data
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
-            
-            if isinstance(data_referencia, str):
-                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
-            else:
-                data_ref_dt = pd.to_datetime(data_referencia)
-            
-            df_data = df[df['DATA_REL'].dt.date == data_ref_dt.date()]
-            taxas_existentes = self.identificar_lancamentos_taxa_admin(df_data)
-            
-            if not taxas_existentes.empty:
-                return {
-                    "sucesso": False, 
-                    "mensagem": f"Já existem {len(taxas_existentes)} taxa(s) para esta data. Use o recálculo ao invés de criar nova."
-                }
-            
-            # Calcular base e valor da nova taxa
-            base_calculo = self.calcular_base_calculo_taxa(df, data_ref_dt.date())
-            
-            if base_calculo <= 0:
-                return {
-                    "sucesso": False,
-                    "mensagem": "Base de cálculo zerada. Não é possível criar taxa de administração."
-                }
-            
-            percentual = self.obter_percentual_taxa_cliente(cliente) # or self.percentual_padrao
-            valor_taxa = base_calculo * (percentual / 100)
-            
-            # Aqui você implementaria a lógica para criar um novo lançamento de taxa
-            # (Similar ao que já existe no sistema para criar lançamentos normais)
-            
-            return {
-                "sucesso": True,
-                "mensagem": f"Nova taxa criada: R$ {valor_taxa:,.2f} ({percentual}% de R$ {base_calculo:,.2f})",
-                "valor_taxa": valor_taxa,
-                "base_calculo": base_calculo,
-                "percentual": percentual
-            }
-            
-        except Exception as e:
-            return {"sucesso": False, "mensagem": f"Erro ao criar nova taxa: {str(e)}"}
-
-    def distinguir_cenarios_taxa(self, data_referencia, cliente=None):
-        """
-        MÉTODO UTILITÁRIO: Distingue entre diferentes cenários de taxa
-        
-        Retorna:
-        - "sem_taxa": Não há taxa para esta data (primeira finalização)
-        - "taxa_existente": Há taxa que pode ser recalculada
-        - "taxa_excluida": Há taxa mas está excluída
-        - "multiplas_taxas": Há múltiplas taxas (situação complexa)
-        """
-        try:
-            if not cliente:
-                cliente = self.sistema.cliente_atual
-                
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
-            
-            if isinstance(data_referencia, str):
-                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
-            else:
-                data_ref_dt = pd.to_datetime(data_referencia)
-            
-            df_data = df[df['DATA_REL'].dt.date == data_ref_dt.date()]
-            taxas_todas = self.identificar_lancamentos_taxa_admin(df_data)
-            
-            if taxas_todas.empty:
-                return "sem_taxa", "Nenhuma taxa encontrada para esta data"
-            
-            # Adicionar coluna STATUS se não existir
-            if 'STATUS' not in taxas_todas.columns:
-                taxas_todas['STATUS'] = 'ATIVO'
-            
-            taxas_ativas = taxas_todas[taxas_todas['STATUS'] != 'EXCLUIDO']
-            taxas_excluidas = taxas_todas[taxas_todas['STATUS'] == 'EXCLUIDO']
-            
-            if len(taxas_ativas) > 1:
-                return "multiplas_taxas", f"{len(taxas_ativas)} taxas ativas encontradas"
-            elif len(taxas_ativas) == 1:
-                return "taxa_existente", f"1 taxa ativa encontrada (ID: {taxas_ativas.iloc[0].get('ID_LANCAMENTO', 'N/A')})"
-            elif len(taxas_excluidas) > 0:
-                return "taxa_excluida", f"{len(taxas_excluidas)} taxa(s) excluída(s) encontrada(s)"
-            else:
-                return "sem_taxa", "Nenhuma taxa ativa encontrada"
-                
-        except Exception as e:
-            return "erro", f"Erro ao analisar cenário: {str(e)}"
-
-    def obter_percentual_taxa_cliente(self, cliente):
-        """
-        VERSÃO CORRIGIDA - Busca percentual de taxa seguindo a mesma lógica do finalizacao_quinzena.py
-        """
-        try:
-            print(f"DEBUG: Buscando percentual da taxa para cliente {cliente}")
-            
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            wb = load_workbook(arquivo_cliente)
-            
-            if 'Contratos_ADM' not in wb.sheetnames:
-                print("DEBUG: Aba 'Contratos_ADM' não encontrada")
-                wb.close()
-                return 0
-            
-            ws_contratos = wb['Contratos_ADM']
-            print(f"DEBUG: Aba 'Contratos_ADM' carregada")
-            
-            # CORREÇÃO 1: Usar a mesma lógica do finalizacao_quinzena.py
-            # 1º Passo: Encontrar contratos ativos
-            contratos_ativos = set()
-            for row in ws_contratos.iter_rows(min_row=3, values_only=True):  # Começar da linha 3
-                if row[0] and row[3] == 'ATIVO':  # Coluna A (Nº Contrato) e Coluna D (Status)
-                    contratos_ativos.add(row[0])
-                    print(f"DEBUG: Contrato ativo encontrado: {row[0]}")
-            
-            print(f"DEBUG: Contratos ativos: {contratos_ativos}")
-            
-            if not contratos_ativos:
-                print("DEBUG: Nenhum contrato ativo encontrado")
-                wb.close()
-                return 0
-            
-            # CORREÇÃO 2: Para cada contrato ativo, buscar administradores com taxa percentual
-            taxa_total = 0
-            administradores_encontrados = []
-            
-            for num_contrato in contratos_ativos:
-                print(f"DEBUG: Verificando administradores do contrato {num_contrato}")
-                
-                for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                    # CORREÇÃO 3: Verificar se pertence ao contrato (coluna G) e é do tipo Percentual (coluna J)
-                    if (row[6] == num_contrato and          # Coluna G (Nº Contrato)
-                        row[9] == 'Percentual'):            # Coluna J (Tipo)
-                        
-                        # CORREÇÃO 4: Extrair percentual da coluna K
-                        percentual_raw = row[10]  # Coluna K (Valor/Percentual)
-                        
-                        print(f"DEBUG: Administrador encontrado:")
-                        print(f"  - CNPJ/CPF: {row[7]}")     # Coluna H
-                        print(f"  - Nome: {row[8]}")         # Coluna I
-                        print(f"  - Tipo: {row[9]}")         # Coluna J
-                        print(f"  - Percentual bruto: '{percentual_raw}'")  # Coluna K
-                        
-                        try:
-                            # CORREÇÃO 5: Processar o percentual corretamente
-                            if percentual_raw:
-                                # Converter para string e limpar
-                                percentual_str = str(percentual_raw).strip()
-                                
-                                # Remover % se existir e converter vírgula para ponto
-                                percentual_limpo = percentual_str.replace('%', '').replace(',', '.')
-                                
-                                percentual_float = float(percentual_limpo)
-                                taxa_total += percentual_float
-                                
-                                administradores_encontrados.append({
-                                    'cnpj_cpf': row[7],
-                                    'nome': row[8],
-                                    'percentual': percentual_float
-                                })
-                                
-                                print(f"DEBUG: Percentual processado: {percentual_float}%")
-                            
-                        except (ValueError, TypeError) as e:
-                            print(f"DEBUG: Erro ao processar percentual '{percentual_raw}': {e}")
-                            continue
-            
-            print(f"DEBUG: Taxa total encontrada: {taxa_total}%")
-            print(f"DEBUG: Administradores encontrados: {len(administradores_encontrados)}")
-            
-            wb.close()
-            return taxa_total
-            
-        except Exception as e:
-            print(f"DEBUG: Erro ao obter percentual: {str(e)}")
-            if 'wb' in locals():
-                wb.close()
-            return 0
-        
-    def verificar_necessidade_recalculo(self, data_referencia, cliente=None):
-        """
-        VERSÃO CORRIGIDA - Verifica se há necessidade de recálculo usando os métodos unificados
-        """
-        try:
-            if not cliente:
-                cliente = self.sistema.cliente_atual
-                
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            
-            if not os.path.exists(arquivo_cliente):
-                return False, "Arquivo do cliente não encontrado"
-            
-            print(f"DEBUG: Verificando necessidade de recálculo para {cliente} em {data_referencia}")
-            
-            # Ler dados da planilha
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-            df = df.fillna("")
-            
-            # Converter data
-            if isinstance(data_referencia, str):
-                data_ref_dt = pd.to_datetime(data_referencia, format='%d/%m/%Y')
-            else:
-                data_ref_dt = pd.to_datetime(data_referencia)
-            
-            # Filtrar para a data específica
-            df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
-            df_data = df[df['DATA_REL'].dt.date == data_ref_dt.date()].copy()
-            
-            # Verificar se há taxas existentes
-            taxas_existentes = self.identificar_lancamentos_taxa_admin(df_data)
-            
-            if taxas_existentes.empty:
-                return False, "Nenhuma taxa encontrada para esta data"
-            
-            print(f"DEBUG: {len(taxas_existentes)} taxa(s) encontrada(s)")
-            
-            # CORREÇÃO: Usar o método unificado para calcular base
-            # Primeiro tentar com DataFrame (mais rápido)
-            base_atual = self.calcular_base_calculo_taxa(data_referencia, df=df)
-            
-            print(f"DEBUG: Base atual calculada: R$ {base_atual:.2f}")
-            
-            # Obter percentual da taxa
-            percentual = self.obter_percentual_taxa_cliente(cliente)
-            
-            if percentual == 0:
-                return False, "Percentual de taxa não configurado"
-            
-            print(f"DEBUG: Percentual de taxa: {percentual}%")
-            
-            # Calcular valor esperado da taxa
-            valor_esperado = base_atual * (percentual / 100)
-            print(f"DEBUG: Valor esperado da taxa: R$ {valor_esperado:.2f}")
-            
-            # Somar valor atual das taxas ATIVAS
-            valor_atual_taxas = 0
-            taxas_ativas = 0
-            
-            for _, taxa in taxas_existentes.iterrows():
-                status = taxa.get('STATUS', 'ATIVO')
-                if status != 'EXCLUIDO':
-                    try:
-                        valor_taxa = float(str(taxa.get('VALOR', 0)).replace(',', '.'))
-                        valor_atual_taxas += valor_taxa
-                        taxas_ativas += 1
-                        print(f"DEBUG: Taxa ativa ID {taxa.get('ID_LANCAMENTO', 'N/A')}: R$ {valor_taxa:.2f}")
-                    except (ValueError, TypeError):
-                        print(f"DEBUG: Erro ao processar valor da taxa: {taxa.get('VALOR', 'N/A')}")
-                        pass
-            
-            print(f"DEBUG: Valor atual total das taxas ativas: R$ {valor_atual_taxas:.2f}")
-            print(f"DEBUG: Taxas ativas encontradas: {taxas_ativas}")
-            
-            # Calcular diferença
-            diferenca = abs(valor_esperado - valor_atual_taxas)
-            tolerancia = 0.01 # R$ 0,01
-            
-            print(f"DEBUG: Diferença: R$ {diferenca:.2f} (tolerância: R$ {tolerancia:.2f})")
-            
-            if diferenca > tolerancia:
-                mensagem = f"Recálculo necessário - Base: R$ {base_atual:.2f} ({percentual}%) = R$ {valor_esperado:.2f}, Atual: R$ {valor_atual_taxas:.2f}, Diferença: R$ {diferenca:.2f}"
-                return True, mensagem
-            
-            mensagem = f"Taxas consistentes - Base: R$ {base_atual:.2f} ({percentual}%) = R$ {valor_esperado:.2f}"
-            return False, mensagem
-            
-        except Exception as e:
-            import traceback
-            print(f"DEBUG: Erro na verificação: {traceback.format_exc()}")
-            return False, f"Erro na verificação: {str(e)}"
-
 class GerenciadorLancamentos:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
@@ -14365,8 +15780,10 @@ class GerenciadorLancamentos:
         frame_acoes = ttk.Frame(frame_botoes)
         frame_acoes.pack(fill='x', pady=(5, 0))
         
-        # Grupo 1: Ações individuais
+        # Grupo 1: Ações individuais e em massa
         ttk.Button(frame_acoes, text="Editar", command=self.editar_lancamento).pack(side='left', padx=5)
+        ttk.Button(frame_acoes, text="📝 Editar em Massa", 
+                command=self.editar_em_massa).pack(side='left', padx=5)
         ttk.Button(frame_acoes, text="Ver Histórico", 
                 command=self.visualizar_historico_lancamento).pack(side='left', padx=5)
         
@@ -14788,52 +16205,6 @@ class GerenciadorLancamentos:
             import traceback
             print(f"DEBUG: Erro na restauração em lote: {traceback.format_exc()}")
             custom_messagebox("error", "Erro", f"Erro na restauração em lote: {str(e)}")
-
-    # def verificar_recalculo_datas_afetadas(self, datas_afetadas, tipo_operacao):
-    #     """Verifica recálculo de taxas para múltiplas datas afetadas"""
-    #     try:
-    #         if not datas_afetadas:
-    #             return
-            
-    #         print(f"DEBUG: Verificando recálculo para {len(datas_afetadas)} datas afetadas")
-            
-    #         # Aguardar um pouco para garantir que as operações foram salvas
-    #         import time
-    #         time.sleep(0.5)
-            
-    #         resultados = []
-            
-    #         for data_afetada in sorted(datas_afetadas):
-    #             try:
-    #                 print(f"DEBUG: Verificando recálculo para {data_afetada}")
-                    
-    #                 # Usar o método unificado do sistema
-    #                 resultado = self.sistema.chamar_apos_operacao_lancamento(data_afetada, tipo_operacao)
-                    
-    #                 resultados.append({
-    #                     'data': data_afetada,
-    #                     'resultado': resultado
-    #                 })
-                    
-    #                 if resultado["sucesso"]:
-    #                     print(f"✅ Verificação para {data_afetada}: {resultado['mensagem']}")
-    #                 else:
-    #                     print(f"⚠️ Problema na verificação para {data_afetada}: {resultado['mensagem']}")
-                        
-    #             except Exception as e:
-    #                 print(f"❌ Erro ao verificar {data_afetada}: {str(e)}")
-    #                 resultados.append({
-    #                     'data': data_afetada,
-    #                     'resultado': {"sucesso": False, "mensagem": f"Erro: {str(e)}"}
-    #                 })
-    #                 continue
-            
-    #         # Log consolidado
-    #         verificacoes_ok = sum(1 for r in resultados if r['resultado']['sucesso'])
-    #         print(f"DEBUG: Verificações concluídas: {verificacoes_ok}/{len(resultados)} OK")
-            
-    #     except Exception as e:
-    #         print(f"DEBUG: Erro geral na verificação de múltiplas datas: {str(e)}")
 
     def criar_janela_progresso(self, titulo, total_items):
         """Cria janela de progresso para operações em lote"""
@@ -15573,6 +16944,167 @@ class GerenciadorLancamentos:
             traceback.print_exc()
             custom_messagebox("error", "Erro", f"Erro ao editar lançamento: {str(e)}")
     
+    def editar_em_massa(self):
+        """Abre editor para alteração em massa dos lançamentos selecionados"""
+        items_selecionados = self.tree_lancamentos.selection()
+        
+        if not items_selecionados:
+            custom_messagebox("warning", "⚠️ Nenhum Item Selecionado", 
+                            "Para editar em massa:\n\n"
+                            "1. Selecione os lançamentos desejados usando Ctrl+Click ou Shift+Click\n"
+                            "2. Clique em 'Editar em Massa'\n\n"
+                            "💡 Dica: Use Ctrl+A para selecionar todos os itens visíveis!")
+            return
+        
+        qtd_selecionados = len(items_selecionados)
+        
+        if qtd_selecionados == 1:
+            resposta = custom_messagebox("yesno", 
+                "Edição Individual ou em Massa?",
+                "Você selecionou apenas 1 lançamento.\n\n"
+                "Deseja usar o editor em massa mesmo assim?\n"
+                "(Não = abrirá o editor individual normal)")
+            
+            if not resposta:
+                # Abrir editor individual
+                self.editar_lancamento()
+                return
+        
+        # Coletar dados dos lançamentos selecionados
+        dados_selecionados = []
+        indices_selecionados = []
+        todos_items = self.tree_lancamentos.get_children()
+        
+        for item in items_selecionados:
+            try:
+                # Obter índice do item
+                indice = todos_items.index(item)
+                indices_selecionados.append(indice)
+                
+                # Obter valores do item
+                valores = self.tree_lancamentos.item(item)['values']
+                
+                if len(valores) < 9:
+                    continue
+                
+                # Montar estrutura de dados compatível com EditorEmMassa
+                dados_item = {
+                    'data': valores[0],           # Data
+                    'tp_desp': str(valores[1]),   # Tipo
+                    'nome': valores[2],           # Nome
+                    'referencia': valores[3],     # Referência
+                    'nf': valores[4],             # NF
+                    'valor': valores[5],          # Valor
+                    'dt_vencto': valores[6],      # Vencimento
+                    'status': valores[7],         # Status
+                    'id_lancamento': valores[8]   # ID
+                }
+                
+                # Buscar dados completos do DataFrame
+                id_lancamento = valores[8]
+                mask = self.dados_originais['ID_LANCAMENTO'] == id_lancamento
+                dados_completos = self.dados_originais[mask]
+                
+                if not dados_completos.empty:
+                    lancamento_completo = dados_completos.iloc[0]
+                    
+                    # Adicionar campos extras do DataFrame
+                    dados_item.update({
+                        'cnpj_cpf': str(lancamento_completo.get('CNPJ_CPF', '')),
+                        'categoria': str(lancamento_completo.get('CATEGORIA', '')),
+                        'vr_unit': str(lancamento_completo.get('VR_UNIT', '')),
+                        'dias': str(lancamento_completo.get('DIAS', '1')),
+                        'dados_bancarios': str(lancamento_completo.get('DADOS_BANCARIOS', '')),
+                        'observacao': str(lancamento_completo.get('OBSERVAÇÃO', '')),
+                        'etapa_obra': str(lancamento_completo.get('ETAPA_OBRA', '')),
+                        'insumo': str(lancamento_completo.get('INSUMO', ''))
+                    })
+                
+                dados_selecionados.append(dados_item)
+                
+            except Exception as e:
+                print(f"Erro ao processar item: {str(e)}")
+                continue
+        
+        if not dados_selecionados:
+            custom_messagebox("error", "Erro", 
+                            "Não foi possível coletar os dados dos lançamentos selecionados")
+            return
+        
+        # Abrir editor em massa
+        editor = EditorEmMassaGerenciador(self.janela, dados_selecionados, 
+                                        indices_selecionados, self.atualizar_lancamento_massa)
+
+    def atualizar_lancamento_massa(self, indice, novos_dados):
+        """
+        Callback para atualizar um lançamento após edição em massa
+        
+        Args:
+            indice: Índice do lançamento na TreeView
+            novos_dados: Dicionário com os novos dados
+        
+        Returns:
+            bool: True se atualizou com sucesso
+        """
+        try:
+            # Obter ID do lançamento pelo índice
+            todos_items = self.tree_lancamentos.get_children()
+            
+            if indice >= len(todos_items):
+                print(f"Índice {indice} fora do alcance")
+                return False
+            
+            item = todos_items[indice]
+            valores = self.tree_lancamentos.item(item)['values']
+            id_lancamento = valores[8]  # ID está na última posição
+            
+            print(f"DEBUG: Atualizando lançamento ID {id_lancamento} (índice {indice})")
+            
+            # Buscar dados originais completos
+            mask = self.dados_originais['ID_LANCAMENTO'] == id_lancamento
+            dados_filtrados = self.dados_originais[mask]
+            
+            if dados_filtrados.empty:
+                print(f"DEBUG: Lançamento ID {id_lancamento} não encontrado")
+                return False
+            
+            dados_originais = dados_filtrados.iloc[0]
+            
+            # Preparar dados editados para salvamento
+            # Garantir que temos todos os campos necessários
+            dados_para_salvar = {
+                'data': novos_dados.get('data', dados_originais.get('DATA_REL')),
+                'tp_desp': novos_dados.get('tp_desp', dados_originais.get('TP_DESP')),
+                'cnpj_cpf': novos_dados.get('cnpj_cpf', dados_originais.get('CNPJ_CPF')),
+                'nome': novos_dados.get('nome', dados_originais.get('NOME')),
+                'referencia': novos_dados.get('referencia', dados_originais.get('REFERÊNCIA')),
+                'nf': novos_dados.get('nf', dados_originais.get('NF')),
+                'vr_unit': novos_dados.get('vr_unit', dados_originais.get('VR_UNIT')),
+                'dias': novos_dados.get('dias', dados_originais.get('DIAS', 1)),
+                'valor': novos_dados.get('valor', dados_originais.get('VALOR')),
+                'dt_vencto': novos_dados.get('dt_vencto', dados_originais.get('DT_VENCTO')),
+                'categoria': novos_dados.get('categoria', dados_originais.get('CATEGORIA')),
+                'dados_bancarios': novos_dados.get('dados_bancarios', dados_originais.get('DADOS_BANCARIOS')),
+                'observacao': novos_dados.get('observacao', dados_originais.get('OBSERVAÇÃO', '')),
+                'etapa_obra': novos_dados.get('etapa_obra', dados_originais.get('ETAPA_OBRA', '')),
+                'insumo': novos_dados.get('insumo', dados_originais.get('INSUMO', ''))
+            }
+            
+            # Usar o método de salvamento existente
+            sucesso = self._executar_salvamento_edicao(id_lancamento, dados_para_salvar, dados_originais)
+            
+            if sucesso:
+                print(f"✅ Lançamento ID {id_lancamento} atualizado com sucesso")
+                return True
+            else:
+                print(f"❌ Falha ao atualizar lançamento ID {id_lancamento}")
+                return False
+                
+        except Exception as e:
+            import traceback
+            print(f"DEBUG: Erro ao atualizar lançamento em massa: {traceback.format_exc()}")
+            return False
+
     def excluir_lancamento(self):
         """
         Versão corrigida que usa o novo sistema de verificação após exclusão
@@ -16528,6 +18060,354 @@ class EditorLancamentoCompleto:
                 
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao salvar: {str(e)}")                
+
+class EditorEmMassaGerenciador:
+    """
+    Editor para alteração em massa de lançamentos no Gerenciador
+    Baseado no EditorEmMassa do Visualizador, mas adaptado para trabalhar
+    com dados da planilha e IDs de lançamentos
+    """
+    
+    def __init__(self, parent, dados_selecionados, indices_selecionados, callback_atualizacao):
+        self.janela = tk.Toplevel(parent)
+        self.janela.title(f"Edição em Massa - {len(indices_selecionados)} lançamentos")
+        self.janela.geometry("600x650")
+        
+        # Gerenciamento de foco
+        self._fechando = False
+        self.janela.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.janela.transient(parent)
+        self.janela.grab_set()
+        
+        self.dados_selecionados = dados_selecionados
+        self.indices_selecionados = indices_selecionados
+        self.callback_atualizacao = callback_atualizacao
+        
+        self._criar_interface()
+    
+    def _criar_interface(self):
+        """Cria a interface do editor em massa"""
+        frame = ttk.Frame(self.janela, padding="10")
+        frame.pack(fill='both', expand=True)
+        
+        # Frame de informações
+        info_frame = ttk.LabelFrame(frame, text="Informações")
+        info_frame.pack(fill='x', pady=5)
+        
+        ttk.Label(info_frame, 
+                 text=f"Você está editando {len(self.indices_selecionados)} lançamentos simultaneamente.",
+                 font=('TkDefaultFont', 9, 'bold')).pack(padx=10, pady=5)
+        ttk.Label(info_frame, 
+                 text="Marque apenas os campos que deseja alterar.",
+                 foreground='blue').pack(padx=10, pady=2)
+        ttk.Label(info_frame,
+                 text="⚠️ As alterações serão salvas diretamente na planilha!",
+                 foreground='red', font=('TkDefaultFont', 8, 'bold')).pack(padx=10, pady=2)
+        
+        # Frame de campos
+        campos_frame = ttk.LabelFrame(frame, text="Campos para Edição em Massa")
+        campos_frame.pack(fill='both', expand=True, pady=10)
+        
+        self.campos_vars = {}
+        self.campos_widgets = {}
+        
+        # Criar campos editáveis
+        self._criar_campo_checkbox(campos_frame, 0, "data_rel", "Data do Relatório:", 
+                                   DateEntry, date_pattern='dd/mm/yyyy', locale='pt_BR', width=20)
+        
+        self._criar_campo_checkbox(campos_frame, 1, "tp_desp", "Tipo de Despesa:", 
+                                   ttk.Entry, width=30)
+        
+        self._criar_campo_checkbox(campos_frame, 2, "referencia", "Referência:", 
+                                   ttk.Entry, width=30)
+        
+        self._criar_campo_checkbox(campos_frame, 3, "etapa_obra", "Etapa da Obra:", 
+                                   ttk.Entry, width=30)
+        
+        self._criar_campo_checkbox(campos_frame, 4, "insumo", "Insumo:", 
+                                   ttk.Entry, width=30)
+        
+        self._criar_campo_checkbox(campos_frame, 5, "nf", "NF:", 
+                                   ttk.Entry, width=30)
+        
+        self._criar_campo_checkbox(campos_frame, 6, "dt_vencto", "Data de Vencimento:", 
+                                   DateEntry, date_pattern='dd/mm/yyyy', locale='pt_BR', width=20)
+        
+        self._criar_campo_checkbox(campos_frame, 7, "observacao", "Observação:", 
+                                   ttk.Entry, width=30)
+        
+        # Frame de atalhos
+        atalhos_frame = ttk.Frame(campos_frame)
+        atalhos_frame.grid(row=8, column=0, columnspan=3, pady=10, sticky='ew')
+        
+        ttk.Label(atalhos_frame, text="Marcar:").pack(side='left', padx=5)
+        ttk.Button(atalhos_frame, text="✓ Todos os Campos", 
+                  command=self.marcar_todos).pack(side='left', padx=2)
+        ttk.Button(atalhos_frame, text="✗ Nenhum Campo", 
+                  command=self.desmarcar_todos).pack(side='left', padx=2)
+        
+        # Botões de ação
+        botoes_frame = ttk.Frame(frame)
+        botoes_frame.pack(fill='x', pady=10)
+        
+        ttk.Button(botoes_frame, text="💾 Aplicar Alterações", 
+                  command=self.aplicar_alteracoes).pack(side='left', padx=5)
+        ttk.Button(botoes_frame, text="❌ Cancelar", 
+                  command=self.on_close).pack(side='left', padx=5)
+        
+        ttk.Label(botoes_frame, 
+                 text="⚠️ As alterações serão salvas na planilha imediatamente",
+                 foreground='red', font=('TkDefaultFont', 8)).pack(side='right', padx=10)
+    
+    def _criar_campo_checkbox(self, parent, row, nome_campo, label, widget_class, **widget_kwargs):
+        """Cria um campo com checkbox de habilitação"""
+        var = tk.BooleanVar(value=False)
+        self.campos_vars[nome_campo] = var
+        
+        chk = ttk.Checkbutton(parent, variable=var, 
+                             command=lambda: self._toggle_campo(nome_campo))
+        chk.grid(row=row, column=0, padx=5, pady=5)
+        
+        lbl = ttk.Label(parent, text=label, state='disabled')
+        lbl.grid(row=row, column=1, sticky='w', padx=5, pady=5)
+        
+        # Criar o widget
+        if widget_class == DateEntry:
+            widget = widget_class(parent, **widget_kwargs)
+        elif widget_class == ttk.Combobox:
+            widget = widget_class(parent, **widget_kwargs)
+        else:
+            widget = widget_class(parent, **widget_kwargs)
+        
+        widget.grid(row=row, column=2, padx=5, pady=5, sticky='ew')
+        widget.config(state='disabled')
+        
+        self.campos_widgets[nome_campo] = {'label': lbl, 'widget': widget}
+        parent.columnconfigure(2, weight=1)
+    
+    def _toggle_campo(self, nome_campo):
+        """Habilita/desabilita um campo baseado no checkbox"""
+        habilitado = self.campos_vars[nome_campo].get()
+        estado = 'normal' if habilitado else 'disabled'
+        
+        self.campos_widgets[nome_campo]['label'].config(state=estado)
+        
+        widget = self.campos_widgets[nome_campo]['widget']
+        
+        # Tratamento especial para cada tipo
+        if isinstance(widget, DateEntry):
+            if habilitado:
+                widget.config(state='normal')
+                try:
+                    for child in widget.winfo_children():
+                        if isinstance(child, tk.Entry):
+                            child.config(state='normal')
+                            break
+                except:
+                    pass
+            else:
+                widget.config(state='disabled')
+        elif isinstance(widget, ttk.Combobox):
+            if habilitado:
+                widget.config(state='readonly')
+            else:
+                widget.config(state='disabled')
+        else:
+            widget.config(state=estado)
+    
+    def marcar_todos(self):
+        """Marca todos os checkboxes e habilita todos os campos"""
+        for nome_campo in self.campos_vars:
+            self.campos_vars[nome_campo].set(True)
+            self._toggle_campo(nome_campo)
+    
+    def desmarcar_todos(self):
+        """Desmarca todos os checkboxes e desabilita todos os campos"""
+        for nome_campo in self.campos_vars:
+            self.campos_vars[nome_campo].set(False)
+            self._toggle_campo(nome_campo)
+    
+    def aplicar_alteracoes(self):
+        """Aplica as alterações em todos os lançamentos selecionados"""
+        try:
+            campos_marcados = [campo for campo, var in self.campos_vars.items() if var.get()]
+            
+            if not campos_marcados:
+                custom_messagebox("warning", "⚠️ Atenção", 
+                                "Você precisa marcar pelo menos um campo para editar!")
+                return
+            
+            qtd = len(self.indices_selecionados)
+            
+            # Tradução de campos para exibição
+            traducao_campos = {
+                'data_rel': 'Data do Relatório',
+                'tp_desp': 'Tipo de Despesa',
+                'referencia': 'Referência',
+                'etapa_obra': 'Etapa da Obra',
+                'insumo': 'Insumo',
+                'nf': 'NF',
+                'dt_vencto': 'Data de Vencimento',
+                'observacao': 'Observação'
+            }
+            
+            campos_texto = "\n• ".join([traducao_campos.get(c, c) for c in campos_marcados])
+            
+            resposta = custom_messagebox("yesno", 
+                "⚠️ Confirmar Edição em Massa",
+                f"Você está prestes a alterar {qtd} lançamentos NA PLANILHA!\n\n"
+                f"Campos que serão alterados:\n• {campos_texto}\n\n"
+                f"⚠️ Esta operação será SALVA DIRETAMENTE na planilha!\n"
+                f"⚠️ As taxas de administração serão verificadas!\n\n"
+                f"Confirma a alteração?")
+            
+            if not resposta:
+                return
+            
+            # Coletar valores dos campos marcados
+            valores_alteracao = {}
+            for campo in campos_marcados:
+                widget = self.campos_widgets[campo]['widget']
+                
+                if isinstance(widget, DateEntry):
+                    valores_alteracao[campo] = widget.get()
+                elif isinstance(widget, (ttk.Entry, ttk.Combobox)):
+                    valor = widget.get()
+                    # Para campos de texto, aplicar upper
+                    if isinstance(widget, ttk.Entry) and campo not in ['data_rel', 'dt_vencto']:
+                        valor = valor.upper()
+                    valores_alteracao[campo] = valor
+            
+            # Aplicar alterações
+            alteracoes_realizadas = 0
+            erros = []
+            datas_afetadas = set()
+            
+            # Criar janela de progresso
+            progress_window = self._criar_janela_progresso("Aplicando alterações em massa...", qtd)
+            
+            try:
+                for i, (idx, dados_originais) in enumerate(zip(self.indices_selecionados, self.dados_selecionados)):
+                    try:
+                        # Atualizar progresso
+                        self._atualizar_progresso(progress_window, i + 1, 
+                                                 f"Atualizando: {dados_originais.get('nome', 'N/A')[:30]}...")
+                        
+                        # Montar dados atualizados
+                        dados_atualizados = dados_originais.copy()
+                        
+                        for campo, valor in valores_alteracao.items():
+                            if campo == 'data_rel':
+                                dados_atualizados['data'] = valor
+                                # Coletar data para verificação de taxas
+                                try:
+                                    data_obj = datetime.strptime(valor, '%d/%m/%Y').date()
+                                    datas_afetadas.add(data_obj)
+                                except:
+                                    pass
+                            else:
+                                dados_atualizados[campo] = valor
+                        
+                        # Aplicar atualização via callback
+                        if self.callback_atualizacao(idx, dados_atualizados):
+                            alteracoes_realizadas += 1
+                        else:
+                            erros.append(f"ID {dados_originais.get('id_lancamento', idx+1)}")
+                            
+                    except Exception as e:
+                        erros.append(f"ID {dados_originais.get('id_lancamento', idx+1)}: {str(e)}")
+                        continue
+                
+            finally:
+                progress_window.destroy()
+            
+            # Mensagem de resultado
+            if alteracoes_realizadas > 0:
+                mensagem = f"✅ {alteracoes_realizadas} lançamentos alterados com sucesso!"
+                
+                if erros:
+                    mensagem += f"\n\n⚠️ {len(erros)} lançamentos com erro:\n" + "\n".join(erros[:5])
+                    if len(erros) > 5:
+                        mensagem += f"\n... e mais {len(erros)-5} erros"
+                
+                if datas_afetadas and 'data_rel' in campos_marcados:
+                    mensagem += f"\n\n🔄 {len(datas_afetadas)} data(s) afetada(s)"
+                    mensagem += "\n   As taxas de administração serão verificadas."
+                
+                custom_messagebox("info", "Resultado da Edição em Massa", mensagem)
+                self.on_close()
+            else:
+                custom_messagebox("error", "Erro", 
+                                "Nenhuma alteração foi realizada.\n\n" + 
+                                "Erros:\n" + "\n".join(erros[:10]))
+                
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao aplicar alterações: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    def _criar_janela_progresso(self, titulo, total_items):
+        """Cria janela de progresso"""
+        janela_progress = tk.Toplevel(self.janela)
+        janela_progress.title(titulo)
+        janela_progress.geometry("400x120")
+        janela_progress.transient(self.janela)
+        janela_progress.grab_set()
+        
+        # Centralizar
+        janela_progress.update_idletasks()
+        x = (janela_progress.winfo_screenwidth() // 2) - (400 // 2)
+        y = (janela_progress.winfo_screenheight() // 2) - (120 // 2)
+        janela_progress.geometry(f"400x120+{x}+{y}")
+        
+        frame = ttk.Frame(janela_progress, padding="20")
+        frame.pack(fill='both', expand=True)
+        
+        label_status = ttk.Label(frame, text="Preparando...", font=('TkDefaultFont', 10))
+        label_status.pack(pady=(0, 10))
+        
+        progress_var = tk.DoubleVar()
+        progress_bar = ttk.Progressbar(frame, variable=progress_var, maximum=total_items, 
+                                    mode='determinate', length=350)
+        progress_bar.pack(pady=(0, 10))
+        
+        label_count = ttk.Label(frame, text=f"0 / {total_items}", font=('TkDefaultFont', 9))
+        label_count.pack()
+        
+        janela_progress.label_status = label_status
+        janela_progress.progress_var = progress_var
+        janela_progress.label_count = label_count
+        janela_progress.total_items = total_items
+        
+        janela_progress.update()
+        
+        return janela_progress
+    
+    def _atualizar_progresso(self, janela_progress, item_atual, mensagem=""):
+        """Atualiza a janela de progresso"""
+        try:
+            if not janela_progress:
+                return
+            
+            janela_progress.progress_var.set(item_atual)
+            
+            if mensagem:
+                janela_progress.label_status.config(text=mensagem)
+            
+            janela_progress.label_count.config(
+                text=f"{item_atual} / {janela_progress.total_items}"
+            )
+            
+            janela_progress.update_idletasks()
+            
+        except Exception as e:
+            print(f"Erro ao atualizar progresso: {str(e)}")
+    
+    def on_close(self):
+        """Fecha a janela de forma segura"""
+        self._fechando = True
+        self.janela.grab_release()
+        self.janela.destroy()
 
 class VisualizadorLancamentosFornecedor:
     def __init__(self, parent, sistema_principal):
@@ -18728,19 +20608,45 @@ class GerenciadorAgenda:
         """
         Calcula datas de DATA_REL (relatórios) para compromissos recorrentes
         Sempre retorna dias 5 e 20 de cada mês baseado na recorrência
+        
+        NOVA FUNCIONALIDADE: 
+        - Suporta mês de referência para recorrências não-mensais
+        - Suporta múltiplas ocorrências dentro do período (ex: 13º salário)
         """
+        from datetime import datetime
+        from dateutil.relativedelta import relativedelta
+        
         datas_relatorio = []
         recorrencia = compromisso.get('recorrencia', 'mensal').lower()
         
+        # NOVO: Obter mês de referência (1-12) para recorrências não-mensais
+        mes_referencia = compromisso.get('mes_referencia', None)
+        
+        # NOVO: Suporte a múltiplas ocorrências dentro do período de recorrência
+        # Exemplo: 13º salário tem 2 parcelas (novembro e dezembro)
+        meses_ocorrencias = compromisso.get('meses_ocorrencias', None)
+        
         # Começar do próximo relatório a partir de hoje
         hoje = data_inicio
-        data_atual = hoje.replace(day=1)  # Primeiro dia do mês atual
+        
+        # Para recorrências não-mensais, começar do mês de referência
+        if recorrencia in ['trimestral', 'semestral', 'anual'] and mes_referencia:
+            # Encontrar a próxima ocorrência do mês de referência
+            ano_atual = hoje.year
+            mes_ref_int = int(mes_referencia) if isinstance(mes_referencia, str) else mes_referencia
+            
+            # Se o mês de referência já passou este ano, começar no próximo ano
+            if hoje.month > mes_ref_int or (hoje.month == mes_ref_int and hoje.day > 20):
+                data_atual = datetime(ano_atual + 1, mes_ref_int, 1).date()
+            else:
+                data_atual = datetime(ano_atual, mes_ref_int, 1).date()
+        else:
+            # Para mensal, começar do mês atual
+            data_atual = hoje.replace(day=1)
         
         # Determinar qual relatório usar baseado no dia de vencimento configurado
         dia_vencimento = compromisso.get('dia_vencimento', 5)
         
-        # Se vencimento é até dia 5, usar relatório do dia 5
-        # Se vencimento é após dia 5, usar relatório do dia 20
         if dia_vencimento <= 5:
             dias_relatorio = [5]  # Apenas relatório do dia 5
         elif dia_vencimento <= 20:
@@ -18748,22 +20654,46 @@ class GerenciadorAgenda:
         else:
             dias_relatorio = [5]  # Default: relatório do dia 5 do próximo mês
         
-        meses_processados = 0
-        max_meses = 12  # Limite de segurança
+        ocorrencias_processadas = 0
+        max_ocorrencias = 24  # Limite de segurança (2 anos de mensais)
         
-        while data_atual <= data_fim and meses_processados < max_meses:
-            for dia_rel in dias_relatorio:
-                try:
-                    data_relatorio = data_atual.replace(day=dia_rel)
-                    
-                    # Só adicionar se for data futura e dentro do período
-                    if data_relatorio > hoje and data_relatorio <= data_fim:
-                        datas_relatorio.append(data_relatorio)
+        while data_atual <= data_fim and ocorrencias_processadas < max_ocorrencias:
+            # Se há meses específicos de ocorrência (ex: 13º salário em nov e dez)
+            if meses_ocorrencias:
+                for mes_ocorrencia in meses_ocorrencias:
+                    try:
+                        mes_int = int(mes_ocorrencia) if isinstance(mes_ocorrencia, str) else mes_ocorrencia
+                        # Usar o ANO da data_atual para calcular o mês correto
+                        data_ocorrencia = datetime(data_atual.year, mes_int, 1).date()
                         
-                except ValueError:
-                    continue
+                        # Só processar se estiver no período válido
+                        if data_ocorrencia > hoje and data_ocorrencia <= data_fim:
+                            for dia_rel in dias_relatorio:
+                                try:
+                                    data_relatorio = data_ocorrencia.replace(day=dia_rel)
+                                    # Evitar duplicatas
+                                    if data_relatorio > hoje and data_relatorio <= data_fim:
+                                        if data_relatorio not in datas_relatorio:
+                                            datas_relatorio.append(data_relatorio)
+                                except ValueError:
+                                    continue
+                    except (ValueError, TypeError):
+                        continue
+            else:
+                # Lógica normal para mês único
+                for dia_rel in dias_relatorio:
+                    try:
+                        data_relatorio = data_atual.replace(day=dia_rel)
+                        
+                        # Só adicionar se for data futura e dentro do período
+                        if data_relatorio > hoje and data_relatorio <= data_fim:
+                            if data_relatorio not in datas_relatorio:
+                                datas_relatorio.append(data_relatorio)
+                                
+                    except ValueError:
+                        continue
             
-            # Avançar para próximo mês baseado na recorrência
+            # Avançar para próximo período baseado na recorrência
             if recorrencia == 'mensal':
                 data_atual = data_atual + relativedelta(months=1)
             elif recorrencia == 'bimestral':
@@ -18773,13 +20703,13 @@ class GerenciadorAgenda:
             elif recorrencia == 'semestral':
                 data_atual = data_atual + relativedelta(months=6)
             elif recorrencia == 'anual':
-                data_atual = data_atual + relativedelta(months=12)
+                data_atual = data_atual + relativedelta(years=1)
             else:
                 data_atual = data_atual + relativedelta(months=1)  # Default mensal
             
-            meses_processados += 1
+            ocorrencias_processadas += 1
         
-        return sorted(datas_relatorio)
+        return sorted(list(set(datas_relatorio)))  # Remover duplicatas e ordenar
 
     def gerar_compromissos_basicos(self):
         """Fallback com compromissos básicos baseados em DATA_REL"""
@@ -20036,6 +21966,44 @@ class GerenciadorAgenda:
             campos_novo['recorrencia'].set('mensal')
             campos_novo['recorrencia'].grid(row=2, column=1, padx=5, pady=5)
             
+            # Mês de Referência (para recorrências não-mensais)
+            ttk.Label(frame_novo, text="Mês de Referência:").grid(row=7, column=0, padx=5, pady=5, sticky='w')
+            campos_novo['mes_referencia'] = ttk.Combobox(frame_novo, 
+                values=['1-Jan', '2-Fev', '3-Mar', '4-Abr', '5-Mai', '6-Jun',
+                        '7-Jul', '8-Ago', '9-Set', '10-Out', '11-Nov', '12-Dez'],
+                state='disabled', width=10)
+            campos_novo['mes_referencia'].grid(row=7, column=1, padx=5, pady=5, sticky='w')
+            
+            ttk.Label(frame_novo, text="Mês de Referência é obrigatório se habilitado.", 
+                    font=('TkDefaultFont', 8), foreground='gray').grid(
+                        row=8, column=0, columnspan=2, sticky='w', padx=5)
+            
+            # Meses de Ocorrências (para múltiplas parcelas)
+            ttk.Label(frame_novo, text="Meses de Ocorrência:").grid(row=9, column=0, padx=5, pady=5, sticky='w')
+            campos_novo['meses_ocorrencias'] = ttk.Entry(frame_novo, width=15, state='disabled')
+            campos_novo['meses_ocorrencias'].grid(row=9, column=1, padx=5, pady=5, sticky='w')
+            
+            
+            # === FUNÇÃO PARA MOSTRAR/OCULTAR CAMPOS BASEADO NA RECORRÊNCIA ===
+            
+            def on_recorrencia_change(event=None):
+                """Mostra campos adicionais apenas para recorrências não-mensais"""
+                recorrencia = campos_novo['recorrencia'].get()
+                
+                if recorrencia in ['anual', 'trimestral', 'semestral']:
+                    # Habilitar campos
+                    campos_novo['mes_referencia'].config(state='readonly')
+                    campos_novo['meses_ocorrencias'].config(state='normal')
+                else:
+                    # Desabilitar e limpar campos
+                    campos_novo['mes_referencia'].config(state='disabled')
+                    campos_novo['mes_referencia'].set('')
+                    campos_novo['meses_ocorrencias'].config(state='disabled')
+                    campos_novo['meses_ocorrencias'].delete(0, tk.END)
+            
+            # Vincular evento de mudança de recorrência
+            campos_novo['recorrencia'].bind('<<ComboboxSelected>>', on_recorrencia_change)
+
             # Categoria
             ttk.Label(frame_novo, text="Categoria:").grid(row=3, column=0, padx=5, pady=5, sticky='w')
             categorias = ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP']
@@ -20155,6 +22123,40 @@ class GerenciadorAgenda:
                     
                     observacao = campos_novo['observacao'].get().strip()
                     
+                    # === PROCESSAR NOVOS CAMPOS ===
+                    
+                    # Mês de referência
+                    mes_ref = None
+                    if recorrencia in ['anual', 'trimestral', 'semestral']:
+                        mes_ref_str = campos_novo['mes_referencia'].get()
+                        if mes_ref_str:
+                            # Extrair número do mês (ex: "11-Nov" -> 11)
+                            mes_ref = int(mes_ref_str.split('-')[0])
+                    
+                    # Meses de ocorrências
+                    meses_ocorr = None
+                    meses_ocorr_str = campos_novo['meses_ocorrencias'].get().strip()
+                    if meses_ocorr_str:
+                        try:
+                            # Converter string "11,12" em lista [11, 12]
+                            meses_ocorr = [int(m.strip()) for m in meses_ocorr_str.split(',')]
+                        except:
+                            pass
+                    
+                    # Criar compromisso com novos campos
+                    novo_compromisso = {
+                        'nome': nome,
+                        'dia_vencimento': dia,
+                        'recorrencia': recorrencia,
+                        'valor_estimado': valor,
+                        'categoria': categoria,
+                        'tipo_despesa': tipo_despesa,
+                        'ativo': True,
+                        'observacao': observacao,
+                        'mes_referencia': mes_ref,  # NOVO
+                        'meses_ocorrencias': meses_ocorr  # NOVO
+                    }
+                    
                     # Salvar na configuração
                     from src.configuracoes_sistema import GerenciadorConfiguracoes
                     config = GerenciadorConfiguracoes.carregar_configuracoes()
@@ -20166,19 +22168,7 @@ class GerenciadorAgenda:
                     if any(c['nome'] == nome for c in config['compromissos_recorrentes']['lista']):
                         custom_messagebox("error", "Erro", "Já existe um compromisso com este nome!")
                         return
-                    
-                    # Adicionar compromisso
-                    novo_compromisso = {
-                        'nome': nome,
-                        'dia_vencimento': dia,
-                        'recorrencia': recorrencia,
-                        'valor_estimado': valor,
-                        'categoria': categoria,
-                        'tipo_despesa': tipo_despesa,
-                        'ativo': True,
-                        'observacao': observacao
-                    }
-                    
+                                      
                     config['compromissos_recorrentes']['lista'].append(novo_compromisso)
                     
                     # Salvar configuração
@@ -20331,7 +22321,7 @@ class GerenciadorAgenda:
             
             # Botões para novo compromisso
             ttk.Button(frame_novo, text="Adicionar Compromisso",
-                    command=adicionar_compromisso).grid(row=7, column=0, columnspan=2, pady=10)
+                    command=adicionar_compromisso).grid(row=10, column=0, columnspan=2, pady=10)
             
             # Botões para edição
             frame_botoes_edicao = ttk.Frame(frame_editar)
