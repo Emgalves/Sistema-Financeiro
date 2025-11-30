@@ -6697,3 +6697,134 @@
 2025-11-27 17:04:30,715 - INFO - Sistema iniciado em modo: TESTE
 2025-11-27 17:04:32,148 - INFO - Abrindo gestão de medições
 2025-11-27 18:02:05,288 - INFO - Sistema encerrado pelo usuário
+2025-11-27 18:44:57,303 - INFO - Configurações importadas com sucesso via src.config
+2025-11-27 18:44:57,332 - INFO - Configurações importadas com sucesso
+2025-11-27 18:44:57,333 - INFO - Configurações do sistema importadas com sucesso
+2025-11-27 18:44:58,697 - INFO - Sistema iniciado em modo: TESTE
+2025-11-27 18:45:00,189 - INFO - Abrindo gestão de medições
+2025-11-27 19:08:05,381 - INFO - Sistema encerrado pelo usuário
+2025-11-28 09:11:58,142 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 09:11:58,161 - INFO - Configurações importadas com sucesso
+2025-11-28 09:11:58,161 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 09:11:59,438 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 09:12:01,847 - INFO - Abrindo gestão de medições
+2025-11-28 09:12:36,556 - INFO - Sistema encerrado pelo usuário
+2025-11-28 12:01:41,263 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 12:01:41,280 - INFO - Configurações importadas com sucesso
+2025-11-28 12:01:41,281 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 12:01:41,861 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 12:01:45,340 - INFO - Abrindo configurações do sistema
+2025-11-28 12:01:45,444 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'toggle_status_compromisso'
+2025-11-28 12:06:12,744 - INFO - Sistema encerrado pelo usuário
+2025-11-28 12:06:26,781 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 12:06:26,863 - INFO - Configurações importadas com sucesso
+2025-11-28 12:06:26,864 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 12:06:27,289 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 12:06:29,225 - INFO - Abrindo configurações do sistema
+2025-11-28 12:06:29,297 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'remover_compromisso'
+2025-11-28 12:07:31,760 - INFO - Sistema encerrado pelo usuário
+2025-11-28 12:07:53,004 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 12:07:53,091 - INFO - Configurações importadas com sucesso
+2025-11-28 12:07:53,093 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 12:07:53,647 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 12:07:55,032 - INFO - Abrindo configurações do sistema
+2025-11-28 12:18:24,130 - INFO - Abrindo configurações do sistema
+2025-11-28 12:21:35,832 - INFO - Abrindo configurações do sistema
+2025-11-28 12:21:41,126 - INFO - Sistema encerrado pelo usuário
+2025-11-28 12:21:50,031 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 12:21:50,117 - INFO - Configurações importadas com sucesso
+2025-11-28 12:21:50,118 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 12:21:50,618 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 12:21:51,903 - INFO - Abrindo configurações do sistema
+2025-11-28 12:22:00,710 - INFO - Sistema encerrado pelo usuário
+2025-11-28 12:22:20,131 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 12:22:20,233 - INFO - Configurações importadas com sucesso
+2025-11-28 12:22:20,234 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 12:22:20,643 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 12:22:22,103 - INFO - Abrindo configurações do sistema
+2025-11-28 12:22:40,837 - INFO - Sistema encerrado pelo usuário
+2025-11-28 12:23:37,157 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 12:23:37,232 - INFO - Configurações importadas com sucesso
+2025-11-28 12:23:37,233 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 12:23:37,500 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 12:23:55,294 - INFO - Abrindo configurações do sistema
+2025-11-28 12:24:28,614 - INFO - Abrindo configurações do sistema
+2025-11-28 13:17:30,997 - INFO - Sistema encerrado pelo usuário
+2025-11-28 13:26:57,917 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 13:26:57,931 - INFO - Configurações importadas com sucesso
+2025-11-28 13:26:57,932 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 13:26:58,439 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 13:26:59,902 - INFO - Abrindo configurações do sistema
+2025-11-28 13:27:00,375 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'toggle_status_compromisso'
+2025-11-28 13:28:13,998 - INFO - Sistema encerrado pelo usuário
+2025-11-28 13:28:24,575 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 13:28:24,653 - INFO - Configurações importadas com sucesso
+2025-11-28 13:28:24,654 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 13:28:25,101 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 13:28:26,598 - INFO - Abrindo configurações do sistema
+2025-11-28 13:28:27,011 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'remover_compromisso'
+2025-11-28 13:29:32,309 - INFO - Sistema encerrado pelo usuário
+2025-11-28 13:29:41,348 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 13:29:41,428 - INFO - Configurações importadas com sucesso
+2025-11-28 13:29:41,429 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 13:29:41,897 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 13:29:43,309 - INFO - Abrindo configurações do sistema
+2025-11-28 13:30:21,715 - INFO - Sistema encerrado pelo usuário
+2025-11-28 13:37:40,106 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 13:37:40,188 - INFO - Configurações importadas com sucesso
+2025-11-28 13:37:40,189 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 13:37:40,819 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 13:37:42,296 - INFO - Abrindo configurações do sistema
+2025-11-28 13:45:25,608 - INFO - Abrindo configurações do sistema
+2025-11-28 13:47:15,625 - INFO - Abrindo configurações do sistema
+2025-11-28 13:47:28,416 - INFO - Sistema encerrado pelo usuário
+2025-11-28 13:48:04,584 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 13:48:04,600 - INFO - Configurações importadas com sucesso
+2025-11-28 13:48:04,601 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 13:48:05,145 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 13:48:07,649 - INFO - Abrindo configurações do sistema
+2025-11-28 13:53:01,086 - INFO - Abrindo configurações do sistema
+2025-11-28 13:54:40,989 - INFO - Abrindo sistema de entrada de dados
+2025-11-28 13:56:10,428 - INFO - Abrindo configurações do sistema
+2025-11-28 13:56:34,204 - INFO - Sistema encerrado pelo usuário
+2025-11-28 15:13:05,155 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 15:13:05,237 - INFO - Configurações importadas com sucesso
+2025-11-28 15:13:05,237 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 15:13:05,876 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 15:13:07,572 - INFO - Abrindo configurações do sistema
+2025-11-28 15:13:25,484 - INFO - Abrindo sistema de entrada de dados
+2025-11-28 15:41:12,811 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 15:41:12,826 - INFO - Configurações importadas com sucesso
+2025-11-28 15:41:12,827 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 15:41:13,527 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 15:41:15,058 - INFO - Abrindo configurações do sistema
+2025-11-28 15:42:38,214 - INFO - Sistema encerrado pelo usuário
+2025-11-28 15:42:47,010 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 15:42:47,091 - INFO - Configurações importadas com sucesso
+2025-11-28 15:42:47,092 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 15:42:47,724 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 15:43:03,865 - INFO - Abrindo configurações do sistema
+2025-11-28 15:44:06,343 - INFO - Sistema encerrado pelo usuário
+2025-11-28 15:44:14,698 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 15:44:14,782 - INFO - Configurações importadas com sucesso
+2025-11-28 15:44:14,783 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 15:44:15,244 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 15:44:21,808 - INFO - Abrindo configurações do sistema
+2025-11-28 15:44:40,183 - INFO - Sistema encerrado pelo usuário
+2025-11-28 15:45:22,154 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 15:45:22,232 - INFO - Configurações importadas com sucesso
+2025-11-28 15:45:22,232 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 15:45:22,785 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 15:45:23,999 - INFO - Abrindo configurações do sistema
+2025-11-28 15:45:43,767 - INFO - Sistema encerrado pelo usuário
+2025-11-28 15:46:44,243 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 15:46:44,327 - INFO - Configurações importadas com sucesso
+2025-11-28 15:46:44,328 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 15:46:44,791 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 15:46:46,031 - INFO - Abrindo configurações do sistema
+2025-11-28 15:47:10,125 - INFO - Sistema encerrado pelo usuário
+2025-11-28 17:18:26,928 - INFO - Configurações importadas com sucesso via src.config
+2025-11-28 17:18:26,944 - INFO - Configurações importadas com sucesso
+2025-11-28 17:18:26,945 - INFO - Configurações do sistema importadas com sucesso
+2025-11-28 17:18:27,524 - INFO - Sistema iniciado em modo: TESTE
+2025-11-28 17:18:34,525 - INFO - Abrindo sistema de entrada de dados
