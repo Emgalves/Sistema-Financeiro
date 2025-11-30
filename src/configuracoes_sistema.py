@@ -281,7 +281,7 @@ class GerenciadorConfiguracoes:
     def __init__(self, parent=None):
         self.root = tk.Toplevel(parent) if parent else tk.Tk()
         self.root.title("Configurações do Sistema")
-        self.root.geometry("920x600")
+        self.root.geometry("920x850")
         
         # Usar o caminho da variável de classe 
         self.config_path = GerenciadorConfiguracoes.CONFIG_PATH
@@ -880,267 +880,695 @@ class GerenciadorConfiguracoes:
             return config['compromissos_recorrentes']['lista']
         return []
 
+    # ==============================================================================
+    # MODIFICAÇÃO 1: Atualizar setup_aba_compromissos_recorrentes
+    # ==============================================================================
+
     def setup_aba_compromissos_recorrentes(self):
-        """Configura a aba de compromissos recorrentes da agenda"""
-        frame_compromissos = ttk.Frame(self.notebook)
-        self.notebook.add(frame_compromissos, text='Agenda - Compromissos')
+        """
+        Configura a aba de compromissos recorrentes
+        VERSÃO CORRIGIDA: Campos em layout vertical
+        """
+        import tkinter as tk
+        from tkinter import ttk
         
-        # Frame principal dividido em duas seções
-        main_frame = ttk.Frame(frame_compromissos)
-        main_frame.pack(fill='both', expand=True, padx=5, pady=5)
+        # Frame principal da aba
+        frame_principal = ttk.Frame(self.notebook)
+        self.notebook.add(frame_principal, text='Agenda - Compromissos')
         
-        # === SEÇÃO ESQUERDA: LISTA DE COMPROMISSOS ===
-        frame_esquerda = ttk.Frame(main_frame)
-        frame_esquerda.pack(side='left', fill='both', expand=True, padx=(0, 5))
+        # Dividir em duas seções
+        paned = ttk.PanedWindow(frame_principal, orient='horizontal')
+        paned.pack(fill='both', expand=True, padx=10, pady=10)
         
-        # Lista de compromissos
-        frame_lista = ttk.LabelFrame(frame_esquerda, text="Compromissos Recorrentes Cadastrados")
-        frame_lista.pack(fill='both', expand=True)
+        # ========================================================================
+        # SEÇÃO ESQUERDA: Lista de compromissos cadastrados
+        # ========================================================================
         
-        # Treeview para exibir compromissos
-        colunas = ('Nome', 'Dia', 'Recorrência', 'Categoria', 'Valor Est.', 'Status')
-        self.tree_compromissos = ttk.Treeview(frame_lista, columns=colunas, show='headings', height=15)
+        frame_esquerda = ttk.Frame(paned)
+        paned.add(frame_esquerda, weight=2)
         
-        # Configurar cabeçalhos
+        ttk.Label(frame_esquerda, text="Compromissos Recorrentes Cadastrados", 
+                font=('TkDefaultFont', 11, 'bold')).pack(pady=(0, 10))
+        
+        frame_tree = ttk.Frame(frame_esquerda)
+        frame_tree.pack(fill='both', expand=True)
+        
+        colunas = ('Nome', 'Dia Venc.', 'Recorrência', 'Categoria', 'Valor Est.', 'Status')
+        self.tree_compromissos = ttk.Treeview(frame_tree, columns=colunas, show='headings', height=20)
+        
         self.tree_compromissos.heading('Nome', text='Nome')
-        self.tree_compromissos.heading('Dia', text='Dia Venc.')
+        self.tree_compromissos.heading('Dia Venc.', text='Dia Venc.')
         self.tree_compromissos.heading('Recorrência', text='Recorrência')
         self.tree_compromissos.heading('Categoria', text='Categoria')
         self.tree_compromissos.heading('Valor Est.', text='Valor Est.')
         self.tree_compromissos.heading('Status', text='Status')
         
-        # Configurar larguras
-        self.tree_compromissos.column('Nome', width=150)
-        self.tree_compromissos.column('Dia', width=60, anchor='center')
-        self.tree_compromissos.column('Recorrência', width=80, anchor='center')
-        self.tree_compromissos.column('Categoria', width=100)
-        self.tree_compromissos.column('Valor Est.', width=80, anchor='e')
-        self.tree_compromissos.column('Status', width=60, anchor='center')
+        self.tree_compromissos.column('Nome', width=180)
+        self.tree_compromissos.column('Dia Venc.', width=70, anchor='center')
+        self.tree_compromissos.column('Recorrência', width=120, anchor='center')
+        self.tree_compromissos.column('Categoria', width=80, anchor='center')
+        self.tree_compromissos.column('Valor Est.', width=100, anchor='e')
+        self.tree_compromissos.column('Status', width=80, anchor='center')
         
-        # Scrollbar
-        scrollbar_comp = ttk.Scrollbar(frame_lista, orient='vertical', command=self.tree_compromissos.yview)
-        self.tree_compromissos.configure(yscrollcommand=scrollbar_comp.set)
+        scrollbar = ttk.Scrollbar(frame_tree, orient='vertical', command=self.tree_compromissos.yview)
+        self.tree_compromissos.configure(yscrollcommand=scrollbar.set)
         
-        self.tree_compromissos.pack(side='left', fill='both', expand=True, padx=5, pady=5)
-        scrollbar_comp.pack(side='right', fill='y', pady=5)
+        self.tree_compromissos.pack(side='left', fill='both', expand=True)
+        scrollbar.pack(side='right', fill='y')
         
-        # Bind para seleção
-        self.tree_compromissos.bind('<<TreeviewSelect>>', self.on_compromisso_select)
+        self.tree_compromissos.tag_configure('ativo', background='#e8f5e8')
+        self.tree_compromissos.tag_configure('inativo', background='#ffe4e1')
         
-        # === SEÇÃO DIREITA: EDIÇÃO ===
-        frame_direita = ttk.Frame(main_frame)
-        frame_direita.pack(side='right', fill='y', padx=(5, 0))
+        self.tree_compromissos.bind('<<TreeviewSelect>>', self.on_select_compromisso)
         
-        # Frame para novo compromisso
-        frame_novo_comp = ttk.LabelFrame(frame_direita, text="Novo Compromisso")
-        frame_novo_comp.pack(fill='x', pady=(0, 10))
+        # ========================================================================
+        # SEÇÃO DIREITA: Formulários
+        # ========================================================================
         
-        # Campos do novo compromisso
-        ttk.Label(frame_novo_comp, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
-        self.entry_novo_comp_nome = ttk.Entry(frame_novo_comp, width=25)
-        self.entry_novo_comp_nome.grid(row=0, column=1, padx=5, pady=5)
+        frame_direita = ttk.Frame(paned)
+        paned.add(frame_direita, weight=1)
         
-        ttk.Label(frame_novo_comp, text="Dia Vencimento:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
-        self.entry_novo_comp_dia = ttk.Spinbox(frame_novo_comp, from_=1, to=31, width=5)
-        self.entry_novo_comp_dia.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        # -----------------------------------------------------------------------
+        # FORMULÁRIO: NOVO COMPROMISSO
+        # -----------------------------------------------------------------------
         
-        ttk.Label(frame_novo_comp, text="Recorrência:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
-        self.combo_novo_comp_rec = ttk.Combobox(frame_novo_comp, values=['mensal', 'trimestral', 'semestral', 'anual'], 
-                                            state='readonly', width=22)
-        self.combo_novo_comp_rec.set('mensal')
-        self.combo_novo_comp_rec.grid(row=2, column=1, padx=5, pady=5)
+        frame_novo = ttk.LabelFrame(frame_direita, text="Novo Compromisso", padding="10")
+        frame_novo.pack(fill='x', pady=(0, 15))
         
-        ttk.Label(frame_novo_comp, text="Categoria:").grid(row=3, column=0, padx=5, pady=5, sticky='w')
-        self.combo_novo_comp_cat = ttk.Combobox(frame_novo_comp, 
-                                            values=['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
-                                            state='readonly', width=22)
-        self.combo_novo_comp_cat.set('')
-        self.combo_novo_comp_cat.grid(row=3, column=1, padx=5, pady=5)
+        self.campos_novo = {}
         
-        ttk.Label(frame_novo_comp, text="Tipo Despesa:").grid(row=4, column=0, padx=5, pady=5, sticky='w')
-        self.combo_novo_comp_tipo = ttk.Combobox(frame_novo_comp, values=['2', '3', '5', '6', '7'], 
-                                                state='readonly', width=5)
-        self.combo_novo_comp_tipo.set('3')
-        self.combo_novo_comp_tipo.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        row = 0
         
-        ttk.Label(frame_novo_comp, text="Valor Est. (R$):").grid(row=5, column=0, padx=5, pady=5, sticky='w')
-        self.entry_novo_comp_valor = ttk.Entry(frame_novo_comp, width=15)
-        self.entry_novo_comp_valor.insert(0, "0,00")
-        self.entry_novo_comp_valor.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        # Nome
+        ttk.Label(frame_novo, text="Nome:").grid(row=row, column=0, padx=5, pady=5, sticky='w')
+        self.campos_novo['nome'] = ttk.Entry(frame_novo, width=25)
+        self.campos_novo['nome'].grid(row=row, column=1, columnspan=2, padx=5, pady=5, sticky='ew')
+        row += 1
         
-        ttk.Label(frame_novo_comp, text="Observação:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
-        self.entry_novo_comp_obs = ttk.Entry(frame_novo_comp, width=25)
-        self.entry_novo_comp_obs.grid(row=6, column=1, padx=5, pady=5)
+        # Dia de vencimento
+        ttk.Label(frame_novo, text="Dia Vencimento:").grid(row=row, column=0, padx=5, pady=5, sticky='w')
+        self.campos_novo['dia_vencimento'] = ttk.Spinbox(frame_novo, from_=1, to=31, width=10)
+        self.campos_novo['dia_vencimento'].set('5')
+        self.campos_novo['dia_vencimento'].grid(row=row, column=1, padx=5, pady=5, sticky='w')
+        row += 1
         
-        ttk.Button(frame_novo_comp, text="Adicionar Compromisso",
-                command=self.adicionar_compromisso_recorrente).grid(row=7, column=0, columnspan=2, pady=10)
+        # Recorrência
+        ttk.Label(frame_novo, text="Recorrência:").grid(row=row, column=0, padx=5, pady=5, sticky='w')
+        self.campos_novo['recorrencia'] = ttk.Combobox(frame_novo, 
+                                                    values=['mensal', 'bimestral', 'trimestral', 
+                                                            'semestral', 'anual'],
+                                                    state='readonly', width=22)
+        self.campos_novo['recorrencia'].set('mensal')
+        self.campos_novo['recorrencia'].grid(row=row, column=1, columnspan=2, padx=5, pady=5, sticky='ew')
+        row += 1
         
-        # Frame para editar compromisso selecionado
-        frame_editar_comp = ttk.LabelFrame(frame_direita, text="Editar Compromisso")
-        frame_editar_comp.pack(fill='x', pady=(0, 10))
+        # ========================================================================
+        # SEPARADOR ANTES DOS CAMPOS NOVOS
+        # ========================================================================
         
-        # Campos de edição (similares aos de criação)
-        ttk.Label(frame_editar_comp, text="Nome:").grid(row=0, column=0, padx=5, pady=3, sticky='w')
-        self.entry_edit_comp_nome = ttk.Entry(frame_editar_comp, width=25)
-        self.entry_edit_comp_nome.grid(row=0, column=1, padx=5, pady=3)
+        ttk.Separator(frame_novo, orient='horizontal').grid(
+            row=row, column=0, columnspan=3, sticky='ew', pady=10
+        )
+        row += 1
         
-        ttk.Label(frame_editar_comp, text="Dia Vencimento:").grid(row=1, column=0, padx=5, pady=3, sticky='w')
-        self.entry_edit_comp_dia = ttk.Spinbox(frame_editar_comp, from_=1, to=31, width=5)
-        self.entry_edit_comp_dia.grid(row=1, column=1, padx=5, pady=3, sticky='w')
+        # Label indicativo (será atualizado dinamicamente)
+        self.label_info_recorrencia = ttk.Label(frame_novo, 
+                            text="📅 Para recorrências não-mensais:", 
+                            font=('TkDefaultFont', 9, 'italic'), 
+                            foreground='#666666')
+        self.label_info_recorrencia.grid(row=row, column=0, columnspan=3, sticky='w', padx=5, pady=(0, 5))
+        row += 1
         
-        ttk.Label(frame_editar_comp, text="Valor Est. (R$):").grid(row=2, column=0, padx=5, pady=3, sticky='w')
-        self.entry_edit_comp_valor = ttk.Entry(frame_editar_comp, width=15)
-        self.entry_edit_comp_valor.grid(row=2, column=1, padx=5, pady=3, sticky='w')
+        # ========================================================================
+        # MÊS DE REFERÊNCIA - LINHA COMPLETA
+        # ========================================================================
         
-        # Frame para botões de ação
-        frame_acoes_comp = ttk.Frame(frame_editar_comp)
-        frame_acoes_comp.grid(row=3, column=0, columnspan=2, pady=10)
+        ttk.Label(frame_novo, text="Mês de Referência:").grid(
+            row=row, column=0, padx=5, pady=5, sticky='w'
+        )
         
-        ttk.Button(frame_acoes_comp, text="Salvar Alterações",
-                command=self.salvar_compromisso_recorrente).pack(side='left', padx=5)
-        ttk.Button(frame_acoes_comp, text="Ativar/Desativar",
-                command=self.toggle_compromisso_status).pack(side='left', padx=5)
-        ttk.Button(frame_acoes_comp, text="Remover",
-                command=self.remover_compromisso_recorrente).pack(side='left', padx=5)
+        self.campos_novo['mes_referencia'] = ttk.Combobox(frame_novo,
+            values=['', '1-Jan', '2-Fev', '3-Mar', '4-Abr', '5-Mai', '6-Jun',
+                    '7-Jul', '8-Ago', '9-Set', '10-Out', '11-Nov', '12-Dez'],
+            state='disabled', width=22)
+        self.campos_novo['mes_referencia'].grid(
+            row=row, column=1, columnspan=2, padx=5, pady=5, sticky='ew'
+        )
+        row += 1
         
-        # Carregar dados
-        self.atualizar_lista_compromissos_recorrentes()
+        # Tooltip mês de referência
+        label_help_mes = ttk.Label(frame_novo, 
+                            text="Mês da recorrência - Obrigatório se habilitado.",
+                            font=('TkDefaultFont', 8), 
+                            foreground='gray',
+                            cursor='hand2')
+        label_help_mes.grid(row=row, column=0, columnspan=3, sticky='w', padx=20, pady=(0, 5))
+        
+        def show_help_mes_ref(event):
+            from tkinter import messagebox
+            messagebox.showinfo("Ajuda - Mês de Referência",
+                "Define quando começa a recorrência.\n\n"
+                "Exemplos:\n"
+                "• 13º Salário: 11-Nov (começa em novembro)\n"
+                "• IPTU: 1-Jan (vence em janeiro)\n"
+                "• Seguro: 3-Mar (renova em março)\n"
+                "• Trimestral: 1-Jan (jan, abr, jul, out)")
+        
+        label_help_mes.bind('<Button-1>', show_help_mes_ref)
+        row += 1
+        
+        # ========================================================================
+        # MESES DE OCORRÊNCIA - LINHA COMPLETA
+        # ========================================================================
+        
+        ttk.Label(frame_novo, text="Meses de Ocorrência:").grid(
+            row=row, column=0, padx=5, pady=5, sticky='w'
+        )
+        
+        self.campos_novo['meses_ocorrencias'] = ttk.Entry(frame_novo, width=25, state='disabled')
+        self.campos_novo['meses_ocorrencias'].grid(
+            row=row, column=1, columnspan=2, padx=5, pady=5, sticky='ew'
+        )
+        row += 1
+        
+        # Tooltip meses de ocorrência
+        label_help_meses = ttk.Label(frame_novo,
+                            text="Indicar os meses da recorrência. Ex. 6,12",
+                            font=('TkDefaultFont', 8),
+                            foreground='gray',
+                            cursor='hand2')
+        label_help_meses.grid(row=row, column=0, columnspan=3, sticky='w', padx=20, pady=(0, 10))
+        
+        def show_help_meses_ocorr(event):
+            from tkinter import messagebox
+            messagebox.showinfo("Ajuda - Meses de Ocorrência",
+                "Opcional. Use para múltiplas ocorrências no mesmo período.\n\n"
+                "Formato: números dos meses separados por vírgula\n\n"
+                "Exemplos:\n"
+                "• 13º Salário: 11,12 (novembro e dezembro)\n"
+                "• Seguro (2 parcelas): 3,9 (março e setembro)\n"
+                "• IPTU (única parcela): deixe vazio\n"
+                "• Trimestral: deixe vazio (calcula automaticamente)")
+        
+        label_help_meses.bind('<Button-1>', show_help_meses_ocorr)
+        row += 1
+        
+        # ========================================================================
+        # SEPARADOR ANTES DOS CAMPOS BÁSICOS
+        # ========================================================================
+        
+        ttk.Separator(frame_novo, orient='horizontal').grid(
+            row=row, column=0, columnspan=3, sticky='ew', pady=10
+        )
+        row += 1
+        
+        # ========================================================================
+        # CAMPOS BÁSICOS (CATEGORIA, TIPO, VALOR, OBSERVAÇÃO)
+        # ========================================================================
+        
+        # Categoria
+        ttk.Label(frame_novo, text="Categoria:").grid(row=row, column=0, padx=5, pady=5, sticky='w')
+        self.campos_novo['categoria'] = ttk.Combobox(frame_novo, 
+                                                    values=['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP'],
+                                                    state='readonly', width=22)
+        self.campos_novo['categoria'].set('MO')
+        self.campos_novo['categoria'].grid(row=row, column=1, columnspan=2, padx=5, pady=5, sticky='ew')
+        row += 1
+        
+        # Tipo de despesa
+        ttk.Label(frame_novo, text="Tipo Despesa:").grid(row=row, column=0, padx=5, pady=5, sticky='w')
+        self.campos_novo['tipo_despesa'] = ttk.Combobox(frame_novo, 
+                                                        values=['2', '3', '5', '6', '7'],
+                                                        state='readonly', width=10)
+        self.campos_novo['tipo_despesa'].set('3')
+        self.campos_novo['tipo_despesa'].grid(row=row, column=1, padx=5, pady=5, sticky='w')
+        row += 1
+        
+        # Valor estimado
+        ttk.Label(frame_novo, text="Valor Estimado (R$):").grid(row=row, column=0, padx=5, pady=5, sticky='w')
+        self.campos_novo['valor_estimado'] = ttk.Entry(frame_novo, width=15)
+        self.campos_novo['valor_estimado'].insert(0, "0,00")
+        self.campos_novo['valor_estimado'].grid(row=row, column=1, padx=5, pady=5, sticky='w')
+        row += 1
+        
+        # Observação
+        ttk.Label(frame_novo, text="Observação:").grid(row=row, column=0, padx=5, pady=5, sticky='w')
+        self.campos_novo['observacao'] = ttk.Entry(frame_novo, width=25)
+        self.campos_novo['observacao'].grid(row=row, column=1, columnspan=2, padx=5, pady=5, sticky='ew')
+        row += 1
+        
+        # ========================================================================
+        # BOTÃO ADICIONAR - APÓS TODOS OS CAMPOS
+        # ========================================================================
+        
+        ttk.Button(frame_novo, text="Adicionar Compromisso", 
+                command=self.adicionar_compromisso_recorrente).grid(
+                    row=row, column=0, columnspan=3, pady=15
+                )
+        
+        # ========================================================================
+        # EVENTO: Mostrar/ocultar campos baseado na recorrência
+        # ========================================================================
+        
+        def on_recorrencia_change(event=None):
+            """Mostra campos adicionais apenas para recorrências não-mensais"""
+            recorrencia = self.campos_novo['recorrencia'].get()
+            
+            if recorrencia in ['anual', 'trimestral', 'semestral', 'bimestral']:
+                # Habilitar campos
+                self.campos_novo['mes_referencia'].config(state='readonly')
+                self.campos_novo['meses_ocorrencias'].config(state='normal')
+                
+                # Destacar visualmente
+                self.label_info_recorrencia.config(
+                    text="📅 Configure quando ocorrerá:",
+                    foreground='#0066cc', 
+                    font=('TkDefaultFont', 9, 'bold')
+                )
+            else:
+                # Desabilitar e limpar campos
+                self.campos_novo['mes_referencia'].config(state='disabled')
+                self.campos_novo['mes_referencia'].set('')
+                self.campos_novo['meses_ocorrencias'].config(state='disabled')
+                self.campos_novo['meses_ocorrencias'].delete(0, tk.END)
+                
+                # Voltar estilo normal
+                self.label_info_recorrencia.config(
+                    text="📅 Para recorrências não-mensais:",
+                    foreground='#666666', 
+                    font=('TkDefaultFont', 9, 'italic')
+                )
+        
+        # Vincular evento
+        self.campos_novo['recorrencia'].bind('<<ComboboxSelected>>', on_recorrencia_change)
+        
+        # -----------------------------------------------------------------------
+        # FORMULÁRIO: EDITAR COMPROMISSO (Similar ao novo, mas simplificado)
+        # -----------------------------------------------------------------------
+        
+        frame_editar = ttk.LabelFrame(frame_direita, text="Editar Compromisso Selecionado", padding="10")
+        frame_editar.pack(fill='x', pady=(0, 10))
+        
+        self.campos_editar = {}
+        
+        row_edit = 0
+        
+        ttk.Label(frame_editar, text="Nome:").grid(row=row_edit, column=0, padx=5, pady=3, sticky='w')
+        self.campos_editar['nome'] = ttk.Entry(frame_editar, width=25)
+        self.campos_editar['nome'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='ew')
+        row_edit += 1
+        
+        ttk.Label(frame_editar, text="Dia Venc.:").grid(row=row_edit, column=0, padx=5, pady=3, sticky='w')
+        self.campos_editar['dia_vencimento'] = ttk.Spinbox(frame_editar, from_=1, to=31, width=10)
+        self.campos_editar['dia_vencimento'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='w')
+        row_edit += 1
+        
+        ttk.Label(frame_editar, text="Recorrência:").grid(row=row_edit, column=0, padx=5, pady=3, sticky='w')
+        self.campos_editar['recorrencia'] = ttk.Combobox(frame_editar,
+                                                        values=['mensal', 'bimestral', 'trimestral',
+                                                                'semestral', 'anual'],
+                                                        state='readonly', width=22)
+        self.campos_editar['recorrencia'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='ew')
+        row_edit += 1
+        
+        # Campos novos de edição
+        ttk.Label(frame_editar, text="Mês Ref.:").grid(row=row_edit, column=0, padx=5, pady=3, sticky='w')
+        self.campos_editar['mes_referencia'] = ttk.Combobox(frame_editar,
+            values=['', '1-Jan', '2-Fev', '3-Mar', '4-Abr', '5-Mai', '6-Jun',
+                    '7-Jul', '8-Ago', '9-Set', '10-Out', '11-Nov', '12-Dez'],
+            state='readonly', width=10)
+        self.campos_editar['mes_referencia'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='w')
+        row_edit += 1
+        
+        ttk.Label(frame_editar, text="Meses Ocorr.:").grid(row=row_edit, column=0, padx=5, pady=3, sticky='w')
+        self.campos_editar['meses_ocorrencias'] = ttk.Entry(frame_editar, width=15)
+        self.campos_editar['meses_ocorrencias'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='w')
+        row_edit += 1
+        
+        ttk.Label(frame_editar, text="Valor (R$):").grid(row=row_edit, column=0, padx=5, pady=3, sticky='w')
+        self.campos_editar['valor_estimado'] = ttk.Entry(frame_editar, width=15)
+        self.campos_editar['valor_estimado'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='w')
+        row_edit += 1
+        
+        # Botões de ação
+        frame_botoes_edit = ttk.Frame(frame_editar)
+        frame_botoes_edit.grid(row=row_edit, column=0, columnspan=2, pady=10)
+        
+        ttk.Button(frame_botoes_edit, text="Salvar", 
+                command=self.salvar_alteracoes_compromisso).pack(side='left', padx=2)
+        ttk.Button(frame_botoes_edit, text="Ativar/Desativar", 
+                command=self.toggle_compromisso_status).pack(side='left', padx=2)
+        ttk.Button(frame_botoes_edit, text="Remover", 
+                command=self.remover_compromisso_recorrente).pack(side='left', padx=2)
+        
+        # Configurar expansão de colunas
+        frame_novo.columnconfigure(1, weight=1)
+        frame_editar.columnconfigure(1, weight=1)
+        
+        # Carregar dados iniciais
+        self.carregar_compromissos_tree()
 
-    # 5. IMPLEMENTAR MÉTODOS DE GESTÃO
+
+    # ==============================================================================
+    # MODIFICAÇÃO 2: Atualizar adicionar_compromisso_recorrente
+    # ==============================================================================
 
     def adicionar_compromisso_recorrente(self):
-        """Adiciona um novo compromisso recorrente"""
+        """
+        Adiciona novo compromisso recorrente com suporte a mês de referência
+        e múltiplas ocorrências
+        """
+        from tkinter import messagebox
+        import json
+        
         try:
-            nome = self.entry_novo_comp_nome.get().strip().upper()
+            # Validações básicas
+            nome = self.campos_novo['nome'].get().strip().upper()
             if not nome:
                 messagebox.showerror("Erro", "Nome é obrigatório!")
                 return
             
-            # Verificar se já existe
-            if any(c['nome'] == nome for c in self.config['compromissos_recorrentes']['lista']):
-                messagebox.showerror("Erro", "Já existe um compromisso com este nome!")
+            # Coletar dados básicos
+            dia_vencimento = int(self.campos_novo['dia_vencimento'].get())
+            recorrencia = self.campos_novo['recorrencia'].get()
+            categoria = self.campos_novo['categoria'].get()
+            tipo_despesa = int(self.campos_novo['tipo_despesa'].get())
+            observacao = self.campos_novo['observacao'].get().strip()
+            
+            # Processar valor
+            valor_str = self.campos_novo['valor_estimado'].get().replace(',', '.')
+            try:
+                valor_estimado = float(valor_str) if valor_str else 0.0
+            except ValueError:
+                messagebox.showerror("Erro", "Valor inválido!")
                 return
             
-            dia = int(self.entry_novo_comp_dia.get())
-            recorrencia = self.combo_novo_comp_rec.get()
-            categoria = self.combo_novo_comp_cat.get()
-            tipo_despesa = int(self.combo_novo_comp_tipo.get())
+            # ========================================================================
+            # PROCESSAR NOVOS CAMPOS
+            # ========================================================================
             
-            valor_str = self.entry_novo_comp_valor.get().replace(',', '.')
-            valor_estimado = float(valor_str) if valor_str else 0.0
+            # Mês de referência
+            mes_referencia = None
+            if recorrencia in ['anual', 'trimestral', 'semestral']:
+                mes_ref_str = self.campos_novo['mes_referencia'].get()
+                if mes_ref_str:
+                    # Extrair número do mês (ex: "11-Nov" -> 11)
+                    try:
+                        mes_referencia = int(mes_ref_str.split('-')[0])
+                    except:
+                        pass
             
-            observacao = self.entry_novo_comp_obs.get().strip()
+            # Meses de ocorrências
+            meses_ocorrencias = None
+            meses_ocorr_str = self.campos_novo['meses_ocorrencias'].get().strip()
+            if meses_ocorr_str:
+                try:
+                    # Converter string "11,12" em lista [11, 12]
+                    meses_ocorrencias = [int(m.strip()) for m in meses_ocorr_str.split(',')]
+                    
+                    # Validar meses (1-12)
+                    if not all(1 <= m <= 12 for m in meses_ocorrencias):
+                        messagebox.showerror("Erro", "Meses de ocorrência devem estar entre 1 e 12!")
+                        return
+                        
+                except ValueError:
+                    messagebox.showerror("Erro", 
+                        "Formato inválido para meses de ocorrência!\n"
+                        "Use números separados por vírgula (ex: 11,12)")
+                    return
             
-            # Criar novo compromisso
+            # ========================================================================
+            # VALIDAÇÕES ESPECÍFICAS
+            # ========================================================================
+            
+            # Para recorrências não-mensais, mês de referência é recomendado
+            if recorrencia in ['anual', 'trimestral', 'semestral'] and not mes_referencia:
+                resposta = messagebox.askyesno("Atenção",
+                    f"Compromisso '{recorrencia}' sem mês de referência.\n\n"
+                    f"Recomendamos definir o mês de referência para "
+                    f"controlar quando o compromisso deve aparecer.\n\n"
+                    f"Deseja continuar mesmo assim?")
+                if not resposta:
+                    return
+            
+            # ========================================================================
+            # CRIAR COMPROMISSO
+            # ========================================================================
+            
             novo_compromisso = {
                 'nome': nome,
-                'dia_vencimento': dia,
+                'dia_vencimento': dia_vencimento,
                 'recorrencia': recorrencia,
                 'valor_estimado': valor_estimado,
                 'categoria': categoria,
                 'tipo_despesa': tipo_despesa,
                 'ativo': True,
-                'observacao': observacao
+                'observacao': observacao,
+                'mes_referencia': mes_referencia,  # NOVO
+                'meses_ocorrencias': meses_ocorrencias  # NOVO
             }
             
-            # Adicionar à configuração
-            if 'compromissos_recorrentes' not in self.config:
-                self.config['compromissos_recorrentes'] = {'lista': [], 'historico_alteracoes': []}
+            # ========================================================================
+            # SALVAR NO JSON
+            # ========================================================================
             
-            self.config['compromissos_recorrentes']['lista'].append(novo_compromisso)
+            # Carregar configuração atual
+            config = self.carregar_configuracoes()
             
-            # Registrar no histórico
-            self.config['compromissos_recorrentes']['historico_alteracoes'].append({
-                'acao': 'ADICIONAR',
-                'compromisso': nome,
-                'data': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            })
+            if 'compromissos_recorrentes' not in config:
+                config['compromissos_recorrentes'] = {'lista': [], 'historico_alteracoes': []}
             
-            # Salvar e atualizar
-            self.salvar_configuracoes()
-            self.atualizar_lista_compromissos_recorrentes()
+            # Verificar duplicatas
+            if any(c['nome'] == nome for c in config['compromissos_recorrentes']['lista']):
+                messagebox.showerror("Erro", "Já existe um compromisso com este nome!")
+                return
             
-            # Limpar campos
-            self.entry_novo_comp_nome.delete(0, tk.END)
-            self.entry_novo_comp_dia.set('5')
-            self.entry_novo_comp_valor.delete(0, tk.END)
-            self.entry_novo_comp_valor.insert(0, "0,00")
-            self.entry_novo_comp_obs.delete(0, tk.END)
+            # Adicionar à lista
+            config['compromissos_recorrentes']['lista'].append(novo_compromisso)
             
-            messagebox.showinfo("Sucesso", "Compromisso recorrente adicionado com sucesso!")
+            # Salvar
+            config_path = self.config_path
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=4, ensure_ascii=False)
             
-        except ValueError as e:
-            messagebox.showerror("Erro", f"Erro nos dados informados: {str(e)}")
+            # Atualizar cache
+            self._atualizar_cache(config)
+            
+            # ========================================================================
+            # LIMPAR FORMULÁRIO
+            # ========================================================================
+            
+            self.campos_novo['nome'].delete(0, tk.END)
+            self.campos_novo['dia_vencimento'].set('5')
+            self.campos_novo['recorrencia'].set('mensal')
+            self.campos_novo['mes_referencia'].set('')
+            self.campos_novo['meses_ocorrencias'].delete(0, tk.END)
+            self.campos_novo['categoria'].set('MO')
+            self.campos_novo['tipo_despesa'].set('3')
+            self.campos_novo['valor_estimado'].delete(0, tk.END)
+            self.campos_novo['valor_estimado'].insert(0, "0,00")
+            self.campos_novo['observacao'].delete(0, tk.END)
+            
+            # Recarregar lista
+            self.carregar_compromissos_tree()
+            
+            # Mensagem de sucesso
+            msg_sucesso = f"Compromisso '{nome}' adicionado com sucesso!"
+            if mes_referencia:
+                meses_dict = {1:'Jan', 2:'Fev', 3:'Mar', 4:'Abr', 5:'Mai', 6:'Jun',
+                            7:'Jul', 8:'Ago', 9:'Set', 10:'Out', 11:'Nov', 12:'Dez'}
+                msg_sucesso += f"\n\nMês de referência: {meses_dict.get(mes_referencia, mes_referencia)}"
+            if meses_ocorrencias:
+                msg_sucesso += f"\nOcorrências: {', '.join(map(str, meses_ocorrencias))}"
+            
+            messagebox.showinfo("Sucesso", msg_sucesso)
+            
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao adicionar compromisso: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao adicionar compromisso:\n{str(e)}")
+            import traceback
+            traceback.print_exc()
 
-    def on_compromisso_select(self, event):
-        """Evento de seleção de compromisso"""
-        selecionado = self.tree_compromissos.selection()
-        if not selecionado:
-            return
-        
-        # Obter dados do compromisso selecionado
-        item = self.tree_compromissos.item(selecionado[0])
-        nome = item['values'][0]
-        
-        # Buscar compromisso na configuração
-        compromisso = None
-        for c in self.config['compromissos_recorrentes']['lista']:
-            if c['nome'] == nome:
-                compromisso = c
-                break
-        
-        if compromisso:
+
+    # ==============================================================================
+    # MODIFICAÇÃO 3: Novo método on_select_compromisso
+    # ==============================================================================
+
+    def on_select_compromisso(self, event=None):
+        """Preenche campos de edição quando um compromisso é selecionado"""
+        try:
+            selecionado = self.tree_compromissos.selection()
+            if not selecionado:
+                return
+            
+            # Obter nome do compromisso selecionado
+            valores = self.tree_compromissos.item(selecionado[0])['values']
+            nome_compromisso = valores[0]
+            
+            # Buscar compromisso completo
+            config = self.carregar_configuracoes()
+            compromisso = None
+            
+            for comp in config.get('compromissos_recorrentes', {}).get('lista', []):
+                if comp['nome'] == nome_compromisso:
+                    compromisso = comp
+                    break
+            
+            if not compromisso:
+                return
+            
             # Preencher campos de edição
-            self.entry_edit_comp_nome.delete(0, tk.END)
-            self.entry_edit_comp_nome.insert(0, compromisso['nome'])
+            self.campos_editar['nome'].delete(0, tk.END)
+            self.campos_editar['nome'].insert(0, compromisso['nome'])
             
-            self.entry_edit_comp_dia.delete(0, tk.END)
-            self.entry_edit_comp_dia.insert(0, str(compromisso['dia_vencimento']))
+            self.campos_editar['dia_vencimento'].delete(0, tk.END)
+            self.campos_editar['dia_vencimento'].insert(0, str(compromisso['dia_vencimento']))
             
-            self.entry_edit_comp_valor.delete(0, tk.END)
+            self.campos_editar['recorrencia'].set(compromisso['recorrencia'])
+            
+            # NOVOS CAMPOS
+            # Mês de referência
+            mes_ref = compromisso.get('mes_referencia')
+            if mes_ref:
+                meses_dict = {1:'1-Jan', 2:'2-Fev', 3:'3-Mar', 4:'4-Abr', 5:'5-Mai', 6:'6-Jun',
+                            7:'7-Jul', 8:'8-Ago', 9:'9-Set', 10:'10-Out', 11:'11-Nov', 12:'12-Dez'}
+                self.campos_editar['mes_referencia'].set(meses_dict.get(mes_ref, ''))
+            else:
+                self.campos_editar['mes_referencia'].set('')
+            
+            # Meses de ocorrências
+            self.campos_editar['meses_ocorrencias'].delete(0, tk.END)
+            meses_ocorr = compromisso.get('meses_ocorrencias')
+            if meses_ocorr:
+                self.campos_editar['meses_ocorrencias'].insert(0, ','.join(map(str, meses_ocorr)))
+            
+            # Valor
+            self.campos_editar['valor_estimado'].delete(0, tk.END)
             valor_formatado = f"{compromisso['valor_estimado']:.2f}".replace('.', ',')
-            self.entry_edit_comp_valor.insert(0, valor_formatado)
+            self.campos_editar['valor_estimado'].insert(0, valor_formatado)
+            
+        except Exception as e:
+            print(f"Erro ao selecionar compromisso: {e}")
 
-    def salvar_compromisso_recorrente(self):
+
+    # ==============================================================================
+    # MODIFICAÇÃO 4: Novo método salvar_alteracoes_compromisso
+    # ==============================================================================
+
+    def salvar_alteracoes_compromisso(self):
         """Salva alterações no compromisso selecionado"""
+        from tkinter import messagebox
+        import json
+        
         selecionado = self.tree_compromissos.selection()
         if not selecionado:
             messagebox.showwarning("Aviso", "Selecione um compromisso para editar!")
             return
         
         try:
-            nome_original = self.tree_compromissos.item(selecionado[0])['values'][0]
+            # Obter nome original
+            valores = self.tree_compromissos.item(selecionado[0])['values']
+            nome_original = valores[0]
             
-            # Buscar compromisso
-            for i, c in enumerate(self.config['compromissos_recorrentes']['lista']):
-                if c['nome'] == nome_original:
-                    # Atualizar dados
-                    c['nome'] = self.entry_edit_comp_nome.get().strip().upper()
-                    c['dia_vencimento'] = int(self.entry_edit_comp_dia.get())
-                    
-                    valor_str = self.entry_edit_comp_valor.get().replace(',', '.')
-                    c['valor_estimado'] = float(valor_str) if valor_str else 0.0
-                    
-                    # Registrar alteração
-                    self.config['compromissos_recorrentes']['historico_alteracoes'].append({
-                        'acao': 'EDITAR',
-                        'compromisso': c['nome'],
-                        'data': datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-                    })
-                    
+            # Obter novos valores
+            novo_nome = self.campos_editar['nome'].get().strip().upper()
+            novo_dia = int(self.campos_editar['dia_vencimento'].get())
+            nova_recorrencia = self.campos_editar['recorrencia'].get()
+            
+            # Processar mês de referência
+            novo_mes_ref = None
+            mes_ref_str = self.campos_editar['mes_referencia'].get()
+            if mes_ref_str:
+                try:
+                    novo_mes_ref = int(mes_ref_str.split('-')[0])
+                except:
+                    pass
+            
+            # Processar meses de ocorrências
+            novos_meses_ocorr = None
+            meses_ocorr_str = self.campos_editar['meses_ocorrencias'].get().strip()
+            if meses_ocorr_str:
+                try:
+                    novos_meses_ocorr = [int(m.strip()) for m in meses_ocorr_str.split(',')]
+                    if not all(1 <= m <= 12 for m in novos_meses_ocorr):
+                        messagebox.showerror("Erro", "Meses devem estar entre 1 e 12!")
+                        return
+                except ValueError:
+                    messagebox.showerror("Erro", "Formato inválido para meses!")
+                    return
+            
+            # Processar valor
+            valor_str = self.campos_editar['valor_estimado'].get().replace(',', '.')
+            novo_valor = float(valor_str) if valor_str else 0.0
+            
+            # Carregar e atualizar configuração
+            config = self.carregar_configuracoes()
+            
+            for comp in config['compromissos_recorrentes']['lista']:
+                if comp['nome'] == nome_original:
+                    comp['nome'] = novo_nome
+                    comp['dia_vencimento'] = novo_dia
+                    comp['recorrencia'] = nova_recorrencia
+                    comp['valor_estimado'] = novo_valor
+                    comp['mes_referencia'] = novo_mes_ref  # NOVO
+                    comp['meses_ocorrencias'] = novos_meses_ocorr  # NOVO
                     break
             
-            self.salvar_configuracoes()
-            self.atualizar_lista_compromissos_recorrentes()
+            # Salvar
+            config_path = self.config_path()
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=4, ensure_ascii=False)
+            
+            self._atualizar_cache(config)
+            self.carregar_compromissos_tree()
             
             messagebox.showinfo("Sucesso", "Compromisso atualizado com sucesso!")
             
-        except ValueError as e:
-            messagebox.showerror("Erro", f"Erro nos dados: {str(e)}")
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao salvar: {str(e)}")
+
+
+    # ==============================================================================
+    # MODIFICAÇÃO 5: Novo método carregar_compromissos_tree
+    # ==============================================================================
+
+    def carregar_compromissos_tree(self):
+        """Carrega compromissos no treeview"""
+        # Limpar tree
+        for item in self.tree_compromissos.get_children():
+            self.tree_compromissos.delete(item)
+        
+        try:
+            config = self.carregar_configuracoes()
+            compromissos = config.get('compromissos_recorrentes', {}).get('lista', [])
+            
+            for comp in compromissos:
+                status = "ATIVO" if comp.get('ativo', True) else "INATIVO"
+                tag = 'ativo' if comp.get('ativo', True) else 'inativo'
+                
+                # Formatar recorrência com indicador de mês de referência
+                recorrencia_display = comp['recorrencia']
+                if comp.get('mes_referencia'):
+                    meses_abrev = {1:'Jan', 2:'Fev', 3:'Mar', 4:'Abr', 5:'Mai', 6:'Jun',
+                                7:'Jul', 8:'Ago', 9:'Set', 10:'Out', 11:'Nov', 12:'Dez'}
+                    mes_abrev = meses_abrev.get(comp['mes_referencia'], '')
+                    recorrencia_display += f" ({mes_abrev})"
+                
+                if comp.get('meses_ocorrencias'):
+                    recorrencia_display += f" *{len(comp['meses_ocorrencias'])}x"
+                
+                valores = (
+                    comp['nome'],
+                    comp['dia_vencimento'],
+                    recorrencia_display,
+                    comp.get('categoria', ''),
+                    f"R$ {comp['valor_estimado']:.2f}",
+                    status
+                )
+                
+                self.tree_compromissos.insert('', 'end', values=valores, tags=(tag,))
+            
+        except Exception as e:
+            print(f"Erro ao carregar compromissos: {e}")
 
     def toggle_compromisso_status(self):
         """Ativa/desativa compromisso selecionado"""
