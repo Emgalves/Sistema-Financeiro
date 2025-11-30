@@ -1,0 +1,110 @@
+2025-11-30 08:54:21,635 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 08:54:21,636 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 08:54:21,637 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 08:54:21,638 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 08:54:21,639 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 08:54:29,780 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 08:54:29,799 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 08:54:29,805 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 08:54:29,806 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 08:54:29,819 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 08:54:37,210 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-11-30 09:13:55,539 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 09:13:55,542 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 09:13:55,543 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 09:13:55,544 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 09:13:55,545 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 09:14:02,062 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 09:14:02,065 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 09:14:02,067 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 09:14:02,068 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 09:14:02,082 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 09:14:06,796 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-11-30 09:21:33,704 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 09:21:33,705 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 09:21:33,706 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 09:21:33,707 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 09:21:33,708 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 09:21:40,029 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 09:21:40,032 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 09:21:40,035 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 09:21:40,036 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 09:21:40,051 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 09:21:44,334 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-11-30 10:22:57,915 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 10:22:57,916 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 10:22:57,917 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 10:22:57,918 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 10:22:57,919 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 10:23:04,893 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 10:23:04,899 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 10:23:04,902 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 10:23:04,904 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 10:23:04,919 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 10:26:01,023 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2025-11-30 11:00:12,625 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 11:00:12,627 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 11:00:12,627 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 11:00:12,628 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 11:00:12,629 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 11:00:20,111 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 11:00:20,129 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 11:00:20,132 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 11:00:20,133 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 11:00:20,148 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 11:00:39,673 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-11-30 16:45:59,978 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 16:45:59,980 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 16:45:59,980 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 16:45:59,981 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 16:45:59,982 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 16:46:06,969 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 16:46:06,972 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 16:46:06,975 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 16:46:06,975 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 16:46:06,990 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 16:46:10,225 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-11-30 17:16:24,954 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 17:16:24,955 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 17:16:24,956 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 17:16:24,957 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 17:16:24,957 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 17:16:31,581 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 17:16:31,584 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 17:16:31,586 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 17:16:31,587 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 17:16:31,601 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 17:16:34,308 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-11-30 17:33:27,330 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 17:33:27,332 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 17:33:27,332 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 17:33:27,333 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 17:33:27,334 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 17:33:33,862 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 17:33:33,864 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 17:33:33,866 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 17:33:33,867 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 17:33:33,881 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 17:35:46,743 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-11-30 17:45:25,480 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 17:45:25,483 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 17:45:25,484 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 17:45:25,485 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 17:45:25,486 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 17:45:32,272 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 17:45:32,275 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 17:45:32,277 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 17:45:32,278 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 17:45:32,294 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 17:48:01,143 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-11-30 18:07:01,896 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-11-30 18:07:01,898 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-11-30 18:07:01,898 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-11-30 18:07:01,899 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-11-30 18:07:01,900 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-11-30 18:07:08,646 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 18:07:08,649 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 18:07:08,652 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-11-30 18:07:08,653 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-11-30 18:07:08,666 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-11-30 18:07:11,516 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
