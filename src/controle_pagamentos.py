@@ -47,6 +47,40 @@ class ControlePagamentos:
         
         self.setup_gui()
     
+    @staticmethod
+    def converter_valor_seguro(valor_celula):
+        """
+        Converte valor de célula Excel para float de forma segura.
+        Trata strings formatadas como moeda brasileira e valores numéricos.
+        
+        Args:
+            valor_celula: Valor da célula (pode ser int, float, string ou None)
+            
+        Returns:
+            float: Valor convertido ou 0.0 se conversão falhar
+        """
+        try:
+            if valor_celula is None:
+                return 0.0
+            
+            # Se já for número, converter para float
+            if isinstance(valor_celula, (int, float)):
+                return float(valor_celula)
+            
+            # Se for string, limpar formatação brasileira
+            if isinstance(valor_celula, str):
+                # Remove R$, pontos de milhar, substitui vírgula decimal por ponto
+                valor_limpo = valor_celula.replace('R$', '').replace('.', '').replace(',', '.').strip()
+                if valor_limpo:
+                    return float(valor_limpo)
+                return 0.0
+            
+            # Outros tipos: tentar conversão direta
+            return float(valor_celula)
+            
+        except (ValueError, TypeError, AttributeError):
+            return 0.0
+    
     def setup_gui(self):
         # Frame principal SEM scroll para melhor controle do layout
         main_frame = ttk.Frame(self.root, padding="10")
@@ -68,11 +102,12 @@ class ControlePagamentos:
         self.tree_container = ttk.Frame(self.frame_parcelas)
         self.tree_container.pack(fill='both', expand=True, padx=5, pady=5)
         
-        # Treeview com coluna adicional para valor editado
+        # ============== MUDANÇA PRINCIPAL: ATIVAR SELEÇÃO MÚLTIPLA ==============
+        # Treeview com coluna adicional para valor editado E SELECTMODE EXTENDED
         colunas = ('Nº Contrato', 'Nº Parcela', 'CNPJ', 'Adm', 'Eventos/Fases', 
                    'Valor Original', 'Valor a Pagar', 'Status', 'Data Pagamento')
         self.tree_parcelas = ttk.Treeview(self.tree_container, columns=colunas, 
-                                         show='headings')
+                                         show='headings', selectmode='extended')  # <-- MUDANÇA AQUI
         
         # Configurar colunas com larguras proporcionais ao espaço disponível
         larguras_iniciais = {
@@ -110,8 +145,31 @@ class ControlePagamentos:
         self.tree_container.grid_rowconfigure(0, weight=1)
         self.tree_container.grid_columnconfigure(0, weight=1)
         
+        # ============== NOVA FUNCIONALIDADE: BIND PARA ATUALIZAR SELEÇÃO ==============
+        self.tree_parcelas.bind('<<TreeviewSelect>>', self.atualizar_info_selecao)
+        
         # Bind para duplo clique editar valor
         self.tree_parcelas.bind('<Double-Button-1>', self.editar_valor_parcela)
+        
+        # ============== NOVO FRAME: INFORMAÇÕES DE SELEÇÃO MÚLTIPLA ==============
+        frame_info_selecao = ttk.LabelFrame(main_frame, text="Parcelas Selecionadas")
+        frame_info_selecao.pack(fill='x', pady=5)
+        
+        info_container = ttk.Frame(frame_info_selecao)
+        info_container.pack(fill='x', padx=5, pady=5)
+        
+        ttk.Label(info_container, text="Quantidade:").grid(row=0, column=0, padx=5, sticky='w')
+        self.label_qtd_selecionadas = ttk.Label(info_container, text="0", 
+                                               font=('Arial', 10, 'bold'), foreground='blue')
+        self.label_qtd_selecionadas.grid(row=0, column=1, padx=5, sticky='w')
+        
+        ttk.Label(info_container, text="Valor Total:").grid(row=0, column=2, padx=20, sticky='w')
+        self.label_valor_total_selecionadas = ttk.Label(info_container, text="R$ 0,00", 
+                                                       font=('Arial', 10, 'bold'), foreground='green')
+        self.label_valor_total_selecionadas.grid(row=0, column=3, padx=5, sticky='w')
+        
+        ttk.Button(info_container, text="Limpar Seleção", 
+                  command=self.limpar_selecao).grid(row=0, column=4, padx=20)
         
         # Frame para edição de valores selecionados
         frame_edicao = ttk.LabelFrame(main_frame, text="Edição de Valores")
@@ -156,16 +214,17 @@ class ControlePagamentos:
                                       showweeknumbers=False)
         self.data_pagamento.pack(side='left', padx=5)
         
+        # ============== BOTÃO ATUALIZADO PARA MÚLTIPLAS PARCELAS ==============
         ttk.Button(container_pagamento, text="Registrar Pagamento das Parcelas Selecionadas",
-                  command=self.registrar_pagamento).pack(side='left', padx=20)
+                  command=self.registrar_pagamento_multiplo).pack(side='left', padx=20)
         
         # NOVO: Botão de Vincular
         ttk.Button(container_pagamento, text="Vincular a Lançamento Existente",
-                  command=self.vincular_parcela).pack(side='left', padx=5)
+                  command=self.vincular_parcelas_multiplas).pack(side='left', padx=5)
         
-        # Label informativo
+        # Label informativo atualizado
         self.label_info = ttk.Label(container_pagamento, 
-                                   text="(Dica: Dê duplo clique em uma parcela para editar o valor)",
+                                   text="(Dica: Use Ctrl+Click ou Shift+Click para selecionar múltiplas parcelas)",
                                    foreground='#666')
         self.label_info.pack(side='left', padx=20)
         
@@ -179,498 +238,576 @@ class ControlePagamentos:
         self.carregar_clientes()
         self.verificar_correcoes_pendentes()
     
-    def carregar_clientes(self):
-        """Carrega lista de clientes no combo"""
+    # ============== NOVAS FUNÇÕES PARA SELEÇÃO MÚLTIPLA ==============
+    
+    def atualizar_info_selecao(self, event=None):
+        """Atualiza as informações sobre as parcelas selecionadas"""
         try:
-            clientes_pasta = Path(PASTA_CLIENTES)
-            if not clientes_pasta.exists():
-                messagebox.showerror("Erro", f"Pasta de clientes não encontrada: {PASTA_CLIENTES}")
-                return
+            selecionados = self.tree_parcelas.selection()
+            qtd = len(selecionados)
             
-            arquivos_excel = list(clientes_pasta.glob("*.xlsx"))
-            arquivos_excel = [f for f in arquivos_excel if not f.name.startswith('~$')]
+            # Atualizar quantidade
+            self.label_qtd_selecionadas.config(text=str(qtd))
             
-            if not arquivos_excel:
-                messagebox.showinfo("Aviso", "Nenhum arquivo de cliente encontrado")
-                return
+            # Calcular valor total
+            valor_total = 0
+            for item_id in selecionados:
+                valores = self.tree_parcelas.item(item_id)['values']
+                
+                # Pegar o valor a pagar (coluna 6)
+                valor_str = str(valores[6]).replace('R$', '').replace('.', '').replace(',', '.').strip()
+                try:
+                    valor = float(valor_str)
+                    valor_total += valor
+                except:
+                    pass
             
-            nomes_clientes = [f.stem for f in arquivos_excel]
-            self.cliente_combo['values'] = sorted(nomes_clientes)
+            # Atualizar label de valor total
+            self.label_valor_total_selecionadas.config(text=f"R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'))
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
+            print(f"Erro ao atualizar info de seleção: {str(e)}")
     
-    def carregar_parcelas(self, event=None):
-        """Carrega as parcelas pendentes do cliente selecionado"""
-        self.cliente_selecionado = self.cliente_combo.get()
-        
-        if not self.cliente_selecionado:
-            return
-        
-        # Limpar valores editados
-        self.valor_editado.clear()
-        
-        # Limpar treeview
-        for item in self.tree_parcelas.get_children():
-            self.tree_parcelas.delete(item)
-        
+    def limpar_selecao(self):
+        """Limpa todas as seleções"""
+        for item in self.tree_parcelas.selection():
+            self.tree_parcelas.selection_remove(item)
+        self.atualizar_info_selecao()
+    
+    def registrar_pagamento_multiplo(self):
+        """Registra pagamento para MÚLTIPLAS parcelas selecionadas"""
         try:
-            arquivo_cliente = Path(PASTA_CLIENTES) / f"{self.cliente_selecionado}.xlsx"
-            
-            if not arquivo_cliente.exists():
-                messagebox.showerror("Erro", f"Arquivo não encontrado: {arquivo_cliente}")
+            # Verificar se há parcelas selecionadas
+            selecionados = self.tree_parcelas.selection()
+            if not selecionados:
+                messagebox.showwarning("Aviso", "Selecione ao menos uma parcela para registrar o pagamento!")
                 return
             
-            wb = load_workbook(arquivo_cliente, data_only=True)
+            # Obter data do pagamento
+            data_pag = self.data_pagamento.get_date()
             
-            if 'Contratos_ADM' not in wb.sheetnames:
-                messagebox.showinfo("Aviso", "Planilha 'Contratos_ADM' não encontrada")
-                wb.close()
+            # Coletar informações de todas as parcelas selecionadas
+            parcelas_info = []
+            valor_total = 0
+            
+            for item_id in selecionados:
+                valores = self.tree_parcelas.item(item_id)['values']
+                
+                num_contrato = str(valores[0])
+                num_parcela = int(valores[1])
+                cnpj = str(valores[2])
+                nome_adm = str(valores[3])
+                
+                # Valor a pagar
+                valor_str = str(valores[6]).replace('R$', '').replace('.', '').replace(',', '.').strip()
+                valor_pagar = float(valor_str)
+                valor_total += valor_pagar
+                
+                parcelas_info.append({
+                    'num_contrato': num_contrato,
+                    'num_parcela': num_parcela,
+                    'cnpj': cnpj,
+                    'nome': nome_adm,
+                    'valor': valor_pagar
+                })
+            
+            # Confirmar com o usuário
+            lista_parcelas = "\n".join([
+                f"• Contrato {p['num_contrato']} - Parcela {p['num_parcela']}: R$ {p['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                for p in parcelas_info
+            ])
+            
+            resposta = messagebox.askyesno(
+                "Confirmar Pagamento Múltiplo",
+                f"Confirma o registro de pagamento para {len(parcelas_info)} parcela(s)?\n\n"
+                f"Data do Pagamento: {data_pag.strftime('%d/%m/%Y')}\n\n"
+                f"Parcelas:\n{lista_parcelas}\n\n"
+                f"VALOR TOTAL: R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+                parent=self.root
+            )
+            
+            if not resposta:
                 return
             
-            ws = wb['Contratos_ADM']
-            
-            parcelas_encontradas = 0
-            
-            for row in ws.iter_rows(min_row=3, values_only=True):
-                # Colunas esperadas (ajustar conforme estrutura real)
-                # Y=25: Num_Contrato, Z=26: Num_Parcela, AA=27: CNPJ_CPF, AB=28: Nome, 
-                # AC=29: Eventos_Fases, AD=30: Valor, AE=31: Status, AF=32: Data_Pagamento
-                
-                if row[24] is None:  # Se Num_Contrato está vazio, linha vazia
-                    continue
-                
-                num_contrato = str(row[24])
-                num_parcela = row[25]
-                cnpj_cpf = row[26]
-                nome = row[27]
-                eventos_fases = row[32] if row[32] else ""
-                valor = row[29]
-                status = row[30] if row[30] else "PENDENTE"
-                data_pagamento = row[31]
-                
-                # Filtrar apenas parcelas PENDENTES
-                if status and status.upper() == "PENDENTE":
-                    valor_str = formatar_moeda(valor)
-                    data_str = data_pagamento.strftime('%d/%m/%Y') if isinstance(data_pagamento, datetime) else ""
-                    
-                    # Inserir na treeview (valor original = valor a pagar inicialmente)
-                    self.tree_parcelas.insert('', 'end', values=(
-                        num_contrato,
-                        num_parcela,
-                        cnpj_cpf,
-                        nome,
-                        eventos_fases,
-                        valor_str,
-                        valor_str,  # Valor a pagar começa igual ao original
-                        status,
-                        data_str
-                    ))
-                    
-                    parcelas_encontradas += 1
-            
-            wb.close()
-            
-            if parcelas_encontradas == 0:
-                messagebox.showinfo("Informação", "Não há parcelas pendentes para este cliente")
-            else:
-                self.frame_parcelas.config(text=f"Parcelas Pendentes ({parcelas_encontradas} encontradas)")
-                
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar parcelas: {str(e)}")
-    
-    def editar_valor_parcela(self, event):
-        """Permite editar o valor da parcela selecionada"""
-        selecao = self.tree_parcelas.selection()
-        if not selecao:
-            return
-        
-        item = selecao[0]
-        valores = self.tree_parcelas.item(item)['values']
-        
-        # Atualizar labels
-        self.label_parcela_selecionada.config(
-            text=f"Contrato {valores[0]} - Parcela {valores[1]}"
-        )
-        self.label_valor_original.config(text=valores[5])
-        
-        # Limpar e focar no entry
-        self.entry_novo_valor.delete(0, tk.END)
-        self.entry_novo_valor.insert(0, valores[6].replace('R$ ', ''))
-        self.entry_novo_valor.focus()
-    
-    def aplicar_valor_editado(self):
-        """Aplica o valor editado à parcela selecionada"""
-        selecao = self.tree_parcelas.selection()
-        if not selecao:
-            messagebox.showwarning("Aviso", "Selecione uma parcela primeiro")
-            return
-        
-        try:
-            # Obter novo valor
-            novo_valor_str = self.entry_novo_valor.get().strip()
-            if not novo_valor_str:
-                messagebox.showwarning("Aviso", "Informe o novo valor")
-                return
-            
-            # Limpar e converter
-            novo_valor_str = novo_valor_str.replace('R$', '').replace('.', '').replace(',', '.').strip()
-            novo_valor = float(novo_valor_str)
-            
-            if novo_valor <= 0:
-                messagebox.showerror("Erro", "Valor deve ser maior que zero")
-                return
-            
-            # Atualizar na treeview
-            item = selecao[0]
-            valores = list(self.tree_parcelas.item(item)['values'])
-            valores[6] = formatar_moeda(novo_valor)  # Coluna "Valor a Pagar"
-            
-            self.tree_parcelas.item(item, values=valores)
-            
-            # Armazenar no dicionário
-            chave = f"{valores[0]}_{valores[1]}_{valores[2]}"
-            self.valor_editado[chave] = novo_valor
-            
-            messagebox.showinfo("Sucesso", f"Valor atualizado para {formatar_moeda(novo_valor)}")
-            
-        except ValueError:
-            messagebox.showerror("Erro", "Valor inválido. Use formato: 1234.56 ou 1234,56")
-    
-    def resetar_valores(self):
-        """Reseta todos os valores editados para os valores originais"""
-        if not messagebox.askyesno("Confirmar", "Resetar todos os valores para os originais?"):
-            return
-        
-        # Limpar dicionário
-        self.valor_editado.clear()
-        
-        # Atualizar treeview
-        for item in self.tree_parcelas.get_children():
-            valores = list(self.tree_parcelas.item(item)['values'])
-            valores[6] = valores[5]  # Valor a pagar = Valor original
-            self.tree_parcelas.item(item, values=valores)
-        
-        messagebox.showinfo("Sucesso", "Valores resetados")
-    
-    def registrar_pagamento(self):
-        """Registra o pagamento das parcelas selecionadas"""
-        selecionados = self.tree_parcelas.selection()
-        
-        if not selecionados:
-            messagebox.showwarning("Aviso", "Selecione pelo menos uma parcela para pagar")
-            return
-        
-        if not self.cliente_selecionado:
-            messagebox.showwarning("Aviso", "Nenhum cliente selecionado")
-            return
-        
-        try:
-            data_pagto = self.data_pagamento.get_date()
-            
+            # Abrir arquivo do cliente
             arquivo_cliente = Path(PASTA_CLIENTES) / f"{self.cliente_selecionado}.xlsx"
             wb = load_workbook(arquivo_cliente)
             ws_contratos = wb['Contratos_ADM']
             ws_dados = wb['Dados']
             
-            parcelas_processadas = []
+            # Processar cada parcela
+            parcelas_processadas = 0
             
-            # Para cada parcela selecionada
-            for item in selecionados:
-                valores = self.tree_parcelas.item(item)['values']
-                num_contrato = str(valores[0])
-                num_parcela = int(valores[1])
-                cnpj_cpf = str(valores[2])
-                nome = str(valores[3])
-                
-                # Pegar o valor a pagar (editado ou original)
-                valor_pagar_str = str(valores[6]).replace('.', '').replace(',', '.')
-                valor_pagar = float(valor_pagar_str)
-                
-                # Buscar total de parcelas para este contrato
-                total_parcelas = 0
-                for row in ws_contratos.iter_rows(min_row=3, values_only=True):
-                    if str(row[24]) == num_contrato:
-                        total_parcelas += 1
-                
-                # Atualizar na aba Contratos_ADM
+            for parcela_info in parcelas_info:
+                # Atualizar status na aba Contratos_ADM
                 for row_idx, row in enumerate(ws_contratos.iter_rows(min_row=3), start=3):
-                    if (str(row[24].value) == num_contrato and
-                        int(row[25].value) == num_parcela and
-                        str(row[26].value) == cnpj_cpf):
+                    if (str(row[24].value) == parcela_info['num_contrato'] and
+                        int(row[25].value) == parcela_info['num_parcela'] and
+                        str(row[26].value) == parcela_info['cnpj']):
                         
-                        # Atualizar status e data de pagamento
-                        ws_contratos.cell(row=row_idx, column=31, value='PAGO')
-                        ws_contratos.cell(row=row_idx, column=32, value=data_pagto)
+                        # Atualizar status e data
+                        ws_contratos.cell(row=row_idx, column=31, value="PAGO")
+                        ws_contratos.cell(row=row_idx, column=32, value=data_pag)
+                        aplicar_formatacao_celula(ws_contratos.cell(row=row_idx, column=32), 'data')
                         
-                        # Se o valor foi editado, registrar em colunas disponíveis após AH
-                        if valor_pagar != float(row[29].value):
-                            # Usar coluna AI (35) para valor efetivamente pago
-                            ws_contratos.cell(row=row_idx, column=35, value=valor_pagar)
-                            # Usar coluna AJ (36) para observação sobre diferença
-                            ws_contratos.cell(row=row_idx, column=36, 
-                                            value=f"Valor pago diferente do original: R$ {valor_pagar:,.2f}")
-                        
-                        # Registrar na aba Dados
-                        proxima_linha = ws_dados.max_row + 1
-                        
-                        # Calcular data de referência
-                        data_pagto_informada = data_pagto
-                        if data_pagto_informada.day <= 5:
-                            data_ref = data_pagto_informada.replace(day=5)
-                        elif data_pagto_informada.day <= 20:
-                            data_ref = data_pagto_informada.replace(day=20)
-                        else:
-                            if data_pagto_informada.month == 12:
-                                data_ref = data_pagto_informada.replace(year=data_pagto_informada.year + 1, month=1, day=5)
-                            else:
-                                data_ref = data_pagto_informada.replace(month=data_pagto_informada.month + 1, day=5)
-
-                        ws_dados.cell(row=proxima_linha, column=1, value=data_ref)
-                        ws_dados.cell(row=proxima_linha, column=1).number_format = 'DD/MM/YYYY'
-                        
-                        # Tipo e dados
-                        ws_dados.cell(row=proxima_linha, column=2, value=2)
-                        ws_dados.cell(row=proxima_linha, column=3, value=cnpj_cpf)
-                        ws_dados.cell(row=proxima_linha, column=4, value=nome)
-                        ws_dados.cell(row=proxima_linha, column=5, value=f"ADM OBRA - PARC. {num_parcela}/{total_parcelas}")
-                        
-                        # Usar o valor editado/pago
-                        valor_formatado = formatar_valor_excel(valor_pagar)
-
-                        # Valores com formato brasileiro
-                        cell_vr_unit = ws_dados.cell(row=proxima_linha, column=7, value=valor_formatado)
-                        cell_vr_unit.number_format = '#,##0.00'
-                        cell_vr_unit = aplicar_formatacao_celula(cell_vr_unit)
-
-                        ws_dados.cell(row=proxima_linha, column=8, value=1)
-
-                        cell_valor = ws_dados.cell(row=proxima_linha, column=9, value=valor_formatado)
-                        cell_valor.number_format = '#,##0.00'
-                        cell_valor = aplicar_formatacao_celula(cell_valor)
-                        
-                        # Data de pagamento
-                        ws_dados.cell(row=proxima_linha, column=10, value=data_pagto)
-                        ws_dados.cell(row=proxima_linha, column=10).number_format = 'DD/MM/YYYY'
-                        
-                        ws_dados.cell(row=proxima_linha, column=11, value='TAX')
-
-                        # Buscar dados bancários do fornecedor
-                        dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_cpf)
-                        ws_dados.cell(row=proxima_linha, column=12, value=dados_bancarios)
-                        
-                        # Se houve edição de valor, adicionar observação
-                        if valor_pagar != float(row[29].value):
-                            ws_dados.cell(row=proxima_linha, column=13, 
-                                        value=f'LANÇAMENTO AUTOMÁTICO - Valor ajustado (Original: R$ {float(row[29].value):,.2f})')
-                        else:
-                            ws_dados.cell(row=proxima_linha, column=13, value='LANÇAMENTO AUTOMÁTICO')
-                        
-                        valor_info = f"R$ {valor_pagar:,.2f}".replace(',', '_').replace('.', ',').replace('_', '.')
-                        parcelas_processadas.append(f"Contrato {num_contrato} - Parcela {num_parcela}/{total_parcelas} - {valor_info}")
+                        parcelas_processadas += 1
                         break
             
-            wb.save(arquivo_cliente)
+            # Criar UM ÚNICO lançamento na aba Dados com o valor total
+            nova_linha = ws_dados.max_row + 1
             
-            # Limpar valores editados após pagamento
-            self.valor_editado.clear()
+            # Preencher dados do lançamento único conforme estrutura real
+            ws_dados.cell(row=nova_linha, column=1, value=data_pag)  # DATA_REL
+            aplicar_formatacao_celula(ws_dados.cell(row=nova_linha, column=1), 'data')
             
-            self.carregar_parcelas()
+            ws_dados.cell(row=nova_linha, column=2, value=1)  # TP_DESP (1 = Taxa de Administração)
             
-            if parcelas_processadas:
-                mensagem = "Pagamentos registrados com sucesso:\n\n" + "\n".join(parcelas_processadas)
-                messagebox.showinfo("Sucesso", mensagem)
+            # Usar CNPJ do primeiro fornecedor
+            ws_dados.cell(row=nova_linha, column=3, value=parcelas_info[0]['cnpj'])  # CNPJ_CPF
+            
+            # Nome com indicação de múltiplas parcelas
+            if len(parcelas_info) == 1:
+                nome_lancamento = f"{parcelas_info[0]['nome']} - Parc. {parcelas_info[0]['num_parcela']}"
             else:
-                messagebox.showwarning("Aviso", "Nenhuma parcela foi processada!")
+                parcelas_nums = ", ".join([str(p['num_parcela']) for p in parcelas_info])
+                nome_lancamento = f"{parcelas_info[0]['nome']} - Parcs. {parcelas_nums}"
+            
+            ws_dados.cell(row=nova_linha, column=4, value=nome_lancamento)  # NOME
+            
+            # Descrição das parcelas na coluna REFERÊNCIA
+            descricao_parcelas = " + ".join([
+                f"Contrato {p['num_contrato']} Parc.{p['num_parcela']}"
+                for p in parcelas_info
+            ])
+            ws_dados.cell(row=nova_linha, column=5, value=f"Taxa Administração: {descricao_parcelas}")  # REFERÊNCIA
+            
+            # VALOR na coluna correta (coluna 9 = índice 9)
+            ws_dados.cell(row=nova_linha, column=9, value=valor_total)  # VALOR
+            aplicar_formatacao_celula(ws_dados.cell(row=nova_linha, column=9), 'moeda')
+            
+            # Data de vencimento (mesma data do pagamento)
+            ws_dados.cell(row=nova_linha, column=10, value=data_pag)  # DT_VENCTO
+            aplicar_formatacao_celula(ws_dados.cell(row=nova_linha, column=10), 'data')
+            
+            # Categoria
+            ws_dados.cell(row=nova_linha, column=11, value="TAX")  # CATEGORIA
+            
+            # Buscar dados bancários
+            dados_bancarios = buscar_dados_bancarios_fornecedor(parcelas_info[0]['cnpj'], self.cliente_selecionado)
+            if dados_bancarios:
+                ws_dados.cell(row=nova_linha, column=12, value=dados_bancarios)  # DADOS_BANCARIOS (string formatada)
+            
+            # Observação
+            ws_dados.cell(row=nova_linha, column=13, value="LANÇAMENTO AUTOMÁTICO - Pagamento Múltiplo")  # OBSERVAÇÃO
+            
+            # Status
+            ws_dados.cell(row=nova_linha, column=14, value="PAGAMENTO REGISTRADO")  # STATUS
+            
+            # Salvar arquivo
+            wb.save(arquivo_cliente)
+            wb.close()
+            
+            # Mensagem de sucesso
+            messagebox.showinfo(
+                "Sucesso",
+                f"Pagamento registrado com sucesso!\n\n"
+                f"✓ {parcelas_processadas} parcela(s) marcada(s) como PAGO\n"
+                f"✓ 1 lançamento criado na aba Dados\n"
+                f"✓ Valor total: R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+                parent=self.root
+            )
+            
+            # Recarregar parcelas
+            self.carregar_parcelas()
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao registrar pagamento: {str(e)}")
             if 'wb' in locals():
                 wb.close()
-
-    # ============= NOVAS FUNÇÕES DE VINCULAÇÃO =============
     
-    def vincular_parcela(self):
-        """Vincula uma parcela a um lançamento existente na aba Dados"""
+    def vincular_parcelas_multiplas(self):
+        """Vincula MÚLTIPLAS parcelas a um lançamento existente"""
         try:
-            # Verificar se há parcela selecionada
-            selecao = self.tree_parcelas.selection()
-            if not selecao:
-                self.root.lift()
-                messagebox.showwarning("Aviso", "Selecione uma parcela para vincular!", parent=self.root)
+            # Verificar seleção
+            selecionados = self.tree_parcelas.selection()
+            if not selecionados:
+                messagebox.showwarning("Aviso", "Selecione ao menos uma parcela para vincular!")
                 return
             
-            if len(selecao) > 1:
-                self.root.lift()
-                messagebox.showwarning("Aviso", "Selecione apenas uma parcela por vez para vincular!", parent=self.root)
-                return
+            # Coletar dados das parcelas selecionadas
+            parcelas_dados = []
+            valor_total = 0
             
-            # Obter dados da parcela selecionada
-            item = self.tree_parcelas.item(selecao[0])
-            valores = item['values']
+            for item_id in selecionados:
+                valores = self.tree_parcelas.item(item_id)['values']
+                
+                num_contrato = str(valores[0])
+                num_parcela = int(valores[1])
+                cnpj = str(valores[2])
+                nome_adm = str(valores[3])
+                
+                valor_str = str(valores[6]).replace('R$', '').replace('.', '').replace(',', '.').strip()
+                valor_pagar = float(valor_str)
+                valor_total += valor_pagar
+                
+                parcelas_dados.append({
+                    'num_contrato': num_contrato,
+                    'num_parcela': num_parcela,
+                    'cnpj': cnpj,
+                    'nome': nome_adm,
+                    'valor_pagar': f"R$ {valor_pagar:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                })
             
-            # Preparar dados da parcela
-            dados_parcela = {
-                'num_contrato': str(valores[0]),
-                'num_parcela': int(valores[1]),
-                'cnpj': str(valores[2]),
-                'nome': str(valores[3]),
-                'eventos_fases': str(valores[4]),
-                'valor_original': str(valores[5]),
-                'valor_pagar': str(valores[6]),
-                'status': str(valores[7])
-            }
+            # Criar janela de busca
+            janela_busca = tk.Toplevel(self.root)
+            janela_busca.title("Buscar Lançamento para Vincular")
+            janela_busca.geometry("1200x600")
+            janela_busca.transient(self.root)
+            janela_busca.grab_set()
             
-            # Verificar se já está paga ou vinculada
-            if dados_parcela['status'].upper() in ['PAGO', 'VINCULADO']:
-                self.root.lift()
-                messagebox.showwarning(
-                    "Aviso", 
-                    f"Esta parcela já está {dados_parcela['status']}!\n\n"
-                    "Não é possível vincular novamente.",
-                    parent=self.root
-                )
-                return
+            # Frame de busca
+            frame_busca = ttk.LabelFrame(janela_busca, text="Critérios de Busca")
+            frame_busca.pack(fill='x', padx=10, pady=10)
             
-            # Abrir janela de seleção de lançamento
-            self.abrir_janela_selecao_lancamento(dados_parcela)
+            busca_container = ttk.Frame(frame_busca)
+            busca_container.pack(fill='x', padx=5, pady=5)
             
-        except Exception as e:
-            self.root.lift()
-            messagebox.showerror("Erro", f"Erro ao vincular parcela: {str(e)}", parent=self.root)
-    
-    def abrir_janela_selecao_lancamento(self, dados_parcela):
-        """Abre janela para seleção de lançamento existente"""
-        try:
-            # Criar janela modal
-            janela = tk.Toplevel(self.root)
-            janela.title("Vincular a Lançamento Existente")
-            janela.geometry("1100x700")
+            ttk.Label(busca_container, text="Nome/Fornecedor:").grid(row=0, column=0, padx=5, sticky='w')
+            entry_nome = ttk.Entry(busca_container, width=30)
+            entry_nome.grid(row=0, column=1, padx=5)
+            entry_nome.insert(0, parcelas_dados[0]['nome'])
             
-            # Centralizar janela
-            janela.update_idletasks()
-            x = (janela.winfo_screenwidth() // 2) - (1100 // 2)
-            y = (janela.winfo_screenheight() // 2) - (700 // 2)
-            janela.geometry(f"+{x}+{y}")
+            ttk.Label(busca_container, text="Valor Total:").grid(row=0, column=2, padx=5, sticky='w')
+            entry_valor = ttk.Entry(busca_container, width=15)
+            entry_valor.grid(row=0, column=3, padx=5)
+            entry_valor.insert(0, f"{valor_total:.2f}".replace('.', ','))
             
-            # Configurações para manter janela no topo
-            janela.transient(self.root)
-            janela.grab_set()
-            janela.lift()
-            janela.attributes('-topmost', True)
-            janela.after(100, lambda: janela.attributes('-topmost', False))
-            janela.focus_force()
+            var_valor_aprox = tk.BooleanVar(value=True)
+            ttk.Checkbutton(busca_container, text="Valor aproximado (±5%)", 
+                           variable=var_valor_aprox).grid(row=0, column=4, padx=5)
             
-            # Frame de informações da parcela
-            frame_info = ttk.LabelFrame(janela, text="Dados da Parcela", padding=10)
+            ttk.Button(busca_container, text="Buscar", 
+                      command=lambda: self.buscar_lancamentos(entry_nome, entry_valor, 
+                                                             var_valor_aprox, tree_lancamentos)
+                      ).grid(row=0, column=5, padx=10)
+            
+            # Info sobre parcelas selecionadas
+            frame_info = ttk.LabelFrame(janela_busca, text="Parcelas a Vincular")
             frame_info.pack(fill='x', padx=10, pady=5)
             
-            # Converter valor para float para formatação
-            valor_float = float(dados_parcela['valor_pagar'].replace('R$', '').replace('.', '').replace(',', '.').strip())
+            info_text = f"Quantidade: {len(parcelas_dados)} | Valor Total: R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+            ttk.Label(frame_info, text=info_text, font=('Arial', 10, 'bold')).pack(padx=5, pady=5)
             
-            info_text = f"""Contrato: {dados_parcela['num_contrato']} - Parcela: {dados_parcela['num_parcela']}
-Fornecedor: {dados_parcela['nome']}
-CNPJ/CPF: {dados_parcela['cnpj']}
-Valor: R$ {valor_float:,.2f}
-Eventos/Fases: {dados_parcela['eventos_fases']}"""
+            # Frame resultados
+            frame_resultados = ttk.LabelFrame(janela_busca, text="Lançamentos Encontrados")
+            frame_resultados.pack(fill='both', expand=True, padx=10, pady=10)
             
-            ttk.Label(frame_info, text=info_text, justify='left').pack()
+            # Treeview
+            colunas_lanc = ('Linha', 'Data', 'Nome', 'CNPJ', 'Valor', 'Status')
+            tree_lancamentos = ttk.Treeview(frame_resultados, columns=colunas_lanc, show='headings')
             
-            # Frame de filtros
-            frame_filtros = ttk.LabelFrame(janela, text="Filtros de Busca", padding=10)
-            frame_filtros.pack(fill='x', padx=10, pady=5)
-            
-            # Filtro por nome
-            ttk.Label(frame_filtros, text="Buscar por Nome:").grid(row=0, column=0, sticky='w', padx=5)
-            var_filtro_nome = tk.StringVar(value=dados_parcela['nome'])
-            entry_filtro = ttk.Entry(frame_filtros, textvariable=var_filtro_nome, width=40)
-            entry_filtro.grid(row=0, column=1, sticky='ew', padx=5)
-            
-            # Filtro por valor aproximado
-            var_valor_aprox = tk.BooleanVar(value=True)
-            ttk.Checkbutton(
-                frame_filtros, 
-                text="Buscar valor aproximado (±10%)", 
-                variable=var_valor_aprox
-            ).grid(row=0, column=2, sticky='w', padx=10)
-            
-            # Botão de buscar
-            btn_buscar = ttk.Button(
-                frame_filtros, 
-                text="Buscar",
-                command=lambda: self.buscar_lancamentos_existentes(
-                    tree_lancamentos, 
-                    dados_parcela, 
-                    var_filtro_nome.get(),
-                    var_valor_aprox.get()
-                )
-            )
-            btn_buscar.grid(row=0, column=3, padx=5)
-            
-            frame_filtros.columnconfigure(1, weight=1)
-            
-            # Frame para lista de lançamentos
-            frame_lancamentos = ttk.LabelFrame(janela, text="Lançamentos Encontrados na Aba 'Dados'", padding=5)
-            frame_lancamentos.pack(fill='both', expand=True, padx=10, pady=5)
-            
-            # Treeview para lançamentos
-            colunas = ('Linha', 'Data', 'Nome', 'CNPJ/CPF', 'Valor', 'Vencimento', 'Referência', 'Observação')
-            tree_lancamentos = ttk.Treeview(frame_lancamentos, columns=colunas, show='headings', height=15)
-            
-            # Configurar colunas
-            larguras = {'Linha': 60, 'Data': 90, 'Nome': 200, 'CNPJ/CPF': 130, 
-                    'Valor': 100, 'Vencimento': 90, 'Referência': 150, 'Observação': 200}
-            
-            for col in colunas:
+            for col in colunas_lanc:
                 tree_lancamentos.heading(col, text=col)
-                tree_lancamentos.column(col, width=larguras.get(col, 100))
+                tree_lancamentos.column(col, width=150)
             
-            # Scrollbars
-            scrolly = ttk.Scrollbar(frame_lancamentos, orient='vertical', command=tree_lancamentos.yview)
-            scrollx = ttk.Scrollbar(frame_lancamentos, orient='horizontal', command=tree_lancamentos.xview)
-            tree_lancamentos.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
+            scrollbar_lanc = ttk.Scrollbar(frame_resultados, orient='vertical', 
+                                          command=tree_lancamentos.yview)
+            tree_lancamentos.configure(yscrollcommand=scrollbar_lanc.set)
             
-            tree_lancamentos.grid(row=0, column=0, sticky='nsew')
-            scrolly.grid(row=0, column=1, sticky='ns')
-            scrollx.grid(row=1, column=0, sticky='ew')
+            tree_lancamentos.pack(side='left', fill='both', expand=True)
+            scrollbar_lanc.pack(side='right', fill='y')
             
-            frame_lancamentos.grid_rowconfigure(0, weight=1)
-            frame_lancamentos.grid_columnconfigure(0, weight=1)
+            # Botões
+            frame_botoes_vinc = ttk.Frame(janela_busca)
+            frame_botoes_vinc.pack(fill='x', padx=10, pady=10)
             
-            # Buscar lançamentos automaticamente ao abrir
-            self.buscar_lancamentos_existentes(tree_lancamentos, dados_parcela, 
-                                            var_filtro_nome.get(), var_valor_aprox.get())
+            ttk.Button(frame_botoes_vinc, text="Vincular Selecionado", 
+                      command=lambda: self.confirmar_vinculacao_multipla(
+                          janela_busca, parcelas_dados, tree_lancamentos)
+                      ).pack(side='left', padx=5)
             
-            # Frame para botões de ação
-            frame_botoes = ttk.Frame(janela)
-            frame_botoes.pack(fill='x', padx=10, pady=10)
+            ttk.Button(frame_botoes_vinc, text="Cancelar", 
+                      command=janela_busca.destroy).pack(side='right', padx=5)
             
-            ttk.Button(
-                frame_botoes, 
-                text="Vincular Selecionado",
-                command=lambda: self.confirmar_vinculacao(
-                    janela, dados_parcela, tree_lancamentos
-                )
-            ).pack(side='left', padx=5)
-            
-            ttk.Button(
-                frame_botoes, 
-                text="Cancelar",
-                command=janela.destroy
-            ).pack(side='right', padx=5)
-            
-            # Label de instruções
-            ttk.Label(
-                janela, 
-                text="Dica: Selecione o lançamento correspondente e clique em 'Vincular Selecionado'",
-                foreground='#666'
-            ).pack(pady=5)
+            # Busca automática inicial
+            self.buscar_lancamentos(entry_nome, entry_valor, var_valor_aprox, tree_lancamentos)
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir janela de seleção: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao vincular parcelas: {str(e)}")
+    
+    def confirmar_vinculacao_multipla(self, janela, parcelas_dados, tree):
+        """Confirma e executa a vinculação de MÚLTIPLAS parcelas ao lançamento selecionado"""
+        try:
+            # Verificar seleção
+            selecao = tree.selection()
+            if not selecao:
+                messagebox.showwarning("Aviso", "Selecione um lançamento para vincular!", parent=janela)
+                return
+            
+            # Obter dados do lançamento
+            item = tree.item(selecao[0])
+            valores = item['values']
+            linha_lancamento = valores[0]
+            nome_lancamento = valores[2]
+            valor_lancamento = valores[4]
+            
+            # Montar texto de confirmação
+            lista_parcelas = "\n".join([
+                f"• Contrato {p['num_contrato']} - Parcela {p['num_parcela']} ({p['valor_pagar']})"
+                for p in parcelas_dados
+            ])
+            
+            resposta = messagebox.askyesno(
+                "Confirmar Vinculação Múltipla",
+                f"Confirma a vinculação de {len(parcelas_dados)} parcela(s)?\n\n"
+                f"PARCELAS:\n{lista_parcelas}\n\n"
+                f"SERÃO VINCULADAS AO LANÇAMENTO:\n"
+                f"Linha: {linha_lancamento}\n"
+                f"Nome: {nome_lancamento}\n"
+                f"Valor: {valor_lancamento}",
+                parent=janela
+            )
+            
+            if not resposta:
+                return
+            
+            # Executar vinculação
+            arquivo_cliente = Path(PASTA_CLIENTES) / f"{self.cliente_selecionado}.xlsx"
+            wb = load_workbook(arquivo_cliente)
+            ws_contratos = wb['Contratos_ADM']
+            
+            hoje = datetime.now()
+            parcelas_vinculadas = 0
+            
+            # Atualizar cada parcela
+            for parcela in parcelas_dados:
+                for row_idx, row in enumerate(ws_contratos.iter_rows(min_row=3), start=3):
+                    if (str(row[24].value) == parcela['num_contrato'] and
+                        int(row[25].value) == parcela['num_parcela'] and
+                        str(row[26].value) == parcela['cnpj']):
+                        
+                        # Atualizar status
+                        ws_contratos.cell(row=row_idx, column=31, value="VINCULADO")
+                        ws_contratos.cell(row=row_idx, column=32, value=hoje)
+                        
+                        # Adicionar observação
+                        obs_atual = ws_contratos.cell(row=row_idx, column=36).value or ""
+                        nova_obs = f"{obs_atual} [VINCULADO À DESPESA DA LINHA {linha_lancamento} DE DADOS]".strip()
+                        ws_contratos.cell(row=row_idx, column=36, value=nova_obs)
+                        
+                        parcelas_vinculadas += 1
+                        break
+            
+            # Salvar
+            wb.save(arquivo_cliente)
+            wb.close()
+            
+            # Sucesso
+            messagebox.showinfo(
+                "Sucesso",
+                f"Vinculação concluída!\n\n"
+                f"✓ {parcelas_vinculadas} parcela(s) vinculada(s)\n"
+                f"✓ Status: VINCULADO\n"
+                f"✓ Linha do lançamento: {linha_lancamento}",
+                parent=janela
+            )
+            
+            # Fechar e atualizar
+            janela.destroy()
+            self.carregar_parcelas()
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao confirmar vinculação: {str(e)}", parent=janela)
+            if 'wb' in locals():
+                wb.close()
+    
+    # ============== FUNÇÕES MANTIDAS DO CÓDIGO ORIGINAL ==============
+    # (As demais funções permanecem iguais ao código original)
+    
+    def carregar_clientes(self):
+        """Carrega lista de clientes disponíveis"""
+        try:
+            if not os.path.exists(PASTA_CLIENTES):
+                messagebox.showerror("Erro", f"Pasta de clientes não encontrada: {PASTA_CLIENTES}")
+                return
+            
+            clientes = []
+            for arquivo in os.listdir(PASTA_CLIENTES):
+                if arquivo.endswith('.xlsx') and not arquivo.startswith('~'):
+                    cliente = arquivo.replace('.xlsx', '')
+                    clientes.append(cliente)
+            
+            if not clientes:
+                messagebox.showwarning("Aviso", "Nenhum cliente encontrado!")
+                return
+            
+            clientes.sort()
+            self.cliente_combo['values'] = clientes
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
+    
+    def carregar_parcelas(self, event=None):
+        """Carrega parcelas pendentes do cliente selecionado"""
+        try:
+            # Limpar treeview
+            for item in self.tree_parcelas.get_children():
+                self.tree_parcelas.delete(item)
+            
+            # Limpar valores editados
+            self.valor_editado.clear()
+            
+            cliente = self.cliente_combo.get()
+            if not cliente:
+                return
+            
+            self.cliente_selecionado = cliente
+            
+            arquivo_cliente = Path(PASTA_CLIENTES) / f"{cliente}.xlsx"
+            if not arquivo_cliente.exists():
+                messagebox.showerror("Erro", f"Arquivo do cliente não encontrado: {arquivo_cliente}")
+                return
+            
+            wb = load_workbook(arquivo_cliente, data_only=True)
+            ws = wb['Contratos_ADM']
+            
+            # Iterar pelas linhas
+            for row in ws.iter_rows(min_row=3):
+                # Verificar se tem dados
+                num_contrato = row[24].value
+                if not num_contrato:
+                    continue
+                
+                num_parcela = row[25].value
+                cnpj = row[26].value
+                nome_adm = row[27].value
+                eventos = row[28].value or ""
+                valor_original = row[29].value
+                status = row[30].value or "PENDENTE"
+                data_pagamento = row[31].value
+                
+                # Mostrar apenas parcelas pendentes
+                if status not in ["PENDENTE", None, ""]:
+                    continue
+                
+                # Formatar valores
+                valor_original_fmt = f"R$ {valor_original:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.') if valor_original else "R$ 0,00"
+                valor_pagar_fmt = valor_original_fmt  # Inicialmente igual ao original
+                
+                data_pag_fmt = data_pagamento.strftime('%d/%m/%Y') if data_pagamento else ""
+                
+                # Inserir no treeview
+                self.tree_parcelas.insert('', 'end', values=(
+                    num_contrato,
+                    num_parcela,
+                    cnpj,
+                    nome_adm,
+                    eventos,
+                    valor_original_fmt,
+                    valor_pagar_fmt,
+                    status,
+                    data_pag_fmt
+                ))
+            
+            wb.close()
+            
+            # Atualizar informações de seleção
+            self.atualizar_info_selecao()
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar parcelas: {str(e)}")
+            if 'wb' in locals():
+                wb.close()
+    
+    def editar_valor_parcela(self, event):
+        """Permite editar o valor de uma parcela específica"""
+        try:
+            # Obter item selecionado
+            item_id = self.tree_parcelas.focus()
+            if not item_id:
+                return
+            
+            valores = self.tree_parcelas.item(item_id)['values']
+            
+            num_contrato = str(valores[0])
+            num_parcela = int(valores[1])
+            
+            # Valor original
+            valor_original_str = str(valores[5]).replace('R$', '').replace('.', '').replace(',', '.').strip()
+            valor_original = float(valor_original_str)
+            
+            # Atualizar labels
+            self.label_parcela_selecionada.config(text=f"Contrato {num_contrato} - Parcela {num_parcela}")
+            self.label_valor_original.config(text=valores[5])
+            
+            # Limpar e focar no campo de novo valor
+            self.entry_novo_valor.delete(0, tk.END)
+            self.entry_novo_valor.focus()
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao editar valor: {str(e)}")
+    
+    def aplicar_valor_editado(self):
+        """Aplica o novo valor editado à parcela"""
+        try:
+            item_id = self.tree_parcelas.focus()
+            if not item_id:
+                messagebox.showwarning("Aviso", "Selecione uma parcela primeiro!")
+                return
+            
+            novo_valor_str = self.entry_novo_valor.get().replace(',', '.')
+            if not novo_valor_str:
+                messagebox.showwarning("Aviso", "Digite um valor!")
+                return
+            
+            novo_valor = float(novo_valor_str)
+            
+            valores = self.tree_parcelas.item(item_id)['values']
+            chave = f"{valores[0]}_{valores[1]}_{valores[2]}"  # contrato_parcela_cnpj
+            
+            # Armazenar valor editado
+            self.valor_editado[chave] = novo_valor
+            
+            # Atualizar treeview
+            novo_valor_fmt = f"R$ {novo_valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+            
+            self.tree_parcelas.item(item_id, values=(
+                valores[0], valores[1], valores[2], valores[3],
+                valores[4], valores[5], novo_valor_fmt, valores[7], valores[8]
+            ))
+            
+            # Limpar campos
+            self.entry_novo_valor.delete(0, tk.END)
+            self.label_parcela_selecionada.config(text="Nenhuma")
+            self.label_valor_original.config(text="R$ 0,00")
+            
+            # Atualizar soma se houver múltiplas selecionadas
+            self.atualizar_info_selecao()
+            
+            messagebox.showinfo("Sucesso", "Valor atualizado!")
+            
+        except ValueError:
+            messagebox.showerror("Erro", "Valor inválido!")
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao aplicar valor: {str(e)}")
+    
+    def resetar_valores(self):
+        """Reseta todos os valores editados para os originais"""
+        try:
+            if not self.valor_editado:
+                messagebox.showinfo("Info", "Não há valores editados para resetar.")
+                return
+            
+            if messagebox.askyesno("Confirmar", "Deseja resetar todos os valores editados?"):
+                self.valor_editado.clear()
+                self.carregar_parcelas()
+                messagebox.showinfo("Sucesso", "Valores resetados!")
+                
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao resetar valores: {str(e)}")
     
     def buscar_lancamentos_existentes(self, tree, dados_parcela, filtro_nome, valor_aproximado):
-        """Busca lançamentos existentes que podem corresponder à parcela"""
+        """Busca lançamentos existentes que podem corresponder à parcela (versão para parcela única)"""
         try:
             # Limpar treeview
             for item in tree.get_children():
@@ -693,14 +830,18 @@ Eventos/Fases: {dados_parcela['eventos_fases']}"""
             # Buscar lançamentos
             encontrados = 0
             for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-                # Extrair dados
+                # Extrair dados conforme estrutura real:
+                # [0]=DATA_REL, [1]=TP_DESP, [2]=CNPJ_CPF, [3]=NOME, [4]=REFERÊNCIA,
+                # [5]=NF, [6]=VR_UNIT, [7]=DIAS, [8]=VALOR, [9]=DT_VENCTO,
+                # [10]=CATEGORIA, [11]=DADOS_BANCARIOS, [12]=OBSERVAÇÃO, [13]=STATUS
+                
                 data_rel = row[0]
                 cnpj_cpf = str(row[2]) if row[2] else ""
                 nome = str(row[3]) if row[3] else ""
                 referencia = str(row[4]) if row[4] else ""
-                valor = row[8] if row[8] else 0
-                dt_vencto = row[9]
-                observacao = str(row[12]) if row[12] else ""
+                valor_celula = row[8]  # COLUNA 9 (índice 8) = VALOR
+                dt_vencto = row[9] if len(row) > 9 else None
+                observacao = str(row[12]) if len(row) > 12 and row[12] else ""
                 
                 # Aplicar filtros
                 # 1. Filtro de nome (case insensitive, busca parcial)
@@ -712,24 +853,22 @@ Eventos/Fases: {dados_parcela['eventos_fases']}"""
                     if filtro_lower not in nome_lower:
                         continue
                 
-                # 2. Filtro de valor
-                try:
-                    valor_float = float(valor)
-                    if valor_aproximado:
-                        # Buscar valor aproximado (±10%)
-                        if not (valor_min <= valor_float <= valor_max):
-                            continue
-                    else:
-                        # Buscar valor exato
-                        if abs(valor_float - valor_parcela) > 0.01:
-                            continue
-                except:
-                    continue
+                # 2. Filtro de valor usando função auxiliar
+                valor_float = self.converter_valor_seguro(valor_celula)
+                
+                if valor_aproximado:
+                    # Buscar valor aproximado (±10%)
+                    if not (valor_min <= valor_float <= valor_max):
+                        continue
+                else:
+                    # Buscar valor exato
+                    if abs(valor_float - valor_parcela) > 0.01:
+                        continue
                 
                 # Formatar dados para exibição
                 data_formatada = data_rel.strftime('%d/%m/%Y') if isinstance(data_rel, datetime) else str(data_rel)
-                vencto_formatado = dt_vencto.strftime('%d/%m/%Y') if isinstance(dt_vencto, datetime) else str(dt_vencto)
-                valor_formatado = f"R$ {valor_float:,.2f}"
+                vencto_formatado = dt_vencto.strftime('%d/%m/%Y') if isinstance(dt_vencto, datetime) else str(dt_vencto) if dt_vencto else ""
+                valor_formatado = f"R$ {valor_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
                 
                 # Adicionar ao treeview
                 tree.insert('', 'end', values=(
@@ -784,108 +923,103 @@ Eventos/Fases: {dados_parcela['eventos_fases']}"""
             else:
                 messagebox.showerror("Erro", f"Erro ao buscar lançamentos: {str(e)}")
     
-    def confirmar_vinculacao(self, janela, dados_parcela, tree):
-        """Confirma e executa a vinculação da parcela ao lançamento selecionado"""
+    def buscar_lancamentos(self, entry_nome, entry_valor, var_valor_aprox, tree):
+        """Busca lançamentos na aba Dados que correspondam aos critérios"""
         try:
-            # Verificar seleção
-            selecao = tree.selection()
-            if not selecao:
-                # Garantir que messagebox apareça no topo
-                janela.attributes('-topmost', False)
-                messagebox.showwarning("Aviso", "Selecione um lançamento para vincular!", parent=janela)
-                janela.attributes('-topmost', True)
-                janela.lift()
+            # Limpar tree
+            for item in tree.get_children():
+                tree.delete(item)
+            
+            nome_busca = entry_nome.get().strip().upper()
+            valor_busca_str = entry_valor.get().strip().replace(',', '.')
+            
+            if not nome_busca and not valor_busca_str:
+                messagebox.showwarning("Aviso", "Informe ao menos um critério de busca!", 
+                                     parent=tree.master.master)
                 return
             
-            # Obter dados do lançamento selecionado
-            item = tree.item(selecao[0])
-            valores = item['values']
-            linha_lancamento = valores[0]
-            nome_lancamento = valores[2]
-            valor_lancamento = valores[4]
+            valor_busca = None
+            if valor_busca_str:
+                try:
+                    valor_busca = float(valor_busca_str)
+                except:
+                    messagebox.showerror("Erro", "Valor inválido!", parent=tree.master.master)
+                    return
             
-            # Garantir que o diálogo de confirmação apareça no topo
-            janela.attributes('-topmost', False)
-            
-            # Confirmar com usuário
-            resposta = messagebox.askyesno(
-                "Confirmar Vinculação",
-                f"Confirma a vinculação?\n\n"
-                f"PARCELA:\n"
-                f"Contrato: {dados_parcela['num_contrato']} - Parcela: {dados_parcela['num_parcela']}\n"
-                f"Fornecedor: {dados_parcela['nome']}\n"
-                f"Valor: {dados_parcela['valor_pagar']}\n\n"
-                f"SERÁ VINCULADA AO LANÇAMENTO:\n"
-                f"Linha: {linha_lancamento}\n"
-                f"Nome: {nome_lancamento}\n"
-                f"Valor: {valor_lancamento}\n\n"
-                f"Esta ação marcará a parcela como 'VINCULADO'.",
-                parent=janela
-            )
-            
-            if not resposta:
-                janela.attributes('-topmost', True)
-                janela.lift()
-                return
-            
-            # Executar vinculação
+            # Abrir arquivo
             arquivo_cliente = Path(PASTA_CLIENTES) / f"{self.cliente_selecionado}.xlsx"
-            wb = load_workbook(arquivo_cliente)
-            ws_contratos = wb['Contratos_ADM']
+            wb = load_workbook(arquivo_cliente, data_only=True)
+            ws_dados = wb['Dados']
             
-            # Atualizar status e dados da parcela
-            hoje = datetime.now()
+            resultados_encontrados = 0
             
-            for row_idx, row in enumerate(ws_contratos.iter_rows(min_row=3), start=3):
-                if (str(row[24].value) == dados_parcela['num_contrato'] and
-                    int(row[25].value) == dados_parcela['num_parcela'] and
-                    str(row[26].value) == dados_parcela['cnpj']):
+            # Buscar nas linhas
+            for row_idx, row in enumerate(ws_dados.iter_rows(min_row=2), start=2):
+                data_rel = row[0].value
+                nome = str(row[3].value or "")
+                cnpj = str(row[2].value or "")
+                valor_celula = row[8].value  # COLUNA 9 (índice 8) = VALOR
+                status = str(row[13].value or "")  # COLUNA 14 (índice 13) = STATUS
+                
+                # Aplicar filtros
+                if nome_busca and nome_busca not in nome.upper():
+                    continue
+                
+                # Converter valor usando função auxiliar
+                if valor_busca is not None:
+                    valor_float = self.converter_valor_seguro(valor_celula)
                     
-                    # Atualizar status para VINCULADO
-                    ws_contratos.cell(row=row_idx, column=31, value="VINCULADO")  # Status
-                    ws_contratos.cell(row=row_idx, column=32, value=hoje)         # Data_Pagamento
+                    # Pular se valor for zero (provavelmente inválido)
+                    if valor_float == 0 and valor_celula:
+                        continue
                     
-                    # Adicionar observação sobre a vinculação na coluna AJ (36)
-                    obs_atual = ws_contratos.cell(row=row_idx, column=36).value or ""
-                    nova_obs = f"{obs_atual} [VINCULADO À DESPESA DA LINHA {linha_lancamento} DE DADOS]".strip()
-                    ws_contratos.cell(row=row_idx, column=36, value=nova_obs)
-                    break
+                    if var_valor_aprox.get():
+                        # Tolerância de 5%
+                        margem = valor_busca * 0.05
+                        if not (valor_busca - margem <= valor_float <= valor_busca + margem):
+                            continue
+                    else:
+                        if abs(valor_float - valor_busca) > 0.01:
+                            continue
+                
+                # Formatar e inserir
+                data_fmt = data_rel.strftime('%d/%m/%Y') if data_rel else ""
+                
+                # Formatar valor usando a função auxiliar
+                valor_float = self.converter_valor_seguro(valor_celula)
+                valor_fmt = f"R$ {valor_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                
+                tree.insert('', 'end', values=(
+                    row_idx,
+                    data_fmt,
+                    nome,
+                    cnpj,
+                    valor_fmt,
+                    status
+                ))
+                
+                resultados_encontrados += 1
             
-            # Salvar alterações
-            wb.save(arquivo_cliente)
             wb.close()
             
-            # Mensagem de sucesso
-            messagebox.showinfo(
-                "Sucesso", 
-                f"Parcela vinculada com sucesso!\n\n"
-                f"Contrato: {dados_parcela['num_contrato']} - Parcela: {dados_parcela['num_parcela']}\n"
-                f"Status: VINCULADO\n"
-                f"Linha do lançamento: {linha_lancamento}",
-                parent=janela
-            )
-            
-            # Fechar janela e atualizar lista
-            janela.destroy()
-            self.carregar_parcelas()
-            
+            if resultados_encontrados == 0:
+                messagebox.showinfo(
+                    "Busca",
+                    "Nenhum lançamento encontrado com os critérios especificados.",
+                    parent=tree.master.master
+                )
+                
         except Exception as e:
-            if 'janela' in locals() and janela.winfo_exists():
-                janela.attributes('-topmost', False)
-                messagebox.showerror("Erro", f"Erro ao confirmar vinculação: {str(e)}", parent=janela)
-                janela.attributes('-topmost', True)
-                janela.lift()
-            else:
-                messagebox.showerror("Erro", f"Erro ao confirmar vinculação: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao buscar lançamentos: {str(e)}", 
+                               parent=tree.master.master)
             if 'wb' in locals():
                 wb.close()
-
+    
     def verificar_correcoes_pendentes(self):
         """Verifica se há correções monetárias pendentes"""
         try:
             gerenciador_correcao = GerenciadorCorrecaoMonetaria()
             
-            # Verificar se está na época de correção
             hoje = date.today()
             config_correcao = gerenciador_correcao.config.get('correcao_automatica', {})
             
@@ -900,10 +1034,9 @@ Eventos/Fases: {dados_parcela['eventos_fases']}"""
                     
         except Exception as e:
             print(f"Erro ao verificar correções: {str(e)}")
-
+    
     def voltar_menu(self):
         """Fecha a janela e retorna ao menu principal"""
-        # Verificar se temos uma referência para o controlador principal
         if hasattr(self, 'controlador_principal') and self.controlador_principal:
             self.root.destroy()
             
@@ -911,7 +1044,6 @@ Eventos/Fases: {dados_parcela['eventos_fases']}"""
                 self.controlador_principal.janela.deiconify()
                 return
         
-        # Se não temos controlador_principal, usar o comportamento padrão
         self.root.destroy()
         
         if self.parent:
@@ -919,7 +1051,7 @@ Eventos/Fases: {dados_parcela['eventos_fases']}"""
                 self.parent.janela.deiconify()
             else:
                 self.parent.deiconify()
-
+    
     def run(self):
         """Inicia a execução do sistema"""
         self.root.mainloop()
