@@ -1,0 +1,140 @@
+2025-12-01 09:29:23,645 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 09:29:23,646 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-01 09:29:23,647 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-01 09:29:23,647 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-01 09:29:23,648 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-01 09:29:40,870 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 09:29:40,888 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 09:29:40,891 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 09:29:40,894 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 09:29:40,904 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-12-01 09:29:46,074 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
+2025-12-01 09:31:14,936 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-12-01 09:34:53,806 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
+2025-12-01 09:38:03,674 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 09:38:03,675 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 10:08:06,091 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 10:08:06,092 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-01 10:08:06,093 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-01 10:08:06,093 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-01 10:08:06,094 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-01 10:08:16,907 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 10:08:16,910 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 10:08:16,912 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 10:08:16,913 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 10:08:16,930 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-12-01 10:08:20,176 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
+2025-12-01 10:08:43,594 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 10:08:43,595 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 10:09:24,446 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando envio de dados - Cliente: CLEVER LUIZ SALVADOR, Registros: 10
+2025-12-01 10:09:24,447 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Obtendo dados do visualizador
+2025-12-01 10:09:24,448 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Total de registros a processar: 10
+2025-12-01 10:09:24,449 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Datas que serão afetadas pela inserção: ['05/12/2025']
+2025-12-01 10:09:24,450 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-12-01 10:09:24,451 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-01 10:09:25,486 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:25,487 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:25,488 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ANTONIO DUTRA DE FREITAS | SALÁRIO | NF:  | R$ 1493.80 | 05/12/2025
+2025-12-01 10:09:25,562 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ANTONIO DUTRA DE FREITAS - SALÁRIO - NF: 
+2025-12-01 10:09:25,563 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:25,564 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:25,565 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: BRUNO JUNIO DA SILVA | SALÁRIO | NF:  | R$ 2566.36 | 05/12/2025
+2025-12-01 10:09:25,629 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: BRUNO JUNIO DA SILVA - SALÁRIO - NF: 
+2025-12-01 10:09:25,630 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:25,631 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:25,632 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: BRUNO RODRIGUES DOS SANTOS | SALÁRIO | NF:  | R$ 1493.80 | 05/12/2025
+2025-12-01 10:09:25,694 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: BRUNO RODRIGUES DOS SANTOS - SALÁRIO - NF: 
+2025-12-01 10:09:25,695 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:25,696 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:25,697 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: CARLOS ALEXANDRE FERNANDES DA SILVA | SALÁRIO | NF:  | R$ 1493.80 | 05/12/2025
+2025-12-01 10:09:25,757 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: CARLOS ALEXANDRE FERNANDES DA SILVA - SALÁRIO - NF: 
+2025-12-01 10:09:25,760 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:25,760 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:25,761 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: DOMINGOS DA SILVA LIMA | SALÁRIO | NF:  | R$ 966.27 | 05/12/2025
+2025-12-01 10:09:25,824 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: DOMINGOS DA SILVA LIMA - SALÁRIO - NF: 
+2025-12-01 10:09:25,825 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:25,826 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:25,826 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: EDER PEREIRA DA SILVA | SALÁRIO | NF:  | R$ 1493.80 | 05/12/2025
+2025-12-01 10:09:25,890 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: EDER PEREIRA DA SILVA - SALÁRIO - NF: 
+2025-12-01 10:09:25,892 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:25,892 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:25,893 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: FRANCISCO REGO DA SILVA | SALÁRIO | NF:  | R$ 1271.76 | 05/12/2025
+2025-12-01 10:09:25,956 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: FRANCISCO REGO DA SILVA - SALÁRIO - NF: 
+2025-12-01 10:09:25,958 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:25,958 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:25,959 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: LUCAS CATALUNHA DA SILVA | SALÁRIO | NF:  | R$ 966.27 | 05/12/2025
+2025-12-01 10:09:26,020 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: LUCAS CATALUNHA DA SILVA - SALÁRIO - NF: 
+2025-12-01 10:09:26,021 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:26,022 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:26,022 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: MARCOS VINICIUS BISPO CORREIA | SALÁRIO | NF:  | R$ 1493.80 | 05/12/2025
+2025-12-01 10:09:26,082 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: MARCOS VINICIUS BISPO CORREIA - SALÁRIO - NF: 
+2025-12-01 10:09:26,085 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - 🔍 MÉTODO DE VERIFICAÇÃO FOI CHAMADO!
+2025-12-01 10:09:26,086 - sistema_relatorios - Sistema_Entrada_Dados - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-01 10:09:26,086 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados novos: ROBERVAL PORTACIO DOS SANTOS | SALÁRIO | NF:  | R$ 966.27 | 05/12/2025
+2025-12-01 10:09:26,147 - sistema_relatorios - Sistema_Entrada_Dados - INFO - ✅ Nenhuma duplicata encontrada para: ROBERVAL PORTACIO DOS SANTOS - SALÁRIO - NF: 
+2025-12-01 10:09:26,154 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1111 na linha 1108
+2025-12-01 10:09:26,160 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1112 na linha 1109
+2025-12-01 10:09:26,166 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1113 na linha 1110
+2025-12-01 10:09:26,174 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1114 na linha 1111
+2025-12-01 10:09:26,181 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1115 na linha 1112
+2025-12-01 10:09:26,188 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1116 na linha 1113
+2025-12-01 10:09:26,194 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1117 na linha 1114
+2025-12-01 10:09:26,202 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1118 na linha 1115
+2025-12-01 10:09:26,246 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1119 na linha 1116
+2025-12-01 10:09:26,276 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Lançamento inserido com ID 1120 na linha 1117
+2025-12-01 10:09:27,040 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-01 10:09:27,541 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Verificando necessidade de recálculo para 2025-12-05
+2025-12-01 10:09:27,542 - sistema_relatorios - Sistema_Entrada_Dados - ERROR - Erro ao verificar recálculo para 2025-12-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-01 10:09:33,028 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Limpando 10 registros salvos da visualização
+2025-12-01 10:09:33,076 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Visualizador fechado - todos os registros foram processados
+2025-12-01 10:09:33,077 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-01 10:09:59,375 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-12-01 10:16:45,167 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 10:16:45,169 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-01 10:16:45,170 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-01 10:16:45,170 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-01 10:16:45,171 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-01 10:25:39,590 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 10:28:46,901 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 11:04:53,165 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 11:04:53,166 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-01 11:04:53,166 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-01 11:04:53,167 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-01 11:04:53,168 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-01 11:05:00,978 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 11:05:00,999 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 11:05:01,003 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 11:05:01,004 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 11:05:01,013 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
+2025-12-01 11:05:03,994 - sistema_relatorios - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-01 11:05:11,102 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 11:05:11,102 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 11:21:57,226 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 11:25:03,258 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 11:37:29,713 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 11:48:48,828 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 11:59:46,287 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 12:08:04,344 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 12:11:18,526 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 12:31:54,958 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 15:07:36,447 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 15:07:36,448 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-01 15:07:36,455 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-01 15:07:36,477 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-01 15:07:36,543 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-01 15:08:03,547 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 15:08:03,566 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 15:08:03,568 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 15:08:03,569 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 15:08:24,214 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 15:08:24,214 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 15:08:24,215 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 15:08:24,216 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 15:08:24,217 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 15:08:24,219 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 15:08:24,226 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-01 15:08:24,227 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-01 16:20:34,126 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 16:23:50,876 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 16:32:45,883 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-01 16:35:50,379 - sistema - logger_config - INFO - Sistema de logging inicializado
