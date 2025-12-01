@@ -10,17 +10,15 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 5,
-    "patch": 0,
-    "release_date": "13/11/2025",
+    "patch": 1,
+    "release_date": "01/12/2025",
     "changes": [
-        "Inclusão de Etapa da Obra nas importações de dados de RH - Folha e Transporte & Café",
-        "Correção dos dados bancários na Agenda",
-        "Inclusão da opção de remover vários regitros de uma vez só no Visualizador de Lançamentos",
-        "Inclusão da opção de vincular parcelas do contrato de administração de obra a lançamentos efetuados",
-        "Relatório de Despesas Aprimorado: adição de numeração de páginas",
-        "Relatório de Despesas Aprimorado: mudança de Notas para a primeira página e arquivada na planilha do cliente",
-        "Relatório de Despesas Aprimorado: adição de data de vencimento para 13º, Férias e Rescisão",
-        "Mudança do botão 'Visualizar Lançamentos' para a seção de Gerenciamento de Dados"
+        "Incluída a opção de editar em massa no visualizador e no gerenciador.",
+        "Inclusão de aba Serviços para ser utilizado nos contratos de prestação de serviço",
+        "Criação de módulo para geração de contrato de prestação de serviço",
+        "Inclusão de campos para CPF, CNO, rstado civil e grupo em Clientes.xlsx, para emissão de contrato de prestação de serviço",
+        "Inclusão de campo endereço em base_fornecedores.xlsx, para emissão de contrato de prestação de serviço",
+        "Atualização do controle de taxa de administração para permitir copiar eventos/fases de um gestor para outro e a vinculação de várias parcelas a um único pagamento"
     ]
 }
 
