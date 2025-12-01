@@ -401,26 +401,6 @@ class SistemaGestaoFinanceira:
         )
         button.pack(pady=(0, 20))
 
-    # def abrir_entrada_dados(self):
-    #     """Abre o sistema de entrada de dados"""
-    #     try:
-    #         simple_logger.info("Abrindo sistema de entrada de dados")
-            
-    #         try:
-    #             from src.Sistema_Entrada_Dados import SistemaEntradaDados
-    #         except ImportError:
-    #             from Sistema_Entrada_Dados import SistemaEntradaDados
-            
-    #         self.root.withdraw()
-    #         app = SistemaEntradaDados(parent=self.root)
-    #         app.root.lift()
-    #         app.root.focus_force()
-    #         app.root.mainloop()
-
-    #     except Exception as e:
-    #         simple_logger.error(f"Erro ao abrir sistema de entrada de dados: {str(e)}")
-    #         messagebox.showerror("Erro", "Erro ao abrir sistema de entrada de dados.")
-    #         self.root.deiconify()
 
     def abrir_entrada_dados(self):
         """Abre o sistema de entrada de dados"""
