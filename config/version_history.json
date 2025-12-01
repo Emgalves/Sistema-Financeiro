@@ -165,5 +165,18 @@
             "Mudança do botão 'Visualizar Lançamentos' para a seção de Gerenciamento de Dados"
         ],
         "timestamp": "2025-11-13T19:05:42.823785"
+    },
+    {
+        "version": "1.5.1",
+        "release_date": "01/12/2025",
+        "changes": [
+            "Incluída a opção de editar em massa no visualizador e no gerenciador.",
+            "Inclusão de aba Serviços para ser utilizado nos contratos de prestação de serviço",
+            "Criação de módulo para geração de contrato de prestação de serviço",
+            "Inclusão de campos para CPF, CNO, rstado civil e grupo em Clientes.xlsx, para emissão de contrato de prestação de serviço",
+            "Inclusão de campo endereço em base_fornecedores.xlsx, para emissão de contrato de prestação de serviço",
+            "Atualização do controle de taxa de administração para permitir copiar eventos/fases de um gestor para outro e a vinculação de várias parcelas a um único pagamento"
+        ],
+        "timestamp": "2025-12-01T11:27:21.148746"
     }
 ]
