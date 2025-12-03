@@ -121,7 +121,92 @@ class GestaoMedicoes:
 
         self.gerador_contrato = GeradorContrato()
         self.servicos_selecionados = []
+
+    def converter_valor_brasileiro_para_float(self, valor_str):
+        """
+        Converte string em formato brasileiro para float.
         
+        IMPORTANTE: Esta função é um MÉTODO da classe, então precisa de 'self' e 'valor_str'
+        
+        Exemplos de entrada aceitos:
+        - "R$ 15.293,58" → 15293.58
+        - "15.293,58" → 15293.58
+        - "R$ 5.017,98" → 5017.98
+        - "5017,98" → 5017.98
+        - "15293.58" → 15293.58 (já em formato numérico)
+        - 15293.58 → 15293.58 (já é número)
+        
+        Args:
+            valor_str: String ou número em formato brasileiro
+            
+        Returns:
+            float: Valor numérico convertido
+            
+        Raises:
+            ValueError: Se não conseguir converter
+        """
+        # Se já for número, retorna direto
+        if isinstance(valor_str, (int, float)):
+            return float(valor_str)
+        
+        # Se for None ou vazio, retorna 0
+        if not valor_str or valor_str == '':
+            return 0.0
+        
+        # Converter para string e limpar
+        valor_limpo = str(valor_str).strip()
+        
+        # Remover símbolo de moeda e espaços
+        valor_limpo = valor_limpo.replace('R$', '').replace('$', '').strip()
+        
+        # DETECTAR FORMATO:
+        # Formato brasileiro: ponto para milhar, vírgula para decimal
+        # Formato americano: vírgula para milhar, ponto para decimal
+        
+        tem_virgula = ',' in valor_limpo
+        tem_ponto = '.' in valor_limpo
+        
+        if tem_virgula and tem_ponto:
+            # Tem ambos - identificar qual é decimal
+            pos_virgula = valor_limpo.rfind(',')
+            pos_ponto = valor_limpo.rfind('.')
+            
+            if pos_virgula > pos_ponto:
+                # Formato brasileiro: vírgula vem depois (é o decimal)
+                # "15.293,58" → remover ponto, trocar vírgula por ponto
+                valor_limpo = valor_limpo.replace('.', '').replace(',', '.')
+            else:
+                # Formato americano: ponto vem depois (é o decimal)
+                # "15,293.58" → remover vírgula
+                valor_limpo = valor_limpo.replace(',', '')
+        
+        elif tem_virgula and not tem_ponto:
+            # Só vírgula - formato brasileiro
+            # "5017,98" → trocar vírgula por ponto
+            valor_limpo = valor_limpo.replace(',', '.')
+        
+        elif tem_ponto and not tem_virgula:
+            # Só ponto - pode ser milhar OU decimal
+            # Analisar contexto
+            partes = valor_limpo.split('.')
+            
+            # Se tem apenas um ponto e:
+            # - 2 casas depois E
+            # - Parte antes tem <= 3 dígitos
+            # Então provavelmente é decimal
+            if len(partes) == 2 and len(partes[-1]) == 2 and len(partes[0]) <= 3:
+                # "15.29" → é decimal, mantém
+                pass
+            else:
+                # "15.293" ou "1.500.293" → é milhar, remove
+                valor_limpo = valor_limpo.replace('.', '')
+        
+        # Tentar converter
+        try:
+            return float(valor_limpo)
+        except ValueError as e:
+            raise ValueError(f"Não foi possível converter '{valor_str}' para número: {e}")
+            
     def setup_gui(self):
         """Configuração da interface gráfica"""
         # Notebook (abas)
@@ -578,7 +663,6 @@ class GestaoMedicoes:
         # Bind de mudança de aba para carregar dados
         self.notebook.bind('<<NotebookTabChanged>>', self.on_tab_changed_contrato)
 
-
     def centralizar_janela(self, janela, largura=600, altura=400):
         """Centraliza a janela na tela e mantém visível - CORRIGIDO v3"""
         # Atualizar a geometria
@@ -644,7 +728,6 @@ class GestaoMedicoes:
         janela.title(titulo)
         self.centralizar_janela(janela, largura, altura)
         return janela
-
 
     def formatar_documento(self, documento):
         
@@ -789,6 +872,53 @@ class GestaoMedicoes:
             import traceback
             traceback.print_exc()
             messagebox.showerror("Erro", f"Erro ao buscar:\n{str(e)}")
+
+    def normalizar_cnpj_cpf(self, cnpj_cpf_input):
+        """
+        Normaliza CNPJ/CPF para busca consistente.
+        Remove formatação e garante comparação confiável.
+        
+        Args:
+            cnpj_cpf_input: String com CNPJ/CPF formatado ou não
+            
+        Returns:
+            dict com 'limpo' (só números) e 'formatado' (com máscara)
+        """
+        try:
+            # Garantir que é string
+            cnpj_str = str(cnpj_cpf_input) if cnpj_cpf_input else ""
+            
+            # Remover todos os caracteres não numéricos
+            apenas_numeros = ''.join(filter(str.isdigit, cnpj_str))
+            
+            # Se vazio, retornar vazio
+            if not apenas_numeros:
+                return {'limpo': '', 'formatado': ''}
+            
+            # Determinar se é CPF ou CNPJ pelo tamanho
+            tamanho = len(apenas_numeros)
+            
+            if tamanho <= 11:
+                # É CPF - garantir 11 dígitos com zeros à esquerda
+                cpf_completo = apenas_numeros.zfill(11)
+                cpf_formatado = f"{cpf_completo[:3]}.{cpf_completo[3:6]}.{cpf_completo[6:9]}-{cpf_completo[9:]}"
+                return {
+                    'limpo': cpf_completo,
+                    'formatado': cpf_formatado,
+                    'tipo': 'CPF'
+                }
+            else:
+                # É CNPJ - garantir 14 dígitos com zeros à esquerda
+                cnpj_completo = apenas_numeros.zfill(14)
+                cnpj_formatado = f"{cnpj_completo[:2]}.{cnpj_completo[2:5]}.{cnpj_completo[5:8]}/{cnpj_completo[8:12]}-{cnpj_completo[12:]}"
+                return {
+                    'limpo': cnpj_completo,
+                    'formatado': cnpj_formatado,
+                    'tipo': 'CNPJ'
+                }
+        except Exception as e:
+            logger.error(f"Erro ao normalizar CNPJ/CPF '{cnpj_cpf_input}': {str(e)}")
+            return {'limpo': '', 'formatado': '', 'tipo': 'INVÁLIDO'}
 
     # Funções da aba Cliente
     def atualizar_lista_clientes(self):
@@ -1782,9 +1912,6 @@ class GestaoMedicoes:
             traceback.print_exc()
             messagebox.showerror("Erro", f"Erro ao carregar dados do fornecedor:\n{str(e)}")
 
-
-
-
     def ao_mudar_data_contrato(self, event=None):
         """Quando Data do Contrato mudar, atualiza Data Início"""
         try:
@@ -1808,7 +1935,6 @@ class GestaoMedicoes:
         except Exception as e:
             logger.error(f"Erro ao sincronizar datas: {e}")
     
-
     def ao_mudar_dias(self, event=None):
         """Quando usuário digitar dias, recalcula Data Fim"""
         try:
@@ -1836,8 +1962,7 @@ class GestaoMedicoes:
             logger.info(f"Data Fim calculada: {data_atual.strftime('%d/%m/%Y')} ({dias_uteis} dias úteis, excluindo data início)")
         except Exception as e:
             logger.error(f"Erro ao calcular data fim: {e}")
-    
-    
+     
     def calcular_prazo_contrato(self, event=None):
         """Calcula o prazo em DIAS ÚTEIS entre Data Início e Data Fim"""
         try:
@@ -2061,8 +2186,6 @@ class GestaoMedicoes:
         
         ttk.Button(final_frame, text="✗ Cancelar", 
                 command=janela.destroy).pack(side='left', padx=5)
-
-
 
     def formatar_valor_global(self, event=None):
         """Formata o valor global para padrão brasileiro"""
@@ -3041,71 +3164,245 @@ class GestaoMedicoes:
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao vincular medição: {str(e)}")
 
+    def adicionar_rastreamento_vinculacao(self, id_contrato, id_medicao, linha_lancamento, valor_medicao, observacao=""):
+        """
+        Adiciona registro de vinculação na aba Vinculacoes para rastreamento.
+        Permite múltiplas vinculações ao mesmo lançamento.
+        
+        Args:
+            id_contrato: ID do contrato
+            id_medicao: ID da medição
+            linha_lancamento: Linha do lançamento na aba Dados
+            valor_medicao: Valor da medição vinculada
+            observacao: Observação adicional
+        """
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            
+            # Verificar se aba Vinculacoes existe, se não, criar
+            if "Vinculacoes" not in wb.sheetnames:
+                ws = wb.create_sheet("Vinculacoes")
+                # Criar cabeçalhos
+                headers = ['ID_Contrato', 'ID_Medicao', 'Linha_Lancamento', 'Data_Vinculacao', 
+                        'Valor_Medicao', 'Observacao']
+                for col, header in enumerate(headers, start=1):
+                    ws.cell(row=1, column=col, value=header)
+            else:
+                ws = wb["Vinculacoes"]
+            
+            # Adicionar novo registro
+            proxima_linha = ws.max_row + 1
+            hoje = datetime.now()
+            
+            ws.cell(row=proxima_linha, column=1, value=id_contrato)
+            ws.cell(row=proxima_linha, column=2, value=id_medicao)
+            ws.cell(row=proxima_linha, column=3, value=linha_lancamento)
+            
+            data_cell = ws.cell(row=proxima_linha, column=4, value=hoje)
+            data_cell.number_format = 'DD/MM/YYYY HH:MM:SS'
+            
+            valor_cell = ws.cell(row=proxima_linha, column=5, value=float(valor_medicao))
+            valor_cell.number_format = '#.##0,00'
+            
+            ws.cell(row=proxima_linha, column=6, value=observacao)
+            
+            wb.save(self.arquivo_cliente)
+            wb.close()
+            
+            logger.info(f"Rastreamento adicionado: Contrato {id_contrato}, Medição {id_medicao}, Linha {linha_lancamento}")
+            
+        except Exception as e:
+            logger.error(f"Erro ao adicionar rastreamento: {str(e)}")
+            try:
+                wb.close()
+            except:
+                pass
 
+    def obter_vinculacoes_lancamento(self, linha_lancamento):
+        """
+        VERSÃO CORRIGIDA - Com conversão correta ao calcular valores.
+        """
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            
+            # Verificar se aba existe
+            if 'Vinculacoes' not in wb.sheetnames:
+                wb.close()
+                return []
+            
+            ws_vinc = wb['Vinculacoes']
+            vinculacoes = []
+            
+            for row in ws_vinc.iter_rows(min_row=2, values_only=True):
+                if row[2] == linha_lancamento:  # Coluna C: Linha_Lancamento
+                    vinculacoes.append({
+                        'id_contrato': row[0],
+                        'id_medicao': row[1],
+                        'linha_lancamento': row[2],
+                        'data_vinculacao': row[3],
+                        'valor_medicao': row[4],  # Já vem como número da planilha
+                        'observacao': row[5] if len(row) > 5 else ""
+                    })
+            
+            wb.close()
+            return vinculacoes
+            
+        except Exception as e:
+            print(f"Erro ao obter vinculações: {e}")
+            return []
+
+    def buscar_lancamentos_por_cnpj(self, cnpj_cpf_normalizado):
+        """
+        Busca lançamentos na aba Dados usando CNPJ/CPF normalizado.
+        Mais robusto que busca por nome.
+        
+        Args:
+            cnpj_cpf_normalizado: Dict com 'limpo' e 'formatado'
+            
+        Returns:
+            Lista de tuplas (índice_linha, dados_linha)
+        """
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb['Dados']
+            
+            lancamentos_encontrados = []
+            cnpj_limpo = cnpj_cpf_normalizado['limpo']
+            
+            for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                # Coluna 3 (índice 2) contém CNPJ/CPF
+                cnpj_celula = str(row[2]) if row[2] else ""
+                
+                # Normalizar CNPJ da célula
+                cnpj_celula_norm = self.normalizar_cnpj_cpf(cnpj_celula)
+                
+                # Comparar apenas os números
+                if cnpj_celula_norm['limpo'] == cnpj_limpo:
+                    lancamentos_encontrados.append((idx, row))
+            
+            wb.close()
+            return lancamentos_encontrados
+            
+        except Exception as e:
+            logger.error(f"Erro ao buscar lançamentos por CNPJ: {str(e)}")
+            try:
+                wb.close()
+            except:
+                pass
+            return []
+    
     def abrir_janela_selecao_lancamento(self, id_medicao, dados_medicao):
-        """Abre janela para seleção de lançamento existente"""
+        """
+        VERSÃO CORRIGIDA - Interface melhorada com filtro de data e nova coluna de saldo.
+        """
         try:
             # Criar janela modal
             janela = tk.Toplevel(self.root)
             janela.title("Vincular a Lançamento Existente")
-            self.centralizar_janela(janela, largura=1000, altura=600)
+            self.centralizar_janela(janela, largura=1200, altura=650)
             
             # Frame de informações da medição
             frame_info = ttk.LabelFrame(janela, text="Dados da Medição", padding=10)
             frame_info.pack(fill='x', padx=10, pady=5)
             
-            info_text = f"""Fornecedor: {dados_medicao['nome']}
-    CNPJ/CPF: {dados_medicao['cnpj']}
-    Valor: R$ {float(dados_medicao['valor']):,.2f}
-    Referência: {dados_medicao['referencia']}
-    Data Medição: {dados_medicao['data_medicao']}"""
+            # Normalizar CNPJ para exibição
+            cnpj_norm = self.normalizar_cnpj_cpf(dados_medicao['cnpj'])
             
-            ttk.Label(frame_info, text=info_text, justify='left').pack()
+            # Extrair data da medição
+            try:
+                if isinstance(dados_medicao['data_medicao'], str):
+                    data_med_str = dados_medicao['data_medicao']
+                else:
+                    data_med_str = dados_medicao['data_medicao'].strftime('%d/%m/%Y')
+            except:
+                data_med_str = "N/D"
+            
+            info_text = f"""Fornecedor: {dados_medicao['nome']}
+    CNPJ/CPF: {cnpj_norm['formatado']} ({cnpj_norm['tipo']})
+    Valor: R$ {float(dados_medicao['valor']):,.2f}
+    Data Medição: {data_med_str}
+    Referência: {dados_medicao['referencia']}"""
+            
+            ttk.Label(frame_info, text=info_text, justify='left', font=('Arial', 10)).pack()
             
             # Frame de filtros
             frame_filtros = ttk.LabelFrame(janela, text="Filtros de Busca", padding=10)
             frame_filtros.pack(fill='x', padx=10, pady=5)
             
-            # Filtro por nome
+            # Linha 1: Nome e checkbox de data
             ttk.Label(frame_filtros, text="Buscar por Nome:").grid(row=0, column=0, sticky='w', padx=5)
             var_filtro_nome = tk.StringVar(value=dados_medicao['nome'])
             entry_filtro = ttk.Entry(frame_filtros, textvariable=var_filtro_nome, width=40)
             entry_filtro.grid(row=0, column=1, sticky='ew', padx=5)
             
-            # Filtro por valor aproximado
-            var_valor_aprox = tk.BooleanVar(value=True)
+            # NOVO: Filtro por data
+            var_filtrar_data = tk.BooleanVar(value=True)
             ttk.Checkbutton(
                 frame_filtros, 
-                text="Buscar valor aproximado (±10%)", 
-                variable=var_valor_aprox
+                text="Filtrar por data (mesmo mês/ano)", 
+                variable=var_filtrar_data
             ).grid(row=0, column=2, sticky='w', padx=10)
             
-            # Botão de buscar
+            # Botões de busca
             btn_buscar = ttk.Button(
                 frame_filtros, 
-                text="Buscar",
+                text="🔍 Buscar",
                 command=lambda: self.buscar_lancamentos_existentes(
                     tree_lancamentos, 
                     dados_medicao, 
                     var_filtro_nome.get(),
-                    var_valor_aprox.get()
+                    var_filtrar_data.get()
                 )
             )
             btn_buscar.grid(row=0, column=3, padx=5)
             
+            btn_buscar_cnpj = ttk.Button(
+                frame_filtros,
+                text="🔍 Só CNPJ",
+                command=lambda: self.buscar_lancamentos_existentes(
+                    tree_lancamentos,
+                    dados_medicao,
+                    "",  # Sem filtro de nome
+                    var_filtrar_data.get()
+                )
+            )
+            btn_buscar_cnpj.grid(row=0, column=4, padx=5)
+            
             frame_filtros.columnconfigure(1, weight=1)
+            
+            # Frame de informações adicionais
+            frame_info_busca = ttk.Frame(janela)
+            frame_info_busca.pack(fill='x', padx=10, pady=2)
+            
+            label_info = ttk.Label(
+                frame_info_busca,
+                text="💡 Busca por: CNPJ + Data (mesmo mês) + Saldo suficiente. Desmarque 'Filtrar por data' se não encontrar.",
+                foreground='#0066cc',
+                font=('Arial', 9)
+            )
+            label_info.pack()
             
             # Frame para lista de lançamentos
             frame_lancamentos = ttk.LabelFrame(janela, text="Lançamentos Encontrados na Aba 'Dados'", padding=5)
             frame_lancamentos.pack(fill='both', expand=True, padx=10, pady=5)
             
-            # Treeview para lançamentos
-            colunas = ('Linha', 'Data', 'Nome', 'CNPJ/CPF', 'Valor', 'Vencimento', 'Referência', 'Observação')
+            # NOVA ESTRUTURA: Treeview com coluna de Saldo Disponível
+            colunas = ('Linha', 'Data', 'Nome', 'CNPJ/CPF', 'Valor Total', 'Saldo Disp.', 'Status', 'Vencimento', 'Referência', 'Obs')
             tree_lancamentos = ttk.Treeview(frame_lancamentos, columns=colunas, show='headings', height=12)
             
             # Configurar colunas
-            larguras = {'Linha': 60, 'Data': 90, 'Nome': 200, 'CNPJ/CPF': 130, 
-                    'Valor': 100, 'Vencimento': 90, 'Referência': 150, 'Observação': 200}
+            larguras = {
+                'Linha': 60, 
+                'Data': 90, 
+                'Nome': 220,
+                'CNPJ/CPF': 130, 
+                'Valor Total': 100,
+                'Saldo Disp.': 100,  # NOVA COLUNA
+                'Status': 100,       # NOVA COLUNA
+                'Vencimento': 90, 
+                'Referência': 120, 
+                'Obs': 150
+            }
             
             for col in colunas:
                 tree_lancamentos.heading(col, text=col)
@@ -3121,8 +3418,12 @@ class GestaoMedicoes:
             scrollx.pack(side='bottom', fill='x')
             
             # Buscar lançamentos automaticamente ao abrir
-            self.buscar_lancamentos_existentes(tree_lancamentos, dados_medicao, 
-                                            var_filtro_nome.get(), var_valor_aprox.get())
+            self.buscar_lancamentos_existentes(
+                tree_lancamentos, 
+                dados_medicao, 
+                var_filtro_nome.get(), 
+                var_filtrar_data.get()
+            )
             
             # Frame para botões de ação
             frame_botoes = ttk.Frame(janela)
@@ -3130,32 +3431,41 @@ class GestaoMedicoes:
             
             ttk.Button(
                 frame_botoes, 
-                text="Vincular Selecionado",
+                text="✓ Vincular Selecionado",
                 command=lambda: self.confirmar_vinculacao(
                     janela, id_medicao, tree_lancamentos, dados_medicao
-                ),
-                style='Accent.TButton'
+                )
+            ).pack(side='left', padx=5)
+            
+            ttk.Button(
+                frame_botoes,
+                text="📊 Ver Vinculações",
+                command=lambda: self.mostrar_vinculacoes_lancamento(tree_lancamentos)
             ).pack(side='left', padx=5)
             
             ttk.Button(
                 frame_botoes, 
-                text="Cancelar",
+                text="✕ Cancelar",
                 command=janela.destroy
             ).pack(side='right', padx=5)
             
             # Label de instruções
             ttk.Label(
                 janela, 
-                text="Dica: Selecione o lançamento correspondente e clique em 'Vincular Selecionado'",
-                foreground='#666'
+                text="💡 Selecione o lançamento com saldo suficiente e clique em 'Vincular Selecionado'",
+                foreground='#666',
+                font=('Arial', 9)
             ).pack(pady=5)
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir janela de seleção: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
-
-    def buscar_lancamentos_existentes(self, tree, dados_medicao, filtro_nome, valor_aproximado):
-        """Busca lançamentos existentes que podem corresponder à medição"""
+    def buscar_lancamentos_existentes(self, tree, dados_medicao, filtro_nome, usar_filtro_data=True):
+        """
+        VERSÃO CORRIGIDA - Com conversão correta de valores brasileiros.
+        """
         try:
             # Limpar treeview
             for item in tree.get_children():
@@ -3165,87 +3475,228 @@ class GestaoMedicoes:
             wb = load_workbook(self.arquivo_cliente)
             ws = wb['Dados']
             
-            # Valor da medição
-            valor_medicao = float(dados_medicao['valor'])
+            # Normalizar CNPJ/CPF da medição
+            cnpj_medicao_norm = self.normalizar_cnpj_cpf(dados_medicao['cnpj'])
             
-            # Calcular margem de valor (±10%)
-            margem = valor_medicao * 0.10
-            valor_min = valor_medicao - margem
-            valor_max = valor_medicao + margem
+            # Valor da medição - CONVERSÃO CORRETA
+            try:
+                valor_medicao = self.converter_valor_brasileiro_para_float(dados_medicao['valor'])
+            except ValueError as e:
+                messagebox.showerror("Erro", f"Erro ao converter valor da medição: {str(e)}")
+                wb.close()
+                return
+            
+            # Data da medição (para comparação)
+            try:
+                if isinstance(dados_medicao['data_medicao'], str):
+                    data_medicao = datetime.strptime(dados_medicao['data_medicao'], '%d/%m/%Y')
+                else:
+                    data_medicao = dados_medicao['data_medicao']
+            except:
+                data_medicao = None
             
             # Buscar lançamentos
             encontrados = 0
+            lancamentos_possiveis = []
+            
             for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-                # Extrair dados
+                # Extrair dados da linha
                 data_rel = row[0]
                 cnpj_cpf = str(row[2]) if row[2] else ""
                 nome = str(row[3]) if row[3] else ""
                 referencia = str(row[4]) if row[4] else ""
-                valor = row[8] if row[8] else 0
+                valor_lancamento = row[8] if row[8] else 0
                 dt_vencto = row[9]
                 observacao = str(row[12]) if row[12] else ""
                 
-                # Aplicar filtros
-                # 1. Filtro de nome (case insensitive, busca parcial)
-                if filtro_nome:
+                # === CRITÉRIO 1: CNPJ/CPF (obrigatório) ===
+                cnpj_linha_norm = self.normalizar_cnpj_cpf(cnpj_cpf)
+                match_cnpj = (cnpj_linha_norm['limpo'] == cnpj_medicao_norm['limpo']) if cnpj_medicao_norm['limpo'] else False
+                
+                # === CRITÉRIO 2: Nome (opcional, fallback) ===
+                match_nome = False
+                if filtro_nome and not match_cnpj:
                     filtro_lower = filtro_nome.lower()
                     nome_lower = nome.lower()
-                    
-                    # Verificar se há correspondência parcial
-                    if filtro_lower not in nome_lower:
-                        continue
+                    palavras_filtro = filtro_lower.split()
+                    palavras_nome = nome_lower.split()
+                    match_nome = all(
+                        any(palavra_filtro in palavra_nome for palavra_nome in palavras_nome)
+                        for palavra_filtro in palavras_filtro
+                    )
                 
-                # 2. Filtro de valor
+                # Se não deu match em CNPJ nem em nome, pular
+                if not (match_cnpj or match_nome):
+                    continue
+                
+                # === CRITÉRIO 3: Data (se habilitado) ===
+                match_data = True  # Padrão: aceita qualquer data
+                if usar_filtro_data and data_medicao and data_rel:
+                    try:
+                        if isinstance(data_rel, datetime):
+                            data_lancamento = data_rel
+                        else:
+                            data_lancamento = datetime.strptime(str(data_rel), '%d/%m/%Y')
+                        
+                        # Aceita se for:
+                        # 1. Mesma data exata, OU
+                        # 2. Mesmo mês e ano
+                        match_data = (
+                            data_lancamento.date() == data_medicao.date() or
+                            (data_lancamento.month == data_medicao.month and 
+                            data_lancamento.year == data_medicao.year)
+                        )
+                    except:
+                        match_data = True  # Se não conseguir comparar, aceita
+                
+                if not match_data:
+                    continue
+                
+                # === CRITÉRIO 4: Valor e Saldo - COM CONVERSÃO CORRETA ===
                 try:
-                    valor_float = float(valor)
-                    if valor_aproximado:
-                        # Buscar valor aproximado (±10%)
-                        if not (valor_min <= valor_float <= valor_max):
-                            continue
-                    else:
-                        # Buscar valor exato
-                        if abs(valor_float - valor_medicao) > 0.01:
-                            continue
+                    valor_lancamento_float = self.converter_valor_brasileiro_para_float(valor_lancamento)
                 except:
                     continue
                 
-                # Formatar dados para exibição
+                # Calcular saldo disponível do lançamento
+                vinculacoes_existentes = self.obter_vinculacoes_lancamento(idx)
+                valor_ja_vinculado = sum(
+                    self.converter_valor_brasileiro_para_float(v['valor_medicao']) 
+                    for v in vinculacoes_existentes
+                )
+                saldo_disponivel = valor_lancamento_float - valor_ja_vinculado
+                
+                # Debug
+                print(f"DEBUG Linha {idx}:")
+                print(f"  Valor lançamento: {valor_lancamento} → {valor_lancamento_float}")
+                print(f"  Já vinculado: {valor_ja_vinculado}")
+                print(f"  Saldo disponível: {saldo_disponivel}")
+                print(f"  Valor medição: {valor_medicao}")
+                
+                # Aceita se:
+                # 1. Valor exato: saldo_disponivel == valor_medicao (com margem de R$ 0.01)
+                # 2. Saldo suficiente: saldo_disponivel >= valor_medicao
+                valor_exato = abs(saldo_disponivel - valor_medicao) <= 0.01
+                saldo_suficiente = saldo_disponivel >= valor_medicao
+                
+                if not (valor_exato or saldo_suficiente):
+                    print(f"  REJEITADO: Saldo insuficiente")
+                    continue
+                
+                print(f"  ACEITO!")
+                
+                # === Preparar dados para exibição ===
+                
+                # Formatar datas
                 data_formatada = data_rel.strftime('%d/%m/%Y') if isinstance(data_rel, datetime) else str(data_rel)
                 vencto_formatado = dt_vencto.strftime('%d/%m/%Y') if isinstance(dt_vencto, datetime) else str(dt_vencto)
-                valor_formatado = f"R$ {valor_float:,.2f}"
                 
-                # Adicionar ao treeview
+                # Formatar valores - USAR FORMATO BRASILEIRO
+                valor_formatado = f"R$ {valor_lancamento_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                saldo_formatado = f"R$ {saldo_disponivel:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                
+                # Indicadores visuais
+                tipo_match = "CNPJ" if match_cnpj else "NOME"
+                info_vinculacoes = ""
+                if vinculacoes_existentes:
+                    qtd = len(vinculacoes_existentes)
+                    info_vinculacoes = f" [{qtd}V]"
+                
+                # Indicador de adequação
+                if valor_exato:
+                    indicador_valor = "🎯 EXATO"
+                elif saldo_disponivel >= valor_medicao * 2:
+                    indicador_valor = "✅ SALDO OK"
+                else:
+                    indicador_valor = "⚠️ SALDO JUSTO"
+                
+                nome_display = f"{nome} ({tipo_match}){info_vinculacoes}"
+                
+                # Adicionar à lista com score para ordenação
+                lancamentos_possiveis.append({
+                    'idx': idx,
+                    'data': data_formatada,
+                    'nome': nome_display,
+                    'cnpj': cnpj_cpf,
+                    'valor_total': valor_formatado,
+                    'saldo_disp': saldo_formatado,
+                    'vencimento': vencto_formatado,
+                    'referencia': referencia,
+                    'observacao': observacao,
+                    'score': (
+                        100 if valor_exato else 0 +  # Valor exato = prioridade máxima
+                        50 if match_cnpj else 0 +     # Match CNPJ > nome
+                        20 if match_data else 0        # Match data é bônus
+                    ),
+                    'indicador': indicador_valor,
+                    'saldo_real': saldo_disponivel
+                })
+            
+            # Ordenar por score (melhores matches primeiro)
+            lancamentos_possiveis.sort(key=lambda x: x['score'], reverse=True)
+            
+            # Adicionar ao treeview
+            for lanc in lancamentos_possiveis:
                 tree.insert('', 'end', values=(
-                    idx,  # Número da linha
-                    data_formatada,
-                    nome,
-                    cnpj_cpf,
-                    valor_formatado,
-                    vencto_formatado,
-                    referencia,
-                    observacao
+                    lanc['idx'],
+                    lanc['data'],
+                    lanc['nome'],
+                    lanc['cnpj'],
+                    lanc['valor_total'],
+                    lanc['saldo_disp'],
+                    lanc['indicador'],
+                    lanc['vencimento'],
+                    lanc['referencia'],
+                    lanc['observacao']
                 ))
                 encontrados += 1
             
             wb.close()
             
-            # Mensagem se nada foi encontrado
+            # Mensagem de resultado
             if encontrados == 0:
                 messagebox.showinfo(
                     "Busca", 
-                    "Nenhum lançamento encontrado com os critérios especificados.\\n\\n"
-                    "Dicas:\\n"
-                    "• Experimente remover parte do nome\\n"
-                    "• Verifique se marcou 'valor aproximado'\\n"
-                    "• O fornecedor pode estar com nome diferente (PF/PJ)"
+                    "Nenhum lançamento encontrado com os critérios especificados.\n\n"
+                    "Possíveis causas:\n"
+                    "• Não há lançamento com saldo suficiente\n"
+                    "• Data da medição não coincide com data do lançamento\n"
+                    "• CNPJ/CPF não corresponde\n"
+                    "• Lançamento já está totalmente vinculado\n\n"
+                    "Dicas:\n"
+                    "• Desmarque 'Filtrar por data' para ampliar busca\n"
+                    "• Verifique se o lançamento existe na aba Dados\n"
+                    "• Confirme CNPJ/CPF do fornecedor"
+                )
+            else:
+                # Mensagem de sucesso com informações
+                msg_data = ""
+                if usar_filtro_data and data_medicao:
+                    msg_data = f"• Data: {data_medicao.strftime('%m/%Y')} (mesmo mês/ano)\n"
+                
+                messagebox.showinfo(
+                    "Busca",
+                    f"Encontrados {encontrados} lançamento(s) compatível(is).\n\n"
+                    f"Critérios aplicados:\n"
+                    f"• CNPJ/CPF: {cnpj_medicao_norm['formatado']}\n"
+                    f"• Nome: {filtro_nome or 'Qualquer'}\n"
+                    f"{msg_data}"
+                    f"• Valor medição: R$ {valor_medicao:,.2f}\n"
+                    f"• Lógica: Saldo disponível >= Valor medição\n\n"
+                    f"🎯 = Valor exato\n"
+                    f"✅ = Saldo OK (>= 2x medição)\n"
+                    f"⚠️ = Saldo justo (>= medição)"
                 )
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao buscar lançamentos: {str(e)}")
-
+            import traceback
+            traceback.print_exc()
 
     def confirmar_vinculacao(self, janela, id_medicao, tree, dados_medicao):
-        """Confirma e executa a vinculação da medição ao lançamento selecionado"""
+        """
+        VERSÃO CORRIGIDA - Com conversão correta de valores brasileiros.
+        """
         try:
             # Verificar seleção
             selecao = tree.selection()
@@ -3257,41 +3708,124 @@ class GestaoMedicoes:
             item = tree.item(selecao[0])
             valores = item['values']
             linha_lancamento = valores[0]
-            nome_lancamento = valores[2]
-            valor_lancamento = valores[4]
+            nome_lancamento_display = valores[2]
+            nome_lancamento = nome_lancamento_display.split(' (')[0]
+            valor_total_lanc_str = valores[4]  # String formatada
+            saldo_disponivel_str = valores[5]  # String formatada
+            indicador = valores[6]
+            
+            # === CONVERSÃO CORRETA DE VALORES ===
+            try:
+                saldo_disponivel = self.converter_valor_brasileiro_para_float(saldo_disponivel_str)
+            except ValueError as e:
+                messagebox.showerror(
+                    "Erro de Conversão",
+                    f"Erro ao converter saldo disponível:\n{saldo_disponivel_str}\n\n{str(e)}"
+                )
+                return
+            
+            try:
+                valor_medicao = self.converter_valor_brasileiro_para_float(dados_medicao['valor'])
+            except ValueError as e:
+                messagebox.showerror(
+                    "Erro de Conversão",
+                    f"Erro ao converter valor da medição:\n{dados_medicao['valor']}\n\n{str(e)}"
+                )
+                return
+            
+            # Debug: mostrar valores convertidos
+            print(f"DEBUG - Conversões:")
+            print(f"  Saldo string: {saldo_disponivel_str}")
+            print(f"  Saldo float: {saldo_disponivel}")
+            print(f"  Medição string: {dados_medicao['valor']}")
+            print(f"  Medição float: {valor_medicao}")
+            
+            # === VALIDAÇÃO CRÍTICA: Verificar saldo disponível ===
+            if saldo_disponivel < valor_medicao:
+                messagebox.showerror(
+                    "Saldo Insuficiente",
+                    f"❌ NÃO É POSSÍVEL VINCULAR!\n\n"
+                    f"Valor da medição: R$ {valor_medicao:,.2f}\n"
+                    f"Saldo disponível: R$ {saldo_disponivel:,.2f}\n"
+                    f"Faltam: R$ {(valor_medicao - saldo_disponivel):,.2f}\n\n"
+                    f"Este lançamento não tem saldo suficiente para esta medição.\n"
+                    f"Procure outro lançamento ou divida a medição."
+                )
+                return
+            
+            # Verificar vinculações existentes
+            vinculacoes_existentes = self.obter_vinculacoes_lancamento(linha_lancamento)
+            
+            # Calcular novo saldo após vinculação
+            novo_saldo = saldo_disponivel - valor_medicao
+            
+            # Preparar mensagem
+            mensagem_vinculacoes = ""
+            if vinculacoes_existentes:
+                qtd = len(vinculacoes_existentes)
+                valor_total_vinc = sum(
+                    self.converter_valor_brasileiro_para_float(v['valor_medicao']) 
+                    for v in vinculacoes_existentes
+                )
+                mensagem_vinculacoes = (
+                    f"\n\n⚠️ ATENÇÃO: Este lançamento já possui {qtd} vinculação(ões):\n"
+                    f"Total já vinculado: R$ {valor_total_vinc:,.2f}\n"
+                    f"Saldo atual: R$ {saldo_disponivel:,.2f}\n\n"
+                    "Esta medição será ADICIONADA às vinculações existentes."
+                )
+            
+            # Aviso sobre saldo final
+            aviso_saldo = ""
+            if novo_saldo <= 0.01:
+                aviso_saldo = "\n\n✅ Este lançamento ficará TOTALMENTE VINCULADO (saldo zerado)."
+            else:
+                aviso_saldo = f"\n\n💰 Saldo restante após vinculação: R$ {novo_saldo:,.2f}"
             
             # Confirmar com usuário
             resposta = messagebox.askyesno(
                 "Confirmar Vinculação",
-                f"Confirma a vinculação?\\n\\n"
-                f"MEDIÇÃO #{id_medicao}\\n"
-                f"Fornecedor: {dados_medicao['nome']}\\n"
-                f"Valor: R$ {float(dados_medicao['valor']):,.2f}\\n\\n"
-                f"SERÁ VINCULADA AO LANÇAMENTO:\\n"
-                f"Linha: {linha_lancamento}\\n"
-                f"Nome: {nome_lancamento}\\n"
-                f"Valor: {valor_lancamento}\\n\\n"
+                f"Confirma a vinculação?\n\n"
+                f"MEDIÇÃO #{id_medicao}\n"
+                f"Fornecedor: {dados_medicao['nome']}\n"
+                f"CNPJ/CPF: {dados_medicao['cnpj']}\n"
+                f"Valor: R$ {valor_medicao:,.2f}\n\n"
+                f"SERÁ VINCULADA AO LANÇAMENTO:\n"
+                f"Linha: {linha_lancamento}\n"
+                f"Nome: {nome_lancamento}\n"
+                f"Valor total: {valor_total_lanc_str}\n"
+                f"Saldo disponível: R$ {saldo_disponivel:,.2f}\n"
+                f"Status: {indicador}"
+                f"{mensagem_vinculacoes}"
+                f"{aviso_saldo}\n\n"
                 f"Esta ação marcará a medição como 'VINCULADO'."
             )
             
             if not resposta:
                 return
             
-            # Executar vinculação
+            # === EXECUTAR VINCULAÇÃO ===
             wb = load_workbook(self.arquivo_cliente)
             ws_medicoes = wb['Medicoes']
             
             # Atualizar status e dados da medição
-            hoje = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            hoje = datetime.now()
             
             for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
                     ws_medicoes.cell(row=idx, column=9, value="VINCULADO")  # Status
-                    ws_medicoes.cell(row=idx, column=10, value=hoje)        # Data_Lancamento
                     
-                    # Adicionar observação sobre a vinculação
+                    data_cell = ws_medicoes.cell(row=idx, column=10, value=hoje)
+                    data_cell.number_format = 'DD/MM/YYYY HH:MM:SS'
+                    
+                    # Observação com mais informações
                     obs_atual = ws_medicoes.cell(row=idx, column=11).value or ""
-                    nova_obs = f"{obs_atual} [VINCULADO À DESPESA DA LINHA {linha_lancamento} DE DADOS]"
+                    info_adicional = ""
+                    if vinculacoes_existentes:
+                        info_adicional = f" (LANÇAMENTO COM {len(vinculacoes_existentes)} VINC. ANTERIOR(ES))"
+                    
+                    info_saldo = f" SALDO PÓS-VINC: R$ {novo_saldo:.2f}"
+                    
+                    nova_obs = f"{obs_atual} [VINCULADO À LINHA {linha_lancamento}{info_adicional}{info_saldo}]"
                     ws_medicoes.cell(row=idx, column=11, value=nova_obs)
                     break
             
@@ -3299,13 +3833,33 @@ class GestaoMedicoes:
             wb.save(self.arquivo_cliente)
             wb.close()
             
-            # Mensagem de sucesso
-            messagebox.showinfo(
-                "Sucesso", 
-                f"Medição #{id_medicao} vinculada com sucesso!\\n\\n"
-                f"Status: VINCULADO\\n"
-                f"Linha do lançamento: {linha_lancamento}"
+            # Adicionar rastreamento da vinculação
+            self.adicionar_rastreamento_vinculacao(
+                id_contrato=self.contrato_atual,
+                id_medicao=id_medicao,
+                linha_lancamento=linha_lancamento,
+                valor_medicao=valor_medicao,
+                observacao=f"Vinculado a {nome_lancamento} - Saldo restante: R$ {novo_saldo:.2f}"
             )
+            
+            # Mensagem de sucesso
+            total_vinculacoes = len(vinculacoes_existentes) + 1
+            msg_final = f"Medição #{id_medicao} vinculada com sucesso!\n\n"
+            msg_final += f"Status: VINCULADO\n"
+            msg_final += f"Linha do lançamento: {linha_lancamento}\n"
+            msg_final += f"Total de vinculações neste lançamento: {total_vinculacoes}\n"
+            msg_final += f"Saldo restante no lançamento: R$ {novo_saldo:,.2f}\n\n"
+            
+            if novo_saldo <= 0.01:
+                msg_final += "✅ Lançamento TOTALMENTE VINCULADO!\n"
+            elif novo_saldo < valor_medicao:
+                msg_final += "⚠️ Saldo restante insuficiente para nova medição deste valor.\n"
+            else:
+                msg_final += "💰 Saldo ainda disponível para mais vinculações.\n"
+            
+            msg_final += "\n📊 Use o relatório de vinculações para ver detalhes."
+            
+            messagebox.showinfo("Sucesso", msg_final)
             
             # Fechar janela e atualizar lista
             janela.destroy()
@@ -3313,11 +3867,91 @@ class GestaoMedicoes:
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao confirmar vinculação: {str(e)}")
+            import traceback
+            traceback.print_exc()
             try:
                 wb.close()
             except:
                 pass
 
+    def mostrar_vinculacoes_lancamento(self, tree):
+        """
+        MÉTODO NOVO - Mostra todas as medições vinculadas ao lançamento selecionado.
+        """
+        try:
+            # Verificar seleção
+            selecao = tree.selection()
+            if not selecao:
+                messagebox.showinfo(
+                    "Informação",
+                    "Selecione um lançamento para ver suas vinculações."
+                )
+                return
+            
+            # Obter linha do lançamento
+            item = tree.item(selecao[0])
+            linha_lancamento = item['values'][0]
+            
+            # Buscar vinculações
+            vinculacoes = self.obter_vinculacoes_lancamento(linha_lancamento)
+            
+            if not vinculacoes:
+                messagebox.showinfo(
+                    "Vinculações",
+                    f"Lançamento da linha {linha_lancamento} não possui vinculações."
+                )
+                return
+            
+            # Montar mensagem
+            valor_total = sum(v['valor_medicao'] for v in vinculacoes)
+            
+            mensagem = f"📊 VINCULAÇÕES DO LANÇAMENTO (Linha {linha_lancamento})\n"
+            mensagem += f"{'='*60}\n\n"
+            mensagem += f"Total de medições vinculadas: {len(vinculacoes)}\n"
+            mensagem += f"Valor total vinculado: R$ {valor_total:,.2f}\n\n"
+            mensagem += "DETALHES:\n"
+            mensagem += "-" * 60 + "\n"
+            
+            for i, v in enumerate(vinculacoes, 1):
+                data_vinc = v['data_vinculacao']
+                data_str = data_vinc.strftime('%d/%m/%Y %H:%M') if isinstance(data_vinc, datetime) else str(data_vinc)
+                
+                mensagem += f"\n{i}. Contrato {v['id_contrato']} - Medição #{v['id_medicao']}\n"
+                mensagem += f"   Valor: R$ {float(v['valor_medicao']):,.2f}\n"
+                mensagem += f"   Data: {data_str}\n"
+                if v['observacao']:
+                    mensagem += f"   Obs: {v['observacao']}\n"
+            
+            # Criar janela de detalhes
+            janela_detalhes = tk.Toplevel()
+            janela_detalhes.title(f"Vinculações - Lançamento Linha {linha_lancamento}")
+            self.centralizar_janela(janela_detalhes, 700, 500)
+            
+            # Text widget com scroll
+            frame = ttk.Frame(janela_detalhes, padding=10)
+            frame.pack(fill='both', expand=True)
+            
+            text_widget = tk.Text(frame, wrap='word', font=('Courier', 10))
+            scrollbar = ttk.Scrollbar(frame, command=text_widget.yview)
+            text_widget.configure(yscrollcommand=scrollbar.set)
+            
+            text_widget.pack(side='left', fill='both', expand=True)
+            scrollbar.pack(side='right', fill='y')
+            
+            text_widget.insert('1.0', mensagem)
+            text_widget.configure(state='disabled')
+            
+            # Botão fechar
+            ttk.Button(
+                janela_detalhes,
+                text="Fechar",
+                command=janela_detalhes.destroy
+            ).pack(pady=10)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao mostrar vinculações: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
     def obter_dados_medicao(self, id_medicao):
         """Obtém todos os dados de uma medição específica"""
@@ -3353,35 +3987,37 @@ class GestaoMedicoes:
             return None
 
     def obter_dados_bancarios(self, cnpj):
-        """Obtém os dados bancários do fornecedor com tratamento robusto para CNPJ/CPF"""
+        """
+        VERSÃO CORRIGIDA - Obtém os dados bancários do fornecedor com tratamento robusto.
+        Funciona tanto em VSCode quanto em executável.
+        """
         try:
-            # Garantir que estamos trabalhando com string
-            cnpj_str = str(cnpj)
+            # Normalizar CNPJ/CPF
+            cnpj_normalizado = self.normalizar_cnpj_cpf(cnpj)
             
-            # Limpar a string, removendo caracteres não numéricos
-            cnpj_limpo = ''.join(filter(str.isdigit, cnpj_str))
+            if not cnpj_normalizado['limpo']:
+                return "DADOS BANCÁRIOS NÃO CADASTRADOS"
             
-            # Determinar se é CPF (11 dígitos) ou CNPJ (14 dígitos) e garantir o preenchimento com zeros
-            if len(cnpj_limpo) <= 11:
-                # É um CPF, garantir 11 dígitos
-                cnpj_formatado = cnpj_limpo.zfill(11)
-                # Formatar como XXX.XXX.XXX-XX
-                cnpj_formatado = f"{cnpj_formatado[:3]}.{cnpj_formatado[3:6]}.{cnpj_formatado[6:9]}-{cnpj_formatado[9:]}"
-            else:
-                # É um CNPJ, garantir 14 dígitos
-                cnpj_formatado = cnpj_limpo.zfill(14)
-                # Formatar como XX.XXX.XXX/XXXX-XX
-                cnpj_formatado = f"{cnpj_formatado[:2]}.{cnpj_formatado[2:5]}.{cnpj_formatado[5:8]}/{cnpj_formatado[8:12]}-{cnpj_formatado[12:]}"
+            # Tentar primeiro com formatação
+            dados_bancarios = buscar_dados_bancarios_fornecedor(
+                cnpj_normalizado['formatado'], 
+                "PIX"
+            )
             
-            # Usar a função auxiliar importada
-            dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_formatado, "PIX")
-            
-            # Verificar se obteve dados bancários
+            # Se não encontrou, tentar sem formatação
             if not dados_bancarios or dados_bancarios == "DADOS BANCÁRIOS NÃO CADASTRADOS":
-                # Tentar sem formatação
-                dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_limpo, "PIX")
-                
+                dados_bancarios = buscar_dados_bancarios_fornecedor(
+                    cnpj_normalizado['limpo'], 
+                    "PIX"
+                )
+            
+            # Se ainda não encontrou, tentar variações
+            if not dados_bancarios or dados_bancarios == "DADOS BANCÁRIOS NÃO CADASTRADOS":
+                # Tentar com o valor original também
+                dados_bancarios = buscar_dados_bancarios_fornecedor(str(cnpj), "PIX")
+            
             return dados_bancarios if dados_bancarios else "DADOS BANCÁRIOS NÃO CADASTRADOS"
+            
         except Exception as e:
             logger.error(f"Erro ao obter dados bancários: {str(e)}")
             return "DADOS BANCÁRIOS NÃO CADASTRADOS"
