@@ -10,15 +10,12 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 5,
-    "patch": 1,
-    "release_date": "01/12/2025",
+    "patch": 2,
+    "release_date": "05/12/2025",
     "changes": [
-        "Incluída a opção de editar em massa no visualizador e no gerenciador.",
-        "Inclusão de aba Serviços para ser utilizado nos contratos de prestação de serviço",
-        "Criação de módulo para geração de contrato de prestação de serviço",
-        "Inclusão de campos para CPF, CNO, rstado civil e grupo em Clientes.xlsx, para emissão de contrato de prestação de serviço",
-        "Inclusão de campo endereço em base_fornecedores.xlsx, para emissão de contrato de prestação de serviço",
-        "Atualização do controle de taxa de administração para permitir copiar eventos/fases de um gestor para outro e a vinculação de várias parcelas a um único pagamento"
+        "Incluída a opção de vincular várias medições a um único pagamento.",
+        "",
+        ""
     ]
 }
 
