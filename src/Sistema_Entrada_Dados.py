@@ -1042,7 +1042,7 @@ class EditorLancamento:
     def __init__(self, parent, dados, indice, callback_atualizacao):
         self.janela = tk.Toplevel(parent)
         self.janela.title("Editar Lançamento")
-        self.janela.geometry("600x550")  
+        self.janela.geometry("600x700")  # Aumentado para acomodar todos os campos
         
         self._fechando = False
         self.janela.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -1053,117 +1053,149 @@ class EditorLancamento:
         self.indice = indice
         self.callback_atualizacao = callback_atualizacao
         
-        # Frame principal
-        frame = ttk.Frame(self.janela, padding="10")
+        # Frame principal com scrollbar
+        canvas = tk.Canvas(self.janela)
+        scrollbar = ttk.Scrollbar(self.janela, orient="vertical", command=canvas.yview)
+        frame_scroll = ttk.Frame(canvas)
+        
+        frame_scroll.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=frame_scroll, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        frame = ttk.Frame(frame_scroll, padding="10")
         frame.pack(fill='both', expand=True)
         
         # Frame para dados do fornecedor (não editáveis)
-        frame_fornecedor = ttk.LabelFrame(frame, text="Dados do Fornecedor")
+        frame_fornecedor = ttk.LabelFrame(frame, text="Dados do Fornecedor (somente leitura)")
         frame_fornecedor.pack(fill='x', pady=5)
         
         # CNPJ/CPF
-        ttk.Label(frame_fornecedor, text="CNPJ/CPF:").grid(row=0, column=0, padx=5, pady=2)
-        self.cnpj_cpf = ttk.Entry(frame_fornecedor, state='readonly')
-        self.cnpj_cpf.grid(row=0, column=1, padx=5, pady=2)
+        ttk.Label(frame_fornecedor, text="CNPJ/CPF:").grid(row=0, column=0, sticky='w', padx=5, pady=2)
+        self.cnpj_cpf = ttk.Entry(frame_fornecedor, state='readonly', width=30)
+        self.cnpj_cpf.grid(row=0, column=1, sticky='ew', padx=5, pady=2)
         
         # Nome
-        ttk.Label(frame_fornecedor, text="Nome:").grid(row=1, column=0, padx=5, pady=2)
-        self.nome = ttk.Entry(frame_fornecedor, state='readonly')
-        self.nome.grid(row=1, column=1, padx=5, pady=2)
+        ttk.Label(frame_fornecedor, text="Nome:").grid(row=1, column=0, sticky='w', padx=5, pady=2)
+        self.nome = ttk.Entry(frame_fornecedor, state='readonly', width=30)
+        self.nome.grid(row=1, column=1, sticky='ew', padx=5, pady=2)
         
-        # Frame para dados da despesa
-        frame_despesa = ttk.LabelFrame(frame, text="Dados da Despesa")
+        # Categoria
+        ttk.Label(frame_fornecedor, text="Categoria:").grid(row=2, column=0, sticky='w', padx=5, pady=2)
+        self.categoria = ttk.Entry(frame_fornecedor, state='readonly', width=30)
+        self.categoria.grid(row=2, column=1, sticky='ew', padx=5, pady=2)
+        
+        # Dados Bancários
+        ttk.Label(frame_fornecedor, text="Dados Bancários:").grid(row=3, column=0, sticky='w', padx=5, pady=2)
+        self.dados_bancarios = ttk.Entry(frame_fornecedor, state='readonly', width=30)
+        self.dados_bancarios.grid(row=3, column=1, sticky='ew', padx=5, pady=2)
+        
+        frame_fornecedor.columnconfigure(1, weight=1)
+        
+        # Frame para dados da despesa (EDITÁVEIS)
+        frame_despesa = ttk.LabelFrame(frame, text="Dados da Despesa (editáveis)")
         frame_despesa.pack(fill='x', pady=5)
         
+        row = 0
+        
         # Data de Referência
-        ttk.Label(frame_despesa, text="Data do Relatório:").grid(row=0, column=0, padx=5, pady=2)
-        self.data_rel = DateEntry(frame_despesa, width=20, date_pattern='dd/mm/yyyy', locale='pt_BR')
-        self.data_rel.grid(row=0, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Data do Relatório:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.data_rel = DateEntry(frame_despesa, width=27, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_rel.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
         
         # Tipo de Despesa
-        ttk.Label(frame_despesa, text="Tipo Despesa:").grid(row=1, column=0, padx=5, pady=2)
-        self.tp_desp = ttk.Entry(frame_despesa)
-        self.tp_desp.grid(row=1, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Tipo Despesa:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.tp_desp = ttk.Entry(frame_despesa, width=30)
+        self.tp_desp.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
         
         # Referência
-        ttk.Label(frame_despesa, text="Referência:").grid(row=2, column=0, padx=5, pady=2)
-        self.referencia = ttk.Entry(frame_despesa)
-        self.referencia.grid(row=2, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Referência:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.referencia = ttk.Entry(frame_despesa, width=30)
+        self.referencia.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
 
         # Etapa da Obra
-        ttk.Label(frame_despesa, text="Etapa da Obra:").grid(row=3, column=0, padx=5, pady=2)
-        self.etapa_obra = ttk.Entry(frame_despesa)
-        self.etapa_obra.grid(row=3, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Etapa da Obra:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.etapa_obra = ttk.Entry(frame_despesa, width=30)
+        self.etapa_obra.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
         
         # Insumo
-        ttk.Label(frame_despesa, text="Insumo:").grid(row=4, column=0, padx=5, pady=2)
-        self.insumo = ttk.Entry(frame_despesa)
-        self.insumo.grid(row=4, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Insumo:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.insumo = ttk.Entry(frame_despesa, width=30)
+        self.insumo.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
 
         # NF
-        ttk.Label(frame_despesa, text="NF:").grid(row=5, column=0, padx=5, pady=2)
-        self.nf = ttk.Entry(frame_despesa)
-        self.nf.grid(row=5, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="NF:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.nf = ttk.Entry(frame_despesa, width=30)
+        self.nf.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
         
         # Valor Unitário
-        ttk.Label(frame_despesa, text="Valor Unitário:").grid(row=6, column=0, padx=5, pady=2)
-        self.vr_unit = ttk.Entry(frame_despesa)
-        self.vr_unit.grid(row=6, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Valor Unitário:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.vr_unit = ttk.Entry(frame_despesa, width=30)
+        self.vr_unit.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
         
         # Dias
-        ttk.Label(frame_despesa, text="Dias:").grid(row=7, column=0, padx=5, pady=2)
-        self.dias = ttk.Entry(frame_despesa)
-        self.dias.grid(row=7, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Dias:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.dias = ttk.Entry(frame_despesa, width=30)
+        self.dias.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
         
-        # Valor Total
-        ttk.Label(frame_despesa, text="Valor Total:").grid(row=8, column=0, padx=5, pady=2)
-        self.valor = ttk.Entry(frame_despesa, state='readonly')
-        self.valor.grid(row=8, column=1, padx=5, pady=2)
+        # Valor Total (calculado automaticamente)
+        ttk.Label(frame_despesa, text="Valor Total:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.valor = ttk.Entry(frame_despesa, state='readonly', width=30)
+        self.valor.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
         
         # Data de Vencimento
-        ttk.Label(frame_despesa, text="Data Vencimento:").grid(row=9, column=0, padx=5, pady=2)
-        self.dt_vencto = DateEntry(frame_despesa, width=20, date_pattern='dd/mm/yyyy', locale='pt_BR')
-        self.dt_vencto.grid(row=9, column=1, padx=5, pady=2)
-        
-        # Configurar o calendário para permitir navegação
-        def configurar_calendario(event=None):
-            if hasattr(self.dt_vencto, '_top_cal'):
-                cal = self.dt_vencto._top_cal
-                if cal:
-                    def permitir_navegacao(event):
-                        return "break"
-                    
-                    # Permitir cliques nas setas e mês/ano
-                    for widget in cal.winfo_children():
-                        if isinstance(widget, tk.Button):
-                            widget.unbind('<Button-1>')
-                            widget.bind('<Button-1>', permitir_navegacao)
-                        
-        self.dt_vencto.bind('<<DateEntryPopup>>', configurar_calendario)
+        ttk.Label(frame_despesa, text="Data Vencimento:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.dt_vencto = DateEntry(frame_despesa, width=27, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.dt_vencto.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
         
         # Forma de Pagamento
-        ttk.Label(frame_despesa, text="Forma de Pagamento:").grid(row=10, column=0, padx=5, pady=2)
-        self.forma_pagamento = ttk.Combobox(frame_despesa, values=['PIX', 'TED', "DINHEIRO"], state='readonly')
-        self.forma_pagamento.grid(row=10, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Forma de Pagamento:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.forma_pagamento = ttk.Combobox(frame_despesa, values=['PIX', 'TED', 'DINHEIRO'], 
+                                            state='readonly', width=27)
+        self.forma_pagamento.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        row += 1
         
         # Observação
-        ttk.Label(frame_despesa, text="Observação:").grid(row=11, column=0, padx=5, pady=2)
-        self.observacao = ttk.Entry(frame_despesa)
-        self.observacao.grid(row=11, column=1, padx=5, pady=2)
+        ttk.Label(frame_despesa, text="Observação:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
+        self.observacao = ttk.Entry(frame_despesa, width=30)
+        self.observacao.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
+        
+        frame_despesa.columnconfigure(1, weight=1)
         
         # Botões
         frame_botoes = ttk.Frame(frame)
         frame_botoes.pack(fill='x', pady=10)
         
-        ttk.Button(frame_botoes, text="Salvar", command=self.salvar).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Cancelar", command=self.janela.self.on_close).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="💾 Salvar", command=self.salvar).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="❌ Cancelar", command=self.on_close).pack(side='left', padx=5)
         
         # Preencher dados existentes
         self.preencher_dados()
         
-        # Vincular eventos
+        # Vincular eventos para cálculo automático
         self.vr_unit.bind('<KeyRelease>', self.calcular_valor_total)
         self.dias.bind('<KeyRelease>', self.calcular_valor_total)
+        
+        # Habilitar scroll com mouse
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
 
     def on_close(self):
         """Fecha a janela de forma segura"""
@@ -1173,32 +1205,48 @@ class EditorLancamento:
         
     def preencher_dados(self):
         """Preenche os campos com os dados atuais"""
+        # Campos readonly do fornecedor
         self.cnpj_cpf.config(state='normal')
-        self.cnpj_cpf.insert(0, self.dados['cnpj_cpf'])
+        self.cnpj_cpf.insert(0, self.dados.get('cnpj_cpf', ''))
         self.cnpj_cpf.config(state='readonly')
         
         self.nome.config(state='normal')
-        self.nome.insert(0, self.dados['nome'])
+        self.nome.insert(0, self.dados.get('nome', ''))
         self.nome.config(state='readonly')
         
-        self.data_rel.set_date(datetime.strptime(self.dados['data'], '%d/%m/%Y'))
-        self.tp_desp.insert(0, self.dados['tp_desp'])
-        self.referencia.insert(0, self.dados['referencia'])
+        self.categoria.config(state='normal')
+        self.categoria.insert(0, self.dados.get('categoria', ''))
+        self.categoria.config(state='readonly')
         
+        self.dados_bancarios.config(state='normal')
+        self.dados_bancarios.insert(0, self.dados.get('dados_bancarios', ''))
+        self.dados_bancarios.config(state='readonly')
+        
+        # Campos editáveis da despesa
+        try:
+            self.data_rel.set_date(datetime.strptime(self.dados['data'], '%d/%m/%Y'))
+        except:
+            pass
+        
+        self.tp_desp.insert(0, self.dados.get('tp_desp', ''))
+        self.referencia.insert(0, self.dados.get('referencia', ''))
         self.etapa_obra.insert(0, self.dados.get('etapa_obra', ''))
         self.insumo.insert(0, self.dados.get('insumo', ''))
-
         self.nf.insert(0, self.dados.get('nf', ''))
-        self.vr_unit.insert(0, self.dados['vr_unit'])
-        self.dias.insert(0, str(self.dados['dias']))
+        self.vr_unit.insert(0, self.dados.get('vr_unit', ''))
+        self.dias.insert(0, str(self.dados.get('dias', '1')))
         
         self.valor.config(state='normal')
-        self.valor.insert(0, self.dados['valor'])
+        self.valor.insert(0, self.dados.get('valor', ''))
         self.valor.config(state='readonly')
         
-        self.dt_vencto.set_date(datetime.strptime(self.dados['dt_vencto'], '%d/%m/%Y'))
-        self.observacao.insert(0, self.dados.get('observacao', ''))
+        try:
+            self.dt_vencto.set_date(datetime.strptime(self.dados['dt_vencto'], '%d/%m/%Y'))
+        except:
+            pass
+        
         self.forma_pagamento.set(self.dados.get('forma_pagamento', ''))
+        self.observacao.insert(0, self.dados.get('observacao', ''))
 
     def atualizar_dados_bancarios(self, event=None):
         """Atualiza os dados bancários baseado no tipo de despesa e forma de pagamento"""
@@ -5793,21 +5841,41 @@ class SistemaEntradaDados:
         
         # Grid para organizar os campos de fornecedor de forma mais equilibrada
         self.campos_fornecedor = {}
-        campos = [('cnpj_cpf', 'CNPJ/CPF:'), 
-                ('nome', 'Nome:'), 
-                ('categoria', 'Categoria:')]
         
-        for row, (campo, label) in enumerate(campos):
-            ttk.Label(frame_fornecedor, text=label, font=('Arial', 10)).grid(row=row, column=0, padx=5, pady=5, sticky='e')
-            entry = ttk.Entry(frame_fornecedor, width=40, font=('Arial', 10))
-            entry.grid(row=row, column=1, padx=5, pady=5, sticky='ew')
-            if campo != 'categoria':
-                entry.config(state='readonly')
-            self.campos_fornecedor[campo] = entry
+        # CNPJ/CPF (row=0)
+        ttk.Label(frame_fornecedor, text='CNPJ/CPF:', font=('Arial', 10)).grid(
+            row=0, column=0, padx=5, pady=5, sticky='e')
+        entry = ttk.Entry(frame_fornecedor, width=40, font=('Arial', 10), state='readonly')
+        entry.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
+        self.campos_fornecedor['cnpj_cpf'] = entry
         
-        # Frame para forma de pagamento
+        # Nome (row=1)
+        ttk.Label(frame_fornecedor, text='Nome:', font=('Arial', 10)).grid(
+            row=1, column=0, padx=5, pady=5, sticky='e')
+        entry = ttk.Entry(frame_fornecedor, width=40, font=('Arial', 10), state='readonly')
+        entry.grid(row=1, column=1, padx=5, pady=5, sticky='ew')
+        self.campos_fornecedor['nome'] = entry
+        
+        # Categoria (row=2) - CORRIGIDO: Combobox editável com valores das configurações
+        ttk.Label(frame_fornecedor, text='Categoria:', font=('Arial', 10)).grid(
+            row=2, column=0, padx=5, pady=5, sticky='e')
+        
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
+        categorias = GerenciadorConfiguracoes.get_categorias_fornecedor()
+        
+        categoria_combo = ttk.Combobox(
+            frame_fornecedor, 
+            values=categorias,
+            font=('Arial', 10), 
+            width=38,
+            state='normal'  # Editável
+        )
+        categoria_combo.grid(row=2, column=1, padx=5, pady=5, sticky='ew')
+        self.campos_fornecedor['categoria'] = categoria_combo
+        
+        # Frame para forma de pagamento (row=3)
         frame_pagamento = ttk.Frame(frame_fornecedor)
-        frame_pagamento.grid(row=len(campos), column=0, columnspan=2, pady=5, sticky='ew')
+        frame_pagamento.grid(row=3, column=0, columnspan=2, pady=5, sticky='ew')
         
         ttk.Label(frame_pagamento, text="Forma de Pagamento:", font=('Arial', 10)).pack(side='left', padx=5)
         self.forma_pagamento_combo = ttk.Combobox(
@@ -5821,10 +5889,11 @@ class SistemaEntradaDados:
         self.forma_pagamento_combo.pack(side='left', padx=5)
         self.forma_pagamento_combo.bind('<<ComboboxSelected>>', self.atualizar_dados_bancarios)
         
-        # Dados Bancários (agora após a forma de pagamento)
-        ttk.Label(frame_fornecedor, text="Dados Bancários:", font=('Arial', 10)).grid(row=len(campos) + 1, column=0, padx=5, pady=5, sticky='e')
+        # Dados Bancários (row=4)
+        ttk.Label(frame_fornecedor, text="Dados Bancários:", font=('Arial', 10)).grid(
+            row=4, column=0, padx=5, pady=5, sticky='e')
         entry = ttk.Entry(frame_fornecedor, width=40, state='readonly', font=('Arial', 10))
-        entry.grid(row=len(campos) + 1, column=1, padx=5, pady=5, sticky='ew')
+        entry.grid(row=4, column=1, padx=5, pady=5, sticky='ew')
         self.campos_fornecedor['dados_bancarios'] = entry
         
         # Configure expandability of columns
@@ -5861,7 +5930,7 @@ class SistemaEntradaDados:
         # Coluna 2 e 3: Labels e campos da direita
         
         # ===== LADO ESQUERDO (valores numéricos) =====
-    
+
         # Tipo Despesa (row=0)
         ttk.Label(frame_despesa, text="Tipo Despesa (1-6):", font=('Arial', 10)).grid(
             row=0, column=0, padx=5, pady=5, sticky='e')
@@ -5921,7 +5990,6 @@ class SistemaEntradaDados:
         ttk.Label(frame_despesa, text="Etapa da Obra:", font=('Arial', 10)).grid(
             row=1, column=2, padx=5, pady=5, sticky='e')
         
-        from src.configuracoes_sistema import GerenciadorConfiguracoes
         etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()
         
         self.campos_despesa['etapa_obra'] = ComboboxAutocompletar(
@@ -5979,7 +6047,7 @@ class SistemaEntradaDados:
             row=4, column=2, padx=5, pady=5, sticky='e')
         self.campos_despesa['observacao'] = ttk.Entry(frame_despesa, font=('Arial', 10), width=40)
         self.campos_despesa['observacao'].grid(row=4, column=3, padx=5, pady=5, sticky='ew')
-    
+
         # Configurar peso da coluna para expandir apenas os campos de referência e observação
         frame_despesa.columnconfigure(3, weight=1)  # Apenas a coluna 3 (campos expansíveis) cresce
         
@@ -6000,10 +6068,6 @@ class SistemaEntradaDados:
         self.campos_despesa['insumo'].bind('<Return>', lambda e: self.campos_despesa['nf'].focus())
         self.campos_despesa['nf'].bind('<Return>', lambda e: self.campos_despesa['dt_vencto'].focus())
         self.campos_despesa['dt_vencto'].bind('<Return>', lambda e: self.campos_despesa['observacao'].focus())
-        
-        # Frame para botões de ação
-        frame_botoes = ttk.Frame(self.aba_dados)
-        frame_botoes.pack(fill='x', padx=10, pady=10, side='bottom')
         
         # Frame para botões de ação
         frame_botoes = ttk.Frame(self.aba_dados)
@@ -20166,7 +20230,7 @@ class VisualizadorLancamentosFornecedor:
         """Formata valor para exibição"""
         try:
             if isinstance(valor, str):
-                valor_limpo = valor_raw.replace('R$', '').replace(' ', '').replace(',', '.').strip()
+                valor_limpo = valor.replace('R$', '').replace(' ', '').replace(',', '.').strip()
                 if valor_limpo:
                     valor = float(valor_limpo.replace(',', '.'))
                 else:
@@ -22900,7 +22964,118 @@ class GerenciadorAgenda:
         lista_sugestoes.grid(row=4, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
         lista_sugestoes.grid_remove()
         
-        # === FUNÇÕES DE BUSCA (manter as mesmas do código original) ===
+        # Referência
+        ttk.Label(frame_form, text="Referência:").grid(row=5, column=0, padx=5, pady=5, sticky='w')
+        referencia = ttk.Entry(frame_form, width=40)
+        referencia.insert(0, valores_item[3])
+        referencia.grid(row=5, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        
+        # NF
+        ttk.Label(frame_form, text="NF:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
+        nf = ttk.Entry(frame_form, width=15)
+        nf.grid(row=6, column=1, padx=5, pady=5, sticky='w')
+        
+        # Valor
+        ttk.Label(frame_form, text="Valor:").grid(row=6, column=2, padx=5, pady=5, sticky='w')
+        valor = ttk.Entry(frame_form, width=15)
+        valor_numerico = valores_item[4].replace('R$ ', '').replace('.', '').replace(',', '.')
+        valor.insert(0, valor_numerico)
+        valor.grid(row=6, column=3, padx=5, pady=5, sticky='w')
+        
+        # Observação
+        ttk.Label(frame_form, text="Observação:").grid(row=7, column=0, padx=5, pady=5, sticky='w')
+        observacao = ttk.Entry(frame_form, width=40)
+        if item_agenda and item_agenda.get('dados_originais'):
+            obs = item_agenda['dados_originais'].get('observacao', '')
+            observacao.insert(0, f"{obs} - CONFIRMADO DA AGENDA")
+        else:
+            observacao.insert(0, "CONFIRMADO DA AGENDA")
+        observacao.grid(row=7, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        
+        # Forma de pagamento
+        ttk.Label(frame_form, text="Forma Pagamento:").grid(row=8, column=0, padx=5, pady=5, sticky='w')
+        forma_pagamento = ttk.Combobox(frame_form, values=['PIX', 'TED', 'DINHEIRO'], 
+                                    state='readonly', width=15)
+        forma_pagamento.set('PIX')
+        forma_pagamento.grid(row=8, column=1, padx=5, pady=5, sticky='w')
+
+        # Dados bancários (atualizado dinamicamente)
+        ttk.Label(frame_form, text="Dados Bancários:").grid(row=8, column=2, padx=5, pady=5, sticky='w')
+        dados_bancarios_entry = ttk.Entry(frame_form, width=40, state='readonly')
+        dados_bancarios_entry.grid(row=8, column=3, padx=5, pady=5, sticky='ew')
+
+        # === FUNÇÕES LOCAIS - ORDEM CORRIGIDA ===
+        
+        # CRÍTICO: Definir atualizar_dados_bancarios PRIMEIRO
+        def atualizar_dados_bancarios():
+            """Atualiza dados bancários baseado no CNPJ e forma de pagamento"""
+            try:
+                cnpj_atual = cnpj_cpf.get().strip()
+                forma_atual = forma_pagamento.get()
+                
+                logger.debug(f"DEBUG: Atualizando dados bancários - CNPJ: {cnpj_atual}, Forma: {forma_atual}")
+                
+                # Validar CNPJ antes de buscar
+                if not cnpj_atual or len(cnpj_atual) < 11:
+                    logger.debug(f"DEBUG: CNPJ inválido ou vazio: {cnpj_atual}")
+                    dados_bancarios_entry.config(state='normal')
+                    dados_bancarios_entry.delete(0, tk.END)
+                    dados_bancarios_entry.insert(0, "PREENCHA O CNPJ/CPF PRIMEIRO")
+                    dados_bancarios_entry.config(state='readonly')
+                    return
+                
+                # Buscar dados bancários usando o método do sistema
+                dados_banc = self.sistema.obter_dados_bancarios_fornecedor(
+                    cnpj_atual, 
+                    forma_pagamento_preferida=forma_atual
+                )
+                
+                logger.debug(f"DEBUG: Dados bancários obtidos: {dados_banc}")
+                
+                # Atualizar campo
+                dados_bancarios_entry.config(state='normal')
+                dados_bancarios_entry.delete(0, tk.END)
+                dados_bancarios_entry.insert(0, dados_banc)
+                dados_bancarios_entry.config(state='readonly')
+                
+            except Exception as e:
+                logger.debug(f"DEBUG: Erro ao atualizar dados bancários: {str(e)}")
+                import traceback
+                logger.debug(traceback.format_exc())
+                dados_bancarios_entry.config(state='normal')
+                dados_bancarios_entry.delete(0, tk.END)
+                dados_bancarios_entry.insert(0, f"ERRO: {str(e)}")
+                dados_bancarios_entry.config(state='readonly')
+        
+        def preencher_dados_fornecedor(fornecedor_dados):
+            """Preenche campos com dados do fornecedor - SEM duplicação"""
+            try:
+                logger.debug(f"DEBUG: preencher_dados_fornecedor CHAMADA")
+                logger.debug(f"DEBUG: Dados recebidos: {fornecedor_dados}")
+                
+                # CRÍTICO: Limpar campos ANTES de preencher
+                cnpj_cpf.delete(0, tk.END)
+                nome.delete(0, tk.END)
+                
+                # Preencher CNPJ/CPF
+                cnpj_valor = fornecedor_dados.get('cnpj_cpf', '').strip()
+                logger.debug(f"DEBUG: Preenchendo CNPJ: '{cnpj_valor}'")
+                cnpj_cpf.insert(0, cnpj_valor)
+                
+                # Preencher Nome
+                nome_valor = fornecedor_dados.get('nome', '').strip()
+                logger.debug(f"DEBUG: Preenchendo Nome: '{nome_valor}'")
+                nome.insert(0, nome_valor)
+                
+                # Aguardar um momento e então atualizar dados bancários
+                janela_confirm.after(200, atualizar_dados_bancarios)
+                
+                logger.debug(f"DEBUG: Campos preenchidos com sucesso")
+                
+            except Exception as e:
+                logger.debug(f"DEBUG: ERRO em preencher_dados_fornecedor: {str(e)}")
+                import traceback
+                logger.debug(traceback.format_exc())
         
         def buscar_fornecedor_por_cnpj(event=None):
             cnpj_digitado = cnpj_cpf.get().strip()
@@ -22943,41 +23118,12 @@ class GerenciadorAgenda:
             except Exception as e:
                 logger.debug(f"DEBUG: Erro: {e}")
         
-        def preencher_dados_fornecedor(fornecedor_dados):
-            """Preenche campos com dados do fornecedor - SEM duplicação"""
-            try:
-                logger.debug(f"DEBUG preencher_dados_fornecedor CHAMADA")
-                logger.debug(f"DEBUG: Dados recebidos: {fornecedor_dados}")
-                
-                # CRÍTICO: Limpar campos ANTES de preencher
-                cnpj_cpf.delete(0, tk.END)
-                nome.delete(0, tk.END)
-                
-                # Preencher CNPJ/CPF
-                cnpj_valor = fornecedor_dados.get('cnpj_cpf', '').strip()
-                logger.debug(f"DEBUG: Preenchendo CNPJ: '{cnpj_valor}'")
-                cnpj_cpf.insert(0, cnpj_valor)
-                
-                # Preencher Nome
-                nome_valor = fornecedor_dados.get('nome', '').strip()
-                logger.debug(f"DEBUG: Preenchendo Nome: '{nome_valor}'")
-                nome.insert(0, nome_valor)
-                
-                # Aguardar um momento e então atualizar dados bancários
-                janela_confirm.after(200, atualizar_dados_bancarios)
-                
-                logger.debug(f"DEBUG: Campos preenchidos com sucesso")
-                
-            except Exception as e:
-                logger.debug(f"DEBUG: ERRO em preencher_dados_fornecedor: {str(e)}")
-                import traceback
-                traceback.logger.debug_exc()
-        
         # Bindings
         cnpj_cpf.bind('<KeyRelease>', buscar_fornecedor_por_cnpj)
         nome.bind('<KeyRelease>', buscar_fornecedor_por_nome)
         lista_sugestoes.bind('<Button-1>', lambda e: janela_confirm.after(50, selecionar_fornecedor_da_lista))
         lista_sugestoes.bind('<Double-Button-1>', selecionar_fornecedor_da_lista)
+        forma_pagamento.bind('<<ComboboxSelected>>', lambda e: atualizar_dados_bancarios())
         
         # Preencher dados iniciais
         logger.debug(f"DEBUG: Tentando buscar fornecedor: {valores_item[2]}")
@@ -22995,9 +23141,7 @@ class GerenciadorAgenda:
                 preencher_dados_fornecedor(fornecedor_dados)
             else:
                 logger.debug(f"DEBUG: Fornecedor não encontrado, preenchendo com dados da agenda")
-                # Se não encontrar, preencher apenas o nome (sem CNPJ)
                 nome.insert(0, valores_item[2])
-                # Deixar CNPJ vazio para o usuário preencher
                 custom_messagebox("warning", "Atenção", 
                     f"Fornecedor '{valores_item[2]}' não encontrado no cadastro.\n"
                     f"Por favor, preencha o CNPJ/CPF manualmente.")
@@ -23006,101 +23150,16 @@ class GerenciadorAgenda:
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao buscar fornecedor: {str(e)}")
             import traceback
-            traceback.logger.debug_exc()
-            # Em caso de erro, preencher apenas o nome
+            logger.debug(traceback.format_exc())
             nome.insert(0, valores_item[2])
             custom_messagebox("error", "Erro", 
                 f"Erro ao buscar dados do fornecedor: {str(e)}\n"
                 f"Preencha os dados manualmente.")
             cnpj_cpf.focus()
-        
-        # Referência
-        ttk.Label(frame_form, text="Referência:").grid(row=5, column=0, padx=5, pady=5, sticky='w')
-        referencia = ttk.Entry(frame_form, width=40)
-        referencia.insert(0, valores_item[3])
-        referencia.grid(row=5, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
-        
-        # NF
-        ttk.Label(frame_form, text="NF:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
-        nf = ttk.Entry(frame_form, width=15)
-        nf.grid(row=6, column=1, padx=5, pady=5, sticky='w')
-        
-        # Valor
-        ttk.Label(frame_form, text="Valor:").grid(row=6, column=2, padx=5, pady=5, sticky='w')
-        valor = ttk.Entry(frame_form, width=15)
-        valor_numerico = valores_item[4].replace('R$ ', '').replace('.', '').replace(',', '.')
-        valor.insert(0, valor_numerico)
-        valor.grid(row=6, column=3, padx=5, pady=5, sticky='w')
-        
-        # Observação
-        ttk.Label(frame_form, text="Observação:").grid(row=7, column=0, padx=5, pady=5, sticky='w')
-        observacao = ttk.Entry(frame_form, width=40)
-        if item_agenda and item_agenda.get('dados_originais'):
-            obs = item_agenda['dados_originais'].get('observacao', '')
-            observacao.insert(0, f"{obs} - CONFIRMADO DA AGENDA")
-        else:
-            observacao.insert(0, "CONFIRMADO DA AGENDA")
-        observacao.grid(row=7, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
-        
-        # Forma de pagamento
-        ttk.Label(frame_form, text="Forma Pagamento:").grid(row=8, column=0, padx=5, pady=5, sticky='w')
-        forma_pagamento = ttk.Combobox(frame_form, values=['PIX', 'TED', 'DINHEIRO'], 
-                                    state='readonly', width=15)
-        forma_pagamento.set('PIX')
-        forma_pagamento.grid(row=8, column=1, padx=5, pady=5, sticky='w')
-
-        # Dados bancários (atualizado dinamicamente)
-        ttk.Label(frame_form, text="Dados Bancários:").grid(row=8, column=2, padx=5, pady=5, sticky='w')
-        dados_bancarios_entry = ttk.Entry(frame_form, width=40, state='readonly')
-        dados_bancarios_entry.grid(row=8, column=3, padx=5, pady=5, sticky='ew')
-
-        # Função para atualizar dados bancários quando mudar fornecedor ou forma de pagamento
-        def atualizar_dados_bancarios():
-            """Atualiza dados bancários baseado no CNPJ e forma de pagamento"""
-            try:
-                cnpj_atual = cnpj_cpf.get().strip()
-                forma_atual = forma_pagamento.get()
-                
-                logger.debug(f"DEBUG: Atualizando dados bancários - CNPJ: {cnpj_atual}, Forma: {forma_atual}")
-                
-                # Validar CNPJ antes de buscar
-                if not cnpj_atual or len(cnpj_atual) < 11:
-                    logger.debug(f"DEBUG: CNPJ inválido ou vazio: {cnpj_atual}")
-                    dados_bancarios_entry.config(state='normal')
-                    dados_bancarios_entry.delete(0, tk.END)
-                    dados_bancarios_entry.insert(0, "PREENCHA O CNPJ/CPF PRIMEIRO")
-                    dados_bancarios_entry.config(state='readonly')
-                    return
-                
-                # Buscar dados bancários usando o método do sistema
-                dados_banc = self.sistema.obter_dados_bancarios_fornecedor(
-                    cnpj_atual, 
-                    forma_pagamento_preferida=forma_atual
-                )
-                
-                logger.debug(f"DEBUG: Dados bancários obtidos: {dados_banc}")
-                
-                # Atualizar campo
-                dados_bancarios_entry.config(state='normal')
-                dados_bancarios_entry.delete(0, tk.END)
-                dados_bancarios_entry.insert(0, dados_banc)
-                dados_bancarios_entry.config(state='readonly')
-                
-            except Exception as e:
-                logger.debug(f"DEBUG: Erro ao atualizar dados bancários: {str(e)}")
-                import traceback
-                traceback.logger.debug_exc()
-                dados_bancarios_entry.config(state='normal')
-                dados_bancarios_entry.delete(0, tk.END)
-                dados_bancarios_entry.insert(0, f"ERRO: {str(e)}")
-                dados_bancarios_entry.config(state='readonly')
-
-        # Atualizar quando mudar a forma de pagamento
-        forma_pagamento.bind('<<ComboboxSelected>>', lambda e: atualizar_dados_bancarios())
 
         frame_form.columnconfigure(1, weight=1)
         
-        # Botões
+        # === BOTÕES - CRÍTICO: GARANTIR QUE SEJAM CRIADOS ===
         frame_botoes = ttk.Frame(main_frame)
         frame_botoes.pack(fill='x')
         
