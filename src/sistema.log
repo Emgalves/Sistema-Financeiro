@@ -6851,3 +6851,221 @@
 2025-12-01 15:08:03,579 - INFO - Proteções contra perda de dados configuradas
 2025-12-01 15:08:06,502 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
 2025-12-01 15:08:24,130 - INFO - ✓ Fornecedor ENCONTRADO na linha 448!
+2025-12-02 16:25:25,201 - INFO - Configurações importadas com sucesso via src.config
+2025-12-02 16:25:25,365 - INFO - Configurações importadas com sucesso
+2025-12-02 16:25:25,365 - INFO - Configurações do sistema importadas com sucesso
+2025-12-02 16:25:26,964 - INFO - Sistema iniciado em modo: TESTE
+2025-12-02 16:25:44,975 - INFO - Abrindo sistema de entrada de dados
+2025-12-02 16:25:46,552 - INFO - Proteções contra perda de dados configuradas
+2025-12-02 16:25:53,418 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-02 16:26:02,519 - INFO - ==================================================
+2025-12-02 16:26:02,520 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2025-12-02 16:26:02,521 - INFO - ==================================================
+2025-12-02 16:26:02,522 - INFO - Fornecedor selecionado: ABC DA CONSTRUCAO
+2025-12-02 16:26:03,454 - INFO - ✓ Fornecedor ENCONTRADO na linha 2!
+2025-12-02 16:26:03,455 - INFO - Dados completos carregados: ABC DA CONSTRUCAO
+2025-12-02 16:26:03,458 - INFO - Todos os campos preenchidos com sucesso!
+2025-12-02 16:26:03,459 - INFO - Notebook tem 3 aba(s)
+2025-12-02 16:26:03,460 - INFO - Tentando selecionar aba de dados (índice 2)...
+2025-12-02 16:26:03,464 - INFO - Aba de dados selecionada com sucesso!
+2025-12-02 16:26:03,465 - INFO - SELEÇÃO DE FORNECEDOR CONCLUÍDA COM SUCESSO!
+2025-12-02 16:26:03,466 - INFO - ==================================================
+2025-12-02 16:26:28,391 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-12-02 16:26:30,150 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-12-02 16:26:38,103 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-12-02 16:26:38,104 - INFO - Obtendo dados do visualizador
+2025-12-02 16:26:38,104 - INFO - Total de registros a processar: 1
+2025-12-02 16:26:38,106 - INFO - Datas que serão afetadas pela inserção: ['05/12/2025']
+2025-12-02 16:26:38,107 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-12-02 16:26:38,107 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-02 16:26:38,797 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-02 16:26:38,798 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-02 16:26:38,799 - INFO - Dados novos: ABC DA CONSTRUCAO | TESTANDO | NF: 123456 | R$ 564.00 | 10/12/2025
+2025-12-02 16:26:38,820 - INFO - ✅ Nenhuma duplicata encontrada para: ABC DA CONSTRUCAO - TESTANDO - NF: 123456
+2025-12-02 16:26:38,823 - INFO - Lançamento inserido com ID 319 na linha 319
+2025-12-02 16:26:39,393 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-02 16:26:39,895 - INFO - Verificando necessidade de recálculo para 2025-12-05
+2025-12-02 16:26:39,896 - ERROR - Erro ao verificar recálculo para 2025-12-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-02 16:26:48,773 - INFO - Limpando 1 registros salvos da visualização
+2025-12-02 16:26:48,788 - INFO - Visualizador fechado - todos os registros foram processados
+2025-12-02 16:26:48,789 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-02 16:51:48,419 - INFO - Configurações importadas com sucesso via src.config
+2025-12-02 16:51:48,437 - INFO - Configurações importadas com sucesso
+2025-12-02 16:51:48,438 - INFO - Configurações do sistema importadas com sucesso
+2025-12-02 16:51:49,126 - INFO - Sistema iniciado em modo: TESTE
+2025-12-02 16:52:41,322 - INFO - Abrindo sistema de entrada de dados
+2025-12-02 16:52:42,797 - INFO - Proteções contra perda de dados configuradas
+2025-12-02 16:52:45,105 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-02 16:53:11,822 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-12-02 16:53:16,117 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-12-02 16:53:16,120 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-12-02 16:53:16,122 - INFO - Usando dados_para_incluir existentes
+2025-12-02 16:53:16,122 - INFO - Total de registros a processar: 1
+2025-12-02 16:53:16,123 - INFO - Datas que serão afetadas pela inserção: ['05/12/2025']
+2025-12-02 16:53:16,124 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-12-02 16:53:16,126 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-02 16:53:16,745 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-02 16:53:16,746 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-02 16:53:16,747 - INFO - Dados novos: FOLHA DP | FOLHA DP | NF:  | R$ 910.80 | 05/12/2025
+2025-12-02 16:53:16,769 - INFO - ✅ Nenhuma duplicata encontrada para: FOLHA DP - FOLHA DP - NF: 
+2025-12-02 16:53:16,772 - INFO - Lançamento inserido com ID 320 na linha 320
+2025-12-02 16:53:17,362 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-02 16:53:17,864 - INFO - Verificando necessidade de recálculo para 2025-12-05
+2025-12-02 16:53:17,867 - ERROR - Erro ao verificar recálculo para 2025-12-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-02 16:53:19,942 - INFO - Limpando 1 registros salvos da visualização
+2025-12-02 16:53:19,943 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-02 16:53:33,329 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-12-02 16:53:35,222 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-12-02 16:53:35,223 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-12-02 16:53:35,224 - INFO - Usando dados_para_incluir existentes
+2025-12-02 16:53:35,225 - INFO - Total de registros a processar: 1
+2025-12-02 16:53:35,225 - INFO - Datas que serão afetadas pela inserção: ['05/12/2025']
+2025-12-02 16:53:35,226 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-12-02 16:53:35,227 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-02 16:53:35,876 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-02 16:53:35,877 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-02 16:53:35,878 - INFO - Dados novos: MOTOBOY | MOTOBOY | NF:  | R$ 146.00 | 05/12/2025
+2025-12-02 16:53:35,902 - INFO - ✅ Nenhuma duplicata encontrada para: MOTOBOY - MOTOBOY - NF: 
+2025-12-02 16:53:35,906 - INFO - Lançamento inserido com ID 321 na linha 321
+2025-12-02 16:53:36,321 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-02 16:53:36,823 - INFO - Verificando necessidade de recálculo para 2025-12-05
+2025-12-02 16:53:36,824 - ERROR - Erro ao verificar recálculo para 2025-12-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-02 16:53:39,965 - INFO - Limpando 1 registros salvos da visualização
+2025-12-02 16:53:39,966 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-02 16:55:23,932 - INFO - Configurações importadas com sucesso via src.config
+2025-12-02 16:55:23,947 - INFO - Configurações importadas com sucesso
+2025-12-02 16:55:23,949 - INFO - Configurações do sistema importadas com sucesso
+2025-12-02 16:55:24,429 - INFO - Sistema iniciado em modo: TESTE
+2025-12-02 16:55:26,072 - INFO - Abrindo sistema de entrada de dados
+2025-12-02 16:55:27,244 - INFO - Proteções contra perda de dados configuradas
+2025-12-02 16:55:29,955 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-02 16:55:42,535 - INFO - ==================================================
+2025-12-02 16:55:42,536 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2025-12-02 16:55:42,537 - INFO - ==================================================
+2025-12-02 16:55:42,537 - INFO - Fornecedor selecionado: JB CIMENTO
+2025-12-02 16:55:43,455 - INFO - ✓ Fornecedor ENCONTRADO na linha 414!
+2025-12-02 16:55:43,456 - INFO - Dados completos carregados: JB CIMENTO
+2025-12-02 16:55:43,458 - INFO - Todos os campos preenchidos com sucesso!
+2025-12-02 16:55:43,458 - INFO - Notebook tem 3 aba(s)
+2025-12-02 16:55:43,459 - INFO - Tentando selecionar aba de dados (índice 2)...
+2025-12-02 16:55:43,462 - INFO - Aba de dados selecionada com sucesso!
+2025-12-02 16:55:43,464 - INFO - SELEÇÃO DE FORNECEDOR CONCLUÍDA COM SUCESSO!
+2025-12-02 16:55:43,464 - INFO - ==================================================
+2025-12-02 16:56:22,191 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-12-02 16:56:42,294 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-12-02 16:57:07,062 - INFO - ==================================================
+2025-12-02 16:57:07,063 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2025-12-02 16:57:07,063 - INFO - ==================================================
+2025-12-02 16:57:07,064 - INFO - Fornecedor selecionado: CASA FERREIRA GONÇALVES
+2025-12-02 16:57:08,051 - INFO - ✓ Fornecedor ENCONTRADO na linha 139!
+2025-12-02 16:57:08,052 - INFO - Dados completos carregados: CASA FERREIRA GONÇALVES
+2025-12-02 16:57:08,054 - INFO - Todos os campos preenchidos com sucesso!
+2025-12-02 16:57:08,055 - INFO - Notebook tem 3 aba(s)
+2025-12-02 16:57:08,056 - INFO - Tentando selecionar aba de dados (índice 2)...
+2025-12-02 16:57:08,059 - INFO - Aba de dados selecionada com sucesso!
+2025-12-02 16:57:08,061 - INFO - SELEÇÃO DE FORNECEDOR CONCLUÍDA COM SUCESSO!
+2025-12-02 16:57:08,062 - INFO - ==================================================
+2025-12-02 17:04:48,640 - INFO - Abrindo configurações do sistema
+2025-12-02 17:06:14,439 - INFO - Sistema encerrado pelo usuário
+2025-12-02 17:13:39,267 - INFO - Configurações importadas com sucesso via src.config
+2025-12-02 17:13:39,284 - INFO - Configurações importadas com sucesso
+2025-12-02 17:13:39,284 - INFO - Configurações do sistema importadas com sucesso
+2025-12-02 17:13:39,894 - INFO - Sistema iniciado em modo: TESTE
+2025-12-02 17:13:42,841 - INFO - Abrindo sistema de entrada de dados
+2025-12-02 17:13:43,896 - ERROR - Erro ao abrir sistema de entrada de dados: type object 'GerenciadorConfiguracoes' has no attribute 'get_categorias'
+2025-12-02 17:22:07,310 - INFO - Configurações importadas com sucesso via src.config
+2025-12-02 17:22:07,331 - INFO - Configurações importadas com sucesso
+2025-12-02 17:22:07,332 - INFO - Configurações do sistema importadas com sucesso
+2025-12-02 17:22:07,980 - INFO - Sistema iniciado em modo: TESTE
+2025-12-02 17:22:22,746 - INFO - Abrindo sistema de entrada de dados
+2025-12-02 17:22:24,492 - INFO - Proteções contra perda de dados configuradas
+2025-12-02 17:22:37,770 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-02 17:22:45,410 - INFO - ==================================================
+2025-12-02 17:22:45,410 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2025-12-02 17:22:45,411 - INFO - ==================================================
+2025-12-02 17:22:45,412 - INFO - Fornecedor selecionado: JB CIMENTO
+2025-12-02 17:22:46,322 - INFO - ✓ Fornecedor ENCONTRADO na linha 414!
+2025-12-02 17:22:46,324 - INFO - Dados completos carregados: JB CIMENTO
+2025-12-02 17:22:46,326 - INFO - Todos os campos preenchidos com sucesso!
+2025-12-02 17:22:46,327 - INFO - Notebook tem 3 aba(s)
+2025-12-02 17:22:46,328 - INFO - Tentando selecionar aba de dados (índice 2)...
+2025-12-02 17:22:46,331 - INFO - Aba de dados selecionada com sucesso!
+2025-12-02 17:22:46,332 - INFO - SELEÇÃO DE FORNECEDOR CONCLUÍDA COM SUCESSO!
+2025-12-02 17:22:46,333 - INFO - ==================================================
+2025-12-02 17:23:04,657 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-12-02 17:23:06,033 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-12-02 17:23:12,257 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-12-02 17:23:12,258 - INFO - Obtendo dados do visualizador
+2025-12-02 17:23:12,259 - INFO - Total de registros a processar: 1
+2025-12-02 17:23:12,260 - INFO - Datas que serão afetadas pela inserção: ['05/12/2025']
+2025-12-02 17:23:12,261 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-12-02 17:23:12,262 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-02 17:23:12,843 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-02 17:23:12,844 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-02 17:23:12,845 - INFO - Dados novos: JB CIMENTO | CIMENTO | NF: 546987 | R$ 2240.00 | 10/12/2025
+2025-12-02 17:23:12,866 - INFO - ✅ Nenhuma duplicata encontrada para: JB CIMENTO - CIMENTO - NF: 546987
+2025-12-02 17:23:12,869 - INFO - Lançamento inserido com ID 322 na linha 322
+2025-12-02 17:23:13,529 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-02 17:23:14,032 - INFO - Verificando necessidade de recálculo para 2025-12-05
+2025-12-02 17:23:14,033 - ERROR - Erro ao verificar recálculo para 2025-12-05: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-02 17:23:15,811 - INFO - Limpando 1 registros salvos da visualização
+2025-12-02 17:23:15,836 - INFO - Visualizador fechado - todos os registros foram processados
+2025-12-02 17:23:15,853 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-02 17:24:12,431 - INFO - Sistema encerrado pelo usuário
+2025-12-02 17:37:53,040 - INFO - Configurações importadas com sucesso via src.config
+2025-12-02 17:37:53,060 - INFO - Configurações importadas com sucesso
+2025-12-02 17:37:53,064 - INFO - Configurações do sistema importadas com sucesso
+2025-12-02 17:37:53,837 - INFO - Sistema iniciado em modo: TESTE
+2025-12-02 17:37:56,062 - INFO - Abrindo sistema de entrada de dados
+2025-12-02 17:37:57,450 - INFO - Proteções contra perda de dados configuradas
+2025-12-02 17:38:00,189 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-02 17:38:45,971 - INFO - Sistema encerrado pelo usuário
+2025-12-02 17:39:05,833 - INFO - Configurações importadas com sucesso via src.config
+2025-12-02 17:39:05,847 - INFO - Configurações importadas com sucesso
+2025-12-02 17:39:05,849 - INFO - Configurações do sistema importadas com sucesso
+2025-12-02 17:39:06,326 - INFO - Sistema iniciado em modo: TESTE
+2025-12-02 17:39:09,276 - INFO - Abrindo sistema de relatórios
+2025-12-02 17:39:47,380 - INFO - Sistema encerrado pelo usuário
+2025-12-02 18:27:34,417 - INFO - Configurações importadas com sucesso via src.config
+2025-12-02 18:27:34,567 - INFO - Configurações importadas com sucesso
+2025-12-02 18:27:34,568 - INFO - Configurações do sistema importadas com sucesso
+2025-12-02 18:27:35,735 - INFO - Sistema iniciado em modo: TESTE
+2025-12-02 18:27:37,305 - INFO - Abrindo configurações do sistema
+2025-12-02 18:30:06,630 - INFO - Sistema encerrado pelo usuário
+2025-12-03 12:04:01,462 - INFO - Configurações importadas com sucesso via src.config
+2025-12-03 12:04:01,624 - INFO - Configurações importadas com sucesso
+2025-12-03 12:04:01,625 - INFO - Configurações do sistema importadas com sucesso
+2025-12-03 12:04:02,953 - INFO - Sistema iniciado em modo: TESTE
+2025-12-03 12:04:06,693 - INFO - Abrindo gestão de medições
+2025-12-03 12:10:57,481 - INFO - Sistema encerrado pelo usuário
+2025-12-03 12:48:14,288 - INFO - Configurações importadas com sucesso via src.config
+2025-12-03 12:48:14,305 - INFO - Configurações importadas com sucesso
+2025-12-03 12:48:14,306 - INFO - Configurações do sistema importadas com sucesso
+2025-12-03 12:48:14,988 - INFO - Sistema iniciado em modo: TESTE
+2025-12-03 12:48:16,666 - INFO - Abrindo gestão de medições
+2025-12-03 12:48:16,867 - ERROR - Erro ao abrir gestão de medições: expected an indented block after 'except' statement on line 3719 (gestao_medicoes.py, line 3720)
+2025-12-03 12:49:28,969 - INFO - Sistema encerrado pelo usuário
+2025-12-03 12:49:44,621 - INFO - Configurações importadas com sucesso via src.config
+2025-12-03 12:49:44,641 - INFO - Configurações importadas com sucesso
+2025-12-03 12:49:44,642 - INFO - Configurações do sistema importadas com sucesso
+2025-12-03 12:49:44,929 - INFO - Sistema iniciado em modo: TESTE
+2025-12-03 12:49:47,089 - INFO - Abrindo gestão de medições
+2025-12-03 13:57:22,745 - INFO - Sistema encerrado pelo usuário
+2025-12-03 14:05:13,559 - INFO - Configurações importadas com sucesso via src.config
+2025-12-03 14:05:13,576 - INFO - Configurações importadas com sucesso
+2025-12-03 14:05:13,577 - INFO - Configurações do sistema importadas com sucesso
+2025-12-03 14:05:14,272 - INFO - Sistema iniciado em modo: TESTE
+2025-12-03 14:05:15,776 - INFO - Abrindo gestão de medições
+2025-12-03 14:14:12,237 - INFO - Sistema encerrado pelo usuário
+2025-12-03 14:22:01,821 - INFO - Configurações importadas com sucesso via src.config
+2025-12-03 14:22:01,838 - INFO - Configurações importadas com sucesso
+2025-12-03 14:22:01,838 - INFO - Configurações do sistema importadas com sucesso
+2025-12-03 14:22:02,557 - INFO - Sistema iniciado em modo: TESTE
+2025-12-03 14:22:03,881 - INFO - Abrindo gestão de medições
+2025-12-03 14:25:03,575 - INFO - Sistema encerrado pelo usuário
+2025-12-03 14:30:45,596 - INFO - Configurações importadas com sucesso via src.config
+2025-12-03 14:30:45,615 - INFO - Configurações importadas com sucesso
+2025-12-03 14:30:45,615 - INFO - Configurações do sistema importadas com sucesso
+2025-12-03 14:30:46,341 - INFO - Sistema iniciado em modo: TESTE
+2025-12-03 14:30:50,309 - INFO - Abrindo gestão de medições
+2025-12-03 14:40:12,720 - INFO - Sistema encerrado pelo usuário
