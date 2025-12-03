@@ -1514,7 +1514,7 @@ class GerenciadorConfiguracoes:
                     break
             
             # Salvar
-            config_path = self.config_path()
+            config_path = self.config_path
             with open(config_path, 'w', encoding='utf-8') as f:
                 json.dump(config, f, indent=4, ensure_ascii=False)
             
