@@ -1,0 +1,64 @@
+2025-12-03 12:03:46,543 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-03 12:03:46,544 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-03 12:03:46,545 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-03 12:03:46,545 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-03 12:03:46,546 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-03 12:04:06,819 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-03 12:04:08,231 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-03 12:04:08,233 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-03 12:04:08,234 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-03 12:04:08,258 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-03 12:04:08,258 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-03 12:48:11,528 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-03 12:48:11,529 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-03 12:48:11,530 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-03 12:48:11,530 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-03 12:48:11,531 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-03 12:49:42,507 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-03 12:49:42,508 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-03 12:49:42,508 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-03 12:49:42,509 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-03 12:49:42,509 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-03 12:49:47,249 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-03 12:49:48,677 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-03 12:49:48,679 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-03 12:49:48,681 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-03 12:49:48,706 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-03 12:49:48,707 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-03 14:05:10,746 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-03 14:05:10,748 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-03 14:05:10,748 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-03 14:05:10,749 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-03 14:05:10,749 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-03 14:05:15,947 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-03 14:05:17,346 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-03 14:05:17,350 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-03 14:05:17,352 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-03 14:05:17,377 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-03 14:05:17,378 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-03 14:21:59,009 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-03 14:21:59,011 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-03 14:21:59,012 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-03 14:21:59,013 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-03 14:21:59,014 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-03 14:22:04,047 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-03 14:22:05,371 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-03 14:22:05,373 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-03 14:22:05,375 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-03 14:22:05,401 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-03 14:22:05,402 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-03 14:30:42,835 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-03 14:30:42,836 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-03 14:30:42,837 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-03 14:30:42,837 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-03 14:30:42,838 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-03 14:30:50,478 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-03 14:30:51,791 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-03 14:30:51,793 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-03 14:30:51,795 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-03 14:30:51,819 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-03 14:30:51,820 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-03 14:31:29,301 - sistema_relatorios - gestao_medicoes - INFO - Rastreamento adicionado: Contrato 5, Medição 1, Linha 1185
+2025-12-03 14:32:01,520 - sistema_relatorios - gestao_medicoes - INFO - Rastreamento adicionado: Contrato 6, Medição 1, Linha 1185
+2025-12-03 14:46:05,351 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-03 14:49:41,612 - sistema - logger_config - INFO - Sistema de logging inicializado
