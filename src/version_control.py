@@ -13,8 +13,8 @@ VERSION_INFO = {
     "patch": 2,
     "release_date": "05/12/2025",
     "changes": [
-        "Incluída a opção de vincular várias medições a um único pagamento.",
-        "",
+        "Incluída a opção de vincular várias medições a um único pagamento",
+        "Criação do relatório gerencial de contratos de empreiteiros",
         ""
     ]
 }
