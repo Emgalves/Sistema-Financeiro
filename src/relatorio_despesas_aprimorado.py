@@ -2278,7 +2278,7 @@ class RelatorioHandler:
         tabela_totais = [
             ['DESPESAS A PAGAR', self.formatar_numero(despesas_a_pagar)],
             ['DESPESAS PAGAS PELO CLIENTE', self.formatar_numero(despesas_pagas_cliente)],
-            ['COMPLEMENTO DE CAIXA', self.formatar_numero(despesas_pagas_caixa)],
+            ['DESPESAS PAGAS PELO CAIXA', self.formatar_numero(despesas_pagas_caixa)],
             [''],
             ['TOTAL DA QUINZENA', self.formatar_numero(total_quinzena)],
             [f'TOTAL ACUMULADO RELATÓRIO Nº {numero_relatorio - 1}',
