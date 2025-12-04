@@ -56,6 +56,7 @@ MODULOS_SISTEMA = [
     "src.relatorio_categoria",
     "src.relatorio_fornecedores",
     "src.relatorio_contratos_medicoes",
+    "src.relatorio_gerencial_engenheiro",
     
     # === GESTAO ===
     "src.despesas_rateadas",
