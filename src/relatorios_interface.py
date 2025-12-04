@@ -277,6 +277,9 @@ class SistemaRelatorios:
             
             elif relatorio["id"] == "gerencial_engenheiro":
                 self.processar_gerencial_engenheiro()
+
+            elif relatorio["id"] == "gerencial_pdf":
+                self.processar_gerencial_pdf()
             
             else:
                 self.processar_outros_relatorios(relatorio)
@@ -644,10 +647,18 @@ class SistemaRelatorios:
             },
             {
                 "id": "gerencial_engenheiro",
-                "nome": "Relatório Gerencial (Engenheiro)",
+                "nome": "Relatório Gerencial Medições",
                 "descricao": "Visão consolidada de todas as obras por grupo/engenheiro",
                 "modulo": "relatorio_gerencial_engenheiro",
                 "classe": "RelatorioGerencialEngenheiro",
+                "disponivel": True
+            },
+            {
+                "id": "gerencial_pdf",
+                "nome": "Relatório Gerencial Medições (PDF)",
+                "descricao": "Visão consolidada em PDF - Layout profissional para apresentações",
+                "modulo": "relatorio_gerencial_pdf",
+                "classe": "RelatorioGerencialPDF",
                 "disponivel": True
             },
             {
@@ -745,6 +756,8 @@ class SistemaRelatorios:
             self.setup_opcoes_fornecedores(opcoes_frame)
         elif relatorio["id"] == "gerencial_engenheiro":
             self.setup_opcoes_gerencial_engenheiro(opcoes_frame)
+        elif relatorio["id"] == "gerencial_pdf":
+            self.setup_opcoes_gerencial_pdf(opcoes_frame)
         elif relatorio["id"] == "lancamentos_pendentes":
             self.setup_opcoes_lancamentos_pendentes(opcoes_frame)
         else:
@@ -2280,6 +2293,85 @@ class SistemaRelatorios:
             logger.error(f"Erro ao configurar opções gerencial: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao configurar opções: {str(e)}")
 
+    def setup_opcoes_gerencial_pdf(self, parent):
+            """Configura opções para o relatório gerencial em PDF"""
+            try:
+                main_frame = ttk.Frame(parent, padding=10)
+                main_frame.pack(fill='both', expand=True)
+                
+                desc_text = """
+    Este relatório gera um PDF profissional com layout hierárquico:
+
+    📊 Estrutura do Documento:
+    • Resumo executivo do grupo (consolidado)
+    • Detalhamento por cliente (nome, CNPJ, CNO, endereço)
+    • Contratos (descrição, valores, status, período)
+    • Medições (datas, referências, valores, status)
+
+    🎨 Características:
+    • Layout profissional similar ao relatório de despesas
+    • Hierarquia visual clara (cores e indentação)
+    • Tabelas formatadas com bordas e cores
+    • Numeração automática de páginas
+    • Pronto para impressão e apresentação
+
+    🎯 Ideal para:
+    • Apresentações para diretoria
+    • Envio a clientes (formato não editável)
+    • Documentação formal de projetos
+    • Reuniões executivas
+                """
+                
+                ttk.Label(
+                    main_frame,
+                    text=desc_text,
+                    justify='left',
+                    wraplength=450,
+                    font=('Arial', 10)
+                ).pack(pady=10, anchor='w')
+                
+                ttk.Separator(main_frame, orient='horizontal').pack(fill='x', pady=15)
+                
+                info_frame = ttk.LabelFrame(main_frame, text="ℹ️ Informações", padding=10)
+                info_frame.pack(fill='x', pady=10)
+                
+                info_text = """
+    ✓ Usa os mesmos dados do relatório gerencial em Excel
+    ✓ Formato PDF universal - não requer programas específicos
+    ✓ Formato não editável - garante integridade dos dados
+    ✓ Arquivo menor que Excel
+    ✓ O PDF abre automaticamente após geração
+                """
+                
+                ttk.Label(
+                    info_frame,
+                    text=info_text,
+                    justify='left',
+                    wraplength=430,
+                    font=('Arial', 9)
+                ).pack(anchor='w')
+                
+                nota_frame = ttk.Frame(main_frame)
+                nota_frame.pack(fill='x', pady=(20, 10))
+                
+                ttk.Label(
+                    nota_frame,
+                    text="📦 Requer biblioteca: reportlab",
+                    font=('Arial', 9, 'bold'),
+                    foreground='darkblue'
+                ).pack(anchor='w')
+                
+                ttk.Label(
+                    nota_frame,
+                    text="   Instalação: pip install reportlab",
+                    font=('Arial', 9, 'italic'),
+                    foreground='darkblue'
+                ).pack(anchor='w')
+                
+                logger.info("✅ Opções do relatório gerencial PDF configuradas")
+                
+            except Exception as e:
+                logger.error(f"Erro ao configurar opções gerencial PDF: {str(e)}")
 
     def setup_opcoes_lancamentos_pendentes(self, parent_frame):
         """
@@ -2678,6 +2770,54 @@ class SistemaRelatorios:
                 self.root.deiconify()
             except:
                 pass
+
+    def processar_gerencial_pdf(self):
+            """Processa o relatório gerencial em PDF"""
+            try:
+                logger.info("🚀 Iniciando Relatório Gerencial PDF")
+                
+                try:
+                    from relatorio_gerencial_pdf import RelatorioGerencialPDF
+                    logger.info("✅ Módulo RelatorioGerencialPDF importado")
+                except ImportError as e:
+                    logger.error(f"❌ Erro ao importar módulo: {str(e)}")
+                    messagebox.showerror(
+                        "Erro de Importação",
+                        f"Não foi possível carregar o módulo do relatório gerencial PDF.\n\n"
+                        f"Erro: {str(e)}\n\n"
+                        f"Certifique-se de que:\n"
+                        f"1. O arquivo 'relatorio_gerencial_pdf.py' está na pasta correta\n"
+                        f"2. A biblioteca 'reportlab' está instalada: pip install reportlab"
+                    )
+                    return
+                
+                self.root.withdraw()
+                
+                try:
+                    relatorio = RelatorioGerencialPDF(parent=self.root)
+                    logger.info("✅ Interface do relatório gerencial PDF aberta")
+                    self.root.wait_window(relatorio.root)
+                    
+                except Exception as e:
+                    logger.error(f"❌ Erro ao criar relatório gerencial PDF: {str(e)}")
+                    messagebox.showerror(
+                        "Erro",
+                        f"Erro ao criar relatório gerencial PDF:\n\n{str(e)}"
+                    )
+                
+                finally:
+                    self.root.deiconify()
+                    self.root.lift()
+                    self.root.focus_force()
+                    logger.info("✅ Retornado à interface principal")
+                    
+            except Exception as e:
+                logger.error(f"💥 ERRO no processamento gerencial PDF: {str(e)}", exc_info=True)
+                messagebox.showerror("Erro", f"Erro ao processar relatório: {str(e)}")
+                try:
+                    self.root.deiconify()
+                except:
+                    pass
 
     def atualizar_progresso_seguro(self, progress_window, mensagem, porcentagem):
         """Atualiza progresso de forma segura"""
