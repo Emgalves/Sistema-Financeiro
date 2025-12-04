@@ -274,6 +274,10 @@ class SistemaRelatorios:
                 self.processar_lancamentos_pendentes()
             elif relatorio["id"] == "fornecedores":
                 self.processar_fornecedores()
+            
+            elif relatorio["id"] == "gerencial_engenheiro":
+                self.processar_gerencial_engenheiro()
+            
             else:
                 self.processar_outros_relatorios(relatorio)
                 
@@ -558,81 +562,6 @@ class SistemaRelatorios:
             logger.error(f"💥 ERRO no executar_direto_limpo: {str(e)}")
             messagebox.showerror("Erro", f"Erro: {str(e)}")
 
-    # def _mostrar_preview_limpo(self, dados_processados, configuracoes):
-    #     """Preview limpo CORRIGIDO - cria janela própria se necessário"""
-    #     try:
-    #         logger.info("🎯 MOSTRANDO PREVIEW COM DADOS DO SERVIÇO - VERSÃO CORRIGIDA")
-            
-    #         # TENTATIVA 1: Usar VisualizadorRelatorio original
-    #         try:
-    #             # Importar visualizador original
-    #             try:
-    #                 from src.relatorio_despesas_aprimorado import VisualizadorRelatorio
-    #                 logger.info("✅ Importado de src.relatorio_despesas_aprimorado")
-    #             except ImportError:
-    #                 from relatorio_despesas_aprimorado import VisualizadorRelatorio
-    #                 logger.info("✅ Importado de relatorio_despesas_aprimorado")
-                
-    #             # Ocultar interface atual
-    #             self.root.withdraw()
-                
-    #             # Criar visualizador
-    #             # visualizador = VisualizadorRelatorio(self.root)
-    #             self._criar_preview_alternativo(dados_processados, configuracoes)
-    #             # visualizador.arquivo_path = configuracoes['arquivo']
-                
-    #             # Configurar callback de retorno ANTES de mostrar preview
-    #             def voltar_interface():
-    #                 """Volta para interface de relatórios"""
-    #                 try:
-    #                     self.root.deiconify()
-    #                     self.root.lift()
-    #                     self.root.focus_force()
-    #                     logger.info("Retornado para interface de relatórios")
-    #                 except Exception as e:
-    #                     logger.error(f"Erro ao voltar: {str(e)}")
-                
-    #             # IMPORTANTE: Configurar referência ao menu principal
-    #             visualizador.menu_principal = self.root
-                
-    #             # Mostrar preview
-    #             preview_window = visualizador.mostrar_preview(dados_processados)
-                
-    #             # Verificar se preview foi criado
-    #             if preview_window is None:
-    #                 logger.error("❌ VisualizadorRelatorio retornou None")
-    #                 raise Exception("Preview window não foi criada")
-                
-    #             # Configurar fechamento personalizado
-    #             def fechar_preview():
-    #                 try:
-    #                     if hasattr(preview_window, 'destroy'):
-    #                         preview_window.destroy()
-    #                 except:
-    #                     pass
-    #                 voltar_interface()
-                
-    #             # Aplicar configuração
-    #             if hasattr(preview_window, 'protocol'):
-    #                 preview_window.protocol("WM_DELETE_WINDOW", fechar_preview)
-                
-    #             logger.info("✅ Preview aberto com VisualizadorRelatorio original")
-    #             return
-                
-    #         except Exception as e:
-    #             logger.error(f"❌ Erro com VisualizadorRelatorio: {str(e)}")
-    #             logger.info("🔄 Tentando preview alternativo...")
-                
-    #             # Restaurar interface em caso de erro
-    #             self.root.deiconify()
-            
-    #         # TENTATIVA 2: Preview alternativo simples
-    #         self._criar_preview_alternativo(dados_processados, configuracoes)
-            
-    #     except Exception as e:
-    #         logger.error(f"💥 ERRO GERAL no preview: {str(e)}", exc_info=True)
-    #         messagebox.showerror("Erro", f"Erro ao abrir preview: {str(e)}")
-    #         self.root.deiconify()
 
     def _mostrar_resultado_geracao_limpo(self, nome_cliente, nome_arquivo, caminho_final):
         """Mostra resultado da geração de forma limpa"""
@@ -660,7 +589,6 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"Erro ao mostrar resultado: {str(e)}")
 
-###
 
     def setup_relatorios_list(self):
         """Configura a lista de relatórios disponíveis"""
@@ -712,6 +640,14 @@ class SistemaRelatorios:
                 "descricao": "Resumo de fornecedores por cliente e global",
                 "modulo": "relatorio_fornecedores",
                 "classe": "RelatorioFornecedores",
+                "disponivel": True
+            },
+            {
+                "id": "gerencial_engenheiro",
+                "nome": "Relatório Gerencial (Engenheiro)",
+                "descricao": "Visão consolidada de todas as obras por grupo/engenheiro",
+                "modulo": "relatorio_gerencial_engenheiro",
+                "classe": "RelatorioGerencialEngenheiro",
                 "disponivel": True
             },
             {
@@ -807,6 +743,8 @@ class SistemaRelatorios:
             self.setup_opcoes_tipo_despesa(opcoes_frame)
         elif relatorio["id"] == "fornecedores":
             self.setup_opcoes_fornecedores(opcoes_frame)
+        elif relatorio["id"] == "gerencial_engenheiro":
+            self.setup_opcoes_gerencial_engenheiro(opcoes_frame)
         elif relatorio["id"] == "lancamentos_pendentes":
             self.setup_opcoes_lancamentos_pendentes(opcoes_frame)
         else:
@@ -2254,6 +2192,95 @@ class SistemaRelatorios:
             value="pdf"
         ).pack(side='left', padx=20, pady=5)
 
+    def setup_opcoes_gerencial_engenheiro(self, parent):
+        """
+        Configura opções para o relatório gerencial por engenheiro
+        
+        Este relatório não precisa de muitas configurações pois trabalha
+        com dados consolidados de todos os clientes de um grupo.
+        """
+        try:
+            # Frame principal
+            main_frame = ttk.Frame(parent, padding=10)
+            main_frame.pack(fill='both', expand=True)
+            
+            # Descrição
+            desc_text = """
+    Este relatório consolida informações de TODAS as obras de um grupo/engenheiro:
+
+    📊 O que mostra:
+    • Resumo executivo do grupo (obras, contratos, valores)
+    • Visão por obra (lista consolidada)
+    • Todos os contratos do grupo
+    • Todas as medições do grupo
+    • Gráficos de acompanhamento
+
+    🎯 Ideal para:
+    • Engenheiros acompanharem múltiplas obras
+    • Gestores visualizarem performance de grupos
+    • Identificação rápida de problemas
+    • Relatórios executivos para diretoria
+
+    💡 O relatório é gerado em tempo real a partir dos dados
+    das planilhas individuais de cada cliente do grupo.
+            """
+            
+            ttk.Label(
+                main_frame,
+                text=desc_text,
+                justify='left',
+                wraplength=450,
+                font=('Arial', 10)
+            ).pack(pady=10, anchor='w')
+            
+            # Separador
+            ttk.Separator(main_frame, orient='horizontal').pack(fill='x', pady=15)
+            
+            # Informações importantes
+            info_frame = ttk.LabelFrame(main_frame, text="ℹ️ Informações Importantes", padding=10)
+            info_frame.pack(fill='x', pady=10)
+            
+            info_text = """
+    ✓ Os grupos são definidos na planilha clientes.xlsx (coluna "Grupo")
+    ✓ Valores válidos: Grupo 1, Grupo 2, Grupo 3, Grupo 4
+    ✓ O relatório filtrará automaticamente os clientes do grupo selecionado
+    ✓ Você pode exportar os resultados para Excel
+    ✓ Gráficos são gerados automaticamente
+            """
+            
+            ttk.Label(
+                info_frame,
+                text=info_text,
+                justify='left',
+                wraplength=430,
+                font=('Arial', 9)
+            ).pack(anchor='w')
+            
+            # Nota sobre configurações
+            nota_frame = ttk.Frame(main_frame)
+            nota_frame.pack(fill='x', pady=(20, 10))
+            
+            ttk.Label(
+                nota_frame,
+                text="💡 Este relatório não requer configurações adicionais.",
+                font=('Arial', 9, 'italic'),
+                foreground='blue'
+            ).pack(anchor='w')
+            
+            ttk.Label(
+                nota_frame,
+                text="   Ao clicar em 'Gerar Relatório', a interface será aberta para seleção do grupo.",
+                font=('Arial', 9, 'italic'),
+                foreground='blue'
+            ).pack(anchor='w')
+            
+            logger.info("✅ Opções do relatório gerencial configuradas")
+            
+        except Exception as e:
+            logger.error(f"Erro ao configurar opções gerencial: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao configurar opções: {str(e)}")
+
+
     def setup_opcoes_lancamentos_pendentes(self, parent_frame):
         """
         Configura as opções específicas para relatório de lançamentos pendentes
@@ -2588,6 +2615,69 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"💥 ERRO outros relatórios: {str(e)}")
             messagebox.showerror("Erro", f"Erro: {str(e)}")
+
+    def processar_gerencial_engenheiro(self):
+        """
+        Processa o relatório gerencial por engenheiro
+        
+        Este relatório abre uma janela independente que permite:
+        1. Selecionar o grupo (1-4)
+        2. Visualizar dados consolidados
+        3. Gerar gráficos
+        4. Exportar para Excel
+        """
+        try:
+            logger.info("🚀 Iniciando Relatório Gerencial por Engenheiro")
+            
+            # Importar o módulo
+            try:
+                from relatorio_gerencial_engenheiro import RelatorioGerencialEngenheiro
+                logger.info("✅ Módulo RelatorioGerencialEngenheiro importado")
+            except ImportError as e:
+                logger.error(f"❌ Erro ao importar módulo: {str(e)}")
+                messagebox.showerror(
+                    "Erro de Importação",
+                    f"Não foi possível carregar o módulo do relatório gerencial.\n\n"
+                    f"Erro: {str(e)}\n\n"
+                    f"Certifique-se de que o arquivo 'relatorio_gerencial_engenheiro.py' "
+                    f"está na pasta correta e que todas as dependências estão instaladas."
+                )
+                return
+            
+            # Ocultar janela principal temporariamente
+            self.root.withdraw()
+            
+            # Criar e abrir o relatório gerencial
+            try:
+                relatorio = RelatorioGerencialEngenheiro(parent=self.root)
+                logger.info("✅ Interface do relatório gerencial aberta")
+                
+                # Aguardar fechamento da janela do relatório
+                self.root.wait_window(relatorio.root)
+                
+            except Exception as e:
+                logger.error(f"❌ Erro ao criar relatório gerencial: {str(e)}")
+                messagebox.showerror(
+                    "Erro",
+                    f"Erro ao criar relatório gerencial:\n\n{str(e)}"
+                )
+            
+            finally:
+                # Restaurar janela principal
+                self.root.deiconify()
+                self.root.lift()
+                self.root.focus_force()
+                logger.info("✅ Retornado à interface principal")
+                
+        except Exception as e:
+            logger.error(f"💥 ERRO no processamento gerencial: {str(e)}", exc_info=True)
+            messagebox.showerror("Erro", f"Erro ao processar relatório: {str(e)}")
+            
+            # Garantir que janela principal volte
+            try:
+                self.root.deiconify()
+            except:
+                pass
 
     def atualizar_progresso_seguro(self, progress_window, mensagem, porcentagem):
         """Atualiza progresso de forma segura"""
