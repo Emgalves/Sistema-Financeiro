@@ -35,3 +35,220 @@
 2025-12-04 09:12:01,164 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
 2025-12-04 09:12:01,165 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
 2025-12-04 09:12:01,249 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 09:29:30,162 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 09:29:30,163 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 09:29:30,163 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 09:29:30,164 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 09:29:30,164 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 09:32:00,648 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 09:32:00,741 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 09:32:00,742 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 09:32:00,755 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 09:32:00,757 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-12-04 09:32:00,758 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2025-12-04 09:32:02,911 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial configuradas
+2025-12-04 09:32:05,043 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_engenheiro
+2025-12-04 09:32:05,044 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_engenheiro
+2025-12-04 09:32:05,045 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial por Engenheiro
+2025-12-04 09:32:05,110 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialEngenheiro importado
+2025-12-04 09:32:05,562 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial aberta
+2025-12-04 09:33:04,536 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 09:33:07,547 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 09:33:07,547 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 09:33:07,592 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 10:37:43,178 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 10:37:43,179 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 10:37:43,180 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 10:37:43,181 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 10:37:43,181 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 10:39:48,303 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 10:39:48,410 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 10:39:48,412 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 10:39:48,429 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 10:39:48,431 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-12-04 10:39:48,431 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2025-12-04 10:39:50,914 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-04 10:39:53,045 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 10:39:53,046 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 10:39:53,047 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 10:39:53,064 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 10:43:18,250 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 10:43:33,778 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 10:43:36,012 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 10:43:36,012 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 10:43:36,081 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 10:47:27,505 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 10:47:27,506 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 10:47:27,508 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 10:47:27,509 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 10:47:27,524 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 10:47:36,887 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 10:47:36,949 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 10:47:36,950 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 10:47:36,955 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 10:47:36,956 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-12-04 10:47:36,957 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2025-12-04 10:47:39,930 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-04 10:47:49,322 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 10:47:49,323 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 10:47:49,323 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 10:47:49,346 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 10:47:49,840 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 11:12:37,181 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 11:12:39,945 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 11:12:39,947 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 11:12:40,045 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 11:16:27,047 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 11:16:27,048 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 11:16:27,049 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 11:16:27,049 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 11:16:27,050 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 11:17:11,883 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 11:17:11,959 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 11:17:11,961 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 11:17:11,978 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 11:17:11,980 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-12-04 11:17:11,981 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2025-12-04 11:17:14,202 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-04 11:17:16,373 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 11:17:16,374 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 11:17:16,374 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 11:17:16,399 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 11:17:16,707 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 11:22:31,088 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 11:22:32,971 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 11:22:32,973 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 11:22:33,045 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 11:28:47,154 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 11:28:47,155 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 11:28:47,155 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 11:28:47,156 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 11:28:47,156 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 11:29:46,043 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 11:29:46,118 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 11:29:46,119 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 11:29:46,136 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 11:29:46,137 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2025-12-04 11:29:46,138 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2025-12-04 11:29:50,107 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-04 11:29:56,255 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 11:29:56,256 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 11:29:56,257 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 11:29:56,282 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 11:29:56,761 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 11:39:53,917 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 11:40:12,007 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 11:40:12,009 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 11:40:12,010 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 11:40:12,012 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 11:40:12,446 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 11:41:29,481 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 11:41:31,114 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 11:41:31,115 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 11:41:31,162 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 11:41:41,655 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 11:41:41,656 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 11:41:41,657 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 11:41:41,657 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 11:41:41,658 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 11:41:46,342 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 11:41:46,394 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 11:41:46,395 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 11:41:46,399 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 11:41:46,401 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-04 11:41:46,402 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-04 11:41:48,446 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-04 11:41:58,058 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 11:41:58,059 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 11:41:58,060 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 11:41:58,068 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 11:41:58,381 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 11:53:00,467 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 11:53:01,637 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 11:53:01,639 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 11:53:01,723 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 11:57:56,270 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 11:57:56,271 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 11:57:56,272 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 11:57:56,272 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 11:57:56,273 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 11:58:01,386 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 11:58:01,463 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 11:58:01,464 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 11:58:01,481 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 11:58:01,482 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-04 11:58:01,483 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-04 11:58:03,248 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-04 11:58:06,419 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 11:58:06,420 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 11:58:06,420 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 11:58:06,445 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 11:58:06,764 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 11:59:43,687 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 11:59:47,466 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 11:59:47,467 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 11:59:47,511 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 15:36:54,251 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 15:36:54,253 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 15:36:54,255 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 15:36:54,255 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 15:36:54,256 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 15:37:02,645 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 15:37:02,725 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 15:37:02,727 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 15:37:02,740 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 15:37:02,741 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-04 15:37:02,742 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-04 15:37:06,650 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-04 15:37:08,682 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 15:37:08,683 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 15:37:08,684 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 15:37:08,689 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 15:37:09,376 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 15:38:58,297 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 15:39:01,044 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial configuradas
+2025-12-04 15:39:09,602 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 15:39:09,603 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 15:39:09,700 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 15:44:39,691 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 15:44:39,691 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 15:44:39,692 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 15:44:39,692 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 15:44:39,692 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 15:45:22,161 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 15:45:22,221 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 15:45:22,222 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 15:45:22,227 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 15:45:22,228 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-04 15:45:22,229 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-04 15:45:24,538 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-04 15:45:26,047 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 15:45:26,048 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 15:45:26,049 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 15:45:26,078 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 15:45:26,795 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 15:54:57,487 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 15:54:59,459 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 15:54:59,460 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 15:54:59,543 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 16:01:12,360 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 16:01:12,361 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-04 16:01:12,362 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-04 16:01:12,362 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-04 16:01:12,362 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-04 16:02:22,832 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-04 16:02:22,910 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-04 16:02:22,911 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-04 16:02:22,928 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-04 16:02:22,930 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-04 16:02:22,931 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-04 16:02:25,659 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-04 16:02:27,103 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-04 16:02:27,104 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-04 16:02:27,105 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-04 16:02:27,136 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-04 16:02:27,925 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-04 16:07:33,030 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-04 16:07:34,669 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-04 16:07:34,694 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-04 16:07:34,750 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
