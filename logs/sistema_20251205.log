@@ -1,0 +1,630 @@
+2025-12-05 11:22:35,296 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 11:22:35,297 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 11:22:35,297 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 11:22:35,298 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 11:22:35,298 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 11:22:55,894 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-05 11:22:57,494 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-05 11:22:57,512 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-05 11:22:57,515 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-05 11:22:57,542 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-05 11:22:57,545 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-05 12:02:29,911 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 12:02:29,912 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 12:02:29,912 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 12:02:29,913 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 12:02:29,913 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 12:02:37,244 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-05 12:02:38,580 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-05 12:02:38,583 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-05 12:02:38,584 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-05 12:02:38,608 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-05 12:02:38,609 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-05 12:21:46,103 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 12:21:46,124 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 12:21:46,125 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 12:21:46,163 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 12:21:46,164 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 12:21:46,165 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 12:21:48,348 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/12/2025
+2025-12-05 12:21:48,350 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/12/2025
+2025-12-05 12:21:48,525 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 12:21:48,543 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 12:21:48,545 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 12:21:48,549 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 12:21:48,550 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 12:21:52,931 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: SERGIO LUCIO PEREIRA
+2025-12-05 12:21:52,932 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\SERGIO LUCIO PEREIRA.xlsx
+2025-12-05 12:21:52,939 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\SERGIO LUCIO PEREIRA.xlsx
+2025-12-05 12:21:55,153 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-12-05 12:21:55,154 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-12-05 12:21:55,155 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-12-05 12:21:55,156 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-12-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-12-05 12:21:55,157 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\SERGIO LUCIO PEREIRA.xlsx
+2025-12-05 12:21:55,158 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\SERGIO LUCIO PEREIRA.xlsx
+2025-12-05 12:21:55,159 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-12-05 12:21:55,159 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: SERGIO LUCIO PEREIRA.xlsx
+2025-12-05 12:21:56,863 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-12-05 12:21:56,864 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-12-05 12:21:59,690 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-12-05 12:23:52,200 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_SERGIO_LUCIO_PEREIRA_20251205_122159.pdf
+2025-12-05 12:23:54,202 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_SERGIO_LUCIO_PEREIRA_20251205_122159.pdf
+2025-12-05 12:24:00,200 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 12:24:00,200 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 12:24:00,274 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 14:45:54,592 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 14:45:54,594 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 14:45:54,595 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 14:45:54,596 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 14:45:54,597 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 14:46:00,881 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 14:46:00,966 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 14:46:00,967 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 14:46:00,984 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 14:46:00,985 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 14:46:00,986 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 14:46:03,500 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 14:46:05,429 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 14:46:05,430 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 14:46:05,431 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 14:46:05,459 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 14:46:06,311 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 14:47:12,920 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 14:47:14,572 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 14:47:14,574 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 14:47:14,628 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 14:50:11,551 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 14:50:11,552 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 14:50:11,552 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 14:50:11,552 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 14:50:11,553 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 14:50:16,299 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 14:50:16,361 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 14:50:16,362 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 14:50:16,374 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 14:50:16,375 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 14:50:16,376 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 14:50:18,122 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 14:50:19,794 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 14:50:19,795 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 14:50:19,796 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 14:50:19,828 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 14:50:20,532 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 14:51:11,731 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 14:51:13,385 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 14:51:13,386 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 14:51:13,426 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 15:13:21,705 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 15:13:21,706 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 15:13:21,706 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 15:13:21,707 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 15:13:21,707 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 15:13:32,120 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:13:32,201 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:13:32,203 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:13:32,220 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:13:32,222 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:13:32,223 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 15:13:35,638 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 15:13:37,720 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 15:13:37,721 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 15:13:37,722 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 15:13:37,813 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 15:13:38,512 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 15:17:01,383 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 15:17:02,726 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 15:17:02,727 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 15:17:02,760 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 15:17:11,734 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 15:17:11,735 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 15:17:11,736 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 15:17:11,736 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 15:17:11,737 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 15:17:16,254 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:17:16,307 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:17:16,309 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:17:16,311 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:17:16,313 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:17:16,314 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 15:17:18,368 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 15:17:20,526 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 15:17:20,527 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 15:17:20,527 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 15:17:20,559 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 15:17:21,325 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 15:19:03,571 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 15:19:05,452 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 15:19:05,453 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 15:19:05,502 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 15:25:23,510 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 15:25:23,512 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 15:25:23,513 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 15:25:23,513 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 15:25:23,514 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 15:25:31,226 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:25:31,308 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:25:31,311 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:25:31,317 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:25:31,318 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:25:31,319 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 15:25:33,276 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 15:25:36,671 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 15:25:36,674 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 15:25:36,675 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 15:25:36,707 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 15:25:37,812 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 15:26:26,198 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 15:26:28,287 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 15:26:28,288 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 15:26:28,335 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 15:27:55,901 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 15:27:55,902 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 15:27:55,903 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 15:27:55,903 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 15:27:55,904 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 15:28:02,143 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:28:02,223 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:28:02,224 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:28:02,242 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:28:02,244 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:28:02,245 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 15:28:04,877 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 15:28:06,766 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 15:28:06,767 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 15:28:06,767 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 15:28:06,799 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 15:28:07,571 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 15:28:49,942 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 15:28:51,893 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 15:28:51,894 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 15:28:51,950 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 15:30:59,818 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 15:30:59,820 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 15:30:59,820 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 15:30:59,821 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 15:30:59,821 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 15:31:04,788 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:31:04,865 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:31:04,867 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:31:04,883 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:31:04,885 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:31:04,886 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 15:31:07,067 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 15:31:08,867 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 15:31:08,868 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 15:31:08,869 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 15:31:08,909 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 15:31:09,783 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 15:32:00,535 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 15:32:02,355 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 15:32:02,356 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 15:32:02,423 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 15:32:47,333 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 15:32:47,334 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 15:32:47,334 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 15:32:47,335 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 15:32:47,335 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 15:32:51,951 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:32:52,009 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:32:52,010 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:32:52,014 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:32:52,016 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:32:52,017 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 15:32:53,855 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 15:32:55,594 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 15:32:55,595 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 15:32:55,596 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 15:32:55,631 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 15:32:56,461 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 15:33:40,045 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 15:33:41,577 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 15:33:41,578 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 15:33:41,621 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 15:35:19,947 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 15:35:19,948 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 15:35:19,950 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 15:35:19,950 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 15:35:19,951 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 15:35:24,799 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:35:24,860 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:35:24,861 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:35:24,869 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:35:24,870 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:35:24,872 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 15:35:26,787 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 15:35:28,576 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 15:35:28,577 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 15:35:28,578 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 15:35:28,611 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 15:35:29,384 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 15:37:32,230 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 15:37:34,318 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 15:37:34,319 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 15:37:34,391 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 15:40:23,796 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 15:40:23,797 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 15:40:23,798 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 15:40:23,798 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 15:40:23,799 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 15:40:28,468 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:40:28,522 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:40:28,523 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:40:28,526 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:40:28,527 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:40:28,528 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 15:40:31,474 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:40:31,517 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:40:31,518 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:40:31,521 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:40:31,522 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:40:35,060 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-12-05 15:40:35,061 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-12-05 15:47:31,807 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 15:47:31,808 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 15:47:31,886 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 15:52:34,911 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 15:52:34,913 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 15:52:34,914 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 15:52:34,915 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 15:52:34,949 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 15:52:42,667 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 15:52:42,792 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 15:52:42,838 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 15:52:42,869 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 15:52:42,886 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 15:52:42,887 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 15:52:45,025 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-05 15:52:46,563 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_pdf
+2025-12-05 15:52:46,564 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_pdf
+2025-12-05 15:52:46,565 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial PDF
+2025-12-05 15:52:46,611 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialPDF importado
+2025-12-05 15:52:47,542 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial PDF aberta
+2025-12-05 15:53:40,197 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 15:53:42,067 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 15:53:42,069 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 15:53:42,125 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 16:00:54,764 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 16:00:54,765 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 16:00:54,766 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 16:00:54,766 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 16:00:54,767 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 16:00:59,665 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 16:00:59,722 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 16:00:59,723 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 16:00:59,726 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 16:00:59,727 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 16:00:59,727 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 16:01:01,539 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 16:01:01,560 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 16:01:01,561 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 16:01:01,564 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 16:01:01,565 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 16:01:03,141 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-12-05 16:01:03,142 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-12-05 16:08:41,992 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial configuradas
+2025-12-05 16:08:43,823 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_engenheiro
+2025-12-05 16:08:43,824 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_engenheiro
+2025-12-05 16:08:43,825 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial por Engenheiro
+2025-12-05 16:08:43,856 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialEngenheiro importado
+2025-12-05 16:08:44,160 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial aberta
+2025-12-05 16:09:57,816 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 16:10:00,014 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 16:10:00,016 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 16:10:00,071 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 16:15:00,401 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 16:15:00,402 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 16:15:00,402 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 16:15:00,403 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 16:15:00,403 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 16:19:46,279 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\clientes.xlsx
+2025-12-05 16:19:46,349 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 16:19:46,351 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-05 16:19:46,363 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-05 16:19:46,364 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-05 16:19:46,365 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-05 16:19:48,723 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial configuradas
+2025-12-05 16:19:50,855 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: gerencial_engenheiro
+2025-12-05 16:19:50,856 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: gerencial_engenheiro
+2025-12-05 16:19:50,857 - sistema_relatorios - relatorios_interface - INFO - 🚀 Iniciando Relatório Gerencial por Engenheiro
+2025-12-05 16:19:50,907 - sistema_relatorios - relatorios_interface - INFO - ✅ Módulo RelatorioGerencialEngenheiro importado
+2025-12-05 16:19:51,425 - sistema_relatorios - relatorios_interface - INFO - ✅ Interface do relatório gerencial aberta
+2025-12-05 16:21:21,030 - sistema_relatorios - relatorios_interface - INFO - ✅ Retornado à interface principal
+2025-12-05 16:21:47,477 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-05 16:21:47,478 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-05 16:21:47,567 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-05 16:21:49,843 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-05 16:21:50,678 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-05 16:21:50,681 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-05 16:21:50,683 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-05 16:21:50,708 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-05 16:21:50,709 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-05 16:21:56,801 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2025-12-05 16:21:56,824 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 16:21:56,829 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'BRUNO SANTANA RINALDI' carregados com sucesso
+2025-12-05 16:21:56,832 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: BRUNO SANTANA RINALDI
+2025-12-05 16:22:02,485 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: a
+2025-12-05 16:22:03,724 - sistema_relatorios - gestao_medicoes - INFO - ✅ 930 fornecedores encontrados
+2025-12-05 16:22:03,726 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: al
+2025-12-05 16:22:04,840 - sistema_relatorios - gestao_medicoes - INFO - ✅ 227 fornecedores encontrados
+2025-12-05 16:22:04,843 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alf
+2025-12-05 16:22:05,898 - sistema_relatorios - gestao_medicoes - INFO - ✅ 3 fornecedores encontrados
+2025-12-05 16:22:05,900 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alfa
+2025-12-05 16:22:06,963 - sistema_relatorios - gestao_medicoes - INFO - ✅ 2 fornecedores encontrados
+2025-12-05 16:22:06,965 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alfat
+2025-12-05 16:22:08,021 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-12-05 16:22:08,023 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alfate
+2025-12-05 16:22:09,065 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-12-05 16:22:09,067 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alfatec
+2025-12-05 16:22:10,145 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-12-05 16:22:11,551 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:22:12,597 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:22:13,613 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:22:13,620 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:22:14,579 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:22:15,626 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:22:20,664 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 15/12/2025 (6 dias úteis, excluindo data início)
+2025-12-05 16:22:20,870 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 06/03/2026 (65 dias úteis, excluindo data início)
+2025-12-05 16:22:23,798 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 06/03/2026 (65 dias úteis, excluindo data início)
+2025-12-05 16:23:01,821 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2025-12-05 16:23:01,842 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 16:23:01,844 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'BRUNO SANTANA RINALDI' carregados com sucesso
+2025-12-05 16:23:01,845 - sistema_relatorios - gerador_contrato - INFO - Buscando fornecedor por nome: ALFATEC INSTALACOES
+2025-12-05 16:23:02,762 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:23:02,764 - sistema_relatorios - logger_config - INFO - Iniciando: Gerar contrato
+2025-12-05 16:23:02,764 - sistema_relatorios - gerador_contrato - WARNING - Campos vazios (serão preenchidos com valor padrão): fornecedor_endereco
+2025-12-05 16:23:02,766 - sistema_relatorios - gerador_contrato - INFO - Valor formatado: R$ 15.000,00 (quinze mil reais)
+2025-12-05 16:23:02,766 - sistema_relatorios - gerador_contrato - INFO - Multa formatada: R$ 4.000,00 (quatro mil reais)
+2025-12-05 16:23:02,767 - sistema_relatorios - gerador_contrato - INFO - Gerando contrato: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_BRUNO_SANTANA_RINALDI_2025-12-05.docx
+2025-12-05 16:23:02,771 - sistema_relatorios - gerador_contrato - INFO - Criando package.json no diretório temporário...
+2025-12-05 16:23:02,777 - sistema_relatorios - gerador_contrato - INFO - Executando Node.js: node
+2025-12-05 16:23:05,722 - sistema_relatorios - gerador_contrato - ERROR - Erro ao executar script Node.js: node:internal/modules/cjs/loader:1424
+  throw err;
+  ^
+
+Error: Cannot find module 'docx'
+Require stack:
+- C:\Users\Obras\AppData\Local\Temp\gerar_contrato.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1421:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1064:22)
+    at Module._load (node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1504:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (C:\Users\Obras\AppData\Local\Temp\gerar_contrato.js:3:94)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ 'C:\\Users\\Obras\\AppData\\Local\\Temp\\gerar_contrato.js' ]
+}
+
+Node.js v24.11.1
+
+2025-12-05 16:23:05,736 - sistema_relatorios - logger_config - INFO - Concluído: Gerar contrato
+2025-12-05 16:34:01,184 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 16:34:01,185 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 16:34:01,185 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 16:34:01,186 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 16:34:01,186 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 16:34:07,378 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-05 16:34:08,805 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-05 16:34:08,808 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-05 16:34:08,811 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-05 16:34:08,834 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-05 16:34:08,834 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-05 16:34:16,488 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2025-12-05 16:34:16,510 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 16:34:16,524 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'BRUNO SANTANA RINALDI' carregados com sucesso
+2025-12-05 16:34:16,527 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: BRUNO SANTANA RINALDI
+2025-12-05 16:34:19,540 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: e
+2025-12-05 16:34:20,616 - sistema_relatorios - gestao_medicoes - INFO - ✅ 855 fornecedores encontrados
+2025-12-05 16:34:20,618 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: er
+2025-12-05 16:34:21,738 - sistema_relatorios - gestao_medicoes - INFO - ✅ 328 fornecedores encontrados
+2025-12-05 16:34:21,741 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-12-05 16:34:22,826 - sistema_relatorios - gestao_medicoes - INFO - ✅ 35 fornecedores encontrados
+2025-12-05 16:34:22,829 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eril
+2025-12-05 16:34:23,941 - sistema_relatorios - gestao_medicoes - WARNING - ⚠️ Nenhum fornecedor encontrado com 'eril'
+2025-12-05 16:34:33,636 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: eri
+2025-12-05 16:34:34,960 - sistema_relatorios - gestao_medicoes - INFO - ✅ 35 fornecedores encontrados
+2025-12-05 16:34:46,501 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ERITON NEVES RODRIGUES (CNPJ: 048.854.356-84)
+2025-12-05 16:34:47,625 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ERITON NEVES RODRIGUES' sem endereço cadastrado
+2025-12-05 16:34:48,655 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ERITON NEVES RODRIGUES' carregados
+2025-12-05 16:34:56,196 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: a
+2025-12-05 16:34:57,327 - sistema_relatorios - gestao_medicoes - INFO - ✅ 930 fornecedores encontrados
+2025-12-05 16:34:57,329 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: al
+2025-12-05 16:34:58,551 - sistema_relatorios - gestao_medicoes - INFO - ✅ 227 fornecedores encontrados
+2025-12-05 16:34:58,553 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alt
+2025-12-05 16:34:59,690 - sistema_relatorios - gestao_medicoes - INFO - ✅ 9 fornecedores encontrados
+2025-12-05 16:34:59,692 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alta
+2025-12-05 16:35:00,806 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-12-05 16:35:00,808 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: altat
+2025-12-05 16:35:01,946 - sistema_relatorios - gestao_medicoes - WARNING - ⚠️ Nenhum fornecedor encontrado com 'altat'
+2025-12-05 16:35:13,579 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alta
+2025-12-05 16:35:14,739 - sistema_relatorios - gestao_medicoes - INFO - ✅ 1 fornecedores encontrados
+2025-12-05 16:35:14,740 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alt
+2025-12-05 16:35:15,901 - sistema_relatorios - gestao_medicoes - INFO - ✅ 9 fornecedores encontrados
+2025-12-05 16:35:15,903 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: al
+2025-12-05 16:35:17,018 - sistema_relatorios - gestao_medicoes - INFO - ✅ 227 fornecedores encontrados
+2025-12-05 16:35:20,171 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alf
+2025-12-05 16:35:21,418 - sistema_relatorios - gestao_medicoes - INFO - ✅ 3 fornecedores encontrados
+2025-12-05 16:35:22,780 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:35:23,924 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:35:24,949 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:35:26,427 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:35:27,516 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:35:28,584 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:35:28,586 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:35:29,653 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:35:30,864 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:35:32,806 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 15/12/2025 (6 dias úteis, excluindo data início)
+2025-12-05 16:35:33,020 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 06/03/2026 (65 dias úteis, excluindo data início)
+2025-12-05 16:35:34,397 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 06/03/2026 (65 dias úteis, excluindo data início)
+2025-12-05 16:35:53,203 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2025-12-05 16:35:53,221 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 16:35:53,224 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'BRUNO SANTANA RINALDI' carregados com sucesso
+2025-12-05 16:35:53,225 - sistema_relatorios - gerador_contrato - INFO - Buscando fornecedor por nome: ALFATEC INSTALACOES
+2025-12-05 16:35:54,252 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:35:54,254 - sistema_relatorios - logger_config - INFO - Iniciando: Gerar contrato
+2025-12-05 16:35:54,255 - sistema_relatorios - gerador_contrato - WARNING - Campos vazios (serão preenchidos com valor padrão): fornecedor_endereco
+2025-12-05 16:35:54,256 - sistema_relatorios - gerador_contrato - INFO - Valor formatado: R$ 8.000,00 (oito mil reais)
+2025-12-05 16:35:54,257 - sistema_relatorios - gerador_contrato - INFO - Multa formatada: R$ 4.000,00 (quatro mil reais)
+2025-12-05 16:35:54,258 - sistema_relatorios - gerador_contrato - INFO - Gerando contrato: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_BRUNO_SANTANA_RINALDI_2025-12-05.docx
+2025-12-05 16:35:54,263 - sistema_relatorios - gerador_contrato - INFO - Executando Node.js: node
+2025-12-05 16:35:56,610 - sistema_relatorios - gerador_contrato - ERROR - Erro ao executar script Node.js: node:internal/modules/cjs/loader:1424
+  throw err;
+  ^
+
+Error: Cannot find module 'docx'
+Require stack:
+- C:\Users\Obras\AppData\Local\Temp\gerar_contrato.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1421:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1064:22)
+    at Module._load (node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1504:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (C:\Users\Obras\AppData\Local\Temp\gerar_contrato.js:3:94)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ 'C:\\Users\\Obras\\AppData\\Local\\Temp\\gerar_contrato.js' ]
+}
+
+Node.js v24.11.1
+
+2025-12-05 16:35:56,618 - sistema_relatorios - logger_config - INFO - Concluído: Gerar contrato
+2025-12-05 16:53:04,411 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 16:53:04,413 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 16:53:04,415 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 16:53:04,416 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 16:53:04,417 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 16:53:12,003 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-05 16:53:14,441 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-05 16:53:14,451 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-05 16:53:14,461 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-05 16:53:14,491 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-05 16:53:14,491 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-05 16:53:21,118 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2025-12-05 16:53:21,140 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 16:53:21,161 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'BRUNO SANTANA RINALDI' carregados com sucesso
+2025-12-05 16:53:21,163 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: BRUNO SANTANA RINALDI
+2025-12-05 16:53:23,926 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: a
+2025-12-05 16:53:25,033 - sistema_relatorios - gestao_medicoes - INFO - ✅ 930 fornecedores encontrados
+2025-12-05 16:53:25,035 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: al
+2025-12-05 16:53:26,137 - sistema_relatorios - gestao_medicoes - INFO - ✅ 227 fornecedores encontrados
+2025-12-05 16:53:26,139 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: alf
+2025-12-05 16:53:27,249 - sistema_relatorios - gestao_medicoes - INFO - ✅ 3 fornecedores encontrados
+2025-12-05 16:53:29,273 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFA TRANSPORTES (CNPJ: 82.110.818/0001-21)
+2025-12-05 16:53:30,466 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFA TRANSPORTES' sem endereço cadastrado
+2025-12-05 16:53:31,450 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFA TRANSPORTES' carregados
+2025-12-05 16:53:31,456 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:53:32,577 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:53:33,606 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:53:33,615 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:53:34,653 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:53:35,751 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:53:35,753 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:53:36,778 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:53:37,812 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:53:37,826 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:53:38,952 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:53:39,930 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:53:39,942 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: ALFATEC INSTALACOES (CNPJ: 14.051.624/0001-42)
+2025-12-05 16:53:41,001 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'ALFATEC INSTALACOES' sem endereço cadastrado
+2025-12-05 16:53:42,081 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:53:44,617 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 15/12/2025 (6 dias úteis, excluindo data início)
+2025-12-05 16:53:44,934 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 27/02/2026 (60 dias úteis, excluindo data início)
+2025-12-05 16:53:46,783 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 27/02/2026 (60 dias úteis, excluindo data início)
+2025-12-05 16:54:11,925 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2025-12-05 16:54:11,942 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 16:54:11,946 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'BRUNO SANTANA RINALDI' carregados com sucesso
+2025-12-05 16:54:11,947 - sistema_relatorios - gerador_contrato - INFO - Buscando fornecedor por nome: ALFATEC INSTALACOES
+2025-12-05 16:54:13,009 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do fornecedor 'ALFATEC INSTALACOES' carregados
+2025-12-05 16:54:13,010 - sistema_relatorios - logger_config - INFO - Iniciando: Gerar contrato
+2025-12-05 16:54:13,011 - sistema_relatorios - gerador_contrato - WARNING - Campos vazios (serão preenchidos com valor padrão): fornecedor_endereco
+2025-12-05 16:54:13,013 - sistema_relatorios - gerador_contrato - INFO - Valor formatado: R$ 8.000,00 (oito mil reais)
+2025-12-05 16:54:13,013 - sistema_relatorios - gerador_contrato - INFO - Multa formatada: R$ 4.000,00 (quatro mil reais)
+2025-12-05 16:54:13,014 - sistema_relatorios - gerador_contrato - INFO - Gerando contrato: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_BRUNO_SANTANA_RINALDI_2025-12-05.docx
+2025-12-05 16:54:13,019 - sistema_relatorios - gerador_contrato - INFO - Executando Node.js: node
+2025-12-05 16:54:13,247 - sistema_relatorios - gerador_contrato - ERROR - Erro ao executar script Node.js: node:internal/modules/cjs/loader:1424
+  throw err;
+  ^
+
+Error: Cannot find module 'docx'
+Require stack:
+- C:\Users\Obras\AppData\Local\Temp\gerar_contrato.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1421:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1059:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1064:22)
+    at Module._load (node:internal/modules/cjs/loader:1227:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1504:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (C:\Users\Obras\AppData\Local\Temp\gerar_contrato.js:3:94)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ 'C:\\Users\\Obras\\AppData\\Local\\Temp\\gerar_contrato.js' ]
+}
+
+Node.js v24.11.1
+
+2025-12-05 16:54:13,253 - sistema_relatorios - logger_config - INFO - Concluído: Gerar contrato
+2025-12-05 17:07:46,846 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-05 17:07:46,848 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-05 17:07:46,848 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-05 17:07:46,849 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-05 17:07:46,849 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-05 17:08:00,553 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-05 17:08:02,365 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-05 17:08:02,388 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-05 17:08:02,391 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-05 17:08:02,421 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-05 17:08:02,424 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
+2025-12-05 17:08:08,875 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2025-12-05 17:08:08,894 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 17:08:08,913 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'BRUNO SANTANA RINALDI' carregados com sucesso
+2025-12-05 17:08:08,915 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: BRUNO SANTANA RINALDI
+2025-12-05 17:08:14,164 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: l
+2025-12-05 17:08:15,306 - sistema_relatorios - gestao_medicoes - INFO - ✅ 736 fornecedores encontrados
+2025-12-05 17:08:15,308 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: lu
+2025-12-05 17:08:16,423 - sistema_relatorios - gestao_medicoes - INFO - ✅ 61 fornecedores encontrados
+2025-12-05 17:08:16,425 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: luc
+2025-12-05 17:08:17,501 - sistema_relatorios - gestao_medicoes - INFO - ✅ 19 fornecedores encontrados
+2025-12-05 17:08:17,503 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: luci
+2025-12-05 17:08:18,652 - sistema_relatorios - gestao_medicoes - INFO - ✅ 7 fornecedores encontrados
+2025-12-05 17:08:18,655 - sistema_relatorios - gestao_medicoes - INFO - Buscando fornecedores com termo: lucia
+2025-12-05 17:08:19,937 - sistema_relatorios - gestao_medicoes - INFO - ✅ 6 fornecedores encontrados
+2025-12-05 17:08:22,526 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: LUCIANO LISBOA DA SILVA (CNPJ: 045.711.446-01)
+2025-12-05 17:08:23,712 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'LUCIANO LISBOA DA SILVA' sem endereço cadastrado
+2025-12-05 17:08:24,752 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'LUCIANO LISBOA DA SILVA' carregados
+2025-12-05 17:08:24,754 - sistema_relatorios - gestao_medicoes - INFO - Carregando dados do fornecedor: LUCIANO LISBOA DA SILVA (CNPJ: 045.711.446-01)
+2025-12-05 17:08:25,853 - sistema_relatorios - gestao_medicoes - WARNING - Fornecedor 'LUCIANO LISBOA DA SILVA' sem endereço cadastrado
+2025-12-05 17:08:26,938 - sistema_relatorios - gestao_medicoes - INFO - ✅ Dados do fornecedor 'LUCIANO LISBOA DA SILVA' carregados
+2025-12-05 17:08:31,055 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 15/12/2025 (6 dias úteis, excluindo data início)
+2025-12-05 17:08:31,292 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 27/02/2026 (60 dias úteis, excluindo data início)
+2025-12-05 17:08:32,622 - sistema_relatorios - gestao_medicoes - INFO - Data Fim calculada: 27/02/2026 (60 dias úteis, excluindo data início)
+2025-12-05 17:08:52,547 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2025-12-05 17:08:52,565 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 17:08:52,569 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'BRUNO SANTANA RINALDI' carregados com sucesso
+2025-12-05 17:08:52,571 - sistema_relatorios - gerador_contrato - INFO - Buscando fornecedor por nome: LUCIANO LISBOA DA SILVA
+2025-12-05 17:08:53,753 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do fornecedor 'LUCIANO LISBOA DA SILVA' carregados
+2025-12-05 17:08:53,754 - sistema_relatorios - logger_config - INFO - Iniciando: Gerar contrato
+2025-12-05 17:08:53,755 - sistema_relatorios - gerador_contrato - WARNING - Campos vazios (serão preenchidos com valor padrão): fornecedor_endereco
+2025-12-05 17:08:53,756 - sistema_relatorios - gerador_contrato - INFO - Valor formatado: R$ 8.000,00 (oito mil reais)
+2025-12-05 17:08:53,757 - sistema_relatorios - gerador_contrato - INFO - Multa formatada: R$ 4.000,00 (quatro mil reais)
+2025-12-05 17:08:53,758 - sistema_relatorios - gerador_contrato - INFO - Gerando contrato: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_BRUNO_SANTANA_RINALDI_2025-12-05.docx
+2025-12-05 17:08:53,764 - sistema_relatorios - gerador_contrato - INFO - Executando Node.js: node
+2025-12-05 17:08:55,274 - sistema_relatorios - gerador_contrato - INFO - Contrato gerado com sucesso: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\contrato_BRUNO_SANTANA_RINALDI_2025-12-05.docx
+2025-12-05 17:08:55,275 - sistema_relatorios - logger_config - INFO - Concluído: Gerar contrato
+2025-12-05 17:08:59,128 - sistema_relatorios - gestao_medicoes - INFO - Pasta de contratos aberta: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-05 17:10:58,353 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2025-12-05 17:10:58,374 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-05 17:10:58,377 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente 'BRUNO SANTANA RINALDI' carregados com sucesso
+2025-12-05 17:10:58,379 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: BRUNO SANTANA RINALDI
+2025-12-05 17:12:00,526 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-05 17:12:00,528 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-05 17:12:00,530 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-05 17:12:00,549 - sistema_relatorios - gerador_contrato - INFO - Node.js encontrado em: C:\Program Files\nodejs\node.EXE
+2025-12-05 17:12:00,551 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso
