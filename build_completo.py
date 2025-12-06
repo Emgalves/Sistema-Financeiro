@@ -37,6 +37,21 @@ MODULOS_SISTEMA = [
     "tkcalendar",
     "babel",
     
+    # === GERAÇÃO DE DOCUMENTOS ===
+    "docx",
+    "docx.shared",
+    "docx.enum",
+    "docx.enum.text",
+    "docx.enum.style",
+    "docx.oxml",
+    "docx.opc",
+    "lxml",
+    "lxml.etree",
+    
+    # === NÚMEROS POR EXTENSO ===
+    "num2words",
+    "num2words.lang_pt_BR",
+    
     # === DOTENV ===
     "dotenv",
     
