@@ -317,21 +317,25 @@ class RelatorioContratos:
         frame_grid = ttk.Frame(frame_contrato, padding=10)
         frame_grid.pack(fill='x')
         
-        # Primeira linha
+        # Configurar pesos das colunas para distribuição uniforme
+        for col in [1, 3, 5]:
+            frame_grid.columnconfigure(col, weight=1)
+        
+        # Primeira linha: ID | Fornecedor (span 2 colunas)
         ttk.Label(frame_grid, text="ID:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky='w', padx=5, pady=2)
         self.lbl_id_contrato = ttk.Label(frame_grid, text="", font=('Arial', 10))
         self.lbl_id_contrato.grid(row=0, column=1, sticky='w', padx=5, pady=2)
         
         ttk.Label(frame_grid, text="Fornecedor:", font=('Arial', 10, 'bold')).grid(row=0, column=2, sticky='w', padx=5, pady=2)
         self.lbl_fornecedor = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_fornecedor.grid(row=0, column=3, sticky='w', padx=5, pady=2)
+        self.lbl_fornecedor.grid(row=0, column=3, columnspan=3, sticky='w', padx=5, pady=2)
         
-        # Segunda linha
+        # Segunda linha: Descrição (span todas as colunas)
         ttk.Label(frame_grid, text="Descrição:", font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky='w', padx=5, pady=2)
         self.lbl_descricao = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_descricao.grid(row=1, column=1, columnspan=3, sticky='w', padx=5, pady=2)
+        self.lbl_descricao.grid(row=1, column=1, columnspan=5, sticky='w', padx=5, pady=2)
         
-        # Terceira linha
+        # Terceira linha: Valor Global | Valor Pago | Saldo (3 colunas)
         ttk.Label(frame_grid, text="Valor Global:", font=('Arial', 10, 'bold')).grid(row=2, column=0, sticky='w', padx=5, pady=2)
         self.lbl_valor_global = ttk.Label(frame_grid, text="", font=('Arial', 10))
         self.lbl_valor_global.grid(row=2, column=1, sticky='w', padx=5, pady=2)
@@ -340,14 +344,22 @@ class RelatorioContratos:
         self.lbl_valor_pago_contrato = ttk.Label(frame_grid, text="", font=('Arial', 10))
         self.lbl_valor_pago_contrato.grid(row=2, column=3, sticky='w', padx=5, pady=2)
         
-        # Quarta linha
-        ttk.Label(frame_grid, text="Saldo:", font=('Arial', 10, 'bold')).grid(row=3, column=0, sticky='w', padx=5, pady=2)
+        ttk.Label(frame_grid, text="Saldo:", font=('Arial', 10, 'bold')).grid(row=2, column=4, sticky='w', padx=5, pady=2)
         self.lbl_saldo_contrato = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_saldo_contrato.grid(row=3, column=1, sticky='w', padx=5, pady=2)
+        self.lbl_saldo_contrato.grid(row=2, column=5, sticky='w', padx=5, pady=2)
         
-        ttk.Label(frame_grid, text="Status:", font=('Arial', 10, 'bold')).grid(row=3, column=2, sticky='w', padx=5, pady=2)
+        # Quarta linha: Data Início | Data Final | Status (3 colunas)
+        ttk.Label(frame_grid, text="Data Início:", font=('Arial', 10, 'bold')).grid(row=3, column=0, sticky='w', padx=5, pady=2)
+        self.lbl_data_inicio = ttk.Label(frame_grid, text="", font=('Arial', 10))
+        self.lbl_data_inicio.grid(row=3, column=1, sticky='w', padx=5, pady=2)
+        
+        ttk.Label(frame_grid, text="Data Final:", font=('Arial', 10, 'bold')).grid(row=3, column=2, sticky='w', padx=5, pady=2)
+        self.lbl_data_final = ttk.Label(frame_grid, text="", font=('Arial', 10))
+        self.lbl_data_final.grid(row=3, column=3, sticky='w', padx=5, pady=2)
+        
+        ttk.Label(frame_grid, text="Status:", font=('Arial', 10, 'bold')).grid(row=3, column=4, sticky='w', padx=5, pady=2)
         self.lbl_status_contrato = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_status_contrato.grid(row=3, column=3, sticky='w', padx=5, pady=2)
+        self.lbl_status_contrato.grid(row=3, column=5, sticky='w', padx=5, pady=2)
         
         # Frame para tabela de medições
         frame_medicoes = ttk.LabelFrame(self.aba_detalhes, text="Medições")
@@ -507,11 +519,12 @@ class RelatorioContratos:
                             'nome': row[2],
                             'descricao': row[3],
                             'data_inicio': row[4],
-                            'valor_global': row[5] or 0,
-                            'valor_pago': row[6] or 0,
-                            'saldo': row[7] or 0,
-                            'status': row[8] or 'ATIVO',
-                            'observacao': row[9]
+                            'data_final': row[5],  # NOVO: Data_Final - coluna 6
+                            'valor_global': row[6] or 0,
+                            'valor_pago': row[7] or 0,
+                            'saldo': row[8] or 0,
+                            'status': row[9] or 'ATIVO',
+                            'observacao': row[10]
                         })
             
             # Carregar medições
@@ -628,6 +641,19 @@ class RelatorioContratos:
         self.lbl_valor_global.config(text=formatar_moeda_br(contrato['valor_global']))
         self.lbl_valor_pago_contrato.config(text=formatar_moeda_br(contrato['valor_pago']))
         self.lbl_saldo_contrato.config(text=formatar_moeda_br(contrato['valor_global'] - contrato['valor_pago']))
+        
+        # Atualizar datas
+        if isinstance(contrato.get('data_inicio'), datetime):
+            self.lbl_data_inicio.config(text=contrato['data_inicio'].strftime('%d/%m/%Y'))
+        else:
+            self.lbl_data_inicio.config(text=str(contrato.get('data_inicio') if contrato.get('data_inicio') else ""))
+        
+        if isinstance(contrato.get('data_final'), datetime):
+            self.lbl_data_final.config(text=contrato['data_final'].strftime('%d/%m/%Y'))
+        else:
+            data_final_texto = str(contrato.get('data_final') if contrato.get('data_final') else "Não definida")
+            self.lbl_data_final.config(text=data_final_texto)
+        
         self.lbl_status_contrato.config(text=contrato['status'])
         
         # Limpar e preencher medições do contrato
@@ -962,6 +988,13 @@ class RelatorioContratos:
                     ws_contrato['B6'] = contrato['data_inicio'].strftime('%d/%m/%Y')
                 else:
                     ws_contrato['B6'] = str(contrato['data_inicio'] if contrato['data_inicio'] else "")
+                
+                
+                ws_contrato['D6'] = "Data Final:"
+                if isinstance(contrato.get('data_final'), datetime):
+                    ws_contrato['E6'] = contrato['data_final'].strftime('%d/%m/%Y')
+                else:
+                    ws_contrato['E6'] = str(contrato.get('data_final') if contrato.get('data_final') else "Não definida")
                 
                 ws_contrato['A7'] = "Valor Global:"
                 ws_contrato['B7'] = float(contrato['valor_global']) if contrato['valor_global'] else 0
