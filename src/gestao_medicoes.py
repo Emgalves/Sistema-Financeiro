@@ -302,23 +302,25 @@ class GestaoMedicoes:
         frame_contratos.pack(fill='both', expand=True, pady=5)
         
         # Treeview para contratos
-        colunas = ('ID', 'Fornecedor', 'Descrição', 'Data Início', 'Valor Global', 'Valor Pago', 'Saldo')
+        colunas = ('ID', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo')
         self.tree_contratos = ttk.Treeview(frame_contratos, columns=colunas, show='headings', height=10)
-        
+
         # Configurar colunas
         self.tree_contratos.heading('ID', text='ID')
         self.tree_contratos.heading('Fornecedor', text='Fornecedor')
         self.tree_contratos.heading('Descrição', text='Descrição')
         self.tree_contratos.heading('Data Início', text='Data Início')
+        self.tree_contratos.heading('Data Final', text='Data Final')  # *** NOVO ***
         self.tree_contratos.heading('Valor Global', text='Valor Global')
         self.tree_contratos.heading('Valor Pago', text='Valor Pago')
         self.tree_contratos.heading('Saldo', text='Saldo')
-        
+
         # Ajustar larguras das colunas
         self.tree_contratos.column('ID', width=50, anchor='center')
         self.tree_contratos.column('Fornecedor', width=150)
         self.tree_contratos.column('Descrição', width=200)
         self.tree_contratos.column('Data Início', width=100, anchor='center')
+        self.tree_contratos.column('Data Final', width=100, anchor='center')  # *** NOVO ***
         self.tree_contratos.column('Valor Global', width=100, anchor='e')
         self.tree_contratos.column('Valor Pago', width=100, anchor='e')
         self.tree_contratos.column('Saldo', width=100, anchor='e')
@@ -1088,28 +1090,32 @@ class GestaoMedicoes:
             
             # Percorrer as linhas (pulando o cabeçalho)
             for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Se tem ID_Contrato
-                    # Formatação de dados
-                    try:
-                        data_inicio = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else row[4]
-                        valor_global = formatar_moeda_br(row[5]) if row[5] else "R$ 0,00"
-                        valor_pago = formatar_moeda_br(row[6]) if row[6] else "R$ 0,00"
-                        saldo = formatar_moeda_br(row[7]) if row[7] else "R$ 0,00"
-                    except (ValueError, TypeError, AttributeError) as e:
-                        data_inicio = str(row[4]) if row[4] else ""
-                        valor_global = str(row[5]) if row[5] else "R$ 0,00"
-                        valor_pago = str(row[6]) if row[6] else "R$ 0,00"
-                        saldo = str(row[7]) if row[7] else "R$ 0,00"
+                if row[0]:  # Se tem ID
+                    # Formatar data início
+                    data_inicio = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else str(row[4] or "")
                     
-                    # Adicionar à treeview
+                    # *** NOVO: Formatar Data Final ***
+                    data_final = ""
+                    if row[5]:  # Se existe data final
+                        if isinstance(row[5], datetime):
+                            data_final = row[5].strftime('%d/%m/%Y')
+                        else:
+                            data_final = str(row[5])
+                    
+                    # ATENÇÃO: Colunas mudaram de posição!
+                    valor_global = f"R$ {row[6]:,.2f}" if isinstance(row[6], (int, float)) else str(row[6] or "0,00")
+                    valor_pago = f"R$ {row[7]:,.2f}" if isinstance(row[7], (int, float)) else str(row[7] or "0,00")
+                    saldo = f"R$ {row[8]:,.2f}" if isinstance(row[8], (int, float)) else str(row[8] or "0,00")
+                    
                     self.tree_contratos.insert('', 'end', values=(
-                        row[0],             # ID
-                        row[2],             # Nome Fornecedor
-                        row[3],             # Descrição
-                        data_inicio,        # Data Início
-                        valor_global,       # Valor Global
-                        valor_pago,         # Valor Pago
-                        saldo               # Saldo
+                        row[0],         # ID
+                        row[2],         # Fornecedor
+                        row[3],         # Descrição
+                        data_inicio,    # Data Início
+                        data_final,     # *** NOVO: Data Final ***
+                        valor_global,   # Valor Global
+                        valor_pago,     # Valor Pago
+                        saldo          # Saldo
                     ))
                 
             wb.close()
@@ -1324,7 +1330,7 @@ class GestaoMedicoes:
         except ImportError:
             messagebox.showerror("Erro", "Módulo de cadastro de fornecedor não encontrado")
             
-    def salvar_contrato(self, janela, cnpj, nome, descricao, data_inicio, valor_global, observacoes):
+    def salvar_contrato(self, janela, cnpj, nome, descricao, data_inicio, data_final, valor_global, observacoes):
         """Salva um novo contrato"""
         try:
             # Validar campos obrigatórios
@@ -1341,6 +1347,18 @@ class GestaoMedicoes:
             except ValueError:
                 messagebox.showerror("Erro", "Valor global inválido!")
                 return
+            
+            # *** NOVO: Validar data final ***
+            if data_final:
+                try:
+                    data_fim_obj = datetime.strptime(data_final, '%d/%m/%Y')
+                    data_inicio_obj = datetime.strptime(data_inicio, '%d/%m/%Y')
+                    if data_fim_obj < data_inicio_obj:
+                        messagebox.showwarning("Aviso", "Data final não pode ser anterior à data inicial!")
+                        return
+                except ValueError:
+                    messagebox.showerror("Erro", "Data final inválida! Use o formato dd/mm/aaaa")
+                    return
             
             # Abrir arquivo do cliente
             wb = load_workbook(self.arquivo_cliente)
@@ -1373,20 +1391,34 @@ class GestaoMedicoes:
             ws.cell(row=proxima_linha, column=2, value=cnpj)                   # CNPJ_Fornecedor
             ws.cell(row=proxima_linha, column=3, value=nome)                   # Nome_Fornecedor
             ws.cell(row=proxima_linha, column=4, value=descricao.upper())      # Descricao
-            ws.cell(row=proxima_linha, column=5, value=data)                   # Data_Inicio
             
-            # Formatação para células de valor
-            valor_cell = ws.cell(row=proxima_linha, column=6, value=valor)     # Valor_Global
+            # Data de Início
+            data_inicio_cell = ws.cell(row=proxima_linha, column=5, value=data)
+            data_inicio_cell.number_format = 'DD/MM/YYYY'
+            
+            # *** NOVO: Data Final ***
+            if data_final:
+                try:
+                    data_fim_obj = datetime.strptime(data_final, '%d/%m/%Y')
+                    data_fim_cell = ws.cell(row=proxima_linha, column=6, value=data_fim_obj)
+                    data_fim_cell.number_format = 'DD/MM/YYYY'
+                except:
+                    ws.cell(row=proxima_linha, column=6, value=None)
+            else:
+                ws.cell(row=proxima_linha, column=6, value=None)
+            
+            # Formatação para células de valor (AGORA NA COLUNA 7+)
+            valor_cell = ws.cell(row=proxima_linha, column=7, value=valor)     # Valor_Global
             valor_cell.number_format = '#.##0,00'
             
-            zero_cell_1 = ws.cell(row=proxima_linha, column=7, value=0)        # Valor_Pago
+            zero_cell_1 = ws.cell(row=proxima_linha, column=8, value=0)        # Valor_Pago
             zero_cell_1.number_format = '#.##0,00'
             
-            saldo_cell = ws.cell(row=proxima_linha, column=8, value=valor)     # Saldo
+            saldo_cell = ws.cell(row=proxima_linha, column=9, value=valor)     # Saldo
             saldo_cell.number_format = '#.##0,00'
             
-            ws.cell(row=proxima_linha, column=9, value="ATIVO")                # Status
-            ws.cell(row=proxima_linha, column=10, value=observacoes.upper())   # Observacao
+            ws.cell(row=proxima_linha, column=10, value="ATIVO")               # Status
+            ws.cell(row=proxima_linha, column=11, value=observacoes.upper())   # Observacao
             
             # Salvar arquivo
             wb.save(self.arquivo_cliente)
@@ -1433,11 +1465,12 @@ class GestaoMedicoes:
                         'nome': row[2],
                         'descricao': row[3],
                         'data_inicio': row[4],
-                        'valor_global': row[5],
-                        'valor_pago': row[6],
-                        'saldo': row[7],
-                        'status': row[8],
-                        'observacao': row[9]
+                        'data_final': row[5],      # *** NOVO ***
+                        'valor_global': row[6],    # Mudou de coluna 5 para 6
+                        'valor_pago': row[7],      # Mudou de coluna 6 para 7
+                        'saldo': row[8],           # Mudou de coluna 7 para 8
+                        'status': row[9],          # Mudou de coluna 8 para 9
+                        'observacao': row[10]      # Mudou de coluna 9 para 10
                     }
                     break
                     
@@ -1485,15 +1518,23 @@ class GestaoMedicoes:
             # Data de Início
             ttk.Label(frame_contrato, text="Data de Início:*").grid(row=1, column=0, padx=5, pady=5, sticky='e')
             data_inicio = DateEntry(frame_contrato, width=12, background='darkblue',
-                                  foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+                                foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
             data_inicio.grid(row=1, column=1, padx=5, pady=5, sticky='w')
             if isinstance(dados_contrato['data_inicio'], datetime):
                 data_inicio.set_date(dados_contrato['data_inicio'])
-            
-            # Valor Global
-            ttk.Label(frame_contrato, text="Valor Global (R$):*").grid(row=2, column=0, padx=5, pady=5, sticky='e')
+
+            # Data Final
+            ttk.Label(frame_contrato, text="Data Final:").grid(row=2, column=0, padx=5, pady=5, sticky='e')
+            data_final = DateEntry(frame_contrato, width=12, background='darkblue',
+                                foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+            data_final.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+            if dados_contrato.get('data_final') and isinstance(dados_contrato['data_final'], datetime):
+                data_final.set_date(dados_contrato['data_final'])
+
+            # Valor Global (ajuste o row para 3)
+            ttk.Label(frame_contrato, text="Valor Global (R$):*").grid(row=3, column=0, padx=5, pady=5, sticky='e')
             valor_global = ttk.Entry(frame_contrato, width=20)
-            valor_global.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+            valor_global.grid(row=3, column=1, padx=5, pady=5, sticky='w')
             valor_global.insert(0, str(dados_contrato['valor_global']))
             
             # Valor Pago (somente leitura)
@@ -1526,17 +1567,17 @@ class GestaoMedicoes:
             frame_botoes = ttk.Frame(frame)
             frame_botoes.pack(fill='x', pady=10)
             
-            ttk.Button(frame_botoes, 
-                     text="Salvar", 
-                     command=lambda: self.atualizar_contrato(
-                         janela,
-                         id_contrato,
-                         descricao_entry.get(),
-                         data_inicio.get(),
-                         valor_global.get(),
-                         status.get(),
-                         observacoes.get("1.0", "end-1c")
-                     )).pack(side='left', padx=5)
+            ttk.Button(frame_botoes, text="Salvar", 
+                command=lambda: self.atualizar_contrato(
+                    janela,
+                    dados_contrato['id'],
+                    descricao_entry.get(),
+                    data_inicio.get_date().strftime('%d/%m/%Y'),
+                    data_final.get_date().strftime('%d/%m/%Y'),  # ← NOVO PARÂMETRO!
+                    valor_global.get(),
+                    status.get(),
+                    observacoes.get('1.0', tk.END).strip()
+                )).pack(side='left', padx=5)
             
             ttk.Button(frame_botoes, 
                      text="Cancelar", 
@@ -1545,7 +1586,8 @@ class GestaoMedicoes:
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao editar contrato: {str(e)}")
     
-    def atualizar_contrato(self, janela, id_contrato, descricao, data_inicio, valor_global, status, observacoes):
+    def atualizar_contrato(self, janela, id_contrato, descricao, data_inicio, 
+                       data_final, valor_global, status, observacoes):
         """Atualiza os dados de um contrato"""
         try:
             # Validar campos obrigatórios
@@ -1563,6 +1605,18 @@ class GestaoMedicoes:
                 messagebox.showerror("Erro", "Valor global inválido!")
                 return
             
+            # *** NOVO: Validar data final ***
+            if data_final:
+                try:
+                    data_fim_obj = datetime.strptime(data_final, '%d/%m/%Y')
+                    data_inicio_obj = datetime.strptime(data_inicio, '%d/%m/%Y')
+                    if data_fim_obj < data_inicio_obj:
+                        messagebox.showwarning("Aviso", "Data final não pode ser anterior à data inicial!")
+                        return
+                except ValueError:
+                    messagebox.showerror("Erro", "Data final inválida! Use o formato dd/mm/aaaa")
+                    return
+            
             # Abrir arquivo do cliente
             wb = load_workbook(self.arquivo_cliente)
             ws = wb["Contratos_Medicao"]
@@ -1574,8 +1628,8 @@ class GestaoMedicoes:
             for idx, row in enumerate(ws.iter_rows(min_row=2, max_col=1, values_only=True), 2):
                 if row[0] == id_contrato:
                     row_index = idx
-                    # Obter valor pago atual
-                    valor_pago = ws.cell(row=row_index, column=7).value or 0
+                    # ⚠️ ATENÇÃO: Valor_Pago agora está na coluna 8 (não 7)
+                    valor_pago = ws.cell(row=row_index, column=8).value or 0
                     break
                     
             if not row_index:
@@ -1583,7 +1637,7 @@ class GestaoMedicoes:
                 wb.close()
                 return
                 
-            # Converter data
+            # Converter data início
             try:
                 data = datetime.strptime(data_inicio, '%d/%m/%Y')
             except ValueError:
@@ -1596,18 +1650,36 @@ class GestaoMedicoes:
             
             # Atualizar dados
             ws.cell(row=row_index, column=4, value=descricao.upper())     # Descricao
-            ws.cell(row=row_index, column=5, value=data)                   # Data_Inicio
             
-            # Valor Global
-            valor_cell = ws.cell(row=row_index, column=6, value=valor)     # Valor_Global
+            # Data de Início
+            data_inicio_cell = ws.cell(row=row_index, column=5, value=data)
+            data_inicio_cell.number_format = 'DD/MM/YYYY'
+            
+            # *** NOVO: Data Final ***
+            if data_final:
+                try:
+                    data_fim_obj = datetime.strptime(data_final, '%d/%m/%Y')
+                    data_fim_cell = ws.cell(row=row_index, column=6, value=data_fim_obj)
+                    data_fim_cell.number_format = 'DD/MM/YYYY'
+                except:
+                    ws.cell(row=row_index, column=6, value=None)
+            else:
+                ws.cell(row=row_index, column=6, value=None)
+            
+            # ⚠️ COLUNAS MUDARAM DE POSIÇÃO!
+            # Valor Global (ERA coluna 6, AGORA é coluna 7)
+            valor_cell = ws.cell(row=row_index, column=7, value=valor)
             valor_cell.number_format = '#.##0,00'
             
-            # Saldo
-            saldo_cell = ws.cell(row=row_index, column=8, value=saldo)     # Saldo
+            # Saldo (ERA coluna 8, AGORA é coluna 9)
+            saldo_cell = ws.cell(row=row_index, column=9, value=saldo)
             saldo_cell.number_format = '#.##0,00'
             
-            ws.cell(row=row_index, column=9, value=status)                # Status
-            ws.cell(row=row_index, column=10, value=observacoes.upper())   # Observacao
+            # Status (ERA coluna 9, AGORA é coluna 10)
+            ws.cell(row=row_index, column=10, value=status)
+            
+            # Observacao (ERA coluna 10, AGORA é coluna 11)
+            ws.cell(row=row_index, column=11, value=observacoes.upper())
             
             # Salvar arquivo
             wb.save(self.arquivo_cliente)
@@ -4153,8 +4225,11 @@ class GestaoMedicoes:
             # Obter observações
             observacoes = f"Contrato de {descricao[:50]}..."  # Primeira parte da descrição
             
-            # Salvar contrato diretamente na planilha
-            self.salvar_contrato(None, cnpj_fornecedor, nome_fornecedor, descricao, data_inicio, valor_limpo, observacoes)
+            # Obter data final do campo
+            data_final = self.ent_data_fim.get_date().strftime('%d/%m/%Y')
+
+            # Salvar contrato na planilha
+            self.salvar_contrato(None, cnpj_fornecedor, nome_fornecedor, descricao, data_inicio, data_final, valor_limpo, observacoes)
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao incluir contrato: {str(e)}")
