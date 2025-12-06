@@ -179,7 +179,7 @@ class RelatorioGerencialPDF:
         # Título
         ttk.Label(
             frame_principal,
-            text="Relatório Gerencial em PDF - Versão 2.0",
+            text="Relatório Gerencial de Medições",
             font=('Arial', 16, 'bold')
         ).pack(pady=(0, 15))
         
@@ -568,7 +568,7 @@ Estrutura: Grupo → Cliente → Contratos → Medições"""
                     descricao = row.get('Descricao', '')
                     valor_global = float(row.get('Valor_Global', 0) or 0)
                     data_inicio = row.get('Data_Inicio')
-                    data_fim = row.get('Data_Fim')
+                    data_final = row.get('Data_Final')  # ✅ Corrigido: era Data_Fim
                     status = row.get('Status', 'ATIVO')
                     
                     # === APLICAR FILTRO DE PERÍODO ===
@@ -596,7 +596,7 @@ Estrutura: Grupo → Cliente → Contratos → Medições"""
                         'descricao': descricao,
                         'valor_global': valor_global,
                         'data_inicio': data_inicio,
-                        'data_fim': data_fim,
+                        'data_final': data_final,  # ✅ Corrigido: era data_fim
                         'status': status,
                         'medicoes': [],
                         'valor_executado': 0,
@@ -768,14 +768,14 @@ Estrutura: Grupo → Cliente → Contratos → Medições"""
             from reportlab.platypus import Image
             
             # Logo
-            logo_img = Image(str(LOGO_PATH), width=25*mm, height=25*mm)
+            logo_img = Image(str(LOGO_PATH),  width=120, height=60)
             
             # Título
             titulo_texto = Paragraph("RELATÓRIO GERENCIAL DE OBRAS", style_titulo)
             
             # Tabela com logo à esquerda e título ao centro
             cabecalho_data = [[logo_img, titulo_texto, ""]]
-            table_cabecalho = Table(cabecalho_data, colWidths=[30*mm, 120*mm, 30*mm])
+            table_cabecalho = Table(cabecalho_data, colWidths=[40*mm, 140*mm, 10*mm])
             table_cabecalho.setStyle(TableStyle([
                 ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                 ('ALIGN', (0, 0), (0, 0), 'LEFT'),   # Logo à esquerda
@@ -901,8 +901,8 @@ Estrutura: Grupo → Cliente → Contratos → Medições"""
             texto_cliente = f"<b>{cliente_dados['nome']}</b>"
             if cliente_dados['documento']:
                 texto_cliente += f" | {cliente_dados['documento']}"
-            if cliente_dados['cno']:
-                texto_cliente += f" | CNO: {cliente_dados['cno']}"
+            # if cliente_dados['cno']:
+            #     texto_cliente += f" | CNO: {cliente_dados['cno']}"
                 
             elementos.append(Paragraph(texto_cliente, style_cliente))
             
@@ -981,7 +981,7 @@ Estrutura: Grupo → Cliente → Contratos → Medições"""
                     contrato_info_2col = [
                         # Linha 1: Período | Valor Global
                         [
-                            f"Período: {formatar_data_br(contrato['data_inicio'])} a {formatar_data_br(contrato['data_fim'])}",
+                            f"Período: {formatar_data_br(contrato['data_inicio'])} a {formatar_data_br(contrato['data_final']) if contrato['data_final'] else 'Não definida'}",
                             f"Valor Global: {formatar_moeda_br(contrato['valor_global'])}"
                         ],
                         # Linha 2: % Realizado | Executado
