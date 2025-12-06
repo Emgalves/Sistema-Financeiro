@@ -252,3 +252,5 @@
 2025-12-04 16:07:34,669 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
 2025-12-04 16:07:34,694 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
 2025-12-04 16:07:34,750 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-04 16:15:53,538 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-04 16:18:57,296 - sistema - logger_config - INFO - Sistema de logging inicializado
