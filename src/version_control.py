@@ -15,7 +15,7 @@ VERSION_INFO = {
     "changes": [
         "Incluída a opção de vincular várias medições a um único pagamento",
         "Criação do relatório gerencial de contratos de empreiteiros",
-        ""
+        "Incluído Data Fim nos contratos de empreiteiros"
     ]
 }
 
