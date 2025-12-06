@@ -575,19 +575,25 @@ class RelatorioGerencialEngenheiro:
                 if row[0]:  # Se tem ID
                     try:
                         # Converter data_inicio para string se for datetime
-                        data_inicio = row[4]
+                        data_inicio = row[4]  # Data_Inicio - coluna 5
                         if hasattr(data_inicio, 'strftime'):
                             data_inicio = data_inicio.strftime('%Y-%m-%d')
                         
+                        # Converter data_final para string se for datetime
+                        data_final = row[5] if len(row) > 5 else None  # ✅ NOVO: Data_Final - coluna 6
+                        if data_final and hasattr(data_final, 'strftime'):
+                            data_final = data_final.strftime('%Y-%m-%d')
+                        
                         contrato = {
-                            'id': row[0],
-                            'nome': row[2],  # Nome_Fornecedor (coluna 2)
-                            'cnpj': row[1],  # CNPJ_Fornecedor (coluna 1)
-                            'descricao': row[3],  # Descrição (coluna 3)
-                            'data_inicio': data_inicio,  # Data_Inicio (coluna 4)
-                            'valor_global': float(row[5]) if row[5] else 0,  # Valor_Global (coluna 5)
-                            'valor_pago': float(row[6]) if row[6] else 0,  # Valor_Pago (coluna 6)
-                            'status': row[8] if len(row) > 8 and row[8] else 'EM ANDAMENTO'  # Status (coluna 8)
+                            'id': row[0],                           # ID_Contrato - coluna 1
+                            'nome': row[2],                         # Nome_Fornecedor - coluna 3
+                            'cnpj': row[1],                         # CNPJ_Fornecedor - coluna 2
+                            'descricao': row[3],                    # Descrição - coluna 4
+                            'data_inicio': data_inicio,             # Data_Inicio - coluna 5
+                            'data_final': data_final,               # ✅ NOVO: Data_Final - coluna 6
+                            'valor_global': float(row[6]) if row[6] else 0,      # ✅ Valor_Global - coluna 7 (era 5)
+                            'valor_pago': float(row[7]) if row[7] else 0,        # ✅ Valor_Pago - coluna 8 (era 6)
+                            'status': row[9] if len(row) > 9 and row[9] else 'EM ANDAMENTO'  # ✅ Status - coluna 10 (era 8)
                         }
                         contratos.append(contrato)
                     except (ValueError, TypeError, IndexError) as e:
