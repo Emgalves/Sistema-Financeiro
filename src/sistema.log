@@ -7347,3 +7347,82 @@
 2025-12-06 10:51:55,839 - INFO - Abrindo gestão de medições
 2025-12-06 10:56:22,868 - INFO - Abrindo gestão de medições
 2025-12-06 10:57:50,107 - INFO - Sistema encerrado pelo usuário
+2025-12-07 10:40:51,897 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 10:40:51,913 - INFO - Configurações importadas com sucesso
+2025-12-07 10:40:51,914 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 10:40:53,294 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 10:40:55,929 - INFO - Abrindo gestão de medições
+2025-12-07 11:02:03,975 - INFO - Sistema encerrado pelo usuário
+2025-12-07 11:02:10,550 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 11:02:10,566 - INFO - Configurações importadas com sucesso
+2025-12-07 11:02:10,566 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 11:02:11,182 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 11:02:12,706 - INFO - Abrindo gestão de medições
+2025-12-07 11:02:17,066 - INFO - Abrindo sistema de entrada de dados
+2025-12-07 11:02:17,925 - INFO - Proteções contra perda de dados configuradas
+2025-12-07 11:02:22,617 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-12-07 11:03:32,681 - INFO - Abrindo gestão de medições
+2025-12-07 11:03:52,633 - INFO - Abrindo sistema de entrada de dados
+2025-12-07 11:03:53,273 - INFO - Proteções contra perda de dados configuradas
+2025-12-07 11:03:55,467 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-12-07 11:09:31,757 - INFO - Abrindo gestão de medições
+2025-12-07 11:24:30,097 - INFO - Sistema encerrado pelo usuário
+2025-12-07 11:29:47,734 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 11:29:47,750 - INFO - Configurações importadas com sucesso
+2025-12-07 11:29:47,752 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 11:29:48,460 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 11:29:50,094 - INFO - Abrindo gestão de medições
+2025-12-07 11:29:50,482 - ERROR - Erro ao abrir gestão de medições: 'GestaoMedicoes' object has no attribute 'voltar_menu_principal'
+2025-12-07 11:30:04,239 - INFO - Sistema encerrado pelo usuário
+2025-12-07 11:30:38,197 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 11:30:38,213 - INFO - Configurações importadas com sucesso
+2025-12-07 11:30:38,213 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 11:30:38,486 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 11:30:40,638 - INFO - Abrindo gestão de medições
+2025-12-07 11:37:44,367 - INFO - Sistema encerrado pelo usuário
+2025-12-07 11:38:06,490 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 11:38:06,504 - INFO - Configurações importadas com sucesso
+2025-12-07 11:38:06,504 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 11:38:07,549 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 11:38:11,056 - INFO - Abrindo gestão de medições
+2025-12-07 11:38:24,928 - INFO - Abrindo gestão de medições
+2025-12-07 11:38:26,484 - INFO - Abrindo gestão de medições
+2025-12-07 11:38:38,709 - INFO - Sistema encerrado pelo usuário
+2025-12-07 11:38:58,054 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 11:38:58,067 - INFO - Configurações importadas com sucesso
+2025-12-07 11:38:58,067 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 11:38:58,540 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 11:39:00,152 - INFO - Abrindo sistema de entrada de dados
+2025-12-07 11:39:01,338 - INFO - Proteções contra perda de dados configuradas
+2025-12-07 11:39:04,466 - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-12-07 11:39:42,471 - INFO - Abrindo gestão de medições
+2025-12-07 11:41:10,654 - INFO - Abrindo configurações do sistema
+2025-12-07 11:41:14,438 - INFO - Abrindo gestão de medições
+2025-12-07 11:41:16,630 - INFO - Abrindo gestão de medições
+2025-12-07 11:41:18,667 - INFO - Abrindo gestão de medições
+2025-12-07 11:41:21,369 - INFO - Abrindo gestão de medições
+2025-12-07 11:43:22,656 - INFO - Sistema encerrado pelo usuário
+2025-12-07 11:45:33,528 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 11:45:33,545 - INFO - Configurações importadas com sucesso
+2025-12-07 11:45:33,546 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 11:45:34,528 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 11:45:37,163 - INFO - Abrindo gestão de medições
+2025-12-07 13:25:35,589 - INFO - Sistema encerrado pelo usuário
+2025-12-07 13:25:57,829 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 13:25:57,845 - INFO - Configurações importadas com sucesso
+2025-12-07 13:25:57,846 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 13:25:59,107 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 13:27:45,345 - INFO - Abrindo gestão de medições
+2025-12-07 13:33:38,220 - INFO - Sistema encerrado pelo usuário
+2025-12-07 13:39:51,792 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 13:39:51,808 - INFO - Configurações importadas com sucesso
+2025-12-07 13:39:51,809 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 13:39:52,393 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 13:41:58,887 - INFO - Abrindo gestão de medições
+2025-12-07 13:48:21,960 - INFO - Sistema encerrado pelo usuário
+2025-12-07 15:48:42,606 - INFO - Configurações importadas com sucesso via src.config
+2025-12-07 15:48:42,623 - INFO - Configurações importadas com sucesso
+2025-12-07 15:48:42,624 - INFO - Configurações do sistema importadas com sucesso
+2025-12-07 15:48:43,302 - INFO - Sistema iniciado em modo: TESTE
+2025-12-07 15:49:37,811 - INFO - Abrindo gestão de medições
+2025-12-07 15:59:53,129 - INFO - Sistema encerrado pelo usuário
