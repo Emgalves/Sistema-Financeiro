@@ -65,6 +65,8 @@ from src.config.utils import (
 class GestaoMedicoes:
     """Classe principal para gestão de medições"""
     
+    _instancia_ativa = None
+
     @staticmethod
     def formatar_nome_cidade(cidade):
         """
@@ -98,14 +100,57 @@ class GestaoMedicoes:
     
     def __init__(self, parent=None):
         """Inicializa a interface de gestão de medições"""
+        
+        # ================================================================
+        # PROTEÇÃO: Evitar múltiplas instâncias
+        # ================================================================
+        if GestaoMedicoes._instancia_ativa is not None:
+            try:
+                if GestaoMedicoes._instancia_ativa.root.winfo_exists():
+                    GestaoMedicoes._instancia_ativa.root.lift()
+                    GestaoMedicoes._instancia_ativa.root.focus_force()
+                    logger.warning("⚠️ Janela de medições já está aberta - trazendo para frente")
+                    return
+            except:
+                GestaoMedicoes._instancia_ativa = None
+        
+        GestaoMedicoes._instancia_ativa = self
+        
         self.parent = parent
         
         if parent:
             self.root = tk.Toplevel(parent)
             self.menu_principal = parent
+            
+            # ============================================================
+            # TRIPLA PROTEÇÃO DE VISIBILIDADE
+            # ============================================================
+            
+            # CAMADA 1: Topmost inicial forte (5 segundos)
+            self.root.attributes('-topmost', True)
+            self.root.after(5000, self._desativar_topmost)
+            
+            # CAMADA 2: Lift e foco inicial
+            self.root.lift()
+            self.root.focus_force()
+            
+            # CAMADA 3: Binds automáticos para trazer janela quando necessário
+            # Quando janela pai ganhar foco, traz filha também
+            parent.bind('<FocusIn>', self._trazer_para_frente, add='+')
+            # Quando clicar na janela pai, traz filha também
+            parent.bind('<Button-1>', self._trazer_para_frente, add='+')
+            
+            # CAMADA 4: Timer de verificação periódica (backup)
+            self._verificar_visibilidade()
+            
+            # Protocolo de fechamento
+            self.root.protocol("WM_DELETE_WINDOW", self.voltar_menu)
+            
+            logger.info("✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade")
         else:
             self.root = tk.Tk()
             self.menu_principal = None
+            logger.info("✅ Janela Gestão de Medições inicializada como janela principal")
             
         configurar_janela(self.root, "Gestão de Medições")
         
@@ -121,6 +166,66 @@ class GestaoMedicoes:
 
         self.gerador_contrato = GeradorContrato()
         self.servicos_selecionados = []
+    
+    def _desativar_topmost(self):
+        """
+        Desativa topmost após 5 segundos.
+        Permite alternância normal de janelas depois.
+        """
+        try:
+            if self.root and self.root.winfo_exists():
+                self.root.attributes('-topmost', False)
+                logger.debug("✓ Topmost desativado após 5s - janela pode ser alternada normalmente")
+        except Exception as e:
+            logger.debug(f"⚠️ Erro ao desativar topmost: {e}")
+    
+    def _trazer_para_frente(self, event=None):
+        """
+        Traz janela de medições para frente automaticamente.
+        Chamado por binds quando janela pai recebe foco ou clique.
+        
+        SOLUÇÃO PRINCIPAL: Isto garante que a janela nunca fica oculta!
+        """
+        try:
+            if self.root and self.root.winfo_exists():
+                # Verificar se janela não está minimizada
+                if self.root.state() != 'withdrawn':
+                    self.root.lift()
+                    logger.debug("✓ Janela trazida para frente via bind")
+        except Exception as e:
+            logger.debug(f"⚠️ Erro ao trazer para frente: {e}")
+    
+    def _verificar_visibilidade(self):
+        """
+        Timer de backup: verifica periodicamente se janela está visível.
+        Se janela pai está ativa mas filha está oculta, traz para frente.
+        
+        Reagendado a cada 2 segundos enquanto janela existir.
+        """
+        try:
+            if self.root and self.root.winfo_exists():
+                # Se janela está mapeada (visível no sistema)
+                if self.root.winfo_ismapped():
+                    # Verificar se janela pai existe e está ativa
+                    if self.menu_principal and self.menu_principal.winfo_exists():
+                        try:
+                            # Tentar pegar o foco atual
+                            foco_atual = self.root.focus_get()
+                            # Se pai tem foco mas filha não, trazer filha
+                            if foco_atual and foco_atual != self.root:
+                                parent_window = foco_atual.winfo_toplevel()
+                                if parent_window == self.menu_principal:
+                                    self.root.lift()
+                                    logger.debug("✓ Janela trazida para frente via timer")
+                        except:
+                            pass
+                
+                # Reagendar próxima verificação
+                self.root.after(2000, self._verificar_visibilidade)
+        except:
+            # Janela foi destruída, parar timer
+            pass
+
 
     def converter_valor_brasileiro_para_float(self, valor_str):
         """
@@ -867,13 +972,13 @@ class GestaoMedicoes:
                 logger.info(f"✅ {len(fornecedores_encontrados)} fornecedores encontrados")
             else:
                 logger.warning(f"⚠️ Nenhum fornecedor encontrado com '{termo}'")
-                messagebox.showinfo("Busca", f"Nenhum fornecedor encontrado com '{termo}'")
+                messagebox.showinfo("Busca", f"Nenhum fornecedor encontrado com '{termo}'", parent=self.root)
             
         except Exception as e:
             logger.error(f"❌ Erro ao buscar fornecedores: {e}")
             import traceback
             traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao buscar:\n{str(e)}")
+            messagebox.showerror("Erro", f"Erro ao buscar:\n{str(e)}", parent=self.root)
 
     def normalizar_cnpj_cpf(self, cnpj_cpf_input):
         """
@@ -930,7 +1035,7 @@ class GestaoMedicoes:
             self.info_clientes = atualizar_combobox_clientes(self.cliente_combobox, mostrar_inativos=False)
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}", parent=self.root)
 
     # E modifique o método selecionar_cliente:
 
@@ -944,7 +1049,8 @@ class GestaoMedicoes:
                 messagebox.showwarning(
                     "Cliente Inativo", 
                     f"O cliente '{self.cliente_atual}' está inativo (contrato finalizado). " +
-                    "Os dados serão mostrados somente para consulta."
+                    "Os dados serão mostrados somente para consulta.", 
+                    parent=self.root
                 )
             
             # Obter informações do cliente
@@ -992,13 +1098,13 @@ class GestaoMedicoes:
             self.notebook.select(1)  # Vai para aba de contratos
             self.carregar_contratos()
         else:
-            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
             
     def verificar_aba_medicoes(self):
         """Verifica se a aba de medições existe na planilha do cliente e cria se necessário"""
         try:
             if not os.path.exists(self.arquivo_cliente):
-                messagebox.showerror("Erro", f"Arquivo do cliente '{self.cliente_atual}' não encontrado!")
+                messagebox.showerror("Erro", f"Arquivo do cliente '{self.cliente_atual}' não encontrado!", parent=self.root)
                 return False
                 
             wb = load_workbook(self.arquivo_cliente)
@@ -1030,7 +1136,7 @@ class GestaoMedicoes:
             return True
         
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao verificar aba de medições: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao verificar aba de medições: {str(e)}", parent=self.root)
             return False
     
     # Funções da aba Contratos
@@ -1038,7 +1144,7 @@ class GestaoMedicoes:
         """Carrega os contratos do cliente atual"""
         try:
             if not self.arquivo_cliente:
-                messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+                messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
                 return
             
             # CORREÇÃO: Atualizar o label do cliente na aba de contratos
@@ -1121,12 +1227,12 @@ class GestaoMedicoes:
             wb.close()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar contratos: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao carregar contratos: {str(e)}", parent=self.root)
     
     def novo_contrato(self):
         """Abre janela para cadastro de novo contrato"""
         if not self.cliente_atual:
-            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
             return
             
         # Criar janela
@@ -1316,7 +1422,7 @@ class GestaoMedicoes:
             wb.close()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao buscar fornecedores: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao buscar fornecedores: {str(e)}", parent=self.root)
     
     def novo_fornecedor(self):
         """Abre janela para cadastro de novo fornecedor"""
@@ -1328,24 +1434,24 @@ class GestaoMedicoes:
             sistema.novo_fornecedor()
             
         except ImportError:
-            messagebox.showerror("Erro", "Módulo de cadastro de fornecedor não encontrado")
+            messagebox.showerror("Erro", "Módulo de cadastro de fornecedor não encontrado", parent=self.root)
             
     def salvar_contrato(self, janela, cnpj, nome, descricao, data_inicio, data_final, valor_global, observacoes):
         """Salva um novo contrato"""
         try:
             # Validar campos obrigatórios
             if not cnpj or not nome or not descricao or not data_inicio or not valor_global:
-                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!")
+                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!", parent=self.root)
                 return
             
             # Validar valor global
             try:
                 valor = float(valor_global.replace(',', '.'))
                 if valor <= 0:
-                    messagebox.showerror("Erro", "Valor global deve ser maior que zero!")
+                    messagebox.showerror("Erro", "Valor global deve ser maior que zero!", parent=self.root)
                     return
             except ValueError:
-                messagebox.showerror("Erro", "Valor global inválido!")
+                messagebox.showerror("Erro", "Valor global inválido!", parent=self.root)
                 return
             
             # *** NOVO: Validar data final ***
@@ -1354,10 +1460,10 @@ class GestaoMedicoes:
                     data_fim_obj = datetime.strptime(data_final, '%d/%m/%Y')
                     data_inicio_obj = datetime.strptime(data_inicio, '%d/%m/%Y')
                     if data_fim_obj < data_inicio_obj:
-                        messagebox.showwarning("Aviso", "Data final não pode ser anterior à data inicial!")
+                        messagebox.showwarning("Aviso", "Data final não pode ser anterior à data inicial!", parent=self.root)
                         return
                 except ValueError:
-                    messagebox.showerror("Erro", "Data final inválida! Use o formato dd/mm/aaaa")
+                    messagebox.showerror("Erro", "Data final inválida! Use o formato dd/mm/aaaa", parent=self.root)
                     return
             
             # Abrir arquivo do cliente
@@ -1365,7 +1471,7 @@ class GestaoMedicoes:
             
             # Verificar se a aba de contratos existe
             if "Contratos_Medicao" not in wb.sheetnames:
-                messagebox.showerror("Erro", "Aba de contratos não encontrada!")
+                messagebox.showerror("Erro", "Aba de contratos não encontrada!", parent=self.root)
                 wb.close()
                 return
             
@@ -1381,7 +1487,7 @@ class GestaoMedicoes:
             try:
                 data = datetime.strptime(data_inicio, '%d/%m/%Y')
             except ValueError:
-                messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa")
+                messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa", parent=self.root)
                 wb.close()
                 return
             
@@ -1424,7 +1530,7 @@ class GestaoMedicoes:
             wb.save(self.arquivo_cliente)
             wb.close()
             
-            messagebox.showinfo("Sucesso", "Contrato cadastrado com sucesso!")
+            messagebox.showinfo("Sucesso", "Contrato cadastrado com sucesso!", parent=self.root, parent=self.root)
             
             # CORREÇÃO: Só fechar janela se foi passada
             if janela:
@@ -1434,7 +1540,7 @@ class GestaoMedicoes:
             self.carregar_contratos()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao salvar contrato: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao salvar contrato: {str(e)}", parent=self.root)
             try:
                 wb.close()
             except:
@@ -1444,7 +1550,7 @@ class GestaoMedicoes:
         """Edita o contrato selecionado"""
         selecionado = self.tree_contratos.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um contrato para editar")
+            messagebox.showwarning("Aviso", "Selecione um contrato para editar", parent=self.root)
             return
             
         # Obter ID do contrato selecionado
@@ -1477,7 +1583,7 @@ class GestaoMedicoes:
             wb.close()
             
             if not dados_contrato:
-                messagebox.showerror("Erro", "Contrato não encontrado!")
+                messagebox.showerror("Erro", "Contrato não encontrado!, parent=self.root")
                 return
                 
             # Criar janela de edição
@@ -1584,7 +1690,7 @@ class GestaoMedicoes:
                      command=janela.destroy).pack(side='left', padx=5)
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao editar contrato: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao editar contrato: {str(e)}", parent=self.root)
     
     def atualizar_contrato(self, janela, id_contrato, descricao, data_inicio, 
                        data_final, valor_global, status, observacoes):
@@ -1592,17 +1698,17 @@ class GestaoMedicoes:
         try:
             # Validar campos obrigatórios
             if not descricao or not data_inicio or not valor_global:
-                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!")
+                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!", parent=self.root)
                 return
             
             # Validar valor global
             try:
                 valor = float(valor_global.replace(',', '.'))
                 if valor <= 0:
-                    messagebox.showerror("Erro", "Valor global deve ser maior que zero!")
+                    messagebox.showerror("Erro", "Valor global deve ser maior que zero!", parent=self.root)
                     return
             except ValueError:
-                messagebox.showerror("Erro", "Valor global inválido!")
+                messagebox.showerror("Erro", "Valor global inválido!", parent=self.root)
                 return
             
             # *** NOVO: Validar data final ***
@@ -1611,10 +1717,10 @@ class GestaoMedicoes:
                     data_fim_obj = datetime.strptime(data_final, '%d/%m/%Y')
                     data_inicio_obj = datetime.strptime(data_inicio, '%d/%m/%Y')
                     if data_fim_obj < data_inicio_obj:
-                        messagebox.showwarning("Aviso", "Data final não pode ser anterior à data inicial!")
+                        messagebox.showwarning("Aviso", "Data final não pode ser anterior à data inicial!", parent=self.root)
                         return
                 except ValueError:
-                    messagebox.showerror("Erro", "Data final inválida! Use o formato dd/mm/aaaa")
+                    messagebox.showerror("Erro", "Data final inválida! Use o formato dd/mm/aaaa", parent=self.root)
                     return
             
             # Abrir arquivo do cliente
@@ -1633,7 +1739,7 @@ class GestaoMedicoes:
                     break
                     
             if not row_index:
-                messagebox.showerror("Erro", "Contrato não encontrado!")
+                messagebox.showerror("Erro", "Contrato não encontrado!", parent=self.root)
                 wb.close()
                 return
                 
@@ -1641,7 +1747,7 @@ class GestaoMedicoes:
             try:
                 data = datetime.strptime(data_inicio, '%d/%m/%Y')
             except ValueError:
-                messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa")
+                messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa", parent=self.root)
                 wb.close()
                 return
                 
@@ -1685,14 +1791,14 @@ class GestaoMedicoes:
             wb.save(self.arquivo_cliente)
             wb.close()
             
-            messagebox.showinfo("Sucesso", "Contrato atualizado com sucesso!")
+            messagebox.showinfo("Sucesso", "Contrato atualizado com sucesso!", parent=self.root)
             janela.destroy()
             
             # Atualizar lista de contratos
             self.carregar_contratos()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao atualizar contrato: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao atualizar contrato: {str(e)}", parent=self.root)
             try:
                 wb.close()
             except:
@@ -1702,7 +1808,7 @@ class GestaoMedicoes:
         """Seleciona um contrato para visualizar/editar medições"""
         selecionado = self.tree_contratos.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um contrato")
+            messagebox.showwarning("Aviso", "Selecione um contrato", parent=self.root)
             return
             
         # Obter ID e nome do fornecedor do contrato selecionado
@@ -1774,10 +1880,10 @@ class GestaoMedicoes:
                 
                 logger.info(f"Dados do cliente carregados na aba de contrato: {self.cliente_atual}")
             else:
-                messagebox.showwarning("Aviso", "Não foi possível carregar os dados do cliente.")
+                messagebox.showwarning("Aviso", "Não foi possível carregar os dados do cliente.", parent=self.root)
         except Exception as e:
             logger.error(f"Erro ao carregar dados do cliente para contrato: {e}")
-            messagebox.showerror("Erro", f"Erro ao carregar dados do cliente: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao carregar dados do cliente: {str(e)}", parent=self.root)
 
     def atualizar_lista_fornecedores_contrato(self):
         
@@ -1857,7 +1963,7 @@ class GestaoMedicoes:
             logger.error(f"❌ Erro ao carregar fornecedores: {e}")
             import traceback
             traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao carregar fornecedores:\n{str(e)}")
+            messagebox.showerror("Erro", f"Erro ao carregar fornecedores:\n{str(e)}", parent=self.root)
 
 
     def carregar_dados_fornecedor_contrato(self, event=None):
@@ -1924,7 +2030,8 @@ class GestaoMedicoes:
             if not fornecedor_encontrado:
                 messagebox.showwarning(
                     "Aviso",
-                    f"Fornecedor '{fornecedor_nome}' não encontrado na planilha."
+                    f"Fornecedor '{fornecedor_nome}' não encontrado na planilha.", 
+                    parent=self.root
                 )
                 return
             
@@ -1982,7 +2089,7 @@ class GestaoMedicoes:
             logger.error(f"❌ Erro ao carregar dados do fornecedor: {e}")
             import traceback
             traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao carregar dados do fornecedor:\n{str(e)}")
+            messagebox.showerror("Erro", f"Erro ao carregar dados do fornecedor:\n{str(e)}", parent=self.root)
 
     def ao_mudar_data_contrato(self, event=None):
         """Quando Data do Contrato mudar, atualiza Data Início"""
@@ -2111,7 +2218,7 @@ class GestaoMedicoes:
         def adicionar_novo_servico():
             nome = combo_novo.get().strip()
             if not nome:
-                messagebox.showwarning("Aviso", "Digite o nome do serviço!")
+                messagebox.showwarning("Aviso", "Digite o nome do serviço!", parent=self.root)
                 return
             
             existentes = GerenciadorConfiguracoes.listar_todos_servicos()
@@ -2120,14 +2227,14 @@ class GestaoMedicoes:
                 if messagebox.askyesno("Novo Serviço", 
                                     f"O serviço '{nome}' não existe.\n\nDeseja adicioná-lo?"):
                     if GerenciadorConfiguracoes.adicionar_servico_rapido(nome):
-                        messagebox.showinfo("Sucesso", f"Serviço '{nome}' adicionado!")
+                        messagebox.showinfo("Sucesso", f"Serviço '{nome}' adicionado!", parent=self.root)
                         atualizar_combo()
                         # Recarregar lista abaixo
                         if categoria_nomes:
                             cmb_categoria.current(0)
                             on_categoria_changed(None)
                     else:
-                        messagebox.showerror("Erro", "Não foi possível adicionar!")
+                        messagebox.showerror("Erro", "Não foi possível adicionar!", parent=self.root)
                         return
             
             # Adicionar à lista de selecionados
@@ -2243,7 +2350,7 @@ class GestaoMedicoes:
                     self.servicos_selecionados.append(servico)
             
             if not self.servicos_selecionados:
-                messagebox.showwarning("Aviso", "Selecione ao menos um serviço!")
+                messagebox.showwarning("Aviso", "Selecione ao menos um serviço!", parent=self.root)
                 return
             
             # Atualizar texto
@@ -2299,28 +2406,28 @@ class GestaoMedicoes:
         
         # Validar cliente selecionado
         if not self.cliente_atual:
-            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
             return
         
         # Validar fornecedor selecionado
         selection = self.lst_fornecedor_contrato.curselection()
         if not selection:
-            messagebox.showwarning("Aviso", "Selecione um fornecedor!")
+            messagebox.showwarning("Aviso", "Selecione um fornecedor!", parent=self.root)
             return
         
         # CORREÇÃO MELHORIA 2: Validar serviços - aceita lista OU campo de texto
         servicos_texto = self.txt_servicos_selecionados.get('1.0', tk.END).strip()
         if not self.servicos_selecionados and not servicos_texto:
-            messagebox.showwarning("Aviso", "Selecione ao menos um serviço ou digite a descrição!")
+            messagebox.showwarning("Aviso", "Selecione ao menos um serviço ou digite a descrição!", parent=self.root)
             return
         
         # Validar campos obrigatórios
         if not self.ent_valor_global.get() or self.ent_valor_global.get() == "R$ 0,00":
-            messagebox.showwarning("Aviso", "Informe o valor global do contrato!")
+            messagebox.showwarning("Aviso", "Informe o valor global do contrato!", parent=self.root)
             return
         
         if not self.ent_endereco_obra.get():
-            messagebox.showwarning("Aviso", "Informe o endereço da obra!")
+            messagebox.showwarning("Aviso", "Informe o endereço da obra!", parent=self.root)
             return
         
         try:
@@ -2344,7 +2451,8 @@ class GestaoMedicoes:
                 messagebox.showerror(
                     "Erro",
                     f"Não foi possível carregar os dados do fornecedor '{nome_fornecedor}'."
-                    f"Verifique se o fornecedor está cadastrado corretamente."
+                    f"Verifique se o fornecedor está cadastrado corretamente.", 
+                    parent=self.root
                 )
                 return
             
@@ -2362,7 +2470,8 @@ class GestaoMedicoes:
                     "Data Ajustada",
                     f"A data final foi ajustada de {data_fim.strftime('%d/%m/%Y')} "
                     f"para {data_fim_ajustada.strftime('%d/%m/%Y')}\n\n"
-                    "Contratos devem terminar em dias úteis."
+                    "Contratos devem terminar em dias úteis.", 
+                    parent=self.root
                 )
                 # Recalcular o número de dias úteis
                 self.calcular_prazo_contrato()
@@ -2410,18 +2519,19 @@ class GestaoMedicoes:
                     "Sucesso",
                     f"Contrato gerado com sucesso!\n\n"
                     f"Arquivo: {Path(arquivo_gerado).name}\n"
-                    f"Local: {self.gerador_contrato.PASTA_CONTRATOS}"
+                    f"Local: {self.gerador_contrato.PASTA_CONTRATOS}",
+                    parent=self.root
                 )
                 
                 # Perguntar se quer abrir a pasta
-                if messagebox.askyesno("Abrir pasta?", "Deseja abrir a pasta de contratos?"):
+                if messagebox.askyesno("Abrir pasta?", "Deseja abrir a pasta de contratos?", parent=self.root):
                     self.abrir_pasta_contratos()
             else:
-                messagebox.showerror("Erro", "Falha ao gerar o contrato. Verifique os logs.")
+                messagebox.showerror("Erro", "Falha ao gerar o contrato. Verifique os logs.", parent=self.root)
                 
         except Exception as e:
             logger.error(f"Erro ao gerar contrato: {e}")
-            messagebox.showerror("Erro", f"Erro ao gerar contrato:\n{str(e)}")
+            messagebox.showerror("Erro", f"Erro ao gerar contrato:\n{str(e)}", parent=self.root)
 
     def limpar_formulario_contrato(self):
         """Limpa todos os campos do formulário de contrato"""
@@ -2495,14 +2605,14 @@ class GestaoMedicoes:
             
         except Exception as e:
             logger.error(f"Erro ao abrir pasta de contratos: {e}")
-            messagebox.showerror("Erro", f"Erro ao abrir pasta: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir pasta: {str(e)}, parent=self.root")
 
     # Funções da aba Medições
     def carregar_medicoes(self):
         """Carrega as medições do contrato selecionado"""
         try:
             if not self.contrato_atual:
-                messagebox.showwarning("Aviso", "Selecione um contrato primeiro!")
+                messagebox.showwarning("Aviso", "Selecione um contrato primeiro!", parent=self.root)
                 return
                 
             # Limpar treeview
@@ -2514,7 +2624,7 @@ class GestaoMedicoes:
             
             # Verificar se a aba de medições existe
             if "Medicoes" not in wb.sheetnames:
-                messagebox.showerror("Erro", "Aba de medições não encontrada!")
+                messagebox.showerror("Erro", "Aba de medições não encontrada!", parent=self.root)
                 wb.close()
                 return
                 
@@ -2546,18 +2656,18 @@ class GestaoMedicoes:
             wb.close()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar medições: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao carregar medições: {str(e)}", parent=self.root)
     
     def nova_medicao(self):
         """Abre janela para cadastro de nova medição"""
         if not self.contrato_atual:
-            messagebox.showwarning("Aviso", "Selecione um contrato primeiro!")
+            messagebox.showwarning("Aviso", "Selecione um contrato primeiro!", parent=self.root)
             return
         
         # Verificar se o contrato tem saldo disponível
         saldo = self.verificar_saldo_contrato()
         if saldo <= 0:
-            messagebox.showwarning("Aviso", "Este contrato não possui saldo disponível para novas medições!")
+            messagebox.showwarning("Aviso", "Este contrato não possui saldo disponível para novas medições!", parent=self.root)
             return
             
         # Criar janela de cadastro
@@ -2651,7 +2761,7 @@ class GestaoMedicoes:
                 
             return float(contrato['saldo'])
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao verificar saldo: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao verificar saldo: {str(e)}", parent=self.root)
             return 0
             
     def obter_dados_contrato(self, id_contrato):
@@ -2689,23 +2799,23 @@ class GestaoMedicoes:
         try:
             # Validar campos obrigatórios
             if not data_medicao or not data_pagamento or not referencia or not valor:
-                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!")
+                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!", parent=self.root)
                 return
                 
             # Validar valor
             try:
                 valor_float = float(valor.replace(',', '.'))
                 if valor_float <= 0:
-                    messagebox.showerror("Erro", "Valor deve ser maior que zero!")
+                    messagebox.showerror("Erro", "Valor deve ser maior que zero!", parent=self.root)
                     return
             except ValueError:
-                messagebox.showerror("Erro", "Valor inválido!")
+                messagebox.showerror("Erro", "Valor inválido!", parent=self.root)
                 return
                 
             # Verificar saldo disponível
             saldo = self.verificar_saldo_contrato()
             if valor_float > saldo:
-                messagebox.showerror("Erro", f"Valor excede o saldo disponível de R$ {saldo:.2f}!")
+                messagebox.showerror("Erro", f"Valor excede o saldo disponível de R$ {saldo:.2f}!", parent=self.root)
                 return
                 
             # Converter datas
@@ -2713,7 +2823,7 @@ class GestaoMedicoes:
                 data_med = datetime.strptime(data_medicao, '%d/%m/%Y')
                 data_pag = datetime.strptime(data_pagamento, '%d/%m/%Y')
             except ValueError:
-                messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa")
+                messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa", parent=self.root)
                 return
                 
             # Abrir arquivo do cliente
@@ -2729,7 +2839,7 @@ class GestaoMedicoes:
             # Obter dados do fornecedor
             contrato = self.obter_dados_contrato(id_contrato)
             if not contrato:
-                messagebox.showerror("Erro", "Não foi possível obter dados do contrato!")
+                messagebox.showerror("Erro", "Não foi possível obter dados do contrato!", parent=self.root)
                 wb.close()
                 return
                 
@@ -2795,14 +2905,14 @@ class GestaoMedicoes:
             wb.save(self.arquivo_cliente)
             wb.close()
             
-            messagebox.showinfo("Sucesso", "Medição cadastrada com sucesso!")
+            messagebox.showinfo("Sucesso", "Medição cadastrada com sucesso!", parent=self.root)
             janela.destroy()
             
             # Atualizar lista de medições
             self.carregar_medicoes()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao salvar medição: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao salvar medição: {str(e)}", parent=self.root)
             try:
                 wb.close()
             except:
@@ -2812,7 +2922,7 @@ class GestaoMedicoes:
         """Edita a medição selecionada"""
         selecionado = self.tree_medicoes.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione uma medição para editar")
+            messagebox.showwarning("Aviso", "Selecione uma medição para editar", parent=self.root)
             return
             
         # Obter ID da medição selecionada
@@ -2845,12 +2955,12 @@ class GestaoMedicoes:
             wb.close()
             
             if not dados_medicao:
-                messagebox.showerror("Erro", "Medição não encontrada!")
+                messagebox.showerror("Erro", "Medição não encontrada!", parent=self.root)
                 return
                 
             # Verificar se já foi lançada
             if dados_medicao['status'] != 'PENDENTE':
-                messagebox.showwarning("Aviso", "Esta medição já foi lançada e não pode ser editada!")
+                messagebox.showwarning("Aviso", "Esta medição já foi lançada e não pode ser editada!", parent=self.root)
                 return
                 
             # Criar janela de edição
@@ -2939,7 +3049,7 @@ class GestaoMedicoes:
                      command=janela.destroy).pack(side='left', padx=5)
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao editar medição: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao editar medição: {str(e)}", parent=self.root)
     
     def atualizar_medicao(self, janela, id_contrato, id_medicao, data_medicao, data_pagamento, 
                         referencia, valor_original, valor_novo, observacoes):
@@ -2947,7 +3057,7 @@ class GestaoMedicoes:
         try:
             # Validar campos obrigatórios
             if not data_medicao or not data_pagamento or not referencia or not valor_novo:
-                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!")
+                messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!", parent=self.root)
                 return
                 
             # Validar valor
@@ -2959,10 +3069,10 @@ class GestaoMedicoes:
                 valor_novo_limpo = valor_novo.replace('R$', '').strip().replace('.', '').replace(',', '.')
                 valor_novo_float = float(valor_novo_limpo)
                 if valor_novo_float <= 0:
-                    messagebox.showerror("Erro", "Valor deve ser maior que zero!")
+                    messagebox.showerror("Erro", "Valor deve ser maior que zero!", parent=self.root)
                     return
             except ValueError:
-                messagebox.showerror("Erro", "Valor inválido!")
+                messagebox.showerror("Erro", "Valor inválido!", parent=self.root)
                 return
                 
             # Se valor mudou, verificar saldo do contrato
@@ -2974,7 +3084,7 @@ class GestaoMedicoes:
                 saldo = self.verificar_saldo_contrato()
                 if diferenca > saldo:
                     messagebox.showerror("Erro", 
-                                       f"O aumento de R$ {diferenca:.2f} excede o saldo disponível de R$ {saldo:.2f}!")
+                                       f"O aumento de R$ {diferenca:.2f} excede o saldo disponível de R$ {saldo:.2f}!", parent=self.root)
                     return
                 
             # Converter datas
@@ -2982,7 +3092,7 @@ class GestaoMedicoes:
                 data_med = datetime.strptime(data_medicao, '%d/%m/%Y')
                 data_pag = datetime.strptime(data_pagamento, '%d/%m/%Y')
             except ValueError:
-                messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa")
+                messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa", parent=self.root)
                 return
                 
             # Abrir arquivo do cliente
@@ -2997,7 +3107,7 @@ class GestaoMedicoes:
                     break
                     
             if not medicao_row:
-                messagebox.showerror("Erro", "Medição não encontrada!")
+                messagebox.showerror("Erro", "Medição não encontrada!", parent=self.root)
                 wb.close()
                 return
                 
@@ -3042,14 +3152,14 @@ class GestaoMedicoes:
             wb.save(self.arquivo_cliente)
             wb.close()
             
-            messagebox.showinfo("Sucesso", "Medição atualizada com sucesso!")
+            messagebox.showinfo("Sucesso", "Medição atualizada com sucesso!", parent=self.root)
             janela.destroy()
             
             # Atualizar lista de medições
             self.carregar_medicoes()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao atualizar medição: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao atualizar medição: {str(e)}", parent=self.root)
             try:
                 wb.close()
             except:
@@ -3060,7 +3170,7 @@ class GestaoMedicoes:
         # Verificar se há seleção
         selecionado = self.tree_medicoes.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione uma medição para lançar")
+            messagebox.showwarning("Aviso", "Selecione uma medição para lançar", parent=self.root)
             return
             
         # Obter ID da medição selecionada
@@ -3069,7 +3179,7 @@ class GestaoMedicoes:
         
         # Verificar se já foi lançada
         if valores[5] != "PENDENTE":
-            messagebox.showwarning("Aviso", "Esta medição já foi lançada!")
+            messagebox.showwarning("Aviso", "Esta medição já foi lançada!", parent=self.root)
             return
             
         # Obter dados completos da medição
@@ -3096,7 +3206,7 @@ class GestaoMedicoes:
                     break
                     
             if not dados_medicao:
-                messagebox.showerror("Erro", "Medição não encontrada!")
+                messagebox.showerror("Erro", "Medição não encontrada!", parent=self.root)
                 wb.close()
                 return
                 
@@ -3161,7 +3271,8 @@ class GestaoMedicoes:
                              f"Medição lançada com sucesso!\n\n"
                              f"Fornecedor: {dados_medicao['nome']}\n"
                              f"Valor: R$ {float(dados_medicao['valor']):.2f}\n"
-                             f"Vencimento: {dt_vencto.strftime('%d/%m/%Y')}")
+                             f"Vencimento: {dt_vencto.strftime('%d/%m/%Y')}", 
+                             parent=self.root)
             
             # Atualizar lista de medições
             self.carregar_medicoes()
@@ -3172,7 +3283,7 @@ class GestaoMedicoes:
                 self.enviar_dados()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao lançar medição: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao lançar medição: {str(e)}", parent=self.root)
             try:
                 wb.close()
             except:
@@ -3184,7 +3295,7 @@ class GestaoMedicoes:
             # Verificar se há medição selecionada
             selecao = self.tree_medicoes.selection()
             if not selecao:
-                messagebox.showwarning("Aviso", "Selecione uma medição para vincular!")
+                messagebox.showwarning("Aviso", "Selecione uma medição para vincular!", parent=self.root)
                 return
             
             # Obter dados da medição selecionada
@@ -3208,7 +3319,8 @@ class GestaoMedicoes:
                             messagebox.showwarning(
                                 "Aviso", 
                                 f"Esta medição já está {status_atual}!\\n\\n"
-                                "Não é possível vincular novamente."
+                                "Não é possível vincular novamente.", 
+                                parent=self.root
                             )
                             return
                         medicao_encontrada = True
@@ -3217,24 +3329,24 @@ class GestaoMedicoes:
                 wb.close()
                 
                 if not medicao_encontrada:
-                    messagebox.showerror("Erro", "Medição não encontrada!")
+                    messagebox.showerror("Erro", "Medição não encontrada!", parent=self.root)
                     return
                     
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao verificar status: {str(e)}")
+                messagebox.showerror("Erro", f"Erro ao verificar status: {str(e)}", parent=self.root)
                 return
             
             # Buscar dados completos da medição
             dados_medicao = self.obter_dados_medicao(id_medicao)
             if not dados_medicao:
-                messagebox.showerror("Erro", "Não foi possível obter dados da medição!")
+                messagebox.showerror("Erro", "Não foi possível obter dados da medição!", parent=self.root)
                 return
             
             # Abrir janela de seleção de lançamento
             self.abrir_janela_selecao_lancamento(id_medicao, dados_medicao)
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao vincular medição: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao vincular medição: {str(e)}", parent=self.root)
 
     def adicionar_rastreamento_vinculacao(self, id_contrato, id_medicao, linha_lancamento, valor_medicao, observacao=""):
         """
@@ -3530,7 +3642,7 @@ class GestaoMedicoes:
             ).pack(pady=5)
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir janela de seleção: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir janela de seleção: {str(e)}", parent=self.root)
             import traceback
             traceback.print_exc()
 
@@ -3554,7 +3666,7 @@ class GestaoMedicoes:
             try:
                 valor_medicao = self.converter_valor_brasileiro_para_float(dados_medicao['valor'])
             except ValueError as e:
-                messagebox.showerror("Erro", f"Erro ao converter valor da medição: {str(e)}")
+                messagebox.showerror("Erro", f"Erro ao converter valor da medição: {str(e)}", parent=self.root)
                 wb.close()
                 return
             
@@ -3761,7 +3873,7 @@ class GestaoMedicoes:
                 )
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao buscar lançamentos: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao buscar lançamentos: {str(e)}", parent=self.root)
             import traceback
             traceback.print_exc()
 
@@ -3773,7 +3885,7 @@ class GestaoMedicoes:
             # Verificar seleção
             selecao = tree.selection()
             if not selecao:
-                messagebox.showwarning("Aviso", "Selecione um lançamento para vincular!")
+                messagebox.showwarning("Aviso", "Selecione um lançamento para vincular!", parent=self.root)
                 return
             
             # Obter dados do lançamento selecionado
@@ -3792,7 +3904,8 @@ class GestaoMedicoes:
             except ValueError as e:
                 messagebox.showerror(
                     "Erro de Conversão",
-                    f"Erro ao converter saldo disponível:\n{saldo_disponivel_str}\n\n{str(e)}"
+                    f"Erro ao converter saldo disponível:\n{saldo_disponivel_str}\n\n{str(e)}", 
+                    parent=self.root
                 )
                 return
             
@@ -3801,7 +3914,8 @@ class GestaoMedicoes:
             except ValueError as e:
                 messagebox.showerror(
                     "Erro de Conversão",
-                    f"Erro ao converter valor da medição:\n{dados_medicao['valor']}\n\n{str(e)}"
+                    f"Erro ao converter valor da medição:\n{dados_medicao['valor']}\n\n{str(e)}", 
+                    parent=self.root
                 )
                 return
             
@@ -3931,14 +4045,14 @@ class GestaoMedicoes:
             
             msg_final += "\n📊 Use o relatório de vinculações para ver detalhes."
             
-            messagebox.showinfo("Sucesso", msg_final)
+            messagebox.showinfo("Sucesso", msg_final, parent=self.root)
             
             # Fechar janela e atualizar lista
             janela.destroy()
             self.carregar_medicoes()
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao confirmar vinculação: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao confirmar vinculação: {str(e)}", parent=self.root)
             import traceback
             traceback.print_exc()
             try:
@@ -3956,7 +4070,8 @@ class GestaoMedicoes:
             if not selecao:
                 messagebox.showinfo(
                     "Informação",
-                    "Selecione um lançamento para ver suas vinculações."
+                    "Selecione um lançamento para ver suas vinculações.", 
+                    parent=self.root
                 )
                 return
             
@@ -3970,7 +4085,8 @@ class GestaoMedicoes:
             if not vinculacoes:
                 messagebox.showinfo(
                     "Vinculações",
-                    f"Lançamento da linha {linha_lancamento} não possui vinculações."
+                    f"Lançamento da linha {linha_lancamento} não possui vinculações.", 
+                    parent=self.root
                 )
                 return
             
@@ -4021,7 +4137,7 @@ class GestaoMedicoes:
             ).pack(pady=10)
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao mostrar vinculações: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao mostrar vinculações: {str(e)}", parent=self.root)
             import traceback
             traceback.print_exc()
 
@@ -4098,7 +4214,7 @@ class GestaoMedicoes:
         """Envia os dados para a planilha do cliente"""
         try:
             if not self.dados_para_incluir:
-                messagebox.showwarning("Aviso", "Não há dados para enviar!")
+                messagebox.showwarning("Aviso", "Não há dados para enviar!", parent=self.root)
                 return
                 
             # Verificar arquivo do cliente
@@ -4159,7 +4275,7 @@ class GestaoMedicoes:
             try:
                 # Tentar salvar o arquivo
                 workbook.save(arquivo_cliente)
-                messagebox.showinfo("Sucesso", "Dados salvos com sucesso na planilha do cliente!")
+                messagebox.showinfo("Sucesso", "Dados salvos com sucesso na planilha do cliente!", parent=self.root)
                     
                 # Limpar após salvar
                 self.dados_para_incluir.clear()
@@ -4174,10 +4290,10 @@ class GestaoMedicoes:
                     "3. Tente enviar novamente"
                 )
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao salvar arquivo: {str(e)}")
+                messagebox.showerror("Erro", f"Erro ao salvar arquivo: {str(e)}", parent=self.root)
                 
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao processar dados: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao processar dados: {str(e)}", parent=self.root)
     
     # MELHORIA 1: Método para incluir contrato na aba Contratos
     def incluir_contrato_na_aba(self):
@@ -4185,18 +4301,18 @@ class GestaoMedicoes:
         try:
             # Validar cliente selecionado
             if not self.cliente_atual:
-                messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+                messagebox.showwarning("Aviso", "Selecione um cliente primeiro!, parent=self.root")
                 return
             
             # Validar fornecedor selecionado
             selection = self.lst_fornecedor_contrato.curselection()
             if not selection:
-                messagebox.showwarning("Aviso", "Selecione um fornecedor!")
+                messagebox.showwarning("Aviso", "Selecione um fornecedor!", parent=self.root)
                 return
             
             # Validar campos obrigatórios
             if not self.ent_valor_global.get() or self.ent_valor_global.get() == "R$ 0,00":
-                messagebox.showwarning("Aviso", "Informe o valor global do contrato!")
+                messagebox.showwarning("Aviso", "Informe o valor global do contrato!", parent=self.root)
                 return
             
             # Obter dados do formulário
@@ -4213,7 +4329,7 @@ class GestaoMedicoes:
             # Obter descrição dos serviços (agora editável - MELHORIA 2)
             descricao = self.txt_servicos_selecionados.get('1.0', tk.END).strip()
             if not descricao:
-                messagebox.showwarning("Aviso", "Informe a descrição dos serviços!")
+                messagebox.showwarning("Aviso", "Informe a descrição dos serviços!", parent=self.root)
                 return
             
             data_inicio = self.ent_data_inicio.get_date().strftime('%d/%m/%Y')
@@ -4232,24 +4348,59 @@ class GestaoMedicoes:
             self.salvar_contrato(None, cnpj_fornecedor, nome_fornecedor, descricao, data_inicio, data_final, valor_limpo, observacoes)
             
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao incluir contrato: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao incluir contrato: {str(e)}", parent=self.root)
             import traceback
             traceback.print_exc()
     
     def voltar_menu(self):
         """Volta ao menu principal"""
-        if hasattr(self, 'dados_para_incluir') and self.dados_para_incluir:
-            if messagebox.askyesno("Aviso", "Existem dados não enviados. Deseja enviá-los antes de sair?"):
-                self.enviar_dados()
+        try:
+            # Verificar dados não enviados
+            if hasattr(self, 'dados_para_incluir') and self.dados_para_incluir:
+                if messagebox.askyesno("Aviso", "Existem dados não enviados. Deseja enviá-los antes de sair?, parent=self.root"):
+                    self.enviar_dados()
+            
+            # ============================================================
+            # LIMPAR BINDS E TIMERS (IMPORTANTE!)
+            # ============================================================
+            if self.menu_principal:
+                try:
+                    # Remover binds criados
+                    self.menu_principal.unbind('<FocusIn>')
+                    self.menu_principal.unbind('<Button-1>')
+                    logger.debug("✓ Binds removidos da janela pai")
+                except Exception as e:
+                    logger.debug(f"⚠️ Erro ao remover binds: {e}")
+            
+            # Limpar instância ativa
+            GestaoMedicoes._instancia_ativa = None
+            logger.debug("✓ Instância ativa limpa")
+            
+            # Fechar a janela atual (isso também para o timer)
+            self.root.destroy()
+            logger.info("✅ Janela de Gestão de Medições fechada")
+            
+            # Mostrar janela principal
+            if self.menu_principal:
+                self.menu_principal.deiconify()
+                self.menu_principal.lift()
+                self.menu_principal.focus_force()
+                logger.info("✅ Menu principal restaurado")
                 
-        # Fechar a janela atual
-        self.root.destroy()
-        
-        # Mostrar janela principal
-        if self.menu_principal:
-            self.menu_principal.deiconify()
-            self.menu_principal.lift()
-            self.menu_principal.focus_force()
+        except Exception as e:
+            logger.error(f"❌ Erro ao voltar para menu principal: {e}")
+            # Mesmo com erro, limpar tudo
+            GestaoMedicoes._instancia_ativa = None
+            try:
+                if self.menu_principal:
+                    self.menu_principal.unbind('<FocusIn>')
+                    self.menu_principal.unbind('<Button-1>')
+            except:
+                pass
+            try:
+                self.root.destroy()
+            except:
+                pass
 
 class ComboboxServicosSimples(ttk.Combobox):
     """Combobox com autocompletar para serviços"""
@@ -4301,15 +4452,16 @@ class ComboboxServicosSimples(ttk.Combobox):
             if valor not in existentes:
                 resposta = messagebox.askyesno(
                     "Novo Serviço",
-                    f"O serviço '{valor}' não existe.\n\nDeseja adicioná-lo?"
+                    f"O serviço '{valor}' não existe.\n\nDeseja adicioná-lo?", 
+                    parent=self.root
                 )
                 
                 if resposta:
                     if GerenciadorConfiguracoes.adicionar_servico_rapido(valor):
-                        messagebox.showinfo("Sucesso", f"Serviço '{valor}' adicionado!")
+                        messagebox.showinfo("Sucesso", f"Serviço '{valor}' adicionado!", parent=self.root)
                         self.atualizar_valores()
                     else:
-                        messagebox.showerror("Erro", "Não foi possível adicionar!")
+                        messagebox.showerror("Erro", "Não foi possível adicionar!", parent=self.root)
         except Exception as e:
             print(f"Erro na validação: {e}")
 
