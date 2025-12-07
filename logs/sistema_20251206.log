@@ -423,3 +423,17 @@
 2025-12-06 10:57:10,717 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados cliente processados: BRUNO SANTANA RINALDI
 2025-12-06 10:57:10,718 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados fornecedor processados: ALFATEC INSTALACOES - 14.051.624/0001-42
 2025-12-06 10:57:10,819 - sistema_relatorios - gerador_contrato - INFO - ✅ Contrato gerado com sucesso: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\Contrato_BRUNO_SANTANA_RINALDI_20251206_105710.docx
+2025-12-06 11:14:52,228 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 11:18:20,052 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 11:46:52,335 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 11:50:01,541 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 12:11:37,616 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 12:15:09,206 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 14:07:44,079 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 14:10:43,055 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 14:50:44,215 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 15:05:34,197 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 15:14:17,107 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 15:39:36,677 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 15:48:22,588 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-06 16:00:31,602 - sistema - logger_config - INFO - Sistema de logging inicializado
