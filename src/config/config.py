@@ -107,7 +107,7 @@ else:  # ENV == 'producao'
     print(f"📁 PASTA_CLIENTES (PRODUÇÃO): {PASTA_CLIENTES}")
 
 # Define caminhos específicos
-ARQUIVO_CLIENTES = BASE_PATH / "clientes.xlsx"
+ARQUIVO_CLIENTES = BASE_PATH / "Clientes.xlsx"
 ARQUIVO_FORNECEDORES = BASE_PATH / "base_fornecedores.xlsx"
 ARQUIVO_MODELO = BASE_PATH / "MODELO.xlsx"
 ARQUIVO_CONTROLE = BASE_PATH / "controle_taxa_adm.xlsx"
