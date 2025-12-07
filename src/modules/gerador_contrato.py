@@ -167,25 +167,40 @@ class GeradorContrato:
             return default
     
     def formatar_cno(self, cno):
-        """Formata CNO no padrão XX.XXX.XXXXX/XX"""
+        """
+        Formata CNO no padrão XX.XXX.XXXXX/XX
+        CORRIGIDO: Verifica se JÁ está formatado antes de processar
+        """
         try:
             # Se vazio, retornar vazio
             if not cno or pd.isna(cno):
                 return ''
             
+            # Converter para string
+            cno_str = str(cno).strip()
+            
+            # Se já está formatado (contém pontos/barra), retornar como está
+            if '.' in cno_str and '/' in cno_str:
+                logger.info(f"CNO já formatado: {cno_str}")
+                return cno_str
+            
             # Remover caracteres não numéricos
-            cno_limpo = ''.join(filter(str.isdigit, str(cno)))
+            cno_limpo = ''.join(filter(str.isdigit, cno_str))
             
             # Se não tiver dígitos suficientes, retornar original
             if len(cno_limpo) < 12:
-                return str(cno)
+                logger.warning(f"CNO com poucos dígitos ({len(cno_limpo)}): {cno_str}")
+                return cno_str
             
-            # Garantir 13 dígitos
+            # Garantir 13 dígitos (completar com zeros à esquerda se necessário)
             cno_limpo = cno_limpo.zfill(13)
             
             # Formatar: XX.XXX.XXXXX/XX
-            return f"{cno_limpo[:2]}.{cno_limpo[2:5]}.{cno_limpo[5:10]}/{cno_limpo[10:12]}"
-        except:
+            cno_formatado = f"{cno_limpo[:2]}.{cno_limpo[2:5]}.{cno_limpo[5:10]}/{cno_limpo[10:12]}"
+            logger.info(f"CNO formatado: {cno_str} → {cno_formatado}")
+            return cno_formatado
+        except Exception as e:
+            logger.error(f"Erro ao formatar CNO: {e}")
             return str(cno) if cno else ''
     
     def obter_dados_cliente(self, nome_cliente):
@@ -279,14 +294,17 @@ class GeradorContrato:
             return None
     
     def obter_dados_fornecedor(self, cnpj_cpf):
-        """Obtém dados do fornecedor da planilha pelo CPF/CNPJ"""
+        """
+        Obtém dados do fornecedor da planilha pelo CPF/CNPJ
+        CORRIGIDO: Busca correta do endereço na coluna 'ENDEREÇO'
+        """
         try:
             logger.info(f"Obtendo dados do fornecedor: {cnpj_cpf}")
             
             df = pd.read_excel(ARQUIVO_FORNECEDORES)
             
             # Buscar fornecedor
-            fornecedor_row = df[df['CPF/CNPJ'].astype(str).str.replace(r'\D', '', regex=True) == 
+            fornecedor_row = df[df['CNPJ/CPF'].astype(str).str.replace(r'\D', '', regex=True) == 
                               cnpj_cpf.replace('.', '').replace('-', '').replace('/', '')]
             
             if fornecedor_row.empty:
@@ -295,10 +313,21 @@ class GeradorContrato:
             
             fornecedor = fornecedor_row.iloc[0]
             
+            # CORREÇÃO: Buscar endereço na coluna correta 'ENDEREÇO' (índice 15)
+            endereco_raw = fornecedor.get('ENDEREÇO', None)
+            
+            # Tratar endereço vazio/NaN
+            if pd.isna(endereco_raw) or not str(endereco_raw).strip():
+                endereco = 'não informado'
+                logger.warning(f"Endereço não encontrado para fornecedor {cnpj_cpf}")
+            else:
+                endereco = str(endereco_raw).strip()
+                logger.info(f"✅ Endereço encontrado: {endereco}")
+            
             dados = {
-                'nome': self._get_safe_value(fornecedor, 'Nome', 'não informado'),
+                'nome': self._get_safe_value(fornecedor, 'NOME', 'não informado'),
                 'cnpj_cpf': formatar_cnpj_cpf(cnpj_cpf),
-                'endereco': self._get_safe_value(fornecedor, 'Endereço', 'não informado')
+                'endereco': endereco
             }
             
             logger.info(f"Dados do fornecedor obtidos: {dados['nome']}")
@@ -306,10 +335,15 @@ class GeradorContrato:
             
         except Exception as e:
             logger.error(f"Erro ao obter dados do fornecedor: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def obter_dados_fornecedor_por_nome(self, nome_fornecedor):
-        """Obtém dados do fornecedor da planilha pelo nome"""
+        """
+        Obtém dados do fornecedor da planilha pelo nome
+        CORRIGIDO: Busca correta do endereço
+        """
         try:
             logger.info(f"Obtendo dados do fornecedor por nome: {nome_fornecedor}")
             
@@ -366,20 +400,29 @@ class GeradorContrato:
                 
                 logger.info(f"CPF/CNPJ: {cnpj_cpf_raw} → {cnpj_cpf_formatado}")
             
+            # CORREÇÃO: Obter endereço da coluna correta
+            endereco_raw = fornecedor.get('ENDEREÇO', None)
+            
+            if pd.isna(endereco_raw) or not str(endereco_raw).strip():
+                endereco = 'não informado'
+                logger.warning(f"Endereço não encontrado para fornecedor {nome_fornecedor}")
+            else:
+                endereco = str(endereco_raw).strip()
+                logger.info(f"✅ Endereço encontrado: {endereco}")
+            
             # Obter outros dados
             razao_social = fornecedor.get('RAZÃO SOCIAL', nome_fornecedor)
             dados_bancarios = fornecedor.get('DADOS BANCÁRIOS', '')
-            endereco = fornecedor.get('ENDEREÇO', '')  # Coluna existe na planilha!
             
             dados = {
                 'nome': str(fornecedor[col_nome]).strip(),
                 'razao_social': str(razao_social).strip() if not pd.isna(razao_social) else nome_fornecedor,
                 'cnpj_cpf': cnpj_cpf_formatado,
-                'endereco': str(endereco).strip() if (not pd.isna(endereco) and endereco) else 'não informado',
+                'endereco': endereco,
                 'dados_bancarios': str(dados_bancarios).strip() if not pd.isna(dados_bancarios) else 'não informado'
             }
             
-            logger.info(f"✅ Dados obtidos: Nome={dados['nome']}, CNPJ/CPF={dados['cnpj_cpf']}")
+            logger.info(f"✅ Dados obtidos: Nome={dados['nome']}, CNPJ/CPF={dados['cnpj_cpf']}, Endereço={dados['endereco']}")
             return dados
             
         except Exception as e:
@@ -403,10 +446,14 @@ class GeradorContrato:
             return data_str
     
     def numero_por_extenso(self, valor):
-        """Converte número para extenso (simplificado)"""
+        """
+        Converte número para extenso (simplificado)
+        CORRIGIDO: Não multiplica mais por 10
+        """
         try:
             from num2words import num2words
-            valor_float = float(str(valor).replace('R$', '').replace('.', '').replace(',', '.').strip())
+            # CORREÇÃO: valor já vem como float correto, não precisa ajustar
+            valor_float = float(valor)
             return num2words(valor_float, lang='pt_BR', to='currency')
         except:
             return f"{valor} reais"
@@ -427,7 +474,10 @@ class GeradorContrato:
         return f"{servicos_texto} e {lista_servicos[-1]}"
     
     def _configurar_estilos(self, doc):
-        """Configura os estilos do documento"""
+        """
+        Configura os estilos do documento
+        CORRIGIDO: CLÁUSULA em preto (não azul) e maior que PARÁGRAFO
+        """
         # Estilo Normal
         style_normal = doc.styles['Normal']
         font_normal = style_normal.font
@@ -455,21 +505,34 @@ class GeradorContrato:
         paragraph_format_title.space_before = Pt(12)
         paragraph_format_title.space_after = Pt(12)
         
-        # Estilo Heading 1
+        # CORREÇÃO: Estilo Heading 1 - CLÁUSULA (maior e em preto)
         style_h1 = doc.styles['Heading 1']
         font_h1 = style_h1.font
         font_h1.name = 'Arial'
-        font_h1.size = Pt(12)
+        font_h1.size = Pt(12)  # Maior que parágrafo
         font_h1.bold = True
+        font_h1.color.rgb = RGBColor(0, 0, 0)  # PRETO, não azul
         
         paragraph_format_h1 = style_h1.paragraph_format
-        paragraph_format_h1.space_before = Pt(10)
-        paragraph_format_h1.space_after = Pt(5)
+        paragraph_format_h1.space_before = Pt(12)  # Mais espaço
+        paragraph_format_h1.space_after = Pt(6)
     
     def gerar_contrato(self, nome_cliente_ou_dict=None, cnpj_fornecedor=None, descricao_servicos=None, 
-                      data_inicio=None, data_fim=None, valor_global=None, observacoes=''):
+                      data_inicio=None, data_fim=None, valor_global=None, prazo_dias=None, multa_valor=None, observacoes=''):
         """
         Gera contrato em formato DOCX usando python-docx
+        
+        CORREÇÕES IMPLEMENTADAS:
+        1. CNO: verifica se já está formatado
+        2. Endereço fornecedor: busca na coluna 'ENDEREÇO' corretamente
+        3. Data do Contrato: usa data_inicio ao invés de data atual
+        4. Prazo: usa valor informado no formulário (prazo_dias)
+        5. Valor Global por extenso: corrigido (não multiplica por 10)
+        6. Multa: usa valor informado no formulário
+        7. CLÁUSULA: em preto e visualmente maior que PARÁGRAFO
+        8. Linhas de assinatura: sem quebra, com espaçamento adequado
+        9. Linha testemunhas: com separação
+        10. Espaçamento antes de DADOS BANCÁRIOS
         
         Aceita dois formatos:
         1. Dicionário completo (formato novo)
@@ -482,6 +545,8 @@ class GeradorContrato:
             data_inicio: Data de início (ignorado se dict)
             data_fim: Data de fim (ignorado se dict)
             valor_global: Valor global do contrato (ignorado se dict)
+            prazo_dias: Prazo em dias úteis (NOVO - usa valor do formulário)
+            multa_valor: Valor da multa (NOVO - usa valor do formulário)
             observacoes: Observações adicionais (ignorado se dict)
             
         Returns:
@@ -505,8 +570,15 @@ class GeradorContrato:
                 data_fim = dados_contrato.get('data_fim')
                 valor_global = dados_contrato.get('valor')
                 
+                # CORREÇÃO: Usar prazo e multa do formulário
+                # Aceitar tanto 'prazo_dias' quanto 'dias' para compatibilidade
+                prazo_dias = dados_contrato.get('prazo_dias') or dados_contrato.get('dias')
+                multa_valor = dados_contrato.get('multa', None)
+                
                 logger.info(f"Usando formato dict - Cliente: {nome_cliente}")
                 logger.info(f"Fornecedor CPF/CNPJ do dict: {cnpj_fornecedor}")
+                logger.info(f"Prazo informado: {prazo_dias} dias")
+                logger.info(f"Multa informada: {multa_valor}")
                 
                 # Validar campos obrigatórios
                 if not nome_cliente:
@@ -569,28 +641,67 @@ class GeradorContrato:
                 
                 endereco_obra = dados_cliente['endereco']
             
-            # Calcular prazo em dias
-            try:
-                dt_inicio = datetime.strptime(data_inicio, '%d/%m/%Y')
-                dt_fim = datetime.strptime(data_fim, '%d/%m/%Y')
-                dias = (dt_fim - dt_inicio).days
-            except:
-                dias = 30
+            # CORREÇÃO: Usar prazo informado no formulário (dias ÚTEIS)
+            # Converter para int se vier como string
+            if prazo_dias is not None and str(prazo_dias).strip() and str(prazo_dias).strip() != '0':
+                try:
+                    dias = int(prazo_dias)
+                    logger.info(f"✅ Usando prazo do formulário: {dias} dias úteis")
+                except (ValueError, TypeError):
+                    logger.warning(f"⚠️ Prazo inválido: '{prazo_dias}', calculando dias úteis")
+                    prazo_dias = None  # Forçar cálculo
+            
+            if prazo_dias is None or str(prazo_dias).strip() == '0':
+                # Fallback: calcular dias ÚTEIS (não corridos) se prazo não foi informado
+                try:
+                    from datetime import datetime as dt
+                    import numpy as np
+                    
+                    dt_inicio = datetime.strptime(data_inicio, '%d/%m/%Y')
+                    dt_fim = datetime.strptime(data_fim, '%d/%m/%Y')
+                    
+                    # Calcular dias ÚTEIS usando numpy.busday_count
+                    dias = np.busday_count(dt_inicio.date(), dt_fim.date())
+                    logger.warning(f"⚠️ Prazo não informado, calculando dias ÚTEIS: {dias}")
+                except Exception as e:
+                    logger.error(f"Erro ao calcular dias úteis: {e}")
+                    # Fallback final: calcular aproximadamente (dias corridos * 0.71)
+                    try:
+                        dt_inicio = datetime.strptime(data_inicio, '%d/%m/%Y')
+                        dt_fim = datetime.strptime(data_fim, '%d/%m/%Y')
+                        dias_corridos = (dt_fim - dt_inicio).days
+                        dias = int(dias_corridos * 0.71)  # Aproximação: 5 dias úteis em 7 corridos
+                        logger.warning(f"⚠️ Usando aproximação de dias úteis: {dias} (baseado em {dias_corridos} corridos)")
+                    except:
+                        dias = 30
+                        logger.warning(f"⚠️ Erro ao calcular prazo, usando padrão: {dias}")
             
             # Preparar valores
             valor_limpo = str(valor_global).replace('R$', '').replace('.', '').replace(',', '.').strip()
             valor_float = float(valor_limpo)
             valor_formatado = f"R$ {valor_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+            
+            # CORREÇÃO: valor por extenso correto (não multiplica por 10)
             valor_extenso = self.numero_por_extenso(valor_float)
             
-            # Calcular multa (10% do valor)
-            multa_float = valor_float * 0.10
+            # CORREÇÃO: Usar multa informada no formulário
+            if multa_valor is not None:
+                multa_limpo = str(multa_valor).replace('R$', '').replace('.', '').replace(',', '.').strip()
+                multa_float = float(multa_limpo)
+                logger.info(f"✅ Usando multa do formulário: R$ {multa_float}")
+            else:
+                # Fallback: calcular 10% se multa não foi informada
+                multa_float = valor_float * 0.10
+                logger.warning(f"⚠️ Multa não informada, calculando 10%: R$ {multa_float}")
+            
             multa_formatada = f"R$ {multa_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+            
+            # CORREÇÃO: multa por extenso correto (não multiplica por 10)
             multa_extenso = self.numero_por_extenso(multa_float)
             
-            # Data por extenso
-            data_hoje = datetime.now().strftime('%d/%m/%Y')
-            data_extenso = self.formatar_data_extenso(data_hoje)
+            # CORREÇÃO: Data por extenso da data de INÍCIO (não data atual)
+            data_extenso = self.formatar_data_extenso(data_inicio)
+            logger.info(f"✅ Data do contrato: {data_inicio} ({data_extenso})")
             
             # Criar documento
             doc = Document()
@@ -613,7 +724,7 @@ class GeradorContrato:
             
             # INTRODUÇÃO
             p1 = doc.add_paragraph()
-            p1.add_run(f"Aos {data_hoje}, nesta cidade {dados_cliente['cidade']}, entre partes, de um lado: ")
+            p1.add_run(f"Aos {data_inicio}, nesta cidade de {dados_cliente['cidade']}, entre partes, de um lado: ")
             
             # CONTRATANTE
             p2 = doc.add_paragraph()
@@ -628,17 +739,19 @@ class GeradorContrato:
             
             # CLÁUSULA PRIMEIRA - OBJETO
             doc.add_heading('CLÁUSULA PRIMEIRA - OBJETO', level=1)
-            doc.add_paragraph(f"O presente contrato tem como OBJETO a prestação de serviços especializados em {descricao_servicos} bem como todos os trabalhos e atividades necessárias para sua conclusão.")
+            doc.add_paragraph(f"O presente contrato tem como OBJETO a prestação de serviços especializados em {descricao_servicos}, bem como todos os trabalhos e atividades necessárias para sua conclusão.")
             
             p_par1 = doc.add_paragraph()
             run_par1 = p_par1.add_run("PARÁGRAFO PRIMEIRO: ")
             run_par1.bold = True
+            run_par1.font.size = Pt(11)  # Menor que CLÁUSULA
             
             doc.add_paragraph(f"Os serviços deverão ser prestados no imóvel situado à {endereco_obra}")
             
             p_par2 = doc.add_paragraph()
             run_par2 = p_par2.add_run("PARÁGRAFO SEGUNDO: ")
             run_par2.bold = True
+            run_par2.font.size = Pt(11)
             
             doc.add_paragraph("A contratada prestará os serviços constantes em orçamento e/ou descritivo de atividades na modalidade por empreitada de forma autônoma, sem qualquer exclusividade, podendo desempenhar atividades para terceiros em geral, simultaneamente ou não.")
             
@@ -649,6 +762,7 @@ class GeradorContrato:
             p_par_primeiro = doc.add_paragraph()
             run_par_primeiro = p_par_primeiro.add_run("PARÁGRAFO PRIMEIRO:")
             run_par_primeiro.bold = True
+            run_par_primeiro.font.size = Pt(11)
             
             doc.add_paragraph("O Contratado obrigar-se-á:")
             
@@ -676,6 +790,7 @@ class GeradorContrato:
             p_par_segundo = doc.add_paragraph()
             run_par_segundo = p_par_segundo.add_run("PARÁGRAFO SEGUNDO:")
             run_par_segundo.bold = True
+            run_par_segundo.font.size = Pt(11)
             
             doc.add_paragraph("São obrigações exclusivas do contratante:")
             doc.add_paragraph("a) Fornecer todos os detalhes, projetos e especificações para a perfeita execução dos serviços;")
@@ -699,18 +814,21 @@ class GeradorContrato:
             p_par_prim = doc.add_paragraph()
             run_par_prim = p_par_prim.add_run("PARÁGRAFO PRIMEIRO")
             run_par_prim.bold = True
+            run_par_prim.font.size = Pt(11)
             
             doc.add_paragraph("A remuneração pelos serviços contratados inclui todos os encargos trabalhistas, sociais, previdenciários, securitários e outros não nominados, gastos e despesas relativos ao exercício dos serviços contratados, por mais especiais que sejam, nada mais sendo devido pelo contratante ao contratado, a qualquer título.")
             
             p_par_seg = doc.add_paragraph()
             run_par_seg = p_par_seg.add_run("PARÁGRAFO SEGUNDO")
             run_par_seg.bold = True
+            run_par_seg.font.size = Pt(11)
             
             doc.add_paragraph("O presente contrato não implica em qualquer vínculo empregatício do contratado, de seus prepostos ou colaboradores pelos serviços prestados ao contratante.")
             
             p_par_terc = doc.add_paragraph()
             run_par_terc = p_par_terc.add_run("PARÁGRAFO TERCEIRO")
             run_par_terc.bold = True
+            run_par_terc.font.size = Pt(11)
             
             doc.add_paragraph("Os comprovantes de transferência servirão como recibo de quitação dos valores eventualmente pagos à Contratada.")
             
@@ -736,6 +854,7 @@ class GeradorContrato:
             p_par_unico = doc.add_paragraph()
             run_par_unico = p_par_unico.add_run("PARÁGRAFO ÚNICO -- ")
             run_par_unico.bold = True
+            run_par_unico.font.size = Pt(11)
             p_par_unico.add_run(f"Além das possibilidades elencadas no caput o inadimplemento de quaisquer das cláusulas estabelecidas neste instrumento, facultará a parte que não lhe deu causa, impor sua rescisão cumulada com ressarcimento de eventuais perdas e danos e lucros cessantes e multa pecuniária irredutível e não compensatória, no valor de {multa_formatada} ({multa_extenso}).")
             
             # CLÁUSULA OITAVA - FORO
@@ -751,42 +870,52 @@ class GeradorContrato:
             p_data.paragraph_format.space_after = Pt(10)
             p_data.add_run(f"Belo Horizonte -- MG, {data_extenso}.")
             
-            # ASSINATURAS
+            # CORREÇÃO: ASSINATURAS - sem quebra de linha, com espaçamento adequado, ALINHADAS À ESQUERDA
             # Linha contratante
             p_linha1 = doc.add_paragraph()
-            p_linha1.paragraph_format.space_before = Pt(20)
-            p_linha1.add_run("_" * 80)
+            p_linha1.paragraph_format.space_before = Pt(30)  # Aumentado para permitir assinatura digital
+            p_linha1.add_run("_" * 60)  # Reduzido para não quebrar linha
             
             p_nome_cliente = doc.add_paragraph()
-            p_nome_cliente.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_nome_cliente.alignment = WD_ALIGN_PARAGRAPH.LEFT  # ALINHADO À ESQUERDA
             run_nome_cliente = p_nome_cliente.add_run(dados_cliente['nome'])
             run_nome_cliente.bold = True
             
             # Linha contratada
             p_linha2 = doc.add_paragraph()
-            p_linha2.paragraph_format.space_before = Pt(10)
-            p_linha2.add_run("_" * 80)
+            p_linha2.paragraph_format.space_before = Pt(30)  # Aumentado para permitir assinatura digital
+            p_linha2.add_run("_" * 60)
             
             p_nome_fornecedor = doc.add_paragraph()
-            p_nome_fornecedor.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_nome_fornecedor.alignment = WD_ALIGN_PARAGRAPH.LEFT  # ALINHADO À ESQUERDA
             run_nome_fornecedor = p_nome_fornecedor.add_run(dados_fornecedor['nome'])
             run_nome_fornecedor.bold = True
             
-            # TESTEMUNHAS
+            # CORREÇÃO: TESTEMUNHAS - com separação entre as duas linhas
             p_test = doc.add_paragraph()
-            p_test.paragraph_format.space_before = Pt(15)
+            p_test.paragraph_format.space_before = Pt(20)
             run_test = p_test.add_run("Testemunhas:")
             run_test.bold = True
             
-            p_linha_test = doc.add_paragraph()
-            p_linha_test.paragraph_format.space_before = Pt(10)
-            p_linha_test.add_run("_" * 80)
+            # Primeira testemunha
+            p_linha_test1 = doc.add_paragraph()
+            p_linha_test1.paragraph_format.space_before = Pt(10)
+            p_linha_test1.add_run("_" * 60)
             
-            doc.add_paragraph("RG n.º                                                   RG n.º")
+            p_rg1 = doc.add_paragraph()
+            p_rg1.add_run("RG n.º ")
             
-            # DADOS BANCÁRIOS
+            # Segunda testemunha
+            p_linha_test2 = doc.add_paragraph()
+            p_linha_test2.paragraph_format.space_before = Pt(15)  # Separação entre testemunhas
+            p_linha_test2.add_run("_" * 60)
+            
+            p_rg2 = doc.add_paragraph()
+            p_rg2.add_run("RG n.º ")
+            
+            # CORREÇÃO: DADOS BANCÁRIOS - com espaçamento aumentado
             p_dados_banc = doc.add_paragraph()
-            p_dados_banc.paragraph_format.space_before = Pt(15)
+            p_dados_banc.paragraph_format.space_before = Pt(50)  # Aumentado
             run_dados_banc = p_dados_banc.add_run("DADOS BANCÁRIOS PARA PAGAMENTO DA PRESTAÇÃO DE SERVIÇOS:")
             run_dados_banc.bold = True
             
