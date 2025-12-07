@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Build automatizado do Sistema de Gestao Financeira"""
+"""Build automatizado do Sistema de Gestao Financeira - ATUALIZADO"""
 
 import os
 import sys
@@ -37,7 +37,7 @@ MODULOS_SISTEMA = [
     "tkcalendar",
     "babel",
     
-    # === GERAÇÃO DE DOCUMENTOS ===
+    # === GERAÇÃO DE DOCUMENTOS (substituiu Node.js) ===
     "docx",
     "docx.shared",
     "docx.enum",
@@ -45,6 +45,9 @@ MODULOS_SISTEMA = [
     "docx.enum.style",
     "docx.oxml",
     "docx.opc",
+    "docx.parts",
+    "docx.text",
+    "docx.document",
     "lxml",
     "lxml.etree",
     
@@ -79,6 +82,10 @@ MODULOS_SISTEMA = [
     "src.gestao_medicoes",
     "src.gestao_taxas",
     "src.configuracoes_sistema",
+    
+    # === MODULES (Gerador de Contratos) ===
+    "src.modules",
+    "src.modules.gerador_contrato",
     
     # === CONTROLE ===
     "src.controle_pagamentos_taxas",
@@ -163,6 +170,7 @@ def verificar_modulos_importantes():
         "src/ambiente_config.py",
         "src/version_control.py",
         "src/Sistema_Entrada_Dados.py",
+        "src/modules/gerador_contrato.py",  # NOVO
     ]
     
     todos_ok = True
@@ -360,6 +368,7 @@ def mostrar_resumo(executaveis):
     print("  [OK] Ambiente detectado pelo nome do arquivo")
     print("  [OK] relatorios_interface incluido")
     print("  [OK] version_control incluido")
+    print("  [OK] gerador_contrato incluido (python-docx)")  # ATUALIZADO
     print(f"  [OK] {len(MODULOS_SISTEMA)} modulos do sistema incluidos")
     print("=" * 70)
     
@@ -409,6 +418,7 @@ def main():
     """Funcao principal do script de build"""
     print_header(f"SISTEMA DE BUILD - {NOME_BASE}")
     print(f"Data/Hora: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    print("\n🎉 VERSAO ATUALIZADA")
     
     # 1. Verificar ambiente
     if not verificar_ambiente():
