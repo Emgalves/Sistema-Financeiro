@@ -7426,3 +7426,91 @@
 2025-12-07 15:48:43,302 - INFO - Sistema iniciado em modo: TESTE
 2025-12-07 15:49:37,811 - INFO - Abrindo gestão de medições
 2025-12-07 15:59:53,129 - INFO - Sistema encerrado pelo usuário
+2025-12-08 10:29:06,379 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 10:29:06,400 - INFO - Configurações importadas com sucesso
+2025-12-08 10:29:06,401 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 10:29:08,480 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 10:30:55,489 - INFO - Abrindo gestão de medições
+2025-12-08 10:30:55,722 - ERROR - Erro ao abrir gestão de medições: keyword argument repeated: parent (gestao_medicoes.py, line 1533)
+2025-12-08 10:32:09,127 - INFO - Sistema encerrado pelo usuário
+2025-12-08 10:33:07,574 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 10:33:07,592 - INFO - Configurações importadas com sucesso
+2025-12-08 10:33:07,593 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 10:33:07,909 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 10:33:10,193 - INFO - Abrindo gestão de medições
+2025-12-08 10:49:04,714 - INFO - Sistema encerrado pelo usuário
+2025-12-08 10:49:21,053 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 10:49:21,071 - INFO - Configurações importadas com sucesso
+2025-12-08 10:49:21,072 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 10:49:21,604 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 10:49:23,467 - INFO - Abrindo gestão de medições
+2025-12-08 10:49:54,545 - INFO - Sistema encerrado pelo usuário
+2025-12-08 10:52:47,796 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 10:52:47,812 - INFO - Configurações importadas com sucesso
+2025-12-08 10:52:47,812 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 10:52:48,436 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 10:52:49,842 - INFO - Abrindo gestão de medições
+2025-12-08 10:52:50,054 - ERROR - Erro ao abrir gestão de medições: keyword argument repeated: parent (gestao_medicoes.py, line 1533)
+2025-12-08 10:53:00,066 - INFO - Sistema encerrado pelo usuário
+2025-12-08 10:53:37,976 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 10:53:37,989 - INFO - Configurações importadas com sucesso
+2025-12-08 10:53:37,990 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 10:53:38,258 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 10:53:39,849 - INFO - Abrindo gestão de medições
+2025-12-08 11:01:35,446 - INFO - Sistema encerrado pelo usuário
+2025-12-08 11:01:49,003 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 11:01:49,020 - INFO - Configurações importadas com sucesso
+2025-12-08 11:01:49,021 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 11:01:49,546 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 11:01:53,798 - INFO - Abrindo gestão de medições
+2025-12-08 11:04:06,149 - INFO - Abrindo sistema de entrada de dados
+2025-12-08 11:04:06,911 - INFO - Proteções contra perda de dados configuradas
+2025-12-08 11:04:09,313 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-08 11:04:26,485 - INFO - Abrindo gestão de medições
+2025-12-08 11:05:45,157 - INFO - Abrindo gestão de medições
+2025-12-08 11:14:42,000 - INFO - Sistema encerrado pelo usuário
+2025-12-08 11:14:53,031 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 11:14:53,048 - INFO - Configurações importadas com sucesso
+2025-12-08 11:14:53,048 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 11:14:53,923 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 11:14:59,474 - INFO - Abrindo gestão de medições
+2025-12-08 11:17:01,111 - INFO - Sistema encerrado pelo usuário
+2025-12-08 11:19:43,981 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 11:19:43,995 - INFO - Configurações importadas com sucesso
+2025-12-08 11:19:43,996 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 11:19:44,462 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 11:19:45,800 - INFO - Abrindo gestão de medições
+2025-12-08 11:23:26,117 - INFO - Sistema encerrado pelo usuário
+2025-12-08 11:26:26,437 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 11:26:26,450 - INFO - Configurações importadas com sucesso
+2025-12-08 11:26:26,451 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 11:26:26,892 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 11:26:28,165 - INFO - Abrindo gestão de medições
+2025-12-08 11:32:56,372 - INFO - Sistema encerrado pelo usuário
+2025-12-08 11:33:08,201 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 11:33:08,219 - INFO - Configurações importadas com sucesso
+2025-12-08 11:33:08,220 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 11:33:08,794 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 11:33:10,339 - INFO - Abrindo gestão de medições
+2025-12-08 11:34:57,426 - INFO - Abrindo sistema de relatórios
+2025-12-08 11:36:26,040 - INFO - Sistema encerrado pelo usuário
+2025-12-08 11:40:40,142 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 11:40:40,154 - INFO - Configurações importadas com sucesso
+2025-12-08 11:40:40,155 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 11:40:40,625 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 11:40:43,264 - INFO - Abrindo sistema de relatórios
+2025-12-08 11:41:51,152 - INFO - Abrindo sistema de relatórios
+2025-12-08 11:42:54,216 - INFO - Abrindo sistema de relatórios
+2025-12-08 11:45:43,069 - INFO - Sistema encerrado pelo usuário
+2025-12-08 14:12:17,015 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 14:12:17,029 - INFO - Configurações importadas com sucesso
+2025-12-08 14:12:17,030 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 14:12:17,696 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 14:12:20,098 - INFO - Abrindo sistema de relatórios
+2025-12-08 14:13:02,232 - INFO - Sistema encerrado pelo usuário
+2025-12-08 14:19:21,984 - INFO - Configurações importadas com sucesso via src.config
+2025-12-08 14:19:22,000 - INFO - Configurações importadas com sucesso
+2025-12-08 14:19:22,001 - INFO - Configurações do sistema importadas com sucesso
+2025-12-08 14:19:23,312 - INFO - Sistema iniciado em modo: TESTE
+2025-12-08 14:19:24,943 - INFO - Abrindo sistema de relatórios
+2025-12-08 14:21:17,045 - INFO - Sistema encerrado pelo usuário
