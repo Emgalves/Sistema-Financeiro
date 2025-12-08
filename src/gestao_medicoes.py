@@ -1530,7 +1530,7 @@ class GestaoMedicoes:
             wb.save(self.arquivo_cliente)
             wb.close()
             
-            messagebox.showinfo("Sucesso", "Contrato cadastrado com sucesso!", parent=self.root, parent=self.root)
+            messagebox.showinfo("Sucesso", "Contrato cadastrado com sucesso!", parent=self.root)
             
             # CORREÇÃO: Só fechar janela se foi passada
             if janela:
@@ -1644,29 +1644,29 @@ class GestaoMedicoes:
             valor_global.insert(0, str(dados_contrato['valor_global']))
             
             # Valor Pago (somente leitura)
-            ttk.Label(frame_contrato, text="Valor Pago (R$):").grid(row=3, column=0, padx=5, pady=5, sticky='e')
+            ttk.Label(frame_contrato, text="Valor Pago (R$):").grid(row=4, column=0, padx=5, pady=5, sticky='e')
             valor_pago = ttk.Entry(frame_contrato, width=20)
-            valor_pago.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+            valor_pago.grid(row=4, column=1, padx=5, pady=5, sticky='w')
             valor_pago.insert(0, str(dados_contrato['valor_pago']))
             valor_pago.config(state='readonly')
             
             # Saldo (somente leitura)
-            ttk.Label(frame_contrato, text="Saldo (R$):").grid(row=4, column=0, padx=5, pady=5, sticky='e')
+            ttk.Label(frame_contrato, text="Saldo (R$):").grid(row=5, column=0, padx=5, pady=5, sticky='e')
             saldo = ttk.Entry(frame_contrato, width=20)
-            saldo.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+            saldo.grid(row=5, column=1, padx=5, pady=5, sticky='w')
             saldo.insert(0, str(dados_contrato['saldo']))
             saldo.config(state='readonly')
             
             # Status
-            ttk.Label(frame_contrato, text="Status:").grid(row=5, column=0, padx=5, pady=5, sticky='e')
+            ttk.Label(frame_contrato, text="Status:").grid(row=6, column=0, padx=5, pady=5, sticky='e')
             status = ttk.Combobox(frame_contrato, values=["ATIVO", "CONCLUÍDO", "CANCELADO"], width=15)
-            status.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+            status.grid(row=6, column=1, padx=5, pady=5, sticky='w')
             status.set(dados_contrato['status'] if dados_contrato['status'] else "ATIVO")
             
             # Observações
-            ttk.Label(frame_contrato, text="Observações:").grid(row=6, column=0, padx=5, pady=5, sticky='ne')
+            ttk.Label(frame_contrato, text="Observações:").grid(row=7, column=0, padx=5, pady=5, sticky='ne')
             observacoes = tk.Text(frame_contrato, width=40, height=4)
-            observacoes.grid(row=6, column=1, padx=5, pady=5, sticky='w')
+            observacoes.grid(row=7, column=1, padx=5, pady=5, sticky='w')
             observacoes.insert("1.0", dados_contrato['observacao'] if dados_contrato['observacao'] else "")
             
             # Frame para botões
@@ -1777,6 +1777,10 @@ class GestaoMedicoes:
             valor_cell = ws.cell(row=row_index, column=7, value=valor)
             valor_cell.number_format = '#.##0,00'
             
+            # Valor Pago (ERA coluna 7, AGORA é coluna 8)
+            valor_pago_cell = ws.cell(row=row_index, column=8, value=valor_pago)
+            valor_pago_cell.number_format = '#.##0,00'
+
             # Saldo (ERA coluna 8, AGORA é coluna 9)
             saldo_cell = ws.cell(row=row_index, column=9, value=saldo)
             saldo_cell.number_format = '#.##0,00'
@@ -2779,11 +2783,12 @@ class GestaoMedicoes:
                         'nome': row[2],
                         'descricao': row[3],
                         'data_inicio': row[4],
-                        'valor_global': row[5],
-                        'valor_pago': row[6],
-                        'saldo': row[7],
-                        'status': row[8],
-                        'observacao': row[9]
+                        'data_final': row[5],
+                        'valor_global': row[6],
+                        'valor_pago': row[7],
+                        'saldo': row[8],
+                        'status': row[9],
+                        'observacao': row[10]
                     }
                     break
                     
@@ -2882,22 +2887,22 @@ class GestaoMedicoes:
             for idx, row in enumerate(ws_contratos.iter_rows(min_row=2, max_col=1, values_only=True), 2):
                 if row[0] == id_contrato:
                     # Obter valores atuais
-                    valor_global = ws_contratos.cell(row=idx, column=6).value or 0
-                    valor_pago = ws_contratos.cell(row=idx, column=7).value or 0
+                    valor_global = ws_contratos.cell(row=idx, column=7).value or 0
+                    valor_pago = ws_contratos.cell(row=idx, column=8).value or 0
                     
                     # Atualizar valor pago
                     novo_valor_pago = valor_pago + valor_float
-                    valor_pago_cell = ws_contratos.cell(row=idx, column=7, value=novo_valor_pago)
+                    valor_pago_cell = ws_contratos.cell(row=idx, column=8, value=novo_valor_pago)
                     valor_pago_cell.number_format = '#.##0,00'
                     
                     # Atualizar saldo
                     novo_saldo = valor_global - novo_valor_pago
-                    saldo_cell = ws_contratos.cell(row=idx, column=8, value=novo_saldo)
+                    saldo_cell = ws_contratos.cell(row=idx, column=9, value=novo_saldo)
                     saldo_cell.number_format = '#.##0,00'
                     
                     # Se saldo zerou, atualizar status para CONCLUÍDO
                     if novo_saldo <= 0:
-                        ws_contratos.cell(row=idx, column=9, value="CONCLUÍDO")
+                        ws_contratos.cell(row=idx, column=10, value="CONCLUÍDO")
                     
                     break
             
@@ -4357,7 +4362,7 @@ class GestaoMedicoes:
         try:
             # Verificar dados não enviados
             if hasattr(self, 'dados_para_incluir') and self.dados_para_incluir:
-                if messagebox.askyesno("Aviso", "Existem dados não enviados. Deseja enviá-los antes de sair?, parent=self.root"):
+                if messagebox.askyesno("Aviso", "Existem dados não enviados. Deseja enviá-los antes de sair?", parent=self.root):
                     self.enviar_dados()
             
             # ============================================================
