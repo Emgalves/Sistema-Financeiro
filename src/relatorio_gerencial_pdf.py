@@ -10,6 +10,7 @@ Layout profissional similar ao relatório de despesas quinzenais
 
 import os
 import sys
+import pandas as pd
 from pathlib import Path
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -86,6 +87,15 @@ def formatar_moeda_br(valor):
 
 def formatar_data_br(data):
     """Formata data para padrão brasileiro"""
+    try:
+        # Verifica se é NaT ou None
+        if pd.isna(data):
+            return ""
+    except:
+        if data is None:
+            return ""
+    
+    # Se for datetime válido, formata
     if isinstance(data, datetime):
         return data.strftime('%d/%m/%Y')
     return str(data) if data else ""
