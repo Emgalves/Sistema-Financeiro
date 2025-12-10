@@ -11,15 +11,16 @@ VERSION_INFO = {
     "major": 1,
     "minor": 5,
     "patch": 2,
-    "release_date": "05/12/2025",
+    "release_date": "11/12/2025",
     "changes": [
         "Incluída a opção de vincular várias medições a um único pagamento",
         "Criação do relatório gerencial de contratos de empreiteiros",
         "Incluído Data Fim nos contratos de empreiteiros",
-        "Alteração do texto "Complemento de Caixa" para "Despesas pagas pelo Caixa" no Relatório de Despesas",
+        "Alteração do texto 'Complemento de Caixa' para 'Despesas pagas pelo Caixa' no Relatório de Despesas",
         "Incluída a opção de copiar as fases/eventos de um gestor para outro no contrato de administração de obra",
         "Incluída a opção de vincular várias parcelas de contrato de administração de obra a um lançamento na planilha do cliente",
-        "Incluída a opção de contrato de medição apenas com prazo, sem data início e fim"
+        "Incluída a opção de contrato de medição apenas com prazo, sem data início e fim",
+        "Inclusão e gestão de medições pendentes na Agenda"
     ]
 }
 
