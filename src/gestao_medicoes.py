@@ -448,6 +448,8 @@ class GestaoMedicoes:
                   command=self.novo_contrato).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Editar Contrato", 
                   command=self.editar_contrato).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Excluir Contrato", 
+                  command=self.excluir_contrato).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Selecionar", 
                   command=self.selecionar_contrato).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Voltar", 
@@ -673,16 +675,19 @@ class GestaoMedicoes:
         row = 0
         ttk.Label(dados_contrato_grid, text="Data do Contrato:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
         self.ent_data_contrato = DateEntry(dados_contrato_grid, width=15, 
-                                        date_pattern='dd/mm/yyyy', locale='pt_BR')
+                                date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.ent_data_contrato.grid(row=row, column=1, sticky='w', padx=5, pady=2)
         self.ent_data_contrato.set_date(datetime.now())
-        self.ent_data_contrato.bind('<<DateEntrySelected>>', self.ao_mudar_data_contrato)
+        # Data do contrato é independente, não precisa de bind especial
+        # self.ent_data_contrato.bind('<<DateEntrySelected>>', self.ao_mudar_data_contrato)
         
         row += 1
         ttk.Label(dados_contrato_grid, text="Data Início:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
         self.ent_data_inicio = DateEntry(dados_contrato_grid, width=15, 
-                                        date_pattern='dd/mm/yyyy', locale='pt_BR')
+                                date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.ent_data_inicio.grid(row=row, column=1, sticky='w', padx=5, pady=2)
+        # Inicializar com data padrão (hoje + 1 dia útil, por exemplo)
+        self.ent_data_inicio.set_date(datetime.now() + timedelta(days=1))
         self.ent_data_inicio.bind('<<DateEntrySelected>>', self.ao_mudar_data_inicio)
         
         ttk.Label(dados_contrato_grid, text="Data Fim:").grid(row=row, column=2, sticky='w', padx=5, pady=2)
@@ -697,6 +702,19 @@ class GestaoMedicoes:
         self.ent_prazo_dias.bind('<KeyRelease>', self.ao_mudar_dias)
         self.ent_prazo_dias.bind('<FocusOut>', self.ao_mudar_dias)
         self.ent_prazo_dias.grid(row=row, column=1, sticky='w', padx=5, pady=2)
+        
+        # Checkbox para data condicionada ao recebimento de material
+        self.var_data_condicionada = tk.BooleanVar(value=False)
+        self.chk_data_condicionada = ttk.Checkbutton(
+            dados_contrato_grid, 
+            text="📦 Início condicionado ao recebimento de material",
+            variable=self.var_data_condicionada,
+            command=self.alternar_data_condicionada
+        )
+        self.chk_data_condicionada.grid(row=row, column=2, columnspan=2, sticky='w', padx=5, pady=2)
+        
+        row += 1
+        ttk.Label(dados_contrato_grid, text="Valor Global:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
         
         row += 1
         ttk.Label(dados_contrato_grid, text="Valor Global:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
@@ -1329,15 +1347,21 @@ class GestaoMedicoes:
                               foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
         data_inicio.grid(row=3, column=1, padx=5, pady=5, sticky='w')
         
+        # Data de Início
+        ttk.Label(frame_contrato, text="Data Final:*").grid(row=4, column=0, padx=5, pady=5, sticky='e')
+        data_final = DateEntry(frame_contrato, width=12, background='darkblue',
+                              foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
+        data_final.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        
         # Valor Global
-        ttk.Label(frame_contrato, text="Valor Global (R$):*").grid(row=4, column=0, padx=5, pady=5, sticky='e')
+        ttk.Label(frame_contrato, text="Valor Global (R$):*").grid(row=5, column=0, padx=5, pady=5, sticky='e')
         valor_global = ttk.Entry(frame_contrato, width=20)
-        valor_global.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        valor_global.grid(row=5, column=1, padx=5, pady=5, sticky='w')
         
         # Observações
-        ttk.Label(frame_contrato, text="Observações:").grid(row=5, column=0, padx=5, pady=5, sticky='ne')
+        ttk.Label(frame_contrato, text="Observações:").grid(row=6, column=0, padx=5, pady=5, sticky='ne')
         observacoes = tk.Text(frame_contrato, width=40, height=4)
-        observacoes.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        observacoes.grid(row=6, column=1, padx=5, pady=5, sticky='w')
         
         # Frame para botões
         frame_botoes = ttk.Frame(frame)
@@ -1351,6 +1375,7 @@ class GestaoMedicoes:
                      nome_entry.get(),
                      descricao_entry.get(),
                      data_inicio.get(),
+                     data_final.get(),
                      valor_global.get(),
                      observacoes.get("1.0", "end-1c")
                  )).pack(side='left', padx=5)
@@ -1691,7 +1716,117 @@ class GestaoMedicoes:
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao editar contrato: {str(e)}", parent=self.root)
-    
+
+    def verificar_medicoes_contrato(self, id_contrato):
+        """Verifica se o contrato possui medições registradas"""
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            
+            # Verificar se a aba de medições existe
+            if "Medicoes" not in wb.sheetnames:
+                wb.close()
+                return False
+            
+            ws = wb["Medicoes"]
+            
+            # Verificar se há medições para este contrato
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[1] == id_contrato:  # Coluna B contém ID_Contrato
+                    wb.close()
+                    return True
+            
+            wb.close()
+            return False
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao verificar medições: {str(e)}", parent=self.root)
+            return True  # Em caso de erro, assume que tem medições (segurança)
+
+    def excluir_contrato(self):
+        """Exclui o contrato selecionado (apenas se não tiver medições)"""
+        selecionado = self.tree_contratos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um contrato para excluir", parent=self.root)
+            return
+        
+        # Obter dados do contrato selecionado
+        valores = self.tree_contratos.item(selecionado)['values']
+        id_contrato = valores[0]
+        fornecedor = valores[1]
+        descricao = valores[2]
+        
+        try:
+            # Verificar se o contrato possui medições
+            if self.verificar_medicoes_contrato(id_contrato):
+                messagebox.showerror(
+                    "Erro", 
+                    f"Não é possível excluir o contrato ID {id_contrato}!\n\n"
+                    "Este contrato possui medições registradas.\n"
+                    "Para excluí-lo, primeiro exclua todas as medições associadas.",
+                    parent=self.root
+                )
+                return
+            
+            # Confirmação de exclusão
+            confirmacao = messagebox.askyesno(
+                "Confirmar Exclusão",
+                f"Deseja realmente excluir o contrato?\n\n"
+                f"ID: {id_contrato}\n"
+                f"Fornecedor: {fornecedor}\n"
+                f"Descrição: {descricao}\n\n"
+                "Esta ação não pode ser desfeita!",
+                parent=self.root
+            )
+            
+            if not confirmacao:
+                return
+            
+            # Abrir arquivo do cliente
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb["Contratos_Medicao"]
+            
+            # Buscar e excluir a linha do contrato
+            linha_excluir = None
+            for idx, row in enumerate(ws.iter_rows(min_row=2, max_col=1, values_only=True), 2):
+                if row[0] == id_contrato:
+                    linha_excluir = idx
+                    break
+            
+            if not linha_excluir:
+                messagebox.showerror("Erro", "Contrato não encontrado na planilha!", parent=self.root)
+                wb.close()
+                return
+            
+            # Excluir a linha
+            ws.delete_rows(linha_excluir, 1)
+            
+            # Salvar arquivo
+            wb.save(self.arquivo_cliente)
+            wb.close()
+            
+            messagebox.showinfo(
+                "Sucesso", 
+                f"Contrato ID {id_contrato} excluído com sucesso!",
+                parent=self.root
+            )
+            
+            # Limpar seleção atual se for o contrato excluído
+            if hasattr(self, 'contrato_atual') and self.contrato_atual == id_contrato:
+                self.contrato_atual = None
+                self.fornecedor_atual = None
+                if hasattr(self, 'lbl_contrato_medicoes'):
+                    self.lbl_contrato_medicoes.config(text="Contrato: Nenhum selecionado")
+            
+            # Atualizar lista de contratos
+            self.carregar_contratos()
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao excluir contrato: {str(e)}", parent=self.root)
+            try:
+                wb.close()
+            except:
+                pass
+
     def atualizar_contrato(self, janela, id_contrato, descricao, data_inicio, 
                        data_final, valor_global, status, observacoes):
         """Atualiza os dados de um contrato"""
@@ -2096,27 +2231,26 @@ class GestaoMedicoes:
             messagebox.showerror("Erro", f"Erro ao carregar dados do fornecedor:\n{str(e)}", parent=self.root)
 
     def ao_mudar_data_contrato(self, event=None):
-        """Quando Data do Contrato mudar, atualiza Data Início"""
+        """Quando Data do Contrato mudar, apenas registra"""
         try:
-            # Sincronizar Data Início com Data do Contrato
             data_contrato = self.ent_data_contrato.get_date()
-            self.ent_data_inicio.set_date(data_contrato)
-            
-            logger.info(f"Data do Contrato/Início sincronizadas: {data_contrato}")
+            logger.info(f"Data do Contrato alterada: {data_contrato}")
+            # NÃO sincronizar com Data Início - são independentes
         except Exception as e:
-            logger.error(f"Erro ao sincronizar data contrato: {e}")
+            logger.error(f"Erro ao alterar data contrato: {e}")
     
     def ao_mudar_data_inicio(self, event=None):
-        """Quando Data Início mudar, atualiza Data do Contrato"""
+        """Quando Data Início mudar, apenas recalcula prazo"""
         try:
-            # Sincronizar Data do Contrato com Data Início
             data_inicio = self.ent_data_inicio.get_date()
-            self.ent_data_contrato.set_date(data_inicio)
+            logger.info(f"Data Início alterada: {data_inicio}")
+            # NÃO sincronizar com Data do Contrato - são independentes
             
-            # Calcular prazo
-            self.calcular_prazo_contrato(event)
+            # Calcular prazo se não estiver em modo condicionado
+            if not self.var_data_condicionada.get():
+                self.calcular_prazo_contrato(event)
         except Exception as e:
-            logger.error(f"Erro ao sincronizar datas: {e}")
+            logger.error(f"Erro ao alterar data início: {e}")
     
     def ao_mudar_dias(self, event=None):
         """Quando usuário digitar dias, recalcula Data Fim"""
@@ -2175,6 +2309,53 @@ class GestaoMedicoes:
                 logger.info(f"Prazo calculado: {dias_uteis} dias úteis (excluindo data início)")
         except Exception as e:
             logger.error(f"Erro ao calcular prazo: {e}")
+
+    def alternar_data_condicionada(self):
+        """
+        Alterna entre modo de data condicionada e modo normal.
+        
+        IMPORTANTE: A Data do Contrato NUNCA é afetada!
+        Apenas Data Início e Data Fim são condicionadas.
+        """
+        try:
+            condicionado = self.var_data_condicionada.get()
+            
+            if condicionado:
+                logger.info("✓ Modo data condicionada ATIVADO")
+                
+                # Desabilitar APENAS Data Início e Data Fim
+                self.ent_data_inicio.configure(state='disabled')
+                self.ent_data_fim.configure(state='disabled')
+                
+                # Data do Contrato permanece HABILITADA
+                
+                messagebox.showinfo(
+                    "Data Condicionada Ativada",
+                    "✓ As datas de INÍCIO e FIM foram desabilitadas.\n\n"
+                    "📋 O contrato incluirá a seguinte cláusula:\n"
+                    "\"O início dos serviços está condicionado ao\n"
+                    "recebimento do material necessário na obra.\"\n\n"
+                    "⏱️ O prazo em dias permanece como referência contratual.\n\n"
+                    "📅 A DATA DO CONTRATO não é afetada (sempre conhecida).",
+                    parent=self.root
+                )
+                
+            else:
+                logger.info("✓ Modo data condicionada DESATIVADO")
+                
+                self.ent_data_inicio.configure(state='normal')
+                self.ent_data_fim.configure(state='normal')
+                
+                # Recalcular prazo automaticamente
+                self.calcular_prazo_contrato()
+                
+        except Exception as e:
+            logger.error(f"❌ Erro ao alternar data condicionada: {e}")
+            messagebox.showerror(
+                "Erro",
+                f"Erro ao alternar modo de data:\n{str(e)}",
+                parent=self.root
+            )
 
     def abrir_selecao_servicos(self):
         """Abre janela para seleção de serviços - VERSÃO COM COMBOBOX"""
@@ -2434,6 +2615,52 @@ class GestaoMedicoes:
             messagebox.showwarning("Aviso", "Informe o endereço da obra!", parent=self.root)
             return
         
+        # Validar prazo em dias (sempre obrigatório)
+        if not self.ent_prazo_dias.get() or self.ent_prazo_dias.get() == '0':
+            messagebox.showwarning("Aviso", "Informe o prazo em dias do contrato!", parent=self.root)
+            return
+        
+        # Se não for condicionado, validar datas específicas
+        data_condicionada = self.var_data_condicionada.get()
+
+        if not data_condicionada:
+            try:
+                data_inicio = self.ent_data_inicio.get_date()
+                data_fim = self.ent_data_fim.get_date()
+                
+                if data_fim <= data_inicio:
+                    messagebox.showwarning(
+                        "Aviso", 
+                        "A data fim deve ser posterior à data de início!", 
+                        parent=self.root
+                    )
+                    return
+                    
+                # Ajustar data fim se cair em fim de semana (somente modo normal)
+                data_fim_ajustada = self.ajustar_data_util(data_fim)
+                
+                if data_fim_ajustada != data_fim:
+                    self.ent_data_fim.set_date(data_fim_ajustada)
+                    messagebox.showinfo(
+                        "Data Ajustada",
+                        f"A data final foi ajustada de {data_fim.strftime('%d/%m/%Y')} "
+                        f"para {data_fim_ajustada.strftime('%d/%m/%Y')}\n\n"
+                        "Contratos devem terminar em dias úteis.", 
+                        parent=self.root
+                    )
+                    self.calcular_prazo_contrato()
+                    
+            except Exception as e:
+                messagebox.showerror(
+                    "Erro", 
+                    f"Erro ao validar datas: {str(e)}", 
+                    parent=self.root
+                )
+                return
+        else:
+            # Modo condicionado: não validar datas mas logar
+            logger.info("⚠️ Contrato com data condicionada - datas não validadas")
+        
         try:
             # Obter dados do cliente
             dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
@@ -2481,8 +2708,9 @@ class GestaoMedicoes:
                 self.calcular_prazo_contrato()
             
             # Preparar dados do contrato
+            # Preparar dados do contrato
             dados_contrato = {
-                'data': self.ent_data_contrato.get_date().strftime('%d/%m/%Y'),
+                'data': self.ent_data_contrato.get_date().strftime('%d/%m/%Y'),  # Data do contrato (SEMPRE)
                 'cidade': self.formatar_nome_cidade(dados_cliente['cidade']),
                 'cliente_nome': dados_cliente['nome'],
                 'cliente_cno': dados_cliente['cno'],
@@ -2494,12 +2722,21 @@ class GestaoMedicoes:
                 'fornecedor_endereco': dados_fornecedor['endereco'],
                 'endereco_obra': self.ent_endereco_obra.get(),
                 'dias': self.ent_prazo_dias.get() or '0',
-                'data_inicio': self.ent_data_inicio.get_date().strftime('%d/%m/%Y'),
-                'data_fim': self.ent_data_fim.get_date().strftime('%d/%m/%Y'),
                 'valor': self.ent_valor_global.get(),
                 'multa': self.ent_multa.get(),
-                'dados_bancarios': dados_bancarios
+                'dados_bancarios': dados_bancarios,
+                'data_condicionada': self.var_data_condicionada.get()
             }
+
+            # Adicionar datas de início/fim conforme modo
+            if not self.var_data_condicionada.get():
+                # Modo normal: datas específicas
+                dados_contrato['data_inicio'] = self.ent_data_inicio.get_date().strftime('%d/%m/%Y')
+                dados_contrato['data_fim'] = self.ent_data_fim.get_date().strftime('%d/%m/%Y')
+            else:
+                # Modo condicionado: textos placeholder
+                dados_contrato['data_inicio'] = 'A definir conforme recebimento de material'
+                dados_contrato['data_fim'] = 'A definir conforme recebimento de material'
             
             # CORREÇÃO MELHORIA 2: Priorizar texto do campo sobre lista
             servicos_texto_campo = self.txt_servicos_selecionados.get('1.0', tk.END).strip()
@@ -2560,10 +2797,9 @@ class GestaoMedicoes:
             self.txt_dados_bancarios.config(state='disabled')
             
             # Resetar datas
-            self.ent_data_contrato.set_date(datetime.now())
-            self.ent_data_contrato.bind('<<DateEntrySelected>>', self.ao_mudar_data_contrato)
-            self.ent_data_inicio.set_date(datetime.now())
-            self.ent_data_fim.set_date(datetime.now() + timedelta(days=30))
+            self.ent_data_contrato.set_date(datetime.now())  # Data do contrato = hoje
+            self.ent_data_inicio.set_date(datetime.now() + timedelta(days=1))  # Início = amanhã
+            self.ent_data_fim.set_date(datetime.now() + timedelta(days=31))  # Fim = +30 dias
             
             # Limpar valores
             self.ent_valor_global.delete(0, tk.END)
