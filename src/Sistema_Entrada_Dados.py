@@ -20735,24 +20735,47 @@ class GerenciadorAgenda:
     def carregar_dados_agenda(self):
         """Carregamento da agenda baseado em DATA_REL"""
         try:
-            logger.debug("=" * 80)
-            logger.debug("DEBUG: Iniciando carregamento da agenda")
-            logger.debug("IMPORTANTE: Filtragem por DATA_REL (dia do relatório)")
-            logger.debug("=" * 80)
+            print("=" * 80)  # Use print ao invés de logger
+            print("DEBUG: Iniciando carregamento da agenda")
+            print("=" * 80)
             self.dados_agenda = []
             
-            # 1. Carregar lançamentos existentes (filtrados por DATA_REL)
+            # 1. Carregar lançamentos existentes
+            print("1. Carregando lançamentos existentes...")
             self.carregar_lancamentos_existentes()
+            print(f"   → {len(self.dados_agenda)} itens carregados")
             
-            # 2. Carregar compromissos das configurações (gerados por DATA_REL)
+            # 2. Carregar compromissos
+            print("2. Carregando compromissos...")
             self.carregar_compromissos_futuros()
+            print(f"   → {len(self.dados_agenda)} itens no total")
             
-            # 3. Identificar condicionados
+            # 3. Carregar medições
+            print("3. Carregando medições pendentes...")
+            self.carregar_medicoes_pendentes()
+            print(f"   → {len(self.dados_agenda)} itens no total")
+            
+            # 4. Agrupar medições
+            print("4. Agrupando medições...")
+            self.agrupar_medicoes_por_fornecedor()
+            print(f"   → {len(self.dados_agenda)} itens no total")
+            
+            # 5. Identificar condicionados
+            print("5. Identificando condicionados...")
             self.carregar_lancamentos_condicionados()
             
-            # 4. Aplicar filtros e atualizar
+            # 6. Aplicar filtros
+            print("6. Aplicando filtros...")
             self.aplicar_filtros()
             self.atualizar_resumo()
+            
+            print(f"✅ Carregamento concluído: {len(self.tree_agenda.get_children())} itens na tela")
+            print("=" * 80)
+            
+        except Exception as e:
+            print(f"❌ ERRO CRÍTICO: {str(e)}")
+            import traceback
+            traceback.print_exc()
             
             total_items = len(self.dados_agenda)
             existentes = len([d for d in self.dados_agenda if d['origem'] == 'EXISTENTE'])
@@ -20867,6 +20890,300 @@ class GerenciadorAgenda:
             
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao carregar compromissos futuros: {str(e)}")
+
+    def carregar_medicoes_pendentes(self):
+        """Carrega medições pendentes do cliente atual e adiciona à agenda"""
+        try:
+            logger.debug("=" * 80)
+            logger.debug("DEBUG: INICIANDO CARREGAMENTO DE MEDIÇÕES PENDENTES")
+            logger.debug("=" * 80)
+            
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            if not arquivo_cliente.exists():
+                logger.debug("DEBUG: Arquivo do cliente não existe")
+                return
+            
+            from openpyxl import load_workbook
+            wb = load_workbook(arquivo_cliente)
+            
+            if "Medicoes" not in wb.sheetnames:
+                logger.debug("DEBUG: Aba Medicoes não encontrada")
+                wb.close()
+                return
+            
+            ws_medicoes = wb["Medicoes"]
+            hoje = datetime.now().date()
+            
+            logger.debug(f"DEBUG: Data de hoje: {hoje}")
+            logger.debug(f"DEBUG: Total de linhas na aba Medicoes: {ws_medicoes.max_row}")
+            
+            medicoes_encontradas = 0
+            medicoes_pendentes = 0
+            medicoes_adicionadas = 0
+            
+            for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), start=2):
+                try:
+                    medicoes_encontradas += 1
+                    
+                    id_contrato = row[0]
+                    id_medicao = row[1]
+                    cnpj_fornecedor = row[2]
+                    nome_fornecedor = row[3]
+                    data_medicao = row[4]
+                    data_pagamento = row[5]
+                    referencia = row[6]
+                    valor = row[7]
+                    status = row[8]
+                    
+                    logger.debug(f"\nDEBUG: Linha {idx} - Contrato {id_contrato}, Medição {id_medicao}")
+                    logger.debug(f"       Status: '{status}' | Fornecedor: {nome_fornecedor}")
+                    
+                    if status != 'PENDENTE':
+                        logger.debug(f"       ❌ Pulada - Status não é PENDENTE")
+                        continue
+                    
+                    medicoes_pendentes += 1
+                    logger.debug(f"       ✅ Status PENDENTE confirmado")
+                    
+                    try:
+                        valor_float = float(valor) if valor else 0.0
+                        if valor_float <= 0:
+                            logger.debug(f"       ❌ Pulada - Valor inválido: {valor}")
+                            continue
+                    except (ValueError, TypeError) as e:
+                        logger.debug(f"       ❌ Pulada - Erro ao converter valor: {e}")
+                        continue
+                    
+                    logger.debug(f"       Valor: R$ {valor_float:,.2f}")
+                    
+                    dt_pagamento = None
+                    if isinstance(data_pagamento, datetime):
+                        dt_pagamento = data_pagamento.date()
+                        logger.debug(f"       Data pagamento (datetime): {dt_pagamento}")
+                    elif isinstance(data_pagamento, str):
+                        try:
+                            dt_pagamento = datetime.strptime(data_pagamento, '%d/%m/%Y').date()
+                            logger.debug(f"       Data pagamento (string): {dt_pagamento}")
+                        except ValueError:
+                            logger.debug(f"       ❌ Pulada - Data de pagamento inválida: {data_pagamento}")
+                            continue
+                    else:
+                        logger.debug(f"       ❌ Pulada - Data de pagamento tipo inválido: {type(data_pagamento)}")
+                        continue
+                    
+                    # Calcular DATA_REL
+                    if 6 <= dt_pagamento.day <= 20:
+                        data_rel = dt_pagamento.replace(day=20)
+                    else:
+                        if dt_pagamento.day > 20:
+                            from dateutil.relativedelta import relativedelta
+                            data_rel = dt_pagamento + relativedelta(months=1)
+                            data_rel = data_rel.replace(day=5)
+                        else:
+                            data_rel = dt_pagamento.replace(day=5)
+                    
+                    logger.debug(f"       Data pagamento: {dt_pagamento} -> DATA_REL: {data_rel}")
+                    
+                    # ✅ CORREÇÃO CRÍTICA: Converter id_origem para string antes de comparar
+                    ja_existe = any(
+                        str(item.get('id_origem', '')).startswith(f"MEDICAO_{id_contrato}_{id_medicao}")
+                        for item in self.dados_agenda
+                    )
+                    
+                    if ja_existe:
+                        logger.debug(f"       ⚠️  Já existe na agenda - não adicionada novamente")
+                        continue
+                    
+                    item_agenda = {
+                        'vencimento': dt_pagamento,
+                        'data_rel': data_rel,
+                        'status': 'PENDENTE',
+                        'fornecedor': nome_fornecedor,
+                        'referencia': f"{referencia if referencia else 'SEM REFERÊNCIA'}",
+                        'valor': valor_float,
+                        'tipo': 'TD2',
+                        'observacao': f"Medição pendente - Contrato {id_contrato}",
+                        'id_origem': f"MEDICAO_{id_contrato}_{id_medicao}",
+                        'origem': 'MEDICAO',
+                        'dados_medicao': {
+                            'id_contrato': id_contrato,
+                            'id_medicao': id_medicao,
+                            'cnpj': cnpj_fornecedor,
+                            'data_medicao': data_medicao,
+                            'data_pagamento': dt_pagamento
+                        }
+                    }
+                    
+                    self.dados_agenda.append(item_agenda)
+                    medicoes_adicionadas += 1
+                    logger.debug(f"       ✅ ADICIONADA À AGENDA com sucesso!")
+                
+                except Exception as e:
+                    logger.debug(f"DEBUG: ❌ Erro ao processar linha {idx}: {str(e)}")
+                    import traceback
+                    logger.debug(traceback.format_exc())
+                    continue
+            
+            wb.close()
+            
+            logger.debug("=" * 80)
+            logger.debug(f"RESUMO DO CARREGAMENTO DE MEDIÇÕES:")
+            logger.debug(f"  • Medições encontradas: {medicoes_encontradas}")
+            logger.debug(f"  • Medições PENDENTES: {medicoes_pendentes}")
+            logger.debug(f"  • Medições ADICIONADAS à agenda: {medicoes_adicionadas}")
+            logger.debug("=" * 80)
+            
+        except Exception as e:
+            logger.debug(f"DEBUG: ❌ Erro CRÍTICO ao carregar medições pendentes: {str(e)}")
+            import traceback
+            logger.debug(traceback.format_exc())
+
+    def agrupar_medicoes_por_fornecedor(self):
+        """Agrupa medições pendentes do mesmo fornecedor no mesmo relatório"""
+        try:
+            logger.debug("=" * 80)
+            logger.debug("DEBUG: AGRUPANDO MEDIÇÕES POR FORNECEDOR")
+            logger.debug("=" * 80)
+            
+            # Separar medições das demais origens
+            medicoes = [item for item in self.dados_agenda if item['origem'] == 'MEDICAO']
+            outros = [item for item in self.dados_agenda if item['origem'] != 'MEDICAO']
+            
+            logger.debug(f"DEBUG: Total de medições encontradas: {len(medicoes)}")
+            logger.debug(f"DEBUG: Outros itens na agenda: {len(outros)}")
+            
+            if not medicoes:
+                logger.debug("DEBUG: Nenhuma medição para agrupar")
+                return
+            
+            # Agrupar medições por fornecedor e data_rel
+            medicoes_agrupadas = {}
+            
+            for medicao in medicoes:
+                # Criar chave única: fornecedor + data_rel
+                chave = f"{medicao['fornecedor']}_{medicao['data_rel'].strftime('%Y%m%d')}"
+                
+                logger.debug(f"\nDEBUG: Processando medição:")
+                logger.debug(f"       Fornecedor: {medicao['fornecedor']}")
+                logger.debug(f"       Data REL: {medicao['data_rel']}")
+                logger.debug(f"       Chave: {chave}")
+                logger.debug(f"       Valor: R$ {medicao['valor']:,.2f}")
+                
+                if chave not in medicoes_agrupadas:
+                    # Criar novo grupo
+                    medicoes_agrupadas[chave] = {
+                        'vencimento': medicao['vencimento'],
+                        'data_rel': medicao['data_rel'],
+                        'status': 'PENDENTE',
+                        'fornecedor': medicao['fornecedor'],
+                        'referencia': '',
+                        'valor': 0.0,
+                        'tipo': 'TD2',
+                        'observacao': '',
+                        'id_origem': '',
+                        'origem': 'MEDICAO_AGRUPADA',
+                        'medicoes_individuais': [],
+                        'cnpj_fornecedor': medicao['dados_medicao']['cnpj']  # Guardar CNPJ
+                    }
+                    logger.debug(f"       → Novo grupo criado")
+                
+                # Adicionar medição ao grupo
+                medicoes_agrupadas[chave]['valor'] += medicao['valor']
+                medicoes_agrupadas[chave]['medicoes_individuais'].append({
+                    'id_contrato': medicao['dados_medicao']['id_contrato'],
+                    'id_medicao': medicao['dados_medicao']['id_medicao'],
+                    'referencia': medicao['referencia'],
+                    'valor': medicao['valor'],
+                    'data_medicao': medicao['dados_medicao']['data_medicao'],
+                    'data_pagamento': medicao['dados_medicao']['data_pagamento']
+                })
+                
+                logger.debug(f"       → Adicionada ao grupo (total no grupo: {len(medicoes_agrupadas[chave]['medicoes_individuais'])})")
+            
+            # Finalizar grupos - montar referência e observação
+            itens_finais = []
+            
+            for chave, grupo in medicoes_agrupadas.items():
+                qtd_medicoes = len(grupo['medicoes_individuais'])
+                
+                logger.debug(f"\n--- Finalizando grupo: {chave}")
+                logger.debug(f"    Quantidade de medições: {qtd_medicoes}")
+                logger.debug(f"    Valor total: R$ {grupo['valor']:,.2f}")
+                
+                if qtd_medicoes == 1:
+                    # Se só tem 1 medição, manter como individual
+                    med = grupo['medicoes_individuais'][0]
+                    
+                    item_individual = {
+                        'vencimento': grupo['vencimento'],
+                        'data_rel': grupo['data_rel'],
+                        'status': 'PENDENTE',
+                        'fornecedor': grupo['fornecedor'],
+                        # ✅ CORREÇÃO: Remover duplicação
+                        'referencia': med['referencia'],  # Já vem formatado de carregar_medicoes_pendentes
+                        'valor': med['valor'],
+                        'tipo': 'TD2',
+                        'observacao': f"Medição pendente - Contrato {med['id_contrato']}",
+                        'id_origem': f"MEDICAO_{med['id_contrato']}_{med['id_medicao']}",
+                        'origem': 'MEDICAO',
+                        'dados_medicao': {
+                            'id_contrato': med['id_contrato'],
+                            'id_medicao': med['id_medicao'],
+                            'cnpj': grupo['cnpj_fornecedor'],
+                            'data_medicao': med['data_medicao'],
+                            'data_pagamento': med['data_pagamento']
+                        }
+                    }
+                    
+                    itens_finais.append(item_individual)
+                    logger.debug(f"    → Mantida como medição INDIVIDUAL")
+                    
+                else:
+                    # Múltiplas medições - criar grupo
+                    
+                    # ✅ NOVO: Pegar contratos únicos
+                    ids_contratos = sorted(list(set([m['id_contrato'] for m in grupo['medicoes_individuais']])))
+                    
+                    # ✅ NOVO: Referência mostrando contratos
+                    if len(ids_contratos) == 1:
+                        # Todas do mesmo contrato
+                        grupo['referencia'] = f"{qtd_medicoes} MEDIÇÕES AGRUPADAS (CONTRATO {ids_contratos[0]})"
+                    else:
+                        # Múltiplos contratos
+                        contratos_str = ', '.join([str(c) for c in ids_contratos])
+                        grupo['referencia'] = f"{qtd_medicoes} MEDIÇÕES AGRUPADAS (CONTRATOS {contratos_str})"
+                    
+                    # Observação detalhada (mantém como está)
+                    detalhes = []
+                    for med in grupo['medicoes_individuais']:
+                        detalhes.append(
+                            f"Med.{med['id_medicao']}/Contr.{med['id_contrato']} "
+                            f"(R$ {med['valor']:,.2f})".replace(',', 'X').replace('.', ',').replace('X', '.')
+                        )
+                    grupo['observacao'] = " | ".join(detalhes)
+                    
+                    # ID único para o grupo
+                    grupo['id_origem'] = f"MEDICAO_GRUPO_{grupo['fornecedor'].replace(' ', '_')}_{grupo['data_rel'].strftime('%Y%m%d')}_CONTRATOS_{'_'.join(map(str, ids_contratos))}"
+                    
+                    itens_finais.append(grupo)
+                    logger.debug(f"    → Criado GRUPO de {qtd_medicoes} medições")
+                    logger.debug(f"       Contratos: {', '.join(map(str, ids_contratos))}")
+            
+            # ✅ Recompor dados_agenda
+            self.dados_agenda = outros + itens_finais
+            
+            logger.debug("=" * 80)
+            logger.debug(f"RESUMO DO AGRUPAMENTO:")
+            logger.debug(f"  • Medições originais: {len(medicoes)}")
+            logger.debug(f"  • Grupos criados: {len([g for g in itens_finais if g['origem'] == 'MEDICAO_AGRUPADA'])}")
+            logger.debug(f"  • Medições individuais mantidas: {len([g for g in itens_finais if g['origem'] == 'MEDICAO'])}")
+            logger.debug(f"  • Total de itens finais: {len(itens_finais)}")
+            logger.debug("=" * 80)
+            
+        except Exception as e:
+            logger.debug(f"DEBUG: ❌ Erro ao agrupar medições: {str(e)}")
+            import traceback
+            logger.debug(traceback.format_exc())
 
     def gerar_compromissos_recorrentes_config(self):
         """Gera compromissos recorrentes baseados em DATA_REL (dias de relatório)"""
@@ -21422,6 +21739,52 @@ class GerenciadorAgenda:
             import traceback
             traceback.logger.debug_exc()
 
+    # def aplicar_filtros(self):
+    #     try:
+    #         # Limpar tree
+    #         for item in self.tree_agenda.get_children():
+    #             self.tree_agenda.delete(item)
+            
+    #         print(f"DEBUG aplicar_filtros: {len(self.dados_agenda)} itens para filtrar")
+            
+    #         data_inicio, data_fim = self.calcular_periodo_filtro()
+    #         items_mostrados = 0
+            
+    #         for item in self.dados_agenda:
+    #             data_comparacao = item.get('data_rel', item['vencimento'])
+                
+    #             if not (data_inicio <= data_comparacao <= data_fim):
+    #                 continue
+                
+    #             # Filtros de origem
+    #             if item['origem'] == 'EXISTENTE' and not self.var_mostrar_existentes.get():
+    #                 continue
+    #             if item['origem'] in ['CONFIGURACAO', 'BASICO'] and not self.var_mostrar_pendentes_config.get():
+    #                 continue
+                
+    #             # Inserir no tree
+    #             valores = (
+    #                 item['vencimento'].strftime('%d/%m/%Y'),
+    #                 item['status'],
+    #                 item['fornecedor'],
+    #                 item['referencia'],
+    #                 f"R$ {item['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+    #                 str(item['tipo']),
+    #                 item['observacao'],
+    #                 item['id_origem']
+    #             )
+                
+    #             self.tree_agenda.insert('', 'end', values=valores)
+    #             items_mostrados += 1
+    #             print(f"   ✅ Inserido: {item['fornecedor']} - R$ {item['valor']:,.2f}")
+            
+    #         print(f"DEBUG: {items_mostrados} itens inseridos no tree_agenda")
+            
+    #     except Exception as e:
+    #         print(f"❌ Erro em aplicar_filtros: {e}")
+    #         import traceback
+    #         traceback.print_exc()
+
     def atualizar_resumo(self):
         """Resumo mais claro e útil"""
         try:
@@ -21457,15 +21820,15 @@ class GerenciadorAgenda:
 
             # Atualizar labels com informações mais claras
             self.label_total_periodo.config(
-                text=f"Total Período: R$ {total_valor:,.2f} ({lancados_count + pendentes_count + vencidos_count} itens)".replace(',', 'X').replace('.', ',').replace('X', '.')
+                text=f"Total Período: {total_valor:,.2f} ({lancados_count + pendentes_count + vencidos_count} itens)".replace(',', 'X').replace('.', ',').replace('X', '.')
             )
 
             self.label_pendentes.config(
-                text=f"Pendentes: {pendentes_count} (R$ {pendentes_valor:,.2f})".replace(',', 'X').replace('.', ',').replace('X', '.')
+                text=f"Pendentes: {pendentes_count} ( {pendentes_valor:,.2f})".replace(',', 'X').replace('.', ',').replace('X', '.')
             )
 
             self.label_vencidos.config(
-                text=f"Vencidos: {vencidos_count} (R$ {vencidos_valor:,.2f})".replace(',', 'X').replace('.', ',').replace('X', '.')
+                text=f"Vencidos: {vencidos_count} ({vencidos_valor:,.2f})".replace(',', 'X').replace('.', ',').replace('X', '.')
             )
 
         except Exception as e:
@@ -22878,6 +23241,11 @@ class GerenciadorAgenda:
                 item_agenda = item
                 break
         
+        # Verificar se é medição agrupada
+        eh_medicao_agrupada = (item_agenda and 
+                            item_agenda['origem'] == 'MEDICAO_AGRUPADA' and 
+                            'medicoes_individuais' in item_agenda)
+
         # Janela de confirmação
         janela_confirm = tk.Toplevel(self.janela)
         janela_confirm.title("Confirmar Lançamento")
@@ -22898,6 +23266,43 @@ class GerenciadorAgenda:
         ttk.Label(frame_info, text=f"Fornecedor: {valores_item[2]}").pack(anchor='w', padx=10, pady=2)
         ttk.Label(frame_info, text=f"Referência: {valores_item[3]}").pack(anchor='w', padx=10, pady=2)
         ttk.Label(frame_info, text=f"Valor: {valores_item[4]}").pack(anchor='w', padx=10, pady=2)
+        
+        if eh_medicao_agrupada:
+            frame_aviso = ttk.LabelFrame(main_frame, text="⚠️ ATENÇÃO - MEDIÇÕES AGRUPADAS")
+            frame_aviso.pack(fill='x', pady=(0, 10))
+            
+            qtd = len(item_agenda['medicoes_individuais'])
+            ttk.Label(frame_aviso, 
+                    text=f"Este lançamento representa {qtd} medições do mesmo fornecedor:",
+                    font=('TkDefaultFont', 9, 'bold'),
+                    foreground='#d97706').pack(anchor='w', padx=10, pady=5)
+            
+            # Criar um frame com scroll para as medições (caso sejam muitas)
+            canvas = tk.Canvas(frame_aviso, height=100)
+            scrollbar = ttk.Scrollbar(frame_aviso, orient="vertical", command=canvas.yview)
+            scrollable_frame = ttk.Frame(canvas)
+            
+            scrollable_frame.bind(
+                "<Configure>",
+                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            )
+            
+            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+            canvas.configure(yscrollcommand=scrollbar.set)
+            
+            # Listar cada medição
+            for med in item_agenda['medicoes_individuais']:
+                valor_formatado = f"R$ {med['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                texto = f"  • Medição {med['id_medicao']} (Contrato {med['id_contrato']}) - {valor_formatado}"
+                ttk.Label(scrollable_frame, text=texto, font=('TkDefaultFont', 8)).pack(anchor='w', padx=5, pady=1)
+            
+            canvas.pack(side="left", fill="both", expand=True, padx=(10, 0))
+            scrollbar.pack(side="right", fill="y")
+            
+            ttk.Label(frame_aviso,
+                    text="💡 Ao confirmar, um único lançamento será criado para todas as medições.",
+                    font=('TkDefaultFont', 8, 'italic'),
+                    foreground='#2563eb').pack(anchor='w', padx=10, pady=5)
         
         # Formulário de lançamento
         frame_form = ttk.LabelFrame(main_frame, text="Dados do Lançamento")
@@ -23194,8 +23599,22 @@ class GerenciadorAgenda:
                 sucesso = self.sistema.inserir_lancamento_completo(dados_lancamento)
                 
                 if sucesso:
+                    # ✅ NOVO: Atualizar status das medições
+                    if item_agenda and item_agenda['origem'] in ['MEDICAO', 'MEDICAO_AGRUPADA']:
+                        logger.debug("DEBUG: Tentando atualizar status das medições...")
+                        atualizado = self.atualizar_status_medicoes_lancadas(item_agenda)
+                        
+                        if atualizado:
+                            logger.debug("DEBUG: ✅ Status das medições atualizado com sucesso!")
+                            mensagem_extra = "\n\n✅ Status das medições atualizado para LANÇADO"
+                        else:
+                            logger.debug("DEBUG: ⚠️ Falha ao atualizar status das medições")
+                            mensagem_extra = "\n\n⚠️ Lançamento criado, mas houve erro ao atualizar status das medições"
+                    else:
+                        mensagem_extra = ""
+                    
                     custom_messagebox("info", "Sucesso", 
-                        f"Lançamento confirmado!\n"
+                        f"Lançamento confirmado!{mensagem_extra}\n"
                         f"Relatório: {data_rel_usar.strftime('%d/%m/%Y')}\n"
                         f"Vencimento: {dt_vencto.get_date().strftime('%d/%m/%Y')}")
                     janela_confirm.destroy()
@@ -23286,6 +23705,111 @@ class GerenciadorAgenda:
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao importar template de agenda: {str(e)}")
     
+    def atualizar_status_medicoes_lancadas(self, item_agenda):
+        """
+        Atualiza o status das medições de PENDENTE para LANÇADO após confirmação
+        Funciona tanto para medições individuais quanto agrupadas
+        """
+        try:
+            logger.debug("=" * 80)
+            logger.debug("DEBUG: Atualizando status das medições para LANÇADO")
+            logger.debug("=" * 80)
+            
+            # Verificar se é uma medição
+            if not item_agenda['origem'] in ['MEDICAO', 'MEDICAO_AGRUPADA']:
+                logger.debug("DEBUG: Item não é uma medição, pulando atualização")
+                return True
+            
+            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
+            if not arquivo_cliente.exists():
+                logger.debug("DEBUG: Arquivo do cliente não existe")
+                return False
+            
+            from openpyxl import load_workbook
+            wb = load_workbook(arquivo_cliente)
+            
+            if "Medicoes" not in wb.sheetnames:
+                logger.debug("DEBUG: Aba Medicoes não encontrada")
+                wb.close()
+                return False
+            
+            ws_medicoes = wb["Medicoes"]
+            data_lancamento = datetime.now()
+            
+            # Lista de medições a atualizar
+            medicoes_atualizar = []
+            
+            if item_agenda['origem'] == 'MEDICAO':
+                # Medição individual
+                medicoes_atualizar.append({
+                    'id_contrato': item_agenda['dados_medicao']['id_contrato'],
+                    'id_medicao': item_agenda['dados_medicao']['id_medicao']
+                })
+                logger.debug(f"DEBUG: Medição INDIVIDUAL - Contrato {item_agenda['dados_medicao']['id_contrato']}, "
+                            f"Medição {item_agenda['dados_medicao']['id_medicao']}")
+            
+            elif item_agenda['origem'] == 'MEDICAO_AGRUPADA':
+                # Medições agrupadas - atualizar todas
+                for med in item_agenda.get('medicoes_individuais', []):
+                    medicoes_atualizar.append({
+                        'id_contrato': med['id_contrato'],
+                        'id_medicao': med['id_medicao']
+                    })
+                logger.debug(f"DEBUG: Medições AGRUPADAS - {len(medicoes_atualizar)} medições a atualizar")
+            
+            if not medicoes_atualizar:
+                logger.debug("DEBUG: Nenhuma medição para atualizar")
+                wb.close()
+                return False
+            
+            # Atualizar cada medição
+            medicoes_atualizadas = 0
+            
+            for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=False), start=2):
+                try:
+                    id_contrato_cel = row[0]  # Coluna A
+                    id_medicao_cel = row[1]   # Coluna B
+                    status_cel = row[8]       # Coluna I (Status)
+                    data_lanc_cel = row[9]    # Coluna J (Data_Lancamento)
+                    
+                    # Verificar se esta linha corresponde a alguma medição a atualizar
+                    for medicao in medicoes_atualizar:
+                        if (id_contrato_cel.value == medicao['id_contrato'] and 
+                            id_medicao_cel.value == medicao['id_medicao']):
+                            
+                            # Atualizar Status
+                            status_cel.value = 'LANÇADO'
+                            
+                            # Atualizar Data_Lancamento
+                            data_lanc_cel.value = data_lancamento
+                            data_lanc_cel.number_format = 'DD/MM/YYYY HH:MM:SS'
+                            
+                            medicoes_atualizadas += 1
+                            
+                            logger.debug(f"   ✅ Atualizada: Contrato {medicao['id_contrato']}, "
+                                    f"Medição {medicao['id_medicao']} -> LANÇADO")
+                            break
+                            
+                except Exception as e:
+                    logger.debug(f"DEBUG: Erro ao processar linha {idx}: {str(e)}")
+                    continue
+            
+            # Salvar arquivo
+            wb.save(arquivo_cliente)
+            wb.close()
+            
+            logger.debug("=" * 80)
+            logger.debug(f"RESUMO: {medicoes_atualizadas} de {len(medicoes_atualizar)} medições atualizadas")
+            logger.debug("=" * 80)
+            
+            return medicoes_atualizadas == len(medicoes_atualizar)
+            
+        except Exception as e:
+            logger.debug(f"DEBUG: Erro ao atualizar status das medições: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return False
+
     def analisar_padroes_historicos(self):
         """Analisa padrões históricos para sugerir compromissos futuros"""
         try:
