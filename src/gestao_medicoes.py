@@ -2951,7 +2951,7 @@ class GestaoMedicoes:
         data_pagamento.grid(row=1, column=1, padx=5, pady=5, sticky='w')
         
         # Calcular data de pagamento padrão (data da medição)
-        data_pagamento = data_medicao
+        # data_pagamento = data_medicao
         
         # Referência
         ttk.Label(frame_medicao, text="Referência:*").grid(row=2, column=0, padx=5, pady=5, sticky='e')
