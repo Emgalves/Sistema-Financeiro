@@ -565,7 +565,8 @@ class GeradorContrato:
                 # Extrair dados necessários
                 nome_cliente = dados_contrato.get('cliente_nome')
                 cnpj_fornecedor = dados_contrato.get('fornecedor_cnpj_cpf')
-                descricao_servicos = dados_contrato.get('descricao', '')
+                descricao_servicos = dados_contrato.get('descricao', '').upper()
+                data_contrato = dados_contrato.get('data')
                 data_inicio = dados_contrato.get('data_inicio')
                 data_fim = dados_contrato.get('data_fim')
                 valor_global = dados_contrato.get('valor')
@@ -700,8 +701,9 @@ class GeradorContrato:
             multa_extenso = self.numero_por_extenso(multa_float)
             
             # CORREÇÃO: Data por extenso da data de INÍCIO (não data atual)
-            data_extenso = self.formatar_data_extenso(data_inicio)
-            logger.info(f"✅ Data do contrato: {data_inicio} ({data_extenso})")
+            data_extenso = self.formatar_data_extenso(data_contrato)
+            logger.info(f"✅ Data do contrato: {data_contrato} ({data_extenso})")
+            logger.info(f"✅ Data início dos serviços: {data_inicio}")
             
             # Criar documento
             doc = Document()
@@ -724,8 +726,8 @@ class GeradorContrato:
             
             # INTRODUÇÃO
             p1 = doc.add_paragraph()
-            p1.add_run(f"Aos {data_inicio}, nesta cidade de {dados_cliente['cidade']}, entre partes, de um lado: ")
-            
+            p1.add_run(f"Aos {data_contrato}, nesta cidade de {dados_cliente['cidade']}, entre partes, de um lado: ")
+
             # CONTRATANTE
             p2 = doc.add_paragraph()
             run_cliente = p2.add_run(dados_cliente['nome'])
@@ -799,14 +801,63 @@ class GeradorContrato:
             # CLÁUSULA TERCEIRA - PRAZO
             doc.add_heading('CLÁUSULA TERCEIRA - PRAZO', level=1)
             
-            p_prazo = doc.add_paragraph()
-            p_prazo.add_run("Os serviços ora contratados serão executados/prestados até o limite de ")
-            run_dias = p_prazo.add_run(f"{dias} dias")
-            run_dias.bold = True
-            p_prazo.add_run(", iniciando-se a contagem com a assinatura deste.")
-            
-            doc.add_paragraph(f"Iniciando-se a contagem com a entrada no campo de obras que está prevista para {data_inicio} e encerrando-se em {data_fim}.")
-            
+            # === PRAZO E DATAS ===
+            doc.add_paragraph()  # Espaço
+
+            # Verificar se data é condicionada
+            data_condicionada = dados_contrato.get('data_condicionada', False)
+
+            if data_condicionada:
+                # MODO CONDICIONADO: Prazo sem datas específicas
+                p_prazo = doc.add_paragraph()
+                p_prazo.add_run('Os serviços ora contratados serão executados/prestados no prazo de ')
+                
+                run_dias = p_prazo.add_run(f'{dias} dias úteis')
+                run_dias.bold = True
+                
+                p_prazo.add_run(', ')
+                
+                run_cond = p_prazo.add_run(
+                    'contados a partir do recebimento do material necessário na obra.'
+                )
+                # run_cond.italic = True
+                # run_cond.font.color.rgb = RGBColor(200, 0, 0)
+                
+                p_prazo.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                
+                # Observação sobre data condicionada
+                doc.add_paragraph()
+                p_obs = doc.add_paragraph()
+                run_obs_title = p_obs.add_run('OBSERVAÇÃO IMPORTANTE: ')
+                run_obs_title.bold = True
+                run_obs_title.font.size = Pt(11)
+                
+                p_obs.add_run(
+                    'O início dos serviços está condicionado ao recebimento do material '
+                    'necessário na obra. As datas de início e término serão definidas '
+                    'conforme a disponibilidade e entrega do material, mantendo-se o prazo '
+                    'de execução estabelecido em dias úteis.'
+                )
+                p_obs.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                
+                logger.info(f"✓ Contrato datado de {data_contrato} com início condicionado")
+                
+            else:
+                # MODO NORMAL: Prazo com datas específicas
+                p_prazo = doc.add_paragraph()
+                p_prazo.add_run("Os serviços ora contratados serão executados/prestados até o limite de ")
+                run_dias = p_prazo.add_run(f"{dias} dias")
+                run_dias.bold = True
+                p_prazo.add_run(", iniciando-se a contagem com a assinatura deste.")
+                p_prazo.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                
+                doc.add_paragraph(
+                    f"Iniciando-se a contagem com a entrada no campo de obras que está "
+                    f"prevista para {data_inicio} e encerrando-se em {data_fim}."
+                )
+                
+                logger.info(f"✓ Contrato datado de {data_contrato}, serviços de {data_inicio} a {data_fim}")
+
             # CLÁUSULA QUARTA - REMUNERAÇÃO
             doc.add_heading('CLÁUSULA QUARTA -- REMUNERAÇÃO', level=1)
             doc.add_paragraph(f"Como remuneração pelos serviços a serem prestados, os contratantes pagarão ao contratado, mediante depósito/transferência bancária, o valor de {valor_formatado} ({valor_extenso}), para pagamento integral dos serviços contratados por este instrumento valores fixos e irreajustáveis, valores que serão pagos mediante medição, após sua execução. Os valores convencionados deverão ser pagos na medida e prazos em que a prestação de serviços se desenvolver, podendo o contratante reter o pagamento, sem nenhum ônus, caso o serviço não seja prestado adequadamente ou integralmente nos moldes e diretrizes estabelecidas pelas partes e projetos de conhecimento.")
@@ -893,7 +944,7 @@ class GeradorContrato:
             
             # CORREÇÃO: TESTEMUNHAS - com separação entre as duas linhas
             p_test = doc.add_paragraph()
-            p_test.paragraph_format.space_before = Pt(20)
+            p_test.paragraph_format.space_before = Pt(40)
             run_test = p_test.add_run("Testemunhas:")
             run_test.bold = True
             
@@ -915,7 +966,7 @@ class GeradorContrato:
             
             # CORREÇÃO: DADOS BANCÁRIOS - com espaçamento aumentado
             p_dados_banc = doc.add_paragraph()
-            p_dados_banc.paragraph_format.space_before = Pt(50)  # Aumentado
+            p_dados_banc.paragraph_format.space_before = Pt(70)  # Aumentado
             run_dados_banc = p_dados_banc.add_run("DADOS BANCÁRIOS PARA PAGAMENTO DA PRESTAÇÃO DE SERVIÇOS:")
             run_dados_banc.bold = True
             
