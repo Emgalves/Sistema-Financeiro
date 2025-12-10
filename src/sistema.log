@@ -7572,3 +7572,58 @@
 2025-12-10 09:58:22,689 - INFO - Sistema iniciado em modo: TESTE
 2025-12-10 09:58:24,526 - INFO - Abrindo gestão de medições
 2025-12-10 10:08:52,016 - INFO - Sistema encerrado pelo usuário
+2025-12-10 13:17:58,098 - INFO - Configurações importadas com sucesso via src.config
+2025-12-10 13:17:58,117 - INFO - Configurações importadas com sucesso
+2025-12-10 13:17:58,118 - INFO - Configurações do sistema importadas com sucesso
+2025-12-10 13:17:58,831 - INFO - Sistema iniciado em modo: TESTE
+2025-12-10 13:18:01,296 - INFO - Abrindo gestão de medições
+2025-12-10 13:20:04,503 - INFO - Abrindo sistema de entrada de dados
+2025-12-10 13:20:05,419 - INFO - Proteções contra perda de dados configuradas
+2025-12-10 13:20:08,532 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-10 13:36:55,437 - INFO - Configurações importadas com sucesso via src.config
+2025-12-10 13:36:55,454 - INFO - Configurações importadas com sucesso
+2025-12-10 13:36:55,454 - INFO - Configurações do sistema importadas com sucesso
+2025-12-10 13:36:56,236 - INFO - Sistema iniciado em modo: TESTE
+2025-12-10 13:37:40,888 - INFO - Abrindo sistema de entrada de dados
+2025-12-10 13:37:42,211 - INFO - Proteções contra perda de dados configuradas
+2025-12-10 13:37:44,615 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-10 13:43:33,805 - INFO - Sistema encerrado pelo usuário
+2025-12-10 13:44:08,450 - INFO - Configurações importadas com sucesso via src.config
+2025-12-10 13:44:08,466 - INFO - Configurações importadas com sucesso
+2025-12-10 13:44:08,466 - INFO - Configurações do sistema importadas com sucesso
+2025-12-10 13:44:09,002 - INFO - Sistema iniciado em modo: TESTE
+2025-12-10 13:44:10,350 - INFO - Abrindo gestão de medições
+2025-12-10 13:45:42,299 - INFO - Sistema encerrado pelo usuário
+2025-12-10 13:46:56,198 - INFO - Configurações importadas com sucesso via src.config
+2025-12-10 13:46:56,215 - INFO - Configurações importadas com sucesso
+2025-12-10 13:46:56,215 - INFO - Configurações do sistema importadas com sucesso
+2025-12-10 13:46:56,800 - INFO - Sistema iniciado em modo: TESTE
+2025-12-10 13:47:10,037 - INFO - Abrindo sistema de entrada de dados
+2025-12-10 13:47:11,225 - INFO - Proteções contra perda de dados configuradas
+2025-12-10 13:47:14,035 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-10 13:53:56,354 - INFO - Abrindo sistema de entrada de dados
+2025-12-10 13:53:56,828 - INFO - Proteções contra perda de dados configuradas
+2025-12-10 13:54:02,116 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-10 13:55:16,850 - INFO - Abrindo sistema de entrada de dados
+2025-12-10 13:55:17,289 - INFO - Proteções contra perda de dados configuradas
+2025-12-10 13:55:20,563 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-10 13:55:50,873 - INFO - Configurações importadas com sucesso via src.config
+2025-12-10 13:55:50,888 - INFO - Configurações importadas com sucesso
+2025-12-10 13:55:50,888 - INFO - Configurações do sistema importadas com sucesso
+2025-12-10 13:55:51,361 - INFO - Sistema iniciado em modo: TESTE
+2025-12-10 13:55:54,113 - INFO - Abrindo gestão de medições
+2025-12-10 13:56:43,409 - INFO - Abrindo sistema de entrada de dados
+2025-12-10 13:56:44,156 - INFO - Proteções contra perda de dados configuradas
+2025-12-10 13:56:47,605 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-10 13:58:11,472 - INFO - Abrindo gestão de medições
+2025-12-10 14:03:06,487 - INFO - Sistema encerrado pelo usuário
+2025-12-10 14:07:46,969 - INFO - Configurações importadas com sucesso via src.config
+2025-12-10 14:07:46,983 - INFO - Configurações importadas com sucesso
+2025-12-10 14:07:46,984 - INFO - Configurações do sistema importadas com sucesso
+2025-12-10 14:07:47,436 - INFO - Sistema iniciado em modo: TESTE
+2025-12-10 14:07:48,877 - INFO - Abrindo gestão de medições
+2025-12-10 14:08:20,492 - INFO - Abrindo sistema de entrada de dados
+2025-12-10 14:08:21,237 - INFO - Proteções contra perda de dados configuradas
+2025-12-10 14:08:25,888 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-10 15:03:32,974 - INFO - Abrindo gestão de medições
+2025-12-10 15:23:45,272 - INFO - Sistema encerrado pelo usuário
