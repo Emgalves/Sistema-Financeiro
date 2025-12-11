@@ -7627,3 +7627,131 @@
 2025-12-10 14:08:25,888 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
 2025-12-10 15:03:32,974 - INFO - Abrindo gestão de medições
 2025-12-10 15:23:45,272 - INFO - Sistema encerrado pelo usuário
+2025-12-11 08:35:01,121 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 08:35:01,139 - INFO - Configurações importadas com sucesso
+2025-12-11 08:35:01,140 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 08:35:02,749 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 08:35:04,238 - INFO - Abrindo gestão de medições
+2025-12-11 09:08:00,896 - INFO - Sistema encerrado pelo usuário
+2025-12-11 09:08:35,579 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 09:08:35,595 - INFO - Configurações importadas com sucesso
+2025-12-11 09:08:35,596 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 09:08:36,906 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 09:08:39,934 - INFO - Abrindo gestão de medições
+2025-12-11 09:08:40,176 - ERROR - Erro ao abrir gestão de medições: unterminated string literal (detected at line 3372) (gestao_medicoes.py, line 3372)
+2025-12-11 09:09:58,902 - INFO - Sistema encerrado pelo usuário
+2025-12-11 09:10:09,061 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 09:10:09,081 - INFO - Configurações importadas com sucesso
+2025-12-11 09:10:09,084 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 09:10:09,351 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 09:10:10,645 - INFO - Abrindo gestão de medições
+2025-12-11 09:12:59,857 - INFO - Sistema encerrado pelo usuário
+2025-12-11 09:13:08,609 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 09:13:08,624 - INFO - Configurações importadas com sucesso
+2025-12-11 09:13:08,624 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 09:13:09,173 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 09:13:23,227 - INFO - Abrindo gestão de medições
+2025-12-11 09:21:02,077 - INFO - Sistema encerrado pelo usuário
+2025-12-11 09:26:27,553 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 09:26:27,568 - INFO - Configurações importadas com sucesso
+2025-12-11 09:26:27,570 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 09:26:28,133 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 09:26:29,330 - INFO - Abrindo gestão de medições
+2025-12-11 09:27:52,490 - INFO - Sistema encerrado pelo usuário
+2025-12-11 09:37:56,034 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 09:37:56,051 - INFO - Configurações importadas com sucesso
+2025-12-11 09:37:56,052 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 09:37:56,641 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 09:38:08,298 - INFO - Abrindo gestão de medições
+2025-12-11 09:38:50,481 - INFO - Abrindo sistema de entrada de dados
+2025-12-11 09:38:51,273 - INFO - Proteções contra perda de dados configuradas
+2025-12-11 09:38:53,323 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-11 09:40:12,272 - INFO - Abrindo sistema de relatórios
+2025-12-11 11:23:57,884 - INFO - Abrindo sistema de entrada de dados
+2025-12-11 11:23:58,573 - INFO - Proteções contra perda de dados configuradas
+2025-12-11 11:24:01,051 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-11 14:44:13,741 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 14:44:13,759 - INFO - Configurações importadas com sucesso
+2025-12-11 14:44:13,761 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 14:44:14,401 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 14:44:16,421 - INFO - Abrindo sistema de entrada de dados
+2025-12-11 14:44:17,806 - INFO - Proteções contra perda de dados configuradas
+2025-12-11 14:44:20,311 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-11 15:14:41,111 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 15:14:41,198 - INFO - Configurações importadas com sucesso
+2025-12-11 15:14:41,199 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 15:14:43,634 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 15:14:48,022 - INFO - Abrindo sistema de entrada de dados
+2025-12-11 15:14:49,537 - INFO - Proteções contra perda de dados configuradas
+2025-12-11 15:14:52,682 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-11 15:26:23,277 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 15:26:23,324 - INFO - Configurações importadas com sucesso
+2025-12-11 15:26:23,325 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 15:26:24,570 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 15:26:32,151 - INFO - Abrindo sistema de entrada de dados
+2025-12-11 15:26:33,891 - INFO - Proteções contra perda de dados configuradas
+2025-12-11 15:26:36,052 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-11 15:35:23,513 - INFO - Abrindo gestão de medições
+2025-12-11 15:41:24,862 - INFO - Sistema encerrado pelo usuário
+2025-12-11 18:28:17,506 - INFO - Configurações importadas com sucesso via src.config
+2025-12-11 18:28:17,561 - INFO - Configurações importadas com sucesso
+2025-12-11 18:28:17,562 - INFO - Configurações do sistema importadas com sucesso
+2025-12-11 18:28:18,258 - INFO - Sistema iniciado em modo: TESTE
+2025-12-11 18:29:51,052 - INFO - Abrindo sistema de entrada de dados
+2025-12-11 18:29:52,803 - INFO - Proteções contra perda de dados configuradas
+2025-12-11 18:29:55,758 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-11 18:57:56,489 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-12-11 18:57:58,000 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-12-11 18:57:58,001 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-12-11 18:57:58,003 - INFO - Usando dados_para_incluir existentes
+2025-12-11 18:57:58,003 - INFO - Total de registros a processar: 1
+2025-12-11 18:57:58,004 - INFO - Datas que serão afetadas pela inserção: ['20/12/2025']
+2025-12-11 18:57:58,005 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-12-11 18:57:58,007 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-11 18:57:58,640 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-11 18:57:58,641 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-11 18:57:58,641 - INFO - Dados novos: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS | TESTE DE MENSAGENS | NF:  | R$ 1500.00 | 20/12/2025
+2025-12-11 18:57:58,655 - INFO - ✅ Nenhuma duplicata encontrada para: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS - TESTE DE MENSAGENS - NF: 
+2025-12-11 18:57:58,658 - INFO - Lançamento inserido com ID 201 na linha 195
+2025-12-11 18:57:58,968 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-11 18:57:59,469 - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-12-11 18:57:59,470 - ERROR - Erro ao verificar recálculo para 2025-12-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-11 18:58:01,279 - INFO - Limpando 1 registros salvos da visualização
+2025-12-11 18:58:01,281 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-11 18:58:22,662 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-12-11 18:58:24,446 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-12-11 18:58:24,450 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-12-11 18:58:24,451 - INFO - Usando dados_para_incluir existentes
+2025-12-11 18:58:24,452 - INFO - Total de registros a processar: 1
+2025-12-11 18:58:24,452 - INFO - Datas que serão afetadas pela inserção: ['20/12/2025']
+2025-12-11 18:58:24,454 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-12-11 18:58:24,456 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-11 18:58:24,946 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-11 18:58:24,947 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-11 18:58:24,948 - INFO - Dados novos: HELTON FERREIRA GARDIANO | 3 MEDIÇÕES AGRUPADAS (CONTRATOS 3, 4, 5) | NF:  | R$ 6300.00 | 20/12/2025
+2025-12-11 18:58:24,959 - INFO - ✅ Nenhuma duplicata encontrada para: HELTON FERREIRA GARDIANO - 3 MEDIÇÕES AGRUPADAS (CONTRATOS 3, 4, 5) - NF: 
+2025-12-11 18:58:24,963 - INFO - Lançamento inserido com ID 202 na linha 196
+2025-12-11 18:58:25,311 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-11 18:58:25,814 - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-12-11 18:58:25,814 - ERROR - Erro ao verificar recálculo para 2025-12-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-11 18:58:26,430 - INFO - Limpando 1 registros salvos da visualização
+2025-12-11 18:58:26,432 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-11 18:58:45,805 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2025-12-11 18:58:46,998 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2025-12-11 18:58:46,999 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2025-12-11 18:58:47,001 - INFO - Usando dados_para_incluir existentes
+2025-12-11 18:58:47,001 - INFO - Total de registros a processar: 1
+2025-12-11 18:58:47,002 - INFO - Datas que serão afetadas pela inserção: ['20/12/2025']
+2025-12-11 18:58:47,003 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2025-12-11 18:58:47,004 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-11 18:58:47,435 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-11 18:58:47,436 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-11 18:58:47,437 - INFO - Dados novos: LUCIANO LISBOA DA SILVA | EXECUÇÃO CONFORME PROJETO | NF:  | R$ 2000.00 | 20/12/2025
+2025-12-11 18:58:47,451 - INFO - ✅ Nenhuma duplicata encontrada para: LUCIANO LISBOA DA SILVA - EXECUÇÃO CONFORME PROJETO - NF: 
+2025-12-11 18:58:47,453 - INFO - Lançamento inserido com ID 203 na linha 197
+2025-12-11 18:58:47,771 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-11 18:58:48,272 - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-12-11 18:58:48,273 - ERROR - Erro ao verificar recálculo para 2025-12-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-11 18:58:49,967 - INFO - Limpando 1 registros salvos da visualização
+2025-12-11 18:58:49,967 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-11 19:08:19,107 - INFO - Sistema encerrado pelo usuário
