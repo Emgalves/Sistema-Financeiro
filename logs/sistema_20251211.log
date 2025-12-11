@@ -1,0 +1,195 @@
+2025-12-11 08:34:49,612 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 08:34:49,613 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 08:34:49,614 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 08:34:49,615 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 08:34:49,615 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 08:35:04,245 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-11 08:35:04,622 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-11 08:35:07,911 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-11 08:35:07,927 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-11 08:35:07,931 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-11 08:35:07,934 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-11 09:07:58,321 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-11 09:07:58,369 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-11 09:08:26,319 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 09:08:26,320 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 09:08:26,321 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 09:08:26,321 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 09:08:26,322 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 09:10:07,111 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 09:10:07,114 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 09:10:07,116 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 09:10:07,117 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 09:10:07,118 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 09:10:10,840 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-11 09:10:11,067 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-11 09:10:12,753 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-11 09:10:12,770 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-11 09:10:12,771 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-11 09:10:12,773 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-11 09:12:57,474 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-11 09:12:57,536 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-11 09:13:06,227 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 09:13:06,228 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 09:13:06,228 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 09:13:06,228 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 09:13:06,229 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 09:13:23,423 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-11 09:13:23,611 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-11 09:13:24,957 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-11 09:13:24,959 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-11 09:13:24,961 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-11 09:13:24,962 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-11 09:20:59,284 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-11 09:20:59,319 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-11 09:26:25,300 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 09:26:25,301 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 09:26:25,301 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 09:26:25,302 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 09:26:25,302 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 09:26:29,536 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-11 09:26:29,717 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-11 09:26:31,067 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-11 09:26:31,070 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-11 09:26:31,071 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-11 09:26:31,072 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-11 09:27:49,862 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-11 09:27:49,884 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-11 09:37:53,200 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 09:37:53,201 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 09:37:53,202 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 09:37:53,202 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 09:37:53,203 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 09:38:08,491 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-11 09:38:08,695 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-11 09:38:10,146 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-11 09:38:10,149 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-11 09:38:10,150 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-11 09:38:10,151 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-11 09:38:49,204 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-11 09:38:49,217 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-11 09:38:51,075 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 09:38:51,101 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 09:38:51,263 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 09:38:51,263 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 09:38:51,265 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 09:38:51,266 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 09:38:56,577 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 09:38:56,578 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 09:40:12,832 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-11 09:40:12,853 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-11 09:40:12,854 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-11 09:40:12,867 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-11 09:40:12,869 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-11 09:40:12,870 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-11 09:40:15,193 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-11 09:40:15,213 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-11 09:40:15,215 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-11 09:40:15,218 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-11 09:40:15,219 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-11 09:40:18,032 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-12-11 09:40:18,033 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-12-11 11:23:56,767 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-11 11:23:56,783 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-11 11:23:56,857 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-11 11:23:58,361 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 11:23:58,363 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 11:23:58,551 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 11:23:58,552 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 11:23:58,557 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 11:23:58,557 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 14:36:04,394 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 14:36:04,395 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 14:36:04,396 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 14:36:04,397 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 14:36:04,397 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 14:36:12,444 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 14:36:12,468 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 14:36:12,659 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 14:36:12,660 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 14:36:12,662 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 14:36:12,663 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 14:44:11,460 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 14:44:11,461 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 14:44:11,461 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 14:44:11,462 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 14:44:11,462 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 14:44:17,618 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 14:44:17,621 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 14:44:17,796 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 14:44:17,797 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 14:44:17,799 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 14:44:17,799 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 15:14:22,491 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 15:14:22,492 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 15:14:22,499 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 15:14:22,511 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 15:14:22,513 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 15:14:49,316 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 15:14:49,337 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 15:14:49,518 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 15:14:49,519 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 15:14:49,522 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 15:14:49,523 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 15:26:14,065 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 15:26:14,065 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 15:26:14,066 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 15:26:14,067 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 15:26:14,067 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 15:26:33,690 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 15:26:33,708 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 15:26:33,881 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 15:26:33,882 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 15:26:33,884 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 15:26:33,884 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 15:34:49,578 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 15:34:49,579 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 15:35:23,520 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-11 15:35:23,761 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-11 15:35:24,568 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-11 15:35:24,591 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-11 15:35:24,593 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-11 15:35:24,594 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-11 15:41:21,395 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-11 15:41:21,423 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-11 18:28:14,913 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-11 18:28:14,914 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-11 18:28:14,915 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-11 18:28:14,915 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-11 18:28:14,916 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-11 18:29:52,622 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:29:52,625 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:29:52,791 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:29:52,792 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:29:52,794 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:29:52,795 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:36:07,471 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:36:07,472 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:40:28,408 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:40:28,409 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:55:24,324 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:55:24,325 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:56:59,475 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:56:59,476 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:56:59,477 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:56:59,477 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:56:59,480 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:56:59,481 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:56:59,482 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:56:59,483 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:57:15,812 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:57:15,813 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:57:15,814 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:57:15,815 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:57:15,817 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:57:15,818 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:57:15,819 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:57:15,820 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:57:33,695 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:57:33,696 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:58:03,697 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:58:03,698 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:58:28,115 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:58:28,116 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-11 18:58:51,954 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-11 18:58:51,955 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
