@@ -167,6 +167,8 @@ except ImportError:
 
 # Gestão de Locações
 from src.gestao_locacoes import GerenciadorLocacoes
+# Importador de Medições
+from src.importador_medicoes import ImportadorMedicoes
 
 # from src.nfe.sistema_nfe_unificado import substituir_sistemas_nfe_por_unificado
 from src.materiais.gerenciador_materiais import inicializar_sistema_materiais_completo
@@ -1995,6 +1997,7 @@ class SistemaEntradaDados:
         }
 
         self.gestao_taxas = GestaoTaxasFixas(self)
+        self.importador_medicoes = ImportadorMedicoes(self)
 
         self.atualizar_combos_configuracoes()
             
@@ -3761,32 +3764,50 @@ class SistemaEntradaDados:
 
         # Separador para dividir visualmente as seções
         ttk.Separator(self.aba_fornecedor, orient='horizontal').pack(fill='x', padx=10, pady=5)
-
-        # Frame de botões gerais na parte inferior
-        frame_botoes_fornecedor = ttk.Frame(self.aba_fornecedor)
-        frame_botoes_fornecedor.pack(fill='x', padx=10, pady=10, side='bottom')
         
+        # Frame para importações
+        frame_importacoes = ttk.LabelFrame(self.aba_fornecedor, text="Importação de Dados")
+        frame_importacoes.pack(fill='x', padx=10, pady=5)
+        
+        frame_botoes_import = ttk.Frame(frame_importacoes)
+        frame_botoes_import.pack(fill='x', padx=5, pady=8)
+        
+        # Botões de importação reorganizados
         ttk.Button(
-            frame_botoes_fornecedor, 
+            frame_botoes_import, 
             text="🚛 Importar Transporte", 
             command=self.importar_transporte_cafe,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
-
+        
         ttk.Button(
-            frame_botoes_fornecedor, 
-            text="Importar Folha RH", 
+            frame_botoes_import, 
+            text="👥 Importar Folha RH", 
             command=self.importar_folha_rh,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
-
+        
         ttk.Button(
-            frame_botoes_fornecedor, 
+            frame_botoes_import, 
+            text="📊 Importar Medições",  # ← NOVO BOTÃO
+            command=self.importar_medicoes,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+        
+        ttk.Button(
+            frame_botoes_import, 
             text="🔧 Gestão de Locações", 
             command=self.abrir_gestao_locacoes,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
        
+        # Separador antes dos botões gerais
+        ttk.Separator(self.aba_fornecedor, orient='horizontal').pack(fill='x', padx=10, pady=5)
+        
+        # Frame de botões gerais na parte inferior (MANTIDO)
+        frame_botoes_fornecedor = ttk.Frame(self.aba_fornecedor)
+        frame_botoes_fornecedor.pack(fill='x', padx=10, pady=10, side='bottom')
+
         ttk.Button(frame_acoes, 
            text="📁 Abrir Logs", 
            command=self.abrir_pasta_logs,
@@ -3803,151 +3824,7 @@ class SistemaEntradaDados:
         
         # self.adicionar_secao_materiais_fornecedor()
 
-    def abrir_pasta_logs(self):
-        """Abre a pasta de logs no explorador"""
-        import subprocess
-        import platform
-        
-        log_dir = os.path.join(os.path.expanduser('~'), 'Desktop', 'logs_sistema')
-        
-        if platform.system() == 'Windows':
-            subprocess.Popen(f'explorer "{log_dir}"')
-        elif platform.system() == 'Darwin':  # macOS
-            subprocess.Popen(['open', log_dir])
-        else:  # Linux
-            subprocess.Popen(['xdg-open', log_dir])
-  
-    def buscar_fornecedor(self):
-        """Busca fornecedores baseado no termo digitado - CORRIGIDO PARA EXECUTÁVEL"""
-        try:
-            termo = self.busca_entry.get().strip()
-            
-            # Limpar resultados anteriores
-            for item in self.tree_fornecedores.get_children():
-                self.tree_fornecedores.delete(item)
-            
-            if not termo:
-                return
-            
-            # Abrir planilha de fornecedores
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-            
-            resultados_encontrados = 0
-            termo_upper = termo.upper()
-            
-            # Buscar na planilha
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular linhas vazias
-                    continue
-                    
-                # CORREÇÃO: Garantir que tudo seja string
-                cnpj_cpf = str(row[0]).strip() if row[0] else ''
-                nome = str(row[3] or '').strip().upper()  # Coluna D = Nome
-                categoria = str(row[11] or '').strip()    # Coluna L = Categoria
-                
-                # Verificar se o termo está no nome
-                if termo_upper in nome:
-                    # Formatar CNPJ/CPF para exibição
-                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf)
-                    
-                    # CORREÇÃO CRÍTICA: Inserir como STRINGS
-                    self.tree_fornecedores.insert('', 'end', values=(
-                        str(cnpj_cpf_formatado),  # Garantir string
-                        str(nome),                # Garantir string
-                        str(categoria)            # Garantir string
-                    ))
-                    
-                    resultados_encontrados += 1
-                    
-                    # Limitar resultados
-                    if resultados_encontrados >= 100:
-                        break
-            
-            wb.close()
-            
-            # Ordenar resultados por nome
-            if resultados_encontrados > 1:
-                items = []
-                for item in self.tree_fornecedores.get_children():
-                    values = self.tree_fornecedores.item(item)['values']
-                    items.append(values)
-                
-                # Limpar tree
-                for item in self.tree_fornecedores.get_children():
-                    self.tree_fornecedores.delete(item)
-                
-                # Ordenar por nome
-                items.sort(key=lambda x: str(x[1]))
-                
-                # Reinserir ordenado - GARANTINDO STRINGS
-                for values in items:
-                    self.tree_fornecedores.insert('', 'end', values=(
-                        str(values[0]),
-                        str(values[1]),
-                        str(values[2])
-                    ))
-            
-            if resultados_encontrados == 0:
-                self.tree_fornecedores.insert('', 'end', values=(
-                    '', 'Nenhum fornecedor encontrado', ''
-                ))
-                
-        except Exception as e:
-            logger.error(f"Erro na busca: {str(e)}")
-            logger.error(traceback.format_exc())
-            custom_messagebox("error", "Erro", f"Erro na busca: {str(e)}")
-
-    def buscar_fornecedores_por_nome_parcial(self, nome_parcial):
-        """
-        Busca otimizada por nome parcial usando cache
-        VERSÃO FINAL OTIMIZADA
-        """
-        try:
-            if not nome_parcial or len(nome_parcial) < 3:
-                return []
-            
-            # Carregar fornecedores do cache
-            fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
-            
-            if not fornecedores:
-                logger.debug("DEBUG: Cache vazio, fazendo busca direta")
-                return self.buscar_fornecedores_por_nome_parcial_direto(nome_parcial)
-            
-            nome_busca = nome_parcial.strip().upper()
-            fornecedores_encontrados = []
-            
-            logger.debug(f"DEBUG: Buscando '{nome_busca}' em {len(fornecedores)} fornecedores do cache")
-            
-            for fornecedor in fornecedores:
-                nome = fornecedor['nome']
-                
-                if nome_busca in nome:
-                    # Calcular relevância (posição no nome)
-                    posicao = nome.find(nome_busca)
-                    relevancia = 1000 - posicao
-                    
-                    fornecedor_resultado = fornecedor.copy()
-                    fornecedor_resultado['relevancia'] = relevancia
-                    
-                    fornecedores_encontrados.append(fornecedor_resultado)
-                    
-                    # Limitar resultados para performance
-                    if len(fornecedores_encontrados) >= 15:
-                        break
-            
-            # Ordenar por relevância
-            fornecedores_encontrados.sort(key=lambda x: (-x['relevancia'], x['nome']))
-            
-            logger.debug(f"DEBUG: {len(fornecedores_encontrados)} fornecedores encontrados no cache")
-            
-            return fornecedores_encontrados
-            
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro na busca por cache: {str(e)}")
-            # Fallback para busca direta
-            return self.buscar_fornecedores_por_nome_parcial_direto(nome_parcial)
-
+    
     def novo_fornecedor(self):
         """Abre janela para cadastro de novo fornecedor - VERSÃO CORRIGIDA"""
         self.janela_fornecedor = tk.Toplevel(self.root)
@@ -4247,22 +4124,136 @@ class SistemaEntradaDados:
                             f"Erro ao selecionar fornecedor:\n{str(e)}\n\n"
                             f"Um arquivo de log foi criado na área de trabalho")
             
-    def buscar_dados_bancarios(self, cnpj_cpf):
+    def buscar_fornecedor(self):
+        """Busca fornecedores baseado no termo digitado - CORRIGIDO PARA EXECUTÁVEL"""
         try:
+            termo = self.busca_entry.get().strip()
+            
+            # Limpar resultados anteriores
+            for item in self.tree_fornecedores.get_children():
+                self.tree_fornecedores.delete(item)
+            
+            if not termo:
+                return
+            
+            # Abrir planilha de fornecedores
             wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
             ws = wb['Fornecedores']
-        
+            
+            resultados_encontrados = 0
+            termo_upper = termo.upper()
+            
+            # Buscar na planilha
             for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0] == cnpj_cpf:
-                    logger.debug(f"CNPJ/CPF encontrado: {cnpj_cpf}")
-                    logger.debug(f"Dados da linha: {row}")
-                    if row[14]:  # coluna O com dados bancários consolidados
-                        return row[14]
-                    return ""
-            return ""
+                if not row[0]:  # Pular linhas vazias
+                    continue
+                    
+                # CORREÇÃO: Garantir que tudo seja string
+                cnpj_cpf = str(row[0]).strip() if row[0] else ''
+                nome = str(row[3] or '').strip().upper()  # Coluna D = Nome
+                categoria = str(row[11] or '').strip()    # Coluna L = Categoria
+                
+                # Verificar se o termo está no nome
+                if termo_upper in nome:
+                    # Formatar CNPJ/CPF para exibição
+                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf)
+                    
+                    # CORREÇÃO CRÍTICA: Inserir como STRINGS
+                    self.tree_fornecedores.insert('', 'end', values=(
+                        str(cnpj_cpf_formatado),  # Garantir string
+                        str(nome),                # Garantir string
+                        str(categoria)            # Garantir string
+                    ))
+                    
+                    resultados_encontrados += 1
+                    
+                    # Limitar resultados
+                    if resultados_encontrados >= 100:
+                        break
+            
+            wb.close()
+            
+            # Ordenar resultados por nome
+            if resultados_encontrados > 1:
+                items = []
+                for item in self.tree_fornecedores.get_children():
+                    values = self.tree_fornecedores.item(item)['values']
+                    items.append(values)
+                
+                # Limpar tree
+                for item in self.tree_fornecedores.get_children():
+                    self.tree_fornecedores.delete(item)
+                
+                # Ordenar por nome
+                items.sort(key=lambda x: str(x[1]))
+                
+                # Reinserir ordenado - GARANTINDO STRINGS
+                for values in items:
+                    self.tree_fornecedores.insert('', 'end', values=(
+                        str(values[0]),
+                        str(values[1]),
+                        str(values[2])
+                    ))
+            
+            if resultados_encontrados == 0:
+                self.tree_fornecedores.insert('', 'end', values=(
+                    '', 'Nenhum fornecedor encontrado', ''
+                ))
+                
         except Exception as e:
-            logger.debug(f"Erro ao buscar dados bancários: {e}")
-            return ""
+            logger.error(f"Erro na busca: {str(e)}")
+            logger.error(traceback.format_exc())
+            custom_messagebox("error", "Erro", f"Erro na busca: {str(e)}")
+
+    def buscar_fornecedores_por_nome_parcial(self, nome_parcial):
+        """
+        Busca otimizada por nome parcial usando cache
+        VERSÃO FINAL OTIMIZADA
+        """
+        try:
+            if not nome_parcial or len(nome_parcial) < 3:
+                return []
+            
+            # Carregar fornecedores do cache
+            fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
+            
+            if not fornecedores:
+                logger.debug("DEBUG: Cache vazio, fazendo busca direta")
+                return self.buscar_fornecedores_por_nome_parcial_direto(nome_parcial)
+            
+            nome_busca = nome_parcial.strip().upper()
+            fornecedores_encontrados = []
+            
+            logger.debug(f"DEBUG: Buscando '{nome_busca}' em {len(fornecedores)} fornecedores do cache")
+            
+            for fornecedor in fornecedores:
+                nome = fornecedor['nome']
+                
+                if nome_busca in nome:
+                    # Calcular relevância (posição no nome)
+                    posicao = nome.find(nome_busca)
+                    relevancia = 1000 - posicao
+                    
+                    fornecedor_resultado = fornecedor.copy()
+                    fornecedor_resultado['relevancia'] = relevancia
+                    
+                    fornecedores_encontrados.append(fornecedor_resultado)
+                    
+                    # Limitar resultados para performance
+                    if len(fornecedores_encontrados) >= 15:
+                        break
+            
+            # Ordenar por relevância
+            fornecedores_encontrados.sort(key=lambda x: (-x['relevancia'], x['nome']))
+            
+            logger.debug(f"DEBUG: {len(fornecedores_encontrados)} fornecedores encontrados no cache")
+            
+            return fornecedores_encontrados
+            
+        except Exception as e:
+            logger.debug(f"DEBUG: Erro na busca por cache: {str(e)}")
+            # Fallback para busca direta
+            return self.buscar_fornecedores_por_nome_parcial_direto(nome_parcial)
 
     def buscar_fornecedor_completo(self, cnpj_cpf):
         """Busca todos os dados de um fornecedor - VERSÃO ROBUSTA PARA EXECUTÁVEL"""
@@ -4378,7 +4369,199 @@ class SistemaEntradaDados:
                 pass
             
             return None
-   
+
+    def buscar_fornecedor_por_cnpj(self, cnpj_cpf):
+        """Busca e seleciona fornecedor pelo CNPJ/CPF"""
+        try:
+            fornecedor = self.buscar_fornecedor_completo(cnpj_cpf)
+            if fornecedor:
+                # Preencher dados do fornecedor encontrado
+                self.campos_fornecedor['nome'].delete(0, tk.END)
+                self.campos_fornecedor['nome'].insert(0, fornecedor['nome'])
+                
+                if fornecedor.get('categoria'):
+                    self.campos_fornecedor['categoria'].delete(0, tk.END)
+                    self.campos_fornecedor['categoria'].insert(0, fornecedor['categoria'])
+                
+                # Preencher dados bancários baseado na forma de pagamento padrão
+                if fornecedor.get('chave_pix'):
+                    dados_bancarios = f"PIX: {fornecedor['chave_pix']}"
+                else:
+                    # Construir dados para TED
+                    partes_dados = []
+                    if fornecedor.get('banco'): partes_dados.append(fornecedor['banco'])
+                    if fornecedor.get('op'): partes_dados.append(fornecedor['op'])
+                    if fornecedor.get('agencia'): partes_dados.append(fornecedor['agencia'])
+                    if fornecedor.get('conta'): partes_dados.append(fornecedor['conta'])
+                    partes_dados.append(fornecedor['cnpj_cpf'])
+                    dados_bancarios = ' - '.join(partes_dados)
+                
+                self.campos_despesa['dados_bancarios'].delete(0, tk.END)
+                self.campos_despesa['dados_bancarios'].insert(0, dados_bancarios)
+                
+                logger.debug(f"DEBUG: Fornecedor encontrado e dados preenchidos: {fornecedor['nome']}")
+                return True
+            else:
+                logger.debug(f"DEBUG: Fornecedor não encontrado para CNPJ/CPF: {cnpj_cpf}")
+                return False
+                
+        except Exception as e:
+            logger.debug(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
+            return False
+
+    def buscar_fornecedor_por_nome_agenda(self, nome_fornecedor):
+        """Busca fornecedor pelo nome para uso na agenda"""
+        try:
+            if not nome_fornecedor or not nome_fornecedor.strip():
+                return None
+            
+            # Abrir planilha de fornecedores
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+            
+            nome_busca = nome_fornecedor.strip().upper()
+            fornecedor_encontrado = None
+            melhor_match = 0
+            
+            # Buscar na planilha
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Pular linhas vazias
+                    continue
+                    
+                cnpj_cpf = str(row[0]).strip()           # Coluna A
+                nome = str(row[3] or '').strip().upper() # Coluna D = Nome
+                
+                # Verificar correspondência
+                if nome_busca in nome:
+                    # Calcular qualidade do match
+                    match_quality = len(nome_busca) / len(nome) if nome else 0
+                    
+                    # Se for match exato ou melhor que o anterior
+                    if nome_busca == nome or match_quality > melhor_match:
+                        melhor_match = match_quality
+                        fornecedor_encontrado = {
+                            'cnpj_cpf': cnpj_cpf,
+                            'nome': nome,
+                            'categoria': str(row[11] or '').strip(),      # Coluna L = CATEGORIA
+                            'telefone': str(row[4] or '').strip(),        # Coluna E = TELEFONE
+                            'email': str(row[5] or '').strip(),           # Coluna F = EMAIL
+                            'banco': str(row[6] or '').strip(),           # Coluna G = BANCO
+                            'op': str(row[7] or '').strip(),              # Coluna H = OP
+                            'agencia': str(row[8] or '').strip(),         # Coluna I = AGENC
+                            'conta': str(row[9] or '').strip(),           # Coluna J = CONTA
+                            'chave_pix': str(row[10] or '').strip(),      # Coluna K = Chave_PIX ← CORRIGIDO!
+                            'dados_bancarios': str(row[14] or '').strip() # Coluna O = DADOS BANCÁRIOS
+                        }
+                        
+                        # Se for match exato, parar a busca
+                        if nome_busca == nome:
+                            break
+            
+            wb.close()
+            
+            if fornecedor_encontrado:
+                logger.debug(f"DEBUG: Fornecedor encontrado: {fornecedor_encontrado['nome']} - {fornecedor_encontrado['cnpj_cpf']}")
+                logger.debug(f"DEBUG: Chave PIX: {fornecedor_encontrado['chave_pix']}")
+                logger.debug(f"DEBUG: Dados bancários: {fornecedor_encontrado['dados_bancarios']}")
+            else:
+                logger.debug(f"DEBUG: Nenhum fornecedor encontrado para: {nome_fornecedor}")
+            
+            return fornecedor_encontrado
+            
+        except Exception as e:
+            logger.debug(f"DEBUG: Erro ao buscar fornecedor por nome: {str(e)}")
+            import traceback
+            traceback.logger.debug_exc()
+            return None
+    
+    def buscar_fornecedor_por_cnpj_agenda(self, cnpj_cpf):
+        """Busca fornecedor pelo CNPJ/CPF para uso na agenda"""
+        try:
+            if not cnpj_cpf or not cnpj_cpf.strip():
+                return None
+            
+            # Limpar formatação do CNPJ/CPF
+            cnpj_limpo = ''.join(filter(str.isdigit, cnpj_cpf))
+            
+            # Abrir planilha de fornecedores
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+            
+            # Buscar na planilha
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:  # Pular linhas vazias
+                    continue
+                    
+                cnpj_planilha = ''.join(filter(str.isdigit, str(row[0])))
+                
+                if cnpj_limpo == cnpj_planilha:
+                    fornecedor = {
+                        'cnpj_cpf': str(row[0]).strip(),              # Coluna A
+                        'nome': str(row[3] or '').strip().upper(),    # Coluna D = NOME
+                        'categoria': str(row[11] or '').strip(),      # Coluna L = CATEGORIA
+                        'telefone': str(row[4] or '').strip(),        # Coluna E = TELEFONE
+                        'email': str(row[5] or '').strip(),           # Coluna F = EMAIL
+                        'banco': str(row[6] or '').strip(),           # Coluna G = BANCO
+                        'op': str(row[7] or '').strip(),              # Coluna H = OP
+                        'agencia': str(row[8] or '').strip(),         # Coluna I = AGENC
+                        'conta': str(row[9] or '').strip(),           # Coluna J = CONTA
+                        'chave_pix': str(row[10] or '').strip(),      # Coluna K = Chave_PIX ← CORRIGIDO!
+                        'dados_bancarios': str(row[14] or '').strip() # Coluna O = DADOS BANCÁRIOS
+                    }
+                    
+                    wb.close()
+                    logger.debug(f"DEBUG: Fornecedor encontrado por CNPJ: {fornecedor['nome']}")
+                    logger.debug(f"DEBUG: Chave PIX: {fornecedor['chave_pix']}")
+                    logger.debug(f"DEBUG: Dados bancários: {fornecedor['dados_bancarios']}")
+                    return fornecedor
+            
+            wb.close()
+            logger.debug(f"DEBUG: Nenhum fornecedor encontrado para CNPJ: {cnpj_cpf}")
+            return None
+            
+        except Exception as e:
+            logger.debug(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
+            import traceback
+            traceback.logger.debug_exc()
+            return None
+
+    def buscar_fornecedor_por_cnpj_agenda_manual(self, cnpj_cpf):
+        """Método auxiliar para buscar e preencher dados do fornecedor"""
+        try:
+            # Usar o método que você já tem para buscar fornecedor
+            fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
+            
+            if fornecedor:
+                # Preencher campos do fornecedor se encontrado
+                if fornecedor.get('nome'):
+                    self.campos_fornecedor['nome'].delete(0, tk.END)
+                    self.campos_fornecedor['nome'].insert(0, fornecedor['nome'])
+                
+                if fornecedor.get('categoria'):
+                    # Verificar se campo categoria existe
+                    if hasattr(self, 'campos_fornecedor') and 'categoria' in self.campos_fornecedor:
+                        self.campos_fornecedor['categoria'].delete(0, tk.END)
+                        self.campos_fornecedor['categoria'].insert(0, fornecedor['categoria'])
+                
+                # Preencher dados bancários se existir o campo
+                dados_bancarios = self.obter_dados_bancarios_fornecedor(cnpj_cpf)
+                if hasattr(self, 'campos_fornecedor') and 'dados_bancarios' in self.campos_fornecedor:
+                    campo_dados_bancarios = self.campos_fornecedor['dados_bancarios']
+                    campo_dados_bancarios.config(state='normal')  # Habilitar temporariamente
+                    campo_dados_bancarios.delete(0, tk.END)
+                    campo_dados_bancarios.insert(0, dados_bancarios)
+                    campo_dados_bancarios.config(state='readonly')  # Voltar ao readonly
+                
+                logger.debug(f"DEBUG: Dados do fornecedor preenchidos: {fornecedor['nome']}")
+                return True
+            else:
+                logger.debug(f"DEBUG: Fornecedor não encontrado para CNPJ/CPF: {cnpj_cpf}")
+                return False
+                
+        except Exception as e:
+            logger.debug(f"DEBUG: Erro ao buscar fornecedor para agenda: {str(e)}")
+            return False
+    
     def setup_formulario_fornecedor(self, modo_edicao=False):
         """Configura o formulário de cadastro/edição de fornecedor com suporte a CPFs criados"""
         formulario = ttk.Frame(self.janela_fornecedor)
@@ -4607,6 +4790,84 @@ class SistemaEntradaDados:
         if modo_edicao:
             self.janela_fornecedor.after(100, self.atualizar_resumo_dados_bancarios)
 
+    def buscar_dados_bancarios(self, cnpj_cpf):
+        try:
+            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
+            ws = wb['Fornecedores']
+        
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if row[0] == cnpj_cpf:
+                    logger.debug(f"CNPJ/CPF encontrado: {cnpj_cpf}")
+                    logger.debug(f"Dados da linha: {row}")
+                    if row[14]:  # coluna O com dados bancários consolidados
+                        return row[14]
+                    return ""
+            return ""
+        except Exception as e:
+            logger.debug(f"Erro ao buscar dados bancários: {e}")
+            return ""
+
+    def obter_dados_bancarios_fornecedor(self, cnpj_cpf, forma_pagamento_preferida="PIX"):
+        """Obtém dados bancários formatados do fornecedor"""
+        logger.debug(f"DEBUG ===== obter_dados_bancarios_fornecedor =====")
+        logger.debug(f"DEBUG: cnpj_cpf recebido: '{cnpj_cpf}'")
+        logger.debug(f"DEBUG: forma_pagamento: '{forma_pagamento_preferida}'")
+        
+        try:
+            fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
+            
+            logger.debug(f"DEBUG: Fornecedor retornado: {fornecedor}")
+            
+            if not fornecedor:
+                logger.debug(f"DEBUG: Fornecedor não encontrado - retornando vazio")
+                return ""
+            
+            # PRIORIDADE 1: Usar coluna DADOS BANCÁRIOS se já estiver preenchida
+            dados_bancarios_coluna = fornecedor.get('dados_bancarios', '').strip()
+            if dados_bancarios_coluna:
+                logger.debug(f"DEBUG: Usando dados da coluna DADOS BANCÁRIOS: '{dados_bancarios_coluna}'")
+                return dados_bancarios_coluna
+            
+            # PRIORIDADE 2: Construir dados baseado na forma de pagamento PIX
+            if forma_pagamento_preferida == "PIX":
+                chave_pix = fornecedor.get('chave_pix', '').strip()
+                if chave_pix:
+                    resultado = f"PIX: {chave_pix}"
+                    logger.debug(f"DEBUG: Construindo dados PIX: '{resultado}'")
+                    return resultado
+                else:
+                    logger.debug(f"DEBUG: Chave PIX não cadastrada - retornando vazio")
+                    return ""
+            
+            # PRIORIDADE 3: Construir dados para TED (apenas se houver dados completos)
+            partes_dados = []
+            
+            if fornecedor.get('banco'): 
+                partes_dados.append(fornecedor['banco'])
+            if fornecedor.get('op'): 
+                partes_dados.append(fornecedor['op'])
+            if fornecedor.get('agencia'): 
+                partes_dados.append(fornecedor['agencia'])
+            if fornecedor.get('conta'): 
+                partes_dados.append(fornecedor['conta'])
+            
+            # Só adicionar CNPJ/CPF se houver pelo menos um dado bancário
+            if partes_dados:
+                partes_dados.append(fornecedor['cnpj_cpf'])
+                resultado = ' - '.join(partes_dados)
+                logger.debug(f"DEBUG: Construindo dados TED: '{resultado}'")
+                return resultado
+            else:
+                # Se não houver nenhum dado bancário, retornar vazio
+                logger.debug(f"DEBUG: Nenhum dado bancário cadastrado - retornando vazio")
+                return ""
+            
+        except Exception as e:
+            logger.debug(f"DEBUG: ERRO em obter_dados_bancarios_fornecedor: {str(e)}")
+            import traceback
+            traceback.logger.debug_exc()
+            return ""
+    
     def atualizar_resumo_dados_bancarios(self, event=None):
         """Atualiza o campo de resumo dos dados bancários em tempo real"""
         try:
@@ -4951,8 +5212,7 @@ class SistemaEntradaDados:
         
         if razao_social and not nome_atual:
             self.campos_form['nome'].insert(0, razao_social)
-
-    
+ 
     def validar_cnpj_cpf_numeros(self, numeros):
         """Valida CNPJ ou CPF usando apenas números"""
         if not numeros or not numeros.isdigit():
@@ -6825,259 +7085,6 @@ class SistemaEntradaDados:
             traceback.logger.debug_exc()
             raise
 
-    def buscar_fornecedor_por_cnpj(self, cnpj_cpf):
-        """Busca e seleciona fornecedor pelo CNPJ/CPF"""
-        try:
-            fornecedor = self.buscar_fornecedor_completo(cnpj_cpf)
-            if fornecedor:
-                # Preencher dados do fornecedor encontrado
-                self.campos_fornecedor['nome'].delete(0, tk.END)
-                self.campos_fornecedor['nome'].insert(0, fornecedor['nome'])
-                
-                if fornecedor.get('categoria'):
-                    self.campos_fornecedor['categoria'].delete(0, tk.END)
-                    self.campos_fornecedor['categoria'].insert(0, fornecedor['categoria'])
-                
-                # Preencher dados bancários baseado na forma de pagamento padrão
-                if fornecedor.get('chave_pix'):
-                    dados_bancarios = f"PIX: {fornecedor['chave_pix']}"
-                else:
-                    # Construir dados para TED
-                    partes_dados = []
-                    if fornecedor.get('banco'): partes_dados.append(fornecedor['banco'])
-                    if fornecedor.get('op'): partes_dados.append(fornecedor['op'])
-                    if fornecedor.get('agencia'): partes_dados.append(fornecedor['agencia'])
-                    if fornecedor.get('conta'): partes_dados.append(fornecedor['conta'])
-                    partes_dados.append(fornecedor['cnpj_cpf'])
-                    dados_bancarios = ' - '.join(partes_dados)
-                
-                self.campos_despesa['dados_bancarios'].delete(0, tk.END)
-                self.campos_despesa['dados_bancarios'].insert(0, dados_bancarios)
-                
-                logger.debug(f"DEBUG: Fornecedor encontrado e dados preenchidos: {fornecedor['nome']}")
-                return True
-            else:
-                logger.debug(f"DEBUG: Fornecedor não encontrado para CNPJ/CPF: {cnpj_cpf}")
-                return False
-                
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
-            return False
-
-    def buscar_fornecedor_por_nome_agenda(self, nome_fornecedor):
-        """Busca fornecedor pelo nome para uso na agenda"""
-        try:
-            if not nome_fornecedor or not nome_fornecedor.strip():
-                return None
-            
-            # Abrir planilha de fornecedores
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-            
-            nome_busca = nome_fornecedor.strip().upper()
-            fornecedor_encontrado = None
-            melhor_match = 0
-            
-            # Buscar na planilha
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular linhas vazias
-                    continue
-                    
-                cnpj_cpf = str(row[0]).strip()           # Coluna A
-                nome = str(row[3] or '').strip().upper() # Coluna D = Nome
-                
-                # Verificar correspondência
-                if nome_busca in nome:
-                    # Calcular qualidade do match
-                    match_quality = len(nome_busca) / len(nome) if nome else 0
-                    
-                    # Se for match exato ou melhor que o anterior
-                    if nome_busca == nome or match_quality > melhor_match:
-                        melhor_match = match_quality
-                        fornecedor_encontrado = {
-                            'cnpj_cpf': cnpj_cpf,
-                            'nome': nome,
-                            'categoria': str(row[11] or '').strip(),      # Coluna L = CATEGORIA
-                            'telefone': str(row[4] or '').strip(),        # Coluna E = TELEFONE
-                            'email': str(row[5] or '').strip(),           # Coluna F = EMAIL
-                            'banco': str(row[6] or '').strip(),           # Coluna G = BANCO
-                            'op': str(row[7] or '').strip(),              # Coluna H = OP
-                            'agencia': str(row[8] or '').strip(),         # Coluna I = AGENC
-                            'conta': str(row[9] or '').strip(),           # Coluna J = CONTA
-                            'chave_pix': str(row[10] or '').strip(),      # Coluna K = Chave_PIX ← CORRIGIDO!
-                            'dados_bancarios': str(row[14] or '').strip() # Coluna O = DADOS BANCÁRIOS
-                        }
-                        
-                        # Se for match exato, parar a busca
-                        if nome_busca == nome:
-                            break
-            
-            wb.close()
-            
-            if fornecedor_encontrado:
-                logger.debug(f"DEBUG: Fornecedor encontrado: {fornecedor_encontrado['nome']} - {fornecedor_encontrado['cnpj_cpf']}")
-                logger.debug(f"DEBUG: Chave PIX: {fornecedor_encontrado['chave_pix']}")
-                logger.debug(f"DEBUG: Dados bancários: {fornecedor_encontrado['dados_bancarios']}")
-            else:
-                logger.debug(f"DEBUG: Nenhum fornecedor encontrado para: {nome_fornecedor}")
-            
-            return fornecedor_encontrado
-            
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao buscar fornecedor por nome: {str(e)}")
-            import traceback
-            traceback.logger.debug_exc()
-            return None
-    
-    def buscar_fornecedor_por_cnpj_agenda(self, cnpj_cpf):
-        """Busca fornecedor pelo CNPJ/CPF para uso na agenda"""
-        try:
-            if not cnpj_cpf or not cnpj_cpf.strip():
-                return None
-            
-            # Limpar formatação do CNPJ/CPF
-            cnpj_limpo = ''.join(filter(str.isdigit, cnpj_cpf))
-            
-            # Abrir planilha de fornecedores
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-            
-            # Buscar na planilha
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular linhas vazias
-                    continue
-                    
-                cnpj_planilha = ''.join(filter(str.isdigit, str(row[0])))
-                
-                if cnpj_limpo == cnpj_planilha:
-                    fornecedor = {
-                        'cnpj_cpf': str(row[0]).strip(),              # Coluna A
-                        'nome': str(row[3] or '').strip().upper(),    # Coluna D = NOME
-                        'categoria': str(row[11] or '').strip(),      # Coluna L = CATEGORIA
-                        'telefone': str(row[4] or '').strip(),        # Coluna E = TELEFONE
-                        'email': str(row[5] or '').strip(),           # Coluna F = EMAIL
-                        'banco': str(row[6] or '').strip(),           # Coluna G = BANCO
-                        'op': str(row[7] or '').strip(),              # Coluna H = OP
-                        'agencia': str(row[8] or '').strip(),         # Coluna I = AGENC
-                        'conta': str(row[9] or '').strip(),           # Coluna J = CONTA
-                        'chave_pix': str(row[10] or '').strip(),      # Coluna K = Chave_PIX ← CORRIGIDO!
-                        'dados_bancarios': str(row[14] or '').strip() # Coluna O = DADOS BANCÁRIOS
-                    }
-                    
-                    wb.close()
-                    logger.debug(f"DEBUG: Fornecedor encontrado por CNPJ: {fornecedor['nome']}")
-                    logger.debug(f"DEBUG: Chave PIX: {fornecedor['chave_pix']}")
-                    logger.debug(f"DEBUG: Dados bancários: {fornecedor['dados_bancarios']}")
-                    return fornecedor
-            
-            wb.close()
-            logger.debug(f"DEBUG: Nenhum fornecedor encontrado para CNPJ: {cnpj_cpf}")
-            return None
-            
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
-            import traceback
-            traceback.logger.debug_exc()
-            return None
-
-    def obter_dados_bancarios_fornecedor(self, cnpj_cpf, forma_pagamento_preferida="PIX"):
-        """Obtém dados bancários formatados do fornecedor"""
-        logger.debug(f"DEBUG ===== obter_dados_bancarios_fornecedor =====")
-        logger.debug(f"DEBUG: cnpj_cpf recebido: '{cnpj_cpf}'")
-        logger.debug(f"DEBUG: forma_pagamento: '{forma_pagamento_preferida}'")
-        
-        try:
-            fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
-            
-            logger.debug(f"DEBUG: Fornecedor retornado: {fornecedor}")
-            
-            if not fornecedor:
-                logger.debug(f"DEBUG: Fornecedor não encontrado - retornando vazio")
-                return ""
-            
-            # PRIORIDADE 1: Usar coluna DADOS BANCÁRIOS se já estiver preenchida
-            dados_bancarios_coluna = fornecedor.get('dados_bancarios', '').strip()
-            if dados_bancarios_coluna:
-                logger.debug(f"DEBUG: Usando dados da coluna DADOS BANCÁRIOS: '{dados_bancarios_coluna}'")
-                return dados_bancarios_coluna
-            
-            # PRIORIDADE 2: Construir dados baseado na forma de pagamento PIX
-            if forma_pagamento_preferida == "PIX":
-                chave_pix = fornecedor.get('chave_pix', '').strip()
-                if chave_pix:
-                    resultado = f"PIX: {chave_pix}"
-                    logger.debug(f"DEBUG: Construindo dados PIX: '{resultado}'")
-                    return resultado
-                else:
-                    logger.debug(f"DEBUG: Chave PIX não cadastrada - retornando vazio")
-                    return ""
-            
-            # PRIORIDADE 3: Construir dados para TED (apenas se houver dados completos)
-            partes_dados = []
-            
-            if fornecedor.get('banco'): 
-                partes_dados.append(fornecedor['banco'])
-            if fornecedor.get('op'): 
-                partes_dados.append(fornecedor['op'])
-            if fornecedor.get('agencia'): 
-                partes_dados.append(fornecedor['agencia'])
-            if fornecedor.get('conta'): 
-                partes_dados.append(fornecedor['conta'])
-            
-            # Só adicionar CNPJ/CPF se houver pelo menos um dado bancário
-            if partes_dados:
-                partes_dados.append(fornecedor['cnpj_cpf'])
-                resultado = ' - '.join(partes_dados)
-                logger.debug(f"DEBUG: Construindo dados TED: '{resultado}'")
-                return resultado
-            else:
-                # Se não houver nenhum dado bancário, retornar vazio
-                logger.debug(f"DEBUG: Nenhum dado bancário cadastrado - retornando vazio")
-                return ""
-            
-        except Exception as e:
-            logger.debug(f"DEBUG: ERRO em obter_dados_bancarios_fornecedor: {str(e)}")
-            import traceback
-            traceback.logger.debug_exc()
-            return ""
-    
-    def buscar_fornecedor_por_cnpj_agenda_manual(self, cnpj_cpf):
-        """Método auxiliar para buscar e preencher dados do fornecedor"""
-        try:
-            # Usar o método que você já tem para buscar fornecedor
-            fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
-            
-            if fornecedor:
-                # Preencher campos do fornecedor se encontrado
-                if fornecedor.get('nome'):
-                    self.campos_fornecedor['nome'].delete(0, tk.END)
-                    self.campos_fornecedor['nome'].insert(0, fornecedor['nome'])
-                
-                if fornecedor.get('categoria'):
-                    # Verificar se campo categoria existe
-                    if hasattr(self, 'campos_fornecedor') and 'categoria' in self.campos_fornecedor:
-                        self.campos_fornecedor['categoria'].delete(0, tk.END)
-                        self.campos_fornecedor['categoria'].insert(0, fornecedor['categoria'])
-                
-                # Preencher dados bancários se existir o campo
-                dados_bancarios = self.obter_dados_bancarios_fornecedor(cnpj_cpf)
-                if hasattr(self, 'campos_fornecedor') and 'dados_bancarios' in self.campos_fornecedor:
-                    campo_dados_bancarios = self.campos_fornecedor['dados_bancarios']
-                    campo_dados_bancarios.config(state='normal')  # Habilitar temporariamente
-                    campo_dados_bancarios.delete(0, tk.END)
-                    campo_dados_bancarios.insert(0, dados_bancarios)
-                    campo_dados_bancarios.config(state='readonly')  # Voltar ao readonly
-                
-                logger.debug(f"DEBUG: Dados do fornecedor preenchidos: {fornecedor['nome']}")
-                return True
-            else:
-                logger.debug(f"DEBUG: Fornecedor não encontrado para CNPJ/CPF: {cnpj_cpf}")
-                return False
-                
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao buscar fornecedor para agenda: {str(e)}")
-            return False
-    
     def calcular_valor_total(self, event=None):
         """Calcula o valor total baseado no tipo de despesa"""
         try:
@@ -7419,6 +7426,26 @@ class SistemaEntradaDados:
             importador.importar_transporte_cafe()
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao abrir importador de transporte: {str(e)}")
+
+    def importar_medicoes(self):
+        """
+        Importa medições de contratos a partir de relatório Excel.
+        
+        Este método:
+        1. Valida cliente selecionado
+        2. Chama o ImportadorMedicoes
+        3. Trata erros
+        """
+        try:
+            self.importador_medicoes.importar_medicoes()
+        except Exception as e:
+            custom_messagebox("error", 
+                "Erro", 
+                f"Erro ao importar medições:\n\n{str(e)}"
+            )
+            import traceback
+            traceback.print_exc()
+            logger.error(f"Erro na importação de medições: {str(e)}")
 
     def limpar_campos_despesa(self):
         """Limpa todos os campos da despesa"""
@@ -7990,7 +8017,20 @@ class SistemaEntradaDados:
             if hasattr(self, '_is_saving'):
                 self._is_saving = False
 
-
+    def abrir_pasta_logs(self):
+        """Abre a pasta de logs no explorador"""
+        import subprocess
+        import platform
+        
+        log_dir = os.path.join(os.path.expanduser('~'), 'Desktop', 'logs_sistema')
+        
+        if platform.system() == 'Windows':
+            subprocess.Popen(f'explorer "{log_dir}"')
+        elif platform.system() == 'Darwin':  # macOS
+            subprocess.Popen(['open', log_dir])
+        else:  # Linux
+            subprocess.Popen(['xdg-open', log_dir])
+  
     # ==========================================
     # MÉTODOS AUXILIARES PARA GESTÃO DE DUPLICATAS
     # ==========================================
