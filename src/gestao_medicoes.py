@@ -3293,7 +3293,7 @@ class GestaoMedicoes:
             messagebox.showerror("Erro", f"Erro ao editar medição: {str(e)}", parent=self.root)
     
     def atualizar_medicao(self, janela, id_contrato, id_medicao, data_medicao, data_pagamento, 
-                        referencia, valor_original, valor_novo, observacoes):
+                    referencia, valor_original, valor_novo, observacoes):
         """Atualiza os dados de uma medição"""
         try:
             # Validar campos obrigatórios
@@ -3301,32 +3301,38 @@ class GestaoMedicoes:
                 messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!", parent=self.root)
                 return
                 
-            # Validar valor
+            # Validar e converter valores
             try:
-                valor_original_limpo = valor_original.replace('R$', '').strip()
+                # Limpar e converter valor original
+                valor_original_limpo = str(valor_original).replace('R$', '').strip()
                 valor_original_limpo = valor_original_limpo.replace('.', '')
                 valor_original_limpo = valor_original_limpo.replace(',', '.')
                 valor_org = float(valor_original_limpo)
-                valor_novo_limpo = valor_novo.replace('R$', '').strip().replace('.', '').replace(',', '.')
+                
+                # Limpar e converter valor novo
+                valor_novo_limpo = str(valor_novo).replace('R$', '').strip()
+                valor_novo_limpo = valor_novo_limpo.replace('.', '')
+                valor_novo_limpo = valor_novo_limpo.replace(',', '.')
                 valor_novo_float = float(valor_novo_limpo)
+                
                 if valor_novo_float <= 0:
                     messagebox.showerror("Erro", "Valor deve ser maior que zero!", parent=self.root)
                     return
-            except ValueError:
-                messagebox.showerror("Erro", "Valor inválido!", parent=self.root)
+            except (ValueError, AttributeError) as e:
+                messagebox.showerror("Erro", f"Valor inválido! Detalhes: {str(e)}", parent=self.root)
                 return
                 
             # Se valor mudou, verificar saldo do contrato
-            if valor_novo_float > valor_org:
-                # Calcular a diferença
+            if valor_novo_float != valor_org:
                 diferenca = valor_novo_float - valor_org
                 
-                # Verificar se o contrato tem saldo para a diferença
-                saldo = self.verificar_saldo_contrato()
-                if diferenca > saldo:
-                    messagebox.showerror("Erro", 
-                                       f"O aumento de R$ {diferenca:.2f} excede o saldo disponível de R$ {saldo:.2f}!", parent=self.root)
-                    return
+                if diferenca > 0:  # Apenas se aumentou
+                    saldo = self.verificar_saldo_contrato()
+                    if diferenca > saldo:
+                        messagebox.showerror("Erro", 
+                                        f"O aumento de R$ {diferenca:.2f} excede o saldo disponível de R$ {saldo:.2f}!", 
+                                        parent=self.root)
+                        return
                 
             # Converter datas
             try:
@@ -3359,32 +3365,75 @@ class GestaoMedicoes:
             
             # Atualizar valor apenas se mudou
             if valor_novo_float != valor_org:
-                valor_cell = ws_medicoes.cell(row=medicao_row, column=8, value=valor_novo_float)  # Valor
+                # Atualizar valor na medição
+                valor_cell = ws_medicoes.cell(row=medicao_row, column=8, value=valor_novo_float)
                 valor_cell.number_format = '#.##0,00'
+                
+                # Calcular a diferença
+                diferenca = valor_novo_float - valor_org
                 
                 # Atualizar valores do contrato
                 ws_contratos = wb["Contratos_Medicao"]
-                for idx, row in enumerate(ws_contratos.iter_rows(min_row=2, max_col=1, values_only=True), 2):
+                contrato_encontrado = False
+                
+                for idx, row in enumerate(ws_contratos.iter_rows(min_row=2, values_only=True), 2):
                     if row[0] == id_contrato:
-                        # Obter valores atuais
-                        valor_global = ws_contratos.cell(row=idx, column=6).value or 0
-                        valor_pago = ws_contratos.cell(row=idx, column=7).value or 0
+                        contrato_encontrado = True
+                        
+                        valor_col_global = ws_contratos.cell(row=idx, column=7).value  # Coluna G
+                        valor_col_pago = ws_contratos.cell(row=idx, column=8).value    # Coluna H
+                        
+                        # Verificar se os valores são numéricos
+                        if isinstance(valor_col_global, datetime):
+                            messagebox.showerror("Erro", 
+                                            f"A coluna G (Valor Global) contém uma data em vez de um valor numérico!\n"
+                                            f"Valor encontrado: {valor_col_global}", 
+                                            parent=self.root)
+                            wb.close()
+                            return
+                            
+                        if isinstance(valor_col_pago, datetime):
+                            messagebox.showerror("Erro", 
+                                            f"A coluna H (Valor Pago) contém uma data em vez de um valor numérico!\n"
+                                            f"Valor encontrado: {valor_col_pago}", 
+                                            parent=self.root)
+                            wb.close()
+                            return
+                        
+                        # Converter para float com segurança
+                        try:
+                            valor_global = float(valor_col_global) if valor_col_global is not None else 0.0
+                            valor_pago = float(valor_col_pago) if valor_col_pago is not None else 0.0
+                        except (ValueError, TypeError) as e:
+                            messagebox.showerror("Erro", 
+                                            f"Erro ao converter valores do contrato:\n"
+                                            f"Valor Global: {valor_col_global}\n"
+                                            f"Valor Pago: {valor_col_pago}\n"
+                                            f"Erro: {str(e)}", 
+                                            parent=self.root)
+                            wb.close()
+                            return
                         
                         # Ajustar com a diferença
-                        novo_valor_pago = valor_pago + (valor_novo_float - valor_org)
-                        valor_pago_cell = ws_contratos.cell(row=idx, column=7, value=novo_valor_pago)
+                        novo_valor_pago = valor_pago + diferenca
+                        valor_pago_cell = ws_contratos.cell(row=idx, column=8, value=novo_valor_pago)  # Coluna H
                         valor_pago_cell.number_format = '#.##0,00'
                         
                         # Atualizar saldo
                         novo_saldo = valor_global - novo_valor_pago
-                        saldo_cell = ws_contratos.cell(row=idx, column=8, value=novo_saldo)
+                        saldo_cell = ws_contratos.cell(row=idx, column=9, value=novo_saldo)  # Coluna I
                         saldo_cell.number_format = '#.##0,00'
                         
-                        # Se saldo zerou, atualizar status para CONCLUÍDO
+                        # Se saldo zerou ou ficou negativo, atualizar status para CONCLUÍDO
                         if novo_saldo <= 0:
-                            ws_contratos.cell(row=idx, column=9, value="CONCLUÍDO")
+                            ws_contratos.cell(row=idx, column=10, value="CONCLUÍDO")  # Coluna J
                         
                         break
+
+                if not contrato_encontrado:
+                    messagebox.showerror("Erro", f"Contrato {id_contrato} não encontrado na planilha!", parent=self.root)
+                    wb.close()
+                    return
             
             # Atualizar observações
             ws_medicoes.cell(row=medicao_row, column=11, value=observacoes.upper())  # Observacao
@@ -3401,6 +3450,8 @@ class GestaoMedicoes:
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao atualizar medição: {str(e)}", parent=self.root)
+            import traceback
+            print(traceback.format_exc())
             try:
                 wb.close()
             except:
