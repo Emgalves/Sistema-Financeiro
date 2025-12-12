@@ -18,13 +18,14 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from tkinter import filedialog
 import logging
+import shutil
 
 # Configurar logging
 logger = logging.getLogger(__name__)
 
 # Importar dependências do sistema
 try:
-    from src.utils import custom_messagebox
+    from src.config.utils import custom_messagebox
     from src.config import BASE_PATH, PASTA_CLIENTES
     
     # Verificar se os imports foram bem-sucedidos
@@ -89,6 +90,10 @@ class ImportadorMedicoes:
         
         # Criar pasta se não existir
         os.makedirs(self.pasta_medicoes, exist_ok=True)
+
+        # Pasta para arquivos importados
+        self.pasta_importados = self.pasta_medicoes / "Importados"
+        os.makedirs(self.pasta_importados, exist_ok=True)
         
         # Configurações de validação
         self.validacoes_ativadas = {
@@ -103,13 +108,11 @@ class ImportadorMedicoes:
         
         # Log das configurações de caminho com verificação de tipos
         logger.info("=" * 60)
-        logger.info("ImportadorMedicoes inicializado")
-        logger.info(f"BASE_PATH: {BASE_PATH} (tipo: {type(BASE_PATH).__name__})")
-        logger.info(f"BASE_PATH existe? {Path(BASE_PATH).exists()}")
-        logger.info(f"PASTA_CLIENTES: {PASTA_CLIENTES} (tipo: {type(PASTA_CLIENTES).__name__})")
-        logger.info(f"PASTA_CLIENTES existe? {Path(PASTA_CLIENTES).exists()}")
+        logger.info("ImportadorMedicoes inicializado (VERSÃO CORRIGIDA)")
+        logger.info(f"BASE_PATH: {BASE_PATH}")
+        logger.info(f"PASTA_CLIENTES: {PASTA_CLIENTES}")
         logger.info(f"Pasta de medições: {self.pasta_medicoes}")
-        logger.info(f"Pasta de medições existe? {self.pasta_medicoes.exists()}")
+        logger.info(f"Pasta importados: {self.pasta_importados}")
         logger.info("=" * 60)
     
     def selecionar_arquivo_relatorio(self):
@@ -345,27 +348,16 @@ class ImportadorMedicoes:
             
             # ===== MEDIÇÃO VÁLIDA - ADICIONAR À LISTA =====
             
-            # Formatar datas
-            if isinstance(data_medicao, datetime):
-                data_medicao_str = data_medicao.strftime('%d/%m/%Y')
-            else:
-                data_medicao_str = str(data_medicao)
-            
-            if data_pagamento is not None:
-                if isinstance(data_pagamento, datetime):
-                    data_pagamento_str = data_pagamento.strftime('%d/%m/%Y')
-                else:
-                    data_pagamento_str = str(data_pagamento)
-            else:
-                # Se não tem data de pagamento, usar a mesma da medição
-                data_pagamento_str = data_medicao_str
+            # Garantir que data_pagamento existe
+            if data_pagamento is None:
+                data_pagamento = data_medicao
             
             medicao = {
                 'id_contrato': id_contrato,
                 'id_medicao': id_medicao,
                 'fornecedor': fornecedor,
-                'data_medicao': data_medicao_str,
-                'data_pagamento': data_pagamento_str,
+                'data_medicao': data_medicao,
+                'data_pagamento': data_pagamento,
                 'referencia': str(referencia).strip(),
                 'valor': valor_float,
                 'status': 'PENDENTE',
@@ -532,33 +524,34 @@ class ImportadorMedicoes:
     
     def preparar_dados_para_sistema(self, medicoes):
         """
-        Prepara os dados das medições no formato esperado pelo sistema.
+        Prepara os dados das medições para serem salvos no sistema.
         
-        Args:
-            medicoes (list): Lista de dicionários com as medições
-            
-        Returns:
-            list: Lista de dicionários no formato do sistema
+        IMPORTANTE: Mantém datas como datetime para salvar corretamente no Excel!
         """
-        dados_preparados = []
+        medicoes_preparadas = []
         
         for medicao in medicoes:
-            # Montar registro no formato do sistema
-            registro = {
+            data_medicao = medicao.get('data_medicao')
+            data_pagamento = medicao.get('data_pagamento')
+            
+            # ✅ CORREÇÃO: Manter como datetime, não converter para string!
+            # Se data_pagamento não existe, usar data_medicao
+            if data_pagamento is None:
+                data_pagamento = data_medicao
+            
+            medicoes_preparadas.append({
                 'ID_Contrato': medicao['id_contrato'],
                 'ID_Medicao': medicao['id_medicao'],
                 'CNPJ_Fornecedor': medicao['cnpj_fornecedor'],
                 'Nome_Fornecedor': medicao['fornecedor'],
-                'Data_Medicao': medicao['data_medicao'],
-                'Data_Pagamento': medicao['data_pagamento'],
+                'Data_Medicao': data_medicao,  # ✅ DATETIME!
+                'Data_Pagamento': data_pagamento,  # ✅ DATETIME!
                 'Referencia': medicao['referencia'],
                 'Valor': medicao['valor'],
                 'Status': medicao['status']
-            }
-            
-            dados_preparados.append(registro)
+            })
         
-        return dados_preparados
+        return medicoes_preparadas
     
     def salvar_medicoes_cliente(self, cliente, medicoes_preparadas):
         """
@@ -709,6 +702,15 @@ class ImportadorMedicoes:
                 sheet.cell(row=proxima_linha, column=8, value=medicao['Valor'])  # H
                 sheet.cell(row=proxima_linha, column=9, value=medicao['Status'])  # I
                 
+                # Formatar células de data (colunas E e F)
+                for col_date in [5, 6]:  # Colunas E (Data_Medicao) e F (Data_Pagamento)
+                    cell = sheet.cell(row=proxima_linha, column=col_date)
+                    if isinstance(cell.value, datetime):
+                        cell.number_format = 'DD/MM/YYYY'
+                
+                # Formatar célula de valor (coluna H)
+                sheet.cell(row=proxima_linha, column=8).number_format = '#,##0.00'
+
                 proxima_linha += 1
             
             # Salvar arquivo
@@ -722,53 +724,244 @@ class ImportadorMedicoes:
             erro_msg = f"Erro ao salvar medições: {str(e)}"
             logger.error(erro_msg)
             return False, erro_msg
-    
-    def renomear_arquivo_importado(self, arquivo_relatorio):
+        
+    def atualizar_saldos_contratos(self, arquivo_cliente, medicoes_importadas):
         """
-        Renomeia o arquivo de relatório após importação bem-sucedida.
-        Adiciona sufixo _IMPORTADO_[DATA_HORA] para evitar duplicidade.
+        Atualiza os valores pagos e saldos na aba Contratos_Medicao
+        
+        NOVA FUNCIONALIDADE:
+        - Quando Saldo = 0, atualiza Status para "CONCLUÍDO"
+        
+        Args:
+            arquivo_cliente (Path): Caminho do arquivo do cliente
+            medicoes_importadas (list): Lista de medições que foram importadas
+            
+        Returns:
+            tuple: (sucesso, mensagem)
+        """
+        try:
+            logger.info("=" * 60)
+            logger.info("ATUALIZANDO SALDOS DOS CONTRATOS")
+            logger.info("=" * 60)
+            
+            # Carregar arquivo
+            wb = openpyxl.load_workbook(arquivo_cliente)
+            
+            # Verificar se aba Contratos_Medicao existe
+            if 'Contratos_Medicao' not in wb.sheetnames:
+                wb.close()
+                return False, "Aba 'Contratos_Medicao' não encontrada no arquivo do cliente"
+            
+            # Verificar se aba Medicoes existe
+            if 'Medicoes' not in wb.sheetnames:
+                wb.close()
+                return False, "Aba 'Medicoes' não encontrada no arquivo do cliente"
+            
+            sheet_contratos = wb['Contratos_Medicao']
+            sheet_medicoes = wb['Medicoes']
+            
+            # ESTRUTURA DA ABA Contratos_Medicao:
+            # A: ID_Contrato
+            # B: CNPJ_Fornecedor
+            # C: Nome_Fornecedor
+            # D: Descricao
+            # E: Data_Inicio
+            # F: Data_Final
+            # G: Valor_Global
+            # H: Valor_Pago      <<< SERÁ ATUALIZADO
+            # I: Saldo           <<< SERÁ ATUALIZADO
+            # J: Status          <<< SERÁ ATUALIZADO SE SALDO = 0
+            # K: Observacao
+            
+            # Mapear contratos por ID
+            contratos_map = {}
+            for row in sheet_contratos.iter_rows(min_row=2, values_only=False):
+                if row[0].value:  # Se tem ID_Contrato
+                    id_contrato = row[0].value
+                    contratos_map[id_contrato] = {
+                        'row_idx': row[0].row,
+                        'valor_global': row[6].value or 0,  # Coluna G
+                        'valor_pago_atual': row[7].value or 0,  # Coluna H
+                        'status_atual': row[9].value  # Coluna J
+                    }
+            
+            logger.info(f"Encontrados {len(contratos_map)} contratos na aba Contratos_Medicao")
+            
+            # Calcular totais pagos por contrato a partir de TODAS as medições
+            # (não apenas as recém-importadas)
+            totais_por_contrato = {}
+            for row in sheet_medicoes.iter_rows(min_row=2, values_only=True):
+                if row[0] and row[7]:  # Se tem ID_Contrato e Valor
+                    id_contrato = row[0]  # Coluna A
+                    valor = float(row[7])  # Coluna H (Valor)
+                    
+                    if id_contrato in totais_por_contrato:
+                        totais_por_contrato[id_contrato] += valor
+                    else:
+                        totais_por_contrato[id_contrato] = valor
+            
+            logger.info(f"Calculados totais pagos para {len(totais_por_contrato)} contratos")
+            
+            # Atualizar cada contrato
+            contratos_atualizados = 0
+            contratos_concluidos = 0  # Contador de contratos que foram concluídos
+            
+            for id_contrato, total_pago in totais_por_contrato.items():
+                if id_contrato in contratos_map:
+                    contrato_info = contratos_map[id_contrato]
+                    row_idx = contrato_info['row_idx']
+                    valor_global = float(contrato_info['valor_global'])
+                    status_atual = contrato_info['status_atual']
+                    
+                    # Calcular novo saldo
+                    novo_saldo = valor_global - total_pago
+                    
+                    # Arredondar para evitar problemas com float
+                    # (ex: 0.0000001 deve ser considerado 0)
+                    if abs(novo_saldo) < 0.01:  # Menos de 1 centavo = 0
+                        novo_saldo = 0
+                    
+                    # Determinar novo status
+                    novo_status = status_atual
+                    if novo_saldo == 0 and status_atual and status_atual.upper() == "ATIVO":
+                        novo_status = "CONCLUÍDO"
+                        contratos_concluidos += 1
+                        logger.info(f"⭐ Contrato {id_contrato} será marcado como CONCLUÍDO (saldo zerado)")
+                    
+                    # Atualizar células
+                    # Coluna H: Valor_Pago
+                    sheet_contratos.cell(row=row_idx, column=8).value = total_pago
+                    
+                    # Coluna I: Saldo
+                    sheet_contratos.cell(row=row_idx, column=9).value = novo_saldo
+                    
+                    # Coluna J: Status (atualiza apenas se mudou para CONCLUÍDO)
+                    if novo_status != status_atual:
+                        sheet_contratos.cell(row=row_idx, column=10).value = novo_status
+                    
+                    contratos_atualizados += 1
+                    
+                    # Log detalhado
+                    log_msg = f"Contrato {id_contrato}: Valor Pago = R$ {total_pago:,.2f} | Saldo = R$ {novo_saldo:,.2f}"
+                    if novo_status != status_atual:
+                        log_msg += f" | Status: {status_atual} → {novo_status}"
+                    logger.info(log_msg)
+            
+            # Salvar arquivo
+            wb.save(arquivo_cliente)
+            wb.close()
+            
+            logger.info("=" * 60)
+            logger.info(f"✓ SALDOS ATUALIZADOS COM SUCESSO!")
+            logger.info(f"✓ {contratos_atualizados} contratos atualizados")
+            if contratos_concluidos > 0:
+                logger.info(f"⭐ {contratos_concluidos} contrato(s) marcado(s) como CONCLUÍDO")
+            logger.info("=" * 60)
+            
+            # Mensagem de retorno
+            mensagem = f"{contratos_atualizados} contrato(s) atualizado(s)"
+            if contratos_concluidos > 0:
+                mensagem += f" ({contratos_concluidos} concluído(s))"
+            
+            return True, mensagem
+            
+        except Exception as e:
+            erro_msg = f"Erro ao atualizar saldos dos contratos: {str(e)}"
+            logger.error(erro_msg)
+            import traceback
+            logger.error(traceback.format_exc())
+            return False, erro_msg
+    
+    def mover_para_importados(self, arquivo_relatorio):
+        """
+        MÉTODO NOVO - Move o arquivo importado para a pasta Importados
         
         Args:
             arquivo_relatorio (str): Caminho do arquivo original
             
         Returns:
-            tuple: (bool, str) - (sucesso, novo_nome)
+            tuple: (sucesso, novo_caminho)
         """
         try:
             arquivo_path = Path(arquivo_relatorio)
             
             # Verificar se arquivo existe
             if not arquivo_path.exists():
-                logger.warning(f"Arquivo não encontrado para renomear: {arquivo_relatorio}")
+                logger.warning(f"Arquivo não encontrado para mover: {arquivo_relatorio}")
                 return False, None
             
-            # Gerar timestamp
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            nome_base = arquivo_path.stem  # Nome sem extensão
-            extensao = arquivo_path.suffix  # .xlsx
+            # Gerar nome de destino
+            nome_arquivo = arquivo_path.name
+            destino = self.pasta_importados / nome_arquivo
             
-            # Se o arquivo já tem _IMPORTADO no nome, não adicionar novamente
-            if "_IMPORTADO_" in nome_base:
-                logger.info("Arquivo já foi renomeado anteriormente, não renomeando novamente")
-                return False, None
+            # Se já existe arquivo com mesmo nome, adicionar timestamp
+            if destino.exists():
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                nome_base = arquivo_path.stem
+                extensao = arquivo_path.suffix
+                nome_arquivo = f"{nome_base}_{timestamp}{extensao}"
+                destino = self.pasta_importados / nome_arquivo
             
-            # Gerar novo nome
-            novo_nome = f"{nome_base}_IMPORTADO_{timestamp}{extensao}"
-            novo_caminho = arquivo_path.parent / novo_nome
+            # Mover arquivo
+            shutil.move(str(arquivo_path), str(destino))
             
-            # Renomear arquivo
-            arquivo_path.rename(novo_caminho)
+            logger.info(f"Arquivo movido com sucesso:")
+            logger.info(f"  De: {arquivo_path}")
+            logger.info(f"  Para: {destino}")
             
-            logger.info(f"Arquivo renomeado com sucesso:")
-            logger.info(f"  De: {arquivo_path.name}")
-            logger.info(f"  Para: {novo_nome}")
-            
-            return True, novo_nome
+            return True, str(destino)
             
         except Exception as e:
-            erro_msg = f"Erro ao renomear arquivo: {str(e)}"
+            erro_msg = f"Erro ao mover arquivo: {str(e)}"
             logger.error(erro_msg)
             return False, None
+        
+    # def renomear_arquivo_importado(self, arquivo_relatorio):
+    #     """
+    #     Renomeia o arquivo de relatório após importação bem-sucedida.
+    #     Adiciona sufixo _IMPORTADO_[DATA_HORA] para evitar duplicidade.
+        
+    #     Args:
+    #         arquivo_relatorio (str): Caminho do arquivo original
+            
+    #     Returns:
+    #         tuple: (bool, str) - (sucesso, novo_nome)
+    #     """
+    #     try:
+    #         arquivo_path = Path(arquivo_relatorio)
+            
+    #         # Verificar se arquivo existe
+    #         if not arquivo_path.exists():
+    #             logger.warning(f"Arquivo não encontrado para renomear: {arquivo_relatorio}")
+    #             return False, None
+            
+    #         # Gerar timestamp
+    #         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    #         nome_base = arquivo_path.stem  # Nome sem extensão
+    #         extensao = arquivo_path.suffix  # .xlsx
+            
+    #         # Se o arquivo já tem _IMPORTADO no nome, não adicionar novamente
+    #         if "_IMPORTADO_" in nome_base:
+    #             logger.info("Arquivo já foi renomeado anteriormente, não renomeando novamente")
+    #             return False, None
+            
+    #         # Gerar novo nome
+    #         novo_nome = f"{nome_base}_IMPORTADO_{timestamp}{extensao}"
+    #         novo_caminho = arquivo_path.parent / novo_nome
+            
+    #         # Renomear arquivo
+    #         arquivo_path.rename(novo_caminho)
+            
+    #         logger.info(f"Arquivo renomeado com sucesso:")
+    #         logger.info(f"  De: {arquivo_path.name}")
+    #         logger.info(f"  Para: {novo_nome}")
+            
+    #         return True, novo_nome
+            
+    #     except Exception as e:
+    #         erro_msg = f"Erro ao renomear arquivo: {str(e)}"
+    #         logger.error(erro_msg)
+    #         return False, None
     
     def importar_medicoes(self):
         """
@@ -861,76 +1054,78 @@ class ImportadorMedicoes:
         # Passo 6: Salvar no arquivo do cliente
         sucesso, mensagem_salvamento = self.salvar_medicoes_cliente(cliente_atual, medicoes_preparadas)
         
-        # Passo 7: Renomear arquivo se salvamento foi bem-sucedido
-        arquivo_renomeado = None
-        if sucesso:
-            # Perguntar ao usuário se deseja renomear o arquivo
-            if custom_messagebox("yesno", 
-                "Renomear Arquivo?", 
-                f"Deseja renomear o arquivo importado para evitar reimportação acidental?\n\n"
-                f"O arquivo será renomeado para:\n"
-                f"{Path(arquivo).stem}_IMPORTADO_[DATA_HORA].xlsx\n\n"
-                f"Recomendado: SIM"
-            ):
-                sucesso_renomear, novo_nome = self.renomear_arquivo_importado(arquivo)
-                if sucesso_renomear:
-                    arquivo_renomeado = novo_nome
-                    logger.info(f"✓ Arquivo renomeado: {novo_nome}")
-                else:
-                    logger.warning("⚠ Não foi possível renomear o arquivo")
-            else:
-                logger.info("Usuário optou por não renomear o arquivo")
+        # Passo 7: Atualizar saldos dos contratos
+        arquivo_cliente = self._obter_arquivo_cliente(cliente_atual)
+        sucesso_saldos = False
+        mensagem_saldos = ""
         
-        # Passo 8: Mostrar resultado final
-        if sucesso:
-            mensagem_final = (
-                f"✅ Importação Concluída com Sucesso!\n\n"
-                f"📊 Resumo Final:\n"
-                f"• Medições importadas: {len(medicoes_preparadas)}\n"
-                f"• Valor total: R$ {resumo['valor_total']:,.2f}\n"
-                f"• Cliente: {cliente_atual}\n"
+        if arquivo_cliente:
+            sucesso_saldos, mensagem_saldos = self.atualizar_saldos_contratos(
+                arquivo_cliente, 
+                medicoes_preparadas
             )
             
-            # Adicionar informação sobre renomeação
-            if arquivo_renomeado:
-                mensagem_final += f"\n📝 Arquivo renomeado para:\n{arquivo_renomeado}\n"
-            
-            if len(erros) > 0:
-                mensagem_final += f"\n⚠️ Avisos durante o processamento: {len(erros)}\n"
-                
-                # Mostrar alguns erros se houver
-                if custom_messagebox("yesno", 
-                    "Importação Concluída", 
-                    mensagem_final + "\nDeseja ver os avisos?"
-                ):
-                    mensagem_erros = "⚠️ Avisos:\n\n"
-                    for erro in erros[:10]:
-                        mensagem_erros += f"• {erro}\n"
-                    if len(erros) > 10:
-                        mensagem_erros += f"\n... e mais {len(erros) - 10} avisos."
-                    custom_messagebox("info", "Avisos", mensagem_erros)
+            if not sucesso_saldos:
+                logger.warning(f"Aviso: {mensagem_saldos}")
+        
+        # Passo 8: Mover arquivo para pasta Importados (SUBSTITUI renomear)
+        arquivo_movido = False
+        novo_caminho = None
+        
+        if custom_messagebox("yesno", 
+            "Mover Arquivo?", 
+            f"Deseja mover o arquivo importado para a pasta 'Importados'?\n\n"
+            f"Isso organiza os arquivos e evita reimportação acidental.\n\n"
+            f"Recomendado: SIM"
+        ):
+            sucesso_mover, novo_caminho = self.mover_para_importados(arquivo)
+            if sucesso_mover:
+                arquivo_movido = True
+                logger.info(f"✓ Arquivo movido: {novo_caminho}")
             else:
-                custom_messagebox("info", "Sucesso", mensagem_final)
-        else:
-            custom_messagebox("error", 
-                "Erro ao Salvar", 
-                f"As medições foram processadas mas houve erro ao salvar:\n\n{mensagem_salvamento}"
-            )
-
-
-# ========== EXEMPLO DE USO ==========
-if __name__ == "__main__":
-    # Teste básico (standalone)
-    print("=== Teste do ImportadorMedicoes ===")
-    
-    class SistemaMock:
-        def __init__(self):
-            self.cliente_atual = "BRUNO SANTANA RINALDI"
-    
-    sistema_mock = SistemaMock()
-    importador = ImportadorMedicoes(sistema_mock)
-    
-    print("✓ ImportadorMedicoes inicializado")
-    print(f"✓ Pasta de medições: {importador.pasta_medicoes}")
-    print("\nPara usar no sistema real, adicione ao menu:")
-    print("  ttk.Button(..., text='Importar Medições', command=self.importar_medicoes)")
+                logger.warning("⚠ Não foi possível mover o arquivo")
+        
+        # Passo 9: Mostrar resultado final
+        mensagem_final = (
+            f"✅ Importação Concluída!\n\n"
+            f"📊 Resumo:\n"
+            f"• Medições: {len(medicoes_preparadas)}\n"
+            f"• Valor: R$ {resumo['valor_total']:,.2f}\n"
+            f"• Cliente: {cliente_atual}\n"
+        )
+        
+        if sucesso_saldos:
+            mensagem_final += f"• Saldos atualizados: {mensagem_saldos}\n"
+        
+        if arquivo_movido:
+            mensagem_final += f"\n📁 Arquivo movido para:\n{Path(novo_caminho).name}\n"
+        
+        custom_messagebox("info", "Sucesso", mensagem_final)
+    def _obter_arquivo_cliente(self, cliente):
+        """
+        Método auxiliar para obter o caminho do arquivo do cliente
+        
+        Args:
+            cliente (str): Nome do cliente
+            
+        Returns:
+            Path: Caminho do arquivo ou None se não encontrar
+        """
+        try:
+            # Possíveis localizações do arquivo
+            possiveis_caminhos = [
+                Path(PASTA_CLIENTES) / f"{cliente}.xlsx",
+                Path(PASTA_CLIENTES) / cliente / f"{cliente}.xlsx",
+                Path(BASE_PATH) / "Clientes" / f"{cliente}.xlsx"
+            ]
+            
+            # Procurar o arquivo
+            for caminho in possiveis_caminhos:
+                if caminho.exists():
+                    return caminho
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Erro ao obter arquivo do cliente: {e}")
+            return None
