@@ -1054,8 +1054,9 @@ class RelatorioContratos:
                     
                     # Formatar células
                     for col in [2, 3]:
-                        if isinstance(ws_contrato.cell(row=linha, column=col).value, datetime):
-                            ws_contrato.cell(row=linha, column=col).number_format = 'dd/mm/yyyy'
+                        cell = ws_contrato.cell(row=linha, column=col)
+                        if isinstance(cell.value, datetime):
+                            cell.number_format = 'DD/MM/YYYY'
                     
                     ws_contrato.cell(row=linha, column=5).number_format = '#,##0.00'
                     
