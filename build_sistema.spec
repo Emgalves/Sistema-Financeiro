@@ -51,7 +51,8 @@ try:
         'docx.opc',
         'docx.opc.constants',
         'docx.opc.packuri',
-        'docx.opc.phys_pkg',
+        'docx.opc.part',
+        'docx.opc.parts',
         'docx.parts',
         'docx.parts.document',
         'docx.text',
@@ -62,14 +63,11 @@ try:
         'docx.section',
         'docx.styles',
     ]
-    
-    print(f"[OK] python-docx: {len(docx_datas)} arquivos de dados coletados")
-    print(f"[OK] python-docx: {len(docx_hiddenimports)} imports encontrados")
-    
+    print("[OK] python-docx coletado com sucesso")
 except Exception as e:
     print(f"[AVISO] Erro ao coletar python-docx: {e}")
 
-# LXML (dependência crítica do python-docx)
+# LXML (necessário para python-docx)
 lxml_datas = []
 lxml_binaries = []
 lxml_hiddenimports = []
@@ -79,54 +77,94 @@ try:
     lxml_datas += tmp_datas
     lxml_binaries += tmp_binaries
     lxml_hiddenimports += tmp_hiddenimports
+    
     lxml_hiddenimports += collect_submodules('lxml')
-    
-    print(f"[OK] lxml: {len(lxml_binaries)} binários coletados")
-    
+    lxml_hiddenimports += [
+        'lxml',
+        'lxml.etree',
+        'lxml._elementpath',
+        'lxml.builder',
+    ]
+    print("[OK] lxml coletado com sucesso")
 except Exception as e:
     print(f"[AVISO] Erro ao coletar lxml: {e}")
 
-# Outras bibliotecas com coleta automática
+# Outros módulos importantes
 outras_datas = []
 outras_binaries = []
 outras_hiddenimports = []
 
-bibliotecas_auto = [
-    'openpyxl',
-    'pandas',
-    'PIL',
-    'reportlab',
-    'matplotlib',
-    'xlwings',
-    'tkcalendar',
-    'babel',
-    'num2words',
-    'dotenv',
-]
+# Coletar openpyxl
+try:
+    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('openpyxl')
+    outras_datas += tmp_datas
+    outras_binaries += tmp_binaries
+    outras_hiddenimports += tmp_hiddenimports
+    print("[OK] openpyxl coletado")
+except:
+    pass
 
-for lib in bibliotecas_auto:
-    try:
-        tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all(lib)
-        outras_datas += tmp_datas
-        outras_binaries += tmp_binaries
-        outras_hiddenimports += tmp_hiddenimports
-        print(f"[OK] {lib} coletado")
-    except:
-        print(f"[AVISO] {lib} não encontrado (pode não estar instalado)")
+# Coletar pandas
+try:
+    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('pandas')
+    outras_datas += tmp_datas
+    outras_binaries += tmp_binaries
+    outras_hiddenimports += tmp_hiddenimports
+    print("[OK] pandas coletado")
+except:
+    pass
+
+# Coletar PIL/Pillow
+try:
+    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('PIL')
+    outras_datas += tmp_datas
+    outras_binaries += tmp_binaries
+    outras_hiddenimports += tmp_hiddenimports
+    print("[OK] PIL/Pillow coletado")
+except:
+    pass
+
+# Coletar reportlab
+try:
+    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('reportlab')
+    outras_datas += tmp_datas
+    outras_binaries += tmp_binaries
+    outras_hiddenimports += tmp_hiddenimports
+    print("[OK] reportlab coletado")
+except:
+    pass
 
 # ====================================================================
-# HIDDEN IMPORTS COMPLETOS
+# HIDDEN IMPORTS COMPLETO
 # ====================================================================
 
-hidden_imports = [
-    # === TKINTER ===
+hidden_imports = []
+
+# Adicionar todos os hiddenimports coletados
+hidden_imports += docx_hiddenimports
+hidden_imports += lxml_hiddenimports
+hidden_imports += outras_hiddenimports
+
+# Adicionar imports manuais do sistema
+hidden_imports += [
+    # Tkinter
     'tkinter',
     'tkinter.ttk',
     'tkinter.scrolledtext',
     'tkinter.filedialog',
     'tkinter.messagebox',
     
-    # === MÓDULOS DO SISTEMA ===
+    # Bibliotecas essenciais
+    'matplotlib',
+    'xlwings',
+    'tkcalendar',
+    'babel',
+    'babel.numbers',
+    'num2words',
+    'num2words.lang_pt_BR',
+    'dotenv',
+    
+    # Módulos do sistema
     'ambiente_config',
     'version_control',
     'Sistema_Entrada_Dados',
@@ -134,7 +172,7 @@ hidden_imports = [
     'src.version_control',
     'src.Sistema_Entrada_Dados',
     
-    # === RELATÓRIOS ===
+    # Relatórios
     'src.relatorios_interface',
     'src.relatorio_despesas_aprimorado',
     'src.relatorio_despesas_service',
@@ -145,29 +183,29 @@ hidden_imports = [
     'src.relatorio_gerencial_engenheiro',
     'src.relatorio_gerencial_pdf',
     
-    # === GESTÃO ===
+    # Gestão
     'src.despesas_rateadas',
     'src.gestao_medicoes',
     'src.gestao_taxas',
     'src.configuracoes_sistema',
     
-    # === MODULES (Gerador de Contratos) ===
+    # Módulos (Gerador de Contratos)
     'src.modules',
     'src.modules.gerador_contrato',
     
-    # === CONTROLE ===
+    # Controle
     'src.controle_pagamentos_taxas',
     'src.controle_pagamentos',
     'src.pagamentos_eventos',
     
-    # === UTILITÁRIOS ===
+    # Utilitários
     'src.verificador_sistema',
     'src.corrigir_imports_sistema',
     'src.finalizacao_quinzena',
     'src.correcao_monetaria',
     'src.teste_certificado_automatico',
     
-    # === CONFIG ===
+    # Config
     'src.config.utils',
     'src.config.dialogs',
     'src.config.logger_config',
@@ -175,18 +213,13 @@ hidden_imports = [
     'src.config.config',
 ]
 
-# Combinar todos os hidden imports
-hidden_imports += docx_hiddenimports
-hidden_imports += lxml_hiddenimports
-hidden_imports += outras_hiddenimports
-
 # Remover duplicatas
 hidden_imports = list(set(hidden_imports))
 
-print(f"\n[INFO] Total de hidden imports: {len(hidden_imports)}")
+print(f"[INFO] Total de hidden imports: {len(hidden_imports)}")
 
 # ====================================================================
-# DADOS ADICIONAIS
+# ARQUIVOS DE DADOS
 # ====================================================================
 
 datas = []
