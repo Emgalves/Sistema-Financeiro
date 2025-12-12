@@ -7755,3 +7755,183 @@
 2025-12-11 18:58:49,967 - INFO - Limpando 1 registros salvos da visualização
 2025-12-11 18:58:49,967 - INFO - Dados salvos removidos com sucesso da visualização
 2025-12-11 19:08:19,107 - INFO - Sistema encerrado pelo usuário
+2025-12-12 08:42:38,640 - INFO - Configurações importadas com sucesso via src.config
+2025-12-12 08:42:38,702 - INFO - Configurações importadas com sucesso
+2025-12-12 08:42:38,703 - INFO - Configurações do sistema importadas com sucesso
+2025-12-12 08:42:40,208 - INFO - Sistema iniciado em modo: TESTE
+2025-12-12 08:42:44,562 - INFO - Abrindo sistema de relatórios
+2025-12-12 08:46:43,799 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 08:46:45,530 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 08:46:48,625 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-12-12 08:48:35,318 - INFO - Abrindo gestão de medições
+2025-12-12 08:50:37,325 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 08:50:37,862 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 08:50:40,622 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-12-12 08:52:04,956 - INFO - Abrindo gestão de medições
+2025-12-12 08:52:45,811 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 08:52:46,372 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 08:52:49,245 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-12-12 08:53:12,987 - INFO - Abrindo gestão de medições
+2025-12-12 08:54:53,810 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 08:54:54,423 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 08:54:57,547 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-12-12 08:56:44,338 - INFO - Iniciando adição de dados - Cliente: ANA AUGUSTA PIRES COUTINHO
+2025-12-12 08:56:45,708 - INFO - Dados adicionados com sucesso - Cliente: ANA AUGUSTA PIRES COUTINHO, Total: 1
+2025-12-12 08:56:45,710 - INFO - Iniciando envio de dados - Cliente: ANA AUGUSTA PIRES COUTINHO, Registros: 1
+2025-12-12 08:56:45,711 - INFO - Usando dados_para_incluir existentes
+2025-12-12 08:56:45,712 - INFO - Total de registros a processar: 1
+2025-12-12 08:56:45,713 - INFO - Datas que serão afetadas pela inserção: ['20/12/2025']
+2025-12-12 08:56:45,713 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-12-12 08:56:45,720 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-12 08:56:46,557 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-12 08:56:46,558 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-12 08:56:46,559 - INFO - Dados novos: ALFATEC INSTALACOES | 2 MEDIÇÕES AGRUPADAS (CONTRATOS 1, 5) | NF:  | R$ 18000.00 | 20/12/2025
+2025-12-12 08:56:46,612 - INFO - ✅ Nenhuma duplicata encontrada para: ALFATEC INSTALACOES - 2 MEDIÇÕES AGRUPADAS (CONTRATOS 1, 5) - NF: 
+2025-12-12 08:56:46,619 - INFO - Lançamento inserido com ID 707 na linha 708
+2025-12-12 08:56:47,078 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-12 08:56:47,579 - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-12-12 08:56:47,580 - ERROR - Erro ao verificar recálculo para 2025-12-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-12 08:56:49,230 - INFO - Limpando 1 registros salvos da visualização
+2025-12-12 08:56:49,231 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-12 08:57:01,313 - INFO - Abrindo gestão de medições
+2025-12-12 10:01:58,723 - INFO - Sistema encerrado pelo usuário
+2025-12-12 10:14:08,098 - INFO - Configurações importadas com sucesso via src.config
+2025-12-12 10:14:08,169 - INFO - Configurações importadas com sucesso
+2025-12-12 10:14:08,170 - INFO - Configurações do sistema importadas com sucesso
+2025-12-12 10:14:09,748 - INFO - Sistema iniciado em modo: TESTE
+2025-12-12 10:15:33,511 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 10:15:35,431 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 10:15:38,790 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2025-12-12 10:15:54,476 - INFO - Iniciando adição de dados - Cliente: ANA AUGUSTA PIRES COUTINHO
+2025-12-12 10:15:56,134 - INFO - Dados adicionados com sucesso - Cliente: ANA AUGUSTA PIRES COUTINHO, Total: 1
+2025-12-12 10:15:56,136 - INFO - Iniciando envio de dados - Cliente: ANA AUGUSTA PIRES COUTINHO, Registros: 1
+2025-12-12 10:15:56,137 - INFO - Usando dados_para_incluir existentes
+2025-12-12 10:15:56,138 - INFO - Total de registros a processar: 1
+2025-12-12 10:15:56,139 - INFO - Datas que serão afetadas pela inserção: ['20/12/2025']
+2025-12-12 10:15:56,141 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2025-12-12 10:15:56,146 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-12 10:15:56,823 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-12 10:15:56,824 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-12 10:15:56,826 - INFO - Dados novos: LUCIANO LISBOA DA SILVA | ASSENTAMENTO DE BANCADA E PISO DA COZINHA/GOURMET | NF:  | R$ 10000.00 | 20/12/2025
+2025-12-12 10:15:56,923 - INFO - ✅ Nenhuma duplicata encontrada para: LUCIANO LISBOA DA SILVA - ASSENTAMENTO DE BANCADA E PISO DA COZINHA/GOURMET - NF: 
+2025-12-12 10:15:56,932 - INFO - Lançamento inserido com ID 708 na linha 709
+2025-12-12 10:15:57,534 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-12 10:15:58,035 - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-12-12 10:15:58,036 - ERROR - Erro ao verificar recálculo para 2025-12-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-12 10:15:59,389 - INFO - Limpando 1 registros salvos da visualização
+2025-12-12 10:15:59,392 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-12 10:16:12,375 - INFO - Abrindo sistema de relatórios
+2025-12-12 10:18:30,157 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 10:18:30,674 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 10:18:33,591 - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-12-12 10:19:16,515 - INFO - Iniciando adição de dados - Cliente: EDUARDO MORENO MARQUES
+2025-12-12 10:19:18,832 - INFO - Dados adicionados com sucesso - Cliente: EDUARDO MORENO MARQUES, Total: 1
+2025-12-12 10:19:18,835 - INFO - Iniciando envio de dados - Cliente: EDUARDO MORENO MARQUES, Registros: 1
+2025-12-12 10:19:18,836 - INFO - Usando dados_para_incluir existentes
+2025-12-12 10:19:18,837 - INFO - Total de registros a processar: 1
+2025-12-12 10:19:18,838 - INFO - Datas que serão afetadas pela inserção: ['20/12/2025']
+2025-12-12 10:19:18,838 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2025-12-12 10:19:18,840 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-12 10:19:20,006 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-12 10:19:20,007 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-12 10:19:20,007 - INFO - Dados novos: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS | INST. CASA DE MÁQUINAS E ACAB, DO ESCRITÓRIO | NF:  | R$ 4000.00 | 20/12/2025
+2025-12-12 10:19:20,085 - INFO - ✅ Nenhuma duplicata encontrada para: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS - INST. CASA DE MÁQUINAS E ACAB, DO ESCRITÓRIO - NF: 
+2025-12-12 10:19:20,091 - INFO - Lançamento inserido com ID 1111 na linha 1112
+2025-12-12 10:19:20,677 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-12 10:19:21,179 - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-12-12 10:19:21,180 - ERROR - Erro ao verificar recálculo para 2025-12-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-12 10:19:22,868 - INFO - Limpando 1 registros salvos da visualização
+2025-12-12 10:19:22,868 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-12 10:19:31,661 - INFO - Abrindo gestão de medições
+2025-12-12 10:22:32,786 - INFO - Abrindo gestão de medições
+2025-12-12 10:22:36,955 - INFO - Abrindo sistema de relatórios
+2025-12-12 10:25:07,897 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 10:25:08,479 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 10:25:11,995 - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2025-12-12 10:25:35,809 - INFO - Abrindo sistema de relatórios
+2025-12-12 10:27:33,519 - INFO - Abrindo gestão de medições
+2025-12-12 10:27:59,455 - INFO - Abrindo sistema de relatórios
+2025-12-12 10:29:58,342 - INFO - Abrindo sistema de relatórios
+2025-12-12 10:31:30,317 - INFO - Sistema encerrado pelo usuário
+2025-12-12 10:31:58,127 - INFO - Configurações importadas com sucesso via src.config
+2025-12-12 10:31:58,151 - INFO - Configurações importadas com sucesso
+2025-12-12 10:31:58,152 - INFO - Configurações do sistema importadas com sucesso
+2025-12-12 10:31:58,627 - INFO - Sistema iniciado em modo: TESTE
+2025-12-12 10:32:01,309 - INFO - Abrindo sistema de relatórios
+2025-12-12 10:32:42,563 - INFO - Sistema encerrado pelo usuário
+2025-12-12 12:23:54,904 - INFO - Configurações importadas com sucesso via src.config
+2025-12-12 12:23:54,962 - INFO - Configurações importadas com sucesso
+2025-12-12 12:23:54,963 - INFO - Configurações do sistema importadas com sucesso
+2025-12-12 12:23:56,416 - INFO - Sistema iniciado em modo: TESTE
+2025-12-12 12:24:00,118 - INFO - Abrindo sistema de relatórios
+2025-12-12 14:28:10,084 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 14:28:11,863 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 14:28:14,782 - INFO - Cliente selecionado com sucesso: RHAUFED RODRIGUES DOS SANTOS
+2025-12-12 14:34:17,578 - INFO - Iniciando adição de dados - Cliente: RHAUFED RODRIGUES DOS SANTOS
+2025-12-12 14:34:19,512 - INFO - Dados adicionados com sucesso - Cliente: RHAUFED RODRIGUES DOS SANTOS, Total: 1
+2025-12-12 14:34:19,513 - INFO - Iniciando envio de dados - Cliente: RHAUFED RODRIGUES DOS SANTOS, Registros: 1
+2025-12-12 14:34:19,514 - INFO - Usando dados_para_incluir existentes
+2025-12-12 14:34:19,515 - INFO - Total de registros a processar: 1
+2025-12-12 14:34:19,515 - INFO - Datas que serão afetadas pela inserção: ['20/12/2025']
+2025-12-12 14:34:19,516 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\RHAUFED RODRIGUES DOS SANTOS.xlsx
+2025-12-12 14:34:19,517 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-12 14:34:20,581 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-12 14:34:20,583 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-12 14:34:20,583 - INFO - Dados novos: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS | DISTRIBUIÇÃO DE AGUA FRIA E QUENTE DAS SUITES | NF:  | R$ 3947.50 | 20/12/2025
+2025-12-12 14:34:20,713 - INFO - ✅ Nenhuma duplicata encontrada para: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS - DISTRIBUIÇÃO DE AGUA FRIA E QUENTE DAS SUITES - NF: 
+2025-12-12 14:34:20,720 - INFO - Lançamento inserido com ID 1087 na linha 1088
+2025-12-12 14:34:21,257 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-12 14:34:21,758 - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-12-12 14:34:21,759 - ERROR - Erro ao verificar recálculo para 2025-12-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-12 14:34:22,946 - INFO - Limpando 1 registros salvos da visualização
+2025-12-12 14:34:22,947 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-12 14:34:31,371 - INFO - Abrindo sistema de relatórios
+2025-12-12 14:35:52,476 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 14:35:54,048 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 14:35:57,760 - INFO - Cliente selecionado com sucesso: RHAUFED RODRIGUES DOS SANTOS
+2025-12-12 14:36:19,931 - INFO - Abrindo gestão de medições
+2025-12-12 14:37:28,401 - INFO - Abrindo sistema de relatórios
+2025-12-12 14:58:57,520 - INFO - Abrindo configurações do sistema
+2025-12-12 14:59:11,038 - INFO - Sistema encerrado pelo usuário
+2025-12-12 14:59:28,850 - INFO - Configurações importadas com sucesso via src.config
+2025-12-12 14:59:28,908 - INFO - Configurações importadas com sucesso
+2025-12-12 14:59:28,908 - INFO - Configurações do sistema importadas com sucesso
+2025-12-12 14:59:29,628 - INFO - Sistema iniciado em modo: TESTE
+2025-12-12 14:59:35,211 - INFO - Abrindo gestão de medições
+2025-12-12 15:00:00,075 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 15:00:01,265 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 15:00:58,573 - INFO - Configurações importadas com sucesso via src.config
+2025-12-12 15:00:58,591 - INFO - Configurações importadas com sucesso
+2025-12-12 15:00:58,592 - INFO - Configurações do sistema importadas com sucesso
+2025-12-12 15:00:59,140 - INFO - Sistema iniciado em modo: TESTE
+2025-12-12 15:01:01,938 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 15:01:03,247 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 15:01:26,404 - INFO - Cliente selecionado com sucesso: RHAUFED RODRIGUES DOS SANTOS
+2025-12-12 15:05:29,986 - ERROR - Erro na importação de medições: 'nome_fornecedor'
+2025-12-12 15:06:48,017 - INFO - Configurações importadas com sucesso via src.config
+2025-12-12 15:06:48,072 - INFO - Configurações importadas com sucesso
+2025-12-12 15:06:48,073 - INFO - Configurações do sistema importadas com sucesso
+2025-12-12 15:06:48,588 - INFO - Sistema iniciado em modo: TESTE
+2025-12-12 15:06:50,655 - INFO - Abrindo sistema de entrada de dados
+2025-12-12 15:06:51,934 - INFO - Proteções contra perda de dados configuradas
+2025-12-12 15:06:55,730 - INFO - Cliente selecionado com sucesso: RHAUFED RODRIGUES DOS SANTOS
+2025-12-12 15:07:32,613 - INFO - Iniciando adição de dados - Cliente: RHAUFED RODRIGUES DOS SANTOS
+2025-12-12 15:07:36,715 - INFO - Dados adicionados com sucesso - Cliente: RHAUFED RODRIGUES DOS SANTOS, Total: 1
+2025-12-12 15:07:36,716 - INFO - Iniciando envio de dados - Cliente: RHAUFED RODRIGUES DOS SANTOS, Registros: 1
+2025-12-12 15:07:36,718 - INFO - Usando dados_para_incluir existentes
+2025-12-12 15:07:36,719 - INFO - Total de registros a processar: 1
+2025-12-12 15:07:36,720 - INFO - Datas que serão afetadas pela inserção: ['20/12/2025']
+2025-12-12 15:07:36,721 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\RHAUFED RODRIGUES DOS SANTOS.xlsx
+2025-12-12 15:07:36,722 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-12 15:07:37,822 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-12 15:07:37,823 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-12 15:07:37,824 - INFO - Dados novos: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS | DISTRIBUIÇÃO DE AGUA FRIA E QUENTE DAS SUITES | NF:  | R$ 3947.50 | 20/12/2025
+2025-12-12 15:07:37,896 - INFO - ✅ Nenhuma duplicata encontrada para: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS - DISTRIBUIÇÃO DE AGUA FRIA E QUENTE DAS SUITES - NF: 
+2025-12-12 15:07:37,904 - INFO - Lançamento inserido com ID 1087 na linha 1088
+2025-12-12 15:07:38,439 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-12 15:07:38,941 - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-12-12 15:07:38,941 - ERROR - Erro ao verificar recálculo para 2025-12-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-12 15:07:40,525 - INFO - Limpando 1 registros salvos da visualização
+2025-12-12 15:07:40,526 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-12 15:08:04,590 - INFO - Abrindo sistema de relatórios
+2025-12-12 15:13:02,921 - INFO - Sistema encerrado pelo usuário
