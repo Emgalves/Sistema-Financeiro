@@ -12,6 +12,7 @@ from dateutil.relativedelta import relativedelta
 from pathlib import Path
 
 from relatorio_despesas_service import RelatoriosDespesasService
+from config_relatorio_quinzenal import configurar_relatorio_quinzenal
 
 # from correcoes_emergenciais import aplicar_todas_correcoes 
 # aplicar_todas_correcoes()
@@ -135,6 +136,7 @@ try:
 except ImportError:
     logger.warning("Usando configuração de janela fallback")
     # Implementação básica caso o módulo não seja encontrado
+
     def configurar_janela(janela, titulo, largura=700, altura=1000):
         """
         Configura o posicionamento e dimensionamento padrão de uma janela
@@ -192,7 +194,7 @@ class SistemaRelatorios:
             self.menu_principal = None
             
         # Configurar a janela
-        configurar_janela(self.root, "Sistema Integrado de Relatórios", 800, 1000)
+        configurar_janela(self.root, "Sistema Integrado de Relatórios", 900, 1000)
         
         # Acompanhar quais módulos foram carregados
         self.modulos_carregados = {}
@@ -219,7 +221,7 @@ class SistemaRelatorios:
         
         # Frame esquerdo para lista de relatórios
         self.left_frame = ttk.LabelFrame(self.main_frame, text="Tipos de Relatórios")
-        self.left_frame.pack(side='left', fill='y', padx=10, pady=10)
+        self.left_frame.pack(side='left', fill='both', padx=10, pady=10)
         
         # Frame direito para opções do relatório selecionado
         self.right_frame = ttk.LabelFrame(self.main_frame, text="Configurações do Relatório")
@@ -614,12 +616,12 @@ class SistemaRelatorios:
                 "disponivel": True
             },
             {
-                "id": "administracao",
-                "nome": "Relatório de Contratos de Administração",
-                "descricao": "Relatório de contratos de administração de obra",
-                "modulo": "relatorio_administracao",
-                "classe": "RelatorioAdministracao",
-                "disponivel": False
+                "id": "medicoes_quinzenal",
+                "nome": "Relatório Quinzenal de Medições (PDF)",
+                "descricao": "Relatório PDF de medições da quinzena (dias 5 e 20)",
+                "modulo": None,
+                "classe": None,
+                "disponivel": True
             },
             {
                 "id": "categoria",
@@ -662,6 +664,14 @@ class SistemaRelatorios:
                 "disponivel": True
             },
             {
+                "id": "administracao",
+                "nome": "Relatório de Contratos de Administração",
+                "descricao": "Relatório de contratos de administração de obra",
+                "modulo": "relatorio_administracao",
+                "classe": "RelatorioAdministracao",
+                "disponivel": False
+            },
+            {
                 "id": "lancamentos_pendentes",
                 "nome": "Relatório de Lançamentos Pendentes",
                 "descricao": "Relatório de lançamentos pendentes de múltiplos clientes",
@@ -699,6 +709,42 @@ class SistemaRelatorios:
         # Bind para seleção
         self.tree_relatorios.bind('<<TreeviewSelect>>', self.mostrar_opcoes_relatorio)
     
+    def mostrar_configuracoes_quinzenal(self):
+        """Mostra configurações do relatório quinzenal no painel direito"""
+        try:
+            logger.info("📄 Carregando configurações do Relatório Quinzenal")
+            
+            # Limpar painel direito
+            for widget in self.right_frame.winfo_children():
+                widget.destroy()
+            
+            # Criar frame de conteúdo com scroll
+            canvas = tk.Canvas(self.right_frame)
+            scrollbar = ttk.Scrollbar(self.right_frame, orient="vertical", command=canvas.yview)
+            scrollable_frame = ttk.Frame(canvas)
+            
+            scrollable_frame.bind(
+                "<Configure>",
+                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            )
+            
+            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+            canvas.configure(yscrollcommand=scrollbar.set)
+            
+            # Pack canvas e scrollbar
+            canvas.pack(side="left", fill="both", expand=True)
+            scrollbar.pack(side="right", fill="y")
+            
+            # Carregar configurações do relatório quinzenal
+            from config_relatorio_quinzenal import configurar_relatorio_quinzenal
+            configurar_relatorio_quinzenal(scrollable_frame, self)
+            
+            logger.info("✅ Configurações do Relatório Quinzenal carregadas")
+            
+        except Exception as e:
+            logger.error(f"Erro ao carregar configurações quinzenal: {str(e)}", exc_info=True)
+            messagebox.showerror("Erro", f"Erro ao carregar configurações: {str(e)}")
+
     def mostrar_opcoes_relatorio(self, event=None):
         """Versão corrigida que usa estrutura original"""
         
@@ -760,6 +806,8 @@ class SistemaRelatorios:
             self.setup_opcoes_gerencial_pdf(opcoes_frame)
         elif relatorio["id"] == "lancamentos_pendentes":
             self.setup_opcoes_lancamentos_pendentes(opcoes_frame)
+        elif relatorio["id"] == "medicoes_quinzenal":
+            self.setup_opcoes_quinzenal(opcoes_frame)
         else:
             ttk.Label(
                 opcoes_frame,
@@ -771,16 +819,7 @@ class SistemaRelatorios:
         btn_frame.pack(fill='x', pady=20)
         
         if relatorio["id"] == "despesas":
-            # NOVO: Botão otimizado para despesas
-            # Label explicativo
-            # ttk.Label(
-            #     btn_frame,
-            #     text="💡 O sistema processará os dados e abrirá diretamente o preview ou gerará o PDF conforme configurado.",
-            #     font=('Arial', 9),
-            #     foreground='blue',
-            #     wraplength=400
-            # ).pack(pady=(0, 10))
-            
+                       
             # Botão de validação (opcional)
             ttk.Button(
                 btn_frame,
@@ -1982,6 +2021,34 @@ class SistemaRelatorios:
             variable=self.formato_contratos,
             value="pdf"
         ).pack(side='left', padx=20, pady=5)
+
+    def setup_opcoes_quinzenal(self, parent_frame):
+        """
+        Configura as opções do Relatório Quinzenal de Medições
+        
+        Este método substitui a mensagem genérica amarela por configurações reais
+        """
+        try:
+            # Limpar frame
+            for widget in parent_frame.winfo_children():
+                widget.destroy()
+            
+            # Usar a configuração completa do relatório quinzenal
+            from config_relatorio_quinzenal import configurar_relatorio_quinzenal
+            configurar_relatorio_quinzenal(parent_frame, self)
+            
+            logger.info("✅ Opções do Relatório Quinzenal configuradas")
+            
+        except Exception as e:
+            logger.error(f"Erro ao configurar opções quinzenal: {str(e)}", exc_info=True)
+            # Se falhar, mostra mensagem de erro ao invés da mensagem genérica
+            ttk.Label(
+                parent_frame,
+                text=f"Erro ao carregar configurações: {str(e)}",
+                font=('Arial', 10),
+                foreground='red',
+                wraplength=400
+            ).pack(pady=20)
 
     def setup_opcoes_categoria(self, parent_frame):
         """Configura as opções específicas para relatório por tipo de despesa"""
