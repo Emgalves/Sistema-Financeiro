@@ -198,6 +198,12 @@ class ImportadorMedicoes:
         """
         Extrai as medições de uma aba de contrato específica.
         
+        REGRA DE STATUS:
+        - Medições com status PENDENTE ou vazio (None/string vazia) são consideradas NOVAS
+        - Medições com status LANÇADO ou VINCULADO são IGNORADAS (já foram processadas)
+        - Usuários podem deixar o campo status vazio por esquecimento ou desconhecimento
+        - O sistema assume que campos vazios são novas medições pendentes
+        
         Args:
             sheet: Planilha do openpyxl
             id_contrato: ID do contrato
@@ -235,8 +241,13 @@ class ImportadorMedicoes:
                 linha_atual += 1
                 continue
             
-            # Validar se é uma medição nova (apenas PENDENTE são novas)
-            if status is None or str(status).upper().strip() != 'PENDENTE':
+            # Validar se é uma medição nova
+            # Aceita: status PENDENTE ou vazio (None ou string vazia)
+            # Rejeita: status LANÇADO ou VINCULADO (medições já processadas)
+            status_str = str(status).upper().strip() if status is not None else ''
+            
+            # Se status está preenchido e NÃO é PENDENTE, pular esta linha
+            if status_str and status_str != 'PENDENTE':
                 # Adicionar ID à lista de IDs existentes para validar sequência
                 medicoes_ids.append(id_medicao)
                 linha_atual += 1
