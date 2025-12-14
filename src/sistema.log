@@ -8038,3 +8038,67 @@
 2025-12-13 17:35:29,401 - INFO - Sistema iniciado em modo: TESTE
 2025-12-13 17:35:36,898 - INFO - Abrindo sistema de relatórios
 2025-12-13 17:36:42,296 - INFO - Sistema encerrado pelo usuário
+2025-12-14 16:31:54,755 - INFO - Configurações importadas com sucesso via src.config
+2025-12-14 16:31:54,784 - INFO - Configurações importadas com sucesso
+2025-12-14 16:31:54,785 - INFO - Configurações do sistema importadas com sucesso
+2025-12-14 16:31:56,438 - INFO - Sistema iniciado em modo: TESTE
+2025-12-14 16:32:58,159 - INFO - Abrindo sistema de entrada de dados
+2025-12-14 16:33:02,558 - INFO - Proteções contra perda de dados configuradas
+2025-12-14 16:33:12,207 - INFO - Abrindo gestão de medições
+2025-12-14 16:33:45,638 - INFO - Abrindo sistema de relatórios
+2025-12-14 16:37:31,660 - INFO - Abrindo gestão de medições
+2025-12-14 16:38:00,716 - INFO - Abrindo sistema de entrada de dados
+2025-12-14 16:38:01,205 - INFO - Proteções contra perda de dados configuradas
+2025-12-14 16:38:04,719 - INFO - Cliente selecionado com sucesso: ELLIAS MAGALHAES E ABREU LIMA
+2025-12-14 16:38:28,633 - INFO - Sistema encerrado pelo usuário
+2025-12-14 16:54:35,282 - INFO - Configurações importadas com sucesso via src.config
+2025-12-14 16:54:35,341 - INFO - Configurações importadas com sucesso
+2025-12-14 16:54:35,342 - INFO - Configurações do sistema importadas com sucesso
+2025-12-14 16:54:36,618 - INFO - Sistema iniciado em modo: TESTE
+2025-12-14 16:54:38,496 - INFO - Abrindo sistema de entrada de dados
+2025-12-14 16:54:39,936 - INFO - Proteções contra perda de dados configuradas
+2025-12-14 16:54:42,720 - INFO - Cliente selecionado com sucesso: ELLIAS MAGALHAES E ABREU LIMA
+2025-12-14 16:55:29,398 - INFO - Iniciando adição de dados - Cliente: ELLIAS MAGALHAES E ABREU LIMA
+2025-12-14 16:55:31,277 - INFO - Dados adicionados com sucesso - Cliente: ELLIAS MAGALHAES E ABREU LIMA, Total: 1
+2025-12-14 16:55:31,278 - INFO - Iniciando envio de dados - Cliente: ELLIAS MAGALHAES E ABREU LIMA, Registros: 1
+2025-12-14 16:55:31,279 - INFO - Usando dados_para_incluir existentes
+2025-12-14 16:55:31,279 - INFO - Total de registros a processar: 1
+2025-12-14 16:55:31,280 - INFO - Datas que serão afetadas pela inserção: ['20/12/2025']
+2025-12-14 16:55:31,281 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2025-12-14 16:55:31,282 - INFO - Verificando integridade dos IDs antes da inserção
+2025-12-14 16:55:31,759 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2025-12-14 16:55:31,760 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2025-12-14 16:55:31,761 - INFO - Dados novos: VITOR LINHARES TEIXEIRA | INSTALAÇÃO ELÉTRICA - 1º PAVIMENTO | NF:  | R$ 3000.00 | 20/12/2025
+2025-12-14 16:55:31,811 - INFO - ✅ Nenhuma duplicata encontrada para: VITOR LINHARES TEIXEIRA - INSTALAÇÃO ELÉTRICA - 1º PAVIMENTO - NF: 
+2025-12-14 16:55:31,813 - INFO - Lançamento inserido com ID 246 na linha 247
+2025-12-14 16:55:32,064 - INFO - Iniciando verificação de recálculo para 1 datas
+2025-12-14 16:55:32,565 - INFO - Verificando necessidade de recálculo para 2025-12-20
+2025-12-14 16:55:32,567 - ERROR - Erro ao verificar recálculo para 2025-12-20: 'SistemaEntradaDados' object has no attribute 'chamar_apos_operacao_lancamento'
+2025-12-14 16:55:34,357 - INFO - Limpando 1 registros salvos da visualização
+2025-12-14 16:55:34,359 - INFO - Dados salvos removidos com sucesso da visualização
+2025-12-14 16:55:45,992 - INFO - Abrindo sistema de relatórios
+2025-12-14 17:13:20,906 - INFO - Sistema encerrado pelo usuário
+2025-12-14 17:13:54,039 - INFO - Configurações importadas com sucesso via src.config
+2025-12-14 17:13:54,059 - INFO - Configurações importadas com sucesso
+2025-12-14 17:13:54,062 - INFO - Configurações do sistema importadas com sucesso
+2025-12-14 17:13:54,567 - INFO - Sistema iniciado em modo: TESTE
+2025-12-14 17:14:23,731 - INFO - Abrindo sistema de relatórios
+2025-12-14 17:16:16,336 - INFO - Sistema encerrado pelo usuário
+2025-12-14 17:19:37,490 - INFO - Configurações importadas com sucesso via src.config
+2025-12-14 17:19:37,524 - INFO - Configurações importadas com sucesso
+2025-12-14 17:19:37,526 - INFO - Configurações do sistema importadas com sucesso
+2025-12-14 17:19:38,246 - INFO - Sistema iniciado em modo: TESTE
+2025-12-14 17:19:39,719 - INFO - Abrindo sistema de relatórios
+2025-12-14 17:20:10,582 - INFO - Sistema encerrado pelo usuário
+2025-12-14 17:24:53,322 - INFO - Configurações importadas com sucesso via src.config
+2025-12-14 17:24:53,340 - INFO - Configurações importadas com sucesso
+2025-12-14 17:24:53,340 - INFO - Configurações do sistema importadas com sucesso
+2025-12-14 17:24:53,782 - INFO - Sistema iniciado em modo: TESTE
+2025-12-14 17:24:56,060 - INFO - Abrindo sistema de relatórios
+2025-12-14 17:31:51,685 - INFO - Sistema encerrado pelo usuário
+2025-12-14 17:37:41,017 - INFO - Configurações importadas com sucesso via src.config
+2025-12-14 17:37:41,033 - INFO - Configurações importadas com sucesso
+2025-12-14 17:37:41,034 - INFO - Configurações do sistema importadas com sucesso
+2025-12-14 17:37:41,475 - INFO - Sistema iniciado em modo: TESTE
+2025-12-14 17:37:43,019 - INFO - Abrindo sistema de relatórios
+2025-12-14 17:38:20,281 - INFO - Sistema encerrado pelo usuário
