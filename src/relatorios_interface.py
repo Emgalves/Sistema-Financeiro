@@ -785,32 +785,31 @@ class SistemaRelatorios:
             ).pack(pady=20)
             return
         
-        # Frame para as opções do relatório
-        opcoes_frame = ttk.LabelFrame(self.right_frame, text="Opções do Relatório")
-        opcoes_frame.pack(fill='both', expand=True, padx=10, pady=10)
+        # Adicionar separador visual
+        ttk.Separator(self.right_frame, orient='horizontal').pack(fill='x', pady=(0, 15))
         
-        # Configurar opções específicas (CÓDIGO ORIGINAL)
+        # Configurar opções específicas diretamente no right_frame (sem frame duplicado)
         if relatorio["id"] == "despesas":
-            self.setup_opcoes_despesas(opcoes_frame)
+            self.setup_opcoes_despesas(self.right_frame)
         elif relatorio["id"] == "contratos":
-            self.setup_opcoes_contratos(opcoes_frame)
+            self.setup_opcoes_contratos(self.right_frame)
         elif relatorio["id"] == "categoria":
-            self.setup_opcoes_categoria(opcoes_frame)
+            self.setup_opcoes_categoria(self.right_frame)
         elif relatorio["id"] == "tipo_despesa":
-            self.setup_opcoes_tipo_despesa(opcoes_frame)
+            self.setup_opcoes_tipo_despesa(self.right_frame)
         elif relatorio["id"] == "fornecedores":
-            self.setup_opcoes_fornecedores(opcoes_frame)
+            self.setup_opcoes_fornecedores(self.right_frame)
         elif relatorio["id"] == "gerencial_engenheiro":
-            self.setup_opcoes_gerencial_engenheiro(opcoes_frame)
+            self.setup_opcoes_gerencial_engenheiro(self.right_frame)
         elif relatorio["id"] == "gerencial_pdf":
-            self.setup_opcoes_gerencial_pdf(opcoes_frame)
+            self.setup_opcoes_gerencial_pdf(self.right_frame)
         elif relatorio["id"] == "lancamentos_pendentes":
-            self.setup_opcoes_lancamentos_pendentes(opcoes_frame)
+            self.setup_opcoes_lancamentos_pendentes(self.right_frame)
         elif relatorio["id"] == "medicoes_quinzenal":
-            self.setup_opcoes_quinzenal(opcoes_frame)
+            self.setup_opcoes_quinzenal(self.right_frame)
         else:
             ttk.Label(
-                opcoes_frame,
+                self.right_frame,
                 text="Opções específicas para este relatório serão implementadas em breve."
             ).pack(pady=20)
         
