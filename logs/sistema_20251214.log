@@ -1,0 +1,165 @@
+2025-12-14 16:31:49,892 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-14 16:31:49,893 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-14 16:31:49,894 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-14 16:31:49,895 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-14 16:31:49,897 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-14 16:33:02,335 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:33:02,382 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:33:02,547 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:33:02,547 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:33:02,549 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:33:02,550 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:33:12,437 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-14 16:33:12,759 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-14 16:33:13,901 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-14 16:33:13,928 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-14 16:33:13,931 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-14 16:33:13,933 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-14 16:33:41,951 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-14 16:33:41,959 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-14 16:33:45,674 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 16:33:45,712 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 16:33:45,714 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 16:33:45,731 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 16:33:45,733 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 16:33:45,734 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-14 16:33:48,073 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 16:33:48,098 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 16:33:48,099 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 16:33:48,101 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 16:33:48,103 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 16:33:49,870 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-12-14 16:33:49,871 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-12-14 16:37:18,764 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-14 16:37:18,765 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-14 16:37:18,827 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-14 16:37:31,672 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-14 16:37:32,319 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-14 16:37:32,322 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-14 16:37:32,324 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-14 16:37:32,324 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-14 16:37:59,346 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-14 16:37:59,351 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-14 16:38:01,042 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:38:01,043 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:38:01,195 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:38:01,196 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:38:01,198 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:38:01,199 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:54:30,761 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-14 16:54:30,762 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-14 16:54:30,762 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-14 16:54:30,763 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-14 16:54:30,763 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-14 16:54:39,747 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:54:39,764 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:54:39,927 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:54:39,928 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:54:39,930 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:54:39,930 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:55:12,858 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:55:12,858 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:55:37,158 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-14 16:55:37,159 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-14 16:55:46,031 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 16:55:46,063 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 16:55:46,065 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 16:55:46,077 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 16:55:46,078 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 16:55:46,079 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-14 16:55:47,425 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 16:55:47,447 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 16:55:47,450 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 16:55:47,453 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 16:55:47,454 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 16:55:48,992 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: contratos
+2025-12-14 16:55:48,993 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: contratos
+2025-12-14 16:56:06,159 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do Relatório Quinzenal configuradas
+2025-12-14 16:56:13,831 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: medicoes_quinzenal
+2025-12-14 16:56:13,832 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: medicoes_quinzenal
+2025-12-14 17:13:07,820 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-14 17:13:07,821 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-14 17:13:07,891 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-14 17:13:52,209 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-14 17:13:52,210 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-14 17:13:52,210 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-14 17:13:52,211 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-14 17:13:52,211 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-14 17:14:23,783 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 17:14:23,844 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 17:14:23,846 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 17:14:23,850 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 17:14:23,851 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 17:14:23,852 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-14 17:14:28,679 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do Relatório Quinzenal configuradas
+2025-12-14 17:16:12,010 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-14 17:16:12,011 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-14 17:16:12,097 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-14 17:19:34,848 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-14 17:19:34,849 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-14 17:19:34,850 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-14 17:19:34,850 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-14 17:19:34,851 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-14 17:19:39,776 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 17:19:39,869 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 17:19:39,871 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 17:19:39,876 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 17:19:39,882 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 17:19:39,883 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-14 17:19:41,093 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/12/2025
+2025-12-14 17:19:41,095 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/12/2025
+2025-12-14 17:19:41,920 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 17:19:41,955 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 17:19:41,963 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 17:19:41,965 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 17:19:41,967 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 17:19:50,101 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do Relatório Quinzenal configuradas
+2025-12-14 17:19:59,215 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial configuradas
+2025-12-14 17:20:01,619 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-14 17:20:07,887 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-14 17:20:07,890 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-14 17:20:08,024 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-14 17:24:51,337 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-14 17:24:51,338 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-14 17:24:51,338 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-14 17:24:51,339 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-14 17:24:51,339 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-14 17:24:56,102 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 17:24:56,170 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 17:24:56,172 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 17:24:56,175 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 17:24:56,176 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 17:24:56,177 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-14 17:24:58,154 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do Relatório Quinzenal configuradas
+2025-12-14 17:25:02,262 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/12/2025
+2025-12-14 17:25:02,263 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/12/2025
+2025-12-14 17:25:02,432 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 17:25:02,455 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 17:25:02,456 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 17:25:02,459 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 17:25:02,460 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 17:25:08,839 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do Relatório Quinzenal configuradas
+2025-12-14 17:25:26,692 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial configuradas
+2025-12-14 17:25:28,886 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do relatório gerencial PDF configuradas
+2025-12-14 17:25:36,068 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do Relatório Quinzenal configuradas
+2025-12-14 17:30:55,728 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do Relatório Quinzenal configuradas
+2025-12-14 17:31:48,511 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-14 17:31:48,512 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-14 17:31:48,608 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-14 17:37:38,930 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-14 17:37:38,931 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-14 17:37:38,931 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-14 17:37:38,931 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-14 17:37:38,932 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-14 17:37:43,084 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-14 17:37:43,166 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-14 17:37:43,174 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-14 17:37:43,179 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-14 17:37:43,189 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-14 17:37:43,192 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-14 17:37:46,407 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do Relatório Quinzenal configuradas
+2025-12-14 17:38:16,843 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-14 17:38:16,845 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-14 17:38:16,933 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-14 17:47:55,376 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-14 17:55:28,972 - sistema - logger_config - INFO - Sistema de logging inicializado
