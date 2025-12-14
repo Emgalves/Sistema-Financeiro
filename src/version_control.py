@@ -11,7 +11,7 @@ VERSION_INFO = {
     "major": 1,
     "minor": 5,
     "patch": 2,
-    "release_date": "12/12/2025",
+    "release_date": "14/12/2025",
     "changes": [
         "Incluída a opção de vincular várias medições a um único pagamento",
         "Criação do relatório gerencial de contratos de empreiteiros",
@@ -21,7 +21,8 @@ VERSION_INFO = {
         "Incluída a opção de vincular várias parcelas de contrato de administração de obra a um lançamento na planilha do cliente",
         "Incluída a opção de contrato de medição apenas com prazo, sem data início e fim",
         "Incluída a opção de importar medições originárias do Relatório de Medições",
-        "Inclusão e gestão de medições pendentes na Agenda"
+        "Inclusão e gestão de medições pendentes na Agenda",
+        "Relatório Quinzenal de Medições - em PDF, para incluir na documentação do cliente"
     ]
 }
 
