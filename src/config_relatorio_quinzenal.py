@@ -259,6 +259,63 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
                     messagebox.showerror("Erro", "Data inválida! Use o formato DD/MM/AAAA")
                     return
             
+            # === PASSO 1: VERIFICAR SE HÁ DADOS ANTES DE PEDIR ARQUIVO ===
+            # Criar janela de verificação
+            verificacao = tk.Toplevel(sistema_relatorios.root)
+            verificacao.title("Verificando dados")
+            verificacao.geometry("350x100")
+            verificacao.transient(sistema_relatorios.root)
+            verificacao.grab_set()
+            
+            # Centralizar
+            verificacao.update_idletasks()
+            x = (verificacao.winfo_screenwidth() // 2) - 175
+            y = (verificacao.winfo_screenheight() // 2) - 50
+            verificacao.geometry(f"+{x}+{y}")
+            
+            frame_verif = ttk.Frame(verificacao, padding=20)
+            frame_verif.pack(fill='both', expand=True)
+            
+            ttk.Label(frame_verif, text="Verificando medições...", font=('Arial', 11)).pack(pady=10)
+            
+            progress_bar_verif = ttk.Progressbar(frame_verif, mode='indeterminate', length=250)
+            progress_bar_verif.pack()
+            progress_bar_verif.start()
+            
+            verificacao.update()
+            
+            # Criar gerador e verificar dados
+            if RelatorioQuinzenalPDF is None:
+                raise ImportError("Módulo gerar_relatorio_quinzenal_pdf não encontrado")
+            
+            gerador = RelatorioQuinzenalPDF(
+                arquivo_cliente_var.get(),
+                arquivo_clientes_var.get()
+            )
+            
+            # Carregar dados do cliente
+            gerador.carregar_dados_cliente()
+            
+            # Verificar se há medições na quinzena
+            contratos_encontrados = gerador.filtrar_medicoes_quinzena(data_ref)
+            
+            progress_bar_verif.stop()
+            verificacao.destroy()
+            
+            # Se não encontrou medições, avisar e parar
+            if not contratos_encontrados:
+                data_inicio, data_fim = gerador.identificar_quinzena(data_ref)
+                messagebox.showinfo(
+                    "Aviso",
+                    f"Nenhuma medição foi encontrada na quinzena especificada.\n\n"
+                    f"Período verificado:\n"
+                    f"  • De: {data_inicio.strftime('%d/%m/%Y')}\n"
+                    f"  • Até: {data_fim.strftime('%d/%m/%Y')}\n\n"
+                    f"Verifique a data de referência."
+                )
+                return
+            
+            # === PASSO 2: HÁ DADOS! AGORA PODE PEDIR ARQUIVO DE SAÍDA ===
             # Sugerir nome do arquivo
             nome_cliente = Path(arquivo_cliente_var.get()).stem.replace('_', ' ').upper()
             nome_sugerido = f"REL_MEDICOES_{nome_cliente}_{data_ref.strftime('%d-%m-%Y')}.pdf"
@@ -274,6 +331,7 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
             if not arquivo_saida:
                 return
             
+            # === PASSO 3: GERAR O PDF ===
             # Criar janela de progresso
             progress = tk.Toplevel(sistema_relatorios.root)
             progress.title("Gerando PDF")
@@ -298,20 +356,13 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
             
             progress.update()
             
-            # Gerar PDF
-            if RelatorioQuinzenalPDF is None:
-                raise ImportError("Módulo gerar_relatorio_quinzenal_pdf não encontrado")
-            
-            gerador = RelatorioQuinzenalPDF(
-                arquivo_cliente_var.get(),
-                arquivo_clientes_var.get()
-            )
-            
+            # Gerar PDF (já temos os dados carregados no gerador)
             resultado = gerador.gerar_pdf(data_ref, arquivo_saida)
             
             progress_bar.stop()
             progress.destroy()
             
+            # === PASSO 4: MOSTRAR RESULTADO ===
             if resultado:
                 # Perguntar se quer abrir
                 total_contratos = len(gerador.contratos_quinzena) if hasattr(gerador, 'contratos_quinzena') else 0
@@ -327,10 +378,10 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
                 if resposta:
                     sistema_relatorios.abrir_arquivo(resultado)
             else:
-                messagebox.showinfo(
+                # Não deveria chegar aqui, pois já verificamos antes
+                messagebox.showwarning(
                     "Aviso",
-                    "Nenhuma medição foi encontrada na quinzena especificada.\n"
-                    "Verifique a data de referência."
+                    "Não foi possível gerar o relatório."
                 )
         
         except Exception as e:
