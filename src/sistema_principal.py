@@ -404,6 +404,8 @@ class SistemaGestaoFinanceira:
 
     def abrir_entrada_dados(self):
         """Abre o sistema de entrada de dados"""
+
+        
         try:
             simple_logger.info("Abrindo sistema de entrada de dados")
             
