@@ -2,7 +2,21 @@
 # -*- coding: utf-8 -*-
 """
 Módulo de Configuração de Ambiente - Sistema de Gestão Financeira
-VERSÃO CORRIGIDA - Prioriza nome do executável sobre .env
+VERSÃO MELHORADA - Prioriza execução como script Python
+
+REGRA PRINCIPAL:
+    - Script Python (.py)     → SEMPRE usa ambiente TESTE
+    - Executável compilado    → Detecta pelo nome do arquivo
+        - Nome termina com _PRODUCAO ou _PROD → PRODUÇÃO
+        - Nome termina com _TESTE ou _TEST    → TESTE
+        - Fallback: busca Google Drive        → PRODUÇÃO se encontrar
+        - Padrão seguro                       → TESTE
+
+SEMPRE VERIFICAR ESTES ARQUIVOS PARA MANTER CONSISTÊNCIA:
+ - src/ambiente_config.py
+    - src/config/paths.py
+    - src/config/config.py
+    - src/config/__init__.py
 """
 
 import os
@@ -25,24 +39,39 @@ class ConfiguracaoAmbiente:
         print("DEBUG - DETECÇÃO DE AMBIENTE")
         print("="*70)
         
-        # MÉTODO 1: Detectar pelo NOME DO EXECUTÁVEL (PRIORIDADE MÁXIMA!)
+        # ===================================================================
+        # VERIFICAÇÃO PRIORITÁRIA: Script Python = SEMPRE TESTE
+        # ===================================================================
+        eh_script_python = not getattr(sys, 'frozen', False)
+        
+        if eh_script_python:
+            print(f"🐍 EXECUTANDO COMO: SCRIPT PYTHON (.py)")
+            print(f"   sys.argv[0]: {sys.argv[0]}")
+            print(f"\n⚠️  REGRA ABSOLUTA: Scripts Python SEMPRE usam ambiente TESTE")
+            print(f"   (Para usar PRODUÇÃO, compile como executável)")
+            
+            self.ambiente = self.TESTE
+            print("="*70)
+            print(f"🎯 AMBIENTE FINAL: {self.ambiente}")
+            print("="*70 + "\n")
+            return  # ✅ Sai aqui, não continua a detecção
+        
+        # ===================================================================
+        # Se chegou aqui, é executável compilado (.exe)
+        # ===================================================================
+        print(f"📦 EXECUTANDO COMO: EXECUTÁVEL COMPILADO (.exe)")
+        print(f"   sys.executable: {sys.executable}")
+        
+        # MÉTODO 1: Detectar pelo NOME DO EXECUTÁVEL (só para executáveis!)
         executavel = self._get_nome_executavel()
         print(f"1. Nome do executável: '{executavel}'")
         
-        # Verificar como PyInstaller está executando
-        if getattr(sys, 'frozen', False):
-            print(f"2. Executando como: EXECUTÁVEL COMPILADO")
-            print(f"   sys.executable: {sys.executable}")
-        else:
-            print(f"2. Executando como: SCRIPT PYTHON")
-            print(f"   sys.argv[0]: {sys.argv[0]}")
-        
         ambiente_detectado = False
         nome_upper = executavel.upper()
-        print(f"3. Nome em maiúsculas: '{nome_upper}'")
+        print(f"2. Nome em maiúsculas: '{nome_upper}'")
         
         # DEBUG: Testar cada condição
-        print(f"\n4. Testando condições:")
+        print(f"\n3. Testando condições:")
         print(f"   - Termina com '_PRODUCAO'? {nome_upper.endswith('_PRODUCAO')}")
         print(f"   - Termina com '_PROD'? {nome_upper.endswith('_PROD')}")
         print(f"   - Termina com '_TESTE'? {nome_upper.endswith('_TESTE')}")
@@ -52,7 +81,6 @@ class ConfiguracaoAmbiente:
         
         # ===================================================================
         # PRIORIDADE MÁXIMA: NOME DO EXECUTÁVEL
-        # Só usar .env se for execução como script Python (desenvolvimento)
         # ===================================================================
         
         # REGRA 1: Termina com _PRODUCAO ou _PROD
@@ -79,28 +107,26 @@ class ConfiguracaoAmbiente:
             ambiente_detectado = True
             print(f"\n✅ RESULTADO: Detectado como TESTE (contém TESTE)")
         
-        # MÉTODO 2: Usar .env SOMENTE se for script Python (desenvolvimento)
+        # ===================================================================
+        # MÉTODO 2: FALLBACK - BUSCAR GOOGLE DRIVE (NOVO!)
+        # Só usar se nome não tiver sufixo identificável
+        # ===================================================================
         if not ambiente_detectado:
-            # Só usar .env se NÃO for executável PyInstaller
-            if not getattr(sys, 'frozen', False):
-                print(f"\n⚠️ Script Python: usando .env...")
-                
-                env_value = os.getenv("AMBIENTE_SISTEMA", "").upper()
-                print(f"   AMBIENTE_SISTEMA = '{env_value}'")
-                
-                if not env_value:
-                    env_value = os.getenv("SISTEMA_AMBIENTE", "").upper()
-                    print(f"   SISTEMA_AMBIENTE = '{env_value}'")
-                
-                if env_value in [self.PRODUCAO, self.TESTE]:
-                    self.ambiente = env_value
-                    ambiente_detectado = True
-                    print(f"\n✅ RESULTADO: Detectado pelo .env como {self.ambiente}")
+            print(f"\n⚠️ Nome sem sufixo identificável")
+            print(f"🔍 Buscando Google Drive como fallback...")
+            
+            google_drive_encontrado = self._buscar_google_drive()
+            
+            if google_drive_encontrado:
+                self.ambiente = self.PRODUCAO
+                ambiente_detectado = True
+                print(f"\n✅ RESULTADO: Detectado como PRODUCAO (Google Drive encontrado)")
             else:
-                # Executável PyInstaller sem sufixo no nome
-                print(f"\n⚠️ Executável sem sufixo identificável")
+                print(f"   ❌ Google Drive não encontrado")
         
-        # MÉTODO 3: Padrão TESTE (apenas para desenvolvimento)
+        # ===================================================================
+        # MÉTODO 2: Padrão TESTE para executáveis sem identificação clara
+        # ===================================================================
         if not ambiente_detectado:
             self.ambiente = self.TESTE
             print(f"\n⚠️ RESULTADO: Usando padrão TESTE (nenhuma regra aplicou)")
@@ -125,6 +151,41 @@ class ConfiguracaoAmbiente:
         except Exception as e:
             print(f"⚠️ Erro ao detectar nome: {e}")
             return ""
+    
+    def _buscar_google_drive(self):
+        """
+        Busca Google Drive em caminhos conhecidos
+        Retorna True se encontrar, False caso contrário
+        """
+        import platform
+        
+        caminhos_windows = [
+            Path("H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios"),
+            Path("G:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatórios"),
+            Path("H:/Drives compartilhados/Relatórios"),
+            Path("G:/Drives compartilhados/Relatórios"),
+            Path("H:/Relatórios"),
+            Path("G:/Relatórios"),
+            Path("F:/Relatórios"),
+            Path("E:/Relatórios"),
+        ]
+        
+        caminhos_mac = [
+            Path(os.path.expanduser("~")) / "Library/CloudStorage/GoogleDrive-emilia.mga@gmail.com/Meu Drive",
+            Path(os.path.expanduser("~")) / "Google Drive",
+        ]
+        
+        caminhos = caminhos_windows if platform.system() == 'Windows' else caminhos_mac
+        
+        for idx, caminho in enumerate(caminhos, 1):
+            print(f"   [{idx}/{len(caminhos)}] Testando: {caminho}")
+            if caminho.exists():
+                print(f"   ✅ ENCONTRADO: {caminho}")
+                return True
+            else:
+                print(f"   ❌ Não existe")
+        
+        return False
     
     def eh_producao(self):
         """Verifica se está em ambiente de produção"""
