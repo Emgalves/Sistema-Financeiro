@@ -222,6 +222,296 @@ def formatar_cnpj_cpf(documento):
         return documento.zfill(11)
     return documento.zfill(14)
 
+# === FORMATADORES AUTOMÁTICOS PARA CAMPOS DE ENTRADA ===
+
+def formatar_cpf_campo(event):
+    """
+    Formata CPF automaticamente durante a digitação em campos Entry: 999.999.999-99
+    
+    Args:
+        event: Evento do Tkinter (KeyRelease)
+    
+    Uso:
+        cpf_entry.bind('<KeyRelease>', formatar_cpf_campo)
+    """
+    widget = event.widget
+    
+    # Obter valor atual
+    valor = widget.get()
+    
+    # Remover tudo que não é número
+    apenas_numeros = re.sub(r'\D', '', valor)
+    
+    # Limitar a 11 dígitos
+    apenas_numeros = apenas_numeros[:11]
+    
+    # Aplicar formatação
+    if len(apenas_numeros) <= 3:
+        formatado = apenas_numeros
+    elif len(apenas_numeros) <= 6:
+        formatado = f"{apenas_numeros[:3]}.{apenas_numeros[3:]}"
+    elif len(apenas_numeros) <= 9:
+        formatado = f"{apenas_numeros[:3]}.{apenas_numeros[3:6]}.{apenas_numeros[6:]}"
+    else:
+        formatado = f"{apenas_numeros[:3]}.{apenas_numeros[3:6]}.{apenas_numeros[6:9]}-{apenas_numeros[9:]}"
+    
+    # Atualizar campo se mudou
+    if formatado != valor:
+        # Salvar posição do cursor
+        pos_cursor = widget.index(tk.INSERT)
+        
+        # Calcular nova posição (ajustar por caracteres inseridos)
+        diff = len(formatado) - len(valor)
+        nova_pos = pos_cursor + diff
+        
+        # Atualizar valor
+        widget.delete(0, tk.END)
+        widget.insert(0, formatado)
+        
+        # Restaurar cursor (limitar à posição válida)
+        nova_pos = max(0, min(nova_pos, len(formatado)))
+        widget.icursor(nova_pos)
+
+
+def formatar_cno_campo(event):
+    """
+    Formata CNO automaticamente durante a digitação: 99.999.99999/99
+    
+    Formato: XX.XXX.XXXXX/XX (12 dígitos)
+    Exemplo: 02.043.11375/74
+    
+    Args:
+        event: Evento do Tkinter (KeyRelease)
+    
+    Uso:
+        cno_entry.bind('<KeyRelease>', formatar_cno_campo)
+    """
+    widget = event.widget
+    
+    # Obter valor atual
+    valor = widget.get()
+    
+    # Remover tudo que não é número
+    apenas_numeros = re.sub(r'\D', '', valor)
+    
+    # Limitar a 12 dígitos
+    apenas_numeros = apenas_numeros[:12]
+    
+    # Aplicar formatação
+    if len(apenas_numeros) <= 2:
+        formatado = apenas_numeros
+    elif len(apenas_numeros) <= 5:
+        formatado = f"{apenas_numeros[:2]}.{apenas_numeros[2:]}"
+    elif len(apenas_numeros) <= 10:
+        formatado = f"{apenas_numeros[:2]}.{apenas_numeros[2:5]}.{apenas_numeros[5:]}"
+    else:
+        formatado = f"{apenas_numeros[:2]}.{apenas_numeros[2:5]}.{apenas_numeros[5:10]}/{apenas_numeros[10:]}"
+    
+    # Atualizar campo se mudou
+    if formatado != valor:
+        # Salvar posição do cursor
+        pos_cursor = widget.index(tk.INSERT)
+        
+        # Calcular nova posição (ajustar por caracteres inseridos)
+        diff = len(formatado) - len(valor)
+        nova_pos = pos_cursor + diff
+        
+        # Atualizar valor
+        widget.delete(0, tk.END)
+        widget.insert(0, formatado)
+        
+        # Restaurar cursor (limitar à posição válida)
+        nova_pos = max(0, min(nova_pos, len(formatado)))
+        widget.icursor(nova_pos)
+
+
+def formatar_cep_campo(event):
+    """
+    Formata CEP automaticamente durante a digitação: 99999-999
+    
+    Args:
+        event: Evento do Tkinter (KeyRelease)
+    
+    Uso:
+        cep_entry.bind('<KeyRelease>', formatar_cep_campo)
+    """
+    widget = event.widget
+    
+    # Obter valor atual
+    valor = widget.get()
+    
+    # Remover tudo que não é número
+    apenas_numeros = re.sub(r'\D', '', valor)
+    
+    # Limitar a 8 dígitos
+    apenas_numeros = apenas_numeros[:8]
+    
+    # Aplicar formatação
+    if len(apenas_numeros) <= 5:
+        formatado = apenas_numeros
+    else:
+        formatado = f"{apenas_numeros[:5]}-{apenas_numeros[5:]}"
+    
+    # Atualizar campo se mudou
+    if formatado != valor:
+        # Salvar posição do cursor
+        pos_cursor = widget.index(tk.INSERT)
+        
+        # Calcular nova posição
+        diff = len(formatado) - len(valor)
+        nova_pos = pos_cursor + diff
+        
+        # Atualizar valor
+        widget.delete(0, tk.END)
+        widget.insert(0, formatado)
+        
+        # Restaurar cursor
+        nova_pos = max(0, min(nova_pos, len(formatado)))
+        widget.icursor(nova_pos)
+
+
+def formatar_telefone_campo(event):
+    """
+    Formata telefone automaticamente: (99) 99999-9999 ou (99) 9999-9999
+    
+    Args:
+        event: Evento do Tkinter (KeyRelease)
+    
+    Uso:
+        telefone_entry.bind('<KeyRelease>', formatar_telefone_campo)
+    """
+    widget = event.widget
+    
+    # Obter valor atual
+    valor = widget.get()
+    
+    # Remover tudo que não é número
+    apenas_numeros = re.sub(r'\D', '', valor)
+    
+    # Limitar a 11 dígitos
+    apenas_numeros = apenas_numeros[:11]
+    
+    # Aplicar formatação
+    if len(apenas_numeros) <= 2:
+        formatado = apenas_numeros
+    elif len(apenas_numeros) <= 6:
+        formatado = f"({apenas_numeros[:2]}) {apenas_numeros[2:]}"
+    elif len(apenas_numeros) <= 10:
+        # Telefone fixo: (XX) XXXX-XXXX
+        formatado = f"({apenas_numeros[:2]}) {apenas_numeros[2:6]}-{apenas_numeros[6:]}"
+    else:
+        # Celular: (XX) XXXXX-XXXX
+        formatado = f"({apenas_numeros[:2]}) {apenas_numeros[2:7]}-{apenas_numeros[7:]}"
+    
+    # Atualizar campo se mudou
+    if formatado != valor:
+        pos_cursor = widget.index(tk.INSERT)
+        diff = len(formatado) - len(valor)
+        nova_pos = pos_cursor + diff
+        
+        widget.delete(0, tk.END)
+        widget.insert(0, formatado)
+        
+        nova_pos = max(0, min(nova_pos, len(formatado)))
+        widget.icursor(nova_pos)
+
+
+def limpar_formatacao(texto):
+    """
+    Remove toda formatação de um texto, deixando apenas números
+    
+    Args:
+        texto (str): Texto formatado
+    
+    Returns:
+        str: Apenas números
+    
+    Exemplo:
+        >>> limpar_formatacao("123.456.789-10")
+        "12345678910"
+        >>> limpar_formatacao("02.043.11375/74")
+        "020431137574"
+    """
+    if not texto:
+        return ""
+    return re.sub(r'\D', '', str(texto))
+
+
+def validar_cpf_completo(cpf):
+    """
+    Valida CPF usando algoritmo oficial
+    
+    Args:
+        cpf (str): CPF formatado ou não
+    
+    Returns:
+        bool: True se válido, False se inválido
+    
+    Exemplo:
+        >>> validar_cpf_completo("123.456.789-10")
+        False
+        >>> validar_cpf_completo("11144477735")
+        True
+    """
+    # Limpar formatação
+    cpf_limpo = limpar_formatacao(cpf)
+    
+    # Validar tamanho
+    if len(cpf_limpo) != 11:
+        return False
+    
+    # Verificar se todos os dígitos são iguais
+    if cpf_limpo == cpf_limpo[0] * 11:
+        return False
+    
+    # Calcular primeiro dígito verificador
+    soma = sum(int(cpf_limpo[i]) * (10 - i) for i in range(9))
+    digito1 = 11 - (soma % 11)
+    digito1 = 0 if digito1 > 9 else digito1
+    
+    # Verificar primeiro dígito
+    if int(cpf_limpo[9]) != digito1:
+        return False
+    
+    # Calcular segundo dígito verificador
+    soma = sum(int(cpf_limpo[i]) * (11 - i) for i in range(10))
+    digito2 = 11 - (soma % 11)
+    digito2 = 0 if digito2 > 9 else digito2
+    
+    # Verificar segundo dígito
+    return int(cpf_limpo[10]) == digito2
+
+
+def validar_cno(cno):
+    """
+    Valida CNO (validação básica de formato)
+    
+    Args:
+        cno (str): CNO formatado ou não
+    
+    Returns:
+        bool: True se tem 12 dígitos, False caso contrário
+    
+    Nota: CNO não possui dígito verificador padrão,
+    apenas validamos se tem 12 dígitos numéricos
+    """
+    cno_limpo = limpar_formatacao(cno)
+    return len(cno_limpo) == 12
+
+
+def validar_cep(cep):
+    """
+    Valida CEP (validação básica de formato)
+    
+    Args:
+        cep (str): CEP formatado ou não
+    
+    Returns:
+        bool: True se tem 8 dígitos, False caso contrário
+    """
+    cep_limpo = limpar_formatacao(cep)
+    return len(cep_limpo) == 8
+
 # === FILE OPERATIONS ===
 def verificar_arquivo_excel(caminho):
     """Verifica se arquivo Excel existe e pode ser aberto"""
