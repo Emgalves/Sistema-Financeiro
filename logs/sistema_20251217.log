@@ -193,3 +193,4 @@
 2025-12-17 12:52:38,026 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
 2025-12-17 12:52:38,030 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
 2025-12-17 12:52:38,031 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 14:55:06,649 - sistema - logger_config - INFO - Sistema de logging inicializado
