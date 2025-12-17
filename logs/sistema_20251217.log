@@ -1,0 +1,195 @@
+2025-12-17 09:45:16,815 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-17 09:45:16,817 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-17 09:45:16,818 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-17 09:45:16,822 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-17 09:45:16,826 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-17 09:45:33,293 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 09:45:33,331 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 09:45:33,540 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 09:45:33,541 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 09:45:33,543 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 09:45:33,544 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 09:47:07,876 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 09:47:07,877 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 09:47:07,878 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 09:47:07,878 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 09:47:07,881 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 09:47:07,882 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 09:47:07,883 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 09:47:07,883 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 10:03:51,972 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-17 10:03:51,973 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-17 10:03:51,974 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-17 10:03:51,974 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-17 10:03:51,975 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-17 10:04:03,599 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 10:04:03,602 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 10:04:03,774 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 10:04:03,775 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 10:04:03,776 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 10:04:03,777 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 10:06:02,560 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-17 10:06:02,587 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-17 10:06:02,588 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-17 10:06:02,593 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-17 10:06:02,595 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-17 10:06:02,596 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-17 10:06:03,975 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/12/2025
+2025-12-17 10:06:03,976 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/12/2025
+2025-12-17 10:06:04,142 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-17 10:06:04,163 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo']
+2025-12-17 10:06:04,165 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-17 10:06:04,167 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-17 10:06:04,168 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-17 10:06:07,180 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: CLEVER LUIZ SALVADOR
+2025-12-17 10:06:07,181 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-12-17 10:06:07,193 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-12-17 10:06:09,171 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-12-17 10:06:09,172 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-12-17 10:06:09,173 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-12-17 10:06:09,173 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-12-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-12-17 10:06:09,174 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-12-17 10:06:09,175 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\CLEVER LUIZ SALVADOR.xlsx
+2025-12-17 10:06:09,176 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-12-17 10:06:09,177 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: CLEVER LUIZ SALVADOR.xlsx
+2025-12-17 10:06:10,912 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-12-17 10:06:10,913 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-12-17 10:06:13,045 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-12-17 10:06:29,915 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_CLEVER_LUIZ_SALVADOR_20251217_100612.pdf
+2025-12-17 10:06:31,667 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-17 10:06:31,667 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-17 10:06:31,801 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-17 10:10:47,211 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 10:10:47,212 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 10:10:47,375 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 10:10:47,375 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 10:10:47,377 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 10:10:47,378 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 11:28:51,307 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-17 11:28:51,308 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-17 11:28:51,309 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-17 11:28:51,309 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-17 11:28:51,309 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-17 11:44:23,975 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-17 11:44:23,977 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-17 11:44:23,977 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-17 11:44:23,978 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-17 11:44:23,978 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-17 11:44:35,020 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 11:44:35,023 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 11:44:35,188 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 11:44:35,188 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 11:44:35,190 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 11:44:35,191 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 11:58:33,042 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-17 11:58:33,044 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-17 11:58:33,044 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-17 11:58:33,045 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-17 11:58:33,045 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-17 11:58:45,283 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 11:58:45,286 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 11:58:45,448 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 11:58:45,449 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 11:58:45,451 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 11:58:45,452 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:00:08,584 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-17 12:00:08,685 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2025-12-17 12:00:08,687 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-17 12:00:08,703 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-17 12:00:08,704 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-17 12:00:08,706 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 16 clientes
+2025-12-17 12:00:11,056 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/12/2025
+2025-12-17 12:00:11,057 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/12/2025
+2025-12-17 12:00:11,218 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2025-12-17 12:00:11,243 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2025-12-17 12:00:11,244 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2025-12-17 12:00:11,246 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2025-12-17 12:00:11,247 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 15
+2025-12-17 12:00:15,470 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: EDUARDO MORENO MARQUES
+2025-12-17 12:00:15,472 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2025-12-17 12:00:15,479 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2025-12-17 12:00:18,565 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2025-12-17 12:00:18,565 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2025-12-17 12:00:18,566 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2025-12-17 12:00:18,567 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2025-12-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2025-12-17 12:00:18,568 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2025-12-17 12:00:18,569 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2025-12-17 12:00:18,569 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2025-12-17 12:00:18,570 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: EDUARDO MORENO MARQUES.xlsx
+2025-12-17 12:00:20,058 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2025-12-17 12:00:20,059 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2025-12-17 12:00:21,721 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2025-12-17 12:01:11,916 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_EDUARDO_MORENO_MARQUES_20251217_120021.pdf
+2025-12-17 12:01:13,923 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_EDUARDO_MORENO_MARQUES_20251217_120021.pdf
+2025-12-17 12:01:17,380 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2025-12-17 12:01:17,381 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2025-12-17 12:01:17,452 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2025-12-17 12:01:18,923 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-17 12:01:19,219 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-17 12:01:20,027 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-17 12:01:20,085 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-17 12:01:20,086 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-17 12:01:20,087 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-17 12:01:28,466 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: EDUARDO MORENO MARQUES
+2025-12-17 12:01:28,500 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2025-12-17 12:01:28,503 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 6850709801.0 (tipo: <class 'numpy.float64'>)
+2025-12-17 12:01:28,504 - sistema_relatorios - gerador_contrato - INFO - CPF convertido de float: 6850709801.0 → 6850709801
+2025-12-17 12:01:28,506 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 6850709801
+2025-12-17 12:01:28,508 - sistema_relatorios - gerador_contrato - WARNING - ⚠️ CPF/CNPJ com tamanho inválido: 10 dígitos
+2025-12-17 12:01:28,509 - sistema_relatorios - gerador_contrato - INFO - CNO formatado: 102003456789 → 01.020.03456/78
+2025-12-17 12:01:28,510 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 6850709801
+2025-12-17 12:01:28,510 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: EDUARDO MORENO MARQUES
+2025-12-17 12:01:28,512 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: EDUARDO MORENO MARQUES
+2025-12-17 12:01:51,095 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-17 12:01:51,097 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-17 12:01:52,573 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:01:52,574 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:01:52,774 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:01:52,775 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:01:52,777 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:01:52,778 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:04:18,001 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-17 12:04:18,002 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-17 12:04:18,003 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-17 12:04:18,003 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-17 12:04:18,003 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-17 12:04:25,206 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:04:25,209 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:04:25,372 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:04:25,373 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:04:25,375 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:04:25,376 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:11:00,953 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2025-12-17 12:11:01,156 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2025-12-17 12:11:01,972 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2025-12-17 12:11:01,974 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2025-12-17 12:11:01,976 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2025-12-17 12:11:01,977 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2025-12-17 12:11:08,109 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GUILHERME ALVES RIBEIRO LEITE
+2025-12-17 12:11:08,136 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2025-12-17 12:11:08,140 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 9835241651.0 (tipo: <class 'numpy.float64'>)
+2025-12-17 12:11:08,140 - sistema_relatorios - gerador_contrato - INFO - CPF convertido de float: 9835241651.0 → 9835241651
+2025-12-17 12:11:08,141 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 9835241651
+2025-12-17 12:11:08,142 - sistema_relatorios - gerador_contrato - WARNING - ⚠️ CPF/CNPJ com tamanho inválido: 10 dígitos
+2025-12-17 12:11:08,143 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 9835241651
+2025-12-17 12:11:08,144 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: GUILHERME ALVES RIBEIRO LEITE
+2025-12-17 12:11:08,145 - sistema_relatorios - gestao_medicoes - INFO - Dados do cliente carregados na aba de contrato: GUILHERME ALVES RIBEIRO LEITE
+2025-12-17 12:12:26,075 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2025-12-17 12:12:26,135 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-17 12:12:27,626 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:12:27,627 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:12:27,802 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:12:27,803 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:12:27,805 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:12:27,805 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:52:20,457 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-17 12:52:20,459 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2025-12-17 12:52:20,459 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2025-12-17 12:52:20,459 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2025-12-17 12:52:20,460 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2025-12-17 12:52:37,797 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:52:37,802 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:52:38,025 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:52:38,026 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2025-12-17 12:52:38,030 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2025-12-17 12:52:38,031 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
