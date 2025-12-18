@@ -56,10 +56,7 @@ class RelatorioQuinzenalPDF:
                 if cliente_nome.upper() in nome_cliente_base:
                     self.cliente_info = {
                         'nome': row['Nome'],
-                        'cpf': str(row['CPF']) if pd.notna(row['CPF']) else 'NÃO INFORMADO',
-                        'endereco': str(row.get('Endereço', '')) if pd.notna(row.get('Endereço')) else '',
-                        'cidade': str(row.get('Cidade', '')) if pd.notna(row.get('Cidade')) else '',
-                        'estado': ''  # Não há campo estado na planilha
+                        'endereco': str(row.get('Endereço', '')) if pd.notna(row.get('Endereço')) else ''
                     }
                     break
             
@@ -67,10 +64,7 @@ class RelatorioQuinzenalPDF:
                 # Se não encontrou, usar dados do arquivo
                 self.cliente_info = {
                     'nome': cliente_nome,
-                    'cpf': 'NÃO INFORMADO',
-                    'endereco': 'NÃO INFORMADO',
-                    'cidade': '',
-                    'estado': ''
+                    'endereco': 'NÃO INFORMADO'
                 }
                 
         except Exception as e:
@@ -79,10 +73,7 @@ class RelatorioQuinzenalPDF:
             traceback.print_exc()
             self.cliente_info = {
                 'nome': 'CLIENTE',
-                'cpf': 'NÃO INFORMADO',
-                'endereco': 'NÃO INFORMADO',
-                'cidade': '',
-                'estado': ''
+                'endereco': 'NÃO INFORMADO'
             }
     
     def identificar_quinzena(self, data_referencia):
@@ -131,6 +122,19 @@ class RelatorioQuinzenalPDF:
             
             # Carregar aba de medições
             df_medicoes = pd.read_excel(self.arquivo_cliente, sheet_name='Medicoes')
+            
+            # === FILTRO CRÍTICO: Excluir medições com status EXCLUÍDO ===
+            # Medições excluídas não devem aparecer em nenhum relatório
+            total_medicoes_antes = len(df_medicoes)
+            df_medicoes = df_medicoes[
+                (df_medicoes['Status'].isna()) | 
+                (df_medicoes['Status'] != 'EXCLUÍDO')
+            ].copy()
+            total_medicoes_depois = len(df_medicoes)
+            medicoes_excluidas = total_medicoes_antes - total_medicoes_depois
+            
+            if medicoes_excluidas > 0:
+                print(f"✓ {medicoes_excluidas} medição(ões) com status EXCLUÍDO foram filtradas do relatório")
             
             # Converter datas
             df_medicoes['Data_Medicao'] = pd.to_datetime(df_medicoes['Data_Medicao'], errors='coerce')
@@ -182,6 +186,9 @@ class RelatorioQuinzenalPDF:
                     'qtd_medicoes_quinzena': len(medicoes_quinzena_ids)
                 })
             
+            # === ORDENAR CONTRATOS POR ID ===
+            contratos_com_medicoes.sort(key=lambda x: x['id'])
+            
             self.contratos_quinzena = contratos_com_medicoes
             return contratos_com_medicoes
             
@@ -213,43 +220,87 @@ class RelatorioQuinzenalPDF:
             return str(data)
     
     def criar_cabecalho(self, canvas, doc):
-        """Cria cabeçalho do documento"""
+        """
+        Cria cabeçalho do documento com dados da empresa e do cliente
+        Este cabeçalho aparece em TODAS as páginas do relatório
+        IMPORTANTE: CPF não é exibido por ser dado sensível (LGPD)
+        """
         canvas.saveState()
         
+        # === MARGENS ALINHADAS COM O CORPO DO DOCUMENTO ===
+        margin_left = doc.leftMargin
+        margin_right = doc.width + doc.leftMargin
+        
+        # === SEÇÃO EMPRESA (Vasconcelos&Rinaldi) ===
         # Logo - verificar se existe
         logo_path = Path(__file__).parent / 'logo.png'
         if logo_path.exists():
             try:
                 canvas.drawImage(
                     str(logo_path), 
-                    30*mm, 
-                    268*mm, 
-                    width=45*mm, 
+                    margin_left, 
+                    273*mm, 
+                    width=40*mm, 
                     height=10*mm,
                     preserveAspectRatio=True,
                     mask='auto'
                 )
             except:
                 # Se falhar ao carregar logo, mostrar texto
-                canvas.setFont('Helvetica-Bold', 10)
-                canvas.drawString(30*mm, 275*mm, "VASCONCELOS&RINALDI")
-                canvas.setFont('Helvetica', 8)
-                canvas.drawString(30*mm, 272*mm, "ENGENHARIA")
+                canvas.setFont('Helvetica-Bold', 9)
+                canvas.drawString(margin_left, 280*mm, "VASCONCELOS&RINALDI")
+                canvas.setFont('Helvetica', 7)
+                canvas.drawString(margin_left, 277*mm, "ENGENHARIA")
         else:
             # Sem logo, mostrar texto
-            canvas.setFont('Helvetica-Bold', 10)
-            canvas.drawString(30*mm, 275*mm, "VASCONCELOS&RINALDI")
-            canvas.setFont('Helvetica', 8)
-            canvas.drawString(30*mm, 272*mm, "ENGENHARIA")
+            canvas.setFont('Helvetica-Bold', 9)
+            canvas.drawString(margin_left, 280*mm, "VASCONCELOS&RINALDI")
+            canvas.setFont('Helvetica', 7)
+            canvas.drawString(margin_left, 277*mm, "ENGENHARIA")
         
-        # Informações de contato (lado direito) - posição ajustada
-        canvas.setFont('Helvetica', 7)
-        y_pos = 275*mm
-        canvas.drawRightString(180*mm, y_pos, "Rua Zodiaco, 87 Sala 07 – Santa Lúcia - Belo Horizonte - MG")
+        # Informações de contato da empresa (lado direito superior)
+        canvas.setFont('Helvetica', 6)
+        y_pos = 280*mm
+        canvas.drawRightString(margin_right, y_pos, "Rua Zodiaco, 87 Sala 07 – Santa Lúcia - Belo Horizonte - MG")
         y_pos -= 3*mm
-        canvas.drawRightString(180*mm, y_pos, "(31) 3654-6616 / (31) 99974-1241 / (31) 98711-1139")
+        canvas.drawRightString(margin_right, y_pos, "(31) 3654-6616 / (31) 99974-1241 / (31) 98711-1139")
         y_pos -= 3*mm
-        canvas.drawRightString(180*mm, y_pos, "rvr.engenharia@gmail.com")
+        canvas.drawRightString(margin_right, y_pos, "rvr.engenharia@gmail.com")
+        
+        # === ESPAÇAMENTO MAIOR ANTES DA LINHA SEPARADORA ===
+        # Linha separadora mais abaixo para criar espaçamento visual
+        # canvas.setStrokeColor(colors.HexColor('#1F4788'))
+        # canvas.setLineWidth(0.5)
+        # canvas.line(margin_left, 265*mm, margin_right, 265*mm)  # Desceu de 271mm para 269mm
+        
+        # === SEÇÃO CLIENTE (Dados do cliente em destaque - SEM CPF) ===
+        # Área sombreada para dados do cliente - com margens alinhadas
+        # canvas.setFillColor(colors.HexColor('#F5F5F5'))
+        # canvas.rect(margin_left, 264*mm, doc.width, 8*mm, fill=1, stroke=0)
+        
+        # Nome do cliente (DESTAQUE) - com margem interna
+        canvas.setFillColor(colors.HexColor('#1F4788'))
+        canvas.setFont('Helvetica-Bold', 11)
+        canvas.drawString(margin_left + 2*mm, 264*mm, self.cliente_info['nome'].upper())
+        
+        # Endereço do cliente (abaixo do nome) - com margem interna
+        canvas.setFillColor(colors.black)
+        canvas.setFont('Helvetica', 8)
+        endereco_completo = self.cliente_info['endereco']
+        # if self.cliente_info['cidade']:
+        #     endereco_completo += f", {self.cliente_info['cidade']}"
+        # if self.cliente_info['estado']:
+        #     endereco_completo += f" / {self.cliente_info['estado']}"
+        
+        # Calcular largura disponível para o endereço
+        largura_disponivel = doc.width - 4*mm  # Desconta margens internas
+        
+        # Truncar endereço se muito longo
+        max_chars = 110
+        if len(endereco_completo) > max_chars:
+            endereco_completo = endereco_completo[:max_chars-3] + "..."
+        
+        canvas.drawString(margin_left + 2*mm, 260*mm, endereco_completo)
         
         canvas.restoreState()
     
@@ -294,7 +345,7 @@ class RelatorioQuinzenalPDF:
             pagesize=A4,
             rightMargin=20*mm,
             leftMargin=20*mm,
-            topMargin=35*mm,
+            topMargin=42*mm,  # Ajustado para 42mm (cabeçalho menor sem CPF)
             bottomMargin=25*mm
         )
         
@@ -338,24 +389,8 @@ class RelatorioQuinzenalPDF:
         # Container para elementos do PDF
         elements = []
         
-        # Título do relatório
-        titulo = Paragraph(
-            self.cliente_info['nome'].upper(),
-            style_titulo
-        )
-        elements.append(titulo)
-        
-        # Endereço
-        endereco_completo = self.cliente_info['endereco']
-        if self.cliente_info['cidade']:
-            endereco_completo += f", {self.cliente_info['cidade']}"
-        if self.cliente_info['estado']:
-            endereco_completo += f" / {self.cliente_info['estado']}"
-        
-        endereco = Paragraph(endereco_completo, style_subtitulo)
-        elements.append(endereco)
-        
-        elements.append(Spacer(1, 5*mm))  # Reduzido de 8mm para 5mm
+        # === NOTA: Título e endereço do cliente agora estão no cabeçalho ===
+        # Isso garante que apareçam em TODAS as páginas do relatório
         
         # Seção de contratos e medições - com data no título
         data_inicio, data_fim = self.identificar_quinzena(data_referencia)
