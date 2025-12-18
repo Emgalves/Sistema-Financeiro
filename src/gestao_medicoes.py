@@ -526,6 +526,8 @@ class GestaoMedicoes:
                 command=self.nova_medicao).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Editar Medição", 
                 command=self.editar_medicao).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Excluir Medição", 
+           command=self.excluir_medicao).pack(side='left')
         ttk.Button(frame_botoes, text="Lançar no Cliente", 
                 command=self.lancar_medicao).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Vincular a Lançamento", 
@@ -2849,7 +2851,10 @@ class GestaoMedicoes:
 
     # Funções da aba Medições
     def carregar_medicoes(self):
-        """Carrega as medições do contrato selecionado"""
+        """
+        Carrega as medições do contrato selecionado
+        VERSÃO ATUALIZADA: Filtra medições excluídas por padrão
+        """
         try:
             if not self.contrato_atual:
                 messagebox.showwarning("Aviso", "Selecione um contrato primeiro!", parent=self.root)
@@ -2873,15 +2878,21 @@ class GestaoMedicoes:
             # Percorrer as linhas (pulando o cabeçalho)
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if row[0] == self.contrato_atual:  # Filtrar pelo ID do contrato atual
+                    # === FILTRO DE EXCLUSÃO ===
+                    # Não mostrar medições com status "EXCLUÍDO"
+                    status = row[8] if row[8] else ""
+                    if status == "EXCLUÍDO":
+                        continue  # Pula esta linha
+                    
                     # Formatação de dados
                     try:
                         data_medicao = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else row[4]
                         data_pagamento = row[5].strftime('%d/%m/%Y') if isinstance(row[5], datetime) else row[5]
-                        valor = f"R$ {float(row[7]):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.') if row[5] else "R$ 0,00"
+                        valor = f"R$ {float(row[7]):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.') if row[7] else "R$ 0,00"
                     except (ValueError, TypeError, AttributeError):
                         data_medicao = str(row[4] or "")
                         data_pagamento = str(row[5] or "")
-                        valor = str(row[7] or "R$ #.##0,00")
+                        valor = str(row[7] or "R$ 0,00")
                     
                     # Adicionar à treeview
                     self.tree_medicoes.insert('', 'end', values=(
@@ -3457,6 +3468,267 @@ class GestaoMedicoes:
             except:
                 pass
     
+    def excluir_medicao(self):
+        """
+        Exclusão lógica da medição selecionada - mantém registro mas marca como excluída
+        
+        CARACTERÍSTICAS:
+        - Não permite exclusão de medições LANÇADAS ou VINCULADAS
+        - Verifica vinculações na aba Vinculacoes antes de permitir exclusão
+        - Devolve o valor ao saldo do contrato
+        - Registra em log de auditoria
+        - Mantém histórico completo para rastreabilidade
+        """
+        try:
+            # Verificar se há seleção
+            selecionado = self.tree_medicoes.selection()
+            if not selecionado:
+                messagebox.showwarning("Aviso", "Selecione uma medição para excluir!", parent=self.root)
+                return
+            
+            # Obter dados da medição
+            valores = self.tree_medicoes.item(selecionado)['values']
+            id_medicao = valores[0]
+            status_atual = valores[5]  # Coluna Status
+            
+            # Verificar se já está excluída
+            if status_atual == "EXCLUÍDO":
+                messagebox.showinfo("Informação", "Esta medição já está excluída!", parent=self.root)
+                return
+            
+            # Buscar dados completos da medição
+            wb = load_workbook(self.arquivo_cliente)
+            ws_medicoes = wb["Medicoes"]
+            
+            dados_medicao = None
+            linha_medicao = None
+            
+            for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
+                if row[0] == self.contrato_atual and row[1] == id_medicao:
+                    dados_medicao = {
+                        'id_medicao': row[1],
+                        'cnpj': row[2],
+                        'nome': row[3],
+                        'data_medicao': row[4],
+                        'data_pagamento': row[5],
+                        'referencia': row[6],
+                        'valor': row[7],
+                        'status': row[8],
+                        'data_lancamento': row[9],
+                        'observacao': row[10]
+                    }
+                    linha_medicao = idx
+                    break
+            
+            if not dados_medicao:
+                wb.close()
+                messagebox.showerror("Erro", "Medição não encontrada!", parent=self.root)
+                return
+            
+            # === VERIFICAÇÕES CRÍTICAS ===
+            
+            # 1. Verificar se já foi lançada ou vinculada
+            if dados_medicao['status'] in ['LANÇADO', 'VINCULADO']:
+                wb.close()
+                messagebox.showerror(
+                    "Erro - Não Permitido",
+                    f"❌ NÃO É POSSÍVEL EXCLUIR!\n\n"
+                    f"Status atual: {dados_medicao['status']}\n\n"
+                    f"Esta medição já foi {dados_medicao['status'].lower()} e possui "
+                    f"impactos financeiros registrados.\n\n"
+                    f"Para corrigi-la:\n"
+                    f"• Se LANÇADO: localize e corrija na aba 'Dados' do cliente\n"
+                    f"• Se VINCULADO: desvincule primeiro ou ajuste manualmente\n\n"
+                    f"⚠️ A exclusão só é permitida para medições com status PENDENTE.",
+                    parent=self.root
+                )
+                return
+            
+            # 2. Verificar se há vinculações (mesmo que status não indique)
+            vinculacoes = []
+            if "Vinculacoes" in wb.sheetnames:
+                ws_vinc = wb["Vinculacoes"]
+                for row in ws_vinc.iter_rows(min_row=2, values_only=True):
+                    if row[0] == self.contrato_atual and row[1] == id_medicao:
+                        vinculacoes.append(row[2])  # Linha do lançamento
+            
+            if vinculacoes:
+                wb.close()
+                linhas_str = ", ".join(map(str, vinculacoes))
+                messagebox.showerror(
+                    "Erro - Vinculação Detectada",
+                    f"❌ NÃO É POSSÍVEL EXCLUIR!\n\n"
+                    f"Esta medição possui {len(vinculacoes)} vinculação(ões) ativa(s):\n"
+                    f"Linhas dos lançamentos: {linhas_str}\n\n"
+                    f"É necessário desvincular antes de excluir.\n"
+                    f"Contate o suporte se necessário.",
+                    parent=self.root
+                )
+                return
+            
+            # === MONTAR MENSAGEM DE CONFIRMAÇÃO ===
+            
+            # Formatar data
+            try:
+                if isinstance(dados_medicao['data_medicao'], datetime):
+                    data_str = dados_medicao['data_medicao'].strftime('%d/%m/%Y')
+                else:
+                    data_str = str(dados_medicao['data_medicao'])
+            except:
+                data_str = "N/D"
+            
+            # Formatar valor
+            try:
+                valor_float = float(dados_medicao['valor'])
+                valor_str = f"R$ {valor_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+            except:
+                valor_str = str(dados_medicao['valor'])
+            
+            mensagem_confirmacao = (
+                f"⚠️ CONFIRMA A EXCLUSÃO DESTA MEDIÇÃO?\n\n"
+                f"📋 DADOS DA MEDIÇÃO:\n"
+                f"{'='*50}\n"
+                f"Contrato: {self.contrato_atual}\n"
+                f"Medição: #{id_medicao}\n"
+                f"Fornecedor: {dados_medicao['nome']}\n"
+                f"CNPJ/CPF: {dados_medicao['cnpj']}\n"
+                f"Data: {data_str}\n"
+                f"Valor: {valor_str}\n"
+                f"Referência: {dados_medicao['referencia']}\n"
+                f"Status atual: {dados_medicao['status']}\n"
+                f"{'='*50}\n\n"
+                f"📌 O QUE ACONTECERÁ:\n"
+                f"• Status mudará para 'EXCLUÍDO'\n"
+                f"• Valor será devolvido ao saldo do contrato\n"
+                f"• Medição NÃO aparecerá mais nos relatórios\n"
+                f"• Registro permanecerá no histórico para auditoria\n"
+                f"• Data/hora da exclusão serão registradas\n\n"
+                f"⚠️ Esta ação NÃO pode ser desfeita automaticamente!\n\n"
+                f"Deseja continuar?"
+            )
+            
+            resposta = messagebox.askyesno(
+                "Confirmar Exclusão",
+                mensagem_confirmacao,
+                parent=self.root
+            )
+            
+            if not resposta:
+                wb.close()
+                return
+            
+            # === EXECUTAR EXCLUSÃO LÓGICA ===
+            
+            try:
+                hoje = datetime.now()
+                
+                # 1. Atualizar status da medição
+                ws_medicoes.cell(row=linha_medicao, column=9, value="EXCLUÍDO")
+                
+                # 2. Registrar data da exclusão (reutilizar coluna Data_Lancamento)
+                data_cell = ws_medicoes.cell(row=linha_medicao, column=10, value=hoje)
+                data_cell.number_format = 'DD/MM/YYYY HH:MM:SS'
+                
+                # 3. Adicionar observação sobre exclusão
+                obs_atual = ws_medicoes.cell(row=linha_medicao, column=11).value or ""
+                nova_obs = f"{obs_atual} [EXCLUÍDO EM {hoje.strftime('%d/%m/%Y %H:%M:%S')}]"
+                ws_medicoes.cell(row=linha_medicao, column=11, value=nova_obs)
+                
+                # 4. Devolver valor ao saldo do contrato
+                ws_contratos = wb["Contratos_Medicao"]
+                
+                for idx, row in enumerate(ws_contratos.iter_rows(min_row=2, values_only=True), 2):
+                    if row[0] == self.contrato_atual:
+                        # Obter valores atuais
+                        valor_global = float(row[6]) if row[6] else 0
+                        valor_pago_atual = float(row[7]) if row[7] else 0
+                        
+                        # Calcular novo valor pago (subtraindo a medição excluída)
+                        valor_medicao = float(dados_medicao['valor'])
+                        novo_valor_pago = valor_pago_atual - valor_medicao
+                        
+                        # Atualizar valor pago
+                        valor_pago_cell = ws_contratos.cell(row=idx, column=8, value=novo_valor_pago)
+                        valor_pago_cell.number_format = '#.##0,00'
+                        
+                        # Atualizar saldo
+                        novo_saldo = valor_global - novo_valor_pago
+                        saldo_cell = ws_contratos.cell(row=idx, column=9, value=novo_saldo)
+                        saldo_cell.number_format = '#.##0,00'
+                        
+                        # Se estava CONCLUÍDO e agora tem saldo, voltar para ATIVO
+                        if row[9] == "CONCLUÍDO" and novo_saldo > 0:
+                            ws_contratos.cell(row=idx, column=10, value="ATIVO")
+                        
+                        break
+                
+                # 5. Registrar exclusão em log (se existir aba de auditoria)
+                if "Auditoria" not in wb.sheetnames:
+                    ws_audit = wb.create_sheet("Auditoria")
+                    # Criar cabeçalhos
+                    headers = ['Data_Hora', 'Acao', 'ID_Contrato', 'ID_Medicao', 
+                            'Valor', 'Usuario', 'Detalhes']
+                    for col, header in enumerate(headers, start=1):
+                        ws_audit.cell(row=1, column=col, value=header)
+                else:
+                    ws_audit = wb["Auditoria"]
+                
+                proxima_linha = ws_audit.max_row + 1
+                
+                ws_audit.cell(row=proxima_linha, column=1, value=hoje)
+                ws_audit.cell(row=proxima_linha, column=2, value="EXCLUSÃO_MEDICAO")
+                ws_audit.cell(row=proxima_linha, column=3, value=self.contrato_atual)
+                ws_audit.cell(row=proxima_linha, column=4, value=id_medicao)
+                
+                valor_cell = ws_audit.cell(row=proxima_linha, column=5, value=float(dados_medicao['valor']))
+                valor_cell.number_format = '#.##0,00'
+                
+                # Usuario (se houver sistema de login, senão deixa vazio)
+                ws_audit.cell(row=proxima_linha, column=6, value="SISTEMA")
+                
+                detalhes = (
+                    f"Fornecedor: {dados_medicao['nome']} | "
+                    f"Referência: {dados_medicao['referencia']} | "
+                    f"Status anterior: {dados_medicao['status']}"
+                )
+                ws_audit.cell(row=proxima_linha, column=7, value=detalhes)
+                
+                # Salvar tudo
+                wb.save(self.arquivo_cliente)
+                wb.close()
+                
+                # Mensagem de sucesso
+                messagebox.showinfo(
+                    "Exclusão Concluída",
+                    f"✅ Medição #{id_medicao} excluída com sucesso!\n\n"
+                    f"📊 RESUMO:\n"
+                    f"• Status: EXCLUÍDO\n"
+                    f"• Valor devolvido ao contrato: {valor_str}\n"
+                    f"• Registrado em: {hoje.strftime('%d/%m/%Y %H:%M:%S')}\n"
+                    f"• Log de auditoria atualizado\n\n"
+                    f"Esta medição não aparecerá mais em relatórios,\n"
+                    f"mas permanece no histórico para auditoria.",
+                    parent=self.root
+                )
+                
+                # Atualizar lista de medições
+                self.carregar_medicoes()
+                
+                logger.info(f"Medição excluída: Contrato {self.contrato_atual}, Medição #{id_medicao}, Valor: {dados_medicao['valor']}")
+                
+            except Exception as e:
+                wb.close()
+                raise Exception(f"Erro ao executar exclusão: {str(e)}")
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao excluir medição: {str(e)}", parent=self.root)
+            import traceback
+            traceback.print_exc()
+            try:
+                wb.close()
+            except:
+                pass
+
     def lancar_medicao(self):
         """Lança a medição selecionada na planilha do cliente"""
         # Verificar se há seleção
