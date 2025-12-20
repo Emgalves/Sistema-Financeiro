@@ -222,6 +222,111 @@ def formatar_cnpj_cpf(documento):
         return documento.zfill(11)
     return documento.zfill(14)
 
+def normalizar_documento(valor_excel, tipo_pessoa):
+    """
+    Normaliza CNPJ ou CPF baseado no tipo de pessoa (PJ/PF).
+    
+    Esta é a função CENTRAL para normalização. Use sempre que possível.
+    A partir de junho/2026, CNPJ poderá conter letras (IN RFB 2.229/2024).
+    
+    Args:
+        valor_excel: Valor do documento (pode ser int, float ou string)
+        tipo_pessoa: 'PF' para CPF ou 'PJ' para CNPJ
+    
+    Returns:
+        String com documento normalizado (11 dígitos para CPF, 14 para CNPJ)
+    
+    Examples:
+        normalizar_documento(12345678901, 'PF') -> '12345678901'
+        normalizar_documento(123456, 'PF') -> '00000123456'
+        normalizar_documento(12345678000190, 'PJ') -> '12345678000190'
+    """
+    # Converter para string preservando dígitos E letras (futuro CNPJ alfanumérico)
+    if isinstance(valor_excel, (int, float)):
+        texto = str(int(valor_excel))
+    else:
+        texto = str(valor_excel).strip().upper()
+    
+    # Para CPF: extrair apenas números (CPF permanece numérico)
+    if tipo_pessoa == 'PF':
+        numeros = ''.join(filter(str.isdigit, texto))
+        return numeros.zfill(11) if numeros else ""
+    
+    # Para CNPJ: extrair números E letras (preparado para IN 2.229/2024)
+    # Mantém alfanuméricos, remove pontuação/espaços
+    alfanumerico = ''.join(c for c in texto if c.isalnum())
+    return alfanumerico.zfill(14) if alfanumerico else ""
+
+
+def formatar_documento(documento, tipo_pessoa):
+    """
+    Formata documento COM MÁSCARA para exibição visual.
+    
+    Args:
+        documento: Documento já normalizado ou valor bruto
+        tipo_pessoa: 'PF' para CPF ou 'PJ' para CNPJ
+    
+    Returns:
+        String formatada com máscara:
+        - CPF: 000.000.000-00
+        - CNPJ: 00.000.000/0000-00
+    
+    Examples:
+        formatar_documento_com_mascara('12345678901', 'PF') -> '123.456.789-01'
+        formatar_documento_com_mascara(12345678000190, 'PJ') -> '12.345.678/0001-90'
+    """
+    # Normalizar primeiro
+    doc_normalizado = normalizar_documento(documento, tipo_pessoa)
+    
+    if not doc_normalizado:
+        return ""
+    
+    # Aplicar máscara
+    if tipo_pessoa == 'PF':
+        # CPF: 000.000.000-00
+        return f"{doc_normalizado[:3]}.{doc_normalizado[3:6]}.{doc_normalizado[6:9]}-{doc_normalizado[9:11]}"
+    else:  # PJ
+        # CNPJ: 00.000.000/0000-00
+        # Suporta alfanuméricos (letras ficam visíveis na máscara)
+        return f"{doc_normalizado[:2]}.{doc_normalizado[2:5]}.{doc_normalizado[5:8]}/{doc_normalizado[8:12]}-{doc_normalizado[12:14]}"
+
+
+def validar_documento(documento, tipo_pessoa):
+    """
+    Valida CNPJ ou CPF usando biblioteca validate-docbr.
+    
+    ATENÇÃO: Esta validação usa algoritmos atuais (pré-2026).
+    A partir de junho/2026, CNPJs alfanuméricos exigirão novo algoritmo da RFB.
+    
+    Args:
+        documento: Documento a validar (normalizado ou não)
+        tipo_pessoa: 'PF' para CPF ou 'PJ' para CNPJ
+    
+    Returns:
+        bool: True se válido, False caso contrário
+    """
+    # Normalizar primeiro
+    doc_normalizado = normalizar_documento(documento, tipo_pessoa)
+    
+    if not doc_normalizado:
+        return False
+    
+    try:
+        if tipo_pessoa == 'PF':
+            cpf = CPF()
+            return cpf.validate(doc_normalizado)
+        else:  # PJ
+            # TODO: Atualizar validação quando RFB publicar algoritmo para CNPJ alfanumérico
+            cnpj = CNPJ()
+            # Validar apenas se for numérico (CNPJs alfanuméricos ainda não têm validação)
+            if doc_normalizado.isdigit():
+                return cnpj.validate(doc_normalizado)
+            else:
+                # CNPJ alfanumérico: aceitar formato mas sem validação de dígito
+                return len(doc_normalizado) == 14
+    except:
+        return False
+
 # === FORMATADORES AUTOMÁTICOS PARA CAMPOS DE ENTRADA ===
 
 def formatar_cpf_campo(event):
