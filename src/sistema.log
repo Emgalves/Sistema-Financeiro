@@ -8321,3 +8321,82 @@
 2025-12-18 12:16:42,573 - INFO - Configurações do sistema importadas com sucesso
 2025-12-18 12:16:43,086 - INFO - Sistema iniciado em modo: TESTE
 2025-12-18 12:17:28,558 - INFO - Sistema encerrado pelo usuário
+2025-12-20 11:03:23,045 - INFO - Configurações importadas com sucesso via src.config
+2025-12-20 11:03:23,084 - INFO - Configurações importadas com sucesso
+2025-12-20 11:03:23,085 - INFO - Configurações do sistema importadas com sucesso
+2025-12-20 11:03:25,627 - INFO - Sistema iniciado em modo: TESTE
+2025-12-20 11:03:27,245 - INFO - Abrindo sistema de entrada de dados
+2025-12-20 11:03:30,217 - INFO - Proteções contra perda de dados configuradas
+2025-12-20 11:03:34,776 - INFO - Cliente selecionado com sucesso: EDIGAR BATISTA FERREIRA
+2025-12-20 11:05:00,257 - INFO - Planilha salva com sucesso!
+2025-12-20 11:05:04,612 - INFO - ==================================================
+2025-12-20 11:05:04,613 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2025-12-20 11:05:04,613 - INFO - ==================================================
+2025-12-20 11:05:04,614 - INFO - Fornecedor selecionado: GRAAL TINTAS LTDA
+2025-12-20 11:05:05,717 - WARNING - ✗ Fornecedor NÃO ENCONTRADO após verificar 964 linhas
+2025-12-20 11:05:05,717 - WARNING - Procurando por: 68602000180
+2025-12-20 11:05:05,718 - WARNING - Verifique se o CNPJ/CPF está correto no arquivo Excel
+2025-12-20 11:05:05,719 - ERROR - Dados completos do fornecedor não encontrados
+2025-12-20 11:16:25,347 - INFO - Sistema encerrado pelo usuário
+2025-12-20 11:18:21,508 - INFO - Configurações importadas com sucesso via src.config
+2025-12-20 11:18:21,537 - INFO - Configurações importadas com sucesso
+2025-12-20 11:18:21,538 - INFO - Configurações do sistema importadas com sucesso
+2025-12-20 11:18:22,363 - INFO - Sistema iniciado em modo: TESTE
+2025-12-20 11:18:23,827 - INFO - Abrindo sistema de entrada de dados
+2025-12-20 11:18:25,289 - INFO - Proteções contra perda de dados configuradas
+2025-12-20 11:18:29,260 - INFO - Cliente selecionado com sucesso: EDIGAR BATISTA FERREIRA
+2025-12-20 11:18:39,707 - INFO - ==================================================
+2025-12-20 11:18:39,709 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2025-12-20 11:18:39,709 - INFO - ==================================================
+2025-12-20 11:18:39,710 - INFO - Fornecedor selecionado: GRAAL TINTAS LTDA
+2025-12-20 11:18:40,704 - WARNING - ============================================================
+2025-12-20 11:18:40,705 - WARNING - ✗ FORNECEDOR NÃO ENCONTRADO
+2025-12-20 11:18:40,706 - WARNING - ============================================================
+2025-12-20 11:18:40,707 - WARNING - Buscado: 68602000180 (CPF)
+2025-12-20 11:18:40,707 - WARNING - Total de linhas verificadas: 964
+2025-12-20 11:18:40,708 - WARNING - Arquivo: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\base_fornecedores.xlsx
+2025-12-20 11:18:40,709 - WARNING - ============================================================
+2025-12-20 11:18:40,709 - WARNING - Primeiros CNPJs no arquivo (para diagnóstico):
+2025-12-20 11:18:41,779 - WARNING -   ABC DA CONSTRUCAO: 38542718005060
+2025-12-20 11:18:41,780 - WARNING -   ABRIL UNIFORMES: 14285160000139
+2025-12-20 11:18:41,781 - WARNING -   ACQUALIMP INDUSTRIA C M P LTDA: 37008145000149
+2025-12-20 11:18:41,782 - WARNING -   ADAFE PRE MOLDADOS: 36387122902
+2025-12-20 11:18:41,783 - WARNING -   ADAILSON SILVA NOVAIS: 03473509680
+2025-12-20 11:22:01,824 - ERROR - Dados completos do fornecedor não encontrados
+2025-12-20 11:45:08,798 - INFO - Configurações importadas com sucesso via src.config
+2025-12-20 11:45:08,824 - INFO - Configurações importadas com sucesso
+2025-12-20 11:45:08,824 - INFO - Configurações do sistema importadas com sucesso
+2025-12-20 11:45:09,644 - INFO - Sistema iniciado em modo: TESTE
+2025-12-20 11:45:14,497 - INFO - Abrindo sistema de entrada de dados
+2025-12-20 11:45:16,197 - INFO - Proteções contra perda de dados configuradas
+2025-12-20 11:45:19,660 - INFO - Cliente selecionado com sucesso: EDIGAR BATISTA FERREIRA
+2025-12-20 11:45:28,577 - INFO - ==================================================
+2025-12-20 11:45:28,578 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2025-12-20 11:45:28,579 - INFO - ==================================================
+2025-12-20 11:45:28,579 - INFO - Fornecedor: GRAAL TINTAS LTDA
+2025-12-20 11:45:29,588 - WARNING - ============================================================
+2025-12-20 11:45:29,589 - WARNING - ✗ FORNECEDOR NÃO ENCONTRADO
+2025-12-20 11:45:29,590 - WARNING - ============================================================
+2025-12-20 11:45:29,591 - WARNING - Buscado: 68602000180 (CPF)
+2025-12-20 11:45:29,591 - WARNING - Total de linhas verificadas: 964
+2025-12-20 11:45:29,592 - WARNING - ============================================================
+2025-12-20 11:45:30,649 - WARNING - Primeiros CNPJs no arquivo (para diagnóstico):
+2025-12-20 11:45:30,655 - WARNING -   ABC DA CONSTRUCAO: 38542718005060
+2025-12-20 11:45:30,656 - WARNING -   ABRIL UNIFORMES: 14285160000139
+2025-12-20 11:45:30,659 - WARNING -   ACQUALIMP INDUSTRIA C M P LTDA: 37008145000149
+2025-12-20 11:45:30,661 - WARNING -   ADAFE PRE MOLDADOS: 36387122902
+2025-12-20 11:45:30,664 - WARNING -   ADAILSON SILVA NOVAIS: 03473509680
+2025-12-20 11:45:30,665 - ERROR - Fornecedor não encontrado: 68602000180
+2025-12-20 13:20:12,007 - INFO - Configurações importadas com sucesso via src.config
+2025-12-20 13:20:12,122 - INFO - Configurações importadas com sucesso
+2025-12-20 13:20:12,135 - INFO - Configurações do sistema importadas com sucesso
+2025-12-20 13:20:12,992 - INFO - Sistema iniciado em modo: TESTE
+2025-12-20 13:20:19,346 - INFO - Abrindo sistema de entrada de dados
+2025-12-20 13:20:20,566 - INFO - Proteções contra perda de dados configuradas
+2025-12-20 13:20:23,350 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-20 15:21:08,579 - INFO - Configurações importadas com sucesso via src.config
+2025-12-20 15:21:08,627 - INFO - Configurações importadas com sucesso
+2025-12-20 15:21:08,628 - INFO - Configurações do sistema importadas com sucesso
+2025-12-20 15:21:10,990 - INFO - Sistema iniciado em modo: TESTE
+2025-12-20 15:21:13,137 - INFO - Abrindo sistema de relatórios
+2025-12-20 15:26:46,069 - INFO - Sistema encerrado pelo usuário
