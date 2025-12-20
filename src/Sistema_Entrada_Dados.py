@@ -219,6 +219,11 @@ try:
             obter_clientes_ativos,
             validar_data,
             validar_cnpj_cpf,
+            formatar_cnpj_cpf,
+            normalizar_documento,
+            formatar_documento,
+            validar_documento,
+            buscar_dados_bancarios_fornecedor,
             formatar_moeda,
             custom_messagebox,
             formatar_cpf_campo,      # Formatadores
@@ -751,7 +756,7 @@ class VisualizadorLancamentos:
         """Atualiza os dados de um lançamento específico"""
         try:
             cnpj_cpf = str(novos_dados['cnpj_cpf']).replace('.', '').replace('-', '').replace('/', '')
-            novos_dados['cnpj_cpf'] = formatar_cnpj_cpf(cnpj_cpf)
+            novos_dados['cnpj_cpf'] = formatar_documento(cnpj_cpf)
             novos_dados['observacao'] = novos_dados['observacao'].upper()
 
             item = self.tree.get_children()[indice]
@@ -1298,7 +1303,7 @@ class EditorLancamento:
                 dados_bancarios = ' - '.join(filter(None, dados_ted))
 
             if dados_bancarios.strip() in ['', ' - ']:
-                dados_bancarios = 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+                dados_bancarios = ''
 
         # Atualizar o campo
         self.campos_fornecedor['dados_bancarios'].config(state='normal')
@@ -4268,7 +4273,10 @@ class SistemaEntradaDados:
             self.janela_fornecedor.destroy()
 
     def selecionar_fornecedor(self):
-        """Seleciona o fornecedor e preenche seus dados - VERSÃO CORRIGIDA PARA EXECUTÁVEL"""
+        """
+        Seleciona o fornecedor e preenche seus dados
+        VERSÃO OTIMIZADA - Usando funções do utils.py
+        """
         try:
             logger.info("="*50)
             logger.info("INICIANDO SELEÇÃO DE FORNECEDOR")
@@ -4276,100 +4284,68 @@ class SistemaEntradaDados:
             
             # Verificar se há seleção
             selecionado = self.tree_fornecedores.selection()
-            logger.debug(f"Seleção obtida: {selecionado}")
             
             if not selecionado:
-                logger.warning("Nenhum fornecedor selecionado")
                 custom_messagebox("warning", "Aviso", "Selecione um fornecedor na lista!")
                 return
             
             # Obter dados da seleção
             valores = self.tree_fornecedores.item(selecionado[0])['values']
-            logger.debug(f"Valores obtidos (tipos): {[(type(v).__name__, v) for v in valores]}")
+            tags = self.tree_fornecedores.item(selecionado[0])['tags']
             
-            # Verificar se é mensagem de erro
-            if len(valores) < 3:
-                logger.warning("Seleção inválida - poucos valores")
+            # Verificar validade
+            if len(valores) < 3 or valores[1] == 'Nenhum fornecedor encontrado':
                 custom_messagebox("warning", "Aviso", "Selecione um fornecedor válido!")
                 return
             
-            # CORREÇÃO CRÍTICA: Converter TUDO para string
-            cnpj_cpf_original = valores[0]
-            nome = str(valores[1]) if valores[1] else ''
-            categoria = str(valores[2]) if valores[2] else ''
+            # ===== CORREÇÃO 3: USAR VALOR NORMALIZADO =====
+            cnpj_cpf_normalizado = str(valores[0]).strip()  # Já normalizado
+            nome = str(valores[1]).strip()
+            categoria = str(valores[2]).strip()
             
-            # Verificar mensagem de erro
-            if nome == 'Nenhum fornecedor encontrado':
-                logger.warning("Seleção inválida - mensagem de erro")
-                custom_messagebox("warning", "Aviso", "Selecione um fornecedor válido!")
-                return
+            logger.info(f"Fornecedor: {nome}")
+            logger.debug(f"CNPJ/CPF normalizado: {cnpj_cpf_normalizado} ({len(cnpj_cpf_normalizado)} dígitos)")
             
-            logger.info(f"Fornecedor selecionado: {nome}")
-            logger.debug(f"CNPJ/CPF original (tipo: {type(cnpj_cpf_original).__name__}): {cnpj_cpf_original}")
-            
-            # CORREÇÃO CRÍTICA: Garantir que cnpj_cpf_formatado seja string
-            if isinstance(cnpj_cpf_original, (int, float)):
-                # Se for número, converter para string e formatar
-                cnpj_cpf_numeros = str(int(cnpj_cpf_original))
-                logger.debug(f"CNPJ/CPF era número, convertido para: {cnpj_cpf_numeros}")
-                
-                # Formatar baseado no tamanho
-                if len(cnpj_cpf_numeros) <= 11:
-                    # CPF
-                    cnpj_cpf_numeros = cnpj_cpf_numeros.zfill(11)
-                    cnpj_cpf_formatado = f"{cnpj_cpf_numeros[:3]}.{cnpj_cpf_numeros[3:6]}.{cnpj_cpf_numeros[6:9]}-{cnpj_cpf_numeros[9:]}"
-                else:
-                    # CNPJ
-                    cnpj_cpf_numeros = cnpj_cpf_numeros.zfill(14)
-                    cnpj_cpf_formatado = f"{cnpj_cpf_numeros[:2]}.{cnpj_cpf_numeros[2:5]}.{cnpj_cpf_numeros[5:8]}/{cnpj_cpf_numeros[8:12]}-{cnpj_cpf_numeros[12:]}"
+            # Formatar para exibição
+            if tags and tags[0]:
+                cnpj_cpf_formatado = tags[0]
             else:
-                # Se já for string, apenas garantir que é string
-                cnpj_cpf_formatado = str(cnpj_cpf_original)
-                # Remover formatação para buscar
-                cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_formatado))
+                cnpj_cpf_formatado = formatar_documento(cnpj_cpf_normalizado)
             
             logger.debug(f"CNPJ/CPF formatado: {cnpj_cpf_formatado}")
-            logger.debug(f"CNPJ/CPF sem formatação: {cnpj_cpf_numeros}")
             
-            # Carregar dados completos
-            logger.debug("Buscando dados completos do fornecedor...")
-            fornecedor_completo = self.buscar_fornecedor_completo(cnpj_cpf_numeros)
+            # ===== CORREÇÃO 4: BUSCAR COM VALOR NORMALIZADO =====
+            fornecedor_completo = self.buscar_fornecedor_completo(cnpj_cpf_normalizado)
             
             if not fornecedor_completo:
-                logger.error("Dados completos do fornecedor não encontrados")
-                custom_messagebox("error", "Erro", "Não foi possível carregar os dados completos do fornecedor!")
+                logger.error(f"Fornecedor não encontrado: {cnpj_cpf_normalizado}")
+                custom_messagebox("error", "Erro", 
+                                f"Não foi possível carregar os dados do fornecedor!\n\n"
+                                f"CNPJ/CPF: {cnpj_cpf_formatado}")
                 return
             
-            logger.info(f"Dados completos carregados: {fornecedor_completo['nome']}")
+            logger.info(f"Dados carregados: {fornecedor_completo['nome']}")
             
             # Verificar campos
             if not hasattr(self, 'campos_fornecedor'):
-                logger.error("CRÍTICO: campos_fornecedor não existe!")
-                custom_messagebox("error", "Erro", 
-                                "Campos de fornecedor não estão configurados!\n"
-                                "A aba de dados pode não estar inicializada.")
+                custom_messagebox("error", "Erro", "Campos de fornecedor não configurados!")
                 return
             
-            logger.debug(f"campos_fornecedor tem {len(self.campos_fornecedor)} campos")
+            # ===== PREENCHER CAMPOS =====
             
-            # Preencher CNPJ/CPF
-            logger.debug("Preenchendo CNPJ/CPF...")
+            # CNPJ/CPF
             self.campos_fornecedor['cnpj_cpf'].config(state='normal')
             self.campos_fornecedor['cnpj_cpf'].delete(0, tk.END)
             self.campos_fornecedor['cnpj_cpf'].insert(0, cnpj_cpf_formatado)
             self.campos_fornecedor['cnpj_cpf'].config(state='readonly')
-            logger.debug("CNPJ/CPF preenchido com sucesso")
             
-            # Preencher Nome
-            logger.debug("Preenchendo Nome...")
+            # Nome
             self.campos_fornecedor['nome'].config(state='normal')
             self.campos_fornecedor['nome'].delete(0, tk.END)
             self.campos_fornecedor['nome'].insert(0, nome)
             self.campos_fornecedor['nome'].config(state='readonly')
-            logger.debug("Nome preenchido com sucesso")
             
-            # Preencher Categoria
-            logger.debug("Preenchendo Categoria...")
+            # Categoria
             if isinstance(self.campos_fornecedor['categoria'], ttk.Combobox):
                 self.campos_fornecedor['categoria'].set(categoria)
             else:
@@ -4377,94 +4353,67 @@ class SistemaEntradaDados:
                 self.campos_fornecedor['categoria'].delete(0, tk.END)
                 self.campos_fornecedor['categoria'].insert(0, categoria)
                 self.campos_fornecedor['categoria'].config(state='readonly')
-            logger.debug("Categoria preenchida com sucesso")
             
-            # Preencher Dados Bancários
-            logger.debug("Preenchendo Dados Bancários...")
+            # ===== DADOS BANCÁRIOS - USANDO FUNÇÃO DO UTILS.PY =====
+            # Determinar forma de pagamento preferida (você pode pegar de um campo se tiver)
+            forma_pagamento = "PIX"  # Padrão
+            if hasattr(self, 'campos_despesa') and 'forma_pagto' in self.campos_despesa:
+                forma_pagamento_campo = self.campos_despesa['forma_pagto'].get()
+                if forma_pagamento_campo:
+                    forma_pagamento = forma_pagamento_campo
+            
+            # Buscar dados bancários usando função do utils
+            dados_bancarios = buscar_dados_bancarios_fornecedor(
+                cnpj_cpf_normalizado,
+                forma_pagamento,
+                ARQUIVO_FORNECEDORES
+            )
+            
             self.campos_fornecedor['dados_bancarios'].config(state='normal')
             self.campos_fornecedor['dados_bancarios'].delete(0, tk.END)
-            
-            if fornecedor_completo.get('chave_pix'):
-                dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
-            else:
-                partes = []
-                if fornecedor_completo.get('banco'):
-                    partes.append(str(fornecedor_completo['banco']))
-                if fornecedor_completo.get('op'):
-                    partes.append(f"Op: {fornecedor_completo['op']}")
-                if fornecedor_completo.get('agencia'):
-                    partes.append(f"Ag: {fornecedor_completo['agencia']}")
-                if fornecedor_completo.get('conta'):
-                    partes.append(f"Conta: {fornecedor_completo['conta']}")
-                
-                dados_bancarios = " | ".join(partes) if partes else "DADOS BANCÁRIOS NÃO CADASTRADOS"
-            
             self.campos_fornecedor['dados_bancarios'].insert(0, dados_bancarios)
             self.campos_fornecedor['dados_bancarios'].config(state='readonly')
-            logger.debug(f"Dados bancários preenchidos: {dados_bancarios}")
             
-            # Preencher Referência
+            logger.debug(f"Dados bancários: {dados_bancarios}")
+            
+            # Referência (Especificação)
             if fornecedor_completo.get('especificacao') and hasattr(self, 'campos_despesa'):
                 if 'referencia' in self.campos_despesa:
-                    logger.debug("Preenchendo campo Referência com especificação...")
                     self.campos_despesa['referencia'].delete(0, tk.END)
-                    self.campos_despesa['referencia'].insert(0, str(fornecedor_completo['especificacao']).strip())
+                    self.campos_despesa['referencia'].insert(0, fornecedor_completo['especificacao'])
             
-            logger.info("Todos os campos preenchidos com sucesso!")
+            logger.info("Campos preenchidos com sucesso!")
             
-            # Verificar notebook
-            if not hasattr(self, 'notebook'):
-                logger.error("CRÍTICO: notebook não existe!")
-                custom_messagebox("error", "Erro", "Notebook não está configurado!")
-                return
+            # Avançar para aba de dados
+            if hasattr(self, 'notebook'):
+                num_abas = self.notebook.index('end')
+                if num_abas >= 3:
+                    self.notebook.select(2)
+                    
+                    # Focar no primeiro campo
+                    if hasattr(self, 'campos_despesa') and 'tp_desp' in self.campos_despesa:
+                        self.campos_despesa['tp_desp'].focus()
             
-            num_abas = self.notebook.index('end')
-            logger.info(f"Notebook tem {num_abas} aba(s)")
-            
-            if num_abas < 3:
-                logger.error(f"CRÍTICO: Número insuficiente de abas ({num_abas})")
-                custom_messagebox("error", "Erro", 
-                                f"Aba de dados não encontrada!\n"
-                                f"O notebook tem apenas {num_abas} aba(s).")
-                return
-            
-            # Tentar avançar para aba de dados
-            logger.info("Tentando selecionar aba de dados (índice 2)...")
-            self.notebook.select(2)
-            logger.info("Aba de dados selecionada com sucesso!")
-            
-            # Focar no primeiro campo
-            if hasattr(self, 'campos_despesa') and 'tp_desp' in self.campos_despesa:
-                logger.debug("Focando no campo tp_desp...")
-                self.campos_despesa['tp_desp'].focus()
-            
-            logger.info("SELEÇÃO DE FORNECEDOR CONCLUÍDA COM SUCESSO!")
+            logger.info("SELEÇÃO CONCLUÍDA COM SUCESSO!")
             logger.info("="*50)
             
-            # custom_messagebox("info", "Sucesso", 
-            #                 f"✅ Fornecedor selecionado com sucesso!\n\n"
-            #                 f"👤 {nome}\n"
-            #                 f"📋 {cnpj_cpf_formatado}\n\n"
-            #                 f"➡️ Continue preenchendo os dados da despesa")
-            
         except Exception as e:
-            logger.error("="*50)
-            logger.error("ERRO CRÍTICO EM SELECIONAR_FORNECEDOR")
-            logger.error("="*50)
-            logger.error(f"Tipo do erro: {type(e).__name__}")
-            logger.error(f"Mensagem: {str(e)}")
-            logger.error("Traceback completo:")
+            logger.error(f"ERRO em selecionar_fornecedor: {str(e)}")
             import traceback
             logger.error(traceback.format_exc())
-            logger.error("="*50)
-            
-            custom_messagebox("error", "Erro", 
-                            f"Erro ao selecionar fornecedor:\n{str(e)}\n\n"
-                            f"Um arquivo de log foi criado na área de trabalho")
+            custom_messagebox("error", "Erro", f"Erro ao selecionar fornecedor:\n{str(e)}")
             
     def buscar_fornecedor(self):
-        """Busca fornecedores baseado no termo digitado - CORRIGIDO PARA EXECUTÁVEL"""
+        """
+        Busca fornecedores - VERSÃO SIMPLIFICADA usando tipo_pessoa
+        """
         try:
+            from src.config.utils import (
+                custom_messagebox
+            )
+            from src.config.config import ARQUIVO_FORNECEDORES
+            from openpyxl import load_workbook
+            
             termo = self.busca_entry.get().strip()
             
             # Limpar resultados anteriores
@@ -4474,7 +4423,7 @@ class SistemaEntradaDados:
             if not termo:
                 return
             
-            # Abrir planilha de fornecedores
+            # Abrir planilha
             wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
             ws = wb['Fornecedores']
             
@@ -4483,55 +4432,50 @@ class SistemaEntradaDados:
             
             # Buscar na planilha
             for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular linhas vazias
+                if not row or not row[0]:
                     continue
-                    
-                # CORREÇÃO: Garantir que tudo seja string
-                cnpj_cpf = str(row[0]).strip() if row[0] else ''
-                nome = str(row[3] or '').strip().upper()  # Coluna D = Nome
-                categoria = str(row[11] or '').strip()    # Coluna L = Categoria
+                
+                # ===== SOLUÇÃO SIMPLES: USAR COLUNA B (tipo_pessoa) =====
+                cnpj_cpf_valor = row[0]  # Coluna A
+                tipo_pessoa = str(row[1]).strip().upper()  # Coluna B ← USAR ISSO!
+                nome = str(row[3] or '').strip().upper()  # Coluna D
+                categoria = str(row[11] or '').strip()  # Coluna L
+                
+                # Normalizar usando tipo_pessoa
+                cnpj_cpf_normalizado = normalizar_documento(cnpj_cpf_valor, tipo_pessoa)
+                cnpj_cpf_formatado = formatar_documento(cnpj_cpf_valor, tipo_pessoa)
                 
                 # Verificar se o termo está no nome
                 if termo_upper in nome:
-                    # Formatar CNPJ/CPF para exibição
-                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf)
-                    
-                    # CORREÇÃO CRÍTICA: Inserir como STRINGS
+                    # Inserir normalizado no Treeview
                     self.tree_fornecedores.insert('', 'end', values=(
-                        str(cnpj_cpf_formatado),  # Garantir string
-                        str(nome),                # Garantir string
-                        str(categoria)            # Garantir string
-                    ))
+                        cnpj_cpf_normalizado,  # Valor interno
+                        nome,
+                        categoria
+                    ), tags=(cnpj_cpf_formatado,))  # Formatado
                     
                     resultados_encontrados += 1
                     
-                    # Limitar resultados
                     if resultados_encontrados >= 100:
                         break
             
             wb.close()
             
-            # Ordenar resultados por nome
+            # Ordenar por nome
             if resultados_encontrados > 1:
                 items = []
                 for item in self.tree_fornecedores.get_children():
                     values = self.tree_fornecedores.item(item)['values']
-                    items.append(values)
+                    tags = self.tree_fornecedores.item(item)['tags']
+                    items.append((values, tags))
                 
-                # Limpar tree
                 for item in self.tree_fornecedores.get_children():
                     self.tree_fornecedores.delete(item)
                 
-                # Ordenar por nome
-                items.sort(key=lambda x: str(x[1]))
+                items.sort(key=lambda x: str(x[0][1]))
                 
-                # Reinserir ordenado - GARANTINDO STRINGS
-                for values in items:
-                    self.tree_fornecedores.insert('', 'end', values=(
-                        str(values[0]),
-                        str(values[1]),
-                        str(values[2])
-                    ))
+                for values, tags in items:
+                    self.tree_fornecedores.insert('', 'end', values=values, tags=tags)
             
             if resultados_encontrados == 0:
                 self.tree_fornecedores.insert('', 'end', values=(
@@ -4540,8 +4484,10 @@ class SistemaEntradaDados:
                 
         except Exception as e:
             logger.error(f"Erro na busca: {str(e)}")
+            import traceback
             logger.error(traceback.format_exc())
             custom_messagebox("error", "Erro", f"Erro na busca: {str(e)}")
+
 
     def buscar_fornecedores_por_nome_parcial(self, nome_parcial):
         """
@@ -4594,112 +4540,102 @@ class SistemaEntradaDados:
             return self.buscar_fornecedores_por_nome_parcial_direto(nome_parcial)
 
     def buscar_fornecedor_completo(self, cnpj_cpf):
-        """Busca todos os dados de um fornecedor - VERSÃO ROBUSTA PARA EXECUTÁVEL"""
+        """
+        Busca fornecedor completo - VERSÃO SIMPLIFICADA usando tipo_pessoa
+        """
         try:
-            logger.debug(f"Buscando fornecedor completo para: {cnpj_cpf} (tipo: {type(cnpj_cpf).__name__})")
+            from src.config.config import ARQUIVO_FORNECEDORES
+            from openpyxl import load_workbook
+            import os
             
-            # Verificar se arquivo existe
+            logger.debug(f"=== buscar_fornecedor_completo ===")
+            logger.debug(f"CNPJ/CPF recebido: {cnpj_cpf}")
+            
             if not os.path.exists(ARQUIVO_FORNECEDORES):
-                logger.error(f"ARQUIVO NÃO ENCONTRADO: {ARQUIVO_FORNECEDORES}")
-                custom_messagebox("error", "Erro", f"Arquivo não encontrado:\n{ARQUIVO_FORNECEDORES}")
+                logger.error(f"Arquivo não encontrado")
                 return None
             
-            logger.debug(f"Abrindo arquivo: {ARQUIVO_FORNECEDORES}")
             wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
             ws = wb['Fornecedores']
             
-            # CORREÇÃO CRÍTICA: Normalizar CNPJ/CPF de entrada convertendo para string primeiro
-            cnpj_cpf_str = str(cnpj_cpf) if cnpj_cpf else ''
-            cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_str))
-            
-            # Validar se tem números
-            if not cnpj_cpf_numeros:
-                logger.error(f"CNPJ/CPF inválido (sem números): {cnpj_cpf}")
-                wb.close()
-                return None
-            
-            # Normalizar tamanho
-            if len(cnpj_cpf_numeros) <= 11:
-                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(11)
-                logger.debug(f"Tratando como CPF: {cnpj_cpf_normalizado}")
+            # Extrair apenas números do CNPJ/CPF recebido
+            if isinstance(cnpj_cpf, (int, float)):
+                cnpj_cpf_numeros = str(int(cnpj_cpf))
             else:
-                cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(14)
-                logger.debug(f"Tratando como CNPJ: {cnpj_cpf_normalizado}")
+                cnpj_cpf_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))
+            
+            logger.debug(f"Buscando por: {cnpj_cpf_numeros}")
             
             # Buscar na planilha
-            linha_atual = 1
             total_linhas = 0
+            fornecedor_encontrado = None
             
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                linha_atual += 1
+            for linha, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+                if not row or not row[0]:
+                    continue
+                
                 total_linhas += 1
                 
-                if not row[0]:  # Pular linhas vazias
-                    continue
+                # ===== USAR tipo_pessoa DA PLANILHA =====
+                row_cnpj_valor = row[0]  # Coluna A
+                row_tipo_pessoa = str(row[1]).strip().upper()  # Coluna B
                 
-                # CORREÇÃO CRÍTICA: Converter tudo para string antes de processar
-                row_cnpj_cpf_original = row[0]
-                logger.debug(f"Linha {linha_atual}: CNPJ/CPF original = {row_cnpj_cpf_original} (tipo: {type(row_cnpj_cpf_original).__name__})")
+                # Normalizar usando tipo_pessoa
+                row_cnpj_normalizado = normalizar_documento(row_cnpj_valor, row_tipo_pessoa)
                 
-                # Converter para string e limpar
-                row_cnpj_cpf_str = str(row_cnpj_cpf_original) if row_cnpj_cpf_original else ''
-                row_cnpj_numeros = ''.join(filter(str.isdigit, row_cnpj_cpf_str))
+                # Também normalizar o valor de busca com o mesmo tipo
+                # (vamos tentar com ambos os tipos para garantir)
+                cnpj_cpf_como_pf = cnpj_cpf_numeros.zfill(11)
+                cnpj_cpf_como_pj = cnpj_cpf_numeros.zfill(14)
                 
-                if not row_cnpj_numeros:
-                    continue
-                
-                # Normalizar tamanho
-                if len(row_cnpj_numeros) <= 11:
-                    row_cnpj_normalizado = row_cnpj_numeros.zfill(11)
-                else:
-                    row_cnpj_normalizado = row_cnpj_numeros.zfill(14)
+                # Log primeiras linhas
+                if total_linhas <= 3 or row_cnpj_normalizado in [cnpj_cpf_como_pf, cnpj_cpf_como_pj]:
+                    logger.debug(f"Linha {linha}:")
+                    logger.debug(f"  Original: {row_cnpj_valor}")
+                    logger.debug(f"  Tipo: {row_tipo_pessoa}")
+                    logger.debug(f"  Normalizado: {row_cnpj_normalizado} ({len(row_cnpj_normalizado)} dígitos)")
                 
                 # Comparar
-                if row_cnpj_normalizado == cnpj_cpf_normalizado:
-                    logger.info(f"✓ Fornecedor ENCONTRADO na linha {linha_atual}!")
-                    logger.debug(f"Match: {row_cnpj_normalizado} == {cnpj_cpf_normalizado}")
+                if row_cnpj_normalizado == cnpj_cpf_como_pf or row_cnpj_normalizado == cnpj_cpf_como_pj:
+                    logger.info(f"✓ FORNECEDOR ENCONTRADO NA LINHA {linha}!")
+                    logger.debug(f"  Tipo: {row_tipo_pessoa}")
+                    logger.debug(f"  CNPJ/CPF: {row_cnpj_normalizado}")
                     
-                    # CORREÇÃO: Converter TODOS os campos para string
-                    fornecedor = {
-                        'cnpj_cpf': str(row[0]) if row[0] else '',
-                        'tipo_pessoa': str(row[1]) if row[1] else '',
-                        'razao_social': str(row[2]) if row[2] else '',
-                        'nome': str(row[3]) if row[3] else '',
-                        'telefone': str(row[4]) if row[4] else '',
-                        'email': str(row[5]) if row[5] else '',
-                        'banco': str(row[6]) if row[6] else '',
-                        'op': str(row[7]) if row[7] else '',
-                        'agencia': str(row[8]) if row[8] else '',
-                        'conta': str(row[9]) if row[9] else '',
-                        'chave_pix': str(row[10]) if row[10] else '',
-                        'categoria': str(row[11]) if row[11] else '',
-                        'especificacao': str(row[12]) if row[12] else '',
-                        'vinculo': str(row[13]) if row[13] else '',
-                        'endereco': str(row[15]) if len(row) > 15 and row[15] else ''
+                    # Montar dicionário
+                    row_completa = list(row) + [None] * (16 - len(row))
+                    
+                    fornecedor_encontrado = {
+                        'cnpj_cpf': str(row_completa[0]).strip() if row_completa[0] else '',
+                        'tipo_pessoa': str(row_completa[1]).strip() if row_completa[1] else '',
+                        'razao_social': str(row_completa[2]).strip() if row_completa[2] else '',
+                        'nome': str(row_completa[3]).strip() if row_completa[3] else '',
+                        'telefone': str(row_completa[4]).strip() if row_completa[4] else '',
+                        'email': str(row_completa[5]).strip() if row_completa[5] else '',
+                        'banco': str(row_completa[6]).strip() if row_completa[6] else '',
+                        'op': str(row_completa[7]).strip() if row_completa[7] else '',
+                        'agencia': str(row_completa[8]).strip() if row_completa[8] else '',
+                        'conta': str(row_completa[9]).strip() if row_completa[9] else '',
+                        'chave_pix': str(row_completa[10]).strip() if row_completa[10] else '',
+                        'categoria': str(row_completa[11]).strip() if row_completa[11] else '',
+                        'especificacao': str(row_completa[12]).strip() if row_completa[12] else '',
+                        'vinculo': str(row_completa[13]).strip() if row_completa[13] else '',
+                        'dados_bancarios': str(row_completa[14]).strip() if row_completa[14] else '',
+                        'endereco': str(row_completa[15]).strip() if row_completa[15] else ''
                     }
                     
-                    wb.close()
-                    logger.debug(f"Dados retornados: Nome={fornecedor['nome']}, Categoria={fornecedor['categoria']}")
-                    return fornecedor
+                    break
             
             wb.close()
-            logger.warning(f"✗ Fornecedor NÃO ENCONTRADO após verificar {total_linhas} linhas")
-            logger.warning(f"Procurando por: {cnpj_cpf_normalizado}")
-            logger.warning("Verifique se o CNPJ/CPF está correto no arquivo Excel")
             
-            return None
+            if not fornecedor_encontrado:
+                logger.warning(f"✗ NÃO ENCONTRADO após {total_linhas} linhas")
+            
+            return fornecedor_encontrado
             
         except Exception as e:
-            logger.error("="*50)
-            logger.error("ERRO EM buscar_fornecedor_completo")
-            logger.error("="*50)
-            logger.error(f"CNPJ/CPF buscado: {cnpj_cpf}")
-            logger.error(f"Tipo do erro: {type(e).__name__}")
-            logger.error(f"Mensagem: {str(e)}")
-            logger.error("Traceback:")
+            logger.error(f"Erro: {str(e)}")
             import traceback
             logger.error(traceback.format_exc())
-            logger.error("="*50)
             
             try:
                 wb.close()
@@ -5280,10 +5216,10 @@ class SistemaEntradaDados:
         """Valida CNPJ/CPF usando apenas os números"""
         if len(numeros) == 11:
             # Validar CPF
-            return validar_cnpj_cpf(f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:9]}-{numeros[9:]}")
+            return validar_documento(f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:9]}-{numeros[9:]}")
         elif len(numeros) == 14:
             # Validar CNPJ
-            return validar_cnpj_cpf(f"{numeros[:2]}.{numeros[2:5]}.{numeros[5:8]}/{numeros[8:12]}-{numeros[12:]}")
+            return validar_documento(f"{numeros[:2]}.{numeros[2:5]}.{numeros[5:8]}/{numeros[8:12]}-{numeros[12:]}")
         return False
 
     def usar_cpf_criado_auto(self):
@@ -5311,9 +5247,9 @@ class SistemaEntradaDados:
                 
                 # TESTE: Validar CPF formatado com a função do sistema
                 try:
-                    if not validar_cnpj_cpf(cpf_formatado):
+                    if not validar_documento(cpf_formatado):
                         logger.debug(f"AVISO: Sistema não reconheceu CPF como válido: {cpf_formatado}")
-                        # Mesmo assim, continuar - pode ser problema na função validar_cnpj_cpf
+                        # Mesmo assim, continuar - pode ser problema na função validar_documento
                 except Exception as e:
                     logger.debug(f"Erro na validação do sistema: {str(e)}")
                 
@@ -5900,7 +5836,7 @@ class SistemaEntradaDados:
                 sucesso_marcacao = self.gerenciador_cpfs.marcar_cpf_como_usado(cnpj_cpf_numeros, nome_fornecedor)
                 
                 if sucesso_marcacao:
-                    cnpj_cpf_formatado = formatar_cnpj_cpf(cnpj_cpf_numeros)
+                    cnpj_cpf_formatado = formatar_documento(cnpj_cpf_numeros)
                     mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
                                     f"🔄 CPF criado marcado como usado:\n"
                                     f"📋 {cnpj_cpf_formatado}\n"
@@ -7105,7 +7041,7 @@ class SistemaEntradaDados:
             dados_bancarios = ' - '.join(filter(None, dados_ted))
 
         if dados_bancarios.strip() in ['', ' - ']:
-            dados_bancarios = 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+            dados_bancarios = ''
             
         self.campos_fornecedor['dados_bancarios'].insert(0, dados_bancarios)
         self.campos_fornecedor['dados_bancarios'].config(state='readonly')
@@ -10575,7 +10511,7 @@ class GestaoContratos:
             for item in self.tree_adm.get_children():
                 valores_adm = self.tree_adm.item(item)['values']
                 cnpj_cpf_adm = str(valores_adm[0]).strip()
-                cnpj_cpf_adm = formatar_cnpj_cpf(cnpj_cpf_adm)
+                cnpj_cpf_adm = formatar_documento(cnpj_cpf_adm)
                 nome_adm = valores_adm[1]
                 
                 # Calcular valor para este administrador (proporcional ao percentual definido)
@@ -12189,7 +12125,7 @@ class GestaoContratos:
                 logger.debug(f"Processando administrador: {valores_adm}")
                 
                 cnpj_cpf_adm = str(valores_adm[0]).strip()
-                cnpj_cpf_adm = formatar_cnpj_cpf(cnpj_cpf_adm)
+                cnpj_cpf_adm = formatar_documento(cnpj_cpf_adm)
                 nome_adm = valores_adm[1]
                 
                 # Extrair descricoes das tags, se existirem
@@ -12367,7 +12303,7 @@ class GestaoContratos:
             
             # Formatação do CNPJ/CPF
             cnpj_cpf = str(valores[0]).strip()
-            cnpj_cpf = formatar_cnpj_cpf(cnpj_cpf)
+            cnpj_cpf = formatar_documento(cnpj_cpf)
             nome_admin = valores[1]
             
             # Buscar dados bancários do fornecedor
