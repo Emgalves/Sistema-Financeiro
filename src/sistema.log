@@ -8400,3 +8400,43 @@
 2025-12-20 15:21:10,990 - INFO - Sistema iniciado em modo: TESTE
 2025-12-20 15:21:13,137 - INFO - Abrindo sistema de relatórios
 2025-12-20 15:26:46,069 - INFO - Sistema encerrado pelo usuário
+2025-12-20 16:51:06,090 - INFO - Configurações importadas com sucesso via src.config
+2025-12-20 16:51:06,115 - INFO - Configurações importadas com sucesso
+2025-12-20 16:51:06,117 - INFO - Configurações do sistema importadas com sucesso
+2025-12-20 16:51:07,520 - INFO - Sistema iniciado em modo: TESTE
+2025-12-20 16:51:09,001 - INFO - Abrindo sistema de relatórios
+2025-12-20 16:57:29,987 - INFO - Sistema encerrado pelo usuário
+2025-12-20 16:58:02,671 - INFO - Configurações importadas com sucesso via src.config
+2025-12-20 16:58:02,691 - INFO - Configurações importadas com sucesso
+2025-12-20 16:58:02,692 - INFO - Configurações do sistema importadas com sucesso
+2025-12-20 16:58:03,161 - INFO - Sistema iniciado em modo: TESTE
+2025-12-20 16:58:04,492 - INFO - Abrindo sistema de relatórios
+2025-12-20 17:03:54,208 - INFO - Sistema encerrado pelo usuário
+2025-12-20 17:07:45,139 - INFO - Configurações importadas com sucesso via src.config
+2025-12-20 17:07:45,157 - INFO - Configurações importadas com sucesso
+2025-12-20 17:07:45,157 - INFO - Configurações do sistema importadas com sucesso
+2025-12-20 17:07:45,590 - INFO - Sistema iniciado em modo: TESTE
+2025-12-20 17:07:47,854 - INFO - Abrindo sistema de relatórios
+2025-12-20 17:09:09,012 - INFO - Sistema encerrado pelo usuário
+2025-12-20 17:21:29,807 - INFO - Configurações importadas com sucesso via src.config
+2025-12-20 17:21:30,142 - INFO - Configurações importadas com sucesso
+2025-12-20 17:21:30,145 - INFO - Configurações do sistema importadas com sucesso
+2025-12-20 17:21:30,896 - INFO - Sistema iniciado em modo: TESTE
+2025-12-20 17:21:35,315 - INFO - Sistema encerrado pelo usuário
+2025-12-22 17:04:06,386 - INFO - Configurações importadas com sucesso via src.config
+2025-12-22 17:04:06,402 - INFO - Configurações importadas com sucesso
+2025-12-22 17:04:06,403 - INFO - Configurações do sistema importadas com sucesso
+2025-12-22 17:04:07,031 - INFO - Sistema iniciado em modo: TESTE
+2025-12-22 17:04:10,282 - INFO - Abrindo sistema de entrada de dados
+2025-12-22 17:04:12,746 - INFO - Proteções contra perda de dados configuradas
+2025-12-22 17:04:15,640 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-22 17:11:21,777 - ERROR - Erro na importação de medições: 'SistemaEntradaDados' object has no attribute 'importador_medicoes'
+2025-12-22 17:11:40,074 - INFO - Sistema encerrado pelo usuário
+2025-12-22 17:40:18,417 - INFO - Configurações importadas com sucesso via src.config
+2025-12-22 17:40:18,435 - INFO - Configurações importadas com sucesso
+2025-12-22 17:40:18,436 - INFO - Configurações do sistema importadas com sucesso
+2025-12-22 17:40:19,053 - INFO - Sistema iniciado em modo: TESTE
+2025-12-22 17:40:21,206 - INFO - Abrindo sistema de entrada de dados
+2025-12-22 17:40:22,945 - INFO - Proteções contra perda de dados configuradas
+2025-12-22 17:40:25,749 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2025-12-22 17:50:47,580 - INFO - Sistema encerrado pelo usuário
