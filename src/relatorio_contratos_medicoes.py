@@ -39,8 +39,7 @@ except ImportError as e:
     ARQUIVO_CLIENTES = BASE_PATH / "dados" / "clientes.xlsx"
     PASTA_CLIENTES = BASE_PATH / "dados" / "clientes"
 
-# Importar o utils.py
-from src.config.utils import atualizar_combobox_clientes, cliente_esta_ativo, obter_info_cliente
+# Não é mais necessário importar utils pois implementamos tudo aqui
 
 
 try:
@@ -86,6 +85,7 @@ except ImportError as e:
         # Trazer janela para frente
         janela.lift()
         janela.focus_force()
+        
 # Importar funções auxiliares ou definir aqui
 def formatar_moeda_br(valor):
     """Formata um valor numérico como moeda brasileira"""
@@ -117,6 +117,9 @@ class RelatorioContratos:
         self.contratos = []
         self.medicoes = []
         
+        # NOVO: Variável para filtro de status
+        self.filtro_status = tk.StringVar(value="TODOS")
+        
         # Configurar interface
         self.setup_gui()
         
@@ -139,13 +142,30 @@ class RelatorioContratos:
         self.cliente_combobox.pack(side='left', padx=5)
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.selecionar_cliente)
         
-        # Container para data
-        frame_data = ttk.Frame(self.frame_selecao)
-        frame_data.pack(fill='x', padx=10, pady=10)
+        # NOVO: Container para filtro de status e data na mesma linha
+        frame_filtros = ttk.Frame(self.frame_selecao)
+        frame_filtros.pack(fill='x', padx=10, pady=10)
         
-        ttk.Label(frame_data, text="Data de Referência:", font=('Arial', 11)).pack(side='left', pady=5)
+        # NOVO: Filtro de Status
+        ttk.Label(frame_filtros, text="Filtro de Status:", font=('Arial', 11)).pack(side='left', pady=5)
+        self.status_combobox = ttk.Combobox(
+            frame_filtros,
+            textvariable=self.filtro_status,
+            values=["TODOS", "ATIVO", "CONCLUÍDO"],
+            state='readonly',
+            width=15,
+            font=('Arial', 11)
+        )
+        self.status_combobox.pack(side='left', padx=5)
+        self.status_combobox.bind('<<ComboboxSelected>>', self.on_filtro_status_changed)
+        
+        # Espaçador
+        ttk.Label(frame_filtros, text="     ").pack(side='left')
+        
+        # Data de referência
+        ttk.Label(frame_filtros, text="Data de Referência:", font=('Arial', 11)).pack(side='left', pady=5)
         self.data_entry = DateEntry(
-            frame_data, 
+            frame_filtros, 
             width=12,
             background='darkblue',
             foreground='white',
@@ -159,7 +179,7 @@ class RelatorioContratos:
         
         # Botão de gerar relatório
         ttk.Button(
-            frame_data,
+            frame_filtros,
             text="Gerar Relatório",
             command=self.gerar_relatorio,
             style='Big.TButton'
@@ -210,6 +230,43 @@ class RelatorioContratos:
         # Carregar lista de clientes
         self.atualizar_lista_clientes()
         
+    def on_filtro_status_changed(self, event=None):
+        """Chamado quando o filtro de status é alterado"""
+        # Se já tem dados carregados, atualiza a visualização
+        if self.contratos:
+            self.aplicar_filtro_e_atualizar()
+    
+    def aplicar_filtro_e_atualizar(self):
+        """Aplica o filtro de status e atualiza todas as visualizações"""
+        # Aplicar filtro
+        self.contratos_filtrados = self.filtrar_contratos_por_status(self.contratos)
+        
+        # Atualizar visualizações com contratos filtrados
+        self.preencher_resumo()
+        self.preencher_detalhes()
+        self.preencher_grafico()
+    
+    def filtrar_contratos_por_status(self, contratos_lista):
+        """
+        Filtra a lista de contratos baseado no filtro de status selecionado
+        
+        Args:
+            contratos_lista: Lista de contratos a ser filtrada
+            
+        Returns:
+            Lista filtrada de contratos
+        """
+        status_filtro = self.filtro_status.get()
+        
+        if status_filtro == "TODOS":
+            return contratos_lista
+        elif status_filtro == "ATIVO":
+            return [c for c in contratos_lista if c.get('status', '').upper() == 'ATIVO']
+        elif status_filtro == "CONCLUÍDO":
+            return [c for c in contratos_lista if c.get('status', '').upper() == 'CONCLUÍDO']
+        else:
+            return contratos_lista
+    
     def setup_aba_resumo(self):
         """Configura a aba de resumo do relatório"""
         # Frame para informações do cliente
@@ -299,75 +356,59 @@ class RelatorioContratos:
         scrollx = ttk.Scrollbar(frame_tabela, orient='horizontal', command=self.tree_resumo.xview)
         self.tree_resumo.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
         
-        # Posicionamento
-        self.tree_resumo.pack(side='left', fill='both', expand=True)
         scrolly.pack(side='right', fill='y')
         scrollx.pack(side='bottom', fill='x')
+        self.tree_resumo.pack(side='left', fill='both', expand=True)
         
-        # Binding para seleção
+        # Bind para seleção de linha
         self.tree_resumo.bind('<<TreeviewSelect>>', self.selecionar_contrato_resumo)
-        
+    
     def setup_aba_detalhes(self):
-        """Configura a aba de detalhes com as medições"""
-        # Frame para informações do contrato selecionado
-        frame_contrato = ttk.LabelFrame(self.aba_detalhes, text="Contrato Selecionado")
-        frame_contrato.pack(fill='x', pady=5)
+        """Configura a aba de detalhes do contrato selecionado"""
+        # Frame para informações do contrato
+        frame_info = ttk.LabelFrame(self.aba_detalhes, text="Informações do Contrato", padding=10)
+        frame_info.pack(fill='x', pady=5, padx=5)
         
         # Grid para informações
-        frame_grid = ttk.Frame(frame_contrato, padding=10)
-        frame_grid.pack(fill='x')
+        ttk.Label(frame_info, text="ID do Contrato:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky='w', padx=5, pady=3)
+        self.lbl_id_contrato = ttk.Label(frame_info, text="-", font=('Arial', 10))
+        self.lbl_id_contrato.grid(row=0, column=1, sticky='w', padx=5, pady=3)
         
-        # Configurar pesos das colunas para distribuição uniforme
-        for col in [1, 3, 5]:
-            frame_grid.columnconfigure(col, weight=1)
+        ttk.Label(frame_info, text="Fornecedor:", font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky='w', padx=5, pady=3)
+        self.lbl_fornecedor = ttk.Label(frame_info, text="-", font=('Arial', 10))
+        self.lbl_fornecedor.grid(row=1, column=1, sticky='w', padx=5, pady=3)
         
-        # Primeira linha: ID | Fornecedor (span 2 colunas)
-        ttk.Label(frame_grid, text="ID:", font=('Arial', 10, 'bold')).grid(row=0, column=0, sticky='w', padx=5, pady=2)
-        self.lbl_id_contrato = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_id_contrato.grid(row=0, column=1, sticky='w', padx=5, pady=2)
+        ttk.Label(frame_info, text="Descrição:", font=('Arial', 10, 'bold')).grid(row=2, column=0, sticky='w', padx=5, pady=3)
+        self.lbl_descricao = ttk.Label(frame_info, text="-", font=('Arial', 10), wraplength=600)
+        self.lbl_descricao.grid(row=2, column=1, sticky='w', padx=5, pady=3)
         
-        ttk.Label(frame_grid, text="Fornecedor:", font=('Arial', 10, 'bold')).grid(row=0, column=2, sticky='w', padx=5, pady=2)
-        self.lbl_fornecedor = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_fornecedor.grid(row=0, column=3, columnspan=3, sticky='w', padx=5, pady=2)
+        ttk.Label(frame_info, text="Data de Início:", font=('Arial', 10, 'bold')).grid(row=3, column=0, sticky='w', padx=5, pady=3)
+        self.lbl_data_inicio = ttk.Label(frame_info, text="-", font=('Arial', 10))
+        self.lbl_data_inicio.grid(row=3, column=1, sticky='w', padx=5, pady=3)
         
-        # Segunda linha: Descrição (span todas as colunas)
-        ttk.Label(frame_grid, text="Descrição:", font=('Arial', 10, 'bold')).grid(row=1, column=0, sticky='w', padx=5, pady=2)
-        self.lbl_descricao = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_descricao.grid(row=1, column=1, columnspan=5, sticky='w', padx=5, pady=2)
+        ttk.Label(frame_info, text="Data Final:", font=('Arial', 10, 'bold')).grid(row=3, column=2, sticky='w', padx=5, pady=3)
+        self.lbl_data_final = ttk.Label(frame_info, text="-", font=('Arial', 10))
+        self.lbl_data_final.grid(row=3, column=3, sticky='w', padx=5, pady=3)
         
-        # Terceira linha: Valor Global | Valor Pago | Saldo (3 colunas)
-        ttk.Label(frame_grid, text="Valor Global:", font=('Arial', 10, 'bold')).grid(row=2, column=0, sticky='w', padx=5, pady=2)
-        self.lbl_valor_global = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_valor_global.grid(row=2, column=1, sticky='w', padx=5, pady=2)
+        ttk.Label(frame_info, text="Valor Global:", font=('Arial', 10, 'bold')).grid(row=4, column=0, sticky='w', padx=5, pady=3)
+        self.lbl_valor_global = ttk.Label(frame_info, text="R$ 0,00", font=('Arial', 10))
+        self.lbl_valor_global.grid(row=4, column=1, sticky='w', padx=5, pady=3)
         
-        ttk.Label(frame_grid, text="Valor Pago:", font=('Arial', 10, 'bold')).grid(row=2, column=2, sticky='w', padx=5, pady=2)
-        self.lbl_valor_pago_contrato = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_valor_pago_contrato.grid(row=2, column=3, sticky='w', padx=5, pady=2)
+        ttk.Label(frame_info, text="Valor Pago:", font=('Arial', 10, 'bold')).grid(row=4, column=2, sticky='w', padx=5, pady=3)
+        self.lbl_valor_pago_contrato = ttk.Label(frame_info, text="R$ 0,00", font=('Arial', 10))
+        self.lbl_valor_pago_contrato.grid(row=4, column=3, sticky='w', padx=5, pady=3)
         
-        ttk.Label(frame_grid, text="Saldo:", font=('Arial', 10, 'bold')).grid(row=2, column=4, sticky='w', padx=5, pady=2)
-        self.lbl_saldo_contrato = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_saldo_contrato.grid(row=2, column=5, sticky='w', padx=5, pady=2)
+        ttk.Label(frame_info, text="Saldo:", font=('Arial', 10, 'bold')).grid(row=5, column=0, sticky='w', padx=5, pady=3)
+        self.lbl_saldo_contrato = ttk.Label(frame_info, text="R$ 0,00", font=('Arial', 10))
+        self.lbl_saldo_contrato.grid(row=5, column=1, sticky='w', padx=5, pady=3)
         
-        # Quarta linha: Data Início | Data Final | Status (3 colunas)
-        ttk.Label(frame_grid, text="Data Início:", font=('Arial', 10, 'bold')).grid(row=3, column=0, sticky='w', padx=5, pady=2)
-        self.lbl_data_inicio = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_data_inicio.grid(row=3, column=1, sticky='w', padx=5, pady=2)
+        # Frame para medições
+        frame_medicoes = ttk.LabelFrame(self.aba_detalhes, text="Medições do Contrato", padding=5)
+        frame_medicoes.pack(fill='both', expand=True, pady=5, padx=5)
         
-        ttk.Label(frame_grid, text="Data Final:", font=('Arial', 10, 'bold')).grid(row=3, column=2, sticky='w', padx=5, pady=2)
-        self.lbl_data_final = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_data_final.grid(row=3, column=3, sticky='w', padx=5, pady=2)
-        
-        ttk.Label(frame_grid, text="Status:", font=('Arial', 10, 'bold')).grid(row=3, column=4, sticky='w', padx=5, pady=2)
-        self.lbl_status_contrato = ttk.Label(frame_grid, text="", font=('Arial', 10))
-        self.lbl_status_contrato.grid(row=3, column=5, sticky='w', padx=5, pady=2)
-        
-        # Frame para tabela de medições
-        frame_medicoes = ttk.LabelFrame(self.aba_detalhes, text="Medições")
-        frame_medicoes.pack(fill='both', expand=True, pady=5)
-        
-        # Tree para medições
-        colunas = ('ID', 'Data Medição', 'Data Pagamento', 'Referência', 'Valor', 'Status')
-        self.tree_medicoes = ttk.Treeview(frame_medicoes, columns=colunas, show='headings', height=10)
+        # Treeview para medições
+        colunas_med = ('ID', 'Data Medição', 'Data Pagamento', 'Referência', 'Valor', 'Status')
+        self.tree_medicoes = ttk.Treeview(frame_medicoes, columns=colunas_med, show='headings', height=15)
         
         # Configurar colunas
         self.tree_medicoes.heading('ID', text='ID')
@@ -377,123 +418,98 @@ class RelatorioContratos:
         self.tree_medicoes.heading('Valor', text='Valor')
         self.tree_medicoes.heading('Status', text='Status')
         
-        # Ajustar larguras das colunas
-        self.tree_medicoes.column('ID', width=30, anchor='center')
-        self.tree_medicoes.column('Data Medição', width=80, anchor='center')
-        self.tree_medicoes.column('Data Pagamento', width=80, anchor='center')
+        # Ajustar larguras
+        self.tree_medicoes.column('ID', width=50, anchor='center')
+        self.tree_medicoes.column('Data Medição', width=100, anchor='center')
+        self.tree_medicoes.column('Data Pagamento', width=100, anchor='center')
         self.tree_medicoes.column('Referência', width=300)
         self.tree_medicoes.column('Valor', width=100, anchor='e')
         self.tree_medicoes.column('Status', width=80, anchor='center')
         
         # Scrollbars
-        scrolly = ttk.Scrollbar(frame_medicoes, orient='vertical', command=self.tree_medicoes.yview)
-        scrollx = ttk.Scrollbar(frame_medicoes, orient='horizontal', command=self.tree_medicoes.xview)
-        self.tree_medicoes.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
+        scrolly_med = ttk.Scrollbar(frame_medicoes, orient='vertical', command=self.tree_medicoes.yview)
+        scrollx_med = ttk.Scrollbar(frame_medicoes, orient='horizontal', command=self.tree_medicoes.xview)
+        self.tree_medicoes.configure(yscrollcommand=scrolly_med.set, xscrollcommand=scrollx_med.set)
         
-        # Posicionamento
+        scrolly_med.pack(side='right', fill='y')
+        scrollx_med.pack(side='bottom', fill='x')
         self.tree_medicoes.pack(side='left', fill='both', expand=True)
-        scrolly.pack(side='right', fill='y')
-        scrollx.pack(side='bottom', fill='x')
-        
+    
     def setup_aba_grafico(self):
-        """Configura a aba de gráficos"""
-        # Frame para controles do gráfico
-        frame_controles = ttk.Frame(self.aba_grafico, padding=5)
-        frame_controles.pack(fill='x', pady=5)
-        
-        ttk.Label(frame_controles, text="Tipo de Gráfico:").pack(side='left', padx=5)
-        self.combo_tipo_grafico = ttk.Combobox(frame_controles, values=[
-            "Pizza - Valor por Contrato",
-            "Barras - Valor Global vs. Pago",
-            "Linha - Evolução de Pagamentos"
-        ], state='readonly', width=30)
-        self.combo_tipo_grafico.pack(side='left', padx=5)
-        self.combo_tipo_grafico.current(0)
-        
-        ttk.Button(frame_controles, text="Atualizar Gráfico", command=self.atualizar_grafico).pack(side='left', padx=20)
-        
+        """Configura a aba de gráfico"""
         # Frame para o gráfico
         self.frame_grafico = ttk.Frame(self.aba_grafico)
-        self.frame_grafico.pack(fill='both', expand=True, pady=5)
+        self.frame_grafico.pack(fill='both', expand=True, padx=5, pady=5)
         
-        # A figura será criada quando houver dados
-    
     def atualizar_lista_clientes(self):
-        """Atualiza a lista de clientes no combobox usando a função centralizada"""
+        """Atualiza a lista de clientes no combobox - apenas clientes ativos (sem Data Final)"""
         try:
-            # Usar a função centralizada (apenas clientes ativos)
-            self.info_clientes = atualizar_combobox_clientes(self.cliente_combobox, mostrar_inativos=False)
+            # Carregar arquivo de clientes
+            if not ARQUIVO_CLIENTES.exists():
+                messagebox.showerror("Erro", f"Arquivo de clientes não encontrado: {ARQUIVO_CLIENTES}")
+                return
             
+            # Ler planilha de clientes
+            df_clientes = pd.read_excel(ARQUIVO_CLIENTES)
+            
+            # Filtrar apenas clientes SEM Data Final (ativos)
+            df_ativos = df_clientes[df_clientes['Data Final'].isna()]
+            
+            # Ordenar por nome
+            df_ativos = df_ativos.sort_values('Nome')
+            
+            # Atualizar combobox
+            nomes_clientes = df_ativos['Nome'].tolist()
+            self.cliente_combobox['values'] = nomes_clientes
+            
+            if nomes_clientes:
+                self.cliente_combobox.current(0)
+                
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
-
-    # E modifique o método selecionar_cliente:
-
+            messagebox.showerror("Erro", f"Erro ao carregar lista de clientes: {str(e)}")
+    
     def selecionar_cliente(self, event=None):
-        """Atualiza o cliente selecionado"""
-        self.cliente_atual = self.cliente_combobox.get()
+        """Quando um cliente é selecionado no combobox"""
+        nome_cliente = self.cliente_combobox.get()
+        if not nome_cliente:
+            return
         
-        if self.cliente_atual:
-            # Verificar se o cliente está ativo (extra proteção)
-            if not cliente_esta_ativo(self.cliente_atual):
-                messagebox.showwarning(
-                    "Cliente Inativo", 
-                    f"O cliente '{self.cliente_atual}' está inativo (contrato finalizado). " +
-                    "Os dados serão mostrados somente para consulta."
-                )
-            
-            # Obter informações do cliente
-            info_cliente = obter_info_cliente(self.cliente_atual)
-            
-            # Atualizar label
-            if hasattr(self, 'lbl_cliente_resumo'):
-                texto_cliente = f"Cliente: {self.cliente_atual}"
-                if info_cliente and not info_cliente['ativo']:
-                    texto_cliente += " (INATIVO)"
-                self.lbl_cliente_resumo.config(text=texto_cliente)
-            
-            # Definir o caminho do arquivo
-            if info_cliente and 'arquivo' in info_cliente:
-                self.arquivo_cliente = info_cliente['arquivo']
-            else:
-                self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
+        self.cliente_atual = nome_cliente
+        
+        # Construir caminho do arquivo do cliente
+        self.arquivo_cliente = PASTA_CLIENTES / f"{nome_cliente}.xlsx"
+        
+        if not self.arquivo_cliente.exists():
+            messagebox.showerror("Erro", f"Arquivo do cliente não encontrado: {self.arquivo_cliente}")
+            return
     
     def gerar_relatorio(self):
-        """Gera o relatório com base nos dados selecionados"""
+        """Gera o relatório baseado no cliente e data selecionados"""
         if not self.cliente_atual:
             messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
             return
             
-        # Obter data de referência
-        try:
-            self.data_referencia = datetime.strptime(self.data_entry.get(), '%d/%m/%Y')
-            self.lbl_data_resumo.config(text=f"Data: {self.data_referencia.strftime('%d/%m/%Y')}")
-        except ValueError:
-            messagebox.showerror("Erro", "Data inválida!")
+        # Obter data de referência e converter para datetime
+        data_selecionada = self.data_entry.get_date()
+        self.data_referencia = datetime.combine(data_selecionada, datetime.min.time())
+        
+        # Carregar dados
+        if not self.carregar_dados():
             return
-            
-        # Carregar contratos e medições
-        self.carregar_dados()
         
-        # Preencher treeview de resumo
-        self.preencher_resumo()
+        # NOVO: Aplicar filtro e atualizar
+        self.aplicar_filtro_e_atualizar()
         
-        # Gerar gráfico inicial
-        self.atualizar_grafico()
-        
-        # Selecionar aba de resumo
-        self.notebook.select(0)
+        # Atualizar labels de informação
+        self.lbl_cliente_resumo.config(text=f"Cliente: {self.cliente_atual}")
+        self.lbl_data_resumo.config(text=f"Data: {self.data_referencia.strftime('%d/%m/%Y')}")
     
     def carregar_dados(self):
-        """Carrega os dados dos contratos e medições do cliente"""
+        """Carrega os dados do cliente do arquivo Excel"""
         try:
-            if not os.path.exists(self.arquivo_cliente):
-                messagebox.showerror("Erro", f"Arquivo do cliente '{self.cliente_atual}' não encontrado!")
-                return False
-                
-            wb = load_workbook(self.arquivo_cliente)
+            wb = load_workbook(self.arquivo_cliente, data_only=True)
             
-            # Verificar se as abas necessárias existem
+            # Verificar se as abas existem
             if "Contratos_Medicao" not in wb.sheetnames:
                 messagebox.showerror("Erro", "Aba de contratos não encontrada!")
                 wb.close()
@@ -519,7 +535,7 @@ class RelatorioContratos:
                             'nome': row[2],
                             'descricao': row[3],
                             'data_inicio': row[4],
-                            'data_final': row[5],  # NOVO: Data_Final - coluna 6
+                            'data_final': row[5],
                             'valor_global': row[6] or 0,
                             'valor_pago': row[7] or 0,
                             'saldo': row[8] or 0,
@@ -566,18 +582,28 @@ class RelatorioContratos:
         # Limpar treeview
         for item in self.tree_resumo.get_children():
             self.tree_resumo.delete(item)
-            
-        if not self.contratos:
+        
+        # MODIFICADO: Usar contratos filtrados ao invés de self.contratos
+        contratos_exibir = self.filtrar_contratos_por_status(self.contratos)
+        
+        if not contratos_exibir:
+            # Zerar totais
+            self.lbl_qtd_contratos.config(text="0")
+            self.lbl_qtd_em_andamento.config(text="0")
+            self.lbl_valor_total.config(text="R$ 0,00")
+            self.lbl_valor_pago.config(text="R$ 0,00")
+            self.lbl_saldo.config(text="R$ 0,00")
+            self.lbl_percentual.config(text="0%")
             return
             
         # Variáveis para totais
-        total_contratos = len(self.contratos)
+        total_contratos = len(contratos_exibir)
         contratos_andamento = 0
         valor_total = 0
         valor_pago = 0
         
         # Preencher tabela
-        for contrato in self.contratos:
+        for contrato in contratos_exibir:
             # Calcular percentual executado
             valor_global = float(contrato['valor_global']) if contrato['valor_global'] else 0
             valor_pago_contrato = float(contrato['valor_pago']) if contrato['valor_pago'] else 0
@@ -651,248 +677,148 @@ class RelatorioContratos:
         if isinstance(contrato.get('data_final'), datetime):
             self.lbl_data_final.config(text=contrato['data_final'].strftime('%d/%m/%Y'))
         else:
-            data_final_texto = str(contrato.get('data_final') if contrato.get('data_final') else "Não definida")
-            self.lbl_data_final.config(text=data_final_texto)
+            self.lbl_data_final.config(text=str(contrato.get('data_final') if contrato.get('data_final') else "Não definida"))
         
-        self.lbl_status_contrato.config(text=contrato['status'])
-        
-        # Limpar e preencher medições do contrato
-        self.preencher_medicoes(id_contrato)
-        
-        # Mudar para a aba de detalhes
-        self.notebook.select(1)
-    
-    def preencher_medicoes(self, id_contrato):
-        """Preenche a tabela de medições para o contrato selecionado"""
-        # Limpar treeview
+        # Limpar treeview de medições
         for item in self.tree_medicoes.get_children():
             self.tree_medicoes.delete(item)
             
-        # Filtrar medições pelo contrato
+        # Filtrar medições deste contrato
         medicoes_contrato = [m for m in self.medicoes if m['id_contrato'] == id_contrato]
         
-        if not medicoes_contrato:
-            return
-            
-        # Ordenar por data de medição
+        # Ordenar por data
         medicoes_contrato.sort(key=lambda x: x['data_medicao'] if isinstance(x['data_medicao'], datetime) else datetime.min)
         
-        # Preencher tabela
+        # Preencher medições
         for medicao in medicoes_contrato:
             # Formatar datas
-            if isinstance(medicao['data_medicao'], datetime):
-                data_med = medicao['data_medicao'].strftime('%d/%m/%Y')
-            else:
-                data_med = str(medicao['data_medicao'] if medicao['data_medicao'] else "")
-                
-            if isinstance(medicao['data_pagamento'], datetime):
-                data_pag = medicao['data_pagamento'].strftime('%d/%m/%Y')
-            else:
-                data_pag = str(medicao['data_pagamento'] if medicao['data_pagamento'] else "")
+            data_med = medicao['data_medicao'].strftime('%d/%m/%Y') if isinstance(medicao['data_medicao'], datetime) else str(medicao['data_medicao'] if medicao['data_medicao'] else "")
+            data_pag = medicao['data_pagamento'].strftime('%d/%m/%Y') if isinstance(medicao['data_pagamento'], datetime) else str(medicao['data_pagamento'] if medicao['data_pagamento'] else "")
             
-            # Combinar referência e observação
-            referencia_completa = medicao['referencia'] or ""
-            if medicao['observacao']:
-                if referencia_completa:
-                    referencia_completa += " - "
-                referencia_completa += medicao['observacao']
-            
-            # Inserir na treeview
             self.tree_medicoes.insert('', 'end', values=(
                 medicao['id_medicao'],
                 data_med,
                 data_pag,
-                referencia_completa,
+                medicao['referencia'],
                 formatar_moeda_br(medicao['valor']),
                 medicao['status']
             ))
-    
-    def atualizar_grafico(self):
-        """Atualiza o gráfico com base no tipo selecionado"""
-        tipo_grafico = self.combo_tipo_grafico.get()
         
+        # Mudar para a aba de detalhes
+        self.notebook.select(self.aba_detalhes)
+    
+    def preencher_detalhes(self):
+        """Atualiza a aba de detalhes (se houver algum contrato selecionado)"""
+        # Esta função pode ser expandida se necessário
+        pass
+    
+    def preencher_grafico(self):
+        """Preenche o gráfico com os dados dos contratos"""
         # Limpar frame do gráfico
         for widget in self.frame_grafico.winfo_children():
             widget.destroy()
-            
-        if not self.contratos:
+        
+        # MODIFICADO: Usar contratos filtrados
+        contratos_exibir = self.filtrar_contratos_por_status(self.contratos)
+        
+        if not contratos_exibir:
+            ttk.Label(
+                self.frame_grafico, 
+                text="Nenhum contrato para exibir no gráfico",
+                font=('Arial', 12)
+            ).pack(expand=True)
             return
-            
+        
         # Criar figura
-        fig, ax = plt.subplots(figsize=(8, 6))
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
         
-        if tipo_grafico == "Pizza - Valor por Contrato":
-            self.criar_grafico_pizza(fig, ax)
-        elif tipo_grafico == "Barras - Valor Global vs. Pago":
-            self.criar_grafico_barras(fig, ax)
-        elif tipo_grafico == "Linha - Evolução de Pagamentos":
-            self.criar_grafico_linha(fig, ax)
-            
-        # Exibir o gráfico
-        canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
-        canvas.draw()
-        canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-    
-    def criar_grafico_pizza(self, fig, ax):
-        """Cria um gráfico de pizza mostrando a distribuição dos valores dos contratos"""
-        # Preparar dados
-        labels = []
-        valores = []
+        # Gráfico 1: Valores por contrato
+        contratos_ids = [f"ID {c['id']}" for c in contratos_exibir]
+        valores_globais = [float(c['valor_global']) for c in contratos_exibir]
+        valores_pagos = [float(c['valor_pago']) for c in contratos_exibir]
         
-        # Limitar a 5 contratos maiores + "Outros"
-        contratos_ordenados = sorted(self.contratos, key=lambda x: float(x['valor_global']), reverse=True)
-        
-        if len(contratos_ordenados) <= 5:
-            for contrato in contratos_ordenados:
-                labels.append(f"{contrato['id']}: {contrato['nome'][:20]}")
-                valores.append(float(contrato['valor_global']))
-        else:
-            # 5 maiores
-            for i in range(5):
-                labels.append(f"{contratos_ordenados[i]['id']}: {contratos_ordenados[i]['nome'][:20]}")
-                valores.append(float(contratos_ordenados[i]['valor_global']))
-            
-            # Resto agrupado como "Outros"
-            valor_outros = sum(float(c['valor_global']) for c in contratos_ordenados[5:])
-            labels.append("Outros")
-            valores.append(valor_outros)
-        
-        # Criar gráfico
-        wedges, texts, autotexts = ax.pie(
-            valores, 
-            labels=None,
-            autopct='%1.1f%%',
-            startangle=90,
-            shadow=False
-        )
-        
-        # Ajustar legenda
-        ax.legend(wedges, labels, loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
-        
-        ax.set_title('Distribuição do Valor Total por Contrato')
-        fig.tight_layout()
-    
-    def criar_grafico_barras(self, fig, ax):
-        """Cria um gráfico de barras comparando valor global vs. valor pago"""
-        # Preparar dados
-        contratos_ids = []
-        valores_globais = []
-        valores_pagos = []
-        
-        # Limitar a 10 contratos
-        contratos_exibir = self.contratos[:10] if len(self.contratos) > 10 else self.contratos
-        
-        for contrato in contratos_exibir:
-            contratos_ids.append(str(contrato['id']))
-            valores_globais.append(float(contrato['valor_global']))
-            valores_pagos.append(float(contrato['valor_pago']))
-        
-        # Configurar barras
         x = range(len(contratos_ids))
         width = 0.35
         
-        ax.bar([p - width/2 for p in x], valores_globais, width, label='Valor Global')
-        ax.bar([p + width/2 for p in x], valores_pagos, width, label='Valor Pago')
+        ax1.bar([i - width/2 for i in x], valores_globais, width, label='Valor Global', color='#1f77b4')
+        ax1.bar([i + width/2 for i in x], valores_pagos, width, label='Valor Pago', color='#2ca02c')
         
-        # Configurar gráfico
-        ax.set_title('Valor Global vs. Valor Pago por Contrato')
-        ax.set_xticks(x)
-        ax.set_xticklabels(contratos_ids)
-        ax.legend()
+        ax1.set_xlabel('Contratos')
+        ax1.set_ylabel('Valor (R$)')
+        ax1.set_title('Valores por Contrato')
+        ax1.set_xticks(x)
+        ax1.set_xticklabels(contratos_ids, rotation=45, ha='right')
+        ax1.legend()
+        ax1.grid(True, alpha=0.3)
         
-        # Adicionar valores nas barras
-        for i, v in enumerate(valores_globais):
-            ax.text(i - width/2, v + max(valores_globais) * 0.01, f"R${v:.1f}K", ha='center', va='bottom', rotation=90, fontsize=8)
-            
-        for i, v in enumerate(valores_pagos):
-            if v > 0:
-                ax.text(i + width/2, v + max(valores_globais) * 0.01, f"R${v:.1f}K", ha='center', va='bottom', rotation=90, fontsize=8)
+        # Gráfico 2: Status dos contratos (Pizza)
+        status_counts = {}
+        for c in contratos_exibir:
+            status = c['status']
+            status_counts[status] = status_counts.get(status, 0) + 1
         
-        fig.tight_layout()
-    
-    def criar_grafico_linha(self, fig, ax):
-        """Cria um gráfico de linha mostrando a evolução de pagamentos por data"""
-        # Preparar dados - precisa agrupar medições por data
-        datas = {}
+        if status_counts:
+            ax2.pie(
+                status_counts.values(),
+                labels=status_counts.keys(),
+                autopct='%1.1f%%',
+                startangle=90,
+                colors=['#2ca02c', '#d62728', '#ff7f0e']
+            )
+            ax2.set_title('Distribuição por Status')
         
-        for medicao in self.medicoes:
-            if isinstance(medicao['data_medicao'], datetime):
-                data_key = medicao['data_medicao'].strftime('%Y-%m')
-                valor = float(medicao['valor'])
-                
-                if data_key in datas:
-                    datas[data_key] += valor
-                else:
-                    datas[data_key] = valor
+        plt.tight_layout()
         
-        # Ordenar por data
-        datas_ordenadas = sorted(datas.keys())
-        valores_acumulados = []
-        acumulado = 0
-        
-        for data in datas_ordenadas:
-            acumulado += datas[data]
-            valores_acumulados.append(acumulado)
-        
-        # Converter datas para formato de exibição
-        datas_exibicao = [datetime.strptime(d, '%Y-%m').strftime('%m/%Y') for d in datas_ordenadas]
-        
-        # Criar gráfico
-        ax.plot(datas_exibicao, valores_acumulados, 'o-', linewidth=2)
-        
-        # Adicionar pontos
-        for i, (data, valor) in enumerate(zip(datas_exibicao, valores_acumulados)):
-            ax.annotate(f"R${valor:.2f}K", 
-                       (data, valor),
-                       textcoords="offset points",
-                       xytext=(0, 10),
-                       ha='center')
-        
-        # Configurar gráfico
-        ax.set_title('Evolução de Pagamentos Acumulados')
-        ax.set_xlabel('Data')
-        ax.set_ylabel('Valor Acumulado (R$)')
-        
-        # Rotacionar labels do eixo x para melhor visualização
-        plt.xticks(rotation=45, ha='right')
-        
-        fig.tight_layout()
+        # Adicionar ao frame
+        canvas = FigureCanvasTkAgg(fig, master=self.frame_grafico)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
     
     def exportar_excel(self):
         """Exporta o relatório para um arquivo Excel"""
         if not self.contratos:
             messagebox.showwarning("Aviso", "Não há dados para exportar!")
             return
-            
-        # Solicitar nome do arquivo ao usuário
+        
+        # MODIFICADO: Usar contratos filtrados
+        contratos_exportar = self.filtrar_contratos_por_status(self.contratos)
+        
+        if not contratos_exportar:
+            messagebox.showwarning("Aviso", "Nenhum contrato corresponde ao filtro selecionado!")
+            return
+        
+        # Solicitar local para salvar
         data_str = self.data_referencia.strftime('%d-%m-%Y')
         nome_padrao = f"Relatorio_{self.cliente_atual}_{data_str}.xlsx"
         
         arquivo = filedialog.asksaveasfilename(
             defaultextension=".xlsx",
-            filetypes=[("Arquivos Excel", "*.xlsx")],
+            filetypes=[("Excel files", "*.xlsx")],
             initialfile=nome_padrao
         )
         
         if not arquivo:
             return
-            
+        
         try:
             # Criar workbook
             wb = Workbook()
             
-            # Aba de resumo
-            ws_resumo = wb.active
-            ws_resumo.title = "Resumo Contratos"
+            # Remover sheet padrão
+            if 'Sheet' in wb.sheetnames:
+                wb.remove(wb['Sheet'])
+            
+            # Criar aba de resumo
+            ws_resumo = wb.create_sheet('Resumo Contratos')
             
             # Estilos
-            titulo_font = Font(name='Arial', size=12, bold=True)
-            cabecalho_font = Font(name='Arial', size=11, bold=True, color="FFFFFF")
-            cabecalho_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+            titulo_font = Font(size=14, bold=True)
+            cabecalho_font = Font(size=11, bold=True)
+            cabecalho_fill = PatternFill(start_color='CCE5FF', end_color='CCE5FF', fill_type='solid')
             borda = Border(
-                left=Side(style='thin'), 
-                right=Side(style='thin'), 
-                top=Side(style='thin'), 
+                left=Side(style='thin'),
+                right=Side(style='thin'),
+                top=Side(style='thin'),
                 bottom=Side(style='thin')
             )
             
@@ -904,37 +830,42 @@ class RelatorioContratos:
             ws_resumo['A2'] = f"Data de Referência: {self.data_referencia.strftime('%d/%m/%Y')}"
             ws_resumo.merge_cells('A2:H2')
             
-            # Informações de totais
-            ws_resumo['A4'] = "Total de Contratos:"
-            ws_resumo['B4'] = self.lbl_qtd_contratos.cget("text")
+            # NOVO: Adicionar informação sobre o filtro aplicado
+            filtro_aplicado = self.filtro_status.get()
+            ws_resumo['A3'] = f"Filtro de Status: {filtro_aplicado}"
+            ws_resumo.merge_cells('A3:H3')
             
-            ws_resumo['D4'] = "Contratos em Andamento:"
-            ws_resumo['E4'] = self.lbl_qtd_em_andamento.cget("text")
+            # Totais - ajustado para linha 5
+            ws_resumo['A5'] = "Total de Contratos:"
+            ws_resumo['B5'] = self.lbl_qtd_contratos.cget("text")
             
-            ws_resumo['A5'] = "Valor Total dos Contratos:"
-            ws_resumo['B5'] = self.lbl_valor_total.cget("text")
+            ws_resumo['D5'] = "Contratos em Andamento:"
+            ws_resumo['E5'] = self.lbl_qtd_em_andamento.cget("text")
             
-            ws_resumo['D5'] = "Valor já Pago:"
-            ws_resumo['E5'] = self.lbl_valor_pago.cget("text")
+            ws_resumo['A6'] = "Valor Total dos Contratos:"
+            ws_resumo['B6'] = self.lbl_valor_total.cget("text")
             
-            ws_resumo['A6'] = "Saldo a Pagar:"
-            ws_resumo['B6'] = self.lbl_saldo.cget("text")
+            ws_resumo['D6'] = "Valor já Pago:"
+            ws_resumo['E6'] = self.lbl_valor_pago.cget("text")
             
-            ws_resumo['D6'] = "Percentual Executado:"
-            ws_resumo['E6'] = self.lbl_percentual.cget("text")
+            ws_resumo['A7'] = "Saldo a Pagar:"
+            ws_resumo['B7'] = self.lbl_saldo.cget("text")
             
-            # Cabeçalho da tabela
+            ws_resumo['D7'] = "Percentual Executado:"
+            ws_resumo['E7'] = self.lbl_percentual.cget("text")
+            
+            # Cabeçalho da tabela - ajustado para linha 9
             cabecalhos = ['ID', 'Fornecedor', 'Descrição', 'Valor Global', 'Valor Pago', 'Saldo', '% Executado', 'Status']
             for col, texto in enumerate(cabecalhos, 1):
-                celula = ws_resumo.cell(row=8, column=col, value=texto)
+                celula = ws_resumo.cell(row=9, column=col, value=texto)
                 celula.font = cabecalho_font
                 celula.fill = cabecalho_fill
                 celula.border = borda
                 celula.alignment = Alignment(horizontal='center')
             
-            # Dados dos contratos
-            linha = 9
-            for contrato in self.contratos:
+            # Dados dos contratos - MODIFICADO: usar contratos_exportar
+            linha = 10
+            for contrato in contratos_exportar:
                 valor_global = float(contrato['valor_global']) if contrato['valor_global'] else 0
                 valor_pago = float(contrato['valor_pago']) if contrato['valor_pago'] else 0
                 saldo = valor_global - valor_pago
@@ -961,8 +892,8 @@ class RelatorioContratos:
             ws_resumo.column_dimensions['B'].width = 25
             ws_resumo.column_dimensions['C'].width = 40
             
-            # Adicionar aba para cada contrato
-            for contrato in self.contratos:
+            # Adicionar aba para cada contrato - MODIFICADO: usar contratos_exportar
+            for contrato in contratos_exportar:
                 # Limitar o nome da aba para 31 caracteres (limite do Excel)
                 nome_aba = f"Contrato {contrato['id']}"
                 ws_contrato = wb.create_sheet(nome_aba)
@@ -1072,7 +1003,14 @@ class RelatorioContratos:
             
             # Salvar o arquivo
             wb.save(arquivo)
-            messagebox.showinfo("Sucesso", f"Relatório exportado com sucesso para:\n{arquivo}")
+            
+            # MODIFICADO: Mensagem mais informativa
+            filtro_info = f"\n\nFiltro aplicado: {self.filtro_status.get()}"
+            qtd_contratos = len(contratos_exportar)
+            messagebox.showinfo(
+                "Sucesso", 
+                f"Relatório exportado com sucesso!{filtro_info}\n{qtd_contratos} contrato(s) exportado(s).\n\nArquivo:\n{arquivo}"
+            )
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao exportar para Excel: {str(e)}")
