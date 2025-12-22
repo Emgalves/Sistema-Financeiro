@@ -75,6 +75,7 @@ from openpyxl import load_workbook
 import openpyxl
 import babel
 from dateutil.relativedelta import relativedelta
+import unicodedata
 
 import requests
 import json
@@ -2014,13 +2015,13 @@ class SistemaEntradaDados:
         }
 
         self.gestao_taxas = GestaoTaxasFixas(self)
-        # self.importador_medicoes = None  
+        self.importador_medicoes = ImportadorMedicoes(self)  
 
         self.atualizar_combos_configuracoes()
             
         # Configurar interface
         self.setup_gui()
-        self.configurar_todos_calendarios()
+        # self.configurar_todos_calendarios()
 
         # Adicionar estas linhas para configurar cada aba explicitamente
         logger.debug("Configurando aba de seleção...")
@@ -2094,21 +2095,6 @@ class SistemaEntradaDados:
         
         logger.debug("Finalizada inicialização do sistema")
 
-    # @property
-    # def importador_medicoes(self):
-    #     """Property com lazy loading do ImportadorMedicoes"""
-    #     if self._importador_medicoes is None:
-    #         try:
-    #             logger.debug("🔄 Inicializando ImportadorMedicoes (lazy loading)...")
-    #             self._importador_medicoes = ImportadorMedicoes(self)
-    #             logger.debug("✅ ImportadorMedicoes inicializado")
-    #         except Exception as e:
-    #             logger.error(f"❌ Erro ao inicializar ImportadorMedicoes: {e}")
-    #             logger.error(traceback.format_exc())
-    #             # Retornar None ao invés de quebrar o sistema
-    #             return None
-    #     return self._importador_medicoes
-    
     def setup_gui(self):
         logger.debug("Iniciando setup_gui...")
         
@@ -2206,26 +2192,6 @@ class SistemaEntradaDados:
             import sys
             sys.exit()  
     
-    def configurar_todos_calendarios(self):
-        """Configura a navegação para todos os calendários do sistema"""
-        # Lista de todos os campos de data que usam DateEntry
-        date_entries = []
-        
-        # Adicionar campos da interface principal
-        if hasattr(self, 'data_rel_entry'):
-            date_entries.append(self.data_rel_entry)
-        
-        # Adicionar campos da aba de dados
-        if hasattr(self, 'campos_despesa') and 'dt_vencto' in self.campos_despesa:
-            date_entries.append(self.campos_despesa['dt_vencto'])
-        
-        # Configurar cada DateEntry encontrado
-        for date_entry in date_entries:
-            if isinstance(date_entry, DateEntry):
-                configurar_navegacao_calendario(date_entry)
-        
-        logger.debug("Calendários configurados para permitir navegação livre.")
-
     def setup_aba_selecao(self):
         """Configura a aba de seleção de cliente - VERSÃO FINAL"""
         # Frame principal para organização
@@ -16326,6 +16292,14 @@ class GerenciadorLancamentos:
         self.tree_lancamentos = None
         self.dados_originais = []
 
+        # Variáveis para controle de busca
+        self.entry_busca = None
+        self.label_resultados = None
+        self.ultimo_termo_busca = ""
+
+        # Armazenar TODOS os IDs dos itens
+        self.todos_itens_tree = []
+
         self.gestor_taxas = GestorTaxasAdministracao(sistema_principal)
         
     def abrir_gerenciador(self):
@@ -16350,6 +16324,37 @@ class GerenciadorLancamentos:
         #  Frame principal
         main_frame = ttk.Frame(self.janela, padding="10")
         main_frame.pack(fill='both', expand=True)
+
+        # NOVO: FRAME DE BUSCA RÁPIDA
+        frame_busca = ttk.LabelFrame(main_frame, text="🔍 Busca Rápida")
+        frame_busca.pack(fill='x', pady=(0, 5))
+        
+        frame_busca_interno = ttk.Frame(frame_busca)
+        frame_busca_interno.pack(fill='x', padx=10, pady=8)
+        
+        # Label e campo de busca
+        ttk.Label(frame_busca_interno, text="Buscar:", 
+                 font=('TkDefaultFont', 9, 'bold')).pack(side='left', padx=(0, 5))
+        
+        self.entry_busca = ttk.Entry(frame_busca_interno, width=50)
+        self.entry_busca.pack(side='left', padx=5, fill='x', expand=True)
+        
+        # Label de resultados
+        self.label_resultados = ttk.Label(frame_busca_interno, 
+                                         text="Digite para buscar em Referência, Nome, NF e Observação",
+                                         font=('TkDefaultFont', 8, 'italic'),
+                                         foreground='gray')
+        self.label_resultados.pack(side='left', padx=(10, 5))
+        
+        # Botão limpar busca
+        btn_limpar_busca = ttk.Button(frame_busca_interno, text="✖ Limpar", 
+                                      command=self.limpar_busca, width=10)
+        btn_limpar_busca.pack(side='left', padx=5)
+        
+        # Configurar eventos de busca
+        self.entry_busca.bind('<KeyRelease>', self.buscar_texto_evento)
+        self.entry_busca.bind('<Return>', lambda e: self.aplicar_filtros())
+        
         
         # Frame de filtros
         frame_filtros = ttk.LabelFrame(main_frame, text="Filtros")
@@ -16375,7 +16380,7 @@ class GerenciadorLancamentos:
         
         # Botão filtrar
         ttk.Button(frame_filtros, text="Filtrar", 
-                command=self.aplicar_filtros).grid(row=0, column=6, padx=10, pady=5)
+                command=self.filtrar_com_feedback).grid(row=0, column=6, padx=10, pady=5)
         
         # Frame da lista de lançamentos
         frame_lista = ttk.Frame(main_frame)
@@ -16477,7 +16482,9 @@ class GerenciadorLancamentos:
         # Configurar tags para cores
         self.tree_lancamentos.tag_configure('excluido', background='#ffcccc')
         self.tree_lancamentos.tag_configure('normal', background='white')
-        self.tree_lancamentos.tag_configure('selecionado', background='#e6f3ff')  # Nova tag para seleção
+        self.tree_lancamentos.tag_configure('selecionado', background='#e6f3ff')
+        self.tree_lancamentos.tag_configure('busca_encontrada', background='#ffffcc')
+
 
         # Configurar eventos
         self.configurar_atalhos()
@@ -16938,44 +16945,51 @@ class GerenciadorLancamentos:
             logger.debug(f"Erro ao atualizar progresso: {str(e)}")
     
     def configurar_atalhos(self):
-        """Configura atalhos de teclado - VERSÃO EXPANDIDA"""
+        """
+        VERSÃO APRIMORADA: Configurar atalhos incluindo busca
+        """
         try:
-            # ATALHO ORIGINAL: Duplo clique para histórico
+            # ATALHOS ORIGINAIS (mantidos)
             def on_double_click(event):
                 if self.tree_lancamentos.selection():
                     self.visualizar_historico_lancamento()
             
             self.tree_lancamentos.bind('<Double-1>', on_double_click)
             
-            # ATALHO ORIGINAL: Tecla H para histórico
             def on_key_h(event):
                 if self.tree_lancamentos.selection():
                     self.visualizar_historico_lancamento()
-                else:
-                    custom_messagebox("info", "Atalho H", "Selecione um lançamento primeiro para ver o histórico")
             
             self.janela.bind('<Key-h>', on_key_h)
             self.janela.bind('<Key-H>', on_key_h)
-            self.tree_lancamentos.bind('<Key-h>', on_key_h)
-            self.tree_lancamentos.bind('<Key-H>', on_key_h)
             
-            # NOVOS ATALHOS PARA SELEÇÃO EM LOTE
-            
-            # Ctrl+A: Selecionar todos os itens visíveis
-            def on_ctrl_a(event):
-                self.selecionar_todos_visiveis()
-                return "break"  # Impede comportamento padrão
-            
-            self.janela.bind('<Control-a>', on_ctrl_a)
-            self.tree_lancamentos.bind('<Control-a>', on_ctrl_a)
-            
-            # Ctrl+D: Limpar seleção
-            def on_ctrl_d(event):
-                self.limpar_selecao()
+            # NOVO: Ctrl+F para focar no campo de busca
+            def on_ctrl_f(event):
+                self.entry_busca.focus_set()
+                self.entry_busca.select_range(0, tk.END)
                 return "break"
             
-            self.janela.bind('<Control-d>', on_ctrl_d)
-            self.tree_lancamentos.bind('<Control-d>', on_ctrl_d)
+            self.janela.bind('<Control-f>', on_ctrl_f)
+            self.janela.bind('<Control-F>', on_ctrl_f)
+            
+            # NOVO: ESC para limpar busca
+            def on_escape(event):
+                # Se o foco está no campo de busca, limpar busca
+                if self.entry_busca == self.janela.focus_get():
+                    self.limpar_busca()
+                else:
+                    # Senão, limpar seleção (comportamento original)
+                    self.limpar_selecao()
+                return "break"
+            
+            self.janela.bind('<Escape>', on_escape)
+            
+            # Ctrl+A: Selecionar todos
+            def on_ctrl_a(event):
+                self.selecionar_todos_visiveis()
+                return "break"
+            
+            self.janela.bind('<Control-a>', on_ctrl_a)
             
             # Delete: Excluir selecionados
             def on_delete(event):
@@ -16984,57 +16998,32 @@ class GerenciadorLancamentos:
                     self.excluir_lancamento()
                 elif len(items_selecionados) > 1:
                     self.excluir_lote()
-                else:
-                    custom_messagebox("info", "Atalho Delete", "Selecione um ou mais lançamentos para excluir")
                 return "break"
             
             self.janela.bind('<Delete>', on_delete)
-            self.tree_lancamentos.bind('<Delete>', on_delete)
             
-            # Ctrl+R: Restaurar selecionados
+            # Ctrl+R: Restaurar
             def on_ctrl_r(event):
                 items_selecionados = self.tree_lancamentos.selection()
                 if len(items_selecionados) == 1:
                     self.restaurar_lancamento()
                 elif len(items_selecionados) > 1:
                     self.restaurar_lote()
-                else:
-                    custom_messagebox("info", "Atalho Ctrl+R", "Selecione um ou mais lançamentos para restaurar")
                 return "break"
             
             self.janela.bind('<Control-r>', on_ctrl_r)
-            self.tree_lancamentos.bind('<Control-r>', on_ctrl_r)
             
-            # F5: Atualizar lista
+            # F5: Atualizar
             def on_f5(event):
                 self.carregar_lancamentos()
                 return "break"
             
             self.janela.bind('<F5>', on_f5)
-            self.tree_lancamentos.bind('<F5>', on_f5)
             
-            # Escape: Limpar seleção
-            def on_escape(event):
-                self.limpar_selecao()
-                return "break"
-            
-            self.janela.bind('<Escape>', on_escape)
-            self.tree_lancamentos.bind('<Escape>', on_escape)
-            
-            # Tornar a janela focável para receber eventos de teclado
-            self.janela.focus_set()
-            
-            logger.debug("DEBUG: Atalhos configurados (incluindo seleção em lote)")
-            logger.debug("       Ctrl+A: Selecionar todos visíveis")
-            logger.debug("       Ctrl+D: Limpar seleção")
-            logger.debug("       Delete: Excluir selecionados")
-            logger.debug("       Ctrl+R: Restaurar selecionados")
-            logger.debug("       F5: Atualizar")
-            logger.debug("       Escape: Limpar seleção")
+            logger.debug("DEBUG: Atalhos configurados (incluindo Ctrl+F para busca)")
             
         except Exception as e:
             logger.debug(f"Erro ao configurar atalhos: {str(e)}")
-
 
     def formatar_tipo_despesa(self, tp_desp):
         """Formata tipo de despesa como inteiro"""
@@ -17108,7 +17097,10 @@ class GerenciadorLancamentos:
             traceback.logger.debug_exc()
        
     def carregar_lancamentos(self):
-        """Carrega os lançamentos da planilha com correção de IDs duplicados"""
+        """
+        Carrega os lançamentos da planilha
+        VERSÃO OTIMIZADA - Reduz flicker visual
+        """
         try:
             arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
             
@@ -17120,103 +17112,62 @@ class GerenciadorLancamentos:
             if 'STATUS' not in df.columns:
                 df['STATUS'] = 'ATIVO'
             
-            # CORREÇÃO: Preencher status em branco com 'ATIVO'
+            # Preencher status em branco
             df['STATUS'] = df['STATUS'].replace('', 'ATIVO')
             df['STATUS'] = df['STATUS'].fillna('ATIVO')
             
-            # CORREÇÃO PRINCIPAL: Gerenciar IDs de forma mais robusta
+            # Gerenciar IDs
             if 'ID_LANCAMENTO' not in df.columns:
-                # Se não existe coluna ID, criar sequencialmente
                 df['ID_LANCAMENTO'] = range(1, len(df) + 1)
-                logger.debug("DEBUG: Criada coluna ID_LANCAMENTO sequencial")
             else:
-                logger.debug("DEBUG: Verificando e corrigindo IDs duplicados/inválidos")
-                
-                # PASSO 1: Converter todos os IDs para numérico, transformando inválidos em NaN
+                # Corrigir IDs duplicados/inválidos
                 df['ID_LANCAMENTO'] = pd.to_numeric(df['ID_LANCAMENTO'], errors='coerce')
                 
-                # PASSO 2: Identificar IDs duplicados
-                ids_duplicados = df[df.duplicated(subset=['ID_LANCAMENTO'], keep=False) & df['ID_LANCAMENTO'].notna()]
-                if not ids_duplicados.empty:
-                    logger.debug(f"DEBUG: Encontrados {len(ids_duplicados)} lançamentos com IDs duplicados")
-                    
-                    # Mostrar quais IDs estão duplicados
-                    ids_problema = ids_duplicados['ID_LANCAMENTO'].unique()
-                    for id_dup in ids_problema:
-                        linhas_dup = ids_duplicados[ids_duplicados['ID_LANCAMENTO'] == id_dup].index.tolist()
-                        logger.debug(f"DEBUG: ID {id_dup} duplicado nas linhas: {[i+2 for i in linhas_dup]}")  # +2 para contar header
-                
-                # PASSO 3: Encontrar o próximo ID disponível
                 ids_validos = df['ID_LANCAMENTO'].dropna()
                 if len(ids_validos) > 0:
                     proximo_id = int(ids_validos.max()) + 1
                 else:
                     proximo_id = 1
                 
-                logger.debug(f"DEBUG: Próximo ID disponível: {proximo_id}")
-                
-                # PASSO 4: Corrigir IDs inválidos (NaN) primeiro
+                # Corrigir IDs inválidos
                 mask_nan = df['ID_LANCAMENTO'].isna()
                 indices_nan = df.index[mask_nan].tolist()
-                
                 for idx in indices_nan:
                     df.loc[idx, 'ID_LANCAMENTO'] = proximo_id
-                    logger.debug(f"DEBUG: Atribuído ID {proximo_id} para linha {idx+2} (era NaN)")
                     proximo_id += 1
                 
-                # PASSO 5: Corrigir IDs duplicados
-                # Primeiro, identificar novamente após correção dos NaN
+                # Corrigir IDs duplicados
                 duplicados_restantes = df[df.duplicated(subset=['ID_LANCAMENTO'], keep='first')]
-                
                 for idx in duplicados_restantes.index:
-                    id_original = df.loc[idx, 'ID_LANCAMENTO']
                     df.loc[idx, 'ID_LANCAMENTO'] = proximo_id
-                    
-                    # Informações do lançamento para debug
-                    nome = df.loc[idx, 'NOME'] if 'NOME' in df.columns else 'N/A'
-                    referencia = df.loc[idx, 'REFERÊNCIA'] if 'REFERÊNCIA' in df.columns else 'N/A'
-                    nf = df.loc[idx, 'NF'] if 'NF' in df.columns else 'N/A'
-                    
-                    logger.debug(f"DEBUG: Corrigido ID duplicado {id_original} → {proximo_id} para linha {idx+2}")
-                    logger.debug(f"       Lançamento: {nome} - {referencia}")
                     proximo_id += 1
-                
-                # PASSO 6: Verificação final
-                ids_finais = df['ID_LANCAMENTO']
-                duplicados_finais = df[df.duplicated(subset=['ID_LANCAMENTO'], keep=False)]
-                
-                if not duplicados_finais.empty:
-                    logger.debug(f"DEBUG: ERRO - Ainda existem {len(duplicados_finais)} IDs duplicados após correção!")
-                    # Se ainda há duplicados, forçar sequência completa
-                    df['ID_LANCAMENTO'] = range(1, len(df) + 1)
-                    logger.debug("DEBUG: Forçada sequência completa de IDs")
-                else:
-                    logger.debug("DEBUG: Todos os IDs estão únicos agora")
             
-            # Converter para int (agora que não há mais NaN nem duplicados)
+            # Converter para int
             df['ID_LANCAMENTO'] = df['ID_LANCAMENTO'].astype(int)
             
-            # CORREÇÃO: Salvar a planilha se houve mudanças nos IDs
-            ids_mudaram = not df['ID_LANCAMENTO'].equals(pd.read_excel(arquivo_cliente, sheet_name='Dados')['ID_LANCAMENTO']) if 'ID_LANCAMENTO' in pd.read_excel(arquivo_cliente, sheet_name='Dados').columns else True
+            # Salvar correções se necessário
+            ids_mudaram = not df['ID_LANCAMENTO'].equals(
+                pd.read_excel(arquivo_cliente, sheet_name='Dados')['ID_LANCAMENTO']
+            ) if 'ID_LANCAMENTO' in pd.read_excel(arquivo_cliente, sheet_name='Dados').columns else True
             
             if ids_mudaram:
-                logger.debug("DEBUG: Salvando correções de ID na planilha")
                 self.salvar_correcoes_ids(arquivo_cliente, df)
             
             # Salvar dados originais
             self.dados_originais = df.copy()
             
-            # Corrigir planilha se necessário (status)
-            self.corrigir_planilha_status(arquivo_cliente, df)
+            # ====================================================================
+            # OTIMIZAÇÃO: Desabilitar redesenho durante inserção em massa
+            # ====================================================================
+            self.tree_lancamentos.config(takefocus=3)
             
-            # Limpar tree
+            # Limpar tree e lista
             for item in self.tree_lancamentos.get_children():
                 self.tree_lancamentos.delete(item)
             
-            logger.debug(f"DEBUG: Tree limpo, iniciando inserção de {len(df)} lançamentos")
+            self.todos_itens_tree = []
             
-            # Preencher tree
-            items_inseridos = 0
+            # Inserir todos os itens
             for idx, row in df.iterrows():
                 status = row.get('STATUS', 'ATIVO')
                 if status == '' or pd.isna(status):
@@ -17228,48 +17179,38 @@ class GerenciadorLancamentos:
                 data_rel = self.formatar_data(row['DATA_REL'])
                 data_vencto = self.formatar_data(row['DT_VENCTO'])
                 valor = self.formatar_valor(row['VALOR'])
-                
-                # CORREÇÃO: Formatar TP_DESP como inteiro
                 tp_desp = self.formatar_tipo_despesa(row['TP_DESP'])
-                
-                # CORREÇÃO: Garantir que o ID seja um inteiro único
                 id_lancamento = int(row['ID_LANCAMENTO'])
                 
                 valores_tree = (data_rel, tp_desp, row['NOME'], 
                             row['REFERÊNCIA'], row['NF'], valor, data_vencto, status, id_lancamento)
                 
-                # DEBUG: Mostrar alguns lançamentos inseridos
-                if items_inseridos < 3:
-                    logger.debug(f"DEBUG: Inserindo item {items_inseridos + 1}: {valores_tree}")
-                
-                self.tree_lancamentos.insert('', 'end', 
+                # Inserir item
+                item_id = self.tree_lancamentos.insert('', 'end', 
                     values=valores_tree,
                     tags=(tag,))
                 
-                items_inseridos += 1
+                # Adicionar à lista de todos os itens
+                self.todos_itens_tree.append(item_id)
             
-            logger.debug(f"DEBUG: {items_inseridos} itens inseridos no tree")
+            # ====================================================================
+            # Reabilitar foco
+            # ====================================================================
+            self.tree_lancamentos.config(takefocus=1)
             
-            # Verificar quantos itens estão no tree antes dos filtros
-            itens_antes_filtro = len(self.tree_lancamentos.get_children())
-            logger.debug(f"DEBUG: Itens no tree ANTES do filtro: {itens_antes_filtro}")
+            logger.debug(f"Carregados {len(df)} lançamentos")
             
-            # if hasattr(self, 'data_inicio') and self.data_inicio:
-            #     self.data_inicio.set_date(data_inicio_padrao)
-
-            # Aplicar filtros
+            # Aplicar filtros padrão
             self.aplicar_filtros()
             
-            # Verificar quantos itens estão no tree depois dos filtros
-            itens_depois_filtro = len(self.tree_lancamentos.get_children())
-            logger.debug(f"DEBUG: Itens no tree DEPOIS do filtro: {itens_depois_filtro}")
-            
-            logger.debug(f"DEBUG: Carregamento concluído. Total de lançamentos: {len(df)}")
+            logger.debug(f"Carregamento concluído")
             
         except Exception as e:
+            logger.error(f"Erro ao carregar lançamentos: {str(e)}")
             import traceback
-            traceback.logger.debug_exc()
+            traceback.print_exc()
             custom_messagebox("error", "Erro", f"Erro ao carregar lançamentos: {str(e)}")
+
 
     def salvar_correcoes_ids(self, arquivo_cliente, df_corrigido):
         """
@@ -17420,75 +17361,310 @@ class GerenciadorLancamentos:
             logger.debug(f"DEBUG: Erro ao corrigir status na planilha: {str(e)}")
             # Não levantar exceção aqui para não interromper o carregamento
     
+    def normalizar_texto(self, texto):
+        """
+        Normaliza texto para busca: remove acentos, converte para minúsculas
+        
+        Args:
+            texto: String para normalizar
+            
+        Returns:
+            String normalizada
+        """
+        if not texto or pd.isna(texto):
+            return ""
+        
+        texto = str(texto).lower()
+        
+        # Remover acentos
+        texto = unicodedata.normalize('NFKD', texto)
+        texto = texto.encode('ASCII', 'ignore').decode('ASCII')
+        
+        return texto
+    
+    def buscar_texto_evento(self, event=None):
+        """
+        Evento disparado quando o usuário digita no campo de busca
+        Aplica busca em tempo real
+        """
+        try:
+            termo_busca = self.entry_busca.get().strip()
+            
+            # Se o termo mudou, aplicar filtros
+            if termo_busca != self.ultimo_termo_busca:
+                self.ultimo_termo_busca = termo_busca
+                self.aplicar_filtros()
+                
+        except Exception as e:
+            logger.debug(f"Erro ao buscar texto: {str(e)}")
+    
+    def limpar_busca(self):
+        """
+        Limpa o campo de busca e reaplica os filtros
+        """
+        try:
+            self.entry_busca.delete(0, tk.END)
+            self.ultimo_termo_busca = ""
+            self.label_resultados.config(
+                text="Digite para buscar em Referência, Nome, NF e Observação",
+                foreground='gray'
+            )
+            self.aplicar_filtros()
+            
+        except Exception as e:
+            logger.debug(f"Erro ao limpar busca: {str(e)}")
+    
+    def item_corresponde_busca(self, item_valores, termo_busca_normalizado):
+        """
+        Verifica se um item corresponde ao termo de busca
+        
+        Args:
+            item_valores: Tupla com valores do item (da Treeview)
+            termo_busca_normalizado: Termo de busca já normalizado
+            
+        Returns:
+            bool: True se o item corresponde à busca
+        """
+        if not termo_busca_normalizado:
+            return True
+        
+        # Colunas: ('Data', 'Tipo', 'Nome', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'ID')
+        #           0       1       2       3            4      5        6             7         8
+        
+        try:
+            # Buscar em: Nome (2), Referência (3), NF (4)
+            campos_busca = [
+                str(item_valores[2]),  # Nome
+                str(item_valores[3]),  # Referência
+                str(item_valores[4]),  # NF
+            ]
+            
+            # Adicionar observação se disponível (precisa buscar nos dados originais)
+            id_lancamento = item_valores[8]
+            if hasattr(self, 'dados_originais') and not self.dados_originais.empty:
+                mask = self.dados_originais['ID_LANCAMENTO'] == id_lancamento
+                dados = self.dados_originais[mask]
+                if not dados.empty:
+                    observacao = dados.iloc[0].get('OBSERVAÇÃO', '')
+                    if observacao and not pd.isna(observacao):
+                        campos_busca.append(str(observacao))
+            
+            # Normalizar e buscar em cada campo
+            for campo in campos_busca:
+                campo_normalizado = self.normalizar_texto(campo)
+                if termo_busca_normalizado in campo_normalizado:
+                    return True
+            
+            return False
+            
+        except Exception as e:
+            logger.debug(f"Erro ao verificar correspondência de busca: {str(e)}")
+            return False
+    
+    def filtrar_com_feedback(self):
+        """
+        Aplica filtros com feedback visual ao usuário
+        NOVO MÉTODO - Melhora a resposta do botão Filtrar
+        """
+        try:
+            # Mudar cursor para ocupado
+            self.janela.config(cursor="watch")
+            self.janela.update_idletasks()
+            
+            # Log inicial
+            data_inicio = self.data_inicio.get_date()
+            data_fim = self.data_fim.get_date()
+            status = self.combo_status.get()
+            termo_busca = self.entry_busca.get().strip() if self.entry_busca else ""
+            
+            logger.debug(f"DEBUG: Iniciando filtragem - Data: {data_inicio} a {data_fim}, "
+                        f"Status: {status}, Busca: '{termo_busca}'")
+            
+            # Aplicar filtros
+            self.aplicar_filtros()
+            
+            # Restaurar cursor
+            self.janela.config(cursor="")
+            
+            logger.debug("DEBUG: Filtros aplicados com sucesso")
+            
+        except Exception as e:
+            self.janela.config(cursor="")
+            logger.debug(f"Erro ao aplicar filtros: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
     def aplicar_filtros(self):
-        """Aplica os filtros selecionados"""
+        """
+        Aplica filtros de data, status e busca por texto nos lançamentos
+        VERSÃO FINAL DE PRODUÇÃO
+        """
         try:
             # Obter filtros
             status_filtro = self.combo_status.get()
             data_inicio = self.data_inicio.get_date()
             data_fim = self.data_fim.get_date()
             
-            logger.debug(f"DEBUG: Aplicando filtros - Status: {status_filtro}, Data início: {data_inicio}, Data fim: {data_fim}")
+            # Obter termo de busca
+            termo_busca = ""
+            termo_busca_normalizado = ""
+            if hasattr(self, 'entry_busca') and self.entry_busca:
+                termo_busca = self.entry_busca.get().strip()
+                if termo_busca:
+                    termo_busca_normalizado = self.normalizar_texto(termo_busca)
             
+            # Log resumido
+            logger.debug(f"Aplicando filtros - Status: {status_filtro}, "
+                        f"Data: {data_inicio} a {data_fim}, Busca: '{termo_busca}'")
+            
+            # Contadores
             itens_visiveis = 0
             itens_ocultos = 0
+            itens_encontrados_busca = 0
             
-            # Filtrar itens na tree
-            for item in self.tree_lancamentos.get_children():
-                valores = self.tree_lancamentos.item(item, 'values')
-                
-                # CORREÇÃO: Verificar os índices corretos das colunas
-                # Colunas: ('Data', 'Tipo', 'Nome', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'ID')
-                #           0       1       2       3            4      5        6             7         8
-                
-                data_rel_str = valores[0]  # Data (índice 0)
-                status_item = valores[7]   # Status (índice 7, não 6!)
-                
-                mostrar = True
-                
-                # Filtro por status
-                if status_filtro == 'Ativos' and status_item != 'ATIVO':
-                    mostrar = False
-                elif status_filtro == 'Excluídos' and status_item != 'EXCLUIDO':
-                    mostrar = False
-                
-                # Filtro por data
-                if mostrar and data_rel_str and data_rel_str.strip():
+            # Obter lista de TODOS os itens
+            if not hasattr(self, 'todos_itens_tree'):
+                logger.warning("Lista todos_itens_tree não existe, criando fallback")
+                self.todos_itens_tree = list(self.tree_lancamentos.get_children())
+            
+            todos_itens = self.todos_itens_tree
+            total_itens = len(todos_itens)
+            
+            if total_itens == 0:
+                logger.warning("Nenhum item para filtrar")
+                return
+            
+            # ====================================================================
+            # OTIMIZAÇÃO: Desabilitar redesenho durante processamento
+            # ====================================================================
+            # Isso evita o "flicker" de itens "correndo" na tela
+            self.tree_lancamentos.config(takefocus=0)
+            
+            # Processar todos os itens
+            for i, item in enumerate(todos_itens):
+                try:
+                    # Obter valores do item
                     try:
-                        # Converter data da string para datetime.date
-                        data_rel = datetime.strptime(data_rel_str, '%d/%m/%Y').date()
-                        
-                        # Verificar se está no intervalo
-                        if data_rel < data_inicio or data_rel > data_fim:
+                        valores = self.tree_lancamentos.item(item, 'values')
+                    except tk.TclError:
+                        # Item não existe mais
+                        continue
+                    
+                    if len(valores) < 8:
+                        continue
+                    
+                    data_rel_str = valores[0]
+                    status_item = valores[7]
+                    
+                    # Determinar se item deve ser mostrado
+                    mostrar = True
+                    encontrado_na_busca = False
+                    
+                    # Filtro por status
+                    if status_filtro == 'Ativos' and status_item != 'ATIVO':
+                        mostrar = False
+                    elif status_filtro == 'Excluídos' and status_item != 'EXCLUIDO':
+                        mostrar = False
+                    
+                    # Filtro por data
+                    if mostrar and data_rel_str and data_rel_str.strip():
+                        try:
+                            data_rel = datetime.strptime(data_rel_str, '%d/%m/%Y').date()
+                            if data_rel < data_inicio or data_rel > data_fim:
+                                mostrar = False
+                        except:
+                            pass
+                    
+                    # Filtro por busca de texto
+                    if mostrar and termo_busca_normalizado:
+                        if self.item_corresponde_busca(valores, termo_busca_normalizado):
+                            encontrado_na_busca = True
+                            itens_encontrados_busca += 1
+                        else:
                             mostrar = False
-                            
-                    except Exception as e:
-                        logger.debug(f"DEBUG: Erro ao processar data '{data_rel_str}': {str(e)}")
-                        # Em caso de erro na data, não filtrar por data para este item
-                
-                # Mostrar/ocultar item
-                if mostrar:
-                    # Verificar se o item já está visível
-                    try:
-                        self.tree_lancamentos.item(item)  # Testa se está visível
+                    
+                    # Verificar se item está visível atualmente
+                    itens_visiveis_agora = self.tree_lancamentos.get_children()
+                    item_esta_visivel = item in itens_visiveis_agora
+                    
+                    # Aplicar mudança de visibilidade
+                    if mostrar:
+                        # Item deve estar visível
+                        if not item_esta_visivel:
+                            try:
+                                self.tree_lancamentos.reattach(item, '', tk.END)
+                            except:
+                                pass
+                        
                         itens_visiveis += 1
-                    except:
-                        # Se não está visível, reattach
-                        self.tree_lancamentos.reattach(item, '', tk.END)
-                        itens_visiveis += 1
-                else:
-                    # Ocultar item
-                    self.tree_lancamentos.detach(item)
-                    itens_ocultos += 1
+                        
+                        # Aplicar tags apropriadas
+                        try:
+                            if encontrado_na_busca and termo_busca_normalizado:
+                                if status_item == 'EXCLUIDO':
+                                    self.tree_lancamentos.item(item, tags=('excluido', 'busca_encontrada'))
+                                else:
+                                    self.tree_lancamentos.item(item, tags=('busca_encontrada',))
+                            else:
+                                if status_item == 'EXCLUIDO':
+                                    self.tree_lancamentos.item(item, tags=('excluido',))
+                                else:
+                                    self.tree_lancamentos.item(item, tags=('normal',))
+                        except:
+                            pass
+                    else:
+                        # Item deve estar oculto
+                        if item_esta_visivel:
+                            try:
+                                self.tree_lancamentos.detach(item)
+                            except:
+                                pass
+                        
+                        itens_ocultos += 1
+                    
+                    # Atualizar UI periodicamente (a cada 200 itens para reduzir flicker)
+                    if i % 200 == 0 and i > 0:
+                        self.janela.update_idletasks()
+                    
+                except Exception as e:
+                    # Silenciosamente ignorar erros em itens individuais
+                    continue
             
-            logger.debug(f"DEBUG: Filtros aplicados - {itens_visiveis} visíveis, {itens_ocultos} ocultos")
+            # ====================================================================
+            # Reabilitar foco e forçar atualização visual final
+            # ====================================================================
+            self.tree_lancamentos.config(takefocus=1)
+            self.tree_lancamentos.update_idletasks()
+            self.janela.update_idletasks()
+            
+            # Atualizar label de resultados da busca
+            if hasattr(self, 'label_resultados'):
+                if termo_busca_normalizado:
+                    if itens_encontrados_busca > 0:
+                        self.label_resultados.config(
+                            text=f"✓ {itens_encontrados_busca} resultado(s) encontrado(s)",
+                            foreground='green'
+                        )
+                    else:
+                        self.label_resultados.config(
+                            text="✗ Nenhum resultado encontrado",
+                            foreground='red'
+                        )
+                else:
+                    self.label_resultados.config(
+                        text="Digite para buscar em Referência, Nome, NF e Observação",
+                        foreground='gray'
+                    )
+            
+            # Log resumido do resultado
+            logger.debug(f"Filtros aplicados - {itens_visiveis} visíveis, "
+                        f"{itens_ocultos} ocultos, {itens_encontrados_busca} encontrados na busca")
                         
         except Exception as e:
-            logger.debug(f"DEBUG: Erro ao aplicar filtros: {str(e)}")
+            logger.error(f"Erro ao aplicar filtros: {str(e)}")
             import traceback
-            traceback.logger.debug_exc()
-            custom_messagebox("error", "Erro", f"Erro ao aplicar filtros: {str(e)}")
-
+            traceback.print_exc()
+            
     def aplicar_filtros_melhorados(self):
         """Versão melhorada do filtro que preserva seleção quando possível"""
         try:
