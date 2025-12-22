@@ -24,7 +24,8 @@ VERSION_INFO = {
         "Inclusão e gestão de medições pendentes na Agenda",
         "Relatório Quinzenal de Medições - em PDF, para incluir na documentação do cliente",
         "Atualização do cadastro de Clientes para incluir metragem de alvará e separar campos do endereço",
-        "Correção de edição em massa no Gerenciador de Lançamentos"
+        "Correção de edição em massa no Gerenciador de Lançamentos",
+        "Inclusão de busca por múltiplos campos no Gerenciador de Lançamentos"
     ]
 }
 
