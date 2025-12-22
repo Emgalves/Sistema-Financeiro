@@ -13,6 +13,7 @@ from pathlib import Path
 
 from relatorio_despesas_service import RelatoriosDespesasService
 from config_relatorio_quinzenal import configurar_relatorio_quinzenal
+from src.config.config import PASTA_CLIENTES
 
 # from correcoes_emergenciais import aplicar_todas_correcoes 
 # aplicar_todas_correcoes()
