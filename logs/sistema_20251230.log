@@ -25,3 +25,5 @@
 2025-12-30 13:11:29,639 - sistema_relatorios - gestao_medicoes - INFO - Rastreamento adicionado: Contrato 6, Medição 1, Linha 492
 2025-12-30 13:11:39,645 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
 2025-12-30 13:11:39,650 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2025-12-30 13:20:56,809 - sistema - logger_config - INFO - Sistema de logging inicializado
+2025-12-30 13:32:08,673 - sistema - logger_config - INFO - Sistema de logging inicializado
