@@ -1196,7 +1196,7 @@ class GestaoMedicoes:
                 # Definir cabeçalhos
                 headers = [
                     "ID_Contrato", "CNPJ_Fornecedor", "Nome_Fornecedor", "Descricao", 
-                    "Data_Inicio", "Valor_Global", "Valor_Pago", "Saldo", "Status", "Observacao"
+                    "Data_Inicio", "Data_Final", "Valor_Global", "Valor_Pago", "Saldo", "Status", "Observacao"
                 ]
                 
                 for col, header in enumerate(headers, 1):
@@ -1349,7 +1349,7 @@ class GestaoMedicoes:
                               foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
         data_inicio.grid(row=3, column=1, padx=5, pady=5, sticky='w')
         
-        # Data de Início
+        # Data Final
         ttk.Label(frame_contrato, text="Data Final:*").grid(row=4, column=0, padx=5, pady=5, sticky='e')
         data_final = DateEntry(frame_contrato, width=12, background='darkblue',
                               foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
@@ -4256,6 +4256,11 @@ class GestaoMedicoes:
                 valor_lancamento = row[8] if row[8] else 0
                 dt_vencto = row[9]
                 observacao = str(row[12]) if row[12] else ""
+                status = str(row[13]).strip().upper() if row[13] else ""  # ← NOVA LINHA
+            
+                # === FILTRO DE STATUS - PULAR SE EXCLUÍDO ===
+                if status == "EXCLUIDO":
+                    continue
                 
                 # === CRITÉRIO 1: CNPJ/CPF (obrigatório) ===
                 cnpj_linha_norm = self.normalizar_cnpj_cpf(cnpj_cpf)
