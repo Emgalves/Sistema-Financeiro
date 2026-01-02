@@ -404,8 +404,6 @@ class SistemaGestaoFinanceira:
 
     def abrir_entrada_dados(self):
         """Abre o sistema de entrada de dados"""
-
-        
         try:
             simple_logger.info("Abrindo sistema de entrada de dados")
             
@@ -415,30 +413,91 @@ class SistemaGestaoFinanceira:
             except ImportError:
                 from Sistema_Entrada_Dados import SistemaEntradaDados
             
-            # CORREÇÃO: Salvar geometria antes de ocultar
+            # ============================================================
+            # SALVAR GEOMETRIA E OCULTAR MENU
+            # ============================================================
             if not hasattr(self.root, '_geometria_original'):
+                self.root.update_idletasks()
                 self.root._geometria_original = self.root.geometry()
+                simple_logger.info(f"💾 Geometria do menu salva: {self.root._geometria_original}")
             
-            # Ocultar menu principal
             self.root.withdraw()
+            self.root.update_idletasks()  # ✅ FORÇA PROCESSAMENTO
             
-            # Criar e abrir sistema de entrada de dados
+            # ============================================================
+            # CRIAR SISTEMA DE ENTRADA DE DADOS
+            # ============================================================
             app = SistemaEntradaDados(parent=self.root)
+            
+            # ============================================================
+            # CALLBACK PARA RETORNAR AO MENU PRINCIPAL
+            # ============================================================
+            def retornar_ao_menu():
+                """Fecha o sistema de entrada e volta ao menu"""
+                try:
+                    simple_logger.info("Fechando Sistema de Entrada de Dados")
+                    
+                    # Destruir janela do subsistema
+                    if hasattr(app, 'root') and app.root.winfo_exists():
+                        app.root.destroy()
+                    
+                    # ============================================================
+                    # RESTAURAR MENU PRINCIPAL COM SEGURANÇA
+                    # ============================================================
+                    self.root.update_idletasks()  # ✅ FORÇA SINCRONIZAÇÃO
+                    self.root.deiconify()
+                    
+                    # Restaurar geometria original
+                    if hasattr(self.root, '_geometria_original'):
+                        self.root.geometry(self.root._geometria_original)
+                        simple_logger.info(f"✅ Geometria restaurada: {self.root._geometria_original}")
+                    
+                    self.root.update_idletasks()  # ✅ FORÇA ATUALIZAÇÃO
+                    self.root.lift()
+                    self.root.focus_force()
+                    
+                    simple_logger.info("✅ Menu principal restaurado")
+                    
+                except Exception as e:
+                    simple_logger.error(f"❌ Erro ao retornar ao menu: {str(e)}")
+                    # Em caso de erro, força exibição do menu
+                    try:
+                        self.root.deiconify()
+                        self.root.lift()
+                    except:
+                        pass
+            
+            # ============================================================
+            # CONFIGURAR PROTOCOLO DE FECHAMENTO
+            # ============================================================
+            app.root.protocol("WM_DELETE_WINDOW", retornar_ao_menu)
+            
+            # ============================================================
+            # GARANTIR QUE A JANELA APAREÇA
+            # ============================================================
+            app.root.update_idletasks()
             app.root.lift()
             app.root.focus_force()
-            app.root.mainloop()
+            
+            simple_logger.info("✅ Sistema de Entrada de Dados aberto")
+            
+            # ❌ REMOVER ISTO: app.root.mainloop()
+            # ✅ NÃO CRIAR NOVO LOOP! O loop principal já está rodando
 
         except Exception as e:
-            simple_logger.error(f"Erro ao abrir sistema de entrada de dados: {str(e)}")
-            messagebox.showerror("Erro", "Erro ao abrir sistema de entrada de dados.")
+            simple_logger.error(f"❌ Erro ao abrir sistema de entrada de dados: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir sistema de entrada de dados:\n{str(e)}")
             
-            # CORREÇÃO: Restaurar com geometria em caso de erro
-            self.root.deiconify()
-            if hasattr(self.root, '_geometria_original'):
-                self.root.geometry(self.root._geometria_original)
-                print(f"✅ Geometria restaurada após erro: {self.root._geometria_original}")
-            self.root.update_idletasks()
-            self.root.lift()
+            # Restaurar menu em caso de erro
+            try:
+                self.root.update_idletasks()
+                self.root.deiconify()
+                if hasattr(self.root, '_geometria_original'):
+                    self.root.geometry(self.root._geometria_original)
+                self.root.update_idletasks()
+                self.root.lift()
+            except:
+                pass
 
     def abrir_gestao_taxas(self):
         """Abre o sistema de gestão de taxas"""
