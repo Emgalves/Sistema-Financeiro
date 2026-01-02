@@ -13,7 +13,8 @@ VERSION_INFO = {
     "patch": 3,
     "release_date": "02/01/2026",
     "changes": [
-        "Melhoria na sincronização do Visualizador de Lançamentos"
+        "Melhoria na sincronização do Visualizador de Lançamentos",
+        "Correção no travamento e saída do sistema"
     ]
 }
 
