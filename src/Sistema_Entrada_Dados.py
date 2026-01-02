@@ -1993,6 +1993,10 @@ class SistemaEntradaDados:
             self.menu_principal = None
             
         configurar_janela(self.root, "Sistema de Entrada de Dados")
+        
+        self.root.protocol("WM_DELETE_WINDOW", self.sair_sistema)
+        logger.debug("✅ Protocolo de fechamento configurado")
+
         self.dados_para_incluir = []
         self.data_rel = None
         self.cliente_atual = None
@@ -2149,61 +2153,157 @@ class SistemaEntradaDados:
 
     def voltar_menu(self):
         """
-        Versão alternativa que força redesenho completo
+        Retorna ao menu principal com restauração completa
         """
-        if self.dados_para_incluir and custom_messagebox("yesno", 
-            "Confirmação", 
-            "Existem dados não salvos. Deseja salvá-los antes de sair?"):
-            self.enviar_dados()
-        
-        menu_ref = self.menu_principal
-        
-        # Fechar janela atual
-        self.root.destroy()
-        
-        if menu_ref:
+        try:
+            # Verificar dados não salvos
+            if self.dados_para_incluir and custom_messagebox("yesno", 
+                "Confirmação", 
+                "Existem dados não salvos. Deseja salvá-los antes de sair?"):
+                self.enviar_dados()
+            
+            logger.info("Voltando ao menu principal")
+            
+            menu_ref = self.menu_principal
+            
+            # ============================================================
+            # FECHAR VISUALIZADOR SE ESTIVER ABERTO
+            # ============================================================
+            if hasattr(self, 'visualizador') and self.visualizador:
+                try:
+                    if hasattr(self.visualizador, 'janela') and self.visualizador.janela.winfo_exists():
+                        self.visualizador._fechando = True
+                        self.visualizador.janela.destroy()
+                        logger.info("✅ Visualizador fechado")
+                except Exception as e:
+                    logger.warning(f"⚠️ Erro ao fechar visualizador: {e}")
+            
+            # ============================================================
+            # DESTRUIR JANELA ATUAL COM SEGURANÇA
+            # ============================================================
             try:
-                geometria = getattr(menu_ref, '_geometria_original', "900x700+100+50")
+                # Cancelar quaisquer callbacks pendentes
+                for after_id in self.root.tk.call('after', 'info'):
+                    try:
+                        self.root.after_cancel(after_id)
+                    except:
+                        pass
                 
-                # ESTRATÉGIA DIFERENTE: Ocultar, configurar, mostrar
-                menu_ref.withdraw()  # Garantir que está oculto
-                
-                # Configurar geometria enquanto oculto
-                menu_ref.geometry(geometria)
-                menu_ref.update_idletasks()
-                menu_ref.update()
-                
-                # Aguardar um ciclo
-                menu_ref.after(10, lambda: None)
-                menu_ref.update()
-                
-                # Mostrar janela configurada
-                menu_ref.deiconify()
-                
-                # Forçar redesenho
-                menu_ref.update_idletasks()
-                menu_ref.update()
-                
-                # Foco
-                menu_ref.lift()
-                menu_ref.focus_force()
-                
-                logger.debug(f"✅ Menu restaurado com redesenho completo")
+                self.root.quit()  # ✅ IMPORTANTE: Sair do mainloop desta janela
+                self.root.destroy()
+                logger.info("✅ Janela do Sistema de Entrada destruída")
                 
             except Exception as e:
-                logger.debug(f"⚠️ Erro: {e}")
-
+                logger.error(f"❌ Erro ao destruir janela: {e}")
+            
+            # ============================================================
+            # RESTAURAR MENU PRINCIPAL
+            # ============================================================
+            if menu_ref and menu_ref.winfo_exists():
+                try:
+                    geometria = getattr(menu_ref, '_geometria_original', "900x700+100+50")
+                    logger.info(f"📐 Restaurando geometria: {geometria}")
+                    
+                    # ESTRATÉGIA: Forçar processamento em cada etapa
+                    menu_ref.withdraw()  # Garantir que está oculto
+                    menu_ref.update_idletasks()
+                    
+                    # Configurar geometria
+                    menu_ref.geometry(geometria)
+                    menu_ref.update_idletasks()
+                    menu_ref.update()
+                    
+                    # Pequena pausa para garantir processamento
+                    menu_ref.after(50)  # 50ms
+                    menu_ref.update()
+                    
+                    # Mostrar janela
+                    menu_ref.deiconify()
+                    menu_ref.update_idletasks()
+                    menu_ref.update()
+                    
+                    # Trazer para frente
+                    menu_ref.lift()
+                    menu_ref.focus_force()
+                    menu_ref.update_idletasks()
+                    
+                    logger.info("✅ Menu principal restaurado com sucesso")
+                    
+                except Exception as e:
+                    logger.error(f"❌ Erro ao restaurar menu: {e}")
+                    # Tentar restauração forçada
+                    try:
+                        menu_ref.deiconify()
+                        menu_ref.lift()
+                    except:
+                        pass
+            else:
+                logger.warning("⚠️ Referência ao menu principal não existe")
+                
+        except Exception as e:
+            logger.error(f"❌ Erro geral em voltar_menu: {str(e)}")
+            import traceback
+            traceback.print_exc()
 
     def sair_sistema(self):
         """Fecha o sistema verificando dados não salvos"""
         try:
-            self.finalizar_sistema()
+            logger.info("Encerrando Sistema de Entrada de Dados")
+            
+            # Verificar dados não salvos
+            if hasattr(self, 'dados_para_incluir') and self.dados_para_incluir:
+                resposta = custom_messagebox("yesno",
+                    "Dados Pendentes",
+                    f"Há {len(self.dados_para_incluir)} lançamento(s) não salvo(s)!\n\n"
+                    "Deseja realmente sair sem salvar?"
+                )
+                if not resposta:
+                    return  # Cancela o fechamento
+            
+            # Fechar visualizador se estiver aberto
+            if hasattr(self, 'visualizador') and self.visualizador:
+                try:
+                    if hasattr(self.visualizador, 'janela') and self.visualizador.janela.winfo_exists():
+                        self.visualizador._fechando = True
+                        self.visualizador.janela.destroy()
+                except:
+                    pass
+            
+            # Cancelar callbacks pendentes
+            try:
+                for after_id in self.root.tk.call('after', 'info'):
+                    try:
+                        self.root.after_cancel(after_id)
+                    except:
+                        pass
+            except:
+                pass
+            
+            # Se tem menu principal, volta para ele
+            if hasattr(self, 'menu_principal') and self.menu_principal:
+                self.voltar_menu()
+            else:
+                # Senão, fecha tudo
+                try:
+                    self.root.quit()
+                    self.root.destroy()
+                except:
+                    pass
+                finally:
+                    import sys
+                    sys.exit(0)
+                    
         except Exception as e:
-            logger.debug(f"Erro ao finalizar sistema: {str(e)}")
-        finally:
-            # Forçar saída se necessário
-            import sys
-            sys.exit()  
+            logger.error(f"❌ Erro ao sair do sistema: {str(e)}")
+            # Forçar saída em caso de erro
+            try:
+                self.root.quit()
+                self.root.destroy()
+            except:
+                pass
+            finally:
+                import sys
+                sys.exit(0) 
     
     def setup_aba_selecao(self):
         """Configura a aba de seleção de cliente - VERSÃO FINAL"""
@@ -25084,9 +25184,13 @@ class ConfiguracaoTaxas:
         return dias_passados > ConfiguracaoTaxas.DIAS_PARA_FECHAR_QUINZENA
      
 if __name__ == "__main__":
-    logger.debug("Iniciando aplicação...")
+    logger.info("Iniciando aplicação...")
     app = SistemaEntradaDados()
-    logger.debug("Atualizando interface...")
+    
+    logger.info("Atualizando interface...")
     app.root.update_idletasks()
-    logger.debug("Iniciando mainloop...")
+    
+    logger.info("Iniciando mainloop...")
     app.root.mainloop()
+    
+    logger.info("Aplicação finalizada")
