@@ -263,6 +263,20 @@ from src.config.utils import buscar_dados_bancarios_fornecedor
 class VisualizadorLancamentos:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
+        
+        # ============================================================
+        # FORÇA SINCRONIZAÇÃO ANTES DE CRIAR A JANELA
+        # ============================================================
+        if hasattr(sistema_principal, 'root'):
+            sistema_principal.root.update_idletasks()
+        
+        # ============================================================
+        # COPIA OS DADOS IMEDIATAMENTE
+        # ============================================================
+        self.dados_para_incluir = sistema_principal.dados_para_incluir.copy() if hasattr(sistema_principal, 'dados_para_incluir') else []
+        
+        logger.info(f"🔍 Visualizador iniciado com {len(self.dados_para_incluir)} lançamentos")
+        
         self.janela = tk.Toplevel(sistema_principal.root)
         configurar_janela(self.janela, "Visualização de Lançamentos Pendentes", 1000, 400)
 
@@ -274,7 +288,6 @@ class VisualizadorLancamentos:
             pass
 
         self.alteracoes = False
-        self.dados_para_incluir = []
         self._fechando = False
         self._dialogo_aberto = False
         
@@ -6646,25 +6659,89 @@ class SistemaEntradaDados:
 
     def visualizar_lancamentos(self):
         """Abre a janela de visualização de lançamentos pendentes"""
+        
+        # ============================================================
+        # FORÇA SINCRONIZAÇÃO ANTES DE ABRIR
+        # ============================================================
+        self.root.update_idletasks()
+        
+        # ============================================================
+        # LOG DETALHADO - DIAGNÓSTICO
+        # ============================================================
+        qtd_dados = len(self.dados_para_incluir) if hasattr(self, 'dados_para_incluir') else 0
+        logger.info("=" * 60)
+        logger.info("📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS")
+        logger.info("=" * 60)
+        logger.info(f"Cliente atual: {self.cliente_atual if hasattr(self, 'cliente_atual') else 'NÃO DEFINIDO'}")
+        logger.info(f"Dados disponíveis: {qtd_dados} lançamento(s)")
+        
+        if qtd_dados > 0:
+            logger.info("📋 Últimos 3 lançamentos:")
+            for i, lancamento in enumerate(self.dados_para_incluir[-3:], 1):
+                logger.info(f"  {i}. {lancamento.get('nome', 'N/A')} - {lancamento.get('referencia', 'N/A')} - R$ {lancamento.get('valor', '0.00')}")
+        else:
+            logger.warning("⚠️ NENHUM LANÇAMENTO PENDENTE!")
+        
+        # ============================================================
+        # VERIFICAR SE JÁ EXISTE VISUALIZADOR ABERTO
+        # ============================================================
         if hasattr(self, 'visualizador') and self.visualizador and hasattr(self.visualizador, 'janela') and self.visualizador.janela.winfo_exists():
-            # Se o visualizador já existir, apenas trazê-lo para frente
+            logger.info("🔄 Visualizador já existe - Atualizando dados e trazendo para frente")
+            
+            # ATUALIZAR OS DADOS NO VISUALIZADOR EXISTENTE
+            self.visualizador.dados_para_incluir = self.dados_para_incluir.copy()
+            self.visualizador.atualizar_dados(self.dados_para_incluir)
+            
+            # Trazer para frente
             self.visualizador.janela.lift()
             self.visualizador.janela.focus_force()
+            
+            logger.info(f"✅ Visualizador atualizado com {len(self.visualizador.dados_para_incluir)} lançamento(s)")
+            logger.info("=" * 60)
             return
         
-        # Criar nova instância do visualizador
+        # ============================================================
+        # CRIAR NOVA INSTÂNCIA DO VISUALIZADOR
+        # ============================================================
+        logger.info("🆕 Criando novo visualizador")
+        
+        # FORÇA MAIS UMA SINCRONIZAÇÃO ANTES DE CRIAR
+        self.root.update_idletasks()
+        
         self.visualizador = VisualizadorLancamentos(self)
         
         # Configurar callback para quando a janela for fechada
         self.visualizador.janela.protocol("WM_DELETE_WINDOW", self.on_visualizador_close)
         
-        # Atualizar dados
+        # ============================================================
+        # ATUALIZAR DADOS NO VISUALIZADOR
+        # ============================================================
         self.visualizador.dados_para_incluir = self.dados_para_incluir.copy()
         self.visualizador.atualizar_dados(self.dados_para_incluir)
+        
+        logger.info(f"✅ Visualizador criado com {len(self.visualizador.dados_para_incluir)} lançamento(s)")
+        
+        # ============================================================
+        # VALIDAÇÃO CRÍTICA - GARANTIR SINCRONIZAÇÃO
+        # ============================================================
+        if len(self.visualizador.dados_para_incluir) != qtd_dados:
+            logger.error("❌ ERRO DE SINCRONIZAÇÃO!")
+            logger.error(f"   Esperado: {qtd_dados} lançamentos")
+            logger.error(f"   Recebido: {len(self.visualizador.dados_para_incluir)} lançamentos")
+            logger.error("   Tentando recuperar...")
+            
+            # FORÇAR CÓPIA NOVAMENTE
+            self.visualizador.dados_para_incluir = self.dados_para_incluir.copy()
+            self.visualizador.atualizar_dados(self.dados_para_incluir)
+            
+            logger.info(f"🔄 Após recuperação: {len(self.visualizador.dados_para_incluir)} lançamentos")
         
         # Garantir que a janela fique na frente
         self.visualizador.janela.lift()
         self.visualizador.janela.focus_force()
+        
+        logger.info("✅ VISUALIZADOR ABERTO COM SUCESSO")
+        logger.info("=" * 60)
 
     def on_visualizador_close(self):
         """Manipula o fechamento da janela do visualizador"""
@@ -7456,6 +7533,11 @@ class SistemaEntradaDados:
             }
             self.dados_para_incluir.append(dados)
 
+            # FORÇA O PROCESSAMENTO IMEDIATO DOS EVENTOS PENDENTES
+            self.root.update_idletasks()
+            
+            logger.info(f"✅ Dados adicionados - Total: {len(self.dados_para_incluir)}")
+
             # Verificar se é um lançamento de TRANSPORTE e criar lançamento automático de CAFÉ
             if dados['tp_desp'] == '1' and dados['referencia'] == 'TRANSPORTE':
                 try:
@@ -7499,6 +7581,8 @@ class SistemaEntradaDados:
                 
                 # Desmarcar checkbox de materiais
                 self.tem_materiais_var.set(False)
+
+                self.root.update_idletasks()
                 
                 custom_messagebox("info", "Sucesso", "Dados adicionados com sucesso!")
                 
@@ -8192,24 +8276,24 @@ class SistemaEntradaDados:
                         import time
                         time.sleep(0.5)
                         
-                        for data_rel in datas_afetadas:
-                            try:
-                                logger.info(f"Verificando necessidade de recálculo para {data_rel}")
+                        # for data_rel in datas_afetadas:
+                        #     try:
+                        #         logger.info(f"Verificando necessidade de recálculo para {data_rel}")
                                 
-                                resultado = self.chamar_apos_operacao_lancamento(data_rel, "INCLUSAO")
+                        #         resultado = self.chamar_apos_operacao_lancamento(data_rel, "INCLUSAO")
                                 
-                                if resultado["sucesso"]:
-                                    if "taxas recalculadas" in resultado["mensagem"]:
-                                        datas_recalculadas.append(data_rel.strftime('%d/%m/%Y'))
-                                        logger.info(f"Taxas recalculadas para {data_rel}: {resultado['mensagem']}")
-                                    else:
-                                        logger.info(f"{data_rel}: {resultado['mensagem']}")
-                                else:
-                                    logger.warning(f"Erro no recálculo para {data_rel}: {resultado['mensagem']}")
+                        #         if resultado["sucesso"]:
+                        #             if "taxas recalculadas" in resultado["mensagem"]:
+                        #                 datas_recalculadas.append(data_rel.strftime('%d/%m/%Y'))
+                        #                 logger.info(f"Taxas recalculadas para {data_rel}: {resultado['mensagem']}")
+                        #             else:
+                        #                 logger.info(f"{data_rel}: {resultado['mensagem']}")
+                        #         else:
+                        #             logger.warning(f"Erro no recálculo para {data_rel}: {resultado['mensagem']}")
                                     
-                            except Exception as e:
-                                logger.error(f"Erro ao verificar recálculo para {data_rel}: {str(e)}")
-                                continue
+                        #     except Exception as e:
+                        #         logger.error(f"Erro ao verificar recálculo para {data_rel}: {str(e)}")
+                        #         continue
                     
                     # ==========================================
                     # MENSAGEM DE SUCESSO E LIMPEZA
