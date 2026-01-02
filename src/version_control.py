@@ -10,22 +10,10 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 5,
-    "patch": 2,
-    "release_date": "18/12/2025",
+    "patch": 3,
+    "release_date": "02/01/2026",
     "changes": [
-        "Incluída a opção de vincular várias medições a um único pagamento",
-        "Criação do relatório gerencial de contratos de empreiteiros",
-        "Incluído Data Fim nos contratos de empreiteiros",
-        "Alteração do texto 'Complemento de Caixa' para 'Despesas pagas pelo Caixa' no Relatório de Despesas",
-        "Incluída a opção de copiar as fases/eventos de um gestor para outro no contrato de administração de obra",
-        "Incluída a opção de vincular várias parcelas de contrato de administração de obra a um lançamento na planilha do cliente",
-        "Incluída a opção de contrato de medição apenas com prazo, sem data início e fim",
-        "Incluída a opção de importar medições originárias do Relatório de Medições",
-        "Inclusão e gestão de medições pendentes na Agenda",
-        "Relatório Quinzenal de Medições - em PDF, para incluir na documentação do cliente",
-        "Atualização do cadastro de Clientes para incluir metragem de alvará e separar campos do endereço",
-        "Correção de edição em massa no Gerenciador de Lançamentos",
-        "Inclusão de busca por múltiplos campos no Gerenciador de Lançamentos"
+        "Melhoria na sincronização do Visualizador de Lançamentos"
     ]
 }
 
