@@ -1011,7 +1011,7 @@ class SistemaRelatorios:
             # Verificar se o arquivo existe
             if not os.path.exists(ARQUIVO_CLIENTES):
                 logger.warning(f"Arquivo de clientes não encontrado: {ARQUIVO_CLIENTES}")
-                return ['Todos os Clientes']
+                return ['']
             
             # Carregar o arquivo usando pandas
             try:
