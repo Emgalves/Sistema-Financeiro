@@ -55,7 +55,8 @@ print("window_config importado pelo caminho alternativo")
 from src.config.utils import (
     formatar_cnpj_cpf,
     buscar_dados_bancarios_fornecedor,
-    validar_cnpj_cpf,
+    validar_cnpj,
+    validar_cpf,
     formatar_cnpj_cpf,
     validar_data,
     aplicar_formatacao_celula,
