@@ -542,25 +542,25 @@ class RelatorioUI:
             logger.error(f"Erro no processamento em lote: {str(e)}", exc_info=True)
             raise
         
-    def gerar_relatorio_lote():
-        try:
-            # Verificar se há arquivos selecionados
-            if not self.arquivo_path:  # Usar self em vez de variável global
-                self.status_label.config(text="Selecione um arquivo Excel!")
-                return
+    # def gerar_relatorio_lote():
+    #     try:
+    #         # Verificar se há arquivos selecionados
+    #         if not self.arquivo_path:  # Usar self em vez de variável global
+    #             self.status_label.config(text="Selecione um arquivo Excel!")
+    #             return
             
-            processar_lote(arquivos_selecionados)
+    #         processar_lote(arquivos_selecionados)
 
 
-            status_label.config(text="Relatórios em lote gerados com sucesso!")
+    #         status_label.config(text="Relatórios em lote gerados com sucesso!")
 
-            # Criar diálogo após gerar os relatórios em lote
-            # criar_dialog_relatorio_gerado(None, None)
+    #         # Criar diálogo após gerar os relatórios em lote
+    #         # criar_dialog_relatorio_gerado(None, None)
 
-        except Exception as e:
-            erro = str(e)
-            print(f"Erro ao gerar relatórios em lote: {erro}")
-            status_label.config(text=f"Erro: {erro}")
+    #     except Exception as e:
+    #         erro = str(e)
+    #         print(f"Erro ao gerar relatórios em lote: {erro}")
+    #         status_label.config(text=f"Erro: {erro}")
 
 
     def criar_dialog_relatorio_gerado(self, nome_cliente, data_formatada):
@@ -2046,7 +2046,12 @@ class RelatorioHandler:
                     valor = pd.to_numeric(valor, errors='coerce')
                     valor = 0 if pd.isna(valor) else valor
                     if coluna == 'DIAS':
-                        valor = str(int(valor))
+                        # Mostrar decimal apenas se houver (ex: 9.5)
+                        # Caso contrário, mostrar como inteiro (ex: 10)
+                        if valor % 1 == 0:
+                            valor = str(int(valor))
+                        else:
+                            valor = f"{valor:.1f}".replace('.', ',')
                     else:
                         valor = self.formatar_numero(valor)
                     linha_formatada.append(valor)
@@ -2962,24 +2967,24 @@ class RelatorioHandler:
             raise
 
     # Método para aplicar as correções na classe RelatorioHandler
-    def aplicar_correcoes_relatorio_handler(handler_instance):
-        """
-        Aplica as correções na instância do RelatorioHandler
-        """
-        # Backup dos métodos originais
-        handler_instance.carregar_dados_excel_original = handler_instance.carregar_dados_excel
-        handler_instance.processar_dados_original = handler_instance.processar_dados
-        handler_instance.criar_resumo_despesas_original = handler_instance.criar_resumo_despesas
-        handler_instance.gerar_relatorio_pdf_original = handler_instance.gerar_relatorio_pdf
+    # def aplicar_correcoes_relatorio_handler(handler_instance):
+    #     """
+    #     Aplica as correções na instância do RelatorioHandler
+    #     """
+    #     # Backup dos métodos originais
+    #     handler_instance.carregar_dados_excel_original = handler_instance.carregar_dados_excel
+    #     handler_instance.processar_dados_original = handler_instance.processar_dados
+    #     handler_instance.criar_resumo_despesas_original = handler_instance.criar_resumo_despesas
+    #     handler_instance.gerar_relatorio_pdf_original = handler_instance.gerar_relatorio_pdf
         
-        # Adicionar novos métodos
-        handler_instance.validar_integridade_dados = validar_integridade_dados.__get__(handler_instance)
-        handler_instance.carregar_dados_excel = carregar_dados_excel_com_validacao.__get__(handler_instance)
-        # handler_instance.processar_dados = processar_dados.__get__(handler_instance) 
-        # handler_instance.criar_resumo_despesas = criar_resumo_despesas_corrigido.__get__(handler_instance)
-        handler_instance.gerar_relatorio_pdf = gerar_relatorio_pdf_com_validacao.__get__(handler_instance)
+    #     # Adicionar novos métodos
+    #     handler_instance.validar_integridade_dados = validar_integridade_dados.__get__(handler_instance)
+    #     handler_instance.carregar_dados_excel = carregar_dados_excel_com_validacao.__get__(handler_instance)
+    #     # handler_instance.processar_dados = processar_dados.__get__(handler_instance) 
+    #     # handler_instance.criar_resumo_despesas = criar_resumo_despesas_corrigido.__get__(handler_instance)
+    #     handler_instance.gerar_relatorio_pdf = gerar_relatorio_pdf_com_validacao.__get__(handler_instance)
         
-        logger.info("Correções aplicadas ao RelatorioHandler")
+    #     logger.info("Correções aplicadas ao RelatorioHandler")
         
 class RelatorioLancamentosPendentes:
     def __init__(self):
@@ -3479,7 +3484,17 @@ class VisualizadorRelatorio:
                 if pd.isna(valor_num):
                     valor_num = 0
                 valor = f"R$ {self.formatar_valor(valor_num)}"
-                dias = str(row.get('DIAS', ''))[:7]
+                
+                # Formatar dias: mostrar decimal apenas se necessário
+                dias_num = pd.to_numeric(row.get('DIAS', 0), errors='coerce')
+                if pd.isna(dias_num):
+                    dias_num = 0
+                if dias_num % 1 == 0:
+                    dias = str(int(dias_num))
+                else:
+                    dias = f"{dias_num:.1f}".replace('.', ',')
+                dias = dias[:7]
+                
                 preview_text.append(f"{nome.ljust(25)} {dias.ljust(8)} {valor.rjust(15)}")
         
         # Outras despesas (tipos 2-7)
