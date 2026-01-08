@@ -8450,3 +8450,996 @@
 2025-12-30 13:07:36,379 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
 2025-12-30 13:08:26,903 - INFO - Abrindo gestão de medições
 2025-12-30 13:11:42,589 - INFO - Sistema encerrado pelo usuário
+2026-01-02 19:23:38,122 - INFO - Configurações importadas com sucesso via src.config
+2026-01-02 19:23:38,156 - INFO - Configurações importadas com sucesso
+2026-01-02 19:23:38,166 - INFO - Configurações do sistema importadas com sucesso
+2026-01-02 19:23:39,078 - INFO - Sistema iniciado em modo: TESTE
+2026-01-02 19:24:22,827 - INFO - Abrindo sistema de entrada de dados
+2026-01-02 19:24:24,224 - INFO - Proteções contra perda de dados configuradas
+2026-01-02 19:24:24,523 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-02 19:24:28,038 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-02 19:24:34,819 - INFO - Voltando ao menu principal
+2026-01-02 19:24:34,919 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-02 19:24:34,965 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-02 19:24:35,231 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-02 19:28:04,634 - INFO - Configurações importadas com sucesso via src.config
+2026-01-02 19:28:04,654 - INFO - Configurações importadas com sucesso
+2026-01-02 19:28:04,655 - INFO - Configurações do sistema importadas com sucesso
+2026-01-02 19:28:05,341 - INFO - Sistema iniciado em modo: TESTE
+2026-01-02 19:28:07,384 - INFO - Abrindo sistema de entrada de dados
+2026-01-02 19:28:08,677 - INFO - Proteções contra perda de dados configuradas
+2026-01-02 19:28:08,926 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-02 19:28:11,543 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-02 19:28:33,202 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-01-02 19:28:33,204 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-02 19:28:34,652 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2026-01-02 19:28:34,653 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2026-01-02 19:28:34,655 - INFO - Usando dados_para_incluir existentes
+2026-01-02 19:28:34,656 - INFO - Total de registros a processar: 1
+2026-01-02 19:28:34,658 - INFO - Datas que serão afetadas pela inserção: ['05/01/2026']
+2026-01-02 19:28:34,660 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2026-01-02 19:28:34,661 - INFO - Verificando integridade dos IDs antes da inserção
+2026-01-02 19:28:35,142 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-02 19:28:35,143 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-02 19:28:35,143 - INFO - Dados novos: FOLHA DP | FOLHA DP | NF:  | R$ 910.80 | 05/01/2026
+2026-01-02 19:28:35,158 - INFO - ✅ Nenhuma duplicata encontrada para: FOLHA DP - FOLHA DP - NF: 
+2026-01-02 19:28:35,160 - INFO - Lançamento inserido com ID 206 na linha 200
+2026-01-02 19:28:35,716 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-01-02 19:28:38,085 - INFO - Limpando 1 registros salvos da visualização
+2026-01-02 19:28:38,086 - INFO - Dados salvos removidos com sucesso da visualização
+2026-01-02 19:28:50,878 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-01-02 19:28:50,880 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-02 19:28:52,477 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2026-01-02 19:28:52,478 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2026-01-02 19:28:52,479 - INFO - Usando dados_para_incluir existentes
+2026-01-02 19:28:52,480 - INFO - Total de registros a processar: 1
+2026-01-02 19:28:52,481 - INFO - Datas que serão afetadas pela inserção: ['05/01/2026']
+2026-01-02 19:28:52,481 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2026-01-02 19:28:52,482 - INFO - Verificando integridade dos IDs antes da inserção
+2026-01-02 19:28:52,979 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-02 19:28:52,979 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-02 19:28:52,980 - INFO - Dados novos: MOTOBOY | MOTOBOY | NF:  | R$ 146.00 | 05/01/2026
+2026-01-02 19:28:52,994 - INFO - ✅ Nenhuma duplicata encontrada para: MOTOBOY - MOTOBOY - NF: 
+2026-01-02 19:28:52,996 - INFO - Lançamento inserido com ID 207 na linha 201
+2026-01-02 19:28:53,337 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-01-02 19:28:55,564 - INFO - Limpando 1 registros salvos da visualização
+2026-01-02 19:28:55,565 - INFO - Dados salvos removidos com sucesso da visualização
+2026-01-02 19:29:04,432 - INFO - Voltando ao menu principal
+2026-01-02 19:29:04,517 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-02 19:29:04,538 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-02 19:29:04,745 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-02 19:29:13,952 - INFO - Abrindo sistema de entrada de dados
+2026-01-02 19:29:14,610 - INFO - Proteções contra perda de dados configuradas
+2026-01-02 19:29:14,696 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-02 19:29:18,417 - INFO - Cliente selecionado com sucesso: EDIGAR BATISTA FERREIRA
+2026-01-02 19:29:23,128 - INFO - Encerrando Sistema de Entrada de Dados
+2026-01-02 19:29:23,128 - INFO - Voltando ao menu principal
+2026-01-02 19:29:23,242 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-02 19:29:23,327 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-02 19:29:23,570 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-02 19:32:00,093 - INFO - Sistema encerrado pelo usuário
+2026-01-02 19:32:21,477 - INFO - Configurações importadas com sucesso via src.config
+2026-01-02 19:32:21,503 - INFO - Configurações importadas com sucesso
+2026-01-02 19:32:21,506 - INFO - Configurações do sistema importadas com sucesso
+2026-01-02 19:32:22,130 - INFO - Sistema iniciado em modo: TESTE
+2026-01-02 19:32:26,029 - INFO - Abrindo sistema de relatórios
+2026-01-02 19:32:47,389 - INFO - Abrindo sistema de entrada de dados
+2026-01-02 19:32:49,028 - INFO - Proteções contra perda de dados configuradas
+2026-01-02 19:32:49,376 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-02 19:32:51,692 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-02 19:32:57,037 - INFO - Voltando ao menu principal
+2026-01-02 19:32:57,142 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-02 19:32:57,193 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-02 19:32:57,420 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-02 19:32:59,685 - INFO - Abrindo sistema de entrada de dados
+2026-01-02 19:33:00,489 - INFO - Proteções contra perda de dados configuradas
+2026-01-02 19:33:01,096 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-02 19:33:03,176 - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2026-01-02 19:33:07,285 - INFO - Encerrando Sistema de Entrada de Dados
+2026-01-02 19:33:07,286 - INFO - Voltando ao menu principal
+2026-01-02 19:33:07,393 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-02 19:33:07,428 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-02 19:33:07,607 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-02 19:36:50,267 - INFO - Sistema encerrado pelo usuário
+2026-01-03 07:39:28,335 - INFO - Configurações importadas com sucesso via src.config
+2026-01-03 07:39:28,429 - INFO - Configurações importadas com sucesso
+2026-01-03 07:39:28,474 - INFO - Configurações do sistema importadas com sucesso
+2026-01-03 07:39:30,517 - INFO - Sistema iniciado em modo: TESTE
+2026-01-03 07:39:36,197 - INFO - Abrindo sistema de entrada de dados
+2026-01-03 07:39:39,323 - INFO - Proteções contra perda de dados configuradas
+2026-01-03 07:39:39,632 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-03 07:39:41,626 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-03 07:39:44,933 - INFO - Voltando ao menu principal
+2026-01-03 07:39:45,028 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-03 07:39:45,083 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-03 07:39:45,351 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-03 07:39:47,221 - INFO - Abrindo sistema de entrada de dados
+2026-01-03 07:39:47,891 - INFO - Proteções contra perda de dados configuradas
+2026-01-03 07:39:48,000 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-03 07:39:51,127 - INFO - Cliente selecionado com sucesso: EDIGAR BATISTA FERREIRA
+2026-01-05 09:39:21,286 - INFO - Configurações importadas com sucesso via src.config
+2026-01-05 09:39:21,320 - INFO - Configurações importadas com sucesso
+2026-01-05 09:39:21,348 - INFO - Configurações do sistema importadas com sucesso
+2026-01-05 09:39:23,340 - INFO - Sistema iniciado em modo: TESTE
+2026-01-05 09:39:26,931 - INFO - Abrindo sistema de entrada de dados
+2026-01-05 09:39:28,233 - INFO - Proteções contra perda de dados configuradas
+2026-01-05 09:39:28,594 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-05 09:39:30,674 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-01-05 10:07:38,775 - INFO - ==================================================
+2026-01-05 10:07:38,777 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-05 10:07:38,778 - INFO - ==================================================
+2026-01-05 10:07:38,778 - INFO - Fornecedor: GILSON LEITE DA COSTA
+2026-01-05 10:07:39,828 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 382!
+2026-01-05 10:07:39,829 - INFO - Dados carregados: GILSON LEITE DA COSTA
+2026-01-05 10:07:40,947 - INFO - Campos preenchidos com sucesso!
+2026-01-05 10:07:40,950 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-05 10:07:40,952 - INFO - ==================================================
+2026-01-05 10:07:53,955 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 382!
+2026-01-07 09:42:12,769 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 09:42:12,787 - INFO - Configurações importadas com sucesso
+2026-01-07 09:42:12,788 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 09:42:14,242 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 09:42:22,137 - INFO - Abrindo sistema de relatórios
+2026-01-07 09:44:42,505 - INFO - Sistema encerrado pelo usuário
+2026-01-07 09:54:53,951 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 09:54:53,977 - INFO - Configurações importadas com sucesso
+2026-01-07 09:54:53,978 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 09:54:55,734 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 09:54:58,842 - INFO - Abrindo sistema de relatórios
+2026-01-07 09:56:47,135 - INFO - Sistema encerrado pelo usuário
+2026-01-07 11:25:59,432 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 11:25:59,906 - INFO - Configurações importadas com sucesso
+2026-01-07 11:25:59,931 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 11:26:00,898 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 11:26:02,553 - INFO - Abrindo sistema de relatórios
+2026-01-07 11:30:50,009 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 11:30:51,025 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 11:30:51,344 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 11:30:54,020 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-07 11:37:06,653 - INFO - Voltando ao menu principal
+2026-01-07 11:37:06,820 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-07 11:37:06,884 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-07 11:37:07,041 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-07 11:37:15,050 - INFO - Sistema encerrado pelo usuário
+2026-01-07 11:37:51,193 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 11:37:51,217 - INFO - Configurações importadas com sucesso
+2026-01-07 11:37:51,218 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 11:37:51,853 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 11:37:53,233 - INFO - Abrindo sistema de relatórios
+2026-01-07 11:41:44,277 - INFO - Sistema encerrado pelo usuário
+2026-01-07 11:41:57,989 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 11:41:58,007 - INFO - Configurações importadas com sucesso
+2026-01-07 11:41:58,008 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 11:41:58,621 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 11:42:00,382 - INFO - Abrindo sistema de relatórios
+2026-01-07 11:42:15,733 - INFO - Sistema encerrado pelo usuário
+2026-01-07 14:04:20,507 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 14:04:20,533 - INFO - Configurações importadas com sucesso
+2026-01-07 14:04:20,534 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 14:04:21,536 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 14:04:31,877 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 14:04:33,260 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 14:04:33,529 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 14:04:36,342 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-07 14:05:15,028 - INFO - Voltando ao menu principal
+2026-01-07 14:05:15,114 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-07 14:05:15,117 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-07 14:05:15,341 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-07 14:05:17,835 - INFO - Sistema encerrado pelo usuário
+2026-01-07 14:39:10,920 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 14:39:10,938 - INFO - Configurações importadas com sucesso
+2026-01-07 14:39:10,939 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 14:39:11,549 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 14:39:22,087 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 14:39:23,429 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 14:39:23,680 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 14:41:56,308 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-07 14:43:18,652 - INFO - Voltando ao menu principal
+2026-01-07 14:43:18,727 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-07 14:43:18,769 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-07 14:43:18,956 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-07 14:43:22,285 - INFO - Sistema encerrado pelo usuário
+2026-01-07 14:54:42,565 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 14:54:42,600 - INFO - Configurações importadas com sucesso
+2026-01-07 14:54:42,603 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 14:54:43,399 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 14:54:45,581 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 14:54:46,866 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 14:54:47,129 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 15:02:02,855 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-07 15:02:29,280 - INFO - Voltando ao menu principal
+2026-01-07 15:02:29,365 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-07 15:02:29,411 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-07 15:02:29,845 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-07 15:02:31,000 - INFO - Abrindo gestão de medições
+2026-01-07 15:02:31,524 - ERROR - Erro ao abrir gestão de medições: cannot import name 'validar_cnpj_cpf' from 'src.config.utils' (C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\config\utils.py)
+2026-01-07 15:04:25,309 - INFO - Sistema encerrado pelo usuário
+2026-01-07 15:05:11,268 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 15:05:11,283 - INFO - Configurações importadas com sucesso
+2026-01-07 15:05:11,285 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 15:05:11,979 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 15:05:14,710 - INFO - Abrindo gestão de medições
+2026-01-07 15:27:22,481 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 15:27:23,916 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 15:27:24,163 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 15:28:24,312 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-01-07 15:28:42,202 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-07 15:28:53,016 - INFO - ==================================================
+2026-01-07 15:28:53,016 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 15:28:53,017 - INFO - ==================================================
+2026-01-07 15:28:53,018 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-01-07 15:28:54,025 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-07 15:28:54,026 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-01-07 15:28:54,027 - INFO - Campos preenchidos com sucesso!
+2026-01-07 15:28:54,030 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 15:28:54,031 - INFO - ==================================================
+2026-01-07 15:29:25,062 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-07 15:29:29,855 - INFO - ==================================================
+2026-01-07 15:29:29,856 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 15:29:29,857 - INFO - ==================================================
+2026-01-07 15:29:29,857 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-01-07 15:29:30,849 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-07 15:29:30,850 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-01-07 15:29:30,851 - INFO - Campos preenchidos com sucesso!
+2026-01-07 15:29:30,853 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 15:29:30,854 - INFO - ==================================================
+2026-01-07 15:48:40,132 - INFO - Voltando ao menu principal
+2026-01-07 15:48:40,533 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-07 15:48:40,614 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-07 15:48:40,854 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-07 15:48:43,875 - INFO - Sistema encerrado pelo usuário
+2026-01-07 15:49:04,576 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 15:49:04,596 - INFO - Configurações importadas com sucesso
+2026-01-07 15:49:04,597 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 15:49:05,236 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 15:49:06,603 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 15:49:07,941 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 15:49:08,197 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 15:49:11,034 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-07 15:49:18,819 - INFO - ==================================================
+2026-01-07 15:49:18,819 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 15:49:18,820 - INFO - ==================================================
+2026-01-07 15:49:18,821 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-01-07 15:49:19,743 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-07 15:49:19,744 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-01-07 15:49:19,745 - INFO - ✓ Referência preenchida: PLOTAGENS
+2026-01-07 15:49:19,746 - INFO - Campos preenchidos com sucesso!
+2026-01-07 15:49:19,748 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 15:49:19,749 - INFO - ==================================================
+2026-01-07 15:51:02,810 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 15:51:02,812 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-07 15:51:04,505 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 1
+2026-01-07 15:51:13,242 - INFO - ==================================================
+2026-01-07 15:51:13,242 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 15:51:13,243 - INFO - ==================================================
+2026-01-07 15:51:13,244 - INFO - Fornecedor: CREA MG
+2026-01-07 15:51:14,242 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 15:51:14,243 - INFO - Dados carregados: CREA MG
+2026-01-07 15:51:15,269 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 15:51:15,271 - INFO - Campos preenchidos com sucesso!
+2026-01-07 15:51:33,241 - INFO - ==================================================
+2026-01-07 15:51:33,242 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 15:51:33,243 - INFO - ==================================================
+2026-01-07 15:51:33,243 - INFO - Fornecedor: CREA MG
+2026-01-07 15:51:34,258 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 15:51:34,259 - INFO - Dados carregados: CREA MG
+2026-01-07 15:51:35,260 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 15:51:35,261 - INFO - Campos preenchidos com sucesso!
+2026-01-07 15:51:37,169 - INFO - ==================================================
+2026-01-07 15:51:37,170 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 15:51:37,171 - INFO - ==================================================
+2026-01-07 15:51:37,172 - INFO - Fornecedor: CREA MG
+2026-01-07 15:51:38,134 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 15:51:38,134 - INFO - Dados carregados: CREA MG
+2026-01-07 15:51:39,193 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 15:51:39,194 - INFO - Campos preenchidos com sucesso!
+2026-01-07 15:51:40,329 - INFO - ==================================================
+2026-01-07 15:51:40,330 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 15:51:40,331 - INFO - ==================================================
+2026-01-07 15:51:40,331 - INFO - Fornecedor: CREA MG
+2026-01-07 15:51:41,326 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 15:51:41,326 - INFO - Dados carregados: CREA MG
+2026-01-07 15:51:42,506 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 15:51:42,507 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:00:52,264 - INFO - ============================================================
+2026-01-07 16:00:52,297 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-07 16:00:52,302 - INFO - ============================================================
+2026-01-07 16:00:52,303 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-07 16:00:52,304 - INFO - Dados disponíveis: 1 lançamento(s)
+2026-01-07 16:00:52,306 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-07 16:00:52,310 - INFO -   1. ANCORA PAPELARIA - PLOTAGENS - R$ 496.00
+2026-01-07 16:00:52,314 - INFO - 🆕 Criando novo visualizador
+2026-01-07 16:00:52,328 - INFO - 🔍 Visualizador iniciado com 1 lançamentos
+2026-01-07 16:00:52,724 - INFO - ✅ Visualizador criado com 1 lançamento(s)
+2026-01-07 16:00:52,766 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-07 16:00:52,767 - INFO - ============================================================
+2026-01-07 16:00:55,338 - INFO - Iniciando envio de dados - Cliente: GUILHERME LEITE, Registros: 1
+2026-01-07 16:00:55,356 - INFO - Obtendo dados do visualizador
+2026-01-07 16:00:55,357 - INFO - Total de registros a processar: 1
+2026-01-07 16:00:55,377 - INFO - Datas que serão afetadas pela inserção: ['05/10/2025']
+2026-01-07 16:00:55,381 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\GUILHERME LEITE.xlsx
+2026-01-07 16:00:55,386 - INFO - Verificando integridade dos IDs antes da inserção
+2026-01-07 16:00:56,213 - INFO - Coluna ID_LANCAMENTO criada
+2026-01-07 16:00:56,340 - INFO - Cabeçalho 'ETAPA_OBRA' adicionado na coluna Q (17)
+2026-01-07 16:00:56,340 - INFO - Cabeçalho 'INSUMO' adicionado na coluna R (18)
+2026-01-07 16:00:56,342 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-07 16:00:56,343 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-07 16:00:56,344 - INFO - Dados novos: ANCORA PAPELARIA | PLOTAGENS | NF:  | R$ 496.00 | 05/10/2025
+2026-01-07 16:00:56,345 - INFO - ✅ Nenhuma duplicata encontrada para: ANCORA PAPELARIA - PLOTAGENS - NF: 
+2026-01-07 16:00:56,348 - INFO - Lançamento inserido com ID 1 na linha 2
+2026-01-07 16:00:56,936 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-01-07 16:00:59,300 - INFO - Limpando 1 registros salvos da visualização
+2026-01-07 16:00:59,322 - INFO - Visualizador fechado - todos os registros foram processados
+2026-01-07 16:00:59,325 - INFO - Dados salvos removidos com sucesso da visualização
+2026-01-07 16:01:03,029 - INFO - Voltando ao menu principal
+2026-01-07 16:01:03,162 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-07 16:01:03,170 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-07 16:01:03,394 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-07 16:01:05,914 - INFO - Sistema encerrado pelo usuário
+2026-01-07 16:01:27,637 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 16:01:27,657 - INFO - Configurações importadas com sucesso
+2026-01-07 16:01:27,658 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 16:01:28,409 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 16:01:30,267 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 16:01:31,974 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 16:01:32,263 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 16:01:34,618 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-07 16:01:42,715 - INFO - ==================================================
+2026-01-07 16:01:42,716 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:01:42,716 - INFO - ==================================================
+2026-01-07 16:01:42,717 - INFO - Fornecedor: CREA MG
+2026-01-07 16:01:43,647 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 16:01:43,648 - INFO - Dados carregados: CREA MG
+2026-01-07 16:01:44,650 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 16:01:44,651 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:01:44,654 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:01:44,654 - INFO - ==================================================
+2026-01-07 16:02:30,627 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:02:30,629 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-07 16:02:32,252 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 1
+2026-01-07 16:02:34,002 - INFO - ==================================================
+2026-01-07 16:02:34,003 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:02:34,004 - INFO - ==================================================
+2026-01-07 16:02:34,004 - INFO - Fornecedor: CREA MG
+2026-01-07 16:02:35,056 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 16:02:35,057 - INFO - Dados carregados: CREA MG
+2026-01-07 16:02:36,074 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 212!
+2026-01-07 16:02:36,075 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:02:36,077 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:02:36,078 - INFO - ==================================================
+2026-01-07 16:03:02,138 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:03:02,140 - INFO - ✅ Dados adicionados - Total: 2
+2026-01-07 16:03:04,201 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 2
+2026-01-07 16:03:15,242 - INFO - ==================================================
+2026-01-07 16:03:15,243 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:03:15,244 - INFO - ==================================================
+2026-01-07 16:03:15,244 - INFO - Fornecedor: CASA DAS LONAS LTDA
+2026-01-07 16:03:16,272 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 160!
+2026-01-07 16:03:16,273 - INFO - Dados carregados: CASA DAS LONAS LTDA
+2026-01-07 16:03:17,253 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 160!
+2026-01-07 16:03:17,254 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:03:17,256 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:03:17,257 - INFO - ==================================================
+2026-01-07 16:03:49,874 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:03:49,875 - INFO - ✅ Dados adicionados - Total: 3
+2026-01-07 16:03:50,945 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 3
+2026-01-07 16:04:03,297 - INFO - ==================================================
+2026-01-07 16:04:03,298 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:04:03,299 - INFO - ==================================================
+2026-01-07 16:04:03,299 - INFO - Fornecedor: LEANDRO RIBEIRO MARTINS
+2026-01-07 16:04:04,329 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 545!
+2026-01-07 16:04:04,330 - INFO - Dados carregados: LEANDRO RIBEIRO MARTINS
+2026-01-07 16:04:04,331 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:04:04,332 - INFO - ✓ Referência preenchida: MOTOBOY
+2026-01-07 16:04:04,334 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:04:04,334 - INFO - ==================================================
+2026-01-07 16:04:28,545 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:04:28,547 - INFO - ✅ Dados adicionados - Total: 4
+2026-01-07 16:04:31,840 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 4
+2026-01-07 16:04:49,777 - INFO - ==================================================
+2026-01-07 16:04:49,778 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:04:49,778 - INFO - ==================================================
+2026-01-07 16:04:49,779 - INFO - Fornecedor: VITOR HENRIQUE
+2026-01-07 16:04:50,821 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 926!
+2026-01-07 16:04:50,822 - INFO - Dados carregados: VITOR HENRIQUE
+2026-01-07 16:04:50,823 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:04:50,825 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:04:50,826 - INFO - ==================================================
+2026-01-07 16:05:22,809 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:05:22,810 - INFO - ✅ Dados adicionados - Total: 5
+2026-01-07 16:05:23,840 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 5
+2026-01-07 16:05:41,329 - INFO - ==================================================
+2026-01-07 16:05:41,329 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:05:41,330 - INFO - ==================================================
+2026-01-07 16:05:41,331 - INFO - Fornecedor: WELINGTON GOMES PAIVA
+2026-01-07 16:05:42,375 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 942!
+2026-01-07 16:05:42,375 - INFO - Dados carregados: WELINGTON GOMES PAIVA
+2026-01-07 16:05:42,376 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:05:42,379 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:05:42,379 - INFO - ==================================================
+2026-01-07 16:06:05,192 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:06:05,194 - INFO - ✅ Dados adicionados - Total: 6
+2026-01-07 16:06:06,256 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 6
+2026-01-07 16:06:16,577 - INFO - ============================================================
+2026-01-07 16:06:16,578 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-07 16:06:16,579 - INFO - ============================================================
+2026-01-07 16:06:16,579 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-07 16:06:16,580 - INFO - Dados disponíveis: 6 lançamento(s)
+2026-01-07 16:06:16,580 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-07 16:06:16,581 - INFO -   1. LEANDRO RIBEIRO MARTINS - MOTOBOY - R$ 15.00
+2026-01-07 16:06:16,581 - INFO -   2. VITOR HENRIQUE - DIÁRIA - R$ 1760.00
+2026-01-07 16:06:16,582 - INFO -   3. WELINGTON GOMES PAIVA - DIÁRIA - R$ 1600.00
+2026-01-07 16:06:16,583 - INFO - 🆕 Criando novo visualizador
+2026-01-07 16:06:16,583 - INFO - 🔍 Visualizador iniciado com 6 lançamentos
+2026-01-07 16:06:16,710 - INFO - ✅ Visualizador criado com 6 lançamento(s)
+2026-01-07 16:06:16,711 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-07 16:06:16,712 - INFO - ============================================================
+2026-01-07 16:12:02,053 - INFO - Iniciando envio de dados - Cliente: GUILHERME LEITE, Registros: 4
+2026-01-07 16:12:02,054 - INFO - Obtendo dados do visualizador
+2026-01-07 16:12:02,055 - INFO - Total de registros a processar: 4
+2026-01-07 16:12:02,055 - INFO - Datas que serão afetadas pela inserção: ['05/10/2025']
+2026-01-07 16:12:02,056 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\GUILHERME LEITE.xlsx
+2026-01-07 16:12:02,057 - INFO - Verificando integridade dos IDs antes da inserção
+2026-01-07 16:12:02,261 - INFO - Coluna ID_LANCAMENTO criada
+2026-01-07 16:12:02,361 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-07 16:12:02,362 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-07 16:12:02,362 - INFO - Dados novos: CREA MG | CREA - ART VINICIUS RINALDI | NF:  | R$ 99.64 | 05/10/2025
+2026-01-07 16:12:02,363 - INFO - ✅ Nenhuma duplicata encontrada para: CREA MG - CREA - ART VINICIUS RINALDI - NF: 
+2026-01-07 16:12:02,364 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-07 16:12:02,364 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-07 16:12:02,365 - INFO - Dados novos: CREA MG | CREA - ART ROGÉRIO VASCONCELOS | NF:  | R$ 262.55 | 05/10/2025
+2026-01-07 16:12:02,367 - INFO - ✅ Nenhuma duplicata encontrada para: CREA MG - CREA - ART ROGÉRIO VASCONCELOS - NF: 
+2026-01-07 16:12:02,368 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-07 16:12:02,368 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-07 16:12:02,369 - INFO - Dados novos: CASA DAS LONAS LTDA | LONA | NF:  | R$ 631.60 | 30/09/2025
+2026-01-07 16:12:02,370 - INFO - ✅ Nenhuma duplicata encontrada para: CASA DAS LONAS LTDA - LONA - NF: 
+2026-01-07 16:12:02,370 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-07 16:12:02,371 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-07 16:12:02,372 - INFO - Dados novos: LEANDRO RIBEIRO MARTINS | MOTOBOY | NF:  | R$ 15.00 | 30/09/2025
+2026-01-07 16:12:02,372 - INFO - ✅ Nenhuma duplicata encontrada para: LEANDRO RIBEIRO MARTINS - MOTOBOY - NF: 
+2026-01-07 16:12:02,374 - INFO - Lançamento inserido com ID 2 na linha 3
+2026-01-07 16:12:02,378 - INFO - Lançamento inserido com ID 3 na linha 4
+2026-01-07 16:12:02,379 - INFO - Lançamento inserido com ID 4 na linha 5
+2026-01-07 16:12:02,380 - INFO - Lançamento inserido com ID 5 na linha 6
+2026-01-07 16:12:02,599 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-01-07 16:12:05,422 - INFO - Limpando 4 registros salvos da visualização
+2026-01-07 16:12:05,439 - INFO - Visualizador fechado - todos os registros foram processados
+2026-01-07 16:12:05,448 - INFO - Dados salvos removidos com sucesso da visualização
+2026-01-07 16:22:35,295 - INFO - Voltando ao menu principal
+2026-01-07 16:22:35,427 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-07 16:22:35,431 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-07 16:22:35,615 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-07 16:22:38,556 - INFO - Sistema encerrado pelo usuário
+2026-01-07 16:40:04,152 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 16:40:04,173 - INFO - Configurações importadas com sucesso
+2026-01-07 16:40:04,176 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 16:40:05,037 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 16:42:12,770 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 16:42:14,195 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 16:42:14,460 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 16:42:21,168 - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-01-07 16:42:23,860 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-07 16:42:38,937 - INFO - ==================================================
+2026-01-07 16:42:38,938 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:42:38,939 - INFO - ==================================================
+2026-01-07 16:42:38,940 - INFO - Fornecedor: VITOR HENRIQUE
+2026-01-07 16:42:39,891 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 926!
+2026-01-07 16:42:39,892 - INFO - Dados carregados: VITOR HENRIQUE
+2026-01-07 16:42:39,893 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:42:39,896 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:42:39,896 - INFO - ==================================================
+2026-01-07 16:43:13,329 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:43:13,331 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-07 16:43:14,728 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 1
+2026-01-07 16:43:28,137 - INFO - ==================================================
+2026-01-07 16:43:28,137 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:43:28,138 - INFO - ==================================================
+2026-01-07 16:43:28,139 - INFO - Fornecedor: WELINGTON GOMES PAIVA
+2026-01-07 16:43:29,179 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 942!
+2026-01-07 16:43:29,180 - INFO - Dados carregados: WELINGTON GOMES PAIVA
+2026-01-07 16:43:29,181 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:43:29,183 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:43:29,184 - INFO - ==================================================
+2026-01-07 16:43:49,465 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:43:49,466 - INFO - ✅ Dados adicionados - Total: 2
+2026-01-07 16:43:50,768 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 2
+2026-01-07 16:44:03,040 - INFO - ==================================================
+2026-01-07 16:44:03,041 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:44:03,042 - INFO - ==================================================
+2026-01-07 16:44:03,042 - INFO - Fornecedor: WANDERSON ROMUALDO DE SOUZA
+2026-01-07 16:44:04,067 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 939!
+2026-01-07 16:44:04,067 - INFO - Dados carregados: WANDERSON ROMUALDO DE SOUZA
+2026-01-07 16:44:04,068 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:44:04,071 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:44:04,071 - INFO - ==================================================
+2026-01-07 16:44:38,120 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:44:38,122 - INFO - ✅ Dados adicionados - Total: 3
+2026-01-07 16:44:39,503 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 3
+2026-01-07 16:44:42,449 - INFO - ============================================================
+2026-01-07 16:44:42,450 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-07 16:44:42,450 - INFO - ============================================================
+2026-01-07 16:44:42,451 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-07 16:44:42,452 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-01-07 16:44:42,453 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-07 16:44:42,453 - INFO -   1. VITOR HENRIQUE - DIÁRIA - R$ 1760.00
+2026-01-07 16:44:42,454 - INFO -   2. WELINGTON GOMES PAIVA - DIÁRIA - R$ 1600.00
+2026-01-07 16:44:42,455 - INFO -   3. WANDERSON ROMUALDO DE SOUZA - DIÁRIA - R$ 1200.00
+2026-01-07 16:44:42,455 - INFO - 🆕 Criando novo visualizador
+2026-01-07 16:44:42,456 - INFO - 🔍 Visualizador iniciado com 3 lançamentos
+2026-01-07 16:44:42,587 - INFO - ✅ Visualizador criado com 3 lançamento(s)
+2026-01-07 16:44:42,588 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-07 16:44:42,589 - INFO - ============================================================
+2026-01-07 16:45:07,432 - INFO - ============================================================
+2026-01-07 16:45:07,433 - INFO - INICIANDO EDIÇÃO EM MASSA
+2026-01-07 16:45:07,433 - INFO - Quantidade de lançamentos: 2
+2026-01-07 16:45:07,434 - INFO - Campos marcados para edição: ['data_rel', 'dt_vencto']
+2026-01-07 16:45:26,741 - INFO - Aplicando alterações nos lançamentos...
+2026-01-07 16:45:26,743 - ERROR -   ✗ Falha ao atualizar lançamento 0
+2026-01-07 16:45:26,747 - ERROR -   ✗ Falha ao atualizar lançamento 1
+2026-01-07 16:45:26,749 - INFO - Edição concluída: 0 sucessos, 2 erros
+2026-01-07 16:45:26,750 - INFO - ============================================================
+2026-01-07 16:46:15,455 - INFO - ============================================================
+2026-01-07 16:46:15,456 - INFO - INICIANDO SALVAMENTO DE EDIÇÃO INDIVIDUAL
+2026-01-07 16:46:15,456 - INFO - Índice do lançamento: 0
+2026-01-07 16:46:15,457 - INFO - Dados para atualização:
+2026-01-07 16:46:15,458 - INFO -   data: 20/10/2025
+2026-01-07 16:46:15,459 - INFO -   tp_desp: 1
+2026-01-07 16:46:15,459 - INFO -   cnpj_cpf: 319.952.737-79
+2026-01-07 16:46:15,460 - INFO -   nome: VITOR HENRIQUE
+2026-01-07 16:46:15,460 - INFO -   forma_pagamento: PIX
+2026-01-07 16:46:15,461 - INFO -   referencia: DIÁRIA
+2026-01-07 16:46:15,462 - INFO -   etapa_obra: 
+2026-01-07 16:46:15,463 - INFO -   insumo: 
+2026-01-07 16:46:15,463 - INFO -   nf: 
+2026-01-07 16:46:15,464 - INFO -   vr_unit: 160.00
+2026-01-07 16:46:15,465 - INFO -   dias: 11.0
+2026-01-07 16:46:15,465 - INFO -   valor: 1760.00
+2026-01-07 16:46:15,466 - INFO -   dt_vencto: 20/10/2025
+2026-01-07 16:46:15,467 - INFO -   categoria: MO
+2026-01-07 16:46:15,469 - INFO -   dados_bancarios: PIX: 31995273779
+2026-01-07 16:46:15,473 - INFO -   observacao: 
+2026-01-07 16:46:15,474 - ERROR - ✗ Callback retornou False - falha ao salvar
+2026-01-07 16:46:15,475 - ERROR - ============================================================
+2026-01-07 16:54:33,360 - INFO - ============================================================
+2026-01-07 16:54:33,368 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-07 16:54:33,371 - INFO - ============================================================
+2026-01-07 16:54:33,373 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-07 16:54:33,374 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-01-07 16:54:33,376 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-07 16:54:33,377 - INFO -   1. VITOR HENRIQUE - DIÁRIA - R$ 1760.00
+2026-01-07 16:54:33,377 - INFO -   2. WELINGTON GOMES PAIVA - DIÁRIA - R$ 1600.00
+2026-01-07 16:54:33,378 - INFO -   3. WANDERSON ROMUALDO DE SOUZA - DIÁRIA - R$ 1200.00
+2026-01-07 16:54:33,381 - INFO - 🔄 Visualizador já existe - Atualizando dados e trazendo para frente
+2026-01-07 16:54:33,396 - INFO - ✅ Visualizador atualizado com 3 lançamento(s)
+2026-01-07 16:54:33,401 - INFO - ============================================================
+2026-01-07 16:55:10,648 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 16:55:10,668 - INFO - Configurações importadas com sucesso
+2026-01-07 16:55:10,669 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 16:55:11,315 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 16:55:12,842 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 16:55:14,409 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 16:55:14,671 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 16:55:17,312 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-07 16:55:30,577 - INFO - ==================================================
+2026-01-07 16:55:30,578 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:55:30,578 - INFO - ==================================================
+2026-01-07 16:55:30,579 - INFO - Fornecedor: VITOR HENRIQUE
+2026-01-07 16:55:31,522 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 926!
+2026-01-07 16:55:31,523 - INFO - Dados carregados: VITOR HENRIQUE
+2026-01-07 16:55:31,525 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:55:31,528 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:55:31,528 - INFO - ==================================================
+2026-01-07 16:55:53,657 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:55:53,659 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-07 16:55:54,960 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 1
+2026-01-07 16:56:21,017 - INFO - ==================================================
+2026-01-07 16:56:21,018 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:56:21,018 - INFO - ==================================================
+2026-01-07 16:56:21,019 - INFO - Fornecedor: WELINGTON GOMES PAIVA
+2026-01-07 16:56:22,048 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 942!
+2026-01-07 16:56:22,048 - INFO - Dados carregados: WELINGTON GOMES PAIVA
+2026-01-07 16:56:22,049 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:56:22,052 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:56:22,052 - INFO - ==================================================
+2026-01-07 16:56:39,640 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:56:39,642 - INFO - ✅ Dados adicionados - Total: 2
+2026-01-07 16:56:41,240 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 2
+2026-01-07 16:56:51,064 - INFO - ==================================================
+2026-01-07 16:56:51,065 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 16:56:51,066 - INFO - ==================================================
+2026-01-07 16:56:51,066 - INFO - Fornecedor: WANDERSON ROMUALDO DE SOUZA
+2026-01-07 16:56:52,092 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 939!
+2026-01-07 16:56:52,093 - INFO - Dados carregados: WANDERSON ROMUALDO DE SOUZA
+2026-01-07 16:56:52,094 - INFO - Campos preenchidos com sucesso!
+2026-01-07 16:56:52,096 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 16:56:52,096 - INFO - ==================================================
+2026-01-07 16:57:13,992 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 16:57:13,994 - INFO - ✅ Dados adicionados - Total: 3
+2026-01-07 16:57:15,239 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 3
+2026-01-07 16:57:17,489 - INFO - ============================================================
+2026-01-07 16:57:17,490 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-07 16:57:17,491 - INFO - ============================================================
+2026-01-07 16:57:17,491 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-07 16:57:17,492 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-01-07 16:57:17,492 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-07 16:57:17,493 - INFO -   1. VITOR HENRIQUE - DIÁRIA - R$ 1760.00
+2026-01-07 16:57:17,493 - INFO -   2. WELINGTON GOMES PAIVA - DIÁRIA - R$ 1600.00
+2026-01-07 16:57:17,494 - INFO -   3. WANDERSON ROMUALDO DE SOUZA - DIÁRIA - R$ 1200.00
+2026-01-07 16:57:17,495 - INFO - 🆕 Criando novo visualizador
+2026-01-07 16:57:17,496 - INFO - 🔍 Visualizador iniciado com 3 lançamentos
+2026-01-07 16:57:17,621 - INFO - ✅ Visualizador criado com 3 lançamento(s)
+2026-01-07 16:57:17,622 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-07 16:57:17,623 - INFO - ============================================================
+2026-01-07 16:57:48,072 - INFO - ============================================================
+2026-01-07 16:57:48,072 - INFO - INICIANDO EDIÇÃO EM MASSA
+2026-01-07 16:57:48,073 - INFO - Quantidade de lançamentos: 2
+2026-01-07 16:57:48,074 - INFO - Campos marcados para edição: ['data_rel', 'dt_vencto']
+2026-01-07 16:58:11,431 - INFO - Aplicando alterações nos lançamentos...
+2026-01-07 16:58:11,433 - INFO - ============================================================
+2026-01-07 16:58:11,434 - INFO - CALLBACK: atualizar_lancamento
+2026-01-07 16:58:11,436 - INFO - Índice recebido: 0
+2026-01-07 16:58:11,438 - INFO - Tipo do índice: <class 'int'>
+2026-01-07 16:58:11,441 - INFO - Total de lançamentos disponíveis: 3
+2026-01-07 16:58:11,443 - ERROR - ============================================================
+2026-01-07 16:58:11,452 - ERROR - ERRO CRÍTICO EM atualizar_lancamento
+2026-01-07 16:58:11,454 - ERROR - Tipo: TypeError
+2026-01-07 16:58:11,455 - ERROR - Mensagem: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+2026-01-07 16:58:11,479 - ERROR - Traceback (most recent call last):
+  File "C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\Sistema_Entrada_Dados.py", line 808, in atualizar_lancamento
+    novos_dados['cnpj_cpf'] = formatar_documento(cnpj_cpf)
+                              ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+
+2026-01-07 16:58:11,489 - ERROR - ============================================================
+2026-01-07 16:58:11,490 - ERROR -   ✗ Falha ao atualizar lançamento 0
+2026-01-07 16:58:11,491 - INFO - ============================================================
+2026-01-07 16:58:11,491 - INFO - CALLBACK: atualizar_lancamento
+2026-01-07 16:58:11,492 - INFO - Índice recebido: 1
+2026-01-07 16:58:11,493 - INFO - Tipo do índice: <class 'int'>
+2026-01-07 16:58:11,493 - INFO - Total de lançamentos disponíveis: 3
+2026-01-07 16:58:11,499 - ERROR - ============================================================
+2026-01-07 16:58:11,501 - ERROR - ERRO CRÍTICO EM atualizar_lancamento
+2026-01-07 16:58:11,501 - ERROR - Tipo: TypeError
+2026-01-07 16:58:11,502 - ERROR - Mensagem: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+2026-01-07 16:58:11,504 - ERROR - Traceback (most recent call last):
+  File "C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\Sistema_Entrada_Dados.py", line 808, in atualizar_lancamento
+    novos_dados['cnpj_cpf'] = formatar_documento(cnpj_cpf)
+                              ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+
+2026-01-07 16:58:11,508 - ERROR - ============================================================
+2026-01-07 16:58:11,508 - ERROR -   ✗ Falha ao atualizar lançamento 1
+2026-01-07 16:58:11,509 - INFO - Edição concluída: 0 sucessos, 2 erros
+2026-01-07 16:58:11,509 - INFO - ============================================================
+2026-01-07 16:58:46,319 - INFO - ============================================================
+2026-01-07 16:58:46,320 - INFO - INICIANDO SALVAMENTO DE EDIÇÃO INDIVIDUAL
+2026-01-07 16:58:46,320 - INFO - Índice do lançamento: 0
+2026-01-07 16:58:46,321 - INFO - Dados para atualização:
+2026-01-07 16:58:46,322 - INFO -   data: 20/10/2025
+2026-01-07 16:58:46,323 - INFO -   tp_desp: 1
+2026-01-07 16:58:46,323 - INFO -   cnpj_cpf: 319.952.737-79
+2026-01-07 16:58:46,324 - INFO -   nome: VITOR HENRIQUE
+2026-01-07 16:58:46,325 - INFO -   forma_pagamento: PIX
+2026-01-07 16:58:46,326 - INFO -   referencia: DIÁRIA
+2026-01-07 16:58:46,327 - INFO -   etapa_obra: 
+2026-01-07 16:58:46,328 - INFO -   insumo: 
+2026-01-07 16:58:46,330 - INFO -   nf: 
+2026-01-07 16:58:46,333 - INFO -   vr_unit: 160.00
+2026-01-07 16:58:46,334 - INFO -   dias: 11.0
+2026-01-07 16:58:46,335 - INFO -   valor: 1760.00
+2026-01-07 16:58:46,336 - INFO -   dt_vencto: 20/10/2025
+2026-01-07 16:58:46,336 - INFO -   categoria: MO
+2026-01-07 16:58:46,337 - INFO -   dados_bancarios: PIX: 31995273779
+2026-01-07 16:58:46,337 - INFO -   observacao: 
+2026-01-07 16:58:46,338 - INFO - ============================================================
+2026-01-07 16:58:46,339 - INFO - CALLBACK: atualizar_lancamento
+2026-01-07 16:58:46,339 - INFO - Índice recebido: 0
+2026-01-07 16:58:46,340 - INFO - Tipo do índice: <class 'int'>
+2026-01-07 16:58:46,340 - INFO - Total de lançamentos disponíveis: 3
+2026-01-07 16:58:46,341 - ERROR - ============================================================
+2026-01-07 16:58:46,342 - ERROR - ERRO CRÍTICO EM atualizar_lancamento
+2026-01-07 16:58:46,342 - ERROR - Tipo: TypeError
+2026-01-07 16:58:46,343 - ERROR - Mensagem: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+2026-01-07 16:58:46,345 - ERROR - Traceback (most recent call last):
+  File "C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\Sistema_Entrada_Dados.py", line 808, in atualizar_lancamento
+    novos_dados['cnpj_cpf'] = formatar_documento(cnpj_cpf)
+                              ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+
+2026-01-07 16:58:46,349 - ERROR - ============================================================
+2026-01-07 16:58:46,350 - ERROR - ✗ Callback retornou False - falha ao salvar
+2026-01-07 16:58:46,351 - ERROR - ============================================================
+2026-01-07 17:26:30,934 - INFO - ==================================================
+2026-01-07 17:26:30,935 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 17:26:30,936 - INFO - ==================================================
+2026-01-07 17:26:30,937 - INFO - Fornecedor: ÁGUA E LUZ  COLOMBINI MAT. CONSTRUCAO
+2026-01-07 17:26:32,016 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 965!
+2026-01-07 17:26:32,017 - INFO - Dados carregados: ÁGUA E LUZ  COLOMBINI MAT. CONSTRUCAO
+2026-01-07 17:26:32,018 - INFO - Campos preenchidos com sucesso!
+2026-01-07 17:26:32,021 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 17:26:32,021 - INFO - ==================================================
+2026-01-07 17:42:48,527 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 17:42:48,556 - INFO - Configurações importadas com sucesso
+2026-01-07 17:42:48,557 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 17:42:50,033 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 17:44:08,267 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 17:44:09,654 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 17:44:09,924 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 17:44:13,362 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-07 17:44:24,098 - INFO - ==================================================
+2026-01-07 17:44:24,099 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 17:44:24,100 - INFO - ==================================================
+2026-01-07 17:44:24,100 - INFO - Fornecedor: VITOR HENRIQUE
+2026-01-07 17:44:25,047 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 926!
+2026-01-07 17:44:25,048 - INFO - Dados carregados: VITOR HENRIQUE
+2026-01-07 17:44:25,049 - INFO - Campos preenchidos com sucesso!
+2026-01-07 17:44:25,051 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 17:44:25,052 - INFO - ==================================================
+2026-01-07 17:44:49,162 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 17:44:49,164 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-07 17:44:51,315 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 1
+2026-01-07 17:45:12,170 - INFO - ==================================================
+2026-01-07 17:45:12,171 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 17:45:12,171 - INFO - ==================================================
+2026-01-07 17:45:12,172 - INFO - Fornecedor: WELINGTON GOMES PAIVA
+2026-01-07 17:45:13,201 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 942!
+2026-01-07 17:45:13,201 - INFO - Dados carregados: WELINGTON GOMES PAIVA
+2026-01-07 17:45:13,202 - INFO - Campos preenchidos com sucesso!
+2026-01-07 17:45:13,205 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 17:45:13,205 - INFO - ==================================================
+2026-01-07 17:45:28,522 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 17:45:28,523 - INFO - ✅ Dados adicionados - Total: 2
+2026-01-07 17:45:29,546 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 2
+2026-01-07 17:45:38,058 - INFO - ==================================================
+2026-01-07 17:45:38,058 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-07 17:45:38,059 - INFO - ==================================================
+2026-01-07 17:45:38,059 - INFO - Fornecedor: WANDERSON ROMUALDO DE SOUZA
+2026-01-07 17:45:39,132 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 939!
+2026-01-07 17:45:39,133 - INFO - Dados carregados: WANDERSON ROMUALDO DE SOUZA
+2026-01-07 17:45:39,134 - INFO - Campos preenchidos com sucesso!
+2026-01-07 17:45:39,136 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-07 17:45:39,137 - INFO - ==================================================
+2026-01-07 17:45:59,625 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-07 17:45:59,627 - INFO - ✅ Dados adicionados - Total: 3
+2026-01-07 17:46:01,040 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 3
+2026-01-07 17:46:24,186 - INFO - ============================================================
+2026-01-07 17:46:24,187 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-07 17:46:24,188 - INFO - ============================================================
+2026-01-07 17:46:24,188 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-07 17:46:24,189 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-01-07 17:46:24,189 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-07 17:46:24,190 - INFO -   1. VITOR HENRIQUE - DIÁRIA - R$ 1760.00
+2026-01-07 17:46:24,191 - INFO -   2. WELINGTON GOMES PAIVA - DIÁRIA - R$ 1600.00
+2026-01-07 17:46:24,191 - INFO -   3. WANDERSON ROMUALDO DE SOUZA - DIÁRIA - R$ 1200.00
+2026-01-07 17:46:24,192 - INFO - 🆕 Criando novo visualizador
+2026-01-07 17:46:24,193 - INFO - 🔍 Visualizador iniciado com 3 lançamentos
+2026-01-07 17:46:24,330 - INFO - ✅ Visualizador criado com 3 lançamento(s)
+2026-01-07 17:46:24,332 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-07 17:46:24,332 - INFO - ============================================================
+2026-01-07 17:48:54,009 - INFO - ============================================================
+2026-01-07 17:48:54,010 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-07 17:48:54,011 - INFO - ============================================================
+2026-01-07 17:48:54,011 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-07 17:48:54,012 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-01-07 17:48:54,013 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-07 17:48:54,013 - INFO -   1. VITOR HENRIQUE - DIÁRIA - R$ 1760.00
+2026-01-07 17:48:54,014 - INFO -   2. WELINGTON GOMES PAIVA - DIÁRIA - R$ 1600.00
+2026-01-07 17:48:54,015 - INFO -   3. WANDERSON ROMUALDO DE SOUZA - DIÁRIA - R$ 1200.00
+2026-01-07 17:48:54,015 - INFO - 🆕 Criando novo visualizador
+2026-01-07 17:48:54,016 - INFO - 🔍 Visualizador iniciado com 3 lançamentos
+2026-01-07 17:48:54,069 - INFO - ✅ Visualizador criado com 3 lançamento(s)
+2026-01-07 17:48:54,071 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-07 17:48:54,072 - INFO - ============================================================
+2026-01-07 17:49:18,783 - INFO - ============================================================
+2026-01-07 17:49:18,784 - INFO - INICIANDO EDIÇÃO EM MASSA
+2026-01-07 17:49:18,785 - INFO - Quantidade de lançamentos: 2
+2026-01-07 17:49:18,785 - INFO - Campos marcados para edição: ['data_rel', 'dt_vencto']
+2026-01-07 17:49:21,140 - INFO - Aplicando alterações nos lançamentos...
+2026-01-07 17:49:21,141 - INFO - ============================================================
+2026-01-07 17:49:21,141 - INFO - CALLBACK: atualizar_lancamento
+2026-01-07 17:49:21,142 - INFO - Índice recebido: 0
+2026-01-07 17:49:21,142 - INFO - Tipo do índice: <class 'int'>
+2026-01-07 17:49:21,143 - INFO - Total de lançamentos disponíveis: 3
+2026-01-07 17:49:21,144 - ERROR - ============================================================
+2026-01-07 17:49:21,144 - ERROR - ERRO CRÍTICO EM atualizar_lancamento
+2026-01-07 17:49:21,145 - ERROR - Tipo: TypeError
+2026-01-07 17:49:21,148 - ERROR - Mensagem: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+2026-01-07 17:49:21,167 - ERROR - Traceback (most recent call last):
+  File "C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\Sistema_Entrada_Dados.py", line 808, in atualizar_lancamento
+    novos_dados['cnpj_cpf'] = formatar_documento(cnpj_cpf)
+                              ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+
+2026-01-07 17:49:21,172 - ERROR - ============================================================
+2026-01-07 17:49:21,174 - ERROR -   ✗ Falha ao atualizar lançamento 0
+2026-01-07 17:49:21,176 - INFO - ============================================================
+2026-01-07 17:49:21,177 - INFO - CALLBACK: atualizar_lancamento
+2026-01-07 17:49:21,178 - INFO - Índice recebido: 1
+2026-01-07 17:49:21,179 - INFO - Tipo do índice: <class 'int'>
+2026-01-07 17:49:21,181 - INFO - Total de lançamentos disponíveis: 3
+2026-01-07 17:49:21,186 - ERROR - ============================================================
+2026-01-07 17:49:21,191 - ERROR - ERRO CRÍTICO EM atualizar_lancamento
+2026-01-07 17:49:21,193 - ERROR - Tipo: TypeError
+2026-01-07 17:49:21,194 - ERROR - Mensagem: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+2026-01-07 17:49:21,196 - ERROR - Traceback (most recent call last):
+  File "C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src\Sistema_Entrada_Dados.py", line 808, in atualizar_lancamento
+    novos_dados['cnpj_cpf'] = formatar_documento(cnpj_cpf)
+                              ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pessoa'
+
+2026-01-07 17:49:21,198 - ERROR - ============================================================
+2026-01-07 17:49:21,200 - ERROR -   ✗ Falha ao atualizar lançamento 1
+2026-01-07 17:49:21,202 - INFO - Edição concluída: 0 sucessos, 2 erros
+2026-01-07 17:49:21,203 - INFO - ============================================================
+2026-01-07 18:20:19,736 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 18:20:19,754 - INFO - Configurações importadas com sucesso
+2026-01-07 18:20:19,755 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 18:20:20,438 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 18:20:21,948 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 18:20:23,232 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 18:20:23,513 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 18:20:26,890 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-07 18:20:30,808 - WARNING - Nenhum item para filtrar
+2026-01-07 18:20:38,621 - WARNING - Nenhum item para filtrar
+2026-01-07 18:20:57,875 - WARNING - Nenhum item para filtrar
+2026-01-07 18:21:14,433 - WARNING - Nenhum item para filtrar
+2026-01-07 18:21:21,441 - WARNING - Nenhum item para filtrar
+2026-01-07 18:21:23,278 - WARNING - Nenhum item para filtrar
+2026-01-07 18:21:24,516 - WARNING - Nenhum item para filtrar
+2026-01-07 18:23:41,179 - WARNING - Divergência ignorada - documento inválido:
+2026-01-07 18:23:41,179 - WARNING -   Buscado: 14020156662 (válido)
+2026-01-07 18:23:41,180 - WARNING -   Encontrado: 00014020156662 (INVÁLIDO)
+2026-01-07 18:23:54,653 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:03,603 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:05,272 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:13,050 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:13,337 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:13,537 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:13,890 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:14,073 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:14,946 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:20,114 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:22,399 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:23,547 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:23,944 - WARNING - Nenhum item para filtrar
+2026-01-07 18:24:24,255 - WARNING - Nenhum item para filtrar
+2026-01-07 18:30:02,752 - INFO - Configurações importadas com sucesso via src.config
+2026-01-07 18:30:02,801 - INFO - Configurações importadas com sucesso
+2026-01-07 18:30:02,802 - INFO - Configurações do sistema importadas com sucesso
+2026-01-07 18:30:03,403 - INFO - Sistema iniciado em modo: TESTE
+2026-01-07 18:31:33,989 - INFO - Abrindo sistema de entrada de dados
+2026-01-07 18:31:35,419 - INFO - Proteções contra perda de dados configuradas
+2026-01-07 18:31:35,700 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-07 18:31:38,533 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-07 18:31:43,335 - INFO - ✅ Total de lançamentos carregados: 8
+2026-01-07 18:31:43,346 - WARNING - Nenhum item para filtrar
+2026-01-07 18:31:43,347 - WARNING - ⚠️ df_filtrado não foi criado
+2026-01-07 18:31:51,264 - INFO - ✅ Total de lançamentos carregados: 8
+2026-01-07 18:31:51,267 - WARNING - Nenhum item para filtrar
+2026-01-07 18:31:51,268 - WARNING - ⚠️ df_filtrado não foi criado
+2026-01-07 18:31:55,534 - WARNING - Nenhum item para filtrar
+2026-01-08 08:54:12,155 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 08:54:12,229 - INFO - Configurações importadas com sucesso
+2026-01-08 08:54:12,230 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 08:54:16,197 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 08:56:53,441 - INFO - Abrindo gestão de medições
+2026-01-08 08:57:48,040 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 08:57:48,919 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 08:57:49,165 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 08:57:51,347 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-08 08:57:54,113 - INFO - ============================================================
+2026-01-08 08:57:54,114 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-08 08:57:54,115 - INFO - ============================================================
+2026-01-08 08:57:54,115 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-08 08:57:54,116 - INFO - Dados disponíveis: 0 lançamento(s)
+2026-01-08 08:57:54,116 - WARNING - ⚠️ NENHUM LANÇAMENTO PENDENTE!
+2026-01-08 08:57:54,117 - INFO - 🆕 Criando novo visualizador
+2026-01-08 08:57:54,118 - INFO - 🔍 Visualizador iniciado com 0 lançamentos
+2026-01-08 08:57:54,229 - INFO - ✅ Visualizador criado com 0 lançamento(s)
+2026-01-08 08:57:54,231 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-08 08:57:54,231 - INFO - ============================================================
+2026-01-08 08:58:20,448 - INFO - Voltando ao menu principal
+2026-01-08 08:58:20,531 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-08 08:58:20,537 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-08 08:58:20,721 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-08 08:58:21,712 - INFO - Abrindo gestão de medições
+2026-01-08 08:59:45,879 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 08:59:46,402 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 08:59:46,494 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 08:59:48,848 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-08 09:25:07,083 - INFO - Voltando ao menu principal
+2026-01-08 09:25:07,285 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-08 09:25:07,296 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-08 09:25:07,489 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-08 09:25:12,607 - INFO - Sistema encerrado pelo usuário
+2026-01-08 09:28:20,008 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 09:28:20,030 - INFO - Configurações importadas com sucesso
+2026-01-08 09:28:20,031 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 09:28:21,422 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 09:28:24,366 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 09:28:25,870 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 09:28:26,135 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 09:28:28,896 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-08 09:32:33,195 - INFO - Voltando ao menu principal
+2026-01-08 09:32:33,293 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-08 09:32:33,326 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-08 09:32:33,559 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-08 09:32:36,682 - INFO - Sistema encerrado pelo usuário
+2026-01-08 09:32:43,022 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 09:32:43,040 - INFO - Configurações importadas com sucesso
+2026-01-08 09:32:43,041 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 09:32:43,463 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 09:32:49,162 - INFO - Sistema encerrado pelo usuário
+2026-01-08 09:36:04,424 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 09:36:04,463 - INFO - Configurações importadas com sucesso
+2026-01-08 09:36:04,464 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 09:36:04,828 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 09:36:09,664 - INFO - Sistema encerrado pelo usuário
+2026-01-08 09:39:36,490 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 09:39:36,510 - INFO - Configurações importadas com sucesso
+2026-01-08 09:39:36,510 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 09:39:36,820 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 09:39:41,575 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 09:39:42,979 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 09:39:43,243 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 09:39:46,502 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-08 09:41:12,734 - INFO - Voltando ao menu principal
+2026-01-08 09:41:12,825 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-08 09:41:12,829 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-08 09:41:13,096 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-08 09:41:16,103 - INFO - Sistema encerrado pelo usuário
+2026-01-08 09:50:46,611 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 09:50:46,631 - INFO - Configurações importadas com sucesso
+2026-01-08 09:50:46,632 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 09:50:47,322 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 09:50:49,721 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 09:50:51,104 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 09:50:51,371 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 09:50:54,191 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-08 09:52:27,384 - INFO - Voltando ao menu principal
+2026-01-08 09:52:27,484 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-08 09:52:27,568 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-08 09:52:27,805 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-08 09:52:30,383 - INFO - Sistema encerrado pelo usuário
+2026-01-08 09:59:32,242 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 09:59:32,265 - INFO - Configurações importadas com sucesso
+2026-01-08 09:59:32,266 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 09:59:33,414 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 09:59:35,731 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 09:59:37,803 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 09:59:38,133 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 09:59:41,765 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-08 10:00:46,673 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 10:00:46,689 - INFO - Configurações importadas com sucesso
+2026-01-08 10:00:46,690 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 10:00:47,246 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 10:00:51,995 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 10:00:53,255 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 10:00:53,508 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 10:00:56,198 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-08 10:13:10,286 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 10:13:10,307 - INFO - Configurações importadas com sucesso
+2026-01-08 10:13:10,307 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 10:13:10,958 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 10:13:13,715 - INFO - Abrindo gestão de medições
+2026-01-08 10:13:58,571 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 10:13:59,415 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 10:13:59,633 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 10:14:02,129 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-08 10:14:20,483 - INFO - Edição do lançamento ID 10 salva com sucesso
+2026-01-08 10:16:58,689 - INFO - Voltando ao menu principal
+2026-01-08 10:16:58,784 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-08 10:16:58,786 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-08 10:16:58,962 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-08 10:17:00,185 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 10:17:00,726 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 10:17:00,833 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 10:17:05,315 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-08 12:21:21,774 - INFO - Configurações importadas com sucesso via src.config
+2026-01-08 12:21:21,791 - INFO - Configurações importadas com sucesso
+2026-01-08 12:21:21,793 - INFO - Configurações do sistema importadas com sucesso
+2026-01-08 12:21:23,352 - INFO - Sistema iniciado em modo: TESTE
+2026-01-08 12:23:45,550 - INFO - Abrindo sistema de entrada de dados
+2026-01-08 12:23:47,171 - INFO - Proteções contra perda de dados configuradas
+2026-01-08 12:23:47,438 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-08 12:23:51,018 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
