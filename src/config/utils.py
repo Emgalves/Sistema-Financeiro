@@ -25,6 +25,125 @@ from src.config.config import (
 )
 
 
+# === VALIDAÇÃO DE DOCUMENTOS ===
+def validar_cpf(cpf):
+    """
+    Valida CPF usando algoritmo oficial dos dígitos verificadores
+    
+    Args:
+        cpf: string com 11 dígitos numéricos (com ou sem formatação)
+    
+    Returns:
+        bool: True se CPF válido, False caso contrário
+    """
+    try:
+        # Remover caracteres não numéricos
+        cpf_numeros = ''.join(filter(str.isdigit, str(cpf)))
+        
+        # Verificar se tem 11 dígitos
+        if len(cpf_numeros) != 11:
+            return False
+        
+        # Verificar se todos os dígitos são iguais (CPF inválido)
+        if cpf_numeros == cpf_numeros[0] * 11:
+            return False
+        
+        # Calcular primeiro dígito verificador
+        soma = 0
+        for i in range(9):
+            soma += int(cpf_numeros[i]) * (10 - i)
+        
+        resto = soma % 11
+        digito1 = 0 if resto < 2 else 11 - resto
+        
+        if int(cpf_numeros[9]) != digito1:
+            return False
+        
+        # Calcular segundo dígito verificador
+        soma = 0
+        for i in range(10):
+            soma += int(cpf_numeros[i]) * (11 - i)
+        
+        resto = soma % 11
+        digito2 = 0 if resto < 2 else 11 - resto
+        
+        return int(cpf_numeros[10]) == digito2
+        
+    except Exception as e:
+        print(f"Erro ao validar CPF: {str(e)}")
+        return False
+
+
+def validar_cnpj(cnpj):
+    """
+    Valida CNPJ usando algoritmo oficial dos dígitos verificadores
+    
+    Args:
+        cnpj: string com 14 dígitos numéricos (com ou sem formatação)
+    
+    Returns:
+        bool: True se CNPJ válido, False caso contrário
+    """
+    try:
+        # Remover caracteres não numéricos
+        cnpj_numeros = ''.join(filter(str.isdigit, str(cnpj)))
+        
+        # Verificar se tem 14 dígitos
+        if len(cnpj_numeros) != 14:
+            return False
+        
+        # Verificar se todos os dígitos são iguais (CNPJ inválido)
+        if cnpj_numeros == cnpj_numeros[0] * 14:
+            return False
+        
+        # Calcular primeiro dígito verificador
+        peso = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+        soma = sum(int(cnpj_numeros[i]) * peso[i] for i in range(12))
+        resto = soma % 11
+        digito1 = 0 if resto < 2 else 11 - resto
+        
+        if int(cnpj_numeros[12]) != digito1:
+            return False
+        
+        # Calcular segundo dígito verificador
+        peso = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+        soma = sum(int(cnpj_numeros[i]) * peso[i] for i in range(13))
+        resto = soma % 11
+        digito2 = 0 if resto < 2 else 11 - resto
+        
+        return int(cnpj_numeros[13]) == digito2
+        
+    except Exception as e:
+        print(f"Erro ao validar CNPJ: {str(e)}")
+        return False
+
+
+def validar_documento(documento):
+    """
+    Valida CPF ou CNPJ automaticamente baseado no tamanho
+    
+    Args:
+        documento: string com CPF (11 dígitos) ou CNPJ (14 dígitos)
+    
+    Returns:
+        bool: True se documento válido, False caso contrário
+    """
+    try:
+        # Remover caracteres não numéricos
+        doc_numeros = ''.join(filter(str.isdigit, str(documento)))
+        
+        if len(doc_numeros) == 11:
+            return validar_cpf(doc_numeros)
+        elif len(doc_numeros) == 14:
+            return validar_cnpj(doc_numeros)
+        else:
+            return False
+            
+    except Exception as e:
+        print(f"Erro ao validar documento: {str(e)}")
+        return False
+
+
 # === CLIENTES ===
 def obter_clientes_ativos(mostrar_inativos=False):
     """
@@ -207,14 +326,14 @@ def calcular_proxima_data_quinzena(data):
             return data.replace(month=data.month + 1, day=5)
 
 # === DOCUMENT VALIDATION ===
-def validar_cnpj_cpf(documento):
-    """Valida CNPJ ou CPF"""
-    if len(documento) <= 11:
-        cpf = CPF()
-        return cpf.validate(documento)
-    else:
-        cnpj = CNPJ()
-        return cnpj.validate(documento)
+# def validar_cnpj_cpf(documento):
+#     """Valida CNPJ ou CPF"""
+#     if len(documento) <= 11:
+#         cpf = CPF()
+#         return cpf.validate(documento)
+#     else:
+#         cnpj = CNPJ()
+#         return cnpj.validate(documento)
 
 def formatar_cnpj_cpf(documento):
     """Formata CNPJ/CPF com zeros à esquerda"""
@@ -639,22 +758,90 @@ def formatar_moeda(valor):
 
 
 # === FIND SUPPLIER ===
-def buscar_fornecedor(tree_fornecedores, termo_busca):
-    """Busca fornecedores na base e atualiza o treeview"""
+def buscar_fornecedor(tree_fornecedores, termo_busca='', categoria_filtro=None):
+    """
+    Busca fornecedores na base e atualiza o treeview
+    
+    Parâmetros:
+    - tree_fornecedores: Treeview onde serão exibidos os resultados
+    - termo_busca: Termo para filtrar por nome/razão social (opcional)
+    - categoria_filtro: Filtrar por categoria específica, ex: 'TAX' (opcional)
+    """
+    # Limpar resultados anteriores
     for item in tree_fornecedores.get_children():
         tree_fornecedores.delete(item)
-        
-    termo = termo_busca.lower()
+    
     try:
+        # Verificar se arquivo existe
+        if not ARQUIVO_FORNECEDORES.exists():
+            messagebox.showerror("Erro", f"Arquivo não encontrado: {ARQUIVO_FORNECEDORES}")
+            return
+        
         wb = load_workbook(ARQUIVO_FORNECEDORES)
         ws = wb['Fornecedores']
         
+        # Normalizar termo de busca
+        termo = termo_busca.lower().strip() if termo_busca else ''
+        categoria_upper = categoria_filtro.upper().strip() if categoria_filtro else None
+        
+        resultados_encontrados = 0
+        
+        # Iterar pelas linhas (começando da linha 2)
         for row in ws.iter_rows(min_row=2, values_only=True):
-            if termo in str(row[3]).lower():  # Busca no nome
-                tree_fornecedores.insert('', 'end', values=(row[0], row[3], row[11]))
+            try:
+                # Estrutura esperada da planilha:
+                # row[0] = CNPJ/CPF (coluna A)
+                # row[1] = tipo_pessoa (coluna B)
+                # row[2] = RAZÃO SOCIAL (coluna C)
+                # row[3] = NOME (coluna D)
+                # row[11] = CATEGORIA: (coluna L)
+                
+                cnpj_cpf = str(row[0]).strip() if row[0] else ''
+                tipo_pessoa = str(row[1]).strip().upper() if row[1] else 'PJ'  # Default PJ
+                razao_social = str(row[2]).strip() if row[2] else ''
+                nome = str(row[3]).strip() if row[3] else ''
+                categoria = str(row[11]).strip().upper() if row[11] else ''
+                
+                # ✅ FILTRO 1: Categoria (se especificado)
+                if categoria_upper and categoria != categoria_upper:
+                    continue
+                
+                # ✅ FILTRO 2: Termo de busca (busca em NOME, RAZÃO SOCIAL e CNPJ/CPF)
+                if termo:
+                    if not (termo in nome.lower() or 
+                           termo in razao_social.lower() or 
+                           termo in cnpj_cpf.lower()):
+                        continue
+                
+                # Definir qual nome exibir (priorizar RAZÃO SOCIAL)
+                nome_exibir = razao_social if razao_social else nome
+                
+                # ✅ Inserir com tipo_pessoa nas TAGS (oculto mas acessível)
+                tree_fornecedores.insert('', 'end', 
+                                       values=(cnpj_cpf, nome_exibir, categoria),
+                                       tags=(tipo_pessoa,))
+                
+                resultados_encontrados += 1
+                
+            except Exception as e_row:
+                # Logar erro mas continuar processando outras linhas
+                # logger.debug(f"Erro ao processar linha: {e_row}")
+                continue
         
         wb.close()
+        
+        # Mensagem se não encontrou resultados
+        if resultados_encontrados == 0:
+            mensagem = "Nenhum fornecedor encontrado"
+            if categoria_upper:
+                mensagem += f" na categoria '{categoria_filtro}'"
+            if termo:
+                mensagem += f" com o termo '{termo_busca}'"
+            messagebox.showinfo("Aviso", mensagem)
+        
     except Exception as e:
+        import traceback
+        # logger.debug(traceback.format_exc())
         messagebox.showerror("Erro", f"Erro ao buscar fornecedores: {str(e)}")
 
 def selecionar_fornecedor(tree_fornecedores, campos_fornecedor, campos_despesa=None, notebook=None, buscar_fornecedor_completo=None):
