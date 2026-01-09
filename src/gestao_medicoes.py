@@ -3781,19 +3781,19 @@ class GestaoMedicoes:
             
             # Estimar data para relatório
             hoje = datetime.now()
-            data_rel = hoje
+            data_rel = dt_vencto
             
             # Ajustar para dia 5 ou 20 mais próximo
-            if hoje.day < 5:
-                data_rel = hoje.replace(day=5)
-            elif hoje.day < 20:
-                data_rel = hoje.replace(day=20)
-            else:
-                # Próximo mês, dia 5
-                if hoje.month == 12:
-                    data_rel = hoje.replace(year=hoje.year+1, month=1, day=5)
-                else:
-                    data_rel = hoje.replace(month=hoje.month+1, day=5)
+            # if hoje.day < 5:
+            #     data_rel = hoje.replace(day=5)
+            # elif hoje.day < 20:
+            #     data_rel = hoje.replace(day=20)
+            # else:
+            #     # Próximo mês, dia 5
+            #     if hoje.month == 12:
+            #         data_rel = hoje.replace(year=hoje.year+1, month=1, day=5)
+            #     else:
+            #         data_rel = hoje.replace(month=hoje.month+1, day=5)
                     
             # Verificar se já existe dados_para_incluir e criar se não existir
             if not hasattr(self, 'dados_para_incluir'):
