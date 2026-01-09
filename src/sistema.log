@@ -9443,3 +9443,1011 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-01-08 12:23:47,171 - INFO - Proteções contra perda de dados configuradas
 2026-01-08 12:23:47,438 - INFO - ✅ Sistema de Entrada de Dados aberto
 2026-01-08 12:23:51,018 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-09 14:29:39,607 - INFO - Configurações importadas com sucesso via src.config
+2026-01-09 14:29:39,628 - INFO - Configurações importadas com sucesso
+2026-01-09 14:29:39,629 - INFO - Configurações do sistema importadas com sucesso
+2026-01-09 14:29:40,581 - INFO - Sistema iniciado em modo: TESTE
+2026-01-09 14:29:45,076 - INFO - Abrindo sistema de entrada de dados
+2026-01-09 14:29:46,862 - INFO - Proteções contra perda de dados configuradas
+2026-01-09 14:29:47,206 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-09 14:29:50,606 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-09 14:30:08,147 - INFO - ==================================================
+2026-01-09 14:30:08,148 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:30:08,149 - INFO - ==================================================
+2026-01-09 14:30:08,150 - INFO - Fornecedor: VANDER PAIXÃO DA SILVA
+2026-01-09 14:30:08,961 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 908!
+2026-01-09 14:30:08,961 - INFO - Dados carregados: VANDER PAIXÃO DA SILVA
+2026-01-09 14:30:08,964 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:30:08,967 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:30:08,968 - INFO - ==================================================
+2026-01-09 14:31:10,907 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:31:10,908 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-09 14:31:12,194 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 1
+2026-01-09 14:31:24,458 - INFO - ==================================================
+2026-01-09 14:31:24,459 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:31:24,460 - INFO - ==================================================
+2026-01-09 14:31:24,460 - INFO - Fornecedor: NOSSA LOJA
+2026-01-09 14:31:25,281 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 690!
+2026-01-09 14:31:25,282 - INFO - Dados carregados: NOSSA LOJA
+2026-01-09 14:31:26,112 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 690!
+2026-01-09 14:31:26,113 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:31:26,114 - INFO - ✓ Referência preenchida: PINTURA
+2026-01-09 14:31:26,118 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:31:26,118 - INFO - ==================================================
+2026-01-09 14:32:04,314 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:32:04,316 - INFO - ✅ Dados adicionados - Total: 2
+2026-01-09 14:32:05,393 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 2
+2026-01-09 14:32:14,322 - INFO - ==================================================
+2026-01-09 14:32:14,323 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:32:14,323 - INFO - ==================================================
+2026-01-09 14:32:14,324 - INFO - Fornecedor: MADECLARA COMERCIO DE MADEIRAS LTDA
+2026-01-09 14:32:15,152 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 594!
+2026-01-09 14:32:15,153 - INFO - Dados carregados: MADECLARA COMERCIO DE MADEIRAS LTDA
+2026-01-09 14:32:15,154 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:32:15,155 - INFO - ✓ Referência preenchida: MADEIRAS
+2026-01-09 14:32:15,157 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:32:15,158 - INFO - ==================================================
+2026-01-09 14:32:41,553 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:32:41,555 - INFO - ✅ Dados adicionados - Total: 3
+2026-01-09 14:32:42,481 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 3
+2026-01-09 14:32:51,321 - INFO - ==================================================
+2026-01-09 14:32:51,322 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:32:51,323 - INFO - ==================================================
+2026-01-09 14:32:51,323 - INFO - Fornecedor: TECFER COM E IND DE FERRO MAT CONSTR LTDA
+2026-01-09 14:32:52,194 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 864!
+2026-01-09 14:32:52,195 - INFO - Dados carregados: TECFER COM E IND DE FERRO MAT CONSTR LTDA
+2026-01-09 14:32:53,100 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 864!
+2026-01-09 14:32:53,101 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:32:53,103 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:32:53,104 - INFO - ==================================================
+2026-01-09 14:33:39,385 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:33:39,386 - INFO - ✅ Dados adicionados - Total: 4
+2026-01-09 14:33:41,081 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 4
+2026-01-09 14:33:42,553 - INFO - ==================================================
+2026-01-09 14:33:42,553 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:33:42,554 - INFO - ==================================================
+2026-01-09 14:33:42,555 - INFO - Fornecedor: TECFER COM E IND DE FERRO MAT CONSTR LTDA
+2026-01-09 14:33:43,378 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 864!
+2026-01-09 14:33:43,379 - INFO - Dados carregados: TECFER COM E IND DE FERRO MAT CONSTR LTDA
+2026-01-09 14:33:44,223 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 864!
+2026-01-09 14:33:44,224 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:33:44,226 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:33:44,227 - INFO - ==================================================
+2026-01-09 14:34:15,056 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:34:15,058 - INFO - ✅ Dados adicionados - Total: 5
+2026-01-09 14:34:16,559 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 5
+2026-01-09 14:34:21,072 - INFO - ==================================================
+2026-01-09 14:34:21,073 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:34:21,074 - INFO - ==================================================
+2026-01-09 14:34:21,075 - INFO - Fornecedor: TECFER COM E IND DE FERRO MAT CONSTR LTDA
+2026-01-09 14:34:21,928 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 864!
+2026-01-09 14:34:21,928 - INFO - Dados carregados: TECFER COM E IND DE FERRO MAT CONSTR LTDA
+2026-01-09 14:34:22,776 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 864!
+2026-01-09 14:34:22,777 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:34:22,779 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:34:22,780 - INFO - ==================================================
+2026-01-09 14:34:55,888 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:34:55,889 - INFO - ✅ Dados adicionados - Total: 6
+2026-01-09 14:34:56,896 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 6
+2026-01-09 14:35:04,128 - INFO - ==================================================
+2026-01-09 14:35:04,128 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:35:04,129 - INFO - ==================================================
+2026-01-09 14:35:04,130 - INFO - Fornecedor: DEPÓSITO 040
+2026-01-09 14:35:04,943 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 233!
+2026-01-09 14:35:04,944 - INFO - Dados carregados: DEPÓSITO 040
+2026-01-09 14:35:05,804 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 233!
+2026-01-09 14:35:05,805 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:35:05,808 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:35:05,808 - INFO - ==================================================
+2026-01-09 14:35:55,087 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:35:55,089 - INFO - ✅ Dados adicionados - Total: 7
+2026-01-09 14:35:56,310 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 7
+2026-01-09 14:36:13,935 - INFO - ==================================================
+2026-01-09 14:36:13,935 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:36:13,936 - INFO - ==================================================
+2026-01-09 14:36:13,937 - INFO - Fornecedor: LOJA DO PAULO
+2026-01-09 14:36:14,865 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 568!
+2026-01-09 14:36:14,865 - INFO - Dados carregados: LOJA DO PAULO
+2026-01-09 14:36:15,667 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 568!
+2026-01-09 14:36:15,668 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:36:15,670 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:36:15,671 - INFO - ==================================================
+2026-01-09 14:36:56,406 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:36:56,408 - INFO - ✅ Dados adicionados - Total: 8
+2026-01-09 14:36:57,517 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 8
+2026-01-09 14:37:21,918 - INFO - ==================================================
+2026-01-09 14:37:21,919 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:37:21,919 - INFO - ==================================================
+2026-01-09 14:37:21,920 - INFO - Fornecedor: LOJA ELETRICA LTDA
+2026-01-09 14:37:22,763 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 570!
+2026-01-09 14:37:22,764 - INFO - Dados carregados: LOJA ELETRICA LTDA
+2026-01-09 14:37:22,765 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:37:22,766 - INFO - ✓ Referência preenchida: MATERIAL ELÉTRICO
+2026-01-09 14:37:22,768 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:37:22,769 - INFO - ==================================================
+2026-01-09 14:37:51,045 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:37:51,047 - INFO - ✅ Dados adicionados - Total: 9
+2026-01-09 14:37:51,790 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 9
+2026-01-09 14:38:24,493 - INFO - ==================================================
+2026-01-09 14:38:24,494 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:38:24,494 - INFO - ==================================================
+2026-01-09 14:38:24,495 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-01-09 14:38:25,318 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 162!
+2026-01-09 14:38:25,319 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-01-09 14:38:25,320 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:38:25,322 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-01-09 14:38:25,325 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:38:25,325 - INFO - ==================================================
+2026-01-09 14:39:08,444 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:39:08,446 - INFO - ✅ Dados adicionados - Total: 10
+2026-01-09 14:39:09,677 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 10
+2026-01-09 14:39:34,396 - INFO - ==================================================
+2026-01-09 14:39:34,397 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 14:39:34,397 - INFO - ==================================================
+2026-01-09 14:39:34,398 - INFO - Fornecedor: RODRIGO ALEXANDRE DIAS
+2026-01-09 14:39:35,303 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 798!
+2026-01-09 14:39:35,304 - INFO - Dados carregados: RODRIGO ALEXANDRE DIAS
+2026-01-09 14:39:36,076 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 798!
+2026-01-09 14:39:36,077 - INFO - Campos preenchidos com sucesso!
+2026-01-09 14:39:36,079 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 14:39:36,080 - INFO - ==================================================
+2026-01-09 14:39:55,252 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 14:39:55,254 - INFO - ✅ Dados adicionados - Total: 11
+2026-01-09 14:39:56,547 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 11
+2026-01-09 14:39:58,878 - INFO - ============================================================
+2026-01-09 14:39:58,879 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-09 14:39:58,879 - INFO - ============================================================
+2026-01-09 14:39:58,880 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-09 14:39:58,880 - INFO - Dados disponíveis: 11 lançamento(s)
+2026-01-09 14:39:58,881 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-09 14:39:58,881 - INFO -   1. LOJA ELETRICA LTDA - MATERIAL ELÉTRICO - R$ 1527.92
+2026-01-09 14:39:58,882 - INFO -   2. CASA FERREIRA GONÇALVES - MATERIAL HIDRÁULICO - R$ 1757.07
+2026-01-09 14:39:58,882 - INFO -   3. RODRIGO ALEXANDRE DIAS - CAMINHÃO PIPA
+ - R$ 450.00
+2026-01-09 14:39:58,883 - INFO - 🆕 Criando novo visualizador
+2026-01-09 14:39:58,884 - INFO - 🔍 Visualizador iniciado com 11 lançamentos
+2026-01-09 14:39:59,019 - INFO - ✅ Visualizador criado com 11 lançamento(s)
+2026-01-09 14:39:59,020 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-09 14:39:59,020 - INFO - ============================================================
+2026-01-09 14:40:12,852 - INFO - ============================================================
+2026-01-09 14:40:12,852 - INFO - INICIANDO SALVAMENTO DE EDIÇÃO INDIVIDUAL
+2026-01-09 14:40:12,853 - INFO - Índice do lançamento: 1
+2026-01-09 14:40:12,854 - INFO - Dados para atualização:
+2026-01-09 14:40:12,854 - INFO -   data: 20/10/2025
+2026-01-09 14:40:12,855 - INFO -   tp_desp: 3
+2026-01-09 14:40:12,856 - INFO -   cnpj_cpf: 14.072.798/0027-20
+2026-01-09 14:40:12,856 - INFO -   nome: NOSSA LOJA
+2026-01-09 14:40:12,857 - INFO -   forma_pagamento: PIX
+2026-01-09 14:40:12,857 - INFO -   referencia: TINTAS
+2026-01-09 14:40:12,858 - INFO -   etapa_obra: 
+2026-01-09 14:40:12,859 - INFO -   insumo: 
+2026-01-09 14:40:12,859 - INFO -   nf: 3468
+2026-01-09 14:40:12,860 - INFO -   vr_unit: 299.90
+2026-01-09 14:40:12,861 - INFO -   dias: 1.0
+2026-01-09 14:40:12,863 - INFO -   valor: 299.90
+2026-01-09 14:40:12,864 - INFO -   dt_vencto: 28/10/2025
+2026-01-09 14:40:12,865 - INFO -   categoria: MAT
+2026-01-09 14:40:12,865 - INFO -   dados_bancarios: 14072798002720
+2026-01-09 14:40:12,866 - INFO -   observacao: 
+2026-01-09 14:40:12,866 - INFO - ============================================================
+2026-01-09 14:40:12,867 - INFO - CALLBACK: atualizar_lancamento
+2026-01-09 14:40:12,868 - INFO - Índice recebido: 1
+2026-01-09 14:40:12,868 - INFO - Tipo do índice: <class 'int'>
+2026-01-09 14:40:12,869 - INFO - Total de lançamentos disponíveis: 11
+2026-01-09 14:40:13,723 - INFO - ✓ LANÇAMENTO ATUALIZADO COM SUCESSO!
+2026-01-09 14:40:13,724 - INFO - ============================================================
+2026-01-09 14:40:13,725 - INFO - ✓ EDIÇÃO SALVA COM SUCESSO!
+2026-01-09 14:40:13,725 - INFO - ============================================================
+2026-01-09 14:40:27,387 - INFO - Iniciando envio de dados - Cliente: GUILHERME LEITE, Registros: 11
+2026-01-09 14:40:27,389 - INFO - Obtendo dados do visualizador
+2026-01-09 14:40:27,389 - INFO - Total de registros a processar: 11
+2026-01-09 14:40:27,390 - INFO - Datas que serão afetadas pela inserção: ['20/10/2025']
+2026-01-09 14:40:27,391 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\GUILHERME LEITE.xlsx
+2026-01-09 14:40:27,392 - INFO - Verificando integridade dos IDs antes da inserção
+2026-01-09 14:40:27,788 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,789 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,790 - INFO - Dados novos: VANDER PAIXÃO DA SILVA | INSTALAÇÃO DE CAVALETE | NF:  | R$ 550.00 | 20/10/2025
+2026-01-09 14:40:27,792 - INFO - ✅ Nenhuma duplicata encontrada para: VANDER PAIXÃO DA SILVA - INSTALAÇÃO DE CAVALETE - NF: 
+2026-01-09 14:40:27,793 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,794 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,795 - INFO - Dados novos: NOSSA LOJA | TINTAS | NF: 3468 | R$ 299.90 | 28/10/2025
+2026-01-09 14:40:27,796 - INFO - ✅ Nenhuma duplicata encontrada para: NOSSA LOJA - TINTAS - NF: 3468
+2026-01-09 14:40:27,797 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,797 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,798 - INFO - Dados novos: MADECLARA COMERCIO DE MADEIRAS LTDA | MADEIRAS | NF: 6200 | R$ 8400.00 | 03/11/2025
+2026-01-09 14:40:27,800 - INFO - ✅ Nenhuma duplicata encontrada para: MADECLARA COMERCIO DE MADEIRAS LTDA - MADEIRAS - NF: 6200
+2026-01-09 14:40:27,801 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,802 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,803 - INFO - Dados novos: TECFER COM E IND DE FERRO MAT CONSTR LTDA | PREGO, ARAME | NF: 64924 | R$ 685.49 | 30/10/2025
+2026-01-09 14:40:27,804 - INFO - ✅ Nenhuma duplicata encontrada para: TECFER COM E IND DE FERRO MAT CONSTR LTDA - PREGO, ARAME - NF: 64924
+2026-01-09 14:40:27,806 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,809 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,810 - INFO - Dados novos: TECFER COM E IND DE FERRO MAT CONSTR LTDA | PERFIL GALVANIZADO | NF: 28960 | R$ 4348.49 | 30/10/2025
+2026-01-09 14:40:27,812 - INFO - ✅ Nenhuma duplicata encontrada para: TECFER COM E IND DE FERRO MAT CONSTR LTDA - PERFIL GALVANIZADO - NF: 28960
+2026-01-09 14:40:27,813 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,813 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,814 - INFO - Dados novos: TECFER COM E IND DE FERRO MAT CONSTR LTDA | TELHAS | NF: 22690 | R$ 1143.88 | 05/11/2025
+2026-01-09 14:40:27,816 - INFO - ✅ Nenhuma duplicata encontrada para: TECFER COM E IND DE FERRO MAT CONSTR LTDA - TELHAS - NF: 22690
+2026-01-09 14:40:27,817 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,817 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,818 - INFO - Dados novos: DEPÓSITO 040 | MATERIAIS DIVERSOS | NF: 1307 | R$ 1145.74 | 22/10/2025
+2026-01-09 14:40:27,819 - INFO - ✅ Nenhuma duplicata encontrada para: DEPÓSITO 040 - MATERIAIS DIVERSOS - NF: 1307
+2026-01-09 14:40:27,820 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,821 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,822 - INFO - Dados novos: LOJA DO PAULO | CADEADO, DOBRADIÇA, SOLUFER | NF: 30192 | R$ 465.00 | 03/11/2025
+2026-01-09 14:40:27,824 - INFO - ✅ Nenhuma duplicata encontrada para: LOJA DO PAULO - CADEADO, DOBRADIÇA, SOLUFER - NF: 30192
+2026-01-09 14:40:27,827 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,827 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,828 - INFO - Dados novos: LOJA ELETRICA LTDA | MATERIAL ELÉTRICO | NF: 943295 | R$ 1527.92 | 03/11/2025
+2026-01-09 14:40:27,829 - INFO - ✅ Nenhuma duplicata encontrada para: LOJA ELETRICA LTDA - MATERIAL ELÉTRICO - NF: 943295
+2026-01-09 14:40:27,830 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,830 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,831 - INFO - Dados novos: CASA FERREIRA GONÇALVES | MATERIAL HIDRÁULICO | NF: 477718 | R$ 1757.07 | 03/11/2025
+2026-01-09 14:40:27,833 - INFO - ✅ Nenhuma duplicata encontrada para: CASA FERREIRA GONÇALVES - MATERIAL HIDRÁULICO - NF: 477718
+2026-01-09 14:40:27,834 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 14:40:27,834 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 14:40:27,835 - INFO - Dados novos: RODRIGO ALEXANDRE DIAS | CAMINHÃO PIPA | NF:  | R$ 450.00 | 07/11/2025
+2026-01-09 14:40:27,836 - INFO - ✅ Nenhuma duplicata encontrada para: RODRIGO ALEXANDRE DIAS - CAMINHÃO PIPA - NF: 
+2026-01-09 14:40:27,838 - INFO - Lançamento inserido com ID 13 na linha 14
+2026-01-09 14:40:27,839 - INFO - Lançamento inserido com ID 14 na linha 15
+2026-01-09 14:40:27,841 - INFO - Lançamento inserido com ID 15 na linha 16
+2026-01-09 14:40:27,844 - INFO - Lançamento inserido com ID 16 na linha 17
+2026-01-09 14:40:27,845 - INFO - Lançamento inserido com ID 17 na linha 18
+2026-01-09 14:40:27,846 - INFO - Lançamento inserido com ID 18 na linha 19
+2026-01-09 14:40:27,847 - INFO - Lançamento inserido com ID 19 na linha 20
+2026-01-09 14:40:27,848 - INFO - Lançamento inserido com ID 20 na linha 21
+2026-01-09 14:40:27,849 - INFO - Lançamento inserido com ID 21 na linha 22
+2026-01-09 14:40:27,850 - INFO - Lançamento inserido com ID 22 na linha 23
+2026-01-09 14:40:27,851 - INFO - Lançamento inserido com ID 23 na linha 24
+2026-01-09 14:40:28,154 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-01-09 14:40:31,126 - INFO - Limpando 11 registros salvos da visualização
+2026-01-09 14:40:31,142 - INFO - Visualizador fechado - todos os registros foram processados
+2026-01-09 14:40:31,148 - INFO - Dados salvos removidos com sucesso da visualização
+2026-01-09 14:40:56,915 - INFO - Voltando ao menu principal
+2026-01-09 14:40:57,007 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-09 14:40:57,016 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-09 14:40:57,199 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-09 14:40:59,890 - INFO - Sistema encerrado pelo usuário
+2026-01-09 14:58:45,366 - INFO - Configurações importadas com sucesso via src.config
+2026-01-09 14:58:45,412 - INFO - Configurações importadas com sucesso
+2026-01-09 14:58:45,416 - INFO - Configurações do sistema importadas com sucesso
+2026-01-09 14:58:46,766 - INFO - Sistema iniciado em modo: TESTE
+2026-01-09 14:58:48,541 - INFO - Abrindo sistema de entrada de dados
+2026-01-09 14:58:50,372 - INFO - Proteções contra perda de dados configuradas
+2026-01-09 14:58:50,718 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-09 14:59:16,352 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-09 15:17:51,142 - INFO - ==================================================
+2026-01-09 15:17:51,143 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:17:51,144 - INFO - ==================================================
+2026-01-09 15:17:51,144 - INFO - Fornecedor: VITOR HENRIQUE
+2026-01-09 15:17:51,907 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 926!
+2026-01-09 15:17:51,908 - INFO - Dados carregados: VITOR HENRIQUE
+2026-01-09 15:17:51,909 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:17:51,912 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:17:51,912 - INFO - ==================================================
+2026-01-09 15:18:26,077 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:18:26,079 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-09 15:18:27,261 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 1
+2026-01-09 15:18:39,661 - INFO - ==================================================
+2026-01-09 15:18:39,662 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:18:39,663 - INFO - ==================================================
+2026-01-09 15:18:39,663 - INFO - Fornecedor: WELINGTON GOMES PAIVA
+2026-01-09 15:18:40,498 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 942!
+2026-01-09 15:18:40,499 - INFO - Dados carregados: WELINGTON GOMES PAIVA
+2026-01-09 15:18:40,500 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:18:40,503 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:18:40,503 - INFO - ==================================================
+2026-01-09 15:18:52,173 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:18:52,175 - INFO - ✅ Dados adicionados - Total: 2
+2026-01-09 15:21:41,682 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 2
+2026-01-09 15:26:20,391 - INFO - ==================================================
+2026-01-09 15:26:20,392 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:26:20,393 - INFO - ==================================================
+2026-01-09 15:26:20,393 - INFO - Fornecedor: WANDERSON ROMUALDO DE SOUZA
+2026-01-09 15:26:21,238 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 939!
+2026-01-09 15:26:21,239 - INFO - Dados carregados: WANDERSON ROMUALDO DE SOUZA
+2026-01-09 15:26:21,240 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:26:21,242 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:26:21,243 - INFO - ==================================================
+2026-01-09 15:26:35,983 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:26:35,985 - INFO - ✅ Dados adicionados - Total: 3
+2026-01-09 15:26:37,134 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 3
+2026-01-09 15:26:48,367 - INFO - ==================================================
+2026-01-09 15:26:48,368 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:26:48,368 - INFO - ==================================================
+2026-01-09 15:26:48,369 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-01-09 15:26:49,139 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-09 15:26:49,140 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-01-09 15:26:49,141 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:26:49,142 - INFO - ✓ Referência preenchida: PLOTAGENS
+2026-01-09 15:26:49,144 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:26:49,144 - INFO - ==================================================
+2026-01-09 15:27:05,360 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-09 15:27:16,918 - INFO - ==================================================
+2026-01-09 15:27:16,919 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:27:16,920 - INFO - ==================================================
+2026-01-09 15:27:16,920 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-01-09 15:27:17,792 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-09 15:27:17,793 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-01-09 15:27:17,794 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:27:17,794 - INFO - ✓ Referência preenchida: PLOTAGENS
+2026-01-09 15:27:17,796 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:27:17,797 - INFO - ==================================================
+2026-01-09 15:27:34,222 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:27:34,224 - INFO - ✅ Dados adicionados - Total: 4
+2026-01-09 15:27:35,766 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 4
+2026-01-09 15:28:01,055 - INFO - ============================================================
+2026-01-09 15:28:01,056 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-09 15:28:01,057 - INFO - ============================================================
+2026-01-09 15:28:01,057 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-09 15:28:01,058 - INFO - Dados disponíveis: 4 lançamento(s)
+2026-01-09 15:28:01,059 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-09 15:28:01,059 - INFO -   1. WELINGTON GOMES PAIVA - DIÁRIA - R$ 1600.00
+2026-01-09 15:28:01,060 - INFO -   2. WANDERSON ROMUALDO DE SOUZA - DIÁRIA - R$ 1000.00
+2026-01-09 15:28:01,060 - INFO -   3. ANCORA PAPELARIA - PLOTAGENS - R$ 14.00
+2026-01-09 15:28:01,061 - INFO - 🆕 Criando novo visualizador
+2026-01-09 15:28:01,062 - INFO - 🔍 Visualizador iniciado com 4 lançamentos
+2026-01-09 15:28:01,193 - INFO - ✅ Visualizador criado com 4 lançamento(s)
+2026-01-09 15:28:01,194 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-09 15:28:01,195 - INFO - ============================================================
+2026-01-09 15:28:11,470 - INFO - Iniciando envio de dados - Cliente: GUILHERME LEITE, Registros: 4
+2026-01-09 15:28:11,471 - INFO - Obtendo dados do visualizador
+2026-01-09 15:28:11,472 - INFO - Total de registros a processar: 4
+2026-01-09 15:28:11,472 - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2026-01-09 15:28:11,473 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\GUILHERME LEITE.xlsx
+2026-01-09 15:28:11,474 - INFO - Verificando integridade dos IDs antes da inserção
+2026-01-09 15:28:11,820 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 15:28:11,821 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 15:28:11,821 - INFO - Dados novos: VITOR HENRIQUE | DIÁRIA | NF:  | R$ 320.00 | 05/11/2025
+2026-01-09 15:28:11,823 - INFO - ✅ Nenhuma duplicata encontrada para: VITOR HENRIQUE - DIÁRIA - NF: 
+2026-01-09 15:28:11,824 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 15:28:11,825 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 15:28:11,825 - INFO - Dados novos: WELINGTON GOMES PAIVA | DIÁRIA | NF:  | R$ 1600.00 | 05/11/2025
+2026-01-09 15:28:11,828 - INFO - ✅ Nenhuma duplicata encontrada para: WELINGTON GOMES PAIVA - DIÁRIA - NF: 
+2026-01-09 15:28:11,828 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 15:28:11,829 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 15:28:11,830 - INFO - Dados novos: WANDERSON ROMUALDO DE SOUZA | DIÁRIA | NF:  | R$ 1000.00 | 05/11/2025
+2026-01-09 15:28:11,832 - INFO - ✅ Nenhuma duplicata encontrada para: WANDERSON ROMUALDO DE SOUZA - DIÁRIA - NF: 
+2026-01-09 15:28:11,833 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 15:28:11,834 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 15:28:11,835 - INFO - Dados novos: ANCORA PAPELARIA | PLOTAGENS | NF:  | R$ 14.00 | 06/11/2025
+2026-01-09 15:28:11,839 - INFO - ✅ Nenhuma duplicata encontrada para: ANCORA PAPELARIA - PLOTAGENS - NF: 
+2026-01-09 15:28:11,841 - INFO - Lançamento inserido com ID 24 na linha 25
+2026-01-09 15:28:11,842 - INFO - Lançamento inserido com ID 25 na linha 26
+2026-01-09 15:28:11,844 - INFO - Lançamento inserido com ID 26 na linha 27
+2026-01-09 15:28:11,845 - INFO - Lançamento inserido com ID 27 na linha 28
+2026-01-09 15:28:12,154 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-01-09 15:28:14,776 - INFO - Limpando 4 registros salvos da visualização
+2026-01-09 15:28:14,795 - INFO - Visualizador fechado - todos os registros foram processados
+2026-01-09 15:28:14,796 - INFO - Dados salvos removidos com sucesso da visualização
+2026-01-09 15:28:16,222 - INFO - Voltando ao menu principal
+2026-01-09 15:28:16,321 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-09 15:28:16,331 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-09 15:28:16,510 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-09 15:28:17,598 - INFO - Abrindo gestão de medições
+2026-01-09 15:28:59,845 - INFO - Abrindo sistema de entrada de dados
+2026-01-09 15:29:00,419 - INFO - Proteções contra perda de dados configuradas
+2026-01-09 15:29:00,510 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-09 15:29:03,103 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-09 15:29:23,612 - INFO - Edição do lançamento ID 28 salva com sucesso
+2026-01-09 15:30:07,460 - INFO - ==================================================
+2026-01-09 15:30:07,461 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:30:07,462 - INFO - ==================================================
+2026-01-09 15:30:07,462 - INFO - Fornecedor: MIGUEL SOUZA DE OLIVEIRA
+2026-01-09 15:30:08,264 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 659!
+2026-01-09 15:30:08,265 - INFO - Dados carregados: MIGUEL SOUZA DE OLIVEIRA
+2026-01-09 15:30:08,266 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:30:08,269 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:30:08,270 - INFO - ==================================================
+2026-01-09 15:31:01,660 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:31:01,661 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-09 15:31:02,739 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 1
+2026-01-09 15:31:13,091 - INFO - ==================================================
+2026-01-09 15:31:13,092 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:31:13,093 - INFO - ==================================================
+2026-01-09 15:31:13,093 - INFO - Fornecedor: DEPÓSITO 040
+2026-01-09 15:31:13,979 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 233!
+2026-01-09 15:31:13,980 - INFO - Dados carregados: DEPÓSITO 040
+2026-01-09 15:31:14,807 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 233!
+2026-01-09 15:31:14,808 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:31:14,811 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:31:14,812 - INFO - ==================================================
+2026-01-09 15:31:36,843 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:31:36,845 - INFO - ✅ Dados adicionados - Total: 2
+2026-01-09 15:31:41,074 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 2
+2026-01-09 15:31:44,940 - INFO - ============================================================
+2026-01-09 15:31:44,941 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-09 15:31:44,942 - INFO - ============================================================
+2026-01-09 15:31:44,942 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-09 15:31:44,943 - INFO - Dados disponíveis: 2 lançamento(s)
+2026-01-09 15:31:44,943 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-09 15:31:44,944 - INFO -   1. MIGUEL SOUZA DE OLIVEIRA - EXECUÇÃO PADRAO ENERGIA
+ - R$ 2500.00
+2026-01-09 15:31:44,945 - INFO -   2. DEPÓSITO 040 - LONA - R$ 630.00
+2026-01-09 15:31:44,946 - INFO - 🆕 Criando novo visualizador
+2026-01-09 15:31:44,947 - INFO - 🔍 Visualizador iniciado com 2 lançamentos
+2026-01-09 15:31:44,998 - INFO - ✅ Visualizador criado com 2 lançamento(s)
+2026-01-09 15:31:45,002 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-09 15:31:45,003 - INFO - ============================================================
+2026-01-09 15:32:17,083 - INFO - ==================================================
+2026-01-09 15:32:17,084 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:32:17,084 - INFO - ==================================================
+2026-01-09 15:32:17,085 - INFO - Fornecedor: UNIVERSO ELÉTRICO LTDA
+2026-01-09 15:32:17,963 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 895!
+2026-01-09 15:32:17,964 - INFO - Dados carregados: UNIVERSO ELÉTRICO LTDA
+2026-01-09 15:32:17,965 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:32:17,966 - INFO - ✓ Referência preenchida: MATERIAIS ELÉTRICOS
+2026-01-09 15:32:17,968 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:32:17,969 - INFO - ==================================================
+2026-01-09 15:32:51,826 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:32:51,828 - INFO - ✅ Dados adicionados - Total: 3
+2026-01-09 15:32:52,809 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 3
+2026-01-09 15:32:55,490 - INFO - ==================================================
+2026-01-09 15:32:55,491 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:32:55,491 - INFO - ==================================================
+2026-01-09 15:32:55,492 - INFO - Fornecedor: UNIVERSO ELÉTRICO LTDA
+2026-01-09 15:32:56,356 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 895!
+2026-01-09 15:32:56,357 - INFO - Dados carregados: UNIVERSO ELÉTRICO LTDA
+2026-01-09 15:32:56,358 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:32:56,359 - INFO - ✓ Referência preenchida: MATERIAIS ELÉTRICOS
+2026-01-09 15:32:56,361 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:32:56,362 - INFO - ==================================================
+2026-01-09 15:33:25,426 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:33:25,427 - INFO - ✅ Dados adicionados - Total: 4
+2026-01-09 15:33:26,561 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 4
+2026-01-09 15:33:31,865 - INFO - ==================================================
+2026-01-09 15:33:31,866 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:33:31,867 - INFO - ==================================================
+2026-01-09 15:33:31,868 - INFO - Fornecedor: UNIVERSO ELÉTRICO LTDA
+2026-01-09 15:33:32,713 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 895!
+2026-01-09 15:33:32,714 - INFO - Dados carregados: UNIVERSO ELÉTRICO LTDA
+2026-01-09 15:33:32,715 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:33:32,716 - INFO - ✓ Referência preenchida: MATERIAIS ELÉTRICOS
+2026-01-09 15:33:32,718 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:33:32,718 - INFO - ==================================================
+2026-01-09 15:34:10,001 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:34:10,003 - INFO - ✅ Dados adicionados - Total: 5
+2026-01-09 15:34:11,256 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 5
+2026-01-09 15:34:17,338 - INFO - ============================================================
+2026-01-09 15:34:17,339 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-09 15:34:17,339 - INFO - ============================================================
+2026-01-09 15:34:17,340 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-09 15:34:17,341 - INFO - Dados disponíveis: 5 lançamento(s)
+2026-01-09 15:34:17,341 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-09 15:34:17,342 - INFO -   1. UNIVERSO ELÉTRICO LTDA - MATERIAIS ELÉTRICOS - R$ 9376.33
+2026-01-09 15:34:17,343 - INFO -   2. UNIVERSO ELÉTRICO LTDA - MATERIAIS ELÉTRICOS - R$ 567.20
+2026-01-09 15:34:17,343 - INFO -   3. UNIVERSO ELÉTRICO LTDA - CURVA 90 - R$ 34.19
+2026-01-09 15:34:17,347 - INFO - 🆕 Criando novo visualizador
+2026-01-09 15:34:17,351 - INFO - 🔍 Visualizador iniciado com 5 lançamentos
+2026-01-09 15:34:17,399 - INFO - ✅ Visualizador criado com 5 lançamento(s)
+2026-01-09 15:34:17,404 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-09 15:34:17,404 - INFO - ============================================================
+2026-01-09 15:34:23,369 - INFO - Iniciando envio de dados - Cliente: GUILHERME LEITE, Registros: 5
+2026-01-09 15:34:23,370 - INFO - Obtendo dados do visualizador
+2026-01-09 15:34:23,371 - INFO - Total de registros a processar: 5
+2026-01-09 15:34:23,371 - INFO - Datas que serão afetadas pela inserção: ['05/11/2025']
+2026-01-09 15:34:23,372 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\GUILHERME LEITE.xlsx
+2026-01-09 15:34:23,373 - INFO - Verificando integridade dos IDs antes da inserção
+2026-01-09 15:34:23,660 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 15:34:23,661 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 15:34:23,662 - INFO - Dados novos: MIGUEL SOUZA DE OLIVEIRA | EXECUÇÃO PADRAO ENERGIA | NF:  | R$ 2500.00 | 06/11/2025
+2026-01-09 15:34:23,666 - INFO - ✅ Nenhuma duplicata encontrada para: MIGUEL SOUZA DE OLIVEIRA - EXECUÇÃO PADRAO ENERGIA - NF: 
+2026-01-09 15:34:23,667 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 15:34:23,668 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 15:34:23,669 - INFO - Dados novos: DEPÓSITO 040 | LONA | NF: 3002 | R$ 630.00 | 10/11/2025
+2026-01-09 15:34:23,672 - INFO - ✅ Nenhuma duplicata encontrada para: DEPÓSITO 040 - LONA - NF: 3002
+2026-01-09 15:34:23,672 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 15:34:23,673 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 15:34:23,674 - INFO - Dados novos: UNIVERSO ELÉTRICO LTDA | MATERIAIS ELÉTRICOS | NF: 328811 | R$ 9376.33 | 13/11/2025
+2026-01-09 15:34:23,677 - INFO - ✅ Nenhuma duplicata encontrada para: UNIVERSO ELÉTRICO LTDA - MATERIAIS ELÉTRICOS - NF: 328811
+2026-01-09 15:34:23,677 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 15:34:23,678 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 15:34:23,679 - INFO - Dados novos: UNIVERSO ELÉTRICO LTDA | MATERIAIS ELÉTRICOS | NF: 329716 | R$ 567.20 | 18/11/2025
+2026-01-09 15:34:23,683 - INFO - ✅ Nenhuma duplicata encontrada para: UNIVERSO ELÉTRICO LTDA - MATERIAIS ELÉTRICOS - NF: 329716
+2026-01-09 15:34:23,685 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 15:34:23,686 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 15:34:23,687 - INFO - Dados novos: UNIVERSO ELÉTRICO LTDA | CURVA 90 | NF: 330336 | R$ 34.19 | 20/11/2025
+2026-01-09 15:34:23,689 - INFO - ✅ Nenhuma duplicata encontrada para: UNIVERSO ELÉTRICO LTDA - CURVA 90 - NF: 330336
+2026-01-09 15:34:23,690 - INFO - Lançamento inserido com ID 29 na linha 30
+2026-01-09 15:34:23,692 - INFO - Lançamento inserido com ID 30 na linha 31
+2026-01-09 15:34:23,693 - INFO - Lançamento inserido com ID 31 na linha 32
+2026-01-09 15:34:23,695 - INFO - Lançamento inserido com ID 32 na linha 33
+2026-01-09 15:34:23,696 - INFO - Lançamento inserido com ID 33 na linha 34
+2026-01-09 15:34:23,932 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-01-09 15:34:26,202 - INFO - Limpando 5 registros salvos da visualização
+2026-01-09 15:34:26,220 - INFO - Visualizador fechado - todos os registros foram processados
+2026-01-09 15:34:26,222 - INFO - Dados salvos removidos com sucesso da visualização
+2026-01-09 15:36:10,568 - INFO - Voltando ao menu principal
+2026-01-09 15:36:10,673 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-09 15:36:10,691 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-09 15:36:10,866 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-09 15:36:14,102 - INFO - Sistema encerrado pelo usuário
+2026-01-09 15:38:35,873 - INFO - Configurações importadas com sucesso via src.config
+2026-01-09 15:38:35,894 - INFO - Configurações importadas com sucesso
+2026-01-09 15:38:35,898 - INFO - Configurações do sistema importadas com sucesso
+2026-01-09 15:38:37,086 - INFO - Sistema iniciado em modo: TESTE
+2026-01-09 15:38:39,557 - INFO - Abrindo gestão de medições
+2026-01-09 15:39:46,853 - INFO - Abrindo sistema de entrada de dados
+2026-01-09 15:39:47,696 - INFO - Proteções contra perda de dados configuradas
+2026-01-09 15:39:47,941 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-09 15:39:51,036 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-09 15:42:34,739 - INFO - Configurações importadas com sucesso via src.config
+2026-01-09 15:42:34,761 - INFO - Configurações importadas com sucesso
+2026-01-09 15:42:34,762 - INFO - Configurações do sistema importadas com sucesso
+2026-01-09 15:42:35,450 - INFO - Sistema iniciado em modo: TESTE
+2026-01-09 15:42:41,506 - INFO - Abrindo sistema de entrada de dados
+2026-01-09 15:42:42,813 - INFO - Proteções contra perda de dados configuradas
+2026-01-09 15:42:43,073 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-09 15:42:45,049 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-09 15:52:14,275 - INFO - ==================================================
+2026-01-09 15:52:14,275 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:52:14,276 - INFO - ==================================================
+2026-01-09 15:52:14,277 - INFO - Fornecedor: ALEIR FERREIRA DE AZEVEDO
+2026-01-09 15:52:14,979 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 29!
+2026-01-09 15:52:14,980 - INFO - Dados carregados: ALEIR FERREIRA DE AZEVEDO
+2026-01-09 15:52:14,981 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:52:14,984 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:52:14,985 - INFO - ==================================================
+2026-01-09 15:52:47,378 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:52:47,380 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-09 15:52:48,610 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 1
+2026-01-09 15:52:56,530 - INFO - ==================================================
+2026-01-09 15:52:56,531 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:52:56,532 - INFO - ==================================================
+2026-01-09 15:52:56,532 - INFO - Fornecedor: ELVIS PEREIRA DA SILVA
+2026-01-09 15:52:57,351 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 300!
+2026-01-09 15:52:57,352 - INFO - Dados carregados: ELVIS PEREIRA DA SILVA
+2026-01-09 15:52:57,353 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:52:57,356 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:52:57,357 - INFO - ==================================================
+2026-01-09 15:53:14,186 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:53:14,188 - INFO - ✅ Dados adicionados - Total: 2
+2026-01-09 15:53:15,593 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 2
+2026-01-09 15:53:27,322 - INFO - ==================================================
+2026-01-09 15:53:27,322 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:53:27,323 - INFO - ==================================================
+2026-01-09 15:53:27,324 - INFO - Fornecedor: WELINGTON GOMES PAIVA
+2026-01-09 15:53:28,152 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 942!
+2026-01-09 15:53:28,153 - INFO - Dados carregados: WELINGTON GOMES PAIVA
+2026-01-09 15:53:28,154 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:53:28,157 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:53:28,157 - INFO - ==================================================
+2026-01-09 15:53:44,898 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:53:44,899 - INFO - ✅ Dados adicionados - Total: 3
+2026-01-09 15:53:46,169 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 3
+2026-01-09 15:54:01,401 - INFO - ==================================================
+2026-01-09 15:54:01,402 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:54:01,403 - INFO - ==================================================
+2026-01-09 15:54:01,404 - INFO - Fornecedor: WANDERSON ROMUALDO DE SOUZA
+2026-01-09 15:54:02,245 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 939!
+2026-01-09 15:54:02,246 - INFO - Dados carregados: WANDERSON ROMUALDO DE SOUZA
+2026-01-09 15:54:02,247 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:54:02,249 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:54:02,249 - INFO - ==================================================
+2026-01-09 15:54:15,257 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:54:15,259 - INFO - ✅ Dados adicionados - Total: 4
+2026-01-09 15:54:17,521 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 4
+2026-01-09 15:54:27,777 - INFO - ==================================================
+2026-01-09 15:54:27,778 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:54:27,778 - INFO - ==================================================
+2026-01-09 15:54:27,779 - INFO - Fornecedor: MARCO JHON DOS SANTOS PAIVA
+2026-01-09 15:54:28,613 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 622!
+2026-01-09 15:54:28,614 - INFO - Dados carregados: MARCO JHON DOS SANTOS PAIVA
+2026-01-09 15:54:28,615 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:54:28,618 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:54:28,618 - INFO - ==================================================
+2026-01-09 15:54:42,217 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:54:42,224 - INFO - ✅ Dados adicionados - Total: 5
+2026-01-09 15:54:43,296 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 5
+2026-01-09 15:54:52,937 - INFO - ==================================================
+2026-01-09 15:54:52,937 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:54:52,938 - INFO - ==================================================
+2026-01-09 15:54:52,939 - INFO - Fornecedor: RAIMUNDO NONATO FRAGA
+2026-01-09 15:54:53,775 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 754!
+2026-01-09 15:54:53,776 - INFO - Dados carregados: RAIMUNDO NONATO FRAGA
+2026-01-09 15:54:53,777 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:54:53,779 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:54:53,780 - INFO - ==================================================
+2026-01-09 15:55:08,361 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:55:08,362 - INFO - ✅ Dados adicionados - Total: 6
+2026-01-09 15:55:09,911 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 6
+2026-01-09 15:55:32,664 - INFO - ==================================================
+2026-01-09 15:55:32,665 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:55:32,666 - INFO - ==================================================
+2026-01-09 15:55:32,666 - INFO - Fornecedor: OLÍDIO DE JESUS
+2026-01-09 15:55:33,506 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 696!
+2026-01-09 15:55:33,507 - INFO - Dados carregados: OLÍDIO DE JESUS
+2026-01-09 15:55:33,509 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:55:33,511 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:55:33,512 - INFO - ==================================================
+2026-01-09 15:55:47,368 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:55:47,370 - INFO - ✅ Dados adicionados - Total: 7
+2026-01-09 15:55:48,463 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 7
+2026-01-09 15:55:56,704 - INFO - ==================================================
+2026-01-09 15:55:56,705 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:55:56,705 - INFO - ==================================================
+2026-01-09 15:55:56,706 - INFO - Fornecedor: ANTONIO ZEFERINO LEANDRO
+2026-01-09 15:55:57,529 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 72!
+2026-01-09 15:55:57,530 - INFO - Dados carregados: ANTONIO ZEFERINO LEANDRO
+2026-01-09 15:55:57,531 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:55:57,533 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:55:57,534 - INFO - ==================================================
+2026-01-09 15:56:19,128 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:56:19,130 - INFO - ✅ Dados adicionados - Total: 8
+2026-01-09 15:56:20,079 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 8
+2026-01-09 15:56:29,103 - INFO - ==================================================
+2026-01-09 15:56:29,104 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:56:29,105 - INFO - ==================================================
+2026-01-09 15:56:29,106 - INFO - Fornecedor: IRLANDO JORGE DOS SANTOS
+2026-01-09 15:56:29,935 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 457!
+2026-01-09 15:56:29,936 - INFO - Dados carregados: IRLANDO JORGE DOS SANTOS
+2026-01-09 15:56:29,937 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:56:29,940 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:56:29,940 - INFO - ==================================================
+2026-01-09 15:56:41,759 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:56:41,761 - INFO - ✅ Dados adicionados - Total: 9
+2026-01-09 15:56:42,903 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 9
+2026-01-09 15:56:54,111 - INFO - ==================================================
+2026-01-09 15:56:54,112 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:56:54,112 - INFO - ==================================================
+2026-01-09 15:56:54,113 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-01-09 15:56:54,923 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-09 15:56:54,923 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-01-09 15:56:54,924 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:56:54,925 - INFO - ✓ Referência preenchida: PLOTAGENS
+2026-01-09 15:56:54,927 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:56:54,928 - INFO - ==================================================
+2026-01-09 15:57:03,679 - INFO - ==================================================
+2026-01-09 15:57:03,680 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:57:03,680 - INFO - ==================================================
+2026-01-09 15:57:03,681 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-01-09 15:57:04,445 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-09 15:57:04,446 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-01-09 15:57:04,447 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:57:04,447 - INFO - ✓ Referência preenchida: PLOTAGENS
+2026-01-09 15:57:04,450 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:57:04,450 - INFO - ==================================================
+2026-01-09 15:57:23,607 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:57:23,609 - INFO - ✅ Dados adicionados - Total: 10
+2026-01-09 15:57:24,790 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 10
+2026-01-09 15:57:56,726 - INFO - ==================================================
+2026-01-09 15:57:56,727 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:57:56,728 - INFO - ==================================================
+2026-01-09 15:57:56,728 - INFO - Fornecedor: ROGÉRIO VASCONCELOS SANTOS
+2026-01-09 15:57:57,560 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 805!
+2026-01-09 15:57:57,561 - INFO - Dados carregados: ROGÉRIO VASCONCELOS SANTOS
+2026-01-09 15:57:57,563 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:57:57,565 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:57:57,566 - INFO - ==================================================
+2026-01-09 15:58:28,054 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:58:28,056 - INFO - ✅ Dados adicionados - Total: 11
+2026-01-09 15:58:29,157 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 11
+2026-01-09 15:58:39,094 - INFO - ==================================================
+2026-01-09 15:58:39,094 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:58:39,095 - INFO - ==================================================
+2026-01-09 15:58:39,096 - INFO - Fornecedor: VR AREIA E BRITA
+2026-01-09 15:58:39,961 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 930!
+2026-01-09 15:58:39,962 - INFO - Dados carregados: VR AREIA E BRITA
+2026-01-09 15:58:39,963 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:58:39,966 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:58:39,966 - INFO - ==================================================
+2026-01-09 15:59:09,925 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:59:09,927 - INFO - ✅ Dados adicionados - Total: 12
+2026-01-09 15:59:11,397 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 12
+2026-01-09 15:59:24,285 - INFO - ==================================================
+2026-01-09 15:59:24,286 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 15:59:24,287 - INFO - ==================================================
+2026-01-09 15:59:24,287 - INFO - Fornecedor: MARCELO MONTEIRO MAIA
+2026-01-09 15:59:25,193 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 614!
+2026-01-09 15:59:25,193 - INFO - Dados carregados: MARCELO MONTEIRO MAIA
+2026-01-09 15:59:25,194 - INFO - Campos preenchidos com sucesso!
+2026-01-09 15:59:25,195 - INFO - ✓ Referência preenchida: TERRAPLANAGEM
+2026-01-09 15:59:25,197 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 15:59:25,198 - INFO - ==================================================
+2026-01-09 15:59:58,765 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 15:59:58,766 - INFO - ✅ Dados adicionados - Total: 13
+2026-01-09 15:59:59,724 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 13
+2026-01-09 16:00:10,765 - INFO - ==================================================
+2026-01-09 16:00:10,765 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:00:10,766 - INFO - ==================================================
+2026-01-09 16:00:10,767 - INFO - Fornecedor: UNIÃO IMPERMEABILIZANTES
+2026-01-09 16:00:11,593 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 896!
+2026-01-09 16:00:11,594 - INFO - Dados carregados: UNIÃO IMPERMEABILIZANTES
+2026-01-09 16:00:12,435 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 896!
+2026-01-09 16:00:12,436 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:00:12,439 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:00:12,439 - INFO - ==================================================
+2026-01-09 16:00:45,156 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:00:45,158 - INFO - ✅ Dados adicionados - Total: 14
+2026-01-09 16:00:46,323 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 14
+2026-01-09 16:00:57,700 - INFO - ==================================================
+2026-01-09 16:00:57,701 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:00:57,701 - INFO - ==================================================
+2026-01-09 16:00:57,702 - INFO - Fornecedor: ELITE EPIS
+2026-01-09 16:00:58,539 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 298!
+2026-01-09 16:00:58,540 - INFO - Dados carregados: ELITE EPIS
+2026-01-09 16:00:58,541 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:00:58,542 - INFO - ✓ Referência preenchida: EQUIPAMENTOS DE PROTEÇÃO
+2026-01-09 16:00:58,545 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:00:58,545 - INFO - ==================================================
+2026-01-09 16:01:24,268 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:01:24,269 - INFO - ✅ Dados adicionados - Total: 15
+2026-01-09 16:01:25,115 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 15
+2026-01-09 16:01:36,284 - INFO - ==================================================
+2026-01-09 16:01:36,284 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:01:36,285 - INFO - ==================================================
+2026-01-09 16:01:36,286 - INFO - Fornecedor: PASI SEGURO
+2026-01-09 16:01:37,127 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 709!
+2026-01-09 16:01:37,128 - INFO - Dados carregados: PASI SEGURO
+2026-01-09 16:01:37,128 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:01:37,129 - INFO - ✓ Referência preenchida: SEGURO COLABORADORES
+2026-01-09 16:01:37,131 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:01:37,132 - INFO - ==================================================
+2026-01-09 16:01:54,915 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:01:54,917 - INFO - ✅ Dados adicionados - Total: 16
+2026-01-09 16:01:55,683 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 16
+2026-01-09 16:02:09,731 - INFO - ==================================================
+2026-01-09 16:02:09,732 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:02:09,732 - INFO - ==================================================
+2026-01-09 16:02:09,733 - INFO - Fornecedor: AMAZONIA UNIFORMES LTDA
+2026-01-09 16:02:10,547 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 49!
+2026-01-09 16:02:10,548 - INFO - Dados carregados: AMAZONIA UNIFORMES LTDA
+2026-01-09 16:02:11,437 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 49!
+2026-01-09 16:02:11,438 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:02:11,439 - INFO - ✓ Referência preenchida: UNIFORMES
+2026-01-09 16:02:11,441 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:02:11,442 - INFO - ==================================================
+2026-01-09 16:02:38,195 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:02:38,197 - INFO - ✅ Dados adicionados - Total: 17
+2026-01-09 16:02:39,290 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 17
+2026-01-09 16:02:49,410 - INFO - ==================================================
+2026-01-09 16:02:49,412 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:02:49,412 - INFO - ==================================================
+2026-01-09 16:02:49,413 - INFO - Fornecedor: FGTS
+2026-01-09 16:02:50,257 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 345!
+2026-01-09 16:02:50,257 - INFO - Dados carregados: FGTS
+2026-01-09 16:02:51,087 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 345!
+2026-01-09 16:02:51,089 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:02:51,091 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:02:51,092 - INFO - ==================================================
+2026-01-09 16:03:41,098 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:03:41,100 - INFO - ✅ Dados adicionados - Total: 18
+2026-01-09 16:03:42,442 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 18
+2026-01-09 16:03:48,970 - INFO - ==================================================
+2026-01-09 16:03:48,970 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:03:48,971 - INFO - ==================================================
+2026-01-09 16:03:48,972 - INFO - Fornecedor: INSS/IRRF
+2026-01-09 16:03:49,795 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 453!
+2026-01-09 16:03:49,796 - INFO - Dados carregados: INSS/IRRF
+2026-01-09 16:03:50,658 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 453!
+2026-01-09 16:03:50,659 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:03:50,662 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:03:50,662 - INFO - ==================================================
+2026-01-09 16:04:12,777 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:04:12,779 - INFO - ✅ Dados adicionados - Total: 19
+2026-01-09 16:04:13,873 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 19
+2026-01-09 16:04:29,257 - INFO - ==================================================
+2026-01-09 16:04:29,258 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:04:29,258 - INFO - ==================================================
+2026-01-09 16:04:29,259 - INFO - Fornecedor: PLIMAX PERSONA
+2026-01-09 16:04:30,048 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 733!
+2026-01-09 16:04:30,049 - INFO - Dados carregados: PLIMAX PERSONA
+2026-01-09 16:04:30,050 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:04:30,050 - INFO - ✓ Referência preenchida: CESTAS BÁSICAS
+2026-01-09 16:04:30,053 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:04:30,053 - INFO - ==================================================
+2026-01-09 16:05:00,433 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:05:00,435 - INFO - ✅ Dados adicionados - Total: 20
+2026-01-09 16:05:01,600 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 20
+2026-01-09 16:05:18,472 - INFO - ==================================================
+2026-01-09 16:05:18,473 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:05:18,474 - INFO - ==================================================
+2026-01-09 16:05:18,475 - INFO - Fornecedor: C3 TECNOLOGIA
+2026-01-09 16:05:19,228 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 140!
+2026-01-09 16:05:19,228 - INFO - Dados carregados: C3 TECNOLOGIA
+2026-01-09 16:05:20,079 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 140!
+2026-01-09 16:05:20,081 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:05:20,083 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:05:20,084 - INFO - ==================================================
+2026-01-09 16:06:14,800 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:06:14,802 - INFO - ✅ Dados adicionados - Total: 21
+2026-01-09 16:06:16,247 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 21
+2026-01-09 16:06:25,976 - INFO - ==================================================
+2026-01-09 16:06:25,976 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:06:25,977 - INFO - ==================================================
+2026-01-09 16:06:25,978 - INFO - Fornecedor: BETON MIX
+2026-01-09 16:06:26,800 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 107!
+2026-01-09 16:06:26,801 - INFO - Dados carregados: BETON MIX
+2026-01-09 16:06:27,637 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 107!
+2026-01-09 16:06:27,638 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:06:27,640 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:06:27,640 - INFO - ==================================================
+2026-01-09 16:06:59,743 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:06:59,745 - INFO - ✅ Dados adicionados - Total: 22
+2026-01-09 16:07:01,231 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 22
+2026-01-09 16:07:14,695 - INFO - ==================================================
+2026-01-09 16:07:14,696 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:07:14,696 - INFO - ==================================================
+2026-01-09 16:07:14,697 - INFO - Fornecedor: MADESCOM MADEIREIRA
+2026-01-09 16:07:15,534 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 600!
+2026-01-09 16:07:15,535 - INFO - Dados carregados: MADESCOM MADEIREIRA
+2026-01-09 16:07:16,322 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 600!
+2026-01-09 16:07:16,324 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:07:16,326 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:07:16,326 - INFO - ==================================================
+2026-01-09 16:07:21,830 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 600!
+2026-01-09 16:07:31,078 - INFO - Planilha salva com sucesso!
+2026-01-09 16:07:35,767 - INFO - ==================================================
+2026-01-09 16:07:35,767 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-09 16:07:35,768 - INFO - ==================================================
+2026-01-09 16:07:35,769 - INFO - Fornecedor: MADESCOM MADEIREIRA
+2026-01-09 16:07:36,848 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 600!
+2026-01-09 16:07:36,849 - INFO - Dados carregados: MADESCOM MADEIREIRA
+2026-01-09 16:07:36,850 - INFO - Campos preenchidos com sucesso!
+2026-01-09 16:07:36,851 - INFO - ✓ Referência preenchida: MADEIRAS
+2026-01-09 16:07:36,853 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-09 16:07:36,854 - INFO - ==================================================
+2026-01-09 16:07:55,510 - INFO - Iniciando adição de dados - Cliente: GUILHERME LEITE
+2026-01-09 16:07:55,512 - INFO - ✅ Dados adicionados - Total: 23
+2026-01-09 16:07:56,629 - INFO - Dados adicionados com sucesso - Cliente: GUILHERME LEITE, Total: 23
+2026-01-09 16:07:58,704 - INFO - ============================================================
+2026-01-09 16:07:58,704 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-01-09 16:07:58,705 - INFO - ============================================================
+2026-01-09 16:07:58,706 - INFO - Cliente atual: GUILHERME LEITE
+2026-01-09 16:07:58,706 - INFO - Dados disponíveis: 23 lançamento(s)
+2026-01-09 16:07:58,707 - INFO - 📋 Últimos 3 lançamentos:
+2026-01-09 16:07:58,708 - INFO -   1. C3 TECNOLOGIA - CHAPEIRA RELÓGIO DE PONTO - R$ 44.00
+2026-01-09 16:07:58,708 - INFO -   2. BETON MIX - CONCRETAGEM - R$ 18000.00
+2026-01-09 16:07:58,709 - INFO -   3. MADESCOM MADEIREIRA - MADEIRAS - R$ 11750.00
+2026-01-09 16:07:58,709 - INFO - 🆕 Criando novo visualizador
+2026-01-09 16:07:58,710 - INFO - 🔍 Visualizador iniciado com 23 lançamentos
+2026-01-09 16:07:58,823 - INFO - ✅ Visualizador criado com 23 lançamento(s)
+2026-01-09 16:07:58,824 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-01-09 16:07:58,825 - INFO - ============================================================
+2026-01-09 16:08:09,510 - INFO - Iniciando envio de dados - Cliente: GUILHERME LEITE, Registros: 23
+2026-01-09 16:08:09,511 - INFO - Obtendo dados do visualizador
+2026-01-09 16:08:09,512 - INFO - Total de registros a processar: 23
+2026-01-09 16:08:09,513 - INFO - Datas que serão afetadas pela inserção: ['20/11/2025']
+2026-01-09 16:08:09,514 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\GUILHERME LEITE.xlsx
+2026-01-09 16:08:09,515 - INFO - Verificando integridade dos IDs antes da inserção
+2026-01-09 16:08:09,864 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,865 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,865 - INFO - Dados novos: ALEIR FERREIRA DE AZEVEDO | SALÁRIO | NF:  | R$ 2400.00 | 20/11/2025
+2026-01-09 16:08:09,868 - INFO - ✅ Nenhuma duplicata encontrada para: ALEIR FERREIRA DE AZEVEDO - SALÁRIO - NF: 
+2026-01-09 16:08:09,869 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,870 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,870 - INFO - Dados novos: ELVIS PEREIRA DA SILVA | SALÁRIO | NF:  | R$ 817.20 | 20/11/2025
+2026-01-09 16:08:09,874 - INFO - ✅ Nenhuma duplicata encontrada para: ELVIS PEREIRA DA SILVA - SALÁRIO - NF: 
+2026-01-09 16:08:09,875 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,876 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,877 - INFO - Dados novos: WELINGTON GOMES PAIVA | SALÁRIO | NF:  | R$ 1104.80 | 20/11/2025
+2026-01-09 16:08:09,880 - INFO - ✅ Nenhuma duplicata encontrada para: WELINGTON GOMES PAIVA - SALÁRIO - NF: 
+2026-01-09 16:08:09,880 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,881 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,882 - INFO - Dados novos: WANDERSON ROMUALDO DE SOUZA | DIÁRIA | NF:  | R$ 1935.00 | 20/11/2025
+2026-01-09 16:08:09,885 - INFO - ✅ Nenhuma duplicata encontrada para: WANDERSON ROMUALDO DE SOUZA - DIÁRIA - NF: 
+2026-01-09 16:08:09,885 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,887 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,887 - INFO - Dados novos: MARCO JHON DOS SANTOS PAIVA | DIÁRIA | NF:  | R$ 2365.00 | 20/11/2025
+2026-01-09 16:08:09,892 - INFO - ✅ Nenhuma duplicata encontrada para: MARCO JHON DOS SANTOS PAIVA - DIÁRIA - NF: 
+2026-01-09 16:08:09,893 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,894 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,895 - INFO - Dados novos: RAIMUNDO NONATO FRAGA | DIÁRIA | NF:  | R$ 2150.00 | 20/11/2025
+2026-01-09 16:08:09,897 - INFO - ✅ Nenhuma duplicata encontrada para: RAIMUNDO NONATO FRAGA - DIÁRIA - NF: 
+2026-01-09 16:08:09,898 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,898 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,899 - INFO - Dados novos: OLÍDIO DE JESUS | DIÁRIA | NF:  | R$ 430.00 | 20/11/2025
+2026-01-09 16:08:09,902 - INFO - ✅ Nenhuma duplicata encontrada para: OLÍDIO DE JESUS - DIÁRIA - NF: 
+2026-01-09 16:08:09,902 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,903 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,904 - INFO - Dados novos: ANTONIO ZEFERINO LEANDRO | DIÁRIA | NF:  | R$ 215.00 | 20/11/2025
+2026-01-09 16:08:09,909 - INFO - ✅ Nenhuma duplicata encontrada para: ANTONIO ZEFERINO LEANDRO - DIÁRIA - NF: 
+2026-01-09 16:08:09,910 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,911 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,912 - INFO - Dados novos: IRLANDO JORGE DOS SANTOS | DIÁRIA | NF:  | R$ 2150.00 | 20/11/2025
+2026-01-09 16:08:09,914 - INFO - ✅ Nenhuma duplicata encontrada para: IRLANDO JORGE DOS SANTOS - DIÁRIA - NF: 
+2026-01-09 16:08:09,915 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,916 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,917 - INFO - Dados novos: ANCORA PAPELARIA | PLOTAGENS | NF:  | R$ 492.00 | 20/11/2025
+2026-01-09 16:08:09,920 - INFO - ✅ Nenhuma duplicata encontrada para: ANCORA PAPELARIA - PLOTAGENS - NF: 
+2026-01-09 16:08:09,923 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,924 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,924 - INFO - Dados novos: ROGÉRIO VASCONCELOS SANTOS | RELÓGIO DE PONTO | NF:  | R$ 500.00 | 20/11/2025
+2026-01-09 16:08:09,927 - INFO - ✅ Nenhuma duplicata encontrada para: ROGÉRIO VASCONCELOS SANTOS - RELÓGIO DE PONTO - NF: 
+2026-01-09 16:08:09,928 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,929 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,929 - INFO - Dados novos: VR AREIA E BRITA | AREIA - PED. Nº 4920 | NF:  | R$ 1350.00 | 20/11/2025
+2026-01-09 16:08:09,932 - INFO - ✅ Nenhuma duplicata encontrada para: VR AREIA E BRITA - AREIA - PED. Nº 4920 - NF: 
+2026-01-09 16:08:09,933 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,934 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,934 - INFO - Dados novos: MARCELO MONTEIRO MAIA | VIAGENS TERRA, DIARIA RETRO | NF:  | R$ 4590.00 | 20/11/2025
+2026-01-09 16:08:09,938 - INFO - ✅ Nenhuma duplicata encontrada para: MARCELO MONTEIRO MAIA - VIAGENS TERRA, DIARIA RETRO - NF: 
+2026-01-09 16:08:09,939 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,940 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,940 - INFO - Dados novos: UNIÃO IMPERMEABILIZANTES | SIKA E BROXA | NF: 12772 | R$ 575.00 | 24/11/2025
+2026-01-09 16:08:09,943 - INFO - ✅ Nenhuma duplicata encontrada para: UNIÃO IMPERMEABILIZANTES - SIKA E BROXA - NF: 12772
+2026-01-09 16:08:09,944 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,945 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,947 - INFO - Dados novos: ELITE EPIS | EQUIPAMENTOS DE PROTEÇÃO | NF: 108625 | R$ 3075.52 | 28/11/2025
+2026-01-09 16:08:09,951 - INFO - ✅ Nenhuma duplicata encontrada para: ELITE EPIS - EQUIPAMENTOS DE PROTEÇÃO - NF: 108625
+2026-01-09 16:08:09,952 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,953 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,954 - INFO - Dados novos: PASI SEGURO | SEGURO COLABORADORES | NF:  | R$ 66.57 | 30/11/2025
+2026-01-09 16:08:09,961 - INFO - ✅ Nenhuma duplicata encontrada para: PASI SEGURO - SEGURO COLABORADORES - NF: 
+2026-01-09 16:08:09,962 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,963 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,963 - INFO - Dados novos: AMAZONIA UNIFORMES LTDA | UNIFORMES | NF: 874 | R$ 1084.00 | 05/12/2025
+2026-01-09 16:08:09,966 - INFO - ✅ Nenhuma duplicata encontrada para: AMAZONIA UNIFORMES LTDA - UNIFORMES - NF: 874
+2026-01-09 16:08:09,967 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,967 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,968 - INFO - Dados novos: FGTS | REF 10/2024 | NF:  | R$ 403.38 | 20/11/2025
+2026-01-09 16:08:09,970 - INFO - ✅ Nenhuma duplicata encontrada para: FGTS - REF 10/2024 - NF: 
+2026-01-09 16:08:09,971 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,973 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,975 - INFO - Dados novos: INSS/IRRF | REF 10/2025 | NF:  | R$ 1855.12 | 20/11/2025
+2026-01-09 16:08:09,977 - INFO - ✅ Nenhuma duplicata encontrada para: INSS/IRRF - REF 10/2025 - NF: 
+2026-01-09 16:08:09,978 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,978 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,979 - INFO - Dados novos: PLIMAX PERSONA | CESTAS BÁSICAS | NF: 259493 | R$ 1938.79 | 28/11/2025
+2026-01-09 16:08:09,982 - INFO - ✅ Nenhuma duplicata encontrada para: PLIMAX PERSONA - CESTAS BÁSICAS - NF: 259493
+2026-01-09 16:08:09,983 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,983 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,985 - INFO - Dados novos: C3 TECNOLOGIA | CHAPEIRA RELÓGIO DE PONTO | NF: 4205 | R$ 44.00 | 07/11/2025
+2026-01-09 16:08:09,989 - INFO - ✅ Nenhuma duplicata encontrada para: C3 TECNOLOGIA - CHAPEIRA RELÓGIO DE PONTO - NF: 4205
+2026-01-09 16:08:09,990 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,991 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,992 - INFO - Dados novos: BETON MIX | CONCRETAGEM | NF: 1473 | R$ 18000.00 | 10/11/2025
+2026-01-09 16:08:09,995 - INFO - ✅ Nenhuma duplicata encontrada para: BETON MIX - CONCRETAGEM - NF: 1473
+2026-01-09 16:08:09,995 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-01-09 16:08:09,996 - INFO - === INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===
+2026-01-09 16:08:09,996 - INFO - Dados novos: MADESCOM MADEIREIRA | MADEIRAS | NF:  | R$ 11750.00 | 14/11/2025
+2026-01-09 16:08:10,000 - INFO - ✅ Nenhuma duplicata encontrada para: MADESCOM MADEIREIRA - MADEIRAS - NF: 
+2026-01-09 16:08:10,001 - INFO - Lançamento inserido com ID 36 na linha 37
+2026-01-09 16:08:10,002 - INFO - Lançamento inserido com ID 37 na linha 38
+2026-01-09 16:08:10,004 - INFO - Lançamento inserido com ID 38 na linha 39
+2026-01-09 16:08:10,008 - INFO - Lançamento inserido com ID 39 na linha 40
+2026-01-09 16:08:10,009 - INFO - Lançamento inserido com ID 40 na linha 41
+2026-01-09 16:08:10,010 - INFO - Lançamento inserido com ID 41 na linha 42
+2026-01-09 16:08:10,011 - INFO - Lançamento inserido com ID 42 na linha 43
+2026-01-09 16:08:10,012 - INFO - Lançamento inserido com ID 43 na linha 44
+2026-01-09 16:08:10,014 - INFO - Lançamento inserido com ID 44 na linha 45
+2026-01-09 16:08:10,015 - INFO - Lançamento inserido com ID 45 na linha 46
+2026-01-09 16:08:10,016 - INFO - Lançamento inserido com ID 46 na linha 47
+2026-01-09 16:08:10,017 - INFO - Lançamento inserido com ID 47 na linha 48
+2026-01-09 16:08:10,018 - INFO - Lançamento inserido com ID 48 na linha 49
+2026-01-09 16:08:10,019 - INFO - Lançamento inserido com ID 49 na linha 50
+2026-01-09 16:08:10,021 - INFO - Lançamento inserido com ID 50 na linha 51
+2026-01-09 16:08:10,024 - INFO - Lançamento inserido com ID 51 na linha 52
+2026-01-09 16:08:10,025 - INFO - Lançamento inserido com ID 52 na linha 53
+2026-01-09 16:08:10,027 - INFO - Lançamento inserido com ID 53 na linha 54
+2026-01-09 16:08:10,028 - INFO - Lançamento inserido com ID 54 na linha 55
+2026-01-09 16:08:10,029 - INFO - Lançamento inserido com ID 55 na linha 56
+2026-01-09 16:08:10,031 - INFO - Lançamento inserido com ID 56 na linha 57
+2026-01-09 16:08:10,032 - INFO - Lançamento inserido com ID 57 na linha 58
+2026-01-09 16:08:10,033 - INFO - Lançamento inserido com ID 58 na linha 59
+2026-01-09 16:08:10,280 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-01-09 16:08:12,472 - INFO - Limpando 23 registros salvos da visualização
+2026-01-09 16:08:12,489 - INFO - Visualizador fechado - todos os registros foram processados
+2026-01-09 16:08:12,490 - INFO - Dados salvos removidos com sucesso da visualização
+2026-01-09 16:08:22,742 - INFO - Voltando ao menu principal
+2026-01-09 16:08:22,830 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-09 16:08:22,912 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-09 16:08:23,097 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-09 16:08:24,190 - INFO - Abrindo gestão de medições
+2026-01-09 16:09:01,054 - INFO - Abrindo sistema de entrada de dados
+2026-01-09 16:09:01,907 - INFO - Proteções contra perda de dados configuradas
+2026-01-09 16:09:02,025 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-09 16:09:04,528 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-09 16:19:04,854 - INFO - Voltando ao menu principal
+2026-01-09 16:19:04,975 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-09 16:19:05,007 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-09 16:19:05,210 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-09 16:19:08,205 - INFO - Sistema encerrado pelo usuário
+2026-01-09 16:25:37,558 - INFO - Configurações importadas com sucesso via src.config
+2026-01-09 16:25:37,583 - INFO - Configurações importadas com sucesso
+2026-01-09 16:25:37,583 - INFO - Configurações do sistema importadas com sucesso
+2026-01-09 16:25:38,387 - INFO - Sistema iniciado em modo: TESTE
+2026-01-09 16:25:39,993 - INFO - Abrindo sistema de entrada de dados
+2026-01-09 16:25:41,395 - INFO - Proteções contra perda de dados configuradas
+2026-01-09 16:25:41,683 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-09 16:25:44,216 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
