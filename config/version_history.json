@@ -197,5 +197,19 @@
             "Correção no travamento e saída do sistema"
         ],
         "timestamp": "2026-01-02T19:23:38.994709"
+    },
+    {
+        "version": "1.5.4",
+        "release_date": "12/01/2026",
+        "changes": [
+            "Melhoria na sincronização do Visualizador de Lançamentos",
+            "Correção no travamento e saída do sistema",
+            "Correção de edição em massa no Visualizador de Lançamentos",
+            "Correção de edição em massa no Gerenciador de Lançamentos",
+            "Correção no lançamento de medições",
+            "Correção na inclusão de contrato de administração com mais de um administrador",
+            "Outras correções menores e melhorias de desempenho"
+        ],
+        "timestamp": "2026-01-12T17:29:17.980092"
     }
 ]
