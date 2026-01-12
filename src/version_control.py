@@ -10,11 +10,16 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 5,
-    "patch": 3,
-    "release_date": "02/01/2026",
+    "patch": 4,
+    "release_date": "12/01/2026",
     "changes": [
         "Melhoria na sincronização do Visualizador de Lançamentos",
-        "Correção no travamento e saída do sistema"
+        "Correção no travamento e saída do sistema",
+        "Correção de edição em massa no Visualizador de Lançamentos",
+        "Correção de edição em massa no Gerenciador de Lançamentos",
+        "Correção no lançamento de medições",
+        "Correção na inclusão de contrato de administração com mais de um administrador",
+        "Outras correções menores e melhorias de desempenho"        
     ]
 }
 
