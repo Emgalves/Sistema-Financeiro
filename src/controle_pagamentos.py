@@ -15,7 +15,6 @@ from src.config.utils import (
     formatar_moeda,
     validar_data,
     formatar_valor_excel,
-    aplicar_formatacao_celula,
     buscar_dados_bancarios_fornecedor
 )
 
@@ -348,72 +347,119 @@ class ControlePagamentos:
                         # Atualizar status e data
                         ws_contratos.cell(row=row_idx, column=31, value="PAGO")
                         ws_contratos.cell(row=row_idx, column=32, value=data_pag)
-                        aplicar_formatacao_celula(ws_contratos.cell(row=row_idx, column=32), 'data')
+                        # Aplicar formato de data
+                        ws_contratos.cell(row=row_idx, column=32).number_format = 'DD/MM/YYYY'
                         
                         parcelas_processadas += 1
                         break
             
-            # Criar UM ÚNICO lançamento na aba Dados com o valor total
-            nova_linha = ws_dados.max_row + 1
+            # ✅ CORREÇÃO: Criar UM lançamento POR ADMINISTRADOR (agrupar por CNPJ)
+            # Agrupar parcelas por administrador
+            parcelas_por_admin = {}
             
-            # Preencher dados do lançamento único conforme estrutura real
-            ws_dados.cell(row=nova_linha, column=1, value=data_pag)  # DATA_REL
-            aplicar_formatacao_celula(ws_dados.cell(row=nova_linha, column=1), 'data')
+            for parcela in parcelas_info:
+                cnpj = parcela['cnpj']
+                if cnpj not in parcelas_por_admin:
+                    parcelas_por_admin[cnpj] = {
+                        'nome': parcela['nome'],
+                        'parcelas': [],
+                        'valor_total': 0
+                    }
+                
+                parcelas_por_admin[cnpj]['parcelas'].append(parcela)
+                parcelas_por_admin[cnpj]['valor_total'] += parcela['valor']
             
-            ws_dados.cell(row=nova_linha, column=2, value=1)  # TP_DESP (1 = Taxa de Administração)
+            # Criar um lançamento para cada administrador
+            lancamentos_criados = 0
             
-            # Usar CNPJ do primeiro fornecedor
-            ws_dados.cell(row=nova_linha, column=3, value=parcelas_info[0]['cnpj'])  # CNPJ_CPF
-            
-            # Nome com indicação de múltiplas parcelas
-            if len(parcelas_info) == 1:
-                nome_lancamento = f"{parcelas_info[0]['nome']} - Parc. {parcelas_info[0]['num_parcela']}"
-            else:
-                parcelas_nums = ", ".join([str(p['num_parcela']) for p in parcelas_info])
-                nome_lancamento = f"{parcelas_info[0]['nome']} - Parcs. {parcelas_nums}"
-            
-            ws_dados.cell(row=nova_linha, column=4, value=nome_lancamento)  # NOME
-            
-            # Descrição das parcelas na coluna REFERÊNCIA
-            descricao_parcelas = " + ".join([
-                f"Contrato {p['num_contrato']} Parc.{p['num_parcela']}"
-                for p in parcelas_info
-            ])
-            ws_dados.cell(row=nova_linha, column=5, value=f"Taxa Administração: {descricao_parcelas}")  # REFERÊNCIA
-            
-            # VALOR na coluna correta (coluna 9 = índice 9)
-            ws_dados.cell(row=nova_linha, column=9, value=valor_total)  # VALOR
-            aplicar_formatacao_celula(ws_dados.cell(row=nova_linha, column=9), 'moeda')
-            
-            # Data de vencimento (mesma data do pagamento)
-            ws_dados.cell(row=nova_linha, column=10, value=data_pag)  # DT_VENCTO
-            aplicar_formatacao_celula(ws_dados.cell(row=nova_linha, column=10), 'data')
-            
-            # Categoria
-            ws_dados.cell(row=nova_linha, column=11, value="TAX")  # CATEGORIA
-            
-            # Buscar dados bancários
-            dados_bancarios = buscar_dados_bancarios_fornecedor(parcelas_info[0]['cnpj'], self.cliente_selecionado)
-            if dados_bancarios:
-                ws_dados.cell(row=nova_linha, column=12, value=dados_bancarios)  # DADOS_BANCARIOS (string formatada)
-            
-            # Observação
-            ws_dados.cell(row=nova_linha, column=13, value="LANÇAMENTO AUTOMÁTICO - Pagamento Múltiplo")  # OBSERVAÇÃO
-            
-            # Status
-            ws_dados.cell(row=nova_linha, column=14, value="PAGAMENTO REGISTRADO")  # STATUS
+            for cnpj, dados_admin in parcelas_por_admin.items():
+                nova_linha = ws_dados.max_row + 1
+                
+                # Preencher dados do lançamento
+                ws_dados.cell(row=nova_linha, column=1, value=data_pag)  # DATA_REL
+                ws_dados.cell(row=nova_linha, column=1).number_format = 'DD/MM/YYYY'
+                
+                ws_dados.cell(row=nova_linha, column=2, value=2)  # TP_DESP (2 = Transferências e boletos)
+                
+                ws_dados.cell(row=nova_linha, column=3, value=cnpj)  # CNPJ_CPF
+                
+                # Nome SEM número de parcela
+                ws_dados.cell(row=nova_linha, column=4, value=dados_admin['nome'])  # NOME
+                
+                # ✅ CORREÇÃO: Referência no formato "TAXA ADM - num_parcela/total"
+                parcelas_list = dados_admin['parcelas']
+                parcelas_nums = [str(p['num_parcela']) for p in parcelas_list]
+                
+                # ✅ CORREÇÃO: Descobrir o total de parcelas ÚNICO do contrato
+                # Usar conjunto (set) para evitar contar duplicatas (múltiplos admins)
+                num_contrato_ref = parcelas_list[0]['num_contrato']
+                parcelas_unicas = set()
+                
+                for row in ws_contratos.iter_rows(min_row=3):
+                    if str(row[24].value) == num_contrato_ref:  # Coluna Y - Referência
+                        num_parcela = row[25].value  # Coluna Z - Número
+                        if num_parcela:
+                            parcelas_unicas.add(num_parcela)
+                
+                # Total = maior número de parcela única
+                total_parcelas = max(parcelas_unicas) if parcelas_unicas else 0
+                
+                # Montar referência com formato correto
+                if len(parcelas_nums) == 1:
+                    referencia = f"TAXA ADM - {parcelas_nums[0]}/{total_parcelas}"
+                else:
+                    referencia = f"TAXA ADM - {','.join(parcelas_nums)}/{total_parcelas}"
+                
+                ws_dados.cell(row=nova_linha, column=5, value=referencia)  # REFERÊNCIA
+                
+                # Preencher VR_UNIT (coluna 7) com valor_total
+                ws_dados.cell(row=nova_linha, column=7, value=dados_admin['valor_total'])  # VR_UNIT
+                ws_dados.cell(row=nova_linha, column=7).number_format = '#,##0.00'
+                
+                # Preencher DIAS (coluna 8) com 1
+                ws_dados.cell(row=nova_linha, column=8, value=1)  # DIAS
+                
+                # VALOR - apenas deste administrador (coluna 9)
+                ws_dados.cell(row=nova_linha, column=9, value=dados_admin['valor_total'])  # VALOR
+                ws_dados.cell(row=nova_linha, column=9).number_format = '#,##0.00'
+                
+                # Data de vencimento (mesma data do pagamento)
+                ws_dados.cell(row=nova_linha, column=10, value=data_pag)  # DT_VENCTO
+                ws_dados.cell(row=nova_linha, column=10).number_format = 'DD/MM/YYYY'
+                
+                # Categoria
+                ws_dados.cell(row=nova_linha, column=11, value="TAX")  # CATEGORIA
+                
+                # Buscar dados bancários deste administrador específico
+                dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj, self.cliente_selecionado)
+                if dados_bancarios:
+                    ws_dados.cell(row=nova_linha, column=12, value=dados_bancarios)  # DADOS_BANCARIOS
+                
+                # Observação
+                ws_dados.cell(row=nova_linha, column=13, value="LANÇAMENTO AUTOMÁTICO - Pagamento Registrado")  # OBSERVAÇÃO
+                
+                # Status = "ATIVO"
+                ws_dados.cell(row=nova_linha, column=14, value="ATIVO")  # STATUS
+                
+                lancamentos_criados += 1
             
             # Salvar arquivo
             wb.save(arquivo_cliente)
             wb.close()
             
-            # Mensagem de sucesso
+            # Mensagem de sucesso detalhada
+            detalhes_admins = "\n".join([
+                f"  • {dados['nome']}: R$ {dados['valor_total']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                for dados in parcelas_por_admin.values()
+            ])
+            
             messagebox.showinfo(
                 "Sucesso",
                 f"Pagamento registrado com sucesso!\n\n"
                 f"✓ {parcelas_processadas} parcela(s) marcada(s) como PAGO\n"
-                f"✓ 1 lançamento criado na aba Dados\n"
-                f"✓ Valor total: R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+                f"✓ {lancamentos_criados} lançamento(s) criado(s) na aba Dados\n\n"
+                f"Lançamentos por administrador:\n{detalhes_admins}\n\n"
+                f"VALOR TOTAL: R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
                 parent=self.root
             )
             
@@ -625,8 +671,30 @@ class ControlePagamentos:
     # (As demais funções permanecem iguais ao código original)
     
     def carregar_clientes(self):
-        """Carrega lista de clientes disponíveis"""
+        """Carrega lista de clientes ativos usando função de utils.py"""
         try:
+            # Importar função de utils se ainda não foi importada
+            from src.config.utils import obter_clientes_ativos
+            
+            # Obter apenas clientes ativos
+            clientes, info_clientes = obter_clientes_ativos(mostrar_inativos=False)
+            
+            if not clientes:
+                messagebox.showwarning("Aviso", "Nenhum cliente ativo encontrado!")
+                return
+            
+            # Atualizar combobox com clientes ativos
+            self.cliente_combo['values'] = clientes
+            
+            # Armazenar informações dos clientes para referência futura
+            self.info_clientes = info_clientes
+            
+        except ImportError:
+            # Fallback para método antigo se utils.py não estiver disponível
+            messagebox.showwarning("Aviso", 
+                "Módulo utils.py não encontrado. Carregando todos os clientes do diretório.\n" +
+                "Para filtrar apenas clientes ativos, certifique-se de que src.config.utils está acessível.")
+            
             if not os.path.exists(PASTA_CLIENTES):
                 messagebox.showerror("Erro", f"Pasta de clientes não encontrada: {PASTA_CLIENTES}")
                 return
@@ -648,7 +716,7 @@ class ControlePagamentos:
             messagebox.showerror("Erro", f"Erro ao carregar clientes: {str(e)}")
     
     def carregar_parcelas(self, event=None):
-        """Carrega parcelas pendentes do cliente selecionado"""
+        """Carrega parcelas pendentes do cliente selecionado (apenas de contratos ATIVOS)"""
         try:
             # Limpar treeview
             for item in self.tree_parcelas.get_children():
@@ -671,30 +739,71 @@ class ControlePagamentos:
             wb = load_workbook(arquivo_cliente, data_only=True)
             ws = wb['Contratos_ADM']
             
-            # Iterar pelas linhas
+            # ✅ PASSO 1: Identificar quais contratos estão ATIVOS
+            # Ler a área de CONTRATOS (colunas A-E) para saber o status
+            contratos_ativos = set()
+            
             for row in ws.iter_rows(min_row=3):
-                # Verificar se tem dados
-                num_contrato = row[24].value
+                num_contrato = row[0].value  # Coluna A - Nº Contrato
+                status_contrato = row[3].value  # Coluna D - Status
+                
+                # Se tem número de contrato e status é ATIVO
+                if num_contrato and status_contrato == 'ATIVO':
+                    contratos_ativos.add(str(num_contrato).strip().upper())
+            
+            # ✅ PASSO 2: Carregar parcelas APENAS de contratos ATIVOS
+            # Usar um set para evitar duplicação de parcelas
+            # Chave: (num_contrato, num_parcela, cnpj)
+            parcelas_processadas = set()
+            
+            for row in ws.iter_rows(min_row=3):
+                # Área de PARCELAS (colunas Y-AH / índices 24-33)
+                num_contrato = row[24].value  # Coluna Y - Referência (Contrato)
                 if not num_contrato:
                     continue
                 
-                num_parcela = row[25].value
-                cnpj = row[26].value
-                nome_adm = row[27].value
-                eventos = row[28].value or ""
-                valor_original = row[29].value
-                status = row[30].value or "PENDENTE"
-                data_pagamento = row[31].value
+                # ✅ FILTRO 1: Verificar se o contrato está ATIVO
+                contrato_key = str(num_contrato).strip().upper()
+                if contrato_key not in contratos_ativos:
+                    continue  # Pular parcelas de contratos inativos
                 
-                # Mostrar apenas parcelas pendentes
+                num_parcela = row[25].value  # Coluna Z - Número
+                cnpj = row[26].value  # Coluna AA - CNPJ/CPF
+                nome_adm = row[27].value  # Coluna AB - Nome
+                eventos = row[32].value or ""  # Coluna AG - Eventos/Fases
+                valor_original = row[29].value  # Coluna AD - Valor
+                status = row[30].value or "PENDENTE"  # Coluna AE - Status
+                data_pagamento = row[31].value  # Coluna AF - Data Pagamento
+                
+                # ✅ FILTRO 2: Mostrar apenas parcelas PENDENTES
                 if status not in ["PENDENTE", None, ""]:
                     continue
+                
+                # ✅ FILTRO 3: Evitar duplicação
+                # Cada parcela deve aparecer UMA VEZ, mesmo que tenha múltiplos administradores
+                # Chave única: contrato + número da parcela + cnpj do administrador
+                chave_parcela = (contrato_key, num_parcela, str(cnpj).strip() if cnpj else "")
+                
+                if chave_parcela in parcelas_processadas:
+                    continue  # Já foi processada
+                
+                parcelas_processadas.add(chave_parcela)
                 
                 # Formatar valores
                 valor_original_fmt = f"R$ {valor_original:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.') if valor_original else "R$ 0,00"
                 valor_pagar_fmt = valor_original_fmt  # Inicialmente igual ao original
                 
-                data_pag_fmt = data_pagamento.strftime('%d/%m/%Y') if data_pagamento else ""
+                # Formatar data de pagamento (se existir e for uma data válida)
+                data_pag_fmt = ""
+                if data_pagamento:
+                    if isinstance(data_pagamento, (date, datetime)):
+                        data_pag_fmt = data_pagamento.strftime('%d/%m/%Y')
+                    elif isinstance(data_pagamento, str):
+                        try:
+                            data_obj = datetime.strptime(data_pagamento, '%Y-%m-%d')
+                            data_pag_fmt = data_obj.strftime('%d/%m/%Y')
+                        except:
+                            data_pag_fmt = str(data_pagamento)
                 
                 # Inserir no treeview
                 self.tree_parcelas.insert('', 'end', values=(
