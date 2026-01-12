@@ -3814,7 +3814,8 @@ class GestaoMedicoes:
                 'dt_vencto': dt_vencto.strftime('%d/%m/%Y'),
                 'dados_bancarios': self.obter_dados_bancarios(dados_medicao['cnpj']),
                 'observacao': f"MEDIÇÃO {id_medicao} - {dados_medicao['observacao'] or ''}",
-                'forma_pagamento': 'PIX'  # Forma padrão
+                'forma_pagamento': 'PIX',  # Forma padrão
+                'status': 'ATIVO'  # Status do lançamento
             }
             
             # Adicionar à lista de dados para incluir
@@ -4841,6 +4842,7 @@ class GestaoMedicoes:
                 sheet.cell(row=proxima_linha, column=11, value=dados['categoria'])
                 sheet.cell(row=proxima_linha, column=12, value=dados['dados_bancarios'])
                 sheet.cell(row=proxima_linha, column=13, value=dados['observacao'])
+                sheet.cell(row=proxima_linha, column=14, value=dados['status'])
 
             try:
                 # Tentar salvar o arquivo
