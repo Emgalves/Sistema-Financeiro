@@ -8348,10 +8348,9 @@ class SistemaEntradaDados:
     def verificar_duplicidade_antes_salvar(self, sheet, dados):
         """
         Verifica se um lançamento similar já existe na planilha usando critérios inteligentes
-        VERSÃO CORRIGIDA - Considera NFs diferentes como NÃO-DUPLICATAS
+        VERSÃO CORRIGIDA - Menos restritiva para evitar falsos positivos
         """
         try:
-            # CORREÇÃO: Remover redefinição do logger
             logger.info("🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!")
             logger.debug(f"🔍 Dados recebidos: {dados}")
             
@@ -8365,16 +8364,13 @@ class SistemaEntradaDados:
             try:
                 valor_novo = float(str(dados['valor']).replace(',', '.'))
             except (ValueError, TypeError):
-                logger.error(f"Erro ao converter valor para verificação: {dados['valor']}")
+                logger.error(f"Erro ao converter valor: {dados['valor']}")
                 return False
             
-            logger.info(f"=== INICIANDO VERIFICAÇÃO DE DUPLICIDADE ===")
-            logger.info(f"Dados novos: {nome_novo} | {referencia_nova} | NF: {nf_nova} | R$ {valor_novo:.2f} | {dt_vencto_nova}")
-            
-            duplicatas_encontradas = 0
+            logger.info(f"=== VERIFICANDO DUPLICIDADE ===")
+            logger.info(f"Dados: {nome_novo} | {referencia_nova} | NF: {nf_nova} | R$ {valor_novo:.2f} | {dt_vencto_nova}")
             
             for row_num, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
-                # Pular linhas vazias
                 if not row[0]:
                     continue
 
@@ -8383,113 +8379,72 @@ class SistemaEntradaDados:
                 if status == 'EXCLUIDO':
                     continue
                     
-                # Normalizar dados da planilha para comparação
-                nome_planilha = str(row[3] or '').strip().upper()  # NOME
-                referencia_planilha = str(row[4] or '').strip().upper()  # REFERÊNCIA
-                nf_planilha = str(row[5] or '').strip().upper()  # NF
-                cnpj_planilha = str(row[2] or '').strip()  # CNPJ_CPF
+                # Normalizar dados da planilha
+                nome_planilha = str(row[3] or '').strip().upper()
+                referencia_planilha = str(row[4] or '').strip().upper()
+                nf_planilha = str(row[5] or '').strip().upper()
+                cnpj_planilha = str(row[2] or '').strip()
                 
-                # Comparar datas de vencimento
+                # Data de vencimento
                 dt_vencto_planilha = ""
-                if row[9]:  # DT_VENCTO
+                if row[9]:
                     if isinstance(row[9], datetime):
                         dt_vencto_planilha = row[9].strftime('%d/%m/%Y')
                     else:
                         dt_vencto_planilha = str(row[9]).strip()
                 
-                # Comparar valores
+                # Valor
                 try:
-                    valor_planilha = float(str(row[8] or 0).replace(',', '.'))  # VALOR
+                    valor_planilha = float(str(row[8] or 0).replace(',', '.'))
                     diferenca_valor = abs(valor_planilha - valor_novo)
                 except (ValueError, TypeError):
                     continue
                 
-                # LOG para debug
-                logger.debug(f"Linha {row_num}: {nome_planilha} | {referencia_planilha} | NF: {nf_planilha} | R$ {valor_planilha:.2f} | {dt_vencto_planilha}")
-                
                 # =============================================================
-                # CRITÉRIO 1: DUPLICATA EXATA POR NF
+                # CRITÉRIO 1: DUPLICATA EXATA POR NF (MAIS RESTRITIVO)
                 # =============================================================
                 if (nf_nova and nf_planilha and 
                     nf_nova == nf_planilha and 
                     nome_planilha == nome_novo and 
                     diferenca_valor < 0.01 and 
-                    dt_vencto_planilha == dt_vencto_nova):
+                    dt_vencto_planilha == dt_vencto_nova and
+                    referencia_planilha == referencia_nova):  # ← ADICIONAR REFERÊNCIA
                     
-                    logger.warning(f"🚨 DUPLICATA EXATA DETECTADA (Critério: NF)!")
-                    logger.warning(f"   NF: {nf_nova}")
-                    logger.warning(f"   Nome: {nome_novo}")
-                    logger.warning(f"   Valor: R$ {valor_novo:.2f}")
-                    logger.warning(f"   Vencimento: {dt_vencto_nova}")
-                    logger.warning(f"   Linha existente: {row_num}")
+                    logger.warning(f"🚨 DUPLICATA EXATA (NF)!")
+                    logger.warning(f"   Linha: {row_num}")
                     return True
                 
                 # =============================================================
-                # CRITÉRIO 2: MESMO FORNECEDOR + VALOR + DATA + REFERÊNCIA SIMILAR
-                # (mas apenas se NFs não existirem OU forem iguais)
+                # CRITÉRIO 2: MESMO FORNECEDOR + VALOR + DATA + REFERÊNCIA EXATA
+                # (Sem similaridade - apenas igualdade)
                 # =============================================================
                 if (nome_planilha == nome_novo and 
+                    referencia_planilha == referencia_nova and  # ← IGUALDADE EXATA
                     diferenca_valor < 0.01 and 
                     dt_vencto_planilha == dt_vencto_nova):
                     
                     # SE AMBAS AS NFs EXISTEM E SÃO DIFERENTES, NÃO É DUPLICATA
                     if nf_nova and nf_planilha and nf_nova != nf_planilha:
-                        logger.debug(f"   ✅ NFs diferentes detectadas ('{nf_nova}' vs '{nf_planilha}') - NÃO é duplicata")
+                        logger.debug(f"   ✅ NFs diferentes ('{nf_nova}' vs '{nf_planilha}') - NÃO é duplicata")
                         continue
                     
-                    # Verificar similaridade da referência
-                    similaridade = self._calcular_similaridade_simples(referencia_nova, referencia_planilha)
-                    
-                    logger.debug(f"   Similaridade entre '{referencia_nova}' e '{referencia_planilha}': {similaridade:.2%}")
-                    
-                    if similaridade >= 0.7:  # 70% de similaridade
-                        logger.warning(f"🚨 DUPLICATA PROVÁVEL DETECTADA (Critério: Fornecedor+Valor+Data+Referência Similar)!")
-                        logger.warning(f"   Nome: {nome_novo}")
-                        logger.warning(f"   Referência nova: '{referencia_nova}'")
-                        logger.warning(f"   Referência existente: '{referencia_planilha}'")
-                        logger.warning(f"   Similaridade: {similaridade:.2%}")
-                        logger.warning(f"   Valor: R$ {valor_novo:.2f}")
-                        logger.warning(f"   Vencimento: {dt_vencto_nova}")
-                        logger.warning(f"   NF nova: '{nf_nova}' | NF existente: '{nf_planilha}'")
-                        logger.warning(f"   Linha existente: {row_num}")
-                        return True
+                    logger.warning(f"🚨 DUPLICATA DETECTADA (Referência Exata)!")
+                    logger.warning(f"   Linha: {row_num}")
+                    return True
                 
                 # =============================================================
-                # CRITÉRIO 3: MESMO CNPJ + VALOR + DATA (independente da referência)
-                # (mas apenas se NFs não existirem OU forem iguais)
+                # CRITÉRIO 3 (REMOVIDO): Não usar similaridade de referência
                 # =============================================================
-                if (cnpj_novo and cnpj_planilha and 
-                    cnpj_novo == cnpj_planilha and 
-                    diferenca_valor < 0.01 and 
-                    dt_vencto_planilha == dt_vencto_nova):
-                    
-                    # SE AMBAS AS NFs EXISTEM E SÃO DIFERENTES, NÃO É DUPLICATA
-                    if nf_nova and nf_planilha and nf_nova != nf_planilha:
-                        logger.debug(f"   ✅ NFs diferentes detectadas ('{nf_nova}' vs '{nf_planilha}') - NÃO é duplicata")
-                        continue
-                    
-                    logger.warning(f"🚨 DUPLICATA SUSPEITA DETECTADA (Critério: CNPJ+Valor+Data)!")
-                    logger.warning(f"   CNPJ: {cnpj_novo}")
-                    logger.warning(f"   Nome: {nome_novo}")
-                    logger.warning(f"   Valor: R$ {valor_novo:.2f}")
-                    logger.warning(f"   Vencimento: {dt_vencto_nova}")
-                    logger.warning(f"   Referência nova: '{referencia_nova}'")
-                    logger.warning(f"   Referência existente: '{referencia_planilha}'")
-                    logger.warning(f"   NF nova: '{nf_nova}' | NF existente: '{nf_planilha}'")
-                    logger.warning(f"   Linha existente: {row_num}")
-                    return True
+                # ANTES: usava _calcular_similaridade_simples() - MUITO RESTRITIVO
+                # AGORA: removido para evitar falsos positivos
             
-            logger.info(f"✅ Nenhuma duplicata encontrada para: {nome_novo} - {referencia_nova} - NF: {nf_nova}")
+            logger.info(f"✅ Nenhuma duplicata para: {nome_novo} - {referencia_nova}")
             return False
             
         except Exception as e:
-            logger.error(f"❌ ERRO na verificação de duplicidade: {str(e)}")
+            logger.error(f"❌ ERRO na verificação: {str(e)}")
             logger.error(traceback.format_exc())
             return False
-        
-        finally:
-            if hasattr(self, '_is_saving'):
-                self._is_saving = False
 
     def _calcular_similaridade_simples(self, texto1, texto2):
         """
@@ -8643,12 +8598,19 @@ class SistemaEntradaDados:
                 lancamentos_duplicados = []
                 lancamentos_validos = []
                 
-                for dados in dados_para_processar:
+                for i, dados in enumerate(dados_para_processar, 1):  # ← ADICIONAR ÍNDICE
+                    logger.info(f"📋 Processando lançamento {i}/{len(dados_para_processar)}: {dados['nome']} - {dados['referencia']}")
+                    
                     if self.verificar_duplicidade_antes_salvar(sheet, dados):
                         lancamentos_duplicados.append(dados)
-                        logger.warning(f"Duplicata detectada: {dados['nome']} - {dados['referencia']} - R$ {dados['valor']}")
+                        logger.warning(f"   ❌ Marcado como DUPLICATA")
                     else:
                         lancamentos_validos.append(dados)
+                        logger.info(f"   ✅ Marcado como VÁLIDO")
+                
+                logger.info(f"\n📊 RESUMO DA VERIFICAÇÃO:")
+                logger.info(f"   ✅ Lançamentos válidos: {len(lancamentos_validos)}")
+                logger.info(f"   ❌ Possíveis duplicatas: {len(lancamentos_duplicados)}")
 
                 # ==========================================
                 # TRATAMENTO INTELIGENTE DE DUPLICATAS
