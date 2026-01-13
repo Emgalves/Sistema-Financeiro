@@ -10842,3 +10842,34 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-01-12 15:00:28,212 - INFO - 📐 Restaurando geometria: 900x1000+0+0
 2026-01-12 15:00:28,408 - INFO - ✅ Menu principal restaurado com sucesso
 2026-01-12 15:00:30,977 - INFO - Sistema encerrado pelo usuário
+2026-01-13 12:47:45,501 - INFO - Configurações importadas com sucesso via src.config
+2026-01-13 12:47:45,529 - INFO - Configurações importadas com sucesso
+2026-01-13 12:47:45,530 - INFO - Configurações do sistema importadas com sucesso
+2026-01-13 12:47:46,929 - INFO - Sistema iniciado em modo: TESTE
+2026-01-13 12:47:48,608 - INFO - Abrindo sistema de entrada de dados
+2026-01-13 12:47:49,959 - INFO - Proteções contra perda de dados configuradas
+2026-01-13 12:47:50,328 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-13 12:47:54,258 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-01-13 12:48:10,680 - INFO - ==================================================
+2026-01-13 12:48:10,680 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-13 12:48:10,681 - INFO - ==================================================
+2026-01-13 12:48:10,682 - INFO - Fornecedor: CARMO SION MATERIAIS DE CONSTRUÇÃO LTDA
+2026-01-13 12:48:11,677 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 156!
+2026-01-13 12:48:11,678 - INFO - Dados carregados: CARMO SION MATERIAIS DE CONSTRUÇÃO LTDA
+2026-01-13 12:48:12,728 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 156!
+2026-01-13 12:48:12,729 - INFO - Campos preenchidos com sucesso!
+2026-01-13 12:48:12,731 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-13 12:48:12,732 - INFO - ==================================================
+2026-01-13 12:49:18,327 - INFO - Iniciando adição de dados - Cliente: JOSE PAULO DE SOUZA PEIXE
+2026-01-13 12:49:18,328 - INFO - ✅ Dados adicionados - Total: 1
+2026-01-13 12:49:20,134 - INFO - Dados adicionados com sucesso - Cliente: JOSE PAULO DE SOUZA PEIXE, Total: 1
+2026-01-13 12:49:31,406 - INFO - ==================================================
+2026-01-13 12:49:31,407 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-13 12:49:31,408 - INFO - ==================================================
+2026-01-13 12:49:31,409 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-01-13 12:49:32,484 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 57!
+2026-01-13 12:49:32,485 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-01-13 12:49:32,486 - INFO - Campos preenchidos com sucesso!
+2026-01-13 12:49:32,488 - INFO - ✓ Referência preenchida: PLOTAGENS
+2026-01-13 12:49:32,490 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-13 12:49:32,491 - INFO - ==================================================
