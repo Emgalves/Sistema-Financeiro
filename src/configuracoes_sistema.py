@@ -281,7 +281,7 @@ class GerenciadorConfiguracoes:
     def __init__(self, parent=None):
         self.root = tk.Toplevel(parent) if parent else tk.Tk()
         self.root.title("Configurações do Sistema")
-        self.root.geometry("920x850")
+        self.root.geometry("920x950")
         
         # Usar o caminho da variável de classe 
         self.config_path = GerenciadorConfiguracoes.CONFIG_PATH
@@ -343,27 +343,10 @@ class GerenciadorConfiguracoes:
                         'categoria': 'MO',
                         'tipo_despesa': 3,
                         'ativo': True,
-                        'observacao': 'Folha de pagamento mensal'
-                    },
-                    {
-                        'nome': 'MHS MENSALIDADE',
-                        'dia_vencimento': 5,
-                        'recorrencia': 'mensal',
-                        'valor_estimado': 0.0,
-                        'categoria': 'MO',
-                        'tipo_despesa': 3,
-                        'ativo': True,
-                        'observacao': ''
-                    },
-                    {
-                        'nome': 'MHS EVENTO SST ESOCIAL',
-                        'dia_vencimento': 20,
-                        'recorrencia': 'mensal',
-                        'valor_estimado': 0.0,
-                        'categoria': 'MO',
-                        'tipo_despesa': 3,
-                        'ativo': True,
-                        'observacao': 'Serviços de segurança do trabalho'
+                        'observacao': 'Gestão de folha de pagamento',
+                        'mes_referencia': 'anterior',  # ✅ NOVO CAMPO
+                        'mes_ref_numero': None,
+                        'meses_ocorrencias': None
                     },
                     {
                         'nome': 'FGTS',
@@ -373,17 +356,36 @@ class GerenciadorConfiguracoes:
                         'categoria': 'MO',
                         'tipo_despesa': 3,
                         'ativo': True,
-                        'observacao': 'Recolhimento FGTS'
+                        'observacao': 'Recolhimento FGTS',
+                        'mes_referencia': 'anterior',  # ✅ Mês ANTERIOR
+                        'mes_ref_numero': None,
+                        'meses_ocorrencias': None
                     },
                     {
-                        'nome': 'INSS/IRRF',
+                        'nome': 'COPASA',
                         'dia_vencimento': 20,
                         'recorrencia': 'mensal',
                         'valor_estimado': 0.0,
-                        'categoria': 'MO',
+                        'categoria': 'SERV',
                         'tipo_despesa': 3,
                         'ativo': True,
-                        'observacao': 'Recolhimento INSS/IRRF'
+                        'observacao': 'Conta de água',
+                        'mes_referencia': 'atual',  # ✅ Mês ATUAL
+                        'mes_ref_numero': None,
+                        'meses_ocorrencias': None
+                    },
+                    {
+                        'nome': 'MOTOBOY',
+                        'dia_vencimento': 5,
+                        'recorrencia': 'mensal',
+                        'valor_estimado': 0.0,
+                        'categoria': 'DIV',
+                        'tipo_despesa': 2,
+                        'ativo': True,
+                        'observacao': 'Serviço de motoboy obra',
+                        'mes_referencia': 'anterior',  # ✅ Mês ANTERIOR
+                        'mes_ref_numero': None,
+                        'meses_ocorrencias': None
                     }
                 ],
                 'historico_alteracoes': []
@@ -1116,6 +1118,17 @@ class GerenciadorConfiguracoes:
         self.campos_novo['observacao'] = ttk.Entry(frame_novo, width=25)
         self.campos_novo['observacao'].grid(row=row, column=1, columnspan=2, padx=5, pady=5, sticky='ew')
         row += 1
+
+        # Tipo de referencia
+        ttk.Label(frame_novo, text="Tipo de Referência:").grid(row=row, column=0, padx=5, pady=5, sticky='w')
+        self.campos_novo['tipo_referencia_mes'] = ttk.Combobox(frame_novo,
+                                                        values=['anterior', 'atual'],
+                                                        state='readonly', width=10) 
+        self.campos_novo['tipo_referencia_mes'].set('anterior')
+        self.campos_novo['tipo_referencia_mes'].grid(row=row, column=1, padx=5, pady=5, sticky='w')
+        row += 1
+                                                               
+                                        
         
         # ========================================================================
         # BOTÃO ADICIONAR - APÓS TODOS OS CAMPOS
@@ -1210,7 +1223,36 @@ class GerenciadorConfiguracoes:
         self.campos_editar['valor_estimado'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='w')
         row_edit += 1
         
-        # Botões de ação
+        # Separador visual (opcional, mas recomendado)
+        ttk.Separator(frame_editar, orient='horizontal').grid(
+            row=row_edit, column=0, columnspan=2, sticky='ew', pady=5
+        )
+        row_edit += 1
+        
+        # Label + Campo
+        ttk.Label(frame_editar, text="Tipo Ref.:").grid(
+            row=row_edit, column=0, padx=5, pady=3, sticky='w'
+        )
+        self.campos_editar['tipo_referencia_mes'] = ttk.Combobox(frame_editar,
+            values=['anterior', 'atual'],
+            state='readonly', width=15)
+        self.campos_editar['tipo_referencia_mes'].set('anterior')  # Padrão
+        self.campos_editar['tipo_referencia_mes'].grid(
+            row=row_edit, column=1, padx=5, pady=3, sticky='w'
+        )
+        row_edit += 1
+        
+        # Texto de ajuda pequeno
+        label_help_edit = ttk.Label(frame_editar,
+            text="ant. = mês passado | atual = mês do relatório",
+            font=('TkDefaultFont', 7),
+            foreground='gray')
+        label_help_edit.grid(
+            row=row_edit, column=0, columnspan=2, sticky='w', padx=20
+        )
+        row_edit += 1
+
+        # Botões de ação (já existentes)
         frame_botoes_edit = ttk.Frame(frame_editar)
         frame_botoes_edit.grid(row=row_edit, column=0, columnspan=2, pady=10)
         
@@ -1445,6 +1487,10 @@ class GerenciadorConfiguracoes:
             self.campos_editar['valor_estimado'].delete(0, tk.END)
             valor_formatado = f"{compromisso['valor_estimado']:.2f}".replace('.', ',')
             self.campos_editar['valor_estimado'].insert(0, valor_formatado)
+
+            # Tipo_referencia_mes (anterior/atual)
+            tipo_ref = compromisso.get('tipo_referencia_mes', 'anterior')
+            self.campos_editar['tipo_referencia_mes'].set(tipo_ref)
             
         except Exception as e:
             print(f"Erro ao selecionar compromisso: {e}")
@@ -1499,6 +1545,9 @@ class GerenciadorConfiguracoes:
             # Processar valor
             valor_str = self.campos_editar['valor_estimado'].get().replace(',', '.')
             novo_valor = float(valor_str) if valor_str else 0.0
+
+            novo_tipo_ref = self.campos_editar['tipo_referencia_mes'].get()
+
             
             # Carregar e atualizar configuração
             config = self.carregar_configuracoes()
@@ -1511,6 +1560,7 @@ class GerenciadorConfiguracoes:
                     comp['valor_estimado'] = novo_valor
                     comp['mes_referencia'] = novo_mes_ref  # NOVO
                     comp['meses_ocorrencias'] = novos_meses_ocorr  # NOVO
+                    comp['tipo_referencia_mes'] = novo_tipo_ref
                     break
             
             # Salvar
