@@ -9,16 +9,15 @@ from pathlib import Path
 # Informações da versão atual
 VERSION_INFO = {
     "major": 1,
-    "minor": 5,
-    "patch": 4,
-    "release_date": "12/01/2026",
+    "minor": 6,
+    "patch": 0,
+    "release_date": "20/01/2026",
     "changes": [
-        "Melhoria na sincronização do Visualizador de Lançamentos",
-        "Correção no travamento e saída do sistema",
-        "Correção de edição em massa no Visualizador de Lançamentos",
-        "Correção de edição em massa no Gerenciador de Lançamentos",
-        "Correção no lançamento de medições",
-        "Correção na inclusão de contrato de administração com mais de um administrador",
+        "Correção de edição no Visualizador de Lançamentos Fornecedor",
+        "Correção de edição no Gerenciador de Lançamentos",
+        "Melhoria na performance da AGENDA",
+        "Inclusão de Referencia automática na AGENDA"
+        "Inclusão de botão INATIVAR/EXCLUIR fornecedores",
         "Outras correções menores e melhorias de desempenho"        
     ]
 }
