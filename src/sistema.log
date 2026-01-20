@@ -10873,3 +10873,169 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-01-13 12:49:32,488 - INFO - ✓ Referência preenchida: PLOTAGENS
 2026-01-13 12:49:32,490 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
 2026-01-13 12:49:32,491 - INFO - ==================================================
+2026-01-15 10:33:31,661 - INFO - Configurações importadas com sucesso via src.config
+2026-01-15 10:33:31,680 - INFO - Configurações importadas com sucesso
+2026-01-15 10:33:31,681 - INFO - Configurações do sistema importadas com sucesso
+2026-01-15 10:33:32,220 - INFO - Sistema iniciado em modo: TESTE
+2026-01-15 10:33:35,354 - INFO - Abrindo configurações do sistema
+2026-01-15 10:37:44,689 - INFO - Abrindo configurações do sistema
+2026-01-16 09:35:05,213 - INFO - Configurações importadas com sucesso via src.config
+2026-01-16 09:35:05,232 - INFO - Configurações importadas com sucesso
+2026-01-16 09:35:05,233 - INFO - Configurações do sistema importadas com sucesso
+2026-01-16 09:35:05,818 - INFO - Sistema iniciado em modo: TESTE
+2026-01-16 09:35:07,447 - INFO - Abrindo configurações do sistema
+2026-01-16 10:02:00,280 - INFO - Sistema encerrado pelo usuário
+2026-01-16 11:17:31,766 - INFO - Configurações importadas com sucesso via src.config
+2026-01-16 11:17:31,901 - INFO - Configurações importadas com sucesso
+2026-01-16 11:17:31,902 - INFO - Configurações do sistema importadas com sucesso
+2026-01-16 11:17:33,134 - INFO - Sistema iniciado em modo: TESTE
+2026-01-16 11:17:35,733 - INFO - Abrindo configurações do sistema
+2026-01-16 11:19:40,283 - INFO - Sistema encerrado pelo usuário
+2026-01-16 11:28:26,788 - INFO - Configurações importadas com sucesso via src.config
+2026-01-16 11:28:26,897 - INFO - Configurações importadas com sucesso
+2026-01-16 11:28:26,899 - INFO - Configurações do sistema importadas com sucesso
+2026-01-16 11:28:27,596 - INFO - Sistema iniciado em modo: TESTE
+2026-01-16 11:28:29,553 - INFO - Abrindo configurações do sistema
+2026-01-16 11:29:16,288 - INFO - Abrindo sistema de entrada de dados
+2026-01-16 11:29:17,180 - INFO - Proteções contra perda de dados configuradas
+2026-01-16 11:29:17,445 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-16 11:29:21,181 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-16 11:29:57,776 - INFO - Voltando ao menu principal
+2026-01-16 11:29:57,860 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-16 11:29:57,877 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-16 11:29:58,128 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-16 11:30:00,640 - INFO - Abrindo configurações do sistema
+2026-01-16 11:31:07,216 - INFO - Abrindo sistema de entrada de dados
+2026-01-16 11:31:07,747 - INFO - Proteções contra perda de dados configuradas
+2026-01-16 11:31:07,851 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-16 11:31:22,024 - INFO - ==================================================
+2026-01-16 11:31:22,025 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-01-16 11:31:22,025 - INFO - ==================================================
+2026-01-16 11:31:22,026 - INFO - Fornecedor: IDEAL CESTAS DE ALIMENTOS
+2026-01-16 11:31:22,949 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 429!
+2026-01-16 11:31:22,949 - INFO - Dados carregados: IDEAL CESTAS DE ALIMENTOS
+2026-01-16 11:31:22,951 - INFO - Campos preenchidos com sucesso!
+2026-01-16 11:31:22,951 - INFO - ✓ Referência preenchida: CESTA BASICA
+2026-01-16 11:31:22,954 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-01-16 11:31:22,955 - INFO - ==================================================
+2026-01-16 11:31:33,496 - INFO - Voltando ao menu principal
+2026-01-16 11:31:33,578 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-16 11:31:33,582 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-16 11:31:33,802 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-16 11:31:34,752 - INFO - Abrindo configurações do sistema
+2026-01-16 11:32:07,687 - INFO - Abrindo sistema de entrada de dados
+2026-01-16 11:32:08,314 - INFO - Proteções contra perda de dados configuradas
+2026-01-16 11:32:08,407 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-16 11:32:11,145 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-16 11:33:16,449 - INFO - Cliente selecionado com sucesso: GUILHERME LEITE
+2026-01-16 11:34:34,687 - INFO - Voltando ao menu principal
+2026-01-16 11:34:34,776 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-16 11:34:34,790 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-16 11:34:35,012 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-16 11:34:38,493 - INFO - Sistema encerrado pelo usuário
+2026-01-16 13:16:09,603 - INFO - Configurações importadas com sucesso via src.config
+2026-01-16 13:16:09,637 - INFO - Configurações importadas com sucesso
+2026-01-16 13:16:09,638 - INFO - Configurações do sistema importadas com sucesso
+2026-01-16 13:16:10,554 - INFO - Sistema iniciado em modo: TESTE
+2026-01-16 13:16:28,684 - INFO - Abrindo configurações do sistema
+2026-01-16 13:17:01,196 - INFO - Abrindo sistema de entrada de dados
+2026-01-16 13:17:02,084 - INFO - Proteções contra perda de dados configuradas
+2026-01-16 13:17:02,339 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-16 13:17:05,987 - INFO - Cliente selecionado com sucesso: EDIGAR BATISTA FERREIRA
+2026-01-16 13:27:15,118 - INFO - Configurações importadas com sucesso via src.config
+2026-01-16 13:27:15,152 - INFO - Configurações importadas com sucesso
+2026-01-16 13:27:15,152 - INFO - Configurações do sistema importadas com sucesso
+2026-01-16 13:27:15,853 - INFO - Sistema iniciado em modo: TESTE
+2026-01-16 13:27:30,624 - INFO - Abrindo sistema de entrada de dados
+2026-01-16 13:27:32,054 - INFO - Proteções contra perda de dados configuradas
+2026-01-16 13:27:32,335 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-16 13:27:35,499 - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2026-01-16 13:30:41,759 - INFO - Voltando ao menu principal
+2026-01-16 13:30:41,854 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-16 13:30:41,858 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-16 13:30:42,081 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-16 13:30:45,126 - INFO - Sistema encerrado pelo usuário
+2026-01-16 15:01:53,303 - INFO - Configurações importadas com sucesso via src.config
+2026-01-16 15:01:53,346 - INFO - Configurações importadas com sucesso
+2026-01-16 15:01:53,356 - INFO - Configurações do sistema importadas com sucesso
+2026-01-16 15:01:53,926 - INFO - Sistema iniciado em modo: TESTE
+2026-01-16 15:04:02,063 - INFO - Abrindo sistema de entrada de dados
+2026-01-16 15:04:03,278 - INFO - Proteções contra perda de dados configuradas
+2026-01-16 15:04:03,524 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-16 15:04:08,106 - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-01-19 09:01:24,264 - INFO - Configurações importadas com sucesso via src.config
+2026-01-19 09:01:24,292 - INFO - Configurações importadas com sucesso
+2026-01-19 09:01:24,293 - INFO - Configurações do sistema importadas com sucesso
+2026-01-19 09:01:25,033 - INFO - Sistema iniciado em modo: TESTE
+2026-01-19 09:01:27,439 - INFO - Abrindo gestão de medições
+2026-01-19 09:01:56,428 - INFO - Abrindo sistema de relatórios
+2026-01-19 09:09:04,389 - INFO - Abrindo sistema de entrada de dados
+2026-01-19 09:09:05,168 - INFO - Proteções contra perda de dados configuradas
+2026-01-19 09:09:05,406 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-19 09:09:09,348 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-01-19 09:11:19,692 - INFO - Voltando ao menu principal
+2026-01-19 09:11:19,782 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-19 09:11:19,793 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-19 09:11:19,973 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-19 09:11:23,156 - INFO - Abrindo gestão de medições
+2026-01-19 09:24:06,849 - INFO - Sistema encerrado pelo usuário
+2026-01-19 10:12:50,482 - INFO - Configurações importadas com sucesso via src.config
+2026-01-19 10:12:50,502 - INFO - Configurações importadas com sucesso
+2026-01-19 10:12:50,503 - INFO - Configurações do sistema importadas com sucesso
+2026-01-19 10:12:51,247 - INFO - Sistema iniciado em modo: TESTE
+2026-01-19 10:12:53,127 - INFO - Abrindo gestão de medições
+2026-01-19 10:22:38,595 - INFO - Sistema encerrado pelo usuário
+2026-01-19 10:40:30,112 - INFO - Configurações importadas com sucesso via src.config
+2026-01-19 10:40:30,134 - INFO - Configurações importadas com sucesso
+2026-01-19 10:40:30,137 - INFO - Configurações do sistema importadas com sucesso
+2026-01-19 10:40:30,834 - INFO - Sistema iniciado em modo: TESTE
+2026-01-19 10:40:35,158 - INFO - Abrindo gestão de medições
+2026-01-19 10:41:02,101 - INFO - Abrindo sistema de relatórios
+2026-01-19 10:41:55,675 - INFO - Sistema encerrado pelo usuário
+2026-01-19 11:27:03,729 - INFO - Configurações importadas com sucesso via src.config
+2026-01-19 11:27:03,747 - INFO - Configurações importadas com sucesso
+2026-01-19 11:27:03,748 - INFO - Configurações do sistema importadas com sucesso
+2026-01-19 11:27:04,395 - INFO - Sistema iniciado em modo: TESTE
+2026-01-19 11:27:06,086 - INFO - Abrindo configurações do sistema
+2026-01-19 11:27:54,181 - INFO - Abrindo sistema de entrada de dados
+2026-01-19 11:27:55,376 - INFO - Proteções contra perda de dados configuradas
+2026-01-19 11:27:55,725 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-19 11:28:07,907 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 709!
+2026-01-19 11:28:14,975 - INFO - Planilha salva com sucesso!
+2026-01-19 11:28:22,393 - INFO - Cliente selecionado com sucesso: FREDERICO LAVORATO ARANTES
+2026-01-19 11:29:02,205 - INFO - Voltando ao menu principal
+2026-01-19 11:29:02,290 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-19 11:29:02,298 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-19 11:29:02,479 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-19 11:29:04,341 - INFO - Abrindo configurações do sistema
+2026-01-19 11:30:39,604 - INFO - Abrindo sistema de entrada de dados
+2026-01-19 11:30:40,446 - INFO - Proteções contra perda de dados configuradas
+2026-01-19 11:30:40,632 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-19 11:30:43,270 - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2026-01-19 11:31:00,492 - INFO - Voltando ao menu principal
+2026-01-19 11:31:00,576 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-19 11:31:00,579 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-19 11:31:00,773 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-19 11:32:46,612 - INFO - Abrindo sistema de entrada de dados
+2026-01-19 11:32:47,186 - INFO - Proteções contra perda de dados configuradas
+2026-01-19 11:32:47,276 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-19 11:32:51,061 - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-01-20 09:43:21,652 - INFO - Configurações importadas com sucesso via src.config
+2026-01-20 09:43:21,673 - INFO - Configurações importadas com sucesso
+2026-01-20 09:43:21,674 - INFO - Configurações do sistema importadas com sucesso
+2026-01-20 09:43:22,314 - INFO - Sistema iniciado em modo: TESTE
+2026-01-20 09:43:47,004 - INFO - Abrindo sistema de relatórios
+2026-01-20 09:44:35,019 - INFO - Abrindo sistema de entrada de dados
+2026-01-20 09:44:36,578 - INFO - Proteções contra perda de dados configuradas
+2026-01-20 09:44:36,820 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-20 09:44:39,641 - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-01-20 10:08:36,787 - INFO - Configurações importadas com sucesso via src.config
+2026-01-20 10:08:36,812 - INFO - Configurações importadas com sucesso
+2026-01-20 10:08:36,812 - INFO - Configurações do sistema importadas com sucesso
+2026-01-20 10:08:37,480 - INFO - Sistema iniciado em modo: TESTE
+2026-01-20 10:08:41,047 - INFO - Abrindo sistema de entrada de dados
+2026-01-20 10:08:42,396 - INFO - Proteções contra perda de dados configuradas
+2026-01-20 10:08:42,665 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-20 10:08:48,680 - INFO - Cliente selecionado com sucesso: RHAUFED RODRIGUES DOS SANTOS
+2026-01-20 10:09:11,762 - INFO - ✅ Lançamento ID 1123 inserido na linha 1124
+2026-01-20 10:09:12,600 - INFO - ✅ Arquivo salvo
