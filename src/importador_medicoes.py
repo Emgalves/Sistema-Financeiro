@@ -317,7 +317,7 @@ class ImportadorMedicoes:
                         continue
             
             # 3. Validar Referência
-            if referencia is None or str(referencia).strip() == '':
+            if referencia is None or str(referencia).strip().upper() == '':
                 erros.append(f"Linha {linha_atual}: Referência obrigatória")
                 linha_atual += 1
                 continue
@@ -369,7 +369,7 @@ class ImportadorMedicoes:
                 'fornecedor': fornecedor,
                 'data_medicao': data_medicao,
                 'data_pagamento': data_pagamento,
-                'referencia': str(referencia).strip(),
+                'referencia': str(referencia).strip().upper(),
                 'valor': valor_float,
                 'status': 'PENDENTE',
                 'linha_origem': linha_atual
