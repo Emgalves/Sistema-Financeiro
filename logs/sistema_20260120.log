@@ -332,3 +332,4 @@
 2026-01-20 21:32:35,726 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
 2026-01-20 21:32:35,729 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
 2026-01-20 21:32:35,729 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 21:45:50,760 - sistema - logger_config - INFO - Sistema de logging inicializado
