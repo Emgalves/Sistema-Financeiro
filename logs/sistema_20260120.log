@@ -276,3 +276,59 @@
 2026-01-20 12:27:54,967 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
 2026-01-20 12:27:54,972 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
 2026-01-20 12:27:54,973 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 12:43:23,206 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-01-20 16:09:44,403 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-01-20 16:09:44,405 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-01-20 16:09:44,406 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-01-20 16:09:44,408 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-01-20 16:09:44,409 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-01-20 16:09:48,017 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 16:09:48,027 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 16:09:48,280 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 16:09:48,283 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 16:09:48,287 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 16:09:48,291 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 16:13:43,441 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-01-20 16:13:43,442 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-01-20 16:13:43,443 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-01-20 16:13:43,444 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-01-20 16:13:43,445 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-01-20 16:13:45,105 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 16:13:45,107 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 16:13:45,282 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 16:13:45,283 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 16:13:45,285 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 16:13:45,286 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 17:07:17,176 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-01-20 17:07:17,177 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-01-20 17:07:17,178 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-01-20 17:07:17,179 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-01-20 17:07:17,180 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-01-20 17:07:25,571 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 17:07:25,574 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 17:07:25,750 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 17:07:25,751 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 17:07:25,753 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 17:07:25,754 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 17:37:25,663 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-01-20 17:37:25,665 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-01-20 17:37:25,666 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-01-20 17:37:25,667 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-01-20 17:37:25,669 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-01-20 17:37:39,521 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 17:37:39,524 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 17:37:39,762 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 17:37:39,765 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 17:37:39,771 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 17:37:39,772 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 21:32:23,010 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-01-20 21:32:23,013 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-01-20 21:32:23,014 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-01-20 21:32:23,018 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-01-20 21:32:23,029 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-01-20 21:32:35,508 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 21:32:35,512 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 21:32:35,724 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 21:32:35,726 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-20 21:32:35,729 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-01-20 21:32:35,729 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
