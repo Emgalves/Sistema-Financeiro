@@ -281,7 +281,21 @@ class GerenciadorConfiguracoes:
     def __init__(self, parent=None):
         self.root = tk.Toplevel(parent) if parent else tk.Tk()
         self.root.title("Configurações do Sistema")
-        self.root.geometry("920x950")
+        self.root.geometry("990x950")
+        
+        # ═══════════════════════════════════════════════════════════════
+        # CORREÇÃO MINIMALISTA: Manter janela visível sem roubar foco
+        # ═══════════════════════════════════════════════════════════════
+        if parent:
+            # Fazer janela modal (bloqueia interação com parent)
+            self.root.transient(parent)
+            self.root.grab_set()
+        
+        # Trazer janela para frente UMA VEZ (no início)
+        self.root.lift()
+        self.root.attributes('-topmost', True)  # Janela sempre no topo
+        self.root.after(100, lambda: self.root.attributes('-topmost', False))  # Remove após 100ms
+        # ═══════════════════════════════════════════════════════════════
         
         # Usar o caminho da variável de classe 
         self.config_path = GerenciadorConfiguracoes.CONFIG_PATH
