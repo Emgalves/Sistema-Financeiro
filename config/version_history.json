@@ -211,5 +211,17 @@
             "Outras correções menores e melhorias de desempenho"
         ],
         "timestamp": "2026-01-12T17:29:17.980092"
+    },
+    {
+        "version": "1.6.0",
+        "release_date": "20/01/2026",
+        "changes": [
+            "Correção de edição no Visualizador de Lançamentos Fornecedor",
+            "Correção de edição no Gerenciador de Lançamentos",
+            "Melhoria na performance da AGENDA",
+            "Inclusão de Referencia automática na AGENDAInclusão de botão INATIVAR/EXCLUIR fornecedores",
+            "Outras correções menores e melhorias de desempenho"
+        ],
+        "timestamp": "2026-01-20T14:02:28.453785"
     }
 ]
