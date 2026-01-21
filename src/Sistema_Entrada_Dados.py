@@ -5500,11 +5500,17 @@ class SistemaEntradaDados:
     def listar_fornecedores_inativos(self):
         """
         Abre janela para visualizar e gerenciar fornecedores INATIVOS
-        Permite reativar fornecedores se necessário
+        VERSÃO CORRIGIDA - USA TIPO_PESSOA DA COLUNA B
         """
         try:
             from src.config.config import ARQUIVO_FORNECEDORES
             from openpyxl import load_workbook
+            import logging
+            
+            logger = logging.getLogger(__name__)
+            logger.info("="*60)
+            logger.info("ABRINDO JANELA DE FORNECEDORES INATIVOS")
+            logger.info("="*60)
             
             # Criar janela
             janela_inativos = tk.Toplevel(self.root)
@@ -5552,29 +5558,57 @@ class SistemaEntradaDados:
             scroll_y.pack(side='right', fill='y')
             
             # Carregar fornecedores inativos
+            logger.info("Carregando fornecedores inativos da planilha...")
+            
             wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
             ws = wb['Fornecedores']
             
             total_inativos = 0
             
-            for row in ws.iter_rows(min_row=2, values_only=True):
+            for row_num, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
                 if not row or not row[0]:
                     continue
                 
-                # Verificar STATUS
+                # Verificar STATUS (coluna 17 = índice 16)
                 status = str(row[16]).strip().upper() if len(row) > 16 and row[16] else 'ATIVO'
                 
+                logger.debug(f"Linha {row_num}: {row[3]} - STATUS: {status}")
+                
                 if status == 'INATIVO':
-                    cnpj_cpf = str(row[0])
+                    # ✅ OBTER TIPO_PESSOA DA COLUNA B (índice 1)
+                    tipo_pessoa = str(row[1]).strip().upper() if row[1] else 'PJ'
+                    
+                    # Extrair CNPJ/CPF
+                    cnpj_cpf_valor = row[0]
+                    cnpj_cpf_limpo = ''.join(filter(str.isdigit, str(cnpj_cpf_valor)))
+                    
+                    # ✅ NORMALIZAR BASEADO NO TIPO_PESSOA
+                    if tipo_pessoa == 'PF':
+                        cnpj_cpf_normalizado = cnpj_cpf_limpo.zfill(11)  # CPF: 11 dígitos
+                        # Formatar CPF
+                        cnpj_cpf_formatado = f"{cnpj_cpf_normalizado[:3]}.{cnpj_cpf_normalizado[3:6]}.{cnpj_cpf_normalizado[6:9]}-{cnpj_cpf_normalizado[9:11]}"
+                    else:  # PJ
+                        cnpj_cpf_normalizado = cnpj_cpf_limpo.zfill(14)  # CNPJ: 14 dígitos
+                        # Formatar CNPJ
+                        cnpj_cpf_formatado = f"{cnpj_cpf_normalizado[:2]}.{cnpj_cpf_normalizado[2:5]}.{cnpj_cpf_normalizado[5:8]}/{cnpj_cpf_normalizado[8:12]}-{cnpj_cpf_normalizado[12:14]}"
+                    
                     nome = str(row[3] or '').strip()
                     categoria = str(row[11] or '').strip()
                     
+                    # ✅ ARMAZENAR CNPJ/CPF NORMALIZADO E TIPO_PESSOA NAS TAGS
                     tree_inativos.insert('', 'end',
-                                    values=(cnpj_cpf, nome, categoria),
-                                    tags=(cnpj_cpf,))
+                                    values=(cnpj_cpf_formatado, nome, categoria),
+                                    tags=(cnpj_cpf_normalizado, tipo_pessoa))  # ← CNPJ + TIPO
+                    
                     total_inativos += 1
+                    
+                    logger.debug(f"  ✓ Adicionado: {nome}")
+                    logger.debug(f"    Tipo: {tipo_pessoa}")
+                    logger.debug(f"    CNPJ/CPF normalizado: {cnpj_cpf_normalizado}")
             
             wb.close()
+            
+            logger.info(f"Total de fornecedores inativos encontrados: {total_inativos}")
             
             # Botões
             botoes_frame = ttk.Frame(main_frame)
@@ -5584,19 +5618,85 @@ class SistemaEntradaDados:
                     font=('Arial', 10, 'bold')).pack(side='left', padx=10)
             
             def reativar_selecionado():
-                selecionado = tree_inativos.selection()
-                if not selecionado:
-                    custom_messagebox("warning", "Aviso", "Selecione um fornecedor!")
-                    return
-                
-                valores = tree_inativos.item(selecionado[0])['values']
-                cnpj_cpf = valores[0]
-                nome = valores[1]
-                
-                if self.reativar_fornecedor(cnpj_cpf, nome):
-                    custom_messagebox("info", "Sucesso",
-                                    f"Fornecedor reativado!\n\n{nome}")
-                    tree_inativos.delete(selecionado[0])
+                """Reativa o fornecedor selecionado"""
+                try:
+                    from src.config.utils import custom_messagebox
+                    
+                    logger.info("="*60)
+                    logger.info("INICIANDO REATIVAÇÃO DE FORNECEDOR")
+                    logger.info("="*60)
+                    
+                    selecionado = tree_inativos.selection()
+                    
+                    if not selecionado:
+                        logger.warning("Nenhum fornecedor selecionado")
+                        custom_messagebox("warning", "Aviso", "⚠️ Selecione um fornecedor!")
+                        return
+                    
+                    # Obter dados do item selecionado
+                    valores = tree_inativos.item(selecionado[0])['values']
+                    tags = tree_inativos.item(selecionado[0])['tags']
+                    
+                    logger.debug(f"Valores: {valores}")
+                    logger.debug(f"Tags: {tags}")
+                    
+                    if not valores or len(valores) < 2:
+                        logger.error("Dados inválidos do fornecedor selecionado")
+                        custom_messagebox("error", "Erro", "❌ Dados inválidos!")
+                        return
+                    
+                    cnpj_cpf_formatado = valores[0]
+                    nome = valores[1]
+                    
+                    # ✅ OBTER CNPJ/CPF E TIPO_PESSOA DAS TAGS
+                    if tags and len(tags) >= 2:
+                        cnpj_cpf = tags[0]  # CNPJ normalizado
+                        tipo_pessoa = tags[1]  # PF ou PJ
+                    else:
+                        logger.error("Tags inválidas")
+                        custom_messagebox("error", "Erro", "❌ Dados inválidos!")
+                        return
+                    
+                    logger.info(f"Reativando fornecedor:")
+                    logger.info(f"  Nome: {nome}")
+                    logger.info(f"  Tipo: {tipo_pessoa}")
+                    logger.info(f"  CNPJ/CPF formatado: {cnpj_cpf_formatado}")
+                    logger.info(f"  CNPJ/CPF normalizado: {cnpj_cpf}")
+                    
+                    # ✅ CHAMAR MÉTODO COM TIPO_PESSOA
+                    sucesso = self.reativar_fornecedor(cnpj_cpf, tipo_pessoa, nome)
+                    
+                    if sucesso:
+                        logger.info("✅ Fornecedor reativado com sucesso!")
+                        
+                        # Remover da lista
+                        tree_inativos.delete(selecionado[0])
+                        
+                        # Atualizar contador
+                        total_restante = len(tree_inativos.get_children())
+                        botoes_frame.winfo_children()[0].config(
+                            text=f"Total: {total_restante} fornecedor(es) inativo(s)"
+                        )
+                        
+                        custom_messagebox("info", "Sucesso",
+                                        f"✅ Fornecedor reativado com sucesso!\n\n"
+                                        f"Nome: {nome}\n"
+                                        f"CNPJ/CPF: {cnpj_cpf_formatado}\n\n"
+                                        f"O fornecedor voltará a aparecer nas buscas.")
+                    else:
+                        logger.error("❌ Falha ao reativar fornecedor")
+                        custom_messagebox("error", "Erro",
+                                        f"❌ Não foi possível reativar o fornecedor.\n\n"
+                                        f"Verifique os logs para mais detalhes.")
+                    
+                    logger.info("="*60)
+                    
+                except Exception as e:
+                    logger.error(f"ERRO em reativar_selecionado: {str(e)}")
+                    import traceback
+                    logger.error(traceback.format_exc())
+                    custom_messagebox("error", "Erro", 
+                                    f"❌ Erro ao reativar fornecedor:\n{str(e)}")
             
             ttk.Button(botoes_frame, text="✅ Reativar Selecionado",
                     command=reativar_selecionado).pack(side='right', padx=5)
@@ -5604,11 +5704,152 @@ class SistemaEntradaDados:
             ttk.Button(botoes_frame, text="Fechar",
                     command=janela_inativos.destroy).pack(side='right', padx=5)
             
+            logger.info("Janela de fornecedores inativos aberta com sucesso")
+            
         except Exception as e:
+            logger.error(f"ERRO ao abrir janela de inativos: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            from src.config.utils import custom_messagebox
             custom_messagebox("error", "Erro", f"Erro ao listar inativos:\n{str(e)}")
-  
 
 
+    def reativar_fornecedor(self, cnpj_cpf, tipo_pessoa, nome):
+        """
+        Reativa um fornecedor que estava INATIVO
+        VERSÃO CORRIGIDA - USA TIPO_PESSOA PARA NORMALIZAR
+        
+        Args:
+            cnpj_cpf: CNPJ/CPF do fornecedor (normalizado com zeros)
+            tipo_pessoa: 'PF' ou 'PJ' (da coluna B)
+            nome: Nome do fornecedor (para log)
+        
+        Returns:
+            bool: True se reativado com sucesso, False caso contrário
+        """
+        try:
+            from src.config.config import ARQUIVO_FORNECEDORES
+            from openpyxl import load_workbook
+            import logging
+            
+            logger = logging.getLogger(__name__)
+            
+            logger.info("="*60)
+            logger.info("MÉTODO: reativar_fornecedor()")
+            logger.info("="*60)
+            logger.info(f"CNPJ/CPF recebido: '{cnpj_cpf}' (type: {type(cnpj_cpf).__name__})")
+            logger.info(f"Tipo Pessoa: '{tipo_pessoa}'")
+            logger.info(f"Nome: '{nome}'")
+            
+            # ✅ GARANTIR QUE CNPJ/CPF ESTÁ NORMALIZADO
+            cnpj_cpf_limpo = ''.join(filter(str.isdigit, str(cnpj_cpf)))
+            
+            if tipo_pessoa == 'PF':
+                cnpj_cpf_normalizado = cnpj_cpf_limpo.zfill(11)  # CPF: 11 dígitos
+            else:  # PJ
+                cnpj_cpf_normalizado = cnpj_cpf_limpo.zfill(14)  # CNPJ: 14 dígitos
+            
+            logger.info(f"CNPJ/CPF normalizado: '{cnpj_cpf_normalizado}' (len={len(cnpj_cpf_normalizado)})")
+            
+            # Abrir planilha
+            logger.debug(f"Abrindo planilha: {ARQUIVO_FORNECEDORES}")
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+            
+            logger.debug(f"Planilha aberta. Total de linhas: {ws.max_row}")
+            
+            # Buscar fornecedor e marcar como ATIVO
+            fornecedor_encontrado = False
+            linha_encontrada = None
+            
+            for row_num in range(2, ws.max_row + 1):
+                cnpj_cpf_row = ws.cell(row_num, 1).value  # Coluna A
+                tipo_pessoa_row = ws.cell(row_num, 2).value  # Coluna B
+                
+                if not cnpj_cpf_row:
+                    continue
+                
+                # ✅ OBTER TIPO_PESSOA DA PLANILHA
+                tipo_pessoa_row_upper = str(tipo_pessoa_row).strip().upper() if tipo_pessoa_row else 'PJ'
+                
+                # ✅ NORMALIZAR CNPJ/CPF DA PLANILHA BASEADO NO TIPO
+                cnpj_cpf_row_limpo = ''.join(filter(str.isdigit, str(cnpj_cpf_row)))
+                
+                if tipo_pessoa_row_upper == 'PF':
+                    cnpj_cpf_row_normalizado = cnpj_cpf_row_limpo.zfill(11)
+                else:
+                    cnpj_cpf_row_normalizado = cnpj_cpf_row_limpo.zfill(14)
+                
+                # Log para debug (primeiras linhas ou quando encontrar)
+                if row_num <= 3 or cnpj_cpf_row_normalizado == cnpj_cpf_normalizado:
+                    logger.debug(f"Linha {row_num}:")
+                    logger.debug(f"  CNPJ planilha original: '{cnpj_cpf_row}'")
+                    logger.debug(f"  Tipo planilha: '{tipo_pessoa_row_upper}'")
+                    logger.debug(f"  CNPJ planilha normalizado: '{cnpj_cpf_row_normalizado}'")
+                    logger.debug(f"  CNPJ busca normalizado: '{cnpj_cpf_normalizado}'")
+                    logger.debug(f"  Match? {cnpj_cpf_row_normalizado == cnpj_cpf_normalizado}")
+                
+                # ✅ COMPARAR VALORES NORMALIZADOS
+                if cnpj_cpf_row_normalizado == cnpj_cpf_normalizado:
+                    # ✅ FORNECEDOR ENCONTRADO!
+                    logger.info(f"✅ FORNECEDOR ENCONTRADO NA LINHA {row_num}!")
+                    
+                    status_anterior = ws.cell(row_num, 17).value
+                    logger.info(f"  STATUS anterior: '{status_anterior}'")
+                    
+                    # Marcar como ATIVO
+                    ws.cell(row_num, 17, 'ATIVO')
+                    logger.info(f"  STATUS novo: 'ATIVO'")
+                    
+                    fornecedor_encontrado = True
+                    linha_encontrada = row_num
+                    break
+            
+            if not fornecedor_encontrado:
+                logger.warning(f"❌ Fornecedor NÃO ENCONTRADO!")
+                logger.warning(f"  Buscou por CNPJ/CPF: '{cnpj_cpf_normalizado}' (tipo: {tipo_pessoa})")
+                logger.warning(f"  Total de linhas verificadas: {ws.max_row - 1}")
+                wb.close()
+                return False
+            
+            # Salvar planilha
+            logger.info("Salvando planilha...")
+            
+            try:
+                wb.save(ARQUIVO_FORNECEDORES)
+                logger.info("✅ Planilha salva com sucesso!")
+                
+            except PermissionError:
+                logger.error("❌ ERRO: Arquivo está aberto em outro programa!")
+                wb.close()
+                from src.config.utils import custom_messagebox
+                custom_messagebox("error", "Erro de Permissão",
+                                "❌ Arquivo está aberto no Excel!\n\n"
+                                "Feche o arquivo e tente novamente.")
+                return False
+            
+            wb.close()
+            
+            logger.info(f"✅ Fornecedor '{nome}' reativado com sucesso!")
+            logger.info(f"   Linha: {linha_encontrada}")
+            logger.info(f"   Tipo: {tipo_pessoa}")
+            logger.info(f"   STATUS: INATIVO → ATIVO")
+            logger.info("="*60)
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ ERRO CRÍTICO em reativar_fornecedor: {str(e)}")
+            import traceback
+            logger.error(traceback.format_exc())
+            
+            try:
+                wb.close()
+            except:
+                pass
+            
+            return False
+    
     def buscar_fornecedores_por_nome_parcial(self, nome_parcial):
         """
         Busca otimizada por nome parcial usando cache
