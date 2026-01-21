@@ -11039,3 +11039,146 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-01-20 10:08:48,680 - INFO - Cliente selecionado com sucesso: RHAUFED RODRIGUES DOS SANTOS
 2026-01-20 10:09:11,762 - INFO - ✅ Lançamento ID 1123 inserido na linha 1124
 2026-01-20 10:09:12,600 - INFO - ✅ Arquivo salvo
+2026-01-21 08:04:53,268 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:04:53,290 - INFO - Configurações importadas com sucesso
+2026-01-21 08:04:53,290 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:04:54,231 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:05:12,466 - INFO - Abrindo configurações do sistema
+2026-01-21 08:05:23,090 - INFO - Abrindo configurações do sistema
+2026-01-21 08:11:46,902 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:27:16,452 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:27:16,564 - INFO - Configurações importadas com sucesso
+2026-01-21 08:27:16,566 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:27:17,704 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:27:22,502 - INFO - Abrindo configurações do sistema
+2026-01-21 08:27:22,506 - ERROR - Erro ao abrir configurações: GerenciadorConfiguracoes.__init__() got an unexpected keyword argument 'parent'
+2026-01-21 08:31:25,067 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:31:36,969 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:31:37,065 - INFO - Configurações importadas com sucesso
+2026-01-21 08:31:37,066 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:31:37,666 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:31:40,796 - INFO - Abrindo configurações do sistema
+2026-01-21 08:31:41,356 - ERROR - Erro ao abrir configurações: string indices must be integers, not 'str'
+2026-01-21 08:37:02,431 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:37:13,644 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:37:13,762 - INFO - Configurações importadas com sucesso
+2026-01-21 08:37:13,763 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:37:14,440 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:37:16,073 - INFO - Abrindo configurações do sistema
+2026-01-21 08:37:16,095 - ERROR - Erro ao abrir configurações: 'GerenciadorConfiguracoes' object has no attribute 'criar_aba_valor_cafe'
+2026-01-21 08:37:40,751 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:39:23,943 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:39:24,055 - INFO - Configurações importadas com sucesso
+2026-01-21 08:39:24,056 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:39:24,440 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:39:26,344 - INFO - Abrindo configurações do sistema
+2026-01-21 08:39:55,062 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:40:41,642 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:40:41,735 - INFO - Configurações importadas com sucesso
+2026-01-21 08:40:41,736 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:40:42,202 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:40:43,863 - INFO - Abrindo configurações do sistema
+2026-01-21 08:41:01,094 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:42:17,021 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:42:17,107 - INFO - Configurações importadas com sucesso
+2026-01-21 08:42:17,108 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:42:17,562 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:42:19,183 - INFO - Abrindo configurações do sistema
+2026-01-21 08:42:37,213 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:43:03,219 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:43:03,316 - INFO - Configurações importadas com sucesso
+2026-01-21 08:43:03,317 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:43:03,985 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:43:05,358 - INFO - Abrindo configurações do sistema
+2026-01-21 08:43:25,949 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:46:41,522 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:46:41,538 - INFO - Configurações importadas com sucesso
+2026-01-21 08:46:41,539 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:46:42,077 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:46:43,156 - INFO - Abrindo configurações do sistema
+2026-01-21 08:47:05,219 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:47:55,306 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:47:55,510 - INFO - Configurações importadas com sucesso
+2026-01-21 08:47:55,512 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:47:56,110 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:47:57,460 - INFO - Abrindo configurações do sistema
+2026-01-21 08:48:12,554 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:48:39,926 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:48:40,019 - INFO - Configurações importadas com sucesso
+2026-01-21 08:48:40,020 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:48:40,674 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:48:42,227 - INFO - Abrindo configurações do sistema
+2026-01-21 08:48:52,825 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:49:24,439 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:49:24,548 - INFO - Configurações importadas com sucesso
+2026-01-21 08:49:24,549 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:49:25,171 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:49:26,499 - INFO - Abrindo configurações do sistema
+2026-01-21 08:50:45,809 - INFO - Sistema encerrado pelo usuário
+2026-01-21 08:58:18,149 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 08:58:18,256 - INFO - Configurações importadas com sucesso
+2026-01-21 08:58:18,257 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 08:58:19,035 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 08:58:20,398 - INFO - Abrindo configurações do sistema
+2026-01-21 09:22:16,260 - INFO - Sistema encerrado pelo usuário
+2026-01-21 09:22:50,608 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 09:22:50,726 - INFO - Configurações importadas com sucesso
+2026-01-21 09:22:50,728 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 09:22:52,402 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 09:36:48,846 - INFO - Abrindo configurações do sistema
+2026-01-21 09:39:49,448 - INFO - Sistema encerrado pelo usuário
+2026-01-21 11:01:51,920 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 11:01:52,582 - INFO - Configurações importadas com sucesso
+2026-01-21 11:01:52,584 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 11:01:55,315 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 11:07:03,842 - INFO - Abrindo configurações do sistema
+2026-01-21 11:07:32,555 - INFO - Sistema encerrado pelo usuário
+2026-01-21 11:08:27,726 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 11:08:27,909 - INFO - Configurações importadas com sucesso
+2026-01-21 11:08:27,910 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 11:08:29,025 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 11:14:47,827 - INFO - Abrindo configurações do sistema
+2026-01-21 11:15:26,398 - INFO - Sistema encerrado pelo usuário
+2026-01-21 11:39:02,738 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 11:39:02,869 - INFO - Configurações importadas com sucesso
+2026-01-21 11:39:02,870 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 11:39:03,704 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 11:39:05,524 - INFO - Abrindo configurações do sistema
+2026-01-21 13:53:28,418 - INFO - Abrindo sistema de entrada de dados
+2026-01-21 13:53:30,100 - INFO - Proteções contra perda de dados configuradas
+2026-01-21 13:53:30,604 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-21 13:53:33,065 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-21 13:53:49,311 - INFO - Voltando ao menu principal
+2026-01-21 13:53:49,400 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-21 13:53:49,435 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-21 13:53:49,645 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-21 13:53:54,374 - INFO - Sistema encerrado pelo usuário
+2026-01-21 13:58:48,954 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 13:58:49,141 - INFO - Configurações importadas com sucesso
+2026-01-21 13:58:49,143 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 13:58:50,214 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 13:58:51,964 - INFO - Abrindo configurações do sistema
+2026-01-21 13:59:29,282 - INFO - Sistema encerrado pelo usuário
+2026-01-21 14:01:20,471 - INFO - Configurações importadas com sucesso via src.config
+2026-01-21 14:01:20,561 - INFO - Configurações importadas com sucesso
+2026-01-21 14:01:20,561 - INFO - Configurações do sistema importadas com sucesso
+2026-01-21 14:01:21,192 - INFO - Sistema iniciado em modo: TESTE
+2026-01-21 14:01:22,899 - INFO - Abrindo configurações do sistema
+2026-01-21 14:01:51,915 - INFO - Abrindo sistema de entrada de dados
+2026-01-21 14:01:53,245 - INFO - Proteções contra perda de dados configuradas
+2026-01-21 14:01:53,824 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-21 14:01:57,075 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-01-21 14:02:18,611 - INFO - Voltando ao menu principal
+2026-01-21 14:02:18,699 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-21 14:02:18,715 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-21 14:02:18,927 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-21 14:02:20,195 - INFO - Abrindo configurações do sistema
+2026-01-21 14:03:48,858 - INFO - Abrindo sistema de entrada de dados
+2026-01-21 14:03:49,479 - INFO - Proteções contra perda de dados configuradas
+2026-01-21 14:03:49,566 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-01-21 14:03:52,492 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-01-21 14:04:04,458 - INFO - Voltando ao menu principal
+2026-01-21 14:04:04,542 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-01-21 14:04:04,562 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-01-21 14:04:04,808 - INFO - ✅ Menu principal restaurado com sucesso
+2026-01-21 14:04:05,858 - INFO - Abrindo configurações do sistema
