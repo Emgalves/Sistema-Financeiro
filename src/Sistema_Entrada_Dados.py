@@ -4897,8 +4897,8 @@ class SistemaEntradaDados:
             # Centralizar
             janela_exclusao.update_idletasks()
             x = (janela_exclusao.winfo_screenwidth() // 2) - 300
-            y = (janela_exclusao.winfo_screenheight() // 2) - 250
-            janela_exclusao.geometry(f"600x500+{x}+{y}")
+            y = (janela_exclusao.winfo_screenheight() // 2) - 300
+            janela_exclusao.geometry(f"600x600+{x}+{y}")
             
             main_frame = ttk.Frame(janela_exclusao, padding="20")
             main_frame.pack(fill='both', expand=True)
@@ -23217,153 +23217,7 @@ class GerenciadorAgenda:
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao carregar compromissos futuros: {str(e)}")
 
-    # def carregar_medicoes_pendentes(self):
-    #     """Carrega medições pendentes do cliente atual e adiciona à agenda"""
-    #     try:
-    #         logger.debug("=" * 80)
-    #         logger.debug("DEBUG: INICIANDO CARREGAMENTO DE MEDIÇÕES PENDENTES")
-    #         logger.debug("=" * 80)
-            
-    #         arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
-    #         if not arquivo_cliente.exists():
-    #             logger.debug("DEBUG: Arquivo do cliente não existe")
-    #             return
-            
-    #         from openpyxl import load_workbook
-    #         wb = load_workbook(arquivo_cliente)
-            
-    #         if "Medicoes" not in wb.sheetnames:
-    #             logger.debug("DEBUG: Aba Medicoes não encontrada")
-    #             wb.close()
-    #             return
-            
-    #         ws_medicoes = wb["Medicoes"]
-    #         hoje = datetime.now().date()
-            
-    #         logger.debug(f"DEBUG: Data de hoje: {hoje}")
-    #         logger.debug(f"DEBUG: Total de linhas na aba Medicoes: {ws_medicoes.max_row}")
-            
-    #         medicoes_encontradas = 0
-    #         medicoes_pendentes = 0
-    #         medicoes_adicionadas = 0
-            
-    #         for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), start=2):
-    #             try:
-    #                 medicoes_encontradas += 1
-                    
-    #                 id_contrato = row[0]
-    #                 id_medicao = row[1]
-    #                 cnpj_fornecedor = row[2]
-    #                 nome_fornecedor = row[3]
-    #                 data_medicao = row[4]
-    #                 data_pagamento = row[5]
-    #                 referencia = row[6]
-    #                 valor = row[7]
-    #                 status = row[8]
-                    
-    #                 logger.debug(f"\nDEBUG: Linha {idx} - Contrato {id_contrato}, Medição {id_medicao}")
-    #                 logger.debug(f"       Status: '{status}' | Fornecedor: {nome_fornecedor}")
-                    
-    #                 if status != 'PENDENTE':
-    #                     logger.debug(f"       ❌ Pulada - Status não é PENDENTE")
-    #                     continue
-                    
-    #                 medicoes_pendentes += 1
-    #                 logger.debug(f"       ✅ Status PENDENTE confirmado")
-                    
-    #                 try:
-    #                     valor_float = float(valor) if valor else 0.0
-    #                     if valor_float <= 0:
-    #                         logger.debug(f"       ❌ Pulada - Valor inválido: {valor}")
-    #                         continue
-    #                 except (ValueError, TypeError) as e:
-    #                     logger.debug(f"       ❌ Pulada - Erro ao converter valor: {e}")
-    #                     continue
-                    
-    #                 logger.debug(f"       Valor: R$ {valor_float:,.2f}")
-                    
-    #                 dt_pagamento = None
-    #                 if isinstance(data_pagamento, datetime):
-    #                     dt_pagamento = data_pagamento.date()
-    #                     logger.debug(f"       Data pagamento (datetime): {dt_pagamento}")
-    #                 elif isinstance(data_pagamento, str):
-    #                     try:
-    #                         dt_pagamento = datetime.strptime(data_pagamento, '%d/%m/%Y').date()
-    #                         logger.debug(f"       Data pagamento (string): {dt_pagamento}")
-    #                     except ValueError:
-    #                         logger.debug(f"       ❌ Pulada - Data de pagamento inválida: {data_pagamento}")
-    #                         continue
-    #                 else:
-    #                     logger.debug(f"       ❌ Pulada - Data de pagamento tipo inválido: {type(data_pagamento)}")
-    #                     continue
-                    
-    #                 # Calcular DATA_REL
-    #                 if 6 <= dt_pagamento.day <= 20:
-    #                     data_rel = dt_pagamento.replace(day=20)
-    #                 else:
-    #                     if dt_pagamento.day > 20:
-    #                         from dateutil.relativedelta import relativedelta
-    #                         data_rel = dt_pagamento + relativedelta(months=1)
-    #                         data_rel = data_rel.replace(day=5)
-    #                     else:
-    #                         data_rel = dt_pagamento.replace(day=5)
-                    
-    #                 logger.debug(f"       Data pagamento: {dt_pagamento} -> DATA_REL: {data_rel}")
-                    
-    #                 # ✅ CORREÇÃO CRÍTICA: Converter id_origem para string antes de comparar
-    #                 ja_existe = any(
-    #                     str(item.get('id_origem', '')).startswith(f"MEDICAO_{id_contrato}_{id_medicao}")
-    #                     for item in self.dados_agenda
-    #                 )
-                    
-    #                 if ja_existe:
-    #                     logger.debug(f"       ⚠️  Já existe na agenda - não adicionada novamente")
-    #                     continue
-                    
-    #                 item_agenda = {
-    #                     'vencimento': dt_pagamento,
-    #                     'data_rel': data_rel,
-    #                     'status': 'PENDENTE',
-    #                     'fornecedor': nome_fornecedor,
-    #                     'referencia': f"{referencia if referencia else 'SEM REFERÊNCIA'}",
-    #                     'valor': valor_float,
-    #                     'tipo': 'TD2',
-    #                     'observacao': f"Medição pendente - Contrato {id_contrato}",
-    #                     'id_origem': f"MEDICAO_{id_contrato}_{id_medicao}",
-    #                     'origem': 'MEDICAO',
-    #                     'dados_medicao': {
-    #                         'id_contrato': id_contrato,
-    #                         'id_medicao': id_medicao,
-    #                         'cnpj': cnpj_fornecedor,
-    #                         'data_medicao': data_medicao,
-    #                         'data_pagamento': dt_pagamento
-    #                     }
-    #                 }
-                    
-    #                 self.dados_agenda.append(item_agenda)
-    #                 medicoes_adicionadas += 1
-    #                 logger.debug(f"       ✅ ADICIONADA À AGENDA com sucesso!")
-                
-    #             except Exception as e:
-    #                 logger.debug(f"DEBUG: ❌ Erro ao processar linha {idx}: {str(e)}")
-    #                 import traceback
-    #                 logger.debug(traceback.format_exc())
-    #                 continue
-            
-    #         wb.close()
-            
-    #         logger.debug("=" * 80)
-    #         logger.debug(f"RESUMO DO CARREGAMENTO DE MEDIÇÕES:")
-    #         logger.debug(f"  • Medições encontradas: {medicoes_encontradas}")
-    #         logger.debug(f"  • Medições PENDENTES: {medicoes_pendentes}")
-    #         logger.debug(f"  • Medições ADICIONADAS à agenda: {medicoes_adicionadas}")
-    #         logger.debug("=" * 80)
-            
-    #     except Exception as e:
-    #         logger.debug(f"DEBUG: ❌ Erro CRÍTICO ao carregar medições pendentes: {str(e)}")
-    #         import traceback
-    #         logger.debug(traceback.format_exc())
-
+    
     def carregar_medicoes_pendentes(self):
         """✅ VERSÃO CORRIGIDA - Nome do fornecedor (não CNPJ)"""
         try:
@@ -25607,9 +25461,11 @@ class GerenciadorAgenda:
 
     def abrir_confirmacao_lancamento(self, valores_item):
         """
-        ✅ VERSÃO COM CATEGORIA - Confirmação rápida e direta
+        ✅ VERSÃO CORRIGIDA - Campos editáveis corretos + Combobox Etapa Obra
         """
         from src.config.utils import custom_messagebox
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
+        # from src.widgets.combobox_autocompletar import ComboboxAutocompletar  # ✅ NOVO IMPORT
         
         # Buscar dados do item
         item_agenda = None
@@ -25626,7 +25482,7 @@ class GerenciadorAgenda:
         # ========== JANELA COMPACTA ==========
         janela_confirm = tk.Toplevel(self.janela)
         janela_confirm.title("⚡ Confirmação Rápida")
-        janela_confirm.geometry("700x600")  # ✅ Aumentar altura
+        janela_confirm.geometry("700x550")
         janela_confirm.transient(self.janela)
         janela_confirm.grab_set()
         
@@ -25641,24 +25497,18 @@ class GerenciadorAgenda:
                 font=('TkDefaultFont', 12, 'bold'), 
                 foreground='#2563eb').pack(side='left')
         
-        ttk.Label(frame_header, text="📋 Ref. Automática", 
+        ttk.Label(frame_header, text="📋 Ref. Editável", 
                 font=('TkDefaultFont', 9), 
                 foreground='#16a34a').pack(side='right')
         
-        # ========== DADOS CONFIRMADOS ==========
-        frame_info = ttk.LabelFrame(main_frame, text="✅ Dados Confirmados", padding="8")
+        # ========== DADOS CONFIRMADOS (APENAS PARA REFERÊNCIA) ==========
+        frame_info = ttk.LabelFrame(main_frame, text="ℹ️ Informação Original", padding="8")
         frame_info.pack(fill='x', pady=(0, 10))
         
-        info_data = [
-            ("📅 Vencimento:", valores_item[0]),
-            ("📋 Referência:", valores_item[3]),
-        ]
-        
-        for i, (label, valor) in enumerate(info_data):
-            ttk.Label(frame_info, text=label, font=('TkDefaultFont', 9, 'bold')).grid(
-                row=0, column=i*2, padx=5, pady=2, sticky='w')
-            ttk.Label(frame_info, text=valor, font=('TkDefaultFont', 9)).grid(
-                row=0, column=i*2+1, padx=5, pady=2, sticky='w')
+        ttk.Label(frame_info, text=f"📅 Vencimento Original: {valores_item[0]}", 
+                font=('TkDefaultFont', 9)).pack(anchor='w', padx=5, pady=2)
+        ttk.Label(frame_info, text=f"📋 Referência Sugerida: {valores_item[3]}", 
+                font=('TkDefaultFont', 9)).pack(anchor='w', padx=5, pady=2)
         
         # Alerta de medições
         if eh_medicao_agrupada:
@@ -25669,13 +25519,14 @@ class GerenciadorAgenda:
                     text=f"✅ {qtd} medições em um lançamento",
                     font=('TkDefaultFont', 9)).pack(padx=5, pady=2)
         
-        # ========== FORMULÁRIO SIMPLIFICADO ==========
-        frame_form = ttk.LabelFrame(main_frame, text="📝 Dados do Fornecedor", padding="10")
+        # ========== FORMULÁRIO EDITÁVEL ==========
+        frame_form = ttk.LabelFrame(main_frame, text="📝 Dados Editáveis", padding="10")
         frame_form.pack(fill='both', expand=True, pady=(0, 10))
         
-        # Linha 0: Data relatório e Tipo
-        ttk.Label(frame_form, text="📊 Data Relatório:", font=('TkDefaultFont', 9, 'bold')).grid(
-            row=0, column=0, padx=5, pady=5, sticky='w')
+        # ✅ LINHA 0: Data Relatório (READONLY) e Tipo (EDITÁVEL)
+        ttk.Label(frame_form, text="📊 Data Relatório:", 
+                font=('TkDefaultFont', 9, 'bold'), 
+                foreground='#dc2626').grid(row=0, column=0, padx=5, pady=5, sticky='w')
         data_rel = DateEntry(frame_form, width=12, date_pattern='dd/mm/yyyy', 
                         locale='pt_BR', state='readonly')
         if item_agenda and 'data_rel' in item_agenda:
@@ -25694,35 +25545,42 @@ class GerenciadorAgenda:
             tp_desp.set('2')
         tp_desp.grid(row=0, column=3, padx=5, pady=5, sticky='w')
         
-        # Linha 1: CNPJ
+        # ✅ LINHA 1: CNPJ/CPF (READONLY)
         ttk.Label(frame_form, text="🆔 CNPJ/CPF:", 
                 font=('TkDefaultFont', 9, 'bold'), 
                 foreground='#dc2626').grid(row=1, column=0, padx=5, pady=5, sticky='w')
-        cnpj_cpf = ttk.Entry(frame_form, width=20)
+        cnpj_cpf = ttk.Entry(frame_form, width=20, state='readonly')
         cnpj_cpf.grid(row=1, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
         
-        # Linha 2: Nome
+        # ✅ LINHA 2: Nome (EDITÁVEL)
         ttk.Label(frame_form, text="👤 Nome:", font=('TkDefaultFont', 9, 'bold')).grid(
             row=2, column=0, padx=5, pady=5, sticky='w')
         nome = ttk.Entry(frame_form, width=40)
         nome.grid(row=2, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
         
-        # Linha 3: Lista sugestões (compacta)
+        # Lista de sugestões (compacta)
         lista_sugestoes = tk.Listbox(frame_form, height=3)
         lista_sugestoes.grid(row=3, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
         lista_sugestoes.grid_remove()
         
-        # ✅ LINHA 4: CATEGORIA (READONLY)
+        # ✅ LINHA 4: Categoria (EDITÁVEL)
         ttk.Label(frame_form, text="📁 Categoria:", font=('TkDefaultFont', 9, 'bold')).grid(
             row=4, column=0, padx=5, pady=5, sticky='w')
-        categoria_entry = ttk.Entry(frame_form, width=15, state='readonly')
+        categoria_entry = ttk.Entry(frame_form, width=15)
         categoria_entry.grid(row=4, column=1, padx=5, pady=5, sticky='w')
         
-        # Linha 5: Valor
-        ttk.Label(frame_form, text="💰 Valor:", font=('TkDefaultFont', 9, 'bold')).grid(
+        # ✅ LINHA 5: Referência (EDITÁVEL) 
+        ttk.Label(frame_form, text="📋 Referência:", font=('TkDefaultFont', 9, 'bold')).grid(
             row=5, column=0, padx=5, pady=5, sticky='w')
+        referencia_entry = ttk.Entry(frame_form, width=40)
+        referencia_entry.insert(0, valores_item[3])
+        referencia_entry.grid(row=5, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        
+        # ✅ LINHA 6: Valor (EDITÁVEL)
+        ttk.Label(frame_form, text="💰 Valor:", font=('TkDefaultFont', 9, 'bold')).grid(
+            row=6, column=0, padx=5, pady=5, sticky='w')
         valor_entry = ttk.Entry(frame_form, width=15)
-        valor_entry.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        valor_entry.grid(row=6, column=1, padx=5, pady=5, sticky='w')
         
         # Preencher valor inicial
         try:
@@ -25732,25 +25590,52 @@ class GerenciadorAgenda:
         except:
             valor_entry.insert(0, "0,00")
         
-        # Linha 6: NF e Forma Pagamento
+        # ✅ LINHA 6 (continuação): Data Vencimento (EDITÁVEL)
+        ttk.Label(frame_form, text="📅 Vencimento:", font=('TkDefaultFont', 9)).grid(
+            row=6, column=2, padx=5, pady=5, sticky='w')
+        dt_vencto = DateEntry(frame_form, width=12, date_pattern='dd/mm/yyyy', 
+                            locale='pt_BR')
+        try:
+            dt_vencto.set_date(datetime.strptime(valores_item[0], '%d/%m/%Y').date())
+        except:
+            dt_vencto.set_date(datetime.now().date())
+        dt_vencto.grid(row=6, column=3, padx=5, pady=5, sticky='w')
+        
+        # ✅ LINHA 7: NF e Forma Pagamento (EDITÁVEL)
         ttk.Label(frame_form, text="📄 NF:", font=('TkDefaultFont', 9)).grid(
-            row=6, column=0, padx=5, pady=5, sticky='w')
+            row=7, column=0, padx=5, pady=5, sticky='w')
         nf = ttk.Entry(frame_form, width=15)
-        nf.grid(row=6, column=1, padx=5, pady=5, sticky='w')
+        nf.grid(row=7, column=1, padx=5, pady=5, sticky='w')
         
         ttk.Label(frame_form, text="💳 Pagto:", font=('TkDefaultFont', 9)).grid(
-            row=6, column=2, padx=5, pady=5, sticky='w')
+            row=7, column=2, padx=5, pady=5, sticky='w')
         forma_pagamento = ttk.Combobox(frame_form, 
                                     values=['PIX', 'TED', 'DINHEIRO'], 
                                     state='readonly', width=10)
         forma_pagamento.set('PIX')
-        forma_pagamento.grid(row=6, column=3, padx=5, pady=5, sticky='w')
+        forma_pagamento.grid(row=7, column=3, padx=5, pady=5, sticky='w')
         
-        # Linha 7: Dados bancários
+        # ✅ LINHA 8: Etapa da Obra (COMBOBOX AUTOCOMPLETAR)
+        ttk.Label(frame_form, text="🏗️ Etapa Obra:", font=('TkDefaultFont', 9)).grid(
+            row=8, column=0, padx=5, pady=5, sticky='w')
+        
+        etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()  # ✅ Carregar etapas
+        etapa_obra_combo = ComboboxAutocompletar(
+            frame_form,
+            values=etapas_obra,
+            config_key='etapas_obra',
+            config_manager=GerenciadorConfiguracoes,
+            font=('TkDefaultFont', 9),
+            width=38,
+            state='normal'
+        )
+        etapa_obra_combo.grid(row=8, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        
+        # ✅ LINHA 9: Dados bancários (READONLY)
         ttk.Label(frame_form, text="🏦 Dados Bancários:", font=('TkDefaultFont', 9)).grid(
-            row=7, column=0, padx=5, pady=5, sticky='w')
+            row=9, column=0, padx=5, pady=5, sticky='w')
         dados_bancarios_entry = ttk.Entry(frame_form, width=40, state='readonly')
-        dados_bancarios_entry.grid(row=7, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
+        dados_bancarios_entry.grid(row=9, column=1, columnspan=3, padx=5, pady=5, sticky='ew')
         
         frame_form.columnconfigure(1, weight=1)
         
@@ -25782,35 +25667,27 @@ class GerenciadorAgenda:
                 dados_bancarios_entry.config(state='readonly')
         
         def preencher_dados_fornecedor(fornecedor_dados):
-            """✅ ATUALIZADO - Preencher também CATEGORIA"""
+            """✅ Preencher campos com dados do fornecedor"""
             try:
-                # CNPJ e Nome
+                # CNPJ (readonly)
+                cnpj_cpf.config(state='normal')
                 cnpj_cpf.delete(0, tk.END)
-                nome.delete(0, tk.END)
                 cnpj_cpf.insert(0, fornecedor_dados.get('cnpj_cpf', '').strip())
+                cnpj_cpf.config(state='readonly')
+                
+                # Nome (editável)
+                nome.delete(0, tk.END)
                 nome.insert(0, fornecedor_dados.get('nome', '').strip())
                 
-                # ✅ CATEGORIA
+                # Categoria (editável)
                 categoria = fornecedor_dados.get('categoria', 'FORNECEDOR')
-                categoria_entry.config(state='normal')
                 categoria_entry.delete(0, tk.END)
                 categoria_entry.insert(0, categoria)
-                categoria_entry.config(state='readonly')
                 
                 # Dados bancários
                 janela_confirm.after(200, atualizar_dados_bancarios)
             except Exception as e:
                 logger.error(f"Erro ao preencher dados: {e}")
-        
-        def buscar_fornecedor_por_cnpj(event=None):
-            cnpj_digitado = cnpj_cpf.get().strip()
-            if len(cnpj_digitado) >= 11:
-                try:
-                    fornecedor_dados = self.sistema.buscar_fornecedor_por_cnpj_agenda(cnpj_digitado)
-                    if fornecedor_dados:
-                        preencher_dados_fornecedor(fornecedor_dados)
-                except:
-                    pass
         
         def buscar_fornecedor_por_nome(event=None):
             nome_digitado = nome.get().strip()
@@ -25843,25 +25720,25 @@ class GerenciadorAgenda:
                 pass
         
         # Bindings
-        cnpj_cpf.bind('<KeyRelease>', buscar_fornecedor_por_cnpj)
         nome.bind('<KeyRelease>', buscar_fornecedor_por_nome)
         lista_sugestoes.bind('<Button-1>', lambda e: janela_confirm.after(50, selecionar_fornecedor_da_lista))
         forma_pagamento.bind('<<ComboboxSelected>>', lambda e: atualizar_dados_bancarios())
         
-        # Preencher fornecedor inicial
+        # ✅ Preencher fornecedor inicial
         try:
             if item_agenda and item_agenda['origem'] in ['MEDICAO', 'MEDICAO_AGRUPADA']:
                 cnpj_medicao = item_agenda.get('dados_medicao', {}).get('cnpj', '')
                 
                 if cnpj_medicao:
-                    logger.debug(f"DEBUG: Buscando fornecedor por CNPJ da medição: {cnpj_medicao}")
                     fornecedor_dados = self.sistema.buscar_fornecedor_por_cnpj_agenda(cnpj_medicao)
                     
                     if fornecedor_dados:
                         preencher_dados_fornecedor(fornecedor_dados)
                     else:
                         nome.insert(0, item_agenda['fornecedor'])
+                        cnpj_cpf.config(state='normal')
                         cnpj_cpf.insert(0, cnpj_medicao)
+                        cnpj_cpf.config(state='readonly')
                 else:
                     nome.insert(0, item_agenda['fornecedor'])
             else:
@@ -25871,7 +25748,7 @@ class GerenciadorAgenda:
                     preencher_dados_fornecedor(fornecedor_dados)
                 else:
                     nome.insert(0, valores_item[2])
-                    
+                        
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao buscar fornecedor inicial: {e}")
             if item_agenda:
@@ -25881,7 +25758,7 @@ class GerenciadorAgenda:
         
         # ========== CONFIRMAÇÃO RÁPIDA ==========
         def confirmar_rapido():
-            """⚡ CONFIRMAÇÃO DIRETA - COM CATEGORIA"""
+            """⚡ CONFIRMAÇÃO COM CAMPOS EDITÁVEIS"""
             try:
                 # Validação básica
                 erros = []
@@ -25890,7 +25767,6 @@ class GerenciadorAgenda:
                 if not cnpj_cpf.get().strip():
                     erros.append("CNPJ obrigatório")
                 
-                # ✅ Validar CATEGORIA
                 categoria_valor = categoria_entry.get().strip()
                 if not categoria_valor:
                     erros.append("Categoria obrigatória")
@@ -25908,29 +25784,30 @@ class GerenciadorAgenda:
                     custom_messagebox("error", "Validação", "\n".join(erros))
                     return
                 
-                # Preparar dados
+                # ✅ Preparar dados com campos editáveis
                 data_rel_usar = data_rel.get_date()
                 if item_agenda and 'data_rel' in item_agenda:
                     data_rel_usar = item_agenda['data_rel']
                 
-                referencia_final = valores_item[3]
+                referencia_final = referencia_entry.get().strip().upper()
+                etapa_obra_valor = etapa_obra_combo.get().strip().upper()  # ✅ Obter do combobox
                 
                 dados_lancamento = {
                     'data_rel': data_rel_usar,
                     'tp_desp': tp_desp.get(),
                     'cnpj_cpf': cnpj_cpf.get().strip(),
                     'nome': nome.get().strip().upper(),
-                    'categoria': categoria_valor.upper(),  # ✅ INCLUIR CATEGORIA
+                    'categoria': categoria_valor.upper(),
                     'referencia': referencia_final,
                     'nf': nf.get().strip().upper(),
                     'valor': valor_float,
-                    'dt_vencto': datetime.strptime(valores_item[0], '%d/%m/%Y').date(),
+                    'dt_vencto': dt_vencto.get_date(),
                     'observacao': f"CONFIRMADO - {referencia_final}",
                     'forma_pagamento': forma_pagamento.get(),
                     'dados_bancarios': dados_bancarios_entry.get(),
                     'vr_unit': valor_float,
                     'dias': 1,
-                    'etapa_obra': '',
+                    'etapa_obra': etapa_obra_valor,  # ✅ Usar valor do combobox
                     'insumo': ''
                 }
                 
@@ -25969,6 +25846,7 @@ class GerenciadorAgenda:
                         f"📋 {dados_lancamento['nome']}\n"
                         f"📁 {categoria_valor}\n"
                         f"🔖 {referencia_final}\n"
+                        f"🏗️ {etapa_obra_valor if etapa_obra_valor else 'Sem etapa'}\n"
                         f"💰 R$ {valor_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'))
                 else:
                     custom_messagebox("error", "Erro", "Falha ao salvar lançamento!")
@@ -25992,8 +25870,8 @@ class GerenciadorAgenda:
         janela_confirm.bind('<Return>', lambda e: confirmar_rapido())
         janela_confirm.bind('<Escape>', lambda e: janela_confirm.destroy())
         
-        # Focar no CNPJ
-        cnpj_cpf.focus()
+        # Focar no primeiro campo editável (Nome)
+        nome.focus()
 
     def remover_compromisso_confirmado(self, item_id_origem):
         """Remove compromisso da lista após confirmação"""
