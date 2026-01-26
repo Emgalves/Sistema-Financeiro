@@ -8250,7 +8250,7 @@ class SistemaEntradaDados:
         """Atualiza os dados bancários baseado no tipo de despesa"""
         tp_desp = self.campos_despesa['tp_desp'].get().strip()
         cnpj_cpf = self.campos_fornecedor['cnpj_cpf'].get().strip()
-    
+
         if not cnpj_cpf:  # Se não houver fornecedor selecionado
             return
         
@@ -8265,32 +8265,38 @@ class SistemaEntradaDados:
 
         self.campos_fornecedor['dados_bancarios'].config(state='normal')
         self.campos_fornecedor['dados_bancarios'].delete(0, tk.END)
-        dados_bancarios_planilha = fornecedor_completo.get('dados_bancarios', '').strip()
         
-        if dados_bancarios_planilha:
-            # Coluna O já tem os dados - usar diretamente!
-            dados_bancarios = dados_bancarios_planilha
+        # PRIORIDADE: verificar forma de pagamento PRIMEIRO
+        forma_pagamento = self.forma_pagamento_var.get()
+        
+        if forma_pagamento == "DINHEIRO":
+            # Para DINHEIRO, deixar o campo vazio
+            dados_bancarios = ""
         else:
-            forma_pagamento = self.forma_pagamento_var.get()
+            # Para PIX ou TED, verificar se há dados na planilha
+            dados_bancarios_planilha = fornecedor_completo.get('dados_bancarios', '').strip()
             
-            if forma_pagamento == "DINHEIRO":
-                dados_bancarios = "PAGAMENTO EM DINHEIRO"
-            elif forma_pagamento == "PIX" and fornecedor_completo['chave_pix']:
-                dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
+            if dados_bancarios_planilha:
+                # Coluna O já tem os dados - usar diretamente!
+                dados_bancarios = dados_bancarios_planilha
             else:
-                # Estrutura para TED
-                dados_ted = []
-                if fornecedor_completo['banco']: dados_ted.append(str(fornecedor_completo['banco']))
-                if fornecedor_completo['op']: dados_ted.append(str(fornecedor_completo['op']))
-                if fornecedor_completo['agencia']: dados_ted.append(str(fornecedor_completo['agencia']))
-                if fornecedor_completo['conta']: dados_ted.append(str(fornecedor_completo['conta']))
-                # SEMPRE adicionar o CNPJ/CPF para TED
-                dados_ted.append(str(fornecedor_completo['cnpj_cpf']))
-                
-                dados_bancarios = ' - '.join(filter(None, dados_ted))
+                # Construir dados bancários baseado na forma de pagamento
+                if forma_pagamento == "PIX" and fornecedor_completo.get('chave_pix'):
+                    dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
+                else:
+                    # Estrutura para TED
+                    dados_ted = []
+                    if fornecedor_completo.get('banco'): dados_ted.append(str(fornecedor_completo['banco']))
+                    if fornecedor_completo.get('op'): dados_ted.append(str(fornecedor_completo['op']))
+                    if fornecedor_completo.get('agencia'): dados_ted.append(str(fornecedor_completo['agencia']))
+                    if fornecedor_completo.get('conta'): dados_ted.append(str(fornecedor_completo['conta']))
+                    # SEMPRE adicionar o CNPJ/CPF para TED
+                    dados_ted.append(str(fornecedor_completo['cnpj_cpf']))
+                    
+                    dados_bancarios = ' - '.join(filter(None, dados_ted))
 
-            if dados_bancarios.strip() in ['', ' - ']:
-                dados_bancarios = ''
+                if dados_bancarios.strip() in ['', ' - ']:
+                    dados_bancarios = ''
             
         self.campos_fornecedor['dados_bancarios'].insert(0, dados_bancarios)
         self.campos_fornecedor['dados_bancarios'].config(state='readonly')
@@ -8934,6 +8940,10 @@ class SistemaEntradaDados:
         # Limpar data de vencimento
         if 'dt_vencto' in self.campos_despesa:
             self.campos_despesa['dt_vencto'].delete(0, tk.END)
+
+        # Restaurar forma de pagamento para PIX (padrão)
+        self.forma_pagamento_var.set("PIX")
+        self.atualizar_dados_bancarios()
 
     def verificar_duplicidade_antes_salvar(self, sheet, dados):
         """
@@ -25482,7 +25492,7 @@ class GerenciadorAgenda:
         # ========== JANELA COMPACTA ==========
         janela_confirm = tk.Toplevel(self.janela)
         janela_confirm.title("⚡ Confirmação Rápida")
-        janela_confirm.geometry("700x550")
+        janela_confirm.geometry("700x600")
         janela_confirm.transient(self.janela)
         janela_confirm.grab_set()
         
