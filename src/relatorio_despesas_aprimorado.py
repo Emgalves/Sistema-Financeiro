@@ -1687,7 +1687,7 @@ class RelatorioHandler:
             return str(data)
 
     def consolidar_despesas_colaboradores(self, df):
-        """Consolida as despesas dos colaboradores"""
+        """Consolida as despesas dos colaboradores - MODIFICADO para capturar data de vencimento"""
         try:
             # Criar cópia e tratar valores nulos
             df = df.copy()
@@ -1709,6 +1709,16 @@ class RelatorioHandler:
                 'TRANSPORTE': 0.0,
                 'CAFÉ': 0.0
             }
+            
+            # NOVO: Capturar a data de vencimento (será a mesma para todos)
+            data_vencimento = ""
+            if 'DT_VENCTO' in df.columns and not df.empty:
+                primeiro_vencto = df['DT_VENCTO'].iloc[0]
+                if pd.notna(primeiro_vencto) and primeiro_vencto != '':
+                    if hasattr(primeiro_vencto, 'strftime'):
+                        data_vencimento = primeiro_vencto.strftime('%d/%m/%Y')
+                    else:
+                        data_vencimento = str(primeiro_vencto)
                 
             for nome, grupo in df.groupby('NOME'):
                 linha = {'NOME': nome}
@@ -1745,8 +1755,9 @@ class RelatorioHandler:
             
             # ADICIONAR ESTA LINHA:
             df_result = df_result.sort_values('TOTAL', ascending=False)
-                
-            return df_result
+            
+            # NOVO: Retornar também a data de vencimento
+            return df_result, data_vencimento
                 
         except Exception as e:
             print(f"Erro ao consolidar despesas: {str(e)}")
@@ -2548,12 +2559,18 @@ class RelatorioHandler:
         # 1. Despesas com Colaboradores - Funcionários (Salários, VT e VR)
         if not df_tp_desp_1.empty:
             logger.debug("Processando despesas com colaboradores - funcionários")
-            elementos.append(Paragraph("1) DESPESAS COM COLABORADORES - SALÁRIO/ADIANTAMENTO, TRANSPORTE E CAFÉ", 
-                                self.config.style_despesa))
             
             try:
-                df_consolidado = self.consolidar_despesas_colaboradores(df_tp_desp_1)
+                # MODIFICAÇÃO: Capturar data de vencimento
+                df_consolidado, data_vencimento = self.consolidar_despesas_colaboradores(df_tp_desp_1)
                 logger.debug(f"Total de funcionários processados: {len(df_consolidado)}")
+                
+                # MODIFICAÇÃO: Incluir vencimento no título
+                titulo = "1) DESPESAS COM COLABORADORES - SALÁRIO/ADIANTAMENTO, TRANSPORTE E CAFÉ"
+                if data_vencimento:
+                    titulo += f"     -    Vencimento: {data_vencimento}"
+                
+                elementos.append(Paragraph(titulo, self.config.style_despesa))
 
                 tabela = self.criar_tabela_despesas(
                     df_consolidado,
@@ -2603,17 +2620,28 @@ class RelatorioHandler:
                                 self.config.style_despesa))
             
             try:
-                # Renomear colunas para corresponder ao formato esperado
+                # MODIFICAÇÃO: Adicionar coluna VENCIMENTO
                 df_diaria_formatado = df_diaria.copy()
+                
+                # Renomear e adicionar coluna de vencimento
                 df_diaria_formatado = df_diaria_formatado.rename(columns={
                     'VR_UNIT': 'DIÁRIA',
                     'VALOR': 'TOTAL',
-                    'DADOS_BANCARIOS': 'DADOS BANCÁRIOS'
+                    'DADOS_BANCARIOS': 'DADOS BANCÁRIOS',
+                    'DT_VENCTO': 'VENCIMENTO'  # NOVO: Mapear DT_VENCTO para VENCIMENTO
                 })
+                
+                # Formatar a coluna VENCIMENTO se necessário
+                if 'VENCIMENTO' in df_diaria_formatado.columns:
+                    df_diaria_formatado['VENCIMENTO'] = df_diaria_formatado['VENCIMENTO'].apply(
+                        lambda x: x.strftime('%d/%m/%Y') if hasattr(x, 'strftime') and pd.notna(x) else str(x) if pd.notna(x) else ''
+                    )
+                
+                # MODIFICAÇÃO: Nova estrutura de colunas incluindo VENCIMENTO
                 tabela = self.criar_tabela_despesas(
                     df_diaria_formatado,
-                    ['NOME', 'DIÁRIA', 'DIAS', 'TOTAL', 'DADOS BANCÁRIOS'],
-                    [280, 90, 50, 100, 270]
+                    ['NOME', 'DIÁRIA', 'DIAS', 'TOTAL', 'VENCIMENTO', 'DADOS BANCÁRIOS'],
+                    [240, 80, 40, 90, 80, 260]  # Ajustar larguras
                 )
                 elementos.append(tabela)
                 elementos.append(Spacer(1, 12))
