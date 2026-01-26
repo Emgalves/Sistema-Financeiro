@@ -11183,3 +11183,15 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-01-21 14:04:04,808 - INFO - ✅ Menu principal restaurado com sucesso
 2026-01-21 14:04:05,858 - INFO - Abrindo configurações do sistema
 2026-01-21 14:10:18,658 - INFO - Sistema encerrado pelo usuário
+2026-01-26 19:17:31,625 - INFO - Configurações importadas com sucesso via src.config
+2026-01-26 19:17:31,659 - INFO - Configurações importadas com sucesso
+2026-01-26 19:17:31,669 - INFO - Configurações do sistema importadas com sucesso
+2026-01-26 19:17:32,881 - INFO - Sistema iniciado em modo: TESTE
+2026-01-26 19:17:35,028 - INFO - Abrindo sistema de relatórios
+2026-01-26 19:19:31,177 - INFO - Sistema encerrado pelo usuário
+2026-01-26 19:23:34,817 - INFO - Configurações importadas com sucesso via src.config
+2026-01-26 19:23:34,852 - INFO - Configurações importadas com sucesso
+2026-01-26 19:23:34,852 - INFO - Configurações do sistema importadas com sucesso
+2026-01-26 19:23:35,725 - INFO - Sistema iniciado em modo: TESTE
+2026-01-26 19:23:37,585 - INFO - Abrindo sistema de relatórios
+2026-01-26 19:25:35,055 - INFO - Sistema encerrado pelo usuário
