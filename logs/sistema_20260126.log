@@ -97,3 +97,110 @@
 2026-01-26 18:30:08,148 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
 2026-01-26 18:30:08,151 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
 2026-01-26 18:30:08,152 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-01-26 19:17:28,974 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-01-26 19:17:28,976 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-01-26 19:17:28,976 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-01-26 19:17:28,977 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-01-26 19:17:28,977 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-01-26 19:17:35,863 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-01-26 19:17:35,981 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-01-26 19:17:35,983 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-01-26 19:17:36,004 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-01-26 19:17:36,006 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2026-01-26 19:17:36,007 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2026-01-26 19:17:37,672 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/02/2026
+2026-01-26 19:17:37,674 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/02/2026
+2026-01-26 19:17:38,611 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-01-26 19:17:38,652 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-01-26 19:17:38,670 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-01-26 19:17:38,757 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-01-26 19:17:38,776 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2026-01-26 19:17:41,524 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2026-01-26 19:17:50,917 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ANA AUGUSTA PIRES COUTINHO
+2026-01-26 19:17:50,919 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2026-01-26 19:17:50,927 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2026-01-26 19:17:56,347 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-01-26 19:17:56,348 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-01-26 19:17:56,349 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-01-26 19:17:56,350 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-01-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-01-26 19:17:56,351 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2026-01-26 19:17:56,351 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA AUGUSTA PIRES COUTINHO.xlsx
+2026-01-26 19:17:56,352 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-01-26 19:17:56,353 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ANA AUGUSTA PIRES COUTINHO.xlsx
+2026-01-26 19:17:59,329 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-01-26 19:17:59,333 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-01-26 19:18:01,060 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-01-26 19:18:22,732 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20260126_191800.pdf
+2026-01-26 19:18:24,738 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_ANA_AUGUSTA_PIRES_COUTINHO_20260126_191800.pdf'
+2026-01-26 19:18:35,925 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: EDUARDO MORENO MARQUES
+2026-01-26 19:18:35,926 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:18:35,928 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:18:38,715 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-01-26 19:18:38,716 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-01-26 19:18:38,717 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-01-26 19:18:38,718 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-01-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-01-26 19:18:38,718 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:18:38,719 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:18:38,721 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-01-26 19:18:38,722 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:18:40,720 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-01-26 19:18:40,721 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-01-26 19:18:42,092 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-01-26 19:18:53,259 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_EDUARDO_MORENO_MARQUES_20260126_191841.pdf
+2026-01-26 19:18:54,963 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-01-26 19:18:54,964 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-01-26 19:18:54,964 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-01-26 19:18:54,965 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-01-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-01-26 19:18:54,966 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:18:54,967 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:18:54,968 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-01-26 19:18:54,968 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:18:55,267 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_EDUARDO_MORENO_MARQUES_20260126_191841.pdf
+2026-01-26 19:18:56,608 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-01-26 19:18:56,609 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-01-26 19:18:58,082 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-01-26 19:19:12,280 - sistema_relatorios - relatorios_interface - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2026-01-26 19:19:12,666 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_EDUARDO_MORENO_MARQUES_20260126_191857.pdf
+2026-01-26 19:19:14,670 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_EDUARDO_MORENO_MARQUES_20260126_191857.pdf'
+2026-01-26 19:19:27,531 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-01-26 19:19:27,532 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-01-26 19:19:27,611 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-01-26 19:23:32,510 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-01-26 19:23:32,512 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-01-26 19:23:32,513 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-01-26 19:23:32,514 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-01-26 19:23:32,514 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-01-26 19:23:38,162 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-01-26 19:23:38,256 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-01-26 19:23:38,257 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-01-26 19:23:38,274 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-01-26 19:23:38,275 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2026-01-26 19:23:38,276 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 17 clientes
+2026-01-26 19:23:39,869 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/02/2026
+2026-01-26 19:23:39,870 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 05/02/2026
+2026-01-26 19:23:40,526 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-01-26 19:23:40,551 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-01-26 19:23:40,552 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-01-26 19:23:40,554 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-01-26 19:23:40,556 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 16
+2026-01-26 19:23:44,946 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: EDUARDO MORENO MARQUES
+2026-01-26 19:23:44,947 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:23:44,954 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:23:48,208 - sistema_relatorios - relatorios_interface - INFO - Modo manual ativado
+2026-01-26 19:23:55,576 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-01-26 19:23:55,577 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-01-26 19:23:55,578 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-01-26 19:23:55,579 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-01-05 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-01-26 19:23:55,580 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:23:55,581 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:23:55,581 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-01-26 19:23:55,582 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: EDUARDO MORENO MARQUES.xlsx
+2026-01-26 19:23:57,621 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-01-26 19:23:57,622 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-01-26 19:23:59,388 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-01-26 19:24:19,428 - sistema_relatorios - relatorios_interface - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2026-01-26 19:24:19,831 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_EDUARDO_MORENO_MARQUES_20260126_192358.pdf
+2026-01-26 19:24:21,835 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_EDUARDO_MORENO_MARQUES_20260126_192358.pdf'
+2026-01-26 19:25:31,472 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-01-26 19:25:31,473 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-01-26 19:25:31,575 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
