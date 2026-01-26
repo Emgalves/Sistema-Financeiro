@@ -204,3 +204,4 @@
 2026-01-26 19:25:31,472 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
 2026-01-26 19:25:31,473 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
 2026-01-26 19:25:31,575 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-01-26 19:36:52,226 - sistema - logger_config - INFO - Sistema de logging inicializado
