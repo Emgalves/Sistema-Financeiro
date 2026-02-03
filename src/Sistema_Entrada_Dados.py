@@ -166,6 +166,9 @@ except ImportError:
             logger.error(f"Erro ao importar configurações: {str(e)}")
             # Não raise aqui para permitir definições alternativas
 
+# Arquivo para salvar preferências de ordenação
+ARQUIVO_PREFERENCIAS_ORDENACAO = PASTA_CLIENTES / ".preferencias_ordenacao.json"
+
 # Gestão de Locações
 from src.gestao_locacoes import GerenciadorLocacoes
 # Importador de Medições
@@ -17556,6 +17559,7 @@ class GerenciadorLancamentos:
         self.todos_itens_tree = []
 
         self.gestor_taxas = GestorTaxasAdministracao(sistema_principal)
+        self.preferencias_ordenacao = self.carregar_preferencias_ordenacao()
         
     def abrir_gerenciador(self):
         """Abre a janela de gerenciamento de lançamentos"""
@@ -17614,28 +17618,107 @@ class GerenciadorLancamentos:
         # Frame de filtros
         frame_filtros = ttk.LabelFrame(main_frame, text="Filtros")
         frame_filtros.pack(fill='x', pady=(0, 10))
-        
+
+        # === LINHA 1: Filtros de Data e Status ===
+        frame_filtros_linha1 = ttk.Frame(frame_filtros)
+        frame_filtros_linha1.pack(fill='x', padx=5, pady=5)
+
         # Filtros por data
-        ttk.Label(frame_filtros, text="Data Início:").grid(row=0, column=0, padx=5, pady=5)
-        self.data_inicio = DateEntry(frame_filtros, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
-        self.data_inicio.grid(row=0, column=1, padx=5, pady=5)
-        
-        ttk.Label(frame_filtros, text="Data Fim:").grid(row=0, column=2, padx=5, pady=5)
-        self.data_fim = DateEntry(frame_filtros, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
-        self.data_fim.grid(row=0, column=3, padx=5, pady=5)
-        
+        ttk.Label(frame_filtros_linha1, text="Data Início:").pack(side='left', padx=(0, 5))
+        self.data_inicio = DateEntry(frame_filtros_linha1, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_inicio.pack(side='left', padx=(0, 10))
+
+        ttk.Label(frame_filtros_linha1, text="Data Fim:").pack(side='left', padx=(0, 5))
+        self.data_fim = DateEntry(frame_filtros_linha1, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_fim.pack(side='left', padx=(0, 10))
+
         self.inicializar_datas_padrao()
-        
+
         # Filtro por status
-        ttk.Label(frame_filtros, text="Status:").grid(row=0, column=4, padx=5, pady=5)
-        self.combo_status = ttk.Combobox(frame_filtros, values=['Todos', 'Ativos', 'Excluídos'], 
+        ttk.Label(frame_filtros_linha1, text="Status:").pack(side='left', padx=(0, 5))
+        self.combo_status = ttk.Combobox(frame_filtros_linha1, values=['Todos', 'Ativos', 'Excluídos'], 
                                     state='readonly', width=10)
         self.combo_status.set('Ativos')
-        self.combo_status.grid(row=0, column=5, padx=5, pady=5)
-        
+        self.combo_status.pack(side='left', padx=(0, 10))
+
         # Botão filtrar
-        ttk.Button(frame_filtros, text="Filtrar", 
-                command=self.filtrar_com_feedback).grid(row=0, column=6, padx=10, pady=5)
+        ttk.Button(frame_filtros_linha1, text="Filtrar", 
+                command=self.filtrar_com_feedback).pack(side='left', padx=5)
+
+        # === NOVA LINHA 2: Ordenação ===
+        frame_ordenacao = ttk.Frame(frame_filtros)
+        frame_ordenacao.pack(fill='x', padx=5, pady=(0, 5))
+
+        ttk.Label(frame_ordenacao, text="🔽 Ordenar por:", 
+                font=('TkDefaultFont', 9, 'bold')).pack(side='left', padx=(0, 10))
+
+        # Ordenação primária
+        ttk.Label(frame_ordenacao, text="1º:").pack(side='left', padx=(0, 5))
+        self.combo_ordem_1 = ttk.Combobox(frame_ordenacao, 
+                                        values=['Data', 'Nome', 'Referência', 'Valor', 'Vencimento', 'Tipo'],
+                                        state='readonly', width=12)
+        self.combo_ordem_1.set('Data')
+        self.combo_ordem_1.pack(side='left', padx=(0, 5))
+
+        # Direção da ordenação primária
+        self.combo_direcao_1 = ttk.Combobox(frame_ordenacao, 
+                                            values=['↑ Crescente', '↓ Decrescente'],
+                                            state='readonly', width=12)
+        self.combo_direcao_1.set('↑ Crescente')
+        self.combo_direcao_1.pack(side='left', padx=(0, 15))
+
+        # Ordenação secundária
+        ttk.Label(frame_ordenacao, text="2º:").pack(side='left', padx=(0, 5))
+        self.combo_ordem_2 = ttk.Combobox(frame_ordenacao, 
+                                        values=['Nenhum', 'Data', 'Nome', 'Referência', 'Valor', 'Vencimento', 'Tipo'],
+                                        state='readonly', width=12)
+        self.combo_ordem_2.set('Nome')
+        self.combo_ordem_2.pack(side='left', padx=(0, 5))
+
+        # Direção da ordenação secundária
+        self.combo_direcao_2 = ttk.Combobox(frame_ordenacao, 
+                                            values=['↑ Crescente', '↓ Decrescente'],
+                                            state='readonly', width=12)
+        self.combo_direcao_2.set('↑ Crescente')
+        self.combo_direcao_2.pack(side='left', padx=(0, 15))
+
+        # Ordenação terciária
+        ttk.Label(frame_ordenacao, text="3º:").pack(side='left', padx=(0, 5))
+        self.combo_ordem_3 = ttk.Combobox(frame_ordenacao, 
+                                        values=['Nenhum', 'Data', 'Nome', 'Referência', 'Valor', 'Vencimento', 'Tipo'],
+                                        state='readonly', width=12)
+        self.combo_ordem_3.set('Valor')
+        self.combo_ordem_3.pack(side='left', padx=(0, 5))
+
+        # Direção da ordenação terciária
+        self.combo_direcao_3 = ttk.Combobox(frame_ordenacao, 
+                                            values=['↑ Crescente', '↓ Decrescente'],
+                                            state='readonly', width=12)
+        self.combo_direcao_3.set('↓ Decrescente')
+        self.combo_direcao_3.pack(side='left', padx=(0, 15))
+
+        # NOVO: Frame para botões de ordenação
+        frame_botoes_ordenacao = ttk.Frame(frame_ordenacao)
+        frame_botoes_ordenacao.pack(side='left', padx=5)
+
+        # Botão aplicar ordenação
+        ttk.Button(frame_botoes_ordenacao, text="📊 Aplicar", 
+                command=self.aplicar_ordenacao_e_salvar,
+                width=10).pack(side='left', padx=2)
+
+        # NOVO: Botão ordenação padrão
+        ttk.Button(frame_botoes_ordenacao, text="🔄 Padrão", 
+                command=self.restaurar_ordenacao_padrao,
+                width=10).pack(side='left', padx=2)
+
+        # Checkbox para destacar possíveis duplicatas
+        self.var_destacar_duplicatas = tk.BooleanVar(value=False)
+        ttk.Checkbutton(frame_ordenacao, text="⚠️ Destacar possíveis duplicatas",
+                    variable=self.var_destacar_duplicatas,
+                    command=self.aplicar_ordenacao_e_salvar).pack(side='left', padx=10)
+
+        # NOVO: Aplicar preferências salvas aos controles
+        self.aplicar_preferencias_ordenacao()
         
         # Frame da lista de lançamentos
         frame_lista = ttk.Frame(main_frame)
@@ -17684,12 +17767,24 @@ class GerenciadorLancamentos:
         # Frame para informações de seleção
         frame_selecao = ttk.Frame(frame_botoes)
         frame_selecao.pack(fill='x', pady=(0, 5))
-        
+
+        # Criar frame interno para organizar melhor
+        frame_info_selecao = ttk.Frame(frame_selecao)
+        frame_info_selecao.pack(side='left', fill='x', expand=True)
+
         # Label para mostrar quantidade selecionada
-        self.label_selecao = ttk.Label(frame_selecao, text="Nenhum item selecionado", 
+        self.label_selecao = ttk.Label(frame_info_selecao, 
+                                    text="Nenhum item selecionado", 
                                     font=('TkDefaultFont', 9, 'italic'))
-        self.label_selecao.pack(side='left')
-        
+        self.label_selecao.pack(side='left', padx=(0, 15))
+
+        # Label para mostrar somatório
+        self.label_somatorio = ttk.Label(frame_info_selecao, 
+                                        text="", 
+                                        font=('TkDefaultFont', 10, 'bold'),
+                                        foreground='#006400')  # Verde escuro
+        self.label_somatorio.pack(side='left', padx=(0, 10))
+
         # Botões de seleção
         ttk.Button(frame_selecao, text="Selecionar Todos Visíveis", 
                 command=self.selecionar_todos_visiveis).pack(side='right', padx=2)
@@ -17739,6 +17834,7 @@ class GerenciadorLancamentos:
         self.tree_lancamentos.tag_configure('normal', background='white')
         self.tree_lancamentos.tag_configure('selecionado', background='#e6f3ff')
         self.tree_lancamentos.tag_configure('busca_encontrada', background='#ffffcc')
+        self.tree_lancamentos.tag_configure('possivel_duplicata', background='#ffe6cc', foreground='#cc6600')
 
 
         # Configurar eventos
@@ -17783,28 +17879,37 @@ class GerenciadorLancamentos:
             # Atualizar label de seleção
             if qtd_selecionados == 0:
                 self.label_selecao.config(text="Nenhum item selecionado")
+                # NOVO: Limpar somatório
+                self.label_somatorio.config(text="")
             elif qtd_selecionados == 1:
                 self.label_selecao.config(text="1 item selecionado")
+                # NOVO: Calcular e exibir somatório
+                total = self.calcular_somatorio_selecionados()
+                self.label_somatorio.config(
+                    text=f"Valor: R$ {total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                )
             else:
                 self.label_selecao.config(text=f"{qtd_selecionados} itens selecionados")
+                # NOVO: Calcular e exibir somatório
+                total = self.calcular_somatorio_selecionados()
+                self.label_somatorio.config(
+                    text=f"Total: R$ {total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                )
             
-            # Controlar estado dos botões
+            # Controlar estado dos botões (mantém igual)
             if qtd_selecionados == 0:
-                # Nenhum selecionado - desabilitar todos
                 self.btn_excluir_individual.config(state='disabled')
                 self.btn_excluir_lote.config(state='disabled')
                 self.btn_restaurar_individual.config(state='disabled')
                 self.btn_restaurar_lote.config(state='disabled')
                 
             elif qtd_selecionados == 1:
-                # Um selecionado - habilitar individuais, desabilitar lote
                 self.btn_excluir_individual.config(state='normal')
                 self.btn_excluir_lote.config(state='disabled')
                 self.btn_restaurar_individual.config(state='normal')
                 self.btn_restaurar_lote.config(state='disabled')
                 
             else:
-                # Múltiplos selecionados - desabilitar individuais, habilitar lote
                 self.btn_excluir_individual.config(state='disabled')
                 self.btn_excluir_lote.config(state='normal')
                 self.btn_restaurar_individual.config(state='disabled')
@@ -17880,6 +17985,52 @@ class GerenciadorLancamentos:
             logger.debug(f"Erro ao obter dados selecionados: {str(e)}")
             return []
 
+    def calcular_somatorio_selecionados(self):
+        """
+        Calcula o somatório dos valores dos itens selecionados
+        
+        Returns:
+            float: Valor total dos itens selecionados
+        """
+        try:
+            items_selecionados = self.tree_lancamentos.selection()
+            
+            if not items_selecionados:
+                return 0.0
+            
+            total = 0.0
+            
+            for item in items_selecionados:
+                try:
+                    valores = self.tree_lancamentos.item(item)['values']
+                    
+                    if len(valores) < 6:
+                        continue
+                    
+                    # O valor está na 6ª coluna (índice 5)
+                    valor_str = str(valores[5])
+                    
+                    # Converter valor brasileiro para float
+                    # Remove pontos de milhar e substitui vírgula por ponto
+                    valor_limpo = valor_str.replace('.', '').replace(',', '.')
+                    
+                    try:
+                        valor_numerico = float(valor_limpo)
+                        total += valor_numerico
+                    except ValueError:
+                        logger.debug(f"Erro ao converter valor: {valor_str}")
+                        continue
+                        
+                except Exception as e:
+                    logger.debug(f"Erro ao processar item no somatório: {str(e)}")
+                    continue
+            
+            return total
+            
+        except Exception as e:
+            logger.debug(f"Erro ao calcular somatório: {str(e)}")
+            return 0.0
+    
     def excluir_lote(self):
         """Executa exclusão em lote dos itens selecionados"""
         try:
@@ -18227,6 +18378,20 @@ class GerenciadorLancamentos:
             self.janela.bind('<Control-f>', on_ctrl_f)
             self.janela.bind('<Control-F>', on_ctrl_f)
             
+            # Ctrl+O: Aplicar ordenação
+            def on_ctrl_o(event):
+                self.aplicar_ordenacao()
+                return "break"
+
+            self.janela.bind('<Control-o>', on_ctrl_o)
+
+            # Ctrl+Shift+O: Restaurar ordenação padrão
+            def on_ctrl_shift_o(event):
+                self.restaurar_ordenacao_padrao()
+                return "break"
+
+            self.janela.bind('<Control-Shift-O>', on_ctrl_shift_o)
+
             # NOVO: ESC para limpar busca
             def on_escape(event):
                 # Se o foco está no campo de busca, limpar busca
@@ -18350,11 +18515,148 @@ class GerenciadorLancamentos:
             logger.debug(f"DEBUG: Erro ao inicializar datas padrão: {str(e)}")
             import traceback
             traceback.logger.debug_exc()
-       
+
+    def obter_ordenacao_padrao(self):
+        """
+        Retorna a configuração de ordenação padrão recomendada
+        
+        Returns:
+            dict: Configuração padrão de ordenação
+        """
+        return {
+            'ordem_1': 'Data',
+            'direcao_1': '↑ Crescente',
+            'ordem_2': 'Nome',
+            'direcao_2': '↑ Crescente',
+            'ordem_3': 'Valor',
+            'direcao_3': '↓ Decrescente',
+            'destacar_duplicatas': False
+        }
+
+    def carregar_preferencias_ordenacao(self):
+        """
+        Carrega as preferências de ordenação salvas
+        
+        Returns:
+            dict: Preferências carregadas ou padrão se não existir arquivo
+        """
+        try:
+            if ARQUIVO_PREFERENCIAS_ORDENACAO.exists():
+                import json
+                with open(ARQUIVO_PREFERENCIAS_ORDENACAO, 'r', encoding='utf-8') as f:
+                    preferencias = json.load(f)
+                    logger.debug(f"DEBUG: Preferências de ordenação carregadas: {preferencias}")
+                    return preferencias
+            else:
+                logger.debug("DEBUG: Arquivo de preferências não existe, usando padrão")
+                return self.obter_ordenacao_padrao()
+                
+        except Exception as e:
+            logger.error(f"Erro ao carregar preferências de ordenação: {str(e)}")
+            return self.obter_ordenacao_padrao()
+
+    def salvar_preferencias_ordenacao(self):
+        """
+        Salva as preferências de ordenação atuais
+        """
+        try:
+            import json
+            
+            # Coletar preferências atuais
+            preferencias = {
+                'ordem_1': self.combo_ordem_1.get(),
+                'direcao_1': self.combo_direcao_1.get(),
+                'ordem_2': self.combo_ordem_2.get(),
+                'direcao_2': self.combo_direcao_2.get(),
+                'ordem_3': self.combo_ordem_3.get(),
+                'direcao_3': self.combo_direcao_3.get(),
+                'destacar_duplicatas': self.var_destacar_duplicatas.get()
+            }
+            
+            # Criar diretório se não existir
+            PASTA_CLIENTES.mkdir(parents=True, exist_ok=True)
+            
+            # Salvar arquivo
+            with open(ARQUIVO_PREFERENCIAS_ORDENACAO, 'w', encoding='utf-8') as f:
+                json.dump(preferencias, f, indent=4, ensure_ascii=False)
+            
+            logger.debug(f"DEBUG: Preferências de ordenação salvas: {preferencias}")
+            
+            # Atualizar preferências em memória
+            self.preferencias_ordenacao = preferencias
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Erro ao salvar preferências de ordenação: {str(e)}")
+            return False
+
+    def aplicar_preferencias_ordenacao(self):
+        """
+        Aplica as preferências de ordenação aos combos
+        """
+        try:
+            if not self.preferencias_ordenacao:
+                self.preferencias_ordenacao = self.obter_ordenacao_padrao()
+            
+            # Aplicar aos combos
+            self.combo_ordem_1.set(self.preferencias_ordenacao.get('ordem_1', 'Data'))
+            self.combo_direcao_1.set(self.preferencias_ordenacao.get('direcao_1', '↑ Crescente'))
+            
+            self.combo_ordem_2.set(self.preferencias_ordenacao.get('ordem_2', 'Nome'))
+            self.combo_direcao_2.set(self.preferencias_ordenacao.get('direcao_2', '↑ Crescente'))
+            
+            self.combo_ordem_3.set(self.preferencias_ordenacao.get('ordem_3', 'Valor'))
+            self.combo_direcao_3.set(self.preferencias_ordenacao.get('direcao_3', '↓ Decrescente'))
+            
+            self.var_destacar_duplicatas.set(self.preferencias_ordenacao.get('destacar_duplicatas', False))
+            
+            logger.debug("DEBUG: Preferências de ordenação aplicadas aos controles")
+            
+        except Exception as e:
+            logger.error(f"Erro ao aplicar preferências de ordenação: {str(e)}")
+
+    def restaurar_ordenacao_padrao(self):
+        """
+        Restaura a ordenação padrão recomendada
+        """
+        try:
+            padrao = self.obter_ordenacao_padrao()
+            
+            # Aplicar aos combos
+            self.combo_ordem_1.set(padrao['ordem_1'])
+            self.combo_direcao_1.set(padrao['direcao_1'])
+            
+            self.combo_ordem_2.set(padrao['ordem_2'])
+            self.combo_direcao_2.set(padrao['direcao_2'])
+            
+            self.combo_ordem_3.set(padrao['ordem_3'])
+            self.combo_direcao_3.set(padrao['direcao_3'])
+            
+            self.var_destacar_duplicatas.set(padrao['destacar_duplicatas'])
+            
+            # Salvar como nova preferência
+            self.salvar_preferencias_ordenacao()
+            
+            # Aplicar ordenação
+            self.aplicar_ordenacao()
+            
+            custom_messagebox("info", "Ordenação Restaurada", 
+                            "Ordenação padrão restaurada:\n\n"
+                            "1º: Data (crescente)\n"
+                            "2º: Nome (crescente)\n"
+                            "3º: Valor (decrescente)")
+            
+            logger.debug("DEBUG: Ordenação padrão restaurada e aplicada")
+            
+        except Exception as e:
+            logger.error(f"Erro ao restaurar ordenação padrão: {str(e)}")
+            custom_messagebox("error", "Erro", f"Erro ao restaurar ordenação padrão: {str(e)}")
+
     def carregar_lancamentos(self):
         """
         Carrega os lançamentos da planilha
-        VERSÃO OTIMIZADA - Reduz flicker visual
+        VERSÃO COM ORDENAÇÃO
         """
         try:
             from openpyxl import load_workbook
@@ -18370,12 +18672,11 @@ class GerenciadorLancamentos:
             df['STATUS'] = df['STATUS'].replace('', 'ATIVO')
             df['STATUS'] = df['STATUS'].fillna('ATIVO')
             
-            # Gerenciar IDs
+            # Gerenciar IDs (mantém código existente)
             if 'ID_LANCAMENTO' not in df.columns:
                 df['ID_LANCAMENTO'] = range(1, len(df) + 1)
-            
             else:
-                # Corrigir IDs duplicados/inválidos
+                # ... código existente de correção de IDs ...
                 df['ID_LANCAMENTO'] = pd.to_numeric(df['ID_LANCAMENTO'], errors='coerce')
                 
                 ids_validos = df['ID_LANCAMENTO'].dropna()
@@ -18384,23 +18685,20 @@ class GerenciadorLancamentos:
                 else:
                     proximo_id = 1
                 
-                # Corrigir IDs inválidos
                 mask_nan = df['ID_LANCAMENTO'].isna()
                 indices_nan = df.index[mask_nan].tolist()
                 for idx in indices_nan:
                     df.loc[idx, 'ID_LANCAMENTO'] = proximo_id
                     proximo_id += 1
                 
-                # Corrigir IDs duplicados
                 duplicados_restantes = df[df.duplicated(subset=['ID_LANCAMENTO'], keep='first')]
                 for idx in duplicados_restantes.index:
                     df.loc[idx, 'ID_LANCAMENTO'] = proximo_id
                     proximo_id += 1
             
-            # Converter para int
             df['ID_LANCAMENTO'] = df['ID_LANCAMENTO'].astype(int)
             
-            # Salvar correções se necessário
+            # Salvar correções se necessário (mantém código existente)
             ids_mudaram = not df['ID_LANCAMENTO'].equals(
                 pd.read_excel(arquivo_cliente, sheet_name='Dados')['ID_LANCAMENTO']
             ) if 'ID_LANCAMENTO' in pd.read_excel(arquivo_cliente, sheet_name='Dados').columns else True
@@ -18411,15 +18709,21 @@ class GerenciadorLancamentos:
             # Salvar dados originais
             self.dados_originais = df.copy()
             
-            # ====================================================================
-            # OTIMIZAÇÃO: Desabilitar redesenho durante inserção em massa
-            # ====================================================================
-            self.tree_lancamentos.config(takefocus=3)
-
+            # ===== NOVO: APLICAR ORDENAÇÃO =====
+            df = self.ordenar_dados(df)
+            
+            # ===== NOVO: IDENTIFICAR POSSÍVEIS DUPLICATAS =====
+            duplicatas_detectadas = set()
+            if self.var_destacar_duplicatas.get():
+                duplicatas_detectadas = self.identificar_possiveis_duplicatas(df)
+            
+            # Desabilitar redesenho durante inserção
+            self.tree_lancamentos.config(takefocus=0)
+            
             # Limpar tree e lista
             for item in self.tree_lancamentos.get_children():
                 self.tree_lancamentos.delete(item)
-
+            
             self.todos_itens_tree = []
             
             # Inserir todos os itens
@@ -18427,43 +18731,81 @@ class GerenciadorLancamentos:
                 status = row.get('STATUS', 'ATIVO')
                 if status == '' or pd.isna(status):
                     status = 'ATIVO'
-                    
-                tag = 'excluido' if status == 'EXCLUIDO' else 'normal'
-
+                
+                # Determinar tag
+                tags = []
+                if status == 'EXCLUIDO':
+                    tags.append('excluido')
+                else:
+                    tags.append('normal')
+                
+                # ===== NOVO: Adicionar tag de duplicata se detectada =====
+                id_lancamento = int(row['ID_LANCAMENTO'])
+                if id_lancamento in duplicatas_detectadas:
+                    tags.append('possivel_duplicata')
+                
                 # Formatar valores
                 data_rel = self.formatar_data(row['DATA_REL'])
                 data_vencto = self.formatar_data(row['DT_VENCTO'])
                 valor = self.formatar_valor(row['VALOR'])
                 tp_desp = self.formatar_tipo_despesa(row['TP_DESP'])
-                id_lancamento = int(row['ID_LANCAMENTO'])
-
+                
                 valores_tree = (data_rel, tp_desp, row['NOME'], 
                             row['REFERÊNCIA'], row['NF'], valor, data_vencto, status, id_lancamento)
-            
+                
                 # Inserir item
                 item_id = self.tree_lancamentos.insert('', 'end', 
                     values=valores_tree,
-                    tags=(tag,))
-
+                    tags=tuple(tags))
+                
                 # Adicionar à lista de todos os itens
                 self.todos_itens_tree.append(item_id)
-
-                # ====================================================================
-                # Reabilitar foco
-                # ====================================================================
-                self.tree_lancamentos.config(takefocus=1)
-
-                logger.debug(f"Carregados {len(df)} lançamentos")
-
+            
+            # Reabilitar foco
+            self.tree_lancamentos.config(takefocus=1)
+            
+            logger.debug(f"Carregados {len(df)} lançamentos")
+            
             # Aplicar filtros padrão
             self.aplicar_filtros()
-
+            
             logger.debug(f"Carregamento concluído")
             
         except Exception as e:
             logger.error(f"Erro ao carregar lançamentos: {str(e)}")
             import traceback
             custom_messagebox("error", "Erro", f"Erro ao carregar lançamentos: {str(e)}")
+
+    def identificar_possiveis_duplicatas(self, df):
+        """
+        Identifica possíveis lançamentos duplicados
+        
+        Args:
+            df: DataFrame com os lançamentos
+            
+        Returns:
+            set: IDs dos lançamentos que podem ser duplicatas
+        """
+        try:
+            duplicatas = set()
+            
+            # Agrupar por Data + Nome + Valor
+            grupos = df.groupby(['DATA_REL', 'NOME', 'VALOR'])
+            
+            for grupo_chave, grupo_df in grupos:
+                if len(grupo_df) > 1:
+                    # Múltiplos lançamentos com mesma data, nome e valor
+                    for id_lanc in grupo_df['ID_LANCAMENTO']:
+                        duplicatas.add(int(id_lanc))
+            
+            if duplicatas:
+                logger.debug(f"DEBUG: {len(duplicatas)} possíveis duplicatas identificadas")
+            
+            return duplicatas
+            
+        except Exception as e:
+            logger.error(f"Erro ao identificar duplicatas: {str(e)}")
+            return set()
 
     def salvar_correcoes_ids(self, arquivo_cliente, df_corrigido):
         """
@@ -18918,7 +19260,162 @@ class GerenciadorLancamentos:
             logger.error(f"Erro ao aplicar filtros: {str(e)}")
             import traceback
             traceback.print_exc()
+
+    def ordenar_dados(self, dados_df):
+        """
+        Ordena o DataFrame de acordo com as opções selecionadas
+        
+        Args:
+            dados_df: DataFrame com os dados a ordenar
             
+        Returns:
+            DataFrame ordenado
+        """
+        try:
+            if dados_df.empty:
+                return dados_df
+            
+            # Coletar critérios de ordenação
+            criterios = []
+            ascendings = []
+            
+            # Mapeamento de nomes exibidos para colunas
+            mapa_colunas = {
+                'Data': 'DATA_REL',
+                'Nome': 'NOME',
+                'Referência': 'REFERÊNCIA',
+                'Valor': 'VALOR',
+                'Vencimento': 'DT_VENCTO',
+                'Tipo': 'TP_DESP'
+            }
+            
+            # Processar cada nível de ordenação
+            for combo_ordem, combo_direcao in [
+                (self.combo_ordem_1, self.combo_direcao_1),
+                (self.combo_ordem_2, self.combo_direcao_2),
+                (self.combo_ordem_3, self.combo_direcao_3)
+            ]:
+                criterio = combo_ordem.get()
+                
+                if criterio and criterio != 'Nenhum':
+                    coluna = mapa_colunas.get(criterio)
+                    
+                    if coluna and coluna in dados_df.columns:
+                        criterios.append(coluna)
+                        
+                        # Determinar direção
+                        direcao = combo_direcao.get()
+                        ascendings.append(direcao.startswith('↑'))
+            
+            # Se não há critérios, retornar sem ordenar
+            if not criterios:
+                return dados_df
+            
+            # Preparar dados para ordenação
+            df_ordenado = dados_df.copy()
+            
+            # Converter valores para ordenação correta
+            for criterio in criterios:
+                if criterio == 'VALOR':
+                    # Converter valores para float para ordenação numérica
+                    df_ordenado['_VALOR_SORT'] = pd.to_numeric(
+                        df_ordenado['VALOR'], errors='coerce'
+                    ).fillna(0)
+                    
+                elif criterio in ['DATA_REL', 'DT_VENCTO']:
+                    # Converter datas para datetime
+                    coluna_sort = f'_{criterio}_SORT'
+                    df_ordenado[coluna_sort] = pd.to_datetime(
+                        df_ordenado[criterio], format='%d/%m/%Y', errors='coerce'
+                    )
+            
+            # Substituir critérios por versões convertidas
+            criterios_ordenacao = []
+            for crit in criterios:
+                if crit == 'VALOR':
+                    criterios_ordenacao.append('_VALOR_SORT')
+                elif crit in ['DATA_REL', 'DT_VENCTO']:
+                    criterios_ordenacao.append(f'_{crit}_SORT')
+                else:
+                    criterios_ordenacao.append(crit)
+            
+            # Aplicar ordenação
+            df_ordenado = df_ordenado.sort_values(
+                by=criterios_ordenacao,
+                ascending=ascendings,
+                na_position='last'
+            )
+            
+            # Remover colunas auxiliares
+            colunas_temp = [col for col in df_ordenado.columns if col.startswith('_') and col.endswith('_SORT')]
+            df_ordenado = df_ordenado.drop(columns=colunas_temp)
+            
+            logger.debug(f"DEBUG: Dados ordenados por {criterios} (ascendings: {ascendings})")
+            
+            return df_ordenado
+            
+        except Exception as e:
+            logger.error(f"Erro ao ordenar dados: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return dados_df
+
+    def aplicar_ordenacao(self):
+        """Aplica a ordenação selecionada aos dados exibidos (sem salvar)"""
+        try:
+            # Recarregar e reaplicar filtros com nova ordenação
+            self.carregar_lancamentos()
+            
+        except Exception as e:
+            logger.error(f"Erro ao aplicar ordenação: {str(e)}")
+            custom_messagebox("error", "Erro", f"Erro ao aplicar ordenação: {str(e)}")
+
+    def aplicar_ordenacao_e_salvar(self):
+        """Aplica a ordenação e salva as preferências"""
+        try:
+            # Salvar preferências
+            if self.salvar_preferencias_ordenacao():
+                logger.debug("DEBUG: Preferências de ordenação salvas")
+            
+            # Aplicar ordenação
+            self.aplicar_ordenacao()
+            
+        except Exception as e:
+            logger.error(f"Erro ao aplicar ordenação e salvar: {str(e)}")
+            custom_messagebox("error", "Erro", f"Erro ao aplicar ordenação: {str(e)}")
+
+    def carregar_preferencias_ordenacao(self):
+        """
+        Carrega as preferências de ordenação salvas com validação
+        
+        Returns:
+            dict: Preferências carregadas ou padrão se não existir/inválido
+        """
+        try:
+            if ARQUIVO_PREFERENCIAS_ORDENACAO.exists():
+                import json
+                with open(ARQUIVO_PREFERENCIAS_ORDENACAO, 'r', encoding='utf-8') as f:
+                    preferencias = json.load(f)
+                    
+                    # Validar se contém todas as chaves necessárias
+                    chaves_necessarias = ['ordem_1', 'direcao_1', 'ordem_2', 'direcao_2', 
+                                        'ordem_3', 'direcao_3', 'destacar_duplicatas']
+                    
+                    if all(chave in preferencias for chave in chaves_necessarias):
+                        logger.debug(f"DEBUG: Preferências de ordenação carregadas: {preferencias}")
+                        return preferencias
+                    else:
+                        logger.warning("DEBUG: Arquivo de preferências incompleto, usando padrão")
+                        return self.obter_ordenacao_padrao()
+            else:
+                logger.debug("DEBUG: Arquivo de preferências não existe, usando padrão")
+                return self.obter_ordenacao_padrao()
+                
+        except Exception as e:
+            logger.error(f"Erro ao carregar preferências de ordenação: {str(e)}")
+            logger.debug("DEBUG: Usando ordenação padrão devido ao erro")
+            return self.obter_ordenacao_padrao()
+
     def aplicar_filtros_melhorados(self):
         """Versão melhorada do filtro que preserva seleção quando possível"""
         try:
