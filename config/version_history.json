@@ -223,5 +223,14 @@
             "Outras correções menores e melhorias de desempenho"
         ],
         "timestamp": "2026-01-20T14:02:28.453785"
+    },
+    {
+        "version": "1.6.1",
+        "release_date": "05/02/2026",
+        "changes": [
+            "Inclusão de somatório no Gerenciador de Lançamentos",
+            "Melhoria nos filtros no Gerenciador de Lançamentos"
+        ],
+        "timestamp": "2026-02-06T09:41:19.828274"
     }
 ]
