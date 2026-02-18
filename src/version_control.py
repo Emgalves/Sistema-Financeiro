@@ -9,12 +9,12 @@ from pathlib import Path
 # Informações da versão atual
 VERSION_INFO = {
     "major": 1,
-    "minor": 6,
-    "patch": 1,
-    "release_date": "05/02/2026",
+    "minor": 7,
+    "patch": 0,
+    "release_date": "20/02/2026",
     "changes": [
-        "Inclusão de somatório no Gerenciador de Lançamentos",
-        "Melhoria nos filtros no Gerenciador de Lançamentos"        
+        "Reorganizada toda a lógica da Gestão de Empreiteiros",
+        "Redesenhado o Relatório Quinzenal de Medições para o modelo do cliente"        
     ]
 }
 
