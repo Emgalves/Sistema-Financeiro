@@ -161,6 +161,9 @@ class GestaoMedicoes:
         self.contrato_atual = None
         self.fornecedor_atual = None
         self.dados_para_incluir = []
+        # Contexto de fornecedor (selecionado na aba Fornecedor)
+        self.cnpj_fornecedor_selecionado = None
+        self.nome_fornecedor_selecionado = None
         
         # Configurar interface
         self.setup_gui()
@@ -319,75 +322,179 @@ class GestaoMedicoes:
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True, padx=10, pady=5)
         
-        # Criar abas
-        self.aba_selecao = ttk.Frame(self.notebook)
-        self.aba_contratos = ttk.Frame(self.notebook)
-        self.aba_medicoes = ttk.Frame(self.notebook)
+        # Criar abas — ordem define os índices
+        self.aba_selecao = ttk.Frame(self.notebook)            # 0
+        self.aba_fornecedor = ttk.Frame(self.notebook)         # 1
+        self.aba_contratos = ttk.Frame(self.notebook)          # 2
+        self.aba_medicoes = ttk.Frame(self.notebook)           # 3
+        self.aba_relatorios = ttk.Frame(self.notebook)         # 4 — NOVA
+        self.aba_contratos_emissao = ttk.Frame(self.notebook)  # 5
         
         self.notebook.add(self.aba_selecao, text='Seleção de Cliente')
+        self.notebook.add(self.aba_fornecedor, text='Fornecedor')
         self.notebook.add(self.aba_contratos, text='Contratos')
         self.notebook.add(self.aba_medicoes, text='Medições')
-        
-        # Aba para Contrato
-        self.aba_contratos_emissao = ttk.Frame(self.notebook)
-        self.notebook.add(self.aba_contratos_emissao, text='Emitir Contrato')
-        self.setup_aba_emissao_contrato()
+        self.notebook.add(self.aba_relatorios, text='Relatórios')
+        self.notebook.add(self.aba_contratos_emissao, text='Contrato')
 
         # Configurar cada aba
         self.setup_aba_selecao()
+        self.setup_aba_fornecedor()
         self.setup_aba_contratos()
         self.setup_aba_medicoes()
+        self.setup_aba_relatorios()
+        self.setup_aba_emissao_contrato()
         
     def setup_aba_selecao(self):
         """Configura a aba de seleção de cliente"""
-        # Frame principal
         frame_principal = ttk.Frame(self.aba_selecao)
         frame_principal.pack(expand=True, fill='both', padx=10, pady=5)
 
-        # Frame para seleção de cliente
+        # --- SELEÇÃO DO CLIENTE ---
         frame_selecao = ttk.LabelFrame(frame_principal, text="Seleção do Cliente")
         frame_selecao.pack(fill='x', pady=10)
 
-        # Container para label e combobox
         frame_cliente = ttk.Frame(frame_selecao)
         frame_cliente.pack(fill='x', padx=10, pady=10)
 
-        # Label alinhado à esquerda
         ttk.Label(frame_cliente, text="Selecione o Cliente:", font=('Arial', 11)).pack(side='left', pady=5)
-        
-        # Combobox com largura aumentada
         self.cliente_combobox = ttk.Combobox(frame_cliente, width=60, font=('Arial', 11))
         self.cliente_combobox.pack(side='left', padx=5, fill='x', expand=True)
-        
-        # Frame para botões de gerenciamento de clientes
-        frame_gerenciar = ttk.Frame(frame_principal)
-        frame_gerenciar.pack(pady=15)
-        
-        # Estilo para botões maiores
+
+        # --- DADOS DO CLIENTE (preenchidos ao selecionar) ---
+        frame_dados_cliente = ttk.LabelFrame(frame_principal, text="Dados do Cliente")
+        frame_dados_cliente.pack(fill='x', pady=5, padx=5)
+
+        dados_grid = ttk.Frame(frame_dados_cliente)
+        dados_grid.pack(fill='x', padx=10, pady=8)
+
+        ttk.Label(dados_grid, text="CNO:").grid(row=0, column=0, sticky='w', padx=5, pady=3)
+        self.ent_sel_cno = ttk.Entry(dados_grid, state='readonly', width=22)
+        self.ent_sel_cno.grid(row=0, column=1, sticky='w', padx=5, pady=3)
+
+        ttk.Label(dados_grid, text="CPF:").grid(row=0, column=2, sticky='w', padx=5, pady=3)
+        self.ent_sel_cpf = ttk.Entry(dados_grid, state='readonly', width=22)
+        self.ent_sel_cpf.grid(row=0, column=3, sticky='w', padx=5, pady=3)
+
+        ttk.Label(dados_grid, text="Estado Civil:").grid(row=1, column=0, sticky='w', padx=5, pady=3)
+        self.ent_sel_estado_civil = ttk.Entry(dados_grid, state='readonly', width=22)
+        self.ent_sel_estado_civil.grid(row=1, column=1, sticky='w', padx=5, pady=3)
+
+        ttk.Label(dados_grid, text="Cidade:").grid(row=1, column=2, sticky='w', padx=5, pady=3)
+        self.ent_sel_cidade = ttk.Entry(dados_grid, state='readonly', width=22)
+        self.ent_sel_cidade.grid(row=1, column=3, sticky='w', padx=5, pady=3)
+
+        ttk.Label(dados_grid, text="Endereço:").grid(row=2, column=0, sticky='w', padx=5, pady=3)
+        self.ent_sel_endereco = ttk.Entry(dados_grid, state='readonly', width=70)
+        self.ent_sel_endereco.grid(row=2, column=1, columnspan=3, sticky='ew', padx=5, pady=3)
+
+        dados_grid.columnconfigure(1, weight=1)
+        dados_grid.columnconfigure(3, weight=1)
+
+        # --- BOTÕES ---
         style = ttk.Style()
         style.configure('Big.TButton', font=('Arial', 12, 'bold'), padding=(15, 10))
-        
-        # Botões
-        ttk.Button(frame_gerenciar, 
+
+        frame_gerenciar = ttk.Frame(frame_principal)
+        frame_gerenciar.pack(pady=15)
+
+        ttk.Button(frame_gerenciar,
                 text="Continuar →",
-                command=self.continuar_para_contratos,
+                command=self.continuar_para_fornecedor,
                 style='Big.TButton').pack(side='right', padx=10)
-        
-        # Frame de botões
+
         frame_botoes_selecao = ttk.Frame(frame_principal)
         frame_botoes_selecao.pack(fill='x', side='bottom', pady=10)
 
-        ttk.Button(frame_botoes_selecao, 
-                text="Voltar ao Menu", 
+        ttk.Button(frame_botoes_selecao,
+                text="Voltar ao Menu",
                 command=self.voltar_menu,
                 style='Big.TButton').pack(side='left', padx=10)
-        
-        # Carregar clientes existentes
+
         self.atualizar_lista_clientes()
-        
-        # Binding para seleção de cliente
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.selecionar_cliente)
         
+    def setup_aba_fornecedor(self):
+        """Configura a aba de seleção de fornecedor/empreiteiro"""
+        frame_principal = ttk.Frame(self.aba_fornecedor)
+        frame_principal.pack(expand=True, fill='both', padx=10, pady=5)
+
+        # Label do cliente em contexto
+        self.lbl_cliente_fornecedor = ttk.Label(
+            frame_principal,
+            text="Cliente: Nenhum selecionado",
+            font=('Arial', 12, 'bold'),
+            foreground='#0056b3'
+        )
+        self.lbl_cliente_fornecedor.pack(anchor='w', padx=5, pady=5)
+
+        # --- BUSCA DE FORNECEDOR ---
+        frame_busca = ttk.LabelFrame(frame_principal, text="Buscar Fornecedor")
+        frame_busca.pack(fill='x', pady=5)
+
+        busca_inner = ttk.Frame(frame_busca)
+        busca_inner.pack(fill='x', padx=10, pady=8)
+
+        ttk.Label(busca_inner, text="Nome / CNPJ:").pack(side='left', padx=5)
+        self.ent_busca_forn_aba = ttk.Entry(busca_inner, width=40)
+        self.ent_busca_forn_aba.pack(side='left', padx=5, fill='x', expand=True)
+        self.ent_busca_forn_aba.bind('<KeyRelease>', self.buscar_fornecedor_aba)
+
+        ttk.Button(busca_inner, text="🔍 Buscar",
+                command=self.buscar_fornecedor_aba).pack(side='left', padx=2)
+        ttk.Button(busca_inner, text="↻ Todos",
+                command=self.listar_todos_fornecedores_aba).pack(side='left', padx=2)
+
+        # Listbox de resultados
+        listbox_frame = ttk.Frame(frame_busca)
+        listbox_frame.pack(fill='x', padx=10, pady=5)
+
+        self.lst_fornecedor_aba = tk.Listbox(listbox_frame, height=5, width=80,
+                                             selectmode='single', exportselection=False)
+        self.lst_fornecedor_aba.pack(side='left', fill='both', expand=True)
+
+        scrollbar_forn = ttk.Scrollbar(listbox_frame, orient='vertical',
+                                       command=self.lst_fornecedor_aba.yview)
+        scrollbar_forn.pack(side='right', fill='y')
+        self.lst_fornecedor_aba.config(yscrollcommand=scrollbar_forn.set)
+        self.lst_fornecedor_aba.bind('<<ListboxSelect>>', self.selecionar_fornecedor_aba)
+
+        # --- DADOS DO FORNECEDOR (preenchidos ao selecionar) ---
+        frame_dados_forn = ttk.LabelFrame(frame_principal, text="Dados do Fornecedor")
+        frame_dados_forn.pack(fill='x', pady=5, padx=5)
+
+        dados_grid = ttk.Frame(frame_dados_forn)
+        dados_grid.pack(fill='x', padx=10, pady=8)
+
+        ttk.Label(dados_grid, text="CNPJ/CPF:").grid(row=0, column=0, sticky='w', padx=5, pady=3)
+        self.ent_forn_cnpj = ttk.Entry(dados_grid, state='readonly', width=25)
+        self.ent_forn_cnpj.grid(row=0, column=1, sticky='w', padx=5, pady=3)
+
+        ttk.Label(dados_grid, text="Endereço:").grid(row=1, column=0, sticky='w', padx=5, pady=3)
+        self.ent_forn_endereco = ttk.Entry(dados_grid, state='readonly', width=70)
+        self.ent_forn_endereco.grid(row=1, column=1, columnspan=3, sticky='ew', padx=5, pady=3)
+
+        ttk.Label(dados_grid, text="Dados Bancários:").grid(row=2, column=0, sticky='nw', padx=5, pady=3)
+        self.txt_forn_dados_bancarios = tk.Text(dados_grid, height=2, width=70,
+                                                state='disabled', wrap='word')
+        self.txt_forn_dados_bancarios.grid(row=2, column=1, columnspan=3, sticky='ew', padx=5, pady=3)
+
+        dados_grid.columnconfigure(1, weight=1)
+
+        # --- BOTÕES ---
+        frame_botoes = ttk.Frame(frame_principal)
+        frame_botoes.pack(fill='x', pady=15)
+
+        ttk.Button(frame_botoes,
+                text="Continuar →",
+                command=self.continuar_para_contratos_filtrado,
+                style='Big.TButton').pack(side='right', padx=10)
+
+        ttk.Button(frame_botoes,
+                text="← Voltar",
+                command=lambda: self.notebook.select(self.aba_selecao),
+                style='Big.TButton').pack(side='left', padx=10)
+
     def setup_aba_contratos(self):
         """Configura a aba de contratos"""
         # Frame principal
@@ -408,28 +515,32 @@ class GestaoMedicoes:
         frame_contratos.pack(fill='both', expand=True, pady=5)
         
         # Treeview para contratos
-        colunas = ('ID', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo')
+        # Coluna 'ID' é mantida nos values mas oculta na exibição (width=0)
+        # 'Nº/Emp' exibe o número sequencial do contrato dentro do empreiteiro
+        colunas = ('ID', 'Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo')
         self.tree_contratos = ttk.Treeview(frame_contratos, columns=colunas, show='headings', height=10)
 
         # Configurar colunas
         self.tree_contratos.heading('ID', text='ID')
+        self.tree_contratos.heading('Nº/Emp', text='Nº/Emp')
         self.tree_contratos.heading('Fornecedor', text='Fornecedor')
         self.tree_contratos.heading('Descrição', text='Descrição')
         self.tree_contratos.heading('Data Início', text='Data Início')
-        self.tree_contratos.heading('Data Final', text='Data Final')  # *** NOVO ***
+        self.tree_contratos.heading('Data Final', text='Data Final')
         self.tree_contratos.heading('Valor Global', text='Valor Global')
         self.tree_contratos.heading('Valor Pago', text='Valor Pago')
         self.tree_contratos.heading('Saldo', text='Saldo')
 
-        # Ajustar larguras das colunas
-        self.tree_contratos.column('ID', width=50, anchor='center')
+        # Ajustar larguras das colunas (ID oculto — largura 0)
+        self.tree_contratos.column('ID', width=0, minwidth=0, stretch=False)
+        self.tree_contratos.column('Nº/Emp', width=55, anchor='center')
         self.tree_contratos.column('Fornecedor', width=150)
         self.tree_contratos.column('Descrição', width=200)
         self.tree_contratos.column('Data Início', width=100, anchor='center')
-        self.tree_contratos.column('Data Final', width=100, anchor='center')  # *** NOVO ***
-        self.tree_contratos.column('Valor Global', width=100, anchor='e')
-        self.tree_contratos.column('Valor Pago', width=100, anchor='e')
-        self.tree_contratos.column('Saldo', width=100, anchor='e')
+        self.tree_contratos.column('Data Final', width=100, anchor='center')
+        self.tree_contratos.column('Valor Global', width=110, anchor='e')
+        self.tree_contratos.column('Valor Pago', width=110, anchor='e')
+        self.tree_contratos.column('Saldo', width=110, anchor='e')
         
         # Scrollbars
         scrolly = ttk.Scrollbar(frame_contratos, orient='vertical', command=self.tree_contratos.yview)
@@ -445,17 +556,19 @@ class GestaoMedicoes:
         frame_botoes = ttk.Frame(frame_principal)
         frame_botoes.pack(fill='x', pady=10)
         
-        ttk.Button(frame_botoes, text="Novo Contrato", 
-                  command=self.novo_contrato).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Editar Contrato", 
+        ttk.Button(frame_botoes, text="Novo Contrato",
+                  command=self.abrir_novo_contrato).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Reemitir Contrato",
+                  command=self.reemitir_contrato).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Editar Contrato",
                   command=self.editar_contrato).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Excluir Contrato", 
+        ttk.Button(frame_botoes, text="Excluir Contrato",
                   command=self.excluir_contrato).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Selecionar", 
+        ttk.Button(frame_botoes, text="Selecionar",
                   command=self.selecionar_contrato).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Voltar", 
-                  command=lambda: self.notebook.select(0)).pack(side='right', padx=5)
-        
+        ttk.Button(frame_botoes, text="Voltar",
+                  command=lambda: self.notebook.select(self.aba_fornecedor)).pack(side='right', padx=5)
+
         # Binding para duplo clique
         self.tree_contratos.bind('<Double-1>', lambda e: self.selecionar_contrato())
 
@@ -535,260 +648,321 @@ class GestaoMedicoes:
                 command=self.vincular_medicao, 
                 style='Accent.TButton').pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Voltar", 
-                command=lambda: self.notebook.select(1)).pack(side='right', padx=5)
+                command=lambda: self.notebook.select(self.aba_contratos)).pack(side='right', padx=5)
         
         # Botão para voltar ao menu principal
         ttk.Button(frame_principal, text="Voltar ao Menu Principal", 
                  command=self.voltar_menu).pack(side='bottom', pady=10)
 
+    def setup_aba_relatorios(self):
+        """Configura a aba de relatórios e importação (escopo: cliente atual)"""
+        frame_principal = ttk.Frame(self.aba_relatorios)
+        frame_principal.pack(expand=True, fill='both', padx=15, pady=10)
+
+        # Label de contexto
+        self.lbl_cliente_relatorios = ttk.Label(
+            frame_principal,
+            text="Cliente: Nenhum selecionado",
+            font=('Arial', 12, 'bold'),
+            foreground='#0056b3'
+        )
+        self.lbl_cliente_relatorios.pack(anchor='w', padx=5, pady=(0, 10))
+
+        # --- SEÇÃO 1: RELATÓRIO DE CONTRATOS (Excel) ---
+        frame_excel = ttk.LabelFrame(frame_principal, text="Relatório de Contratos e Medições", padding=12)
+        frame_excel.pack(fill='x', pady=8)
+
+        ttk.Label(frame_excel,
+            text="Exporta todos os contratos e medições do cliente selecionado para uma janela interativa,\n"
+                 "com filtros por status e data. Permite exportar para Excel.",
+            foreground='#444444', font=('Arial', 9)).pack(anchor='w', pady=(0, 8))
+
+        ttk.Button(frame_excel,
+            text="📊 Abrir Relatório de Contratos",
+            command=self.abrir_relatorio_contratos,
+            style='Big.TButton').pack(anchor='w')
+
+        # --- SEÇÃO 2: IMPORTAR MEDIÇÕES ---
+        frame_import = ttk.LabelFrame(frame_principal, text="Importar Medições", padding=12)
+        frame_import.pack(fill='x', pady=8)
+
+        ttk.Label(frame_import,
+            text="Importa medições a partir de um arquivo .xlsx gerado pelo relatório de contratos.\n"
+                 "As medições são associadas automaticamente aos contratos existentes do cliente.",
+            foreground='#444444', font=('Arial', 9)).pack(anchor='w', pady=(0, 8))
+
+        ttk.Button(frame_import,
+            text="📥 Importar Medições (.xlsx)",
+            command=self.importar_medicoes_relatorio,
+            style='Big.TButton').pack(anchor='w')
+
+        # --- SEÇÃO 3: RELATÓRIO QUINZENAL PDF ---
+        frame_pdf = ttk.LabelFrame(frame_principal, text="Relatório Quinzenal PDF", padding=12)
+        frame_pdf.pack(fill='x', pady=8)
+
+        ttk.Label(frame_pdf,
+            text="Gera o relatório quinzenal de medições em PDF para o cliente selecionado.\n"
+                 "Se um fornecedor estiver selecionado, o relatório será filtrado por ele.",
+            foreground='#444444', font=('Arial', 9)).pack(anchor='w', pady=(0, 8))
+
+        frame_data_pdf = ttk.Frame(frame_pdf)
+        frame_data_pdf.pack(anchor='w', pady=(0, 8))
+
+        ttk.Label(frame_data_pdf, text="Data de referência:").pack(side='left', padx=(0, 8))
+        self.ent_data_relatorio_pdf = DateEntry(frame_data_pdf, width=14,
+                                                date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.ent_data_relatorio_pdf.set_date(datetime.now())
+        self.ent_data_relatorio_pdf.pack(side='left')
+
+        # Indicador do filtro de fornecedor ativo
+        self.lbl_filtro_pdf = ttk.Label(frame_data_pdf,
+            text="", foreground='#0056b3', font=('Arial', 9, 'italic'))
+        self.lbl_filtro_pdf.pack(side='left', padx=12)
+
+        ttk.Button(frame_pdf,
+            text="📄 Gerar PDF Quinzenal",
+            command=self.gerar_relatorio_pdf_quinzenal,
+            style='Big.TButton').pack(anchor='w')
+
+        # --- BOTÃO VOLTAR ---
+        frame_botoes = ttk.Frame(frame_principal)
+        frame_botoes.pack(fill='x', side='bottom', pady=10)
+
+        ttk.Button(frame_botoes, text="Voltar ao Menu Principal",
+                command=self.voltar_menu).pack(side='left', padx=5)
+
+    # --- Métodos da aba Relatórios ---
+
+    def abrir_relatorio_contratos(self):
+        """Abre a janela de relatório de contratos (RelatorioContratos)"""
+        if not self.cliente_atual:
+            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
+            return
+        try:
+            from src.relatorio_contratos_medicoes import RelatorioContratos
+            janela = RelatorioContratos(parent=self.root)
+            # Pré-selecionar o cliente e disparar selecionar_cliente para
+            # que cliente_atual e arquivo_cliente sejam definidos na janela
+            if hasattr(janela, 'cliente_combobox'):
+                janela.cliente_combobox.set(self.cliente_atual)
+            if hasattr(janela, 'selecionar_cliente'):
+                janela.selecionar_cliente()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao abrir relatório de contratos:\n{str(e)}", parent=self.root)
+
+    def importar_medicoes_relatorio(self):
+        """Chama o ImportadorMedicoes com o contexto do cliente atual"""
+        if not self.cliente_atual:
+            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
+            return
+        try:
+            from src.importador_medicoes import ImportadorMedicoes
+            importador = ImportadorMedicoes(sistema_principal=self)
+            importador.importar_medicoes()
+            # Recarregar contratos e medições após importação
+            self.carregar_contratos()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao iniciar importador:\n{str(e)}", parent=self.root)
+
+    def gerar_relatorio_pdf_quinzenal(self):
+        """Gera o relatório quinzenal PDF usando o cliente e data selecionados"""
+        if not self.cliente_atual:
+            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
+            return
+        if not self.arquivo_cliente:
+            messagebox.showwarning("Aviso", "Arquivo do cliente não encontrado!", parent=self.root)
+            return
+        try:
+            from src.gerar_relatorio_quinzenal_pdf import RelatorioQuinzenalPDF
+
+            data_ref = self.ent_data_relatorio_pdf.get_date()
+            # Converter para datetime se necessário
+            if not isinstance(data_ref, datetime):
+                data_ref = datetime(data_ref.year, data_ref.month, data_ref.day)
+
+            gerador = RelatorioQuinzenalPDF(
+                arquivo_cliente=str(self.arquivo_cliente),
+                arquivo_clientes=str(ARQUIVO_CLIENTES)
+            )
+            arquivo_pdf = gerador.gerar_pdf(data_referencia=data_ref)
+
+            if arquivo_pdf:
+                messagebox.showinfo(
+                    "Sucesso",
+                    f"Relatório gerado com sucesso:\n{arquivo_pdf}",
+                    parent=self.root
+                )
+                # Abrir o PDF automaticamente
+                try:
+                    import subprocess, platform
+                    if platform.system() == 'Windows':
+                        os.startfile(str(arquivo_pdf))
+                    elif platform.system() == 'Darwin':
+                        subprocess.run(['open', str(arquivo_pdf)])
+                    else:
+                        subprocess.run(['xdg-open', str(arquivo_pdf)])
+                except Exception:
+                    pass  # Abertura automática é opcional
+            else:
+                messagebox.showwarning("Aviso", "O relatório não foi gerado. Verifique os logs.", parent=self.root)
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar PDF:\n{str(e)}", parent=self.root)
+
     def setup_aba_emissao_contrato(self):
-        """Configura a aba de emissão de contratos"""
-        
+        """Configura a aba de contrato (novo e reemissão)"""
+
         # Frame principal com scroll
         main_frame = ttk.Frame(self.aba_contratos_emissao)
         main_frame.pack(fill='both', expand=True, padx=10, pady=10)
-        
-        # Canvas para scroll
+
         canvas = tk.Canvas(main_frame)
         scrollbar = ttk.Scrollbar(main_frame, orient="vertical", command=canvas.yview)
         scrollable_frame = ttk.Frame(canvas)
-        
+
         scrollable_frame.bind(
             "<Configure>",
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
-        
+
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
         canvas.configure(yscrollcommand=scrollbar.set)
-        
-        # --- SEÇÃO 1: DADOS DO CLIENTE ---
-        frame_cliente = ttk.LabelFrame(scrollable_frame, text="Dados do Cliente", padding=10)
-        frame_cliente.pack(fill='x', pady=5)
-        
-        self.lbl_cliente_contrato = ttk.Label(frame_cliente, text="Cliente: Nenhum selecionado", 
-                                            font=('Arial', 10, 'bold'), foreground='#0056b3')
-        self.lbl_cliente_contrato.pack(anchor='w', pady=5)
-        
-        # Grid para dados do cliente
-        dados_cliente_frame = ttk.Frame(frame_cliente)
-        dados_cliente_frame.pack(fill='x', pady=5)
-        
-        row = 0
-        ttk.Label(dados_cliente_frame, text="CNO:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        self.ent_cno = ttk.Entry(dados_cliente_frame, state='readonly', width=20)
-        self.ent_cno.grid(row=row, column=1, sticky='w', padx=5, pady=2)
-        
-        ttk.Label(dados_cliente_frame, text="CPF:").grid(row=row, column=2, sticky='w', padx=5, pady=2)
-        self.ent_cpf_cliente = ttk.Entry(dados_cliente_frame, state='readonly', width=20)
-        self.ent_cpf_cliente.grid(row=row, column=3, sticky='w', padx=5, pady=2)
-        
-        row += 1
-        ttk.Label(dados_cliente_frame, text="Estado Civil:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        self.ent_estado_civil = ttk.Entry(dados_cliente_frame, state='readonly', width=20)
-        self.ent_estado_civil.grid(row=row, column=1, sticky='w', padx=5, pady=2)
-        
-        ttk.Label(dados_cliente_frame, text="Cidade:").grid(row=row, column=2, sticky='w', padx=5, pady=2)
-        self.ent_cidade = ttk.Entry(dados_cliente_frame, state='readonly', width=20)
-        self.ent_cidade.grid(row=row, column=3, sticky='w', padx=5, pady=2)
-        
-        row += 1
-        ttk.Label(dados_cliente_frame, text="Endereço:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        self.ent_endereco_cliente = ttk.Entry(dados_cliente_frame, state='readonly', width=60)
-        self.ent_endereco_cliente.grid(row=row, column=1, columnspan=3, sticky='ew', padx=5, pady=2)
-        
-        # --- SEÇÃO 2: DADOS DO FORNECEDOR ---
-        frame_fornecedor = ttk.LabelFrame(scrollable_frame, text="Dados do Fornecedor", padding=10)
-        frame_fornecedor.pack(fill='x', pady=5)
-        
-        # === CAMPO DE BUSCA  ===
-        busca_frame = ttk.Frame(frame_fornecedor)
-        busca_frame.pack(fill='x', pady=5)
-        
-        ttk.Label(busca_frame, text="Buscar Fornecedor:").pack(side='left', padx=5)
-        
-        self.ent_busca_fornecedor = ttk.Entry(busca_frame, width=40)
-        self.ent_busca_fornecedor.pack(side='left', padx=5, fill='x', expand=True)
-        self.ent_busca_fornecedor.bind('<KeyRelease>', self.buscar_fornecedor_contrato)
-        
-        ttk.Button(busca_frame, text="🔍 Buscar", 
-                command=lambda: self.buscar_fornecedor_contrato()).pack(side='left', padx=2)
-        
-        ttk.Button(busca_frame, text="↻ Todos",
-                command=self.atualizar_lista_fornecedores_contrato).pack(side='left', padx=2)
-        
-        # === SELEÇÃO DE FORNECEDOR  ===
-        sel_forn_frame = ttk.Frame(frame_fornecedor)
-        sel_forn_frame.pack(fill='x', pady=5)
-        
-        ttk.Label(sel_forn_frame, text="Selecionar:").pack(side='left', anchor='n', padx=5, pady=2)
-        
-        # Frame para Listbox e Scrollbar
-        listbox_frame = ttk.Frame(sel_forn_frame)
-        listbox_frame.pack(side='left', fill='both', expand=True, padx=5)
-        
-        # Criar Listbox para mostrar fornecedores (4 linhas visíveis)
-        self.lst_fornecedor_contrato = tk.Listbox(listbox_frame, height=4, width=60, 
-                                                   selectmode='single', exportselection=False)
-        self.lst_fornecedor_contrato.pack(side='left', fill='both', expand=True)
-        
-        # Adicionar mensagem placeholder inicial (será removida ao buscar)
-        self.lst_fornecedor_contrato.insert(tk.END, "👆 Clique em 'Buscar' ou '↻ Todos' para listar fornecedores")
-        self.lst_fornecedor_contrato.config(state='disabled')  # Desabilitar seleção do placeholder
-        
-        # Scrollbar para a Listbox
-        scrollbar_fornecedor = ttk.Scrollbar(listbox_frame, orient='vertical', 
-                                             command=self.lst_fornecedor_contrato.yview)
-        scrollbar_fornecedor.pack(side='right', fill='y')
-        self.lst_fornecedor_contrato.config(yscrollcommand=scrollbar_fornecedor.set)
-        
-        # Bind para seleção (quando clicar em um item)
-        self.lst_fornecedor_contrato.bind('<<ListboxSelect>>', self.carregar_dados_fornecedor_contrato)
-        
-        
-        ttk.Button(sel_forn_frame, text="Atualizar", 
-                command=self.atualizar_lista_fornecedores_contrato).pack(side='left', padx=5)
-        
-        # Dados do fornecedor
-        dados_forn_frame = ttk.Frame(frame_fornecedor)
-        dados_forn_frame.pack(fill='x', pady=5)
-        
-        row = 0
-        ttk.Label(dados_forn_frame, text="CNPJ/CPF:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        self.ent_cnpj_fornecedor = ttk.Entry(dados_forn_frame, state='readonly', width=25)
-        self.ent_cnpj_fornecedor.grid(row=row, column=1, sticky='w', padx=5, pady=2)
-        
-        row += 1
-        ttk.Label(dados_forn_frame, text="Endereço:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        self.ent_endereco_fornecedor = ttk.Entry(dados_forn_frame, state='readonly', width=60)
-        self.ent_endereco_fornecedor.grid(row=row, column=1, columnspan=3, sticky='ew', padx=5, pady=2)
-        
-        row += 1
-        ttk.Label(dados_forn_frame, text="Dados Bancários:").grid(row=row, column=0, sticky='nw', padx=5, pady=5)
-        self.txt_dados_bancarios = tk.Text(dados_forn_frame, height=1, width=60, state='disabled', wrap='word')
-        self.txt_dados_bancarios.grid(row=row, column=1, columnspan=3, sticky='ew', padx=5, pady=5)
-        
-        # --- SEÇÃO 3: DADOS DO CONTRATO ---
+
+        # --- CONTEXTO: Cliente e Fornecedor (somente leitura, herdados do contexto) ---
+        frame_contexto = ttk.LabelFrame(scrollable_frame, text="Contexto", padding=8)
+        frame_contexto.pack(fill='x', pady=5)
+
+        self.lbl_contrato_cliente = ttk.Label(frame_contexto,
+            text="Cliente: Nenhum selecionado",
+            font=('Arial', 10, 'bold'), foreground='#0056b3')
+        self.lbl_contrato_cliente.pack(anchor='w')
+
+        self.lbl_contrato_fornecedor = ttk.Label(frame_contexto,
+            text="Fornecedor: Nenhum selecionado",
+            font=('Arial', 10, 'bold'), foreground='#0056b3')
+        self.lbl_contrato_fornecedor.pack(anchor='w')
+
+        # --- DADOS DO CONTRATO ---
         frame_dados_contrato = ttk.LabelFrame(scrollable_frame, text="Dados do Contrato", padding=10)
         frame_dados_contrato.pack(fill='x', pady=5)
-        
-        # Grid para dados do contrato
+
         dados_contrato_grid = ttk.Frame(frame_dados_contrato)
         dados_contrato_grid.pack(fill='x', pady=5)
-        
+
         row = 0
         ttk.Label(dados_contrato_grid, text="Data do Contrato:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        self.ent_data_contrato = DateEntry(dados_contrato_grid, width=15, 
+        self.ent_data_contrato = DateEntry(dados_contrato_grid, width=15,
                                 date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.ent_data_contrato.grid(row=row, column=1, sticky='w', padx=5, pady=2)
         self.ent_data_contrato.set_date(datetime.now())
-        # Data do contrato é independente, não precisa de bind especial
-        # self.ent_data_contrato.bind('<<DateEntrySelected>>', self.ao_mudar_data_contrato)
-        
+        ttk.Label(dados_contrato_grid, text="⚠️ Verifique a data ao reemitir",
+                foreground='#b8860b', font=('Arial', 8, 'italic')).grid(
+                row=row, column=2, columnspan=2, sticky='w', padx=5, pady=2)
+
         row += 1
         ttk.Label(dados_contrato_grid, text="Data Início:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        self.ent_data_inicio = DateEntry(dados_contrato_grid, width=15, 
+        self.ent_data_inicio = DateEntry(dados_contrato_grid, width=15,
                                 date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.ent_data_inicio.grid(row=row, column=1, sticky='w', padx=5, pady=2)
-        # Inicializar com data padrão (hoje + 1 dia útil, por exemplo)
         self.ent_data_inicio.set_date(datetime.now() + timedelta(days=1))
         self.ent_data_inicio.bind('<<DateEntrySelected>>', self.ao_mudar_data_inicio)
-        
+
         ttk.Label(dados_contrato_grid, text="Data Fim:").grid(row=row, column=2, sticky='w', padx=5, pady=2)
-        self.ent_data_fim = DateEntry(dados_contrato_grid, width=15, 
+        self.ent_data_fim = DateEntry(dados_contrato_grid, width=15,
                                     date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.ent_data_fim.grid(row=row, column=3, sticky='w', padx=5, pady=2)
         self.ent_data_fim.bind('<<DateEntrySelected>>', self.calcular_prazo_contrato)
-        
+
         row += 1
         ttk.Label(dados_contrato_grid, text="Prazo (dias):").grid(row=row, column=0, sticky='w', padx=5, pady=2)
         self.ent_prazo_dias = ttk.Entry(dados_contrato_grid, width=15)
         self.ent_prazo_dias.bind('<KeyRelease>', self.ao_mudar_dias)
         self.ent_prazo_dias.bind('<FocusOut>', self.ao_mudar_dias)
         self.ent_prazo_dias.grid(row=row, column=1, sticky='w', padx=5, pady=2)
-        
-        # Checkbox para data condicionada ao recebimento de material
+
         self.var_data_condicionada = tk.BooleanVar(value=False)
         self.chk_data_condicionada = ttk.Checkbutton(
-            dados_contrato_grid, 
+            dados_contrato_grid,
             text="📦 Início condicionado ao recebimento de material",
             variable=self.var_data_condicionada,
             command=self.alternar_data_condicionada
         )
         self.chk_data_condicionada.grid(row=row, column=2, columnspan=2, sticky='w', padx=5, pady=2)
-        
-        row += 1
-        ttk.Label(dados_contrato_grid, text="Valor Global:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        
+
         row += 1
         ttk.Label(dados_contrato_grid, text="Valor Global:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
         self.ent_valor_global = ttk.Entry(dados_contrato_grid, width=20)
         self.ent_valor_global.grid(row=row, column=1, sticky='w', padx=5, pady=2)
         self.ent_valor_global.insert(0, "R$ 0,00")
         self.ent_valor_global.bind('<FocusOut>', self.formatar_valor_global)
-        
+
         ttk.Label(dados_contrato_grid, text="Multa:").grid(row=row, column=2, sticky='w', padx=5, pady=2)
         self.ent_multa = ttk.Entry(dados_contrato_grid, width=20)
         self.ent_multa.grid(row=row, column=3, sticky='w', padx=5, pady=2)
         self.ent_multa.insert(0, "R$ 4.000,00")
-        
+
         row += 1
         ttk.Label(dados_contrato_grid, text="Endereço da Obra:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
         self.ent_endereco_obra = ttk.Entry(dados_contrato_grid, width=60)
         self.ent_endereco_obra.grid(row=row, column=1, columnspan=3, sticky='ew', padx=5, pady=2)
-        
-        # --- SEÇÃO 4: DESCRIÇÃO DOS SERVIÇOS ---
+
+        # --- DESCRIÇÃO DOS SERVIÇOS ---
         frame_servicos = ttk.LabelFrame(scrollable_frame, text="Descrição dos Serviços", padding=10)
         frame_servicos.pack(fill='both', expand=True, pady=5)
-        
-        ttk.Button(frame_servicos, text="📋 Selecionar Serviços", 
+
+        ttk.Button(frame_servicos, text="📋 Selecionar Serviços",
                 command=self.abrir_selecao_servicos).pack(pady=5)
-        
-        # Lista de serviços selecionados
+
         servicos_frame = ttk.Frame(frame_servicos)
         servicos_frame.pack(fill='both', expand=True, pady=5)
-        
-        ttk.Label(servicos_frame, text="Serviços selecionados:", 
+
+        ttk.Label(servicos_frame, text="Serviços selecionados:",
                 font=('Arial', 9, 'bold')).pack(anchor='w')
-        
+
         self.txt_servicos_selecionados = tk.Text(servicos_frame, height=5, width=70, wrap='word')
         self.txt_servicos_selecionados.pack(fill='both', expand=True, pady=5)
-        
-        # Scrollbar para texto de serviços
+
         scrollbar_servicos = ttk.Scrollbar(self.txt_servicos_selecionados)
         scrollbar_servicos.pack(side='right', fill='y')
         self.txt_servicos_selecionados.config(yscrollcommand=scrollbar_servicos.set)
         scrollbar_servicos.config(command=self.txt_servicos_selecionados.yview)
-        
-        # --- SEÇÃO 5: BOTÕES DE AÇÃO ---
+
+        # --- OBSERVAÇÕES ---
+        frame_obs = ttk.LabelFrame(scrollable_frame, text="Observações", padding=10)
+        frame_obs.pack(fill='x', pady=5)
+
+        self.txt_observacoes_contrato = tk.Text(frame_obs, height=3, width=70, wrap='word')
+        self.txt_observacoes_contrato.pack(fill='x', pady=5)
+
+        # --- BOTÕES DE AÇÃO ---
         frame_botoes = ttk.Frame(scrollable_frame)
         frame_botoes.pack(fill='x', pady=10)
-        
+
         style = ttk.Style()
         style.configure('Action.TButton', font=('Arial', 10, 'bold'))
-        
-        ttk.Button(frame_botoes, text="📄 Gerar Contrato", 
-                command=self.gerar_contrato_final, 
+
+        ttk.Button(frame_botoes, text="📄 Gerar Contrato",
+                command=self.gerar_contrato_final,
                 style='Action.TButton').pack(side='left', padx=5)
 
-        # MELHORIA 1: Botão para incluir contrato na aba Contratos
-        ttk.Button(frame_botoes, text="➕ Incluir como Novo Contrato", 
-                command=self.incluir_contrato_na_aba, 
+        ttk.Button(frame_botoes, text="💾 Salvar Contrato",
+                command=self.incluir_contrato_na_aba,
                 style='Action.TButton').pack(side='left', padx=5)
-        
-        ttk.Button(frame_botoes, text="🔄 Limpar Formulário", 
+
+        ttk.Button(frame_botoes, text="🔄 Limpar Formulário",
                 command=self.limpar_formulario_contrato).pack(side='left', padx=5)
-        
-        ttk.Button(frame_botoes, text="📂 Abrir Pasta de Contratos", 
+
+        ttk.Button(frame_botoes, text="📂 Abrir Pasta de Contratos",
                 command=self.abrir_pasta_contratos).pack(side='left', padx=5)
 
-        ttk.Button(frame_botoes, text="Voltar", 
-                command=lambda: self.notebook.select(1)).pack(side='right', padx=5)
-        
+        ttk.Button(frame_botoes, text="Voltar",
+                command=lambda: self.notebook.select(self.aba_contratos)).pack(side='right', padx=5)
+
         # Empacotar canvas e scrollbar
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
-        
-        # Bind de mudança de aba para carregar dados
+
+        # Bind de mudança de aba para carregar dados do contexto
         self.notebook.bind('<<NotebookTabChanged>>', self.on_tab_changed_contrato)
 
     def centralizar_janela(self, janela, largura=600, altura=400):
@@ -1061,65 +1235,311 @@ class GestaoMedicoes:
     # E modifique o método selecionar_cliente:
 
     def selecionar_cliente(self, event=None):
-        """Atualiza o cliente selecionado"""
+        """Atualiza o cliente selecionado e preenche painel de dados na aba Seleção"""
         self.cliente_atual = self.cliente_combobox.get()
-        
+
         if self.cliente_atual:
-            # Verificar se o cliente está ativo (extra proteção)
             if not cliente_esta_ativo(self.cliente_atual):
                 messagebox.showwarning(
-                    "Cliente Inativo", 
+                    "Cliente Inativo",
                     f"O cliente '{self.cliente_atual}' está inativo (contrato finalizado). " +
-                    "Os dados serão mostrados somente para consulta.", 
+                    "Os dados serão mostrados somente para consulta.",
                     parent=self.root
                 )
-            
-            # Obter informações do cliente
+
             info_cliente = obter_info_cliente(self.cliente_atual)
-            
-            # CORREÇÃO: Atualizar TODOS os labels de cliente nas diferentes abas
             texto_cliente = f"Cliente: {self.cliente_atual}"
             if info_cliente and not info_cliente['ativo']:
                 texto_cliente += " (INATIVO)"
-            
-            # Atualizar label na aba de contratos
-            if hasattr(self, 'lbl_cliente_contratos'):
-                self.lbl_cliente_contratos.config(text=texto_cliente)
-            
-            # Atualizar label na aba de medições
-            if hasattr(self, 'lbl_cliente_medicoes'):
-                self.lbl_cliente_medicoes.config(text=texto_cliente)
-            
-            # Manter compatibilidade com outros labels se existirem
-            if hasattr(self, 'lbl_cliente_resumo'):
-                self.lbl_cliente_resumo.config(text=texto_cliente)
-            
-            # Definir o caminho do arquivo
+
+            # Atualizar labels nas abas dependentes
+            for attr in ('lbl_cliente_contratos', 'lbl_cliente_medicoes',
+                         'lbl_cliente_fornecedor', 'lbl_cliente_relatorios', 'lbl_cliente_resumo'):
+                if hasattr(self, attr):
+                    getattr(self, attr).config(text=texto_cliente)
+
+            # Definir caminho do arquivo
             if info_cliente and 'arquivo' in info_cliente:
                 self.arquivo_cliente = info_cliente['arquivo']
             else:
                 self.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
-            
-            # Verifica se arquivo existe e cria a aba de medições se necessário
+
+            # Preencher painel de dados do cliente na aba Seleção
+            try:
+                dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
+                if dados_cliente:
+                    def _set(entry, valor):
+                        entry.config(state='normal')
+                        entry.delete(0, tk.END)
+                        entry.insert(0, valor or '')
+                        entry.config(state='readonly')
+
+                    _set(self.ent_sel_cno,         dados_cliente.get('cno', ''))
+                    _set(self.ent_sel_cpf,         dados_cliente.get('cnpj_cpf', ''))
+                    _set(self.ent_sel_estado_civil, dados_cliente.get('estado_civil', ''))
+                    _set(self.ent_sel_cidade,
+                         self.formatar_nome_cidade(dados_cliente.get('cidade', '')))
+                    _set(self.ent_sel_endereco,    dados_cliente.get('endereco', ''))
+            except Exception as e:
+                logger.warning(f"Não foi possível carregar dados do cliente no painel: {e}")
+
             self.verificar_aba_medicoes()
-    
-    def continuar_para_contratos(self):
-        """Avança para a aba de contratos após confirmar seleção"""
-        if self.cliente_atual:
-            # CORREÇÃO: Garantir que o label seja atualizado antes de mudar de aba
-            info_cliente = obter_info_cliente(self.cliente_atual)
-            texto_cliente = f"Cliente: {self.cliente_atual}"
-            if info_cliente and not info_cliente['ativo']:
-                texto_cliente += " (INATIVO)"
-            
-            # Atualizar label na aba de contratos
-            if hasattr(self, 'lbl_cliente_contratos'):
-                self.lbl_cliente_contratos.config(text=texto_cliente)
-            
-            self.notebook.select(1)  # Vai para aba de contratos
-            self.carregar_contratos()
-        else:
+
+    def continuar_para_fornecedor(self):
+        """Avança para a aba de seleção de fornecedor"""
+        if not self.cliente_atual:
             messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
+            return
+        self.notebook.select(self.aba_fornecedor)
+
+    def continuar_para_contratos(self):
+        """Mantido por compatibilidade — use continuar_para_fornecedor no fluxo principal"""
+        self.continuar_para_fornecedor()
+
+    def continuar_para_contratos_filtrado(self):
+        """Avança para a aba de Contratos filtrando pelo fornecedor selecionado"""
+        selecionado = self.lst_fornecedor_aba.curselection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um fornecedor primeiro!", parent=self.root)
+            return
+
+        item = self.lst_fornecedor_aba.get(selecionado[0]).strip()
+        if not item or item.startswith("👆"):
+            messagebox.showwarning("Aviso", "Selecione um fornecedor válido!", parent=self.root)
+            return
+
+        # Extrair CNPJ do formato "NOME - CNPJ"
+        if " - " in item:
+            partes = item.rsplit(" - ", 1)
+            self.nome_fornecedor_selecionado = partes[0].strip()
+            self.cnpj_fornecedor_selecionado = partes[1].strip()
+        else:
+            self.nome_fornecedor_selecionado = item
+            self.cnpj_fornecedor_selecionado = ""
+
+        # Atualizar label da aba Contratos
+        if hasattr(self, 'lbl_cliente_contratos'):
+            self.lbl_cliente_contratos.config(
+                text=f"Cliente: {self.cliente_atual}  |  Fornecedor: {self.nome_fornecedor_selecionado}"
+            )
+
+        self.notebook.select(self.aba_contratos)
+        self.carregar_contratos()
+
+        # Atualizar indicador de filtro na aba Relatórios
+        if hasattr(self, 'lbl_filtro_pdf'):
+            if self.nome_fornecedor_selecionado:
+                self.lbl_filtro_pdf.config(
+                    text=f"Filtro ativo: {self.nome_fornecedor_selecionado}"
+                )
+            else:
+                self.lbl_filtro_pdf.config(text="")
+
+    # --- Métodos da aba Fornecedor ---
+
+    def buscar_fornecedor_aba(self, event=None):
+        """Busca fornecedores na nova aba de seleção"""
+        try:
+            termo = self.ent_busca_forn_aba.get().strip()
+            if not termo:
+                self.listar_todos_fornecedores_aba()
+                return
+
+            from openpyxl import load_workbook as _lw
+            wb = _lw(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+
+            termo_upper = termo.upper()
+            termo_num = ''.join(filter(str.isdigit, termo))
+            encontrados = []
+
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:
+                    continue
+                cnpj_raw = row[0]
+                razao = row[2] if len(row) > 2 else ''
+                fantasia = row[3] if len(row) > 3 else ''
+                cnpj_num = ''.join(filter(str.isdigit, str(cnpj_raw)))
+
+                match = (
+                    (termo_num and termo_num in cnpj_num) or
+                    (fantasia and termo_upper in str(fantasia).upper()) or
+                    (razao and termo_upper in str(razao).upper())
+                )
+                if match:
+                    nome = str(fantasia).strip() if fantasia and str(fantasia).strip() else str(razao).strip()
+                    cnpj_fmt = self.formatar_documento(cnpj_raw)
+                    encontrados.append(f"{nome} - {cnpj_fmt}")
+
+            wb.close()
+            self._preencher_listbox_forn_aba(sorted(encontrados))
+
+            if not encontrados:
+                messagebox.showinfo("Busca", f"Nenhum fornecedor encontrado com '{termo}'", parent=self.root)
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao buscar fornecedores:\n{str(e)}", parent=self.root)
+
+    def listar_todos_fornecedores_aba(self):
+        """Lista todos os fornecedores na aba de seleção"""
+        try:
+            from openpyxl import load_workbook as _lw
+            wb = _lw(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+
+            fornecedores = []
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:
+                    continue
+                razao = row[2] if len(row) > 2 else ''
+                fantasia = row[3] if len(row) > 3 else ''
+                nome = str(fantasia).strip() if fantasia and str(fantasia).strip() else str(razao).strip()
+                cnpj_fmt = self.formatar_documento(row[0])
+                fornecedores.append(f"{nome} - {cnpj_fmt}")
+
+            wb.close()
+            self._preencher_listbox_forn_aba(sorted(fornecedores))
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar fornecedores:\n{str(e)}", parent=self.root)
+
+    def _preencher_listbox_forn_aba(self, itens):
+        """Preenche a listbox da aba fornecedor com os itens fornecidos"""
+        self.lst_fornecedor_aba.delete(0, tk.END)
+        for item in itens:
+            self.lst_fornecedor_aba.insert(tk.END, item)
+
+    def selecionar_fornecedor_aba(self, event=None):
+        """Carrega dados do fornecedor selecionado na aba de seleção"""
+        selecionado = self.lst_fornecedor_aba.curselection()
+        if not selecionado:
+            return
+
+        item = self.lst_fornecedor_aba.get(selecionado[0]).strip()
+        if not item:
+            return
+
+        try:
+            if " - " in item:
+                partes = item.rsplit(" - ", 1)
+                nome_busca = partes[0].strip()
+                cnpj_busca = partes[1].strip()
+            else:
+                nome_busca = item
+                cnpj_busca = None
+
+            from openpyxl import load_workbook as _lw
+            wb = _lw(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+
+            fornecedor = None
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:
+                    continue
+                cnpj_fmt = self.formatar_documento(row[0])
+                if cnpj_busca and cnpj_fmt == cnpj_busca:
+                    fornecedor = row
+                    break
+
+            wb.close()
+
+            if not fornecedor:
+                messagebox.showwarning("Aviso", f"Fornecedor não encontrado.", parent=self.root)
+                return
+
+            cnpj_cpf = self.formatar_documento(fornecedor[0])
+            endereco = str(fornecedor[15]).strip() if len(fornecedor) > 15 and fornecedor[15] else '[ENDEREÇO NÃO CADASTRADO]'
+
+            def _set(entry, valor):
+                entry.config(state='normal')
+                entry.delete(0, tk.END)
+                entry.insert(0, valor)
+                entry.config(state='readonly')
+
+            _set(self.ent_forn_cnpj, cnpj_cpf)
+            _set(self.ent_forn_endereco, endereco)
+
+            # Dados bancários
+            try:
+                dados_banc = buscar_dados_bancarios_fornecedor(cnpj_cpf, "PIX") or 'Dados bancários não cadastrados'
+            except Exception:
+                dados_banc = 'Erro ao buscar dados bancários'
+
+            self.txt_forn_dados_bancarios.config(state='normal')
+            self.txt_forn_dados_bancarios.delete('1.0', tk.END)
+            self.txt_forn_dados_bancarios.insert('1.0', dados_banc)
+            self.txt_forn_dados_bancarios.config(state='disabled')
+
+            logger.info(f"Fornecedor selecionado na aba: {nome_busca} ({cnpj_cpf})")
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar dados do fornecedor:\n{str(e)}", parent=self.root)
+
+    # --- Métodos da aba Contrato (novo / reemissão) ---
+
+    def abrir_novo_contrato(self):
+        """Navega para aba Contrato com formulário limpo para novo contrato"""
+        if not self.cliente_atual:
+            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
+            return
+        if not hasattr(self, 'cnpj_fornecedor_selecionado') or not self.cnpj_fornecedor_selecionado:
+            messagebox.showwarning("Aviso", "Selecione um fornecedor primeiro!", parent=self.root)
+            return
+        self.limpar_formulario_contrato()
+        self.notebook.select(self.aba_contratos_emissao)
+
+    def reemitir_contrato(self):
+        """Preenche a aba Contrato com dados de um contrato existente para reemissão"""
+        selecionado = self.tree_contratos.selection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um contrato para reemitir!", parent=self.root)
+            return
+
+        valores = self.tree_contratos.item(selecionado)['values']
+        id_contrato = valores[0]
+
+        try:
+            contrato = self.obter_dados_contrato(id_contrato)
+            if not contrato:
+                messagebox.showerror("Erro", "Não foi possível carregar os dados do contrato!", parent=self.root)
+                return
+
+            self.limpar_formulario_contrato()
+
+            # Preencher campos com dados do contrato existente
+            if contrato['data_inicio']:
+                try:
+                    dt = contrato['data_inicio'] if isinstance(contrato['data_inicio'], datetime)                          else datetime.strptime(str(contrato['data_inicio']), '%d/%m/%Y')
+                    self.ent_data_inicio.set_date(dt)
+                except Exception:
+                    pass
+
+            if contrato['data_final']:
+                try:
+                    dt = contrato['data_final'] if isinstance(contrato['data_final'], datetime)                          else datetime.strptime(str(contrato['data_final']), '%d/%m/%Y')
+                    self.ent_data_fim.set_date(dt)
+                    self.calcular_prazo_contrato()
+                except Exception:
+                    pass
+
+            if contrato['valor_global']:
+                self.ent_valor_global.delete(0, tk.END)
+                valor_fmt = f"R$ {float(contrato['valor_global']):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                self.ent_valor_global.insert(0, valor_fmt)
+
+            if contrato['descricao']:
+                self.txt_servicos_selecionados.delete('1.0', tk.END)
+                self.txt_servicos_selecionados.insert('1.0', contrato['descricao'])
+
+            if contrato['observacao']:
+                self.txt_observacoes_contrato.delete('1.0', tk.END)
+                self.txt_observacoes_contrato.insert('1.0', contrato['observacao'])
+
+            self.notebook.select(self.aba_contratos_emissao)
+            logger.info(f"Contrato {id_contrato} carregado para reemissão")
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar contrato para reemissão:\n{str(e)}", parent=self.root)
             
     def verificar_aba_medicoes(self):
         """Verifica se a aba de medições existe na planilha do cliente e cria se necessário"""
@@ -1214,37 +1634,59 @@ class GestaoMedicoes:
                 
             # Carregar dados da aba Contratos_Medicao
             ws = wb["Contratos_Medicao"]
-            
-            # Percorrer as linhas (pulando o cabeçalho)
+
+            # Filtro por fornecedor selecionado (CNPJ normalizado)
+            cnpj_filtro = getattr(self, 'cnpj_fornecedor_selecionado', None)
+            cnpj_filtro_num = ''.join(filter(str.isdigit, cnpj_filtro)) if cnpj_filtro else ''
+
+            # 1ª passagem: construir índice sequencial por empreiteiro (ordem de inserção na planilha)
+            # Chave: CNPJ normalizado → contador
+            seq_por_cnpj = {}
+            id_para_seq = {}
             for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Se tem ID
-                    # Formatar data início
-                    data_inicio = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else str(row[4] or "")
-                    
-                    # *** NOVO: Formatar Data Final ***
-                    data_final = ""
-                    if row[5]:  # Se existe data final
-                        if isinstance(row[5], datetime):
-                            data_final = row[5].strftime('%d/%m/%Y')
-                        else:
-                            data_final = str(row[5])
-                    
-                    # ATENÇÃO: Colunas mudaram de posição!
-                    valor_global = f"R$ {row[6]:,.2f}" if isinstance(row[6], (int, float)) else str(row[6] or "0,00")
-                    valor_pago = f"R$ {row[7]:,.2f}" if isinstance(row[7], (int, float)) else str(row[7] or "0,00")
-                    saldo = f"R$ {row[8]:,.2f}" if isinstance(row[8], (int, float)) else str(row[8] or "0,00")
-                    
-                    self.tree_contratos.insert('', 'end', values=(
-                        row[0],         # ID
-                        row[2],         # Fornecedor
-                        row[3],         # Descrição
-                        data_inicio,    # Data Início
-                        data_final,     # *** NOVO: Data Final ***
-                        valor_global,   # Valor Global
-                        valor_pago,     # Valor Pago
-                        saldo          # Saldo
-                    ))
-                
+                if not row[0]:
+                    continue
+                cnpj_num = ''.join(filter(str.isdigit, str(row[1] or '')))
+                seq_por_cnpj[cnpj_num] = seq_por_cnpj.get(cnpj_num, 0) + 1
+                id_para_seq[row[0]] = seq_por_cnpj[cnpj_num]
+
+            # 2ª passagem: popular treeview com filtro e numeração sequencial
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:
+                    continue
+
+                # Aplicar filtro por fornecedor se houver um selecionado
+                if cnpj_filtro_num:
+                    cnpj_linha = ''.join(filter(str.isdigit, str(row[1] or '')))
+                    if cnpj_linha != cnpj_filtro_num:
+                        continue
+
+                # Número sequencial deste contrato dentro do empreiteiro
+                num_seq = id_para_seq.get(row[0], '?')
+
+                # Formatar datas
+                data_inicio = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else str(row[4] or '')
+                data_final = ''
+                if row[5]:
+                    data_final = row[5].strftime('%d/%m/%Y') if isinstance(row[5], datetime) else str(row[5])
+
+                # Formatar valores
+                valor_global = f"R$ {row[6]:,.2f}" if isinstance(row[6], (int, float)) else str(row[6] or '0,00')
+                valor_pago   = f"R$ {row[7]:,.2f}" if isinstance(row[7], (int, float)) else str(row[7] or '0,00')
+                saldo        = f"R$ {row[8]:,.2f}" if isinstance(row[8], (int, float)) else str(row[8] or '0,00')
+
+                self.tree_contratos.insert('', 'end', values=(
+                    row[0],        # ID global (usado internamente por selecionar/editar/excluir)
+                    num_seq,       # Nº sequencial dentro do empreiteiro
+                    row[2],        # Fornecedor
+                    row[3],        # Descrição
+                    data_inicio,   # Data Início
+                    data_final,    # Data Final
+                    valor_global,  # Valor Global
+                    valor_pago,    # Valor Pago
+                    saldo          # Saldo
+                ))
+
             wb.close()
             
         except Exception as e:
@@ -1969,13 +2411,36 @@ class GestaoMedicoes:
         self.carregar_medicoes()
         
         # Mudar para a aba de medições
-        self.notebook.select(2)  # Índice da aba de medições
+        self.notebook.select(self.aba_medicoes)  # Índice da aba de medições
     
     def on_tab_changed_contrato(self, event):
         """Chamado quando a aba é alterada"""
-        if self.notebook.index(self.notebook.select()) == 3:  # Aba de emissão de contrato
-            self.carregar_dados_cliente_contrato()
-            # Lista de fornecedores começa vazia - usuário deve buscar manualmente
+        if self.notebook.select() == str(self.aba_contratos_emissao):
+            self._preencher_contexto_aba_contrato()
+
+    def _preencher_contexto_aba_contrato(self):
+        """Preenche os labels de contexto (cliente e fornecedor) na aba Contrato"""
+        nome_cliente = self.cliente_atual or "Nenhum selecionado"
+        nome_forn = getattr(self, 'nome_fornecedor_selecionado', None) or "Nenhum selecionado"
+        cnpj_forn = getattr(self, 'cnpj_fornecedor_selecionado', None) or ""
+
+        if hasattr(self, 'lbl_contrato_cliente'):
+            self.lbl_contrato_cliente.config(text=f"Cliente: {nome_cliente}")
+        if hasattr(self, 'lbl_contrato_fornecedor'):
+            txt = f"Fornecedor: {nome_forn}"
+            if cnpj_forn:
+                txt += f"  ({cnpj_forn})"
+            self.lbl_contrato_fornecedor.config(text=txt)
+
+        # Pré-preencher endereço da obra com endereço do cliente (se campo vazio)
+        try:
+            if hasattr(self, 'ent_endereco_obra') and not self.ent_endereco_obra.get().strip():
+                dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
+                if dados_cliente:
+                    self.ent_endereco_obra.delete(0, tk.END)
+                    self.ent_endereco_obra.insert(0, dados_cliente.get('endereco', ''))
+        except Exception:
+            pass
 
     def carregar_dados_cliente_contrato(self):
         """Carrega dados do cliente selecionado na aba de contrato"""
@@ -2597,10 +3062,13 @@ class GestaoMedicoes:
             messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
             return
         
-        # Validar fornecedor selecionado
-        selection = self.lst_fornecedor_contrato.curselection()
-        if not selection:
-            messagebox.showwarning("Aviso", "Selecione um fornecedor!", parent=self.root)
+        # Validar fornecedor selecionado (a partir do contexto da aba Fornecedor)
+        if not getattr(self, 'cnpj_fornecedor_selecionado', None):
+            messagebox.showwarning(
+                "Aviso",
+                "Nenhum fornecedor selecionado.\n\nVolte à aba Fornecedor e selecione um fornecedor.",
+                parent=self.root
+            )
             return
         
         # CORREÇÃO MELHORIA 2: Validar serviços - aceita lista OU campo de texto
@@ -2668,16 +3136,18 @@ class GestaoMedicoes:
             # Obter dados do cliente
             dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
             
-            # Obter dados do fornecedor
-            selection = self.lst_fornecedor_contrato.curselection()
-            item_selecionado = self.lst_fornecedor_contrato.get(selection[0]).strip()
-            
-            # Extrair nome do formato "NOME - CNPJ"
-            if " - " in item_selecionado:
-                nome_fornecedor = item_selecionado.rsplit(" - ", 1)[0].strip()
-            else:
-                nome_fornecedor = item_selecionado
-            
+            # Obter dados do fornecedor a partir do contexto (aba Fornecedor)
+            nome_fornecedor = getattr(self, 'nome_fornecedor_selecionado', None)
+            cnpj_forn = getattr(self, 'cnpj_fornecedor_selecionado', None)
+
+            if not nome_fornecedor and not cnpj_forn:
+                messagebox.showwarning(
+                    "Aviso",
+                    "Nenhum fornecedor selecionado.\n\nVolte à aba Fornecedor e selecione um fornecedor.",
+                    parent=self.root
+                )
+                return
+
             dados_fornecedor = self.gerador_contrato.obter_dados_fornecedor_por_nome(nome_fornecedor)
             
             # Validar se fornecedor foi encontrado
@@ -2690,8 +3160,9 @@ class GestaoMedicoes:
                 )
                 return
             
-            # Obter dados bancários
-            dados_bancarios = self.txt_dados_bancarios.get('1.0', tk.END).strip()
+            # Obter dados bancários a partir do contexto
+            cnpj_forn_ctx = getattr(self, 'cnpj_fornecedor_selecionado', '') or ''
+            dados_bancarios = self.obter_dados_bancarios(cnpj_forn_ctx)
             
             # Ajustar data fim se cair em fim de semana
             data_fim = self.ent_data_fim.get_date()
@@ -2780,49 +3251,39 @@ class GestaoMedicoes:
     def limpar_formulario_contrato(self):
         """Limpa todos os campos do formulário de contrato"""
         try:
-            # Limpar e restaurar placeholder na listbox de fornecedores
-            self.lst_fornecedor_contrato.config(state='normal')
-            self.lst_fornecedor_contrato.delete(0, tk.END)
-            self.lst_fornecedor_contrato.insert(tk.END, "👆 Clique em 'Buscar' ou '↻ Todos' para listar fornecedores")
-            self.lst_fornecedor_contrato.config(state='disabled')
-            
-            # Limpar campos de fornecedor
-            self.ent_cnpj_fornecedor.config(state='normal')
-            self.ent_cnpj_fornecedor.delete(0, tk.END)
-            self.ent_cnpj_fornecedor.config(state='readonly')
-            
-            self.ent_endereco_fornecedor.config(state='normal')
-            self.ent_endereco_fornecedor.delete(0, tk.END)
-            self.ent_endereco_fornecedor.config(state='readonly')
-            
-            self.txt_dados_bancarios.config(state='normal')
-            self.txt_dados_bancarios.delete('1.0', tk.END)
-            self.txt_dados_bancarios.config(state='disabled')
-            
             # Resetar datas
-            self.ent_data_contrato.set_date(datetime.now())  # Data do contrato = hoje
-            self.ent_data_inicio.set_date(datetime.now() + timedelta(days=1))  # Início = amanhã
-            self.ent_data_fim.set_date(datetime.now() + timedelta(days=31))  # Fim = +30 dias
-            
-            # Limpar valores
+            self.ent_data_contrato.set_date(datetime.now())
+            self.ent_data_inicio.set_date(datetime.now() + timedelta(days=1))
+            self.ent_data_fim.set_date(datetime.now() + timedelta(days=31))
+
+            # Limpar valores monetários
             self.ent_valor_global.delete(0, tk.END)
             self.ent_valor_global.insert(0, "R$ 0,00")
             self.ent_valor_global.bind('<FocusOut>', self.formatar_valor_global)
-            
+
             self.ent_multa.delete(0, tk.END)
             self.ent_multa.insert(0, "R$ 4.000,00")
-            
+
+            # Limpar endereço da obra
             self.ent_endereco_obra.delete(0, tk.END)
-            
+
+            # Limpar checkbox de data condicionada
+            if hasattr(self, 'var_data_condicionada'):
+                self.var_data_condicionada.set(False)
+
             # Limpar serviços
             self.servicos_selecionados = []
             self.txt_servicos_selecionados.delete('1.0', tk.END)
-            
+
+            # Limpar observações
+            if hasattr(self, 'txt_observacoes_contrato'):
+                self.txt_observacoes_contrato.delete('1.0', tk.END)
+
             # Recalcular prazo
             self.calcular_prazo_contrato()
-            
+
             logger.info("Formulário de contrato limpo")
-            
+
         except Exception as e:
             logger.error(f"Erro ao limpar formulário: {e}")
 
@@ -4869,58 +5330,43 @@ class GestaoMedicoes:
     
     # MELHORIA 1: Método para incluir contrato na aba Contratos
     def incluir_contrato_na_aba(self):
-        """Inclui os dados do contrato da aba 'Emitir Contrato' na aba 'Contratos'"""
+        """Salva o contrato da aba Contrato na planilha do cliente"""
         try:
-            # Validar cliente selecionado
             if not self.cliente_atual:
-                messagebox.showwarning("Aviso", "Selecione um cliente primeiro!, parent=self.root")
+                messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
                 return
-            
-            # Validar fornecedor selecionado
-            selection = self.lst_fornecedor_contrato.curselection()
-            if not selection:
-                messagebox.showwarning("Aviso", "Selecione um fornecedor!", parent=self.root)
+
+            nome_fornecedor = getattr(self, 'nome_fornecedor_selecionado', None)
+            cnpj_fornecedor = getattr(self, 'cnpj_fornecedor_selecionado', None)
+
+            if not nome_fornecedor or not cnpj_fornecedor:
+                messagebox.showwarning("Aviso", "Selecione um fornecedor na aba Fornecedor antes de salvar!", parent=self.root)
                 return
-            
-            # Validar campos obrigatórios
+
             if not self.ent_valor_global.get() or self.ent_valor_global.get() == "R$ 0,00":
                 messagebox.showwarning("Aviso", "Informe o valor global do contrato!", parent=self.root)
                 return
-            
-            # Obter dados do formulário
-            item_selecionado = self.lst_fornecedor_contrato.get(selection[0]).strip()
-            
-            # Extrair nome do formato "NOME - CNPJ"
-            if " - " in item_selecionado:
-                nome_fornecedor = item_selecionado.rsplit(" - ", 1)[0].strip()
-            else:
-                nome_fornecedor = item_selecionado
-            
-            cnpj_fornecedor = self.ent_cnpj_fornecedor.get().strip()
-            
-            # Obter descrição dos serviços (agora editável - MELHORIA 2)
+
             descricao = self.txt_servicos_selecionados.get('1.0', tk.END).strip()
             if not descricao:
                 messagebox.showwarning("Aviso", "Informe a descrição dos serviços!", parent=self.root)
                 return
-            
-            data_inicio = self.ent_data_inicio.get_date().strftime('%d/%m/%Y')
-            valor_global = self.ent_valor_global.get()
-            
-            # Remover formatação do valor
-            valor_limpo = valor_global.replace('R$', '').replace('.', '').replace(',', '.').strip()
-            
-            # Obter observações
-            observacoes = f"Contrato de {descricao[:50]}..."  # Primeira parte da descrição
-            
-            # Obter data final do campo
-            data_final = self.ent_data_fim.get_date().strftime('%d/%m/%Y')
 
-            # Salvar contrato na planilha
-            self.salvar_contrato(None, cnpj_fornecedor, nome_fornecedor, descricao, data_inicio, data_final, valor_limpo, observacoes)
-            
+            data_inicio = self.ent_data_inicio.get_date().strftime('%d/%m/%Y')
+            data_final = self.ent_data_fim.get_date().strftime('%d/%m/%Y')
+            valor_global = self.ent_valor_global.get()
+            valor_limpo = valor_global.replace('R$', '').replace('.', '').replace(',', '.').strip()
+
+            # Observações: campo dedicado, com fallback para descrição
+            observacoes = self.txt_observacoes_contrato.get('1.0', tk.END).strip()
+            if not observacoes:
+                observacoes = f"Contrato de {descricao[:80]}"
+
+            self.salvar_contrato(None, cnpj_fornecedor, nome_fornecedor, descricao,
+                                 data_inicio, data_final, valor_limpo, observacoes)
+
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao incluir contrato: {str(e)}", parent=self.root)
+            messagebox.showerror("Erro", f"Erro ao salvar contrato: {str(e)}", parent=self.root)
             import traceback
             traceback.print_exc()
     
