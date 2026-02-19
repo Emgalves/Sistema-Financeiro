@@ -804,7 +804,7 @@ class GestaoMedicoes:
                 except Exception:
                     pass  # Abertura automática é opcional
             else:
-                messagebox.showwarning("Aviso", "O relatório não foi gerado. Verifique os logs.", parent=self.root)
+                messagebox.showwarning("Aviso", "O relatório não foi gerado. Não existem medições no período.", parent=self.root)
 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao gerar PDF:\n{str(e)}", parent=self.root)
