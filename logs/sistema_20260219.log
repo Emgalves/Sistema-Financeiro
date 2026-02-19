@@ -1,0 +1,378 @@
+2026-02-19 11:37:00,262 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 11:37:00,320 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 11:37:00,381 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 11:37:00,460 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 11:37:00,551 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 11:37:22,809 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 11:37:23,227 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 11:37:26,217 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 11:37:26,237 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 11:37:26,241 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 11:37:26,243 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 11:37:28,503 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2026-02-19 11:37:28,531 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 11:37:28,552 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 21089086504 (tipo: <class 'int'>)
+2026-02-19 11:37:28,553 - sistema_relatorios - gerador_contrato - INFO - CPF convertido de int: 21089086504 → 21089086504
+2026-02-19 11:37:28,554 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 21089086504
+2026-02-19 11:37:28,555 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 210.890.865-04
+2026-02-19 11:37:28,556 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-02-19 11:37:28,557 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 210.890.865-04
+2026-02-19 11:37:28,559 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-02-19 11:41:25,298 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 11:41:25,359 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 11:50:57,040 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 11:50:57,041 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 11:50:57,042 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 11:50:57,042 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 11:50:57,043 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 11:51:03,929 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 11:51:04,147 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 11:51:06,002 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 11:51:06,004 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 11:51:06,006 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 11:51:06,007 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 11:51:10,624 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2026-02-19 11:51:10,645 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 11:51:10,663 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 21089086504 (tipo: <class 'int'>)
+2026-02-19 11:51:10,664 - sistema_relatorios - gerador_contrato - INFO - CPF convertido de int: 21089086504 → 21089086504
+2026-02-19 11:51:10,665 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 21089086504
+2026-02-19 11:51:10,666 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 210.890.865-04
+2026-02-19 11:51:10,667 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-02-19 11:51:10,669 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 210.890.865-04
+2026-02-19 11:51:10,673 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-02-19 11:58:40,625 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 11:58:40,705 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 11:58:56,443 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 11:58:56,444 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 11:58:56,444 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 11:58:56,445 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 11:58:56,446 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 11:59:55,317 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 11:59:55,593 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 11:59:57,681 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 11:59:57,684 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 11:59:57,686 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 11:59:57,687 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 12:00:01,302 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2026-02-19 12:00:01,331 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 12:00:01,353 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 21089086504 (tipo: <class 'int'>)
+2026-02-19 12:00:01,354 - sistema_relatorios - gerador_contrato - INFO - CPF convertido de int: 21089086504 → 21089086504
+2026-02-19 12:00:01,355 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 21089086504
+2026-02-19 12:00:01,356 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 210.890.865-04
+2026-02-19 12:00:01,356 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-02-19 12:00:01,357 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 210.890.865-04
+2026-02-19 12:00:01,357 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-02-19 12:04:23,006 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 12:04:23,032 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 12:04:25,457 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:04:25,499 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:04:25,771 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:04:25,785 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:04:25,788 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:04:25,882 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:09:28,392 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:09:28,393 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:09:28,394 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:09:28,394 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:09:28,395 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:09:28,396 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:09:28,404 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:09:28,407 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:10:00,285 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:10:00,286 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:10:00,288 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:10:00,289 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:10:00,290 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:10:00,293 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 12:10:00,300 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 12:10:00,304 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 15:00:39,872 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 15:00:39,873 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 15:00:39,873 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 15:00:39,874 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 15:00:39,874 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 15:01:17,228 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 15:01:17,464 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 15:01:19,384 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 15:01:19,386 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 15:01:19,389 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 15:01:19,390 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 15:01:22,403 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2026-02-19 15:01:22,427 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 15:01:22,446 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 21089086504 (tipo: <class 'int'>)
+2026-02-19 15:01:22,448 - sistema_relatorios - gerador_contrato - INFO - CPF convertido de int: 21089086504 → 21089086504
+2026-02-19 15:01:22,449 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 21089086504
+2026-02-19 15:01:22,449 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 210.890.865-04
+2026-02-19 15:01:22,450 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-02-19 15:01:22,450 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 210.890.865-04
+2026-02-19 15:01:22,451 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-02-19 15:03:10,539 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-02-19 15:03:10,562 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 15:03:10,566 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-02-19 15:03:10,567 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-02-19 15:03:10,567 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-02-19 15:03:10,568 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-02-19 15:03:10,570 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-02-19 15:03:10,573 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-02-19 15:03:10,575 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-02-19 15:11:49,153 - sistema_relatorios - gestao_medicoes - INFO - Fornecedor selecionado na aba: ALFATEC INSTALACOES (14.051.624/0001-42)
+2026-02-19 15:36:00,146 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 15:36:00,199 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 15:36:16,990 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 15:36:16,991 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 15:36:16,991 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 15:36:16,992 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 15:36:16,992 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 15:38:02,157 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 15:38:02,397 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 15:38:04,215 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 15:38:04,217 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 15:38:04,219 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 15:38:04,220 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 15:38:07,036 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-02-19 15:38:07,056 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 15:38:07,075 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-02-19 15:38:07,076 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-02-19 15:38:07,076 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-02-19 15:38:07,077 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-02-19 15:38:07,078 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-02-19 15:38:07,079 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-02-19 15:38:07,079 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-02-19 15:39:45,388 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 15:39:45,396 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 15:41:41,894 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 15:41:41,895 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 15:41:41,896 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 15:41:41,896 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 15:41:41,897 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 15:41:46,282 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 15:41:46,479 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 15:41:48,196 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 15:41:48,199 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 15:41:48,200 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 15:41:48,201 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 15:41:51,209 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-02-19 15:41:51,230 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 15:41:51,234 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-02-19 15:41:51,235 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-02-19 15:41:51,236 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-02-19 15:41:51,236 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-02-19 15:41:51,237 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-02-19 15:41:51,238 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-02-19 15:41:51,239 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-02-19 15:55:29,616 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 15:55:29,668 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 15:55:44,093 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 15:55:44,094 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 15:55:44,094 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 15:55:44,095 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 15:55:44,095 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 15:55:52,186 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 15:55:52,420 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 15:55:54,299 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 15:55:54,301 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 15:55:54,303 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 15:55:54,304 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 15:55:56,533 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-02-19 15:55:56,554 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 15:55:56,568 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-02-19 15:55:56,569 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-02-19 15:55:56,570 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-02-19 15:55:56,571 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-02-19 15:55:56,571 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-02-19 15:55:56,573 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-02-19 15:55:56,573 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-02-19 15:57:14,765 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: GILMAR ALMEIDA PORTUGAL
+2026-02-19 15:57:14,786 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 15:57:14,793 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 21089086504 (tipo: <class 'int'>)
+2026-02-19 15:57:14,794 - sistema_relatorios - gerador_contrato - INFO - CPF convertido de int: 21089086504 → 21089086504
+2026-02-19 15:57:14,795 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 21089086504
+2026-02-19 15:57:14,796 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 210.890.865-04
+2026-02-19 15:57:14,797 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-02-19 15:57:14,798 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 210.890.865-04
+2026-02-19 15:57:14,798 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-02-19 15:59:21,719 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 15:59:21,728 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 16:06:29,727 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 16:06:29,729 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 16:06:29,729 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 16:06:29,730 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 16:06:29,730 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 16:07:31,679 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:07:31,786 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:07:32,321 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:07:32,372 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:07:32,399 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:07:32,424 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:07:58,176 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:07:58,177 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:07:58,178 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:07:58,180 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:07:58,181 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:07:58,183 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:07:58,192 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:07:58,194 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:09:05,890 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:09:05,892 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:09:05,893 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:09:05,894 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:09:05,895 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:09:05,896 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:09:05,907 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:09:05,908 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:09:41,199 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 16:09:41,447 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 16:09:42,804 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 16:09:42,807 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 16:09:42,808 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 16:09:42,809 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 16:09:50,670 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 16:09:50,692 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 16:09:50,720 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 05990396635 (tipo: <class 'str'>)
+2026-02-19 16:09:50,722 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 05990396635
+2026-02-19 16:09:50,723 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 05990396635
+2026-02-19 16:09:50,724 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 059.903.966-35
+2026-02-19 16:09:50,725 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 059.903.966-35
+2026-02-19 16:09:50,725 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 16:10:46,772 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 16:10:46,783 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 16:11:40,060 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 16:11:40,062 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 16:11:40,071 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 16:11:40,080 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 16:11:40,082 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 16:11:47,284 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 16:11:47,519 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 16:11:49,840 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 16:11:49,844 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 16:11:49,846 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 16:11:49,847 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 16:11:52,255 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 16:11:52,289 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 16:11:52,310 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 05990396635 (tipo: <class 'str'>)
+2026-02-19 16:11:52,311 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 05990396635
+2026-02-19 16:11:52,312 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 05990396635
+2026-02-19 16:11:52,312 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 059.903.966-35
+2026-02-19 16:11:52,313 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 059.903.966-35
+2026-02-19 16:11:52,314 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 16:13:56,545 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 16:13:56,554 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 16:15:02,275 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 16:15:02,275 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 16:15:02,276 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 16:15:02,276 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 16:15:02,277 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 16:15:07,041 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 16:15:07,236 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 16:15:08,971 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 16:15:08,973 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 16:15:08,974 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 16:15:08,975 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 16:15:11,468 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 16:15:11,493 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 16:15:11,496 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 05990396635 (tipo: <class 'str'>)
+2026-02-19 16:15:11,497 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 05990396635
+2026-02-19 16:15:11,497 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 05990396635
+2026-02-19 16:15:11,498 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 059.903.966-35
+2026-02-19 16:15:11,499 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 059.903.966-35
+2026-02-19 16:15:11,500 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 16:15:53,326 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 16:15:53,334 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 16:15:57,081 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:15:57,086 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:15:57,259 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:15:57,259 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:15:57,261 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:15:57,262 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:16:11,629 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:16:11,630 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:16:11,631 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:16:11,632 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:16:11,635 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:16:11,636 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:16:11,642 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:16:11,643 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:16:52,915 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:16:52,915 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:16:52,916 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:16:52,917 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:16:52,918 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:16:52,919 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:16:52,926 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:16:52,927 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:17:15,043 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:17:15,044 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:17:15,045 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:17:15,046 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:17:15,047 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:17:15,049 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:17:15,056 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-02-19 16:17:15,057 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-02-19 16:46:18,321 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 16:46:18,322 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 16:46:18,322 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 16:46:18,323 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 16:46:18,323 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 16:46:23,675 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 16:46:23,911 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 16:46:25,878 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 16:46:25,881 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 16:46:25,883 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 16:46:25,884 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 16:46:28,235 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 16:46:28,257 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 16:46:28,275 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 05990396635 (tipo: <class 'str'>)
+2026-02-19 16:46:28,275 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 05990396635
+2026-02-19 16:46:28,276 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 05990396635
+2026-02-19 16:46:28,277 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 059.903.966-35
+2026-02-19 16:46:28,277 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 059.903.966-35
+2026-02-19 16:46:28,278 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 17:07:38,668 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 17:07:38,701 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 17:09:23,360 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 17:09:23,361 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 17:09:23,361 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 17:09:23,362 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 17:09:23,363 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 17:09:30,240 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 17:09:30,553 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 17:09:32,969 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 17:09:32,973 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 17:09:32,975 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 17:09:32,976 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 17:09:38,970 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 17:09:39,001 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 17:09:39,019 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 05990396635 (tipo: <class 'str'>)
+2026-02-19 17:09:39,020 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 05990396635
+2026-02-19 17:09:39,022 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 05990396635
+2026-02-19 17:09:39,025 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 059.903.966-35
+2026-02-19 17:09:39,027 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 059.903.966-35
+2026-02-19 17:09:39,028 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 17:11:22,246 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 17:11:22,253 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-19 17:12:33,755 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 17:12:33,756 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 17:12:33,757 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 17:12:33,757 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 17:12:33,757 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 17:15:57,106 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-19 17:15:57,107 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-19 17:15:57,107 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-19 17:15:57,108 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-19 17:15:57,108 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-19 17:16:02,187 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-19 17:16:02,432 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-19 17:16:04,418 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-19 17:16:04,420 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-19 17:16:04,422 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-19 17:16:04,423 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-19 17:16:08,083 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 17:16:08,104 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-19 17:16:08,125 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 05990396635 (tipo: <class 'str'>)
+2026-02-19 17:16:08,126 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 05990396635
+2026-02-19 17:16:08,127 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 05990396635
+2026-02-19 17:16:08,128 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 059.903.966-35
+2026-02-19 17:16:08,129 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 059.903.966-35
+2026-02-19 17:16:08,129 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-02-19 17:17:57,771 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-19 17:17:57,810 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
