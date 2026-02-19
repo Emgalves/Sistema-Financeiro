@@ -232,5 +232,14 @@
             "Melhoria nos filtros no Gerenciador de Lançamentos"
         ],
         "timestamp": "2026-02-06T09:41:19.828274"
+    },
+    {
+        "version": "1.7.0",
+        "release_date": "20/02/2026",
+        "changes": [
+            "Reorganizada toda a lógica da Gestão de Empreiteiros",
+            "Redesenhado o Relatório Quinzenal de Medições para o modelo do cliente"
+        ],
+        "timestamp": "2026-02-19T11:37:15.225138"
     }
 ]
