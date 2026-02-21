@@ -1,0 +1,74 @@
+2026-02-20 10:30:25,215 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-20 11:42:46,756 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-20 11:42:46,757 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-20 11:42:46,758 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-20 11:42:46,760 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-20 11:42:46,761 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-20 11:43:01,499 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-20 11:43:02,305 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-20 11:43:06,718 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-20 11:43:06,756 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-20 11:43:06,770 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-20 11:43:06,772 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-20 11:43:11,066 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: EDUARDO MORENO MARQUES
+2026-02-20 11:43:11,089 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-20 11:43:11,155 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 06850709801 (tipo: <class 'str'>)
+2026-02-20 11:43:11,155 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 06850709801
+2026-02-20 11:43:11,156 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 06850709801
+2026-02-20 11:43:11,156 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 068.507.098-01
+2026-02-20 11:43:11,157 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 068.507.098-01
+2026-02-20 11:43:11,158 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: EDUARDO MORENO MARQUES
+2026-02-20 11:43:55,546 - sistema_relatorios - gestao_medicoes - INFO - Fornecedor selecionado na aba: C.A.R INST. HIDRAULICAS E GÁS  CARLINHOS (040.681.266-74)
+2026-02-20 12:09:43,232 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-20 12:09:43,265 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-20 12:14:21,471 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-20 12:14:21,472 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-20 12:14:21,473 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-20 12:14:21,473 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-20 12:14:21,474 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-20 12:14:26,695 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-20 12:14:26,943 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-20 12:14:28,943 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-20 12:14:28,946 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-20 12:14:28,947 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-20 12:14:28,948 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-20 12:14:33,100 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: EDUARDO MORENO MARQUES
+2026-02-20 12:14:33,123 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-20 12:14:33,142 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 06850709801 (tipo: <class 'str'>)
+2026-02-20 12:14:33,143 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 06850709801
+2026-02-20 12:14:33,146 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 06850709801
+2026-02-20 12:14:33,146 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 068.507.098-01
+2026-02-20 12:14:33,147 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 068.507.098-01
+2026-02-20 12:14:33,148 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: EDUARDO MORENO MARQUES
+2026-02-20 12:16:30,839 - sistema_relatorios - gestao_medicoes - INFO - Rastreamento adicionado: Contrato 1, Medição 11, Linha 1229
+2026-02-20 12:25:52,596 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-20 12:25:52,624 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-02-20 12:27:00,408 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-02-20 12:27:00,411 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-02-20 12:27:00,412 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-02-20 12:27:00,413 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-02-20 12:27:00,414 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-02-20 12:30:03,740 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-02-20 12:30:03,973 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-02-20 12:30:06,010 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-02-20 12:30:06,013 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-02-20 12:30:06,015 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-02-20 12:30:06,016 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-02-20 12:30:08,401 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: FREDERICO LAVORATO ARANTES
+2026-02-20 12:30:08,424 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-20 12:30:08,442 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 062.258.326-37 (tipo: <class 'str'>)
+2026-02-20 12:30:08,444 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 062.258.326-37
+2026-02-20 12:30:08,445 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 06225832637
+2026-02-20 12:30:08,447 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 062.258.326-37
+2026-02-20 12:30:08,448 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 062.258.326-37
+2026-02-20 12:30:08,450 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: FREDERICO LAVORATO ARANTES
+2026-02-20 12:30:12,109 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: EDUARDO MORENO MARQUES
+2026-02-20 12:30:12,138 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-02-20 12:30:12,141 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 06850709801 (tipo: <class 'str'>)
+2026-02-20 12:30:12,142 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 06850709801
+2026-02-20 12:30:12,144 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 06850709801
+2026-02-20 12:30:12,145 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 068.507.098-01
+2026-02-20 12:30:12,147 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 068.507.098-01
+2026-02-20 12:30:12,148 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: EDUARDO MORENO MARQUES
+2026-02-20 12:46:15,151 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-02-20 12:46:15,187 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
