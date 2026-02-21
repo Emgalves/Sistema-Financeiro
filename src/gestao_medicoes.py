@@ -1195,7 +1195,7 @@ class GestaoMedicoes:
             
             # Se vazio, retornar vazio
             if not apenas_numeros:
-                return {'limpo': '', 'formatado': ''}
+                return {'limpo': '', 'formatado': '', 'tipo': 'INVÁLIDO'}
             
             # Determinar se é CPF ou CNPJ pelo tamanho
             tamanho = len(apenas_numeros)
@@ -1221,6 +1221,62 @@ class GestaoMedicoes:
         except Exception as e:
             logger.error(f"Erro ao normalizar CNPJ/CPF '{cnpj_cpf_input}': {str(e)}")
             return {'limpo': '', 'formatado': '', 'tipo': 'INVÁLIDO'}
+
+    def buscar_fornecedor_por_nome_agenda(self, nome_fornecedor):
+        """
+        Busca um fornecedor na base de dados pelo nome (razão social ou nome fantasia).
+        Usado pelo ImportadorMedicoes para obter o CNPJ a partir do nome.
+
+        Args:
+            nome_fornecedor (str): Nome do fornecedor a ser buscado
+
+        Returns:
+            dict com 'cnpj_cpf' ou None se não encontrar
+        """
+        try:
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb.active  # Aba 'Fornecedores'
+
+            nome_busca = nome_fornecedor.strip().upper()
+
+            melhor_match = None
+            melhor_score = 0
+            melhor_tipo = ""
+
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                cnpj      = str(row[0]).strip() if row[0] else ""
+                razao     = str(row[2]).strip().upper() if row[2] else ""
+                nome_fan  = str(row[3]).strip().upper() if row[3] else ""
+
+                # Correspondência exata
+                if nome_busca == razao or nome_busca == nome_fan:
+                    wb.close()
+                    tipo = str(row[1]).strip().upper() if row[1] else ""  # coluna B
+                    return {'cnpj_cpf': cnpj, 'tipo_pessoa': tipo}
+
+                # Correspondência parcial
+                for candidato in [razao, nome_fan]:
+                    if not candidato:
+                        continue
+                    if nome_busca in candidato or candidato in nome_busca:
+                        score = len(set(nome_busca.split()) & set(candidato.split()))
+                        if score > melhor_score:
+                            melhor_score = score
+                            melhor_match = cnpj
+                            melhor_tipo  = tipo
+
+            wb.close()
+
+            if melhor_match and melhor_score > 0:
+                logger.info(f"Fornecedor '{nome_fornecedor}' → CNPJ '{melhor_match}' (score={melhor_score})")
+                return {'cnpj_cpf': melhor_match, 'tipo_pessoa': melhor_tipo}
+
+            logger.warning(f"Fornecedor não encontrado na base: '{nome_fornecedor}'")
+            return None
+
+        except Exception as e:
+            logger.error(f"Erro ao buscar fornecedor por nome '{nome_fornecedor}': {str(e)}")
+            return None
 
     # Funções da aba Cliente
     def atualizar_lista_clientes(self):
