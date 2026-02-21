@@ -386,44 +386,52 @@ class ImportadorMedicoes:
         return medicoes, erros
     
     def buscar_cnpj_fornecedor(self, nome_fornecedor):
-        """
-        Busca o CNPJ do fornecedor na base de dados do sistema.
-        Usa os métodos já existentes no sistema.
-        
-        Args:
-            nome_fornecedor (str): Nome do fornecedor
-            
-        Returns:
-            str: CNPJ/CPF do fornecedor ou None se não encontrar
-        """
-        # Usar cache se já buscou este fornecedor
         if nome_fornecedor in self.cache_fornecedores:
             return self.cache_fornecedores[nome_fornecedor]
-        
+
         try:
             fornecedor = None
-            
-            # Tentar usar buscar_fornecedor_por_nome_agenda (método existente)
+
             if hasattr(self.sistema, 'buscar_fornecedor_por_nome_agenda'):
                 fornecedor = self.sistema.buscar_fornecedor_por_nome_agenda(nome_fornecedor)
-            
-            # Fallback: tentar buscar_fornecedor_completo se tiver CNPJ
-            elif hasattr(self.sistema, 'buscar_fornecedor_completo'):
-                # Este método precisa de CNPJ, então não é aplicável aqui
-                pass
-            
-            # Extrair CNPJ do fornecedor encontrado
+
             if fornecedor and 'cnpj_cpf' in fornecedor:
                 cnpj = fornecedor['cnpj_cpf']
                 self.cache_fornecedores[nome_fornecedor] = cnpj
-                logger.debug(f"Fornecedor encontrado: {nome_fornecedor} → {cnpj}")
                 return cnpj
-            
-            # Se não encontrar, cachear None para evitar buscas repetidas
+
+            # ── FALLBACK: leitura direta do arquivo de fornecedores ──────────
+            try:
+                from src.config.config import ARQUIVO_FORNECEDORES
+                import openpyxl as _ox
+                wb = _ox.load_workbook(ARQUIVO_FORNECEDORES, read_only=True, data_only=True)
+                ws = wb.active
+                nome_busca = nome_fornecedor.strip().upper()
+                melhor_cnpj, melhor_score = None, 0
+                for row in ws.iter_rows(min_row=2, values_only=True):
+                    cnpj  = str(row[0]).strip() if row[0] else ""
+                    razao = str(row[2]).strip().upper() if row[2] else ""
+                    nome_ = str(row[3]).strip().upper() if row[3] else ""
+                    for candidato in [razao, nome_]:
+                        if nome_busca == candidato:
+                            wb.close()
+                            self.cache_fornecedores[nome_fornecedor] = cnpj
+                            return cnpj
+                        if nome_busca in candidato or candidato in nome_busca:
+                            score = len(set(nome_busca.split()) & set(candidato.split()))
+                            if score > melhor_score:
+                                melhor_score, melhor_cnpj = score, cnpj
+                wb.close()
+                if melhor_cnpj:
+                    self.cache_fornecedores[nome_fornecedor] = melhor_cnpj
+                    return melhor_cnpj
+            except Exception as fe:
+                logger.warning(f"Fallback de busca direta falhou: {fe}")
+            # ─────────────────────────────────────────────────────────────────
+
             self.cache_fornecedores[nome_fornecedor] = None
-            logger.debug(f"Fornecedor não encontrado: {nome_fornecedor}")
             return None
-            
+
         except Exception as e:
             logger.error(f"Erro ao buscar CNPJ do fornecedor '{nome_fornecedor}': {str(e)}")
             return None
@@ -706,6 +714,19 @@ class ImportadorMedicoes:
                 sheet.cell(row=proxima_linha, column=1, value=medicao['ID_Contrato'])  # A
                 sheet.cell(row=proxima_linha, column=2, value=medicao['ID_Medicao'])  # B
                 sheet.cell(row=proxima_linha, column=3, value=medicao['CNPJ_Fornecedor'])  # C
+                cnpj_val = str(medicao['CNPJ_Fornecedor']).strip()
+                apenas_numeros = ''.join(filter(str.isdigit, cnpj_val))
+                tipo_pessoa = medicao.get('tipo_pessoa', '').upper()
+
+                if tipo_pessoa == 'PJ':
+                    cnpj_completo = apenas_numeros.zfill(14)
+                    cnpj_fmt = f"{cnpj_completo[:2]}.{cnpj_completo[2:5]}.{cnpj_completo[5:8]}/{cnpj_completo[8:12]}-{cnpj_completo[12:]}"
+                elif tipo_pessoa == 'PF':
+                    cnpj_completo = apenas_numeros.zfill(11)
+                    cnpj_fmt = f"{cnpj_completo[:3]}.{cnpj_completo[3:6]}.{cnpj_completo[6:9]}-{cnpj_completo[9:]}"
+                else:
+                    cnpj_fmt = cnpj_val  # tipo desconhecido, mantém original
+                sheet.cell(row=proxima_linha, column=3, value=cnpj_fmt)
                 sheet.cell(row=proxima_linha, column=4, value=medicao['Nome_Fornecedor'])  # D
                 sheet.cell(row=proxima_linha, column=5, value=medicao['Data_Medicao'])  # E
                 sheet.cell(row=proxima_linha, column=6, value=medicao['Data_Pagamento'])  # F
