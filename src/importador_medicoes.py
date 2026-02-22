@@ -295,26 +295,26 @@ class ImportadorMedicoes:
                 
                 # Regra: Data Medição (coluna B) não pode ser < 5 se hoje é > 5 e <= 20, 
                 # ou < 20 se hoje é > 20 e <= 5
-                if 5 < dia_hoje <= 20:
-                    # Período 1: hoje entre 6 e 20
-                    # Data de medição não pode ser < 5
-                    if dia_medicao < 5:
-                        erros.append(
-                            f"Linha {linha_atual}: Data de Medição (dia {dia_medicao}) não pode ser "
-                            f"anterior ao dia 5 quando estamos entre os dias 6 e 20"
-                        )
-                        linha_atual += 1
-                        continue
-                elif dia_hoje > 20 or dia_hoje <= 5:
-                    # Período 2: hoje entre 21 e 5 do mês seguinte
-                    # Data de medição não pode ser < 20
-                    if dia_medicao < 20:
-                        erros.append(
-                            f"Linha {linha_atual}: Data de Medição (dia {dia_medicao}) não pode ser "
-                            f"anterior ao dia 20 quando estamos entre os dias 21 e 5"
-                        )
-                        linha_atual += 1
-                        continue
+                # if 5 < dia_hoje <= 20:
+                #     # Período 1: hoje entre 6 e 20
+                #     # Data de medição não pode ser < 5
+                #     if dia_medicao < 5:
+                #         erros.append(
+                #             f"Linha {linha_atual}: Data de Medição (dia {dia_medicao}) não pode ser "
+                #             f"anterior ao dia 5 quando estamos entre os dias 6 e 20"
+                #         )
+                #         linha_atual += 1
+                #         continue
+                # elif dia_hoje > 20 or dia_hoje <= 5:
+                #     # Período 2: hoje entre 21 e 5 do mês seguinte
+                #     # Data de medição não pode ser < 20
+                #     if dia_medicao < 20:
+                #         erros.append(
+                #             f"Linha {linha_atual}: Data de Medição (dia {dia_medicao}) não pode ser "
+                #             f"anterior ao dia 20 quando estamos entre os dias 21 e 5"
+                #         )
+                #         linha_atual += 1
+                #         continue
             
             # 3. Validar Referência
             if referencia is None or str(referencia).strip().upper() == '':
