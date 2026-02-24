@@ -241,5 +241,14 @@
             "Redesenhado o Relatório Quinzenal de Medições para o modelo do cliente"
         ],
         "timestamp": "2026-02-19T11:37:15.225138"
+    },
+    {
+        "version": "1.7.1",
+        "release_date": "24/02/2026",
+        "changes": [
+            "Inclusão de checkbox no Gerenciador de lançamentos para somar selecionados",
+            "Filtro de data do Gerenciador de Lançamentos traz a quinzena atual por padrãoCorreção da aba Contratos da Gestão de Medições para carregar todos os contratos, independente do fornecedor"
+        ],
+        "timestamp": "2026-02-24T16:40:06.117150"
     }
 ]
