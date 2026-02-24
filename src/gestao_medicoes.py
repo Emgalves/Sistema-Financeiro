@@ -344,7 +344,15 @@ class GestaoMedicoes:
         self.setup_aba_medicoes()
         self.setup_aba_relatorios()
         self.setup_aba_emissao_contrato()
-        
+        self.notebook.bind('<<NotebookTabChanged>>', self._ao_trocar_aba)
+
+    def _ao_trocar_aba(self, event=None):
+        """Carrega contratos automaticamente ao entrar na aba Contratos."""
+        aba_atual = self.notebook.select()
+        if aba_atual == str(self.aba_contratos):
+            if self.cliente_atual and self.arquivo_cliente:
+                self.carregar_contratos()
+
     def setup_aba_selecao(self):
         """Configura a aba de seleção de cliente"""
         frame_principal = ttk.Frame(self.aba_selecao)
@@ -1342,10 +1350,17 @@ class GestaoMedicoes:
             self.verificar_aba_medicoes()
 
     def continuar_para_fornecedor(self):
-        """Avança para a aba de seleção de fornecedor"""
+        """Avança para a aba de seleção de fornecedor.
+        Também limpa o filtro de fornecedor anterior para que a aba
+        Contratos exiba todos os contratos do cliente caso o usuário
+        navegue diretamente para ela sem selecionar um fornecedor.
+        """
         if not self.cliente_atual:
             messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
             return
+        # Limpar contexto de fornecedor anterior
+        self.cnpj_fornecedor_selecionado = None
+        self.nome_fornecedor_selecionado = None
         self.notebook.select(self.aba_fornecedor)
 
     def continuar_para_contratos(self):
