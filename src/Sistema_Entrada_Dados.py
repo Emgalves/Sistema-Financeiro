@@ -17558,6 +17558,8 @@ class GerenciadorLancamentos:
         # Armazenar TODOS os IDs dos itens
         self.todos_itens_tree = []
 
+        self._itens_marcados = set()
+
         self.gestor_taxas = GestorTaxasAdministracao(sistema_principal)
         self.preferencias_ordenacao = self.carregar_preferencias_ordenacao()
         
@@ -17580,289 +17582,424 @@ class GerenciadorLancamentos:
         
     def criar_interface(self):
         """Cria a interface do gerenciador - VERSÃO COM EXCLUSÃO EM LOTE"""
-        #  Frame principal
         main_frame = ttk.Frame(self.janela, padding="10")
         main_frame.pack(fill='both', expand=True)
 
-        # NOVO: FRAME DE BUSCA RÁPIDA
+        # ── Busca Rápida ─────────────────────────────────────────────────────────
         frame_busca = ttk.LabelFrame(main_frame, text="🔍 Busca Rápida")
         frame_busca.pack(fill='x', pady=(0, 5))
-        
+
         frame_busca_interno = ttk.Frame(frame_busca)
         frame_busca_interno.pack(fill='x', padx=10, pady=8)
-        
-        # Label e campo de busca
-        ttk.Label(frame_busca_interno, text="Buscar:", 
-                 font=('TkDefaultFont', 9, 'bold')).pack(side='left', padx=(0, 5))
-        
+
+        ttk.Label(frame_busca_interno, text="Buscar:",
+                font=('TkDefaultFont', 9, 'bold')).pack(side='left', padx=(0, 5))
+
         self.entry_busca = ttk.Entry(frame_busca_interno, width=50)
         self.entry_busca.pack(side='left', padx=5, fill='x', expand=True)
-        
-        # Label de resultados
-        self.label_resultados = ttk.Label(frame_busca_interno, 
-                                         text="Digite para buscar em Referência, Nome, NF e Observação",
-                                         font=('TkDefaultFont', 8, 'italic'),
-                                         foreground='gray')
+
+        self.label_resultados = ttk.Label(
+            frame_busca_interno,
+            text="Digite para buscar em Referência, Nome, NF e Observação",
+            font=('TkDefaultFont', 8, 'italic'),
+            foreground='gray'
+        )
         self.label_resultados.pack(side='left', padx=(10, 5))
-        
-        # Botão limpar busca
-        btn_limpar_busca = ttk.Button(frame_busca_interno, text="✖ Limpar", 
-                                      command=self.limpar_busca, width=10)
-        btn_limpar_busca.pack(side='left', padx=5)
-        
-        # Configurar eventos de busca
+
+        ttk.Button(frame_busca_interno, text="✖ Limpar",
+                command=self.limpar_busca, width=10).pack(side='left', padx=5)
+
         self.entry_busca.bind('<KeyRelease>', self.buscar_texto_evento)
         self.entry_busca.bind('<Return>', lambda e: self.aplicar_filtros())
-        
-        
-        # Frame de filtros
+
+        # ── Filtros ───────────────────────────────────────────────────────────────
         frame_filtros = ttk.LabelFrame(main_frame, text="Filtros")
         frame_filtros.pack(fill='x', pady=(0, 10))
 
-        # === LINHA 1: Filtros de Data e Status ===
         frame_filtros_linha1 = ttk.Frame(frame_filtros)
         frame_filtros_linha1.pack(fill='x', padx=5, pady=5)
 
-        # Filtros por data
         ttk.Label(frame_filtros_linha1, text="Data Início:").pack(side='left', padx=(0, 5))
-        self.data_inicio = DateEntry(frame_filtros_linha1, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_inicio = DateEntry(frame_filtros_linha1, width=12,
+                                    date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.data_inicio.pack(side='left', padx=(0, 10))
 
         ttk.Label(frame_filtros_linha1, text="Data Fim:").pack(side='left', padx=(0, 5))
-        self.data_fim = DateEntry(frame_filtros_linha1, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
+        self.data_fim = DateEntry(frame_filtros_linha1, width=12,
+                                date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.data_fim.pack(side='left', padx=(0, 10))
 
         self.inicializar_datas_padrao()
 
-        # Filtro por status
         ttk.Label(frame_filtros_linha1, text="Status:").pack(side='left', padx=(0, 5))
-        self.combo_status = ttk.Combobox(frame_filtros_linha1, values=['Todos', 'Ativos', 'Excluídos'], 
-                                    state='readonly', width=10)
+        self.combo_status = ttk.Combobox(
+            frame_filtros_linha1,
+            values=['Todos', 'Ativos', 'Excluídos'],
+            state='readonly', width=10
+        )
         self.combo_status.set('Ativos')
         self.combo_status.pack(side='left', padx=(0, 10))
 
-        # Botão filtrar
-        ttk.Button(frame_filtros_linha1, text="Filtrar", 
+        ttk.Button(frame_filtros_linha1, text="Filtrar",
                 command=self.filtrar_com_feedback).pack(side='left', padx=5)
 
-        # === NOVA LINHA 2: Ordenação ===
+        # ── Ordenação ─────────────────────────────────────────────────────────────
         frame_ordenacao = ttk.Frame(frame_filtros)
         frame_ordenacao.pack(fill='x', padx=5, pady=(0, 5))
 
-        ttk.Label(frame_ordenacao, text="🔽 Ordenar por:", 
+        ttk.Label(frame_ordenacao, text="🔽 Ordenar por:",
                 font=('TkDefaultFont', 9, 'bold')).pack(side='left', padx=(0, 10))
 
-        # Ordenação primária
         ttk.Label(frame_ordenacao, text="1º:").pack(side='left', padx=(0, 5))
-        self.combo_ordem_1 = ttk.Combobox(frame_ordenacao, 
-                                        values=['Data', 'Nome', 'Referência', 'Valor', 'Vencimento', 'Tipo'],
-                                        state='readonly', width=12)
+        self.combo_ordem_1 = ttk.Combobox(
+            frame_ordenacao,
+            values=['Data', 'Nome', 'Referência', 'Valor', 'Vencimento', 'Tipo'],
+            state='readonly', width=12
+        )
         self.combo_ordem_1.set('Data')
         self.combo_ordem_1.pack(side='left', padx=(0, 5))
 
-        # Direção da ordenação primária
-        self.combo_direcao_1 = ttk.Combobox(frame_ordenacao, 
-                                            values=['↑ Crescente', '↓ Decrescente'],
-                                            state='readonly', width=12)
+        self.combo_direcao_1 = ttk.Combobox(
+            frame_ordenacao,
+            values=['↑ Crescente', '↓ Decrescente'],
+            state='readonly', width=12
+        )
         self.combo_direcao_1.set('↑ Crescente')
         self.combo_direcao_1.pack(side='left', padx=(0, 15))
 
-        # Ordenação secundária
         ttk.Label(frame_ordenacao, text="2º:").pack(side='left', padx=(0, 5))
-        self.combo_ordem_2 = ttk.Combobox(frame_ordenacao, 
-                                        values=['Nenhum', 'Data', 'Nome', 'Referência', 'Valor', 'Vencimento', 'Tipo'],
-                                        state='readonly', width=12)
+        self.combo_ordem_2 = ttk.Combobox(
+            frame_ordenacao,
+            values=['Nenhum', 'Data', 'Nome', 'Referência', 'Valor', 'Vencimento', 'Tipo'],
+            state='readonly', width=12
+        )
         self.combo_ordem_2.set('Nome')
         self.combo_ordem_2.pack(side='left', padx=(0, 5))
 
-        # Direção da ordenação secundária
-        self.combo_direcao_2 = ttk.Combobox(frame_ordenacao, 
-                                            values=['↑ Crescente', '↓ Decrescente'],
-                                            state='readonly', width=12)
+        self.combo_direcao_2 = ttk.Combobox(
+            frame_ordenacao,
+            values=['↑ Crescente', '↓ Decrescente'],
+            state='readonly', width=12
+        )
         self.combo_direcao_2.set('↑ Crescente')
         self.combo_direcao_2.pack(side='left', padx=(0, 15))
 
-        # Ordenação terciária
         ttk.Label(frame_ordenacao, text="3º:").pack(side='left', padx=(0, 5))
-        self.combo_ordem_3 = ttk.Combobox(frame_ordenacao, 
-                                        values=['Nenhum', 'Data', 'Nome', 'Referência', 'Valor', 'Vencimento', 'Tipo'],
-                                        state='readonly', width=12)
+        self.combo_ordem_3 = ttk.Combobox(
+            frame_ordenacao,
+            values=['Nenhum', 'Data', 'Nome', 'Referência', 'Valor', 'Vencimento', 'Tipo'],
+            state='readonly', width=12
+        )
         self.combo_ordem_3.set('Valor')
         self.combo_ordem_3.pack(side='left', padx=(0, 5))
 
-        # Direção da ordenação terciária
-        self.combo_direcao_3 = ttk.Combobox(frame_ordenacao, 
-                                            values=['↑ Crescente', '↓ Decrescente'],
-                                            state='readonly', width=12)
+        self.combo_direcao_3 = ttk.Combobox(
+            frame_ordenacao,
+            values=['↑ Crescente', '↓ Decrescente'],
+            state='readonly', width=12
+        )
         self.combo_direcao_3.set('↓ Decrescente')
         self.combo_direcao_3.pack(side='left', padx=(0, 15))
 
-        # NOVO: Frame para botões de ordenação
         frame_botoes_ordenacao = ttk.Frame(frame_ordenacao)
         frame_botoes_ordenacao.pack(side='left', padx=5)
 
-        # Botão aplicar ordenação
-        ttk.Button(frame_botoes_ordenacao, text="📊 Aplicar", 
+        ttk.Button(frame_botoes_ordenacao, text="📊 Aplicar",
                 command=self.aplicar_ordenacao_e_salvar,
                 width=10).pack(side='left', padx=2)
 
-        # NOVO: Botão ordenação padrão
-        ttk.Button(frame_botoes_ordenacao, text="🔄 Padrão", 
+        ttk.Button(frame_botoes_ordenacao, text="🔄 Padrão",
                 command=self.restaurar_ordenacao_padrao,
                 width=10).pack(side='left', padx=2)
 
-        # Checkbox para destacar possíveis duplicatas
         self.var_destacar_duplicatas = tk.BooleanVar(value=False)
-        ttk.Checkbutton(frame_ordenacao, text="⚠️ Destacar possíveis duplicatas",
-                    variable=self.var_destacar_duplicatas,
-                    command=self.aplicar_ordenacao_e_salvar).pack(side='left', padx=10)
+        ttk.Checkbutton(
+            frame_ordenacao,
+            text="⚠️ Destacar possíveis duplicatas",
+            variable=self.var_destacar_duplicatas,
+            command=self.aplicar_ordenacao_e_salvar
+        ).pack(side='left', padx=10)
 
-        # NOVO: Aplicar preferências salvas aos controles
         self.aplicar_preferencias_ordenacao()
-        
-        # Frame da lista de lançamentos
+
+        # ── Treeview ──────────────────────────────────────────────────────────────
         frame_lista = ttk.Frame(main_frame)
         frame_lista.pack(fill='both', expand=True)
-        
-        # Treeview para lançamentos - MODIFICAÇÃO: Adicionar selectmode para múltipla seleção
-        colunas = ('Data', 'Tipo', 'Nome', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'ID')
-        self.tree_lancamentos = ttk.Treeview(frame_lista, columns=colunas, show='headings', 
-                                        height=20, selectmode='extended')  # CHAVE: selectmode='extended'
-        
-        # Configurar cabeçalhos (mantém igual)
+
+        colunas = ('✓', 'Data', 'Tipo', 'Nome', 'Referência', 'NF',
+                'Valor', 'Vencimento', 'Status', 'ID')
+
+        self.tree_lancamentos = ttk.Treeview(
+            frame_lista, columns=colunas, show='headings',
+            height=20, selectmode='extended'
+        )
+
+        col_config = {
+            '✓':          (28,  False, 'center'),
+            'ID':         (0,   False, 'center'),
+            'Data':       (70,  False, 'center'),
+            'Vencimento': (70,  False, 'center'),
+            'Tipo':       (35,  False, 'center'),
+            'Valor':      (100, False, 'e'),
+            'NF':         (70,  False, 'center'),
+            'Status':     (75,  False, 'center'),
+            'Nome':       (200, True,  'w'),
+            'Referência': (200, True,  'w'),
+        }
+
         for col in colunas:
+            largura, stretch, ancora = col_config.get(col, (100, True, 'w'))
             self.tree_lancamentos.heading(col, text=col)
-            if col == 'ID':
-                self.tree_lancamentos.column(col, width=0, stretch=False)
-            elif col in ['Data', 'Vencimento']:
-                self.tree_lancamentos.column(col, width=60)
-            elif col == 'Tipo':
-                self.tree_lancamentos.column(col, width=30, anchor='center')
-            elif col == 'Valor':
-                self.tree_lancamentos.column(col, width=100, anchor='e')
-            elif col in ['NF', 'Status']:
-                self.tree_lancamentos.column(col, width=70, anchor='center')
-            else:
-                self.tree_lancamentos.column(col, width=200)
-        
-        # Scrollbars (mantém igual)
-        scrolly = ttk.Scrollbar(frame_lista, orient='vertical', command=self.tree_lancamentos.yview)
-        scrollx = ttk.Scrollbar(frame_lista, orient='horizontal', command=self.tree_lancamentos.xview)
-        self.tree_lancamentos.configure(yscrollcommand=scrolly.set, xscrollcommand=scrollx.set)
-        
-        # Posicionar elementos
+            self.tree_lancamentos.column(col, width=largura, stretch=stretch, anchor=ancora)
+
+        self.tree_lancamentos.column('ID', width=0, minwidth=0, stretch=False)
+
+        scrolly = ttk.Scrollbar(frame_lista, orient='vertical',
+                                command=self.tree_lancamentos.yview)
+        scrollx = ttk.Scrollbar(frame_lista, orient='horizontal',
+                                command=self.tree_lancamentos.xview)
+        self.tree_lancamentos.configure(yscrollcommand=scrolly.set,
+                                        xscrollcommand=scrollx.set)
+
         self.tree_lancamentos.grid(row=0, column=0, sticky='nsew')
         scrolly.grid(row=0, column=1, sticky='ns')
         scrollx.grid(row=1, column=0, sticky='ew')
 
-        # Configurar peso das linhas/colunas para expansão
         frame_lista.grid_rowconfigure(0, weight=1)
         frame_lista.grid_columnconfigure(0, weight=1)
 
-        # Frame de botões - VERSÃO EXPANDIDA
+        # ── Botões e totalizadores ────────────────────────────────────────────────
+        # ATENÇÃO: frame_botoes deve ser criado ANTES de frame_selecao
         frame_botoes = ttk.Frame(main_frame)
         frame_botoes.pack(fill='x', pady=(10, 0))
-        
-        # === SELEÇÃO E INFORMAÇÕES ===
-        # Frame para informações de seleção
+
+        # --- Linha de seleção e totalizadores ------------------------------------
         frame_selecao = ttk.Frame(frame_botoes)
         frame_selecao.pack(fill='x', pady=(0, 5))
 
-        # Criar frame interno para organizar melhor
         frame_info_selecao = ttk.Frame(frame_selecao)
         frame_info_selecao.pack(side='left', fill='x', expand=True)
 
-        # Label para mostrar quantidade selecionada
-        self.label_selecao = ttk.Label(frame_info_selecao, 
-                                    text="Nenhum item selecionado", 
-                                    font=('TkDefaultFont', 9, 'italic'))
+        # Quantidade selecionada
+        self.label_selecao = ttk.Label(
+            frame_info_selecao,
+            text="Nenhum item selecionado",
+            font=('TkDefaultFont', 9, 'italic')
+        )
         self.label_selecao.pack(side='left', padx=(0, 15))
 
-        # Label para mostrar somatório
-        self.label_somatorio = ttk.Label(frame_info_selecao, 
-                                        text="", 
-                                        font=('TkDefaultFont', 10, 'bold'),
-                                        foreground='#006400')  # Verde escuro
-        self.label_somatorio.pack(side='left', padx=(0, 10))
+        # Somatório dos selecionados (verde)
+        self.label_somatorio = ttk.Label(
+            frame_info_selecao,
+            text="",
+            font=('TkDefaultFont', 10, 'bold'),
+            foreground='#006400'
+        )
+        self.label_somatorio.pack(side='left', padx=(0, 20))
 
-        # Botões de seleção
-        ttk.Button(frame_selecao, text="Selecionar Todos Visíveis", 
+        # Total de todos os visíveis (azul) ← NOVO
+        self.label_total_visiveis = ttk.Label(
+            frame_info_selecao,
+            text="",
+            font=('TkDefaultFont', 10, 'bold'),
+            foreground='#00008B'
+        )
+        self.label_total_visiveis.pack(side='left', padx=(0, 10))
+
+        ttk.Button(frame_selecao, text="Selecionar Todos Visíveis",
                 command=self.selecionar_todos_visiveis).pack(side='right', padx=2)
-        ttk.Button(frame_selecao, text="Limpar Seleção", 
+        ttk.Button(frame_selecao, text="Limpar Seleção",
                 command=self.limpar_selecao).pack(side='right', padx=2)
-        
-        # === BOTÕES DE AÇÃO PRINCIPAL ===
+
+        # --- Ações principais ----------------------------------------------------
         frame_acoes = ttk.Frame(frame_botoes)
         frame_acoes.pack(fill='x', pady=(5, 0))
-        
-        # Grupo 1: Ações individuais e em massa
-        ttk.Button(frame_acoes, text="Editar", command=self.editar_lancamento).pack(side='left', padx=5)
-        ttk.Button(frame_acoes, text="📝 Editar em Massa", 
+
+        ttk.Button(frame_acoes, text="Editar",
+                command=self.editar_lancamento).pack(side='left', padx=5)
+        ttk.Button(frame_acoes, text="📝 Editar em Massa",
                 command=self.editar_em_massa).pack(side='left', padx=5)
-        ttk.Button(frame_acoes, text="Ver Histórico", 
+        ttk.Button(frame_acoes, text="Ver Histórico",
                 command=self.visualizar_historico_lancamento).pack(side='left', padx=5)
-        
-        # Separador
+
         ttk.Separator(frame_acoes, orient='vertical').pack(side='left', fill='y', padx=10)
-        
-        # Grupo 2: Ações em lote - NOVOS BOTÕES
-        self.btn_excluir_individual = ttk.Button(frame_acoes, text="Excluir", 
-                                            command=self.excluir_lancamento)
+
+        self.btn_excluir_individual = ttk.Button(frame_acoes, text="Excluir",
+                                                command=self.excluir_lancamento)
         self.btn_excluir_individual.pack(side='left', padx=2)
-        
-        self.btn_excluir_lote = ttk.Button(frame_acoes, text="Excluir Selecionados", 
+
+        self.btn_excluir_lote = ttk.Button(frame_acoes, text="Excluir Selecionados",
                                         command=self.excluir_lote, state='disabled')
         self.btn_excluir_lote.pack(side='left', padx=2)
-        
-        self.btn_restaurar_individual = ttk.Button(frame_acoes, text="Restaurar", 
+
+        self.btn_restaurar_individual = ttk.Button(frame_acoes, text="Restaurar",
                                                 command=self.restaurar_lancamento)
         self.btn_restaurar_individual.pack(side='left', padx=2)
-        
-        self.btn_restaurar_lote = ttk.Button(frame_acoes, text="Restaurar Selecionados", 
-                                        command=self.restaurar_lote, state='disabled')
-        self.btn_restaurar_lote.pack(side='left', padx=2)
-        
-        # Separador
-        ttk.Separator(frame_acoes, orient='vertical').pack(side='left', fill='y', padx=10)
-        
-        # Grupo 3: Ações gerais
-        ttk.Button(frame_acoes, text="Atualizar", command=self.carregar_lancamentos).pack(side='left', padx=5)
-        ttk.Button(frame_acoes, text="Fechar", command=self.janela.destroy).pack(side='right', padx=5)
 
-        # Configurar tags para cores
+        self.btn_restaurar_lote = ttk.Button(frame_acoes, text="Restaurar Selecionados",
+                                            command=self.restaurar_lote, state='disabled')
+        self.btn_restaurar_lote.pack(side='left', padx=2)
+
+        ttk.Separator(frame_acoes, orient='vertical').pack(side='left', fill='y', padx=10)
+
+        ttk.Button(frame_acoes, text="Atualizar",
+                command=self.carregar_lancamentos).pack(side='left', padx=5)
+        ttk.Button(frame_acoes, text="Fechar",
+                command=self.janela.destroy).pack(side='right', padx=5)
+
+        # ── Tags de cor ───────────────────────────────────────────────────────────
         self.tree_lancamentos.tag_configure('excluido', background='#ffcccc')
         self.tree_lancamentos.tag_configure('normal', background='white')
         self.tree_lancamentos.tag_configure('selecionado', background='#e6f3ff')
         self.tree_lancamentos.tag_configure('busca_encontrada', background='#ffffcc')
-        self.tree_lancamentos.tag_configure('possivel_duplicata', background='#ffe6cc', foreground='#cc6600')
+        self.tree_lancamentos.tag_configure('possivel_duplicata',
+                                            background='#ffe6cc', foreground='#cc6600')
 
-
-        # Configurar eventos
+        # ── Bind checkbox + eventos ───────────────────────────────────────────────
+        self.tree_lancamentos.bind('<ButtonRelease-1>', self._toggle_checkbox)
         self.configurar_atalhos()
         self.configurar_eventos_selecao()
+
+    def atualizar_totalizador_visiveis(self):
+        """
+        Soma os valores de TODOS os itens visíveis no momento e
+        atualiza self.label_total_visiveis.
+
+        Chamado ao final de aplicar_filtros() e carregar_lancamentos().
+        """
+        try:
+            if not hasattr(self, 'label_total_visiveis'):
+                return
+
+            itens_visiveis = self.tree_lancamentos.get_children()
+
+            if not itens_visiveis:
+                self.label_total_visiveis.config(text="")
+                return
+
+            total = 0.0
+            for item in itens_visiveis:
+                try:
+                    # Índice 6 → coluna 'Valor' (após inserção da coluna ✓)
+                    valor_str = str(self.tree_lancamentos.item(item)['values'][6])
+                    valor_limpo = valor_str.replace('.', '').replace(',', '.')
+                    total += float(valor_limpo)
+                except (ValueError, IndexError):
+                    continue
+
+            qtd = len(itens_visiveis)
+            total_fmt = (
+                f"R$ {total:,.2f}"
+                .replace(',', 'X').replace('.', ',').replace('X', '.')
+            )
+            self.label_total_visiveis.config(
+                text=f"Total ({qtd} itens): {total_fmt}"
+            )
+
+        except Exception as e:
+            logger.debug(f"Erro ao atualizar totalizador: {e}")
+
+    def _toggle_checkbox(self, event):
+        try:
+            
+            col_id    = self.tree_lancamentos.identify_column(event.x)
+            col_index = int(col_id.replace('#', '')) - 1
+            
+            
+            if col_index != 0:
+                return
+
+            item = self.tree_lancamentos.identify_row(event.y)
+            if not item:
+                return
+
+            valores = list(self.tree_lancamentos.item(item)['values'])
+
+            if item in self._itens_marcados:
+                self._itens_marcados.discard(item)
+                valores[0] = '☐'
+            else:
+                self._itens_marcados.add(item)
+                valores[0] = '☑'
+
+            self.tree_lancamentos.item(item, values=valores)
+            
+            self.tree_lancamentos.after_idle(self._atualizar_labels_checkbox)
+
+            return 'break'
+
+        except Exception as e:
+            logger.debug(f"Erro em _toggle_checkbox: {e}")
+
+
+    def _atualizar_labels_checkbox(self):
+        try:
+            visiveis = set(self.tree_lancamentos.get_children())
+            marcados_visiveis = self._itens_marcados & visiveis
+            qtd = len(marcados_visiveis)
+
+            self.tree_lancamentos.unbind('<<TreeviewSelect>>')
+
+            if marcados_visiveis:
+                self.tree_lancamentos.selection_set(tuple(marcados_visiveis))
+            else:
+                self.tree_lancamentos.selection_remove(self.tree_lancamentos.selection())
+
+            if qtd == 0:
+                self.label_selecao.config(text="Nenhum item selecionado")
+                self.label_somatorio.config(text="")
+                self.btn_excluir_individual.config(state='disabled')
+                self.btn_excluir_lote.config(state='disabled')
+                self.btn_restaurar_individual.config(state='disabled')
+                self.btn_restaurar_lote.config(state='disabled')
+            else:
+                total = 0.0
+                for item in marcados_visiveis:
+                    try:
+                        valor_str = str(self.tree_lancamentos.item(item)['values'][6])
+                        total += float(valor_str.replace('.', '').replace(',', '.'))
+                    except (ValueError, IndexError):
+                        continue
+
+                total_fmt = (f"R$ {total:,.2f}"
+                            .replace(',', 'X').replace('.', ',').replace('X', '.'))
+
+                if qtd == 1:
+                    self.label_selecao.config(text="1 item selecionado")
+                    self.label_somatorio.config(text=f"Valor: {total_fmt}")
+                    self.btn_excluir_individual.config(state='normal')
+                    self.btn_excluir_lote.config(state='disabled')
+                    self.btn_restaurar_individual.config(state='normal')
+                    self.btn_restaurar_lote.config(state='disabled')
+                else:
+                    self.label_selecao.config(text=f"{qtd} itens selecionados")
+                    self.label_somatorio.config(text=f"Total: {total_fmt}")
+                    self.btn_excluir_individual.config(state='disabled')
+                    self.btn_excluir_lote.config(state='normal')
+                    self.btn_restaurar_individual.config(state='disabled')
+                    self.btn_restaurar_lote.config(state='normal')
+
+            # Forçar redesenho dos labels na tela
+            self.label_selecao.update_idletasks()
+            self.label_somatorio.update_idletasks()
+
+        except Exception as e:
+            logger.debug(f"Erro em _atualizar_labels_checkbox: {e}")
 
     def configurar_eventos_selecao(self):
         """Configura eventos para controle de seleção múltipla"""
         try:
-            # Evento quando seleção muda
-            def on_selection_change(event=None):
-                self.atualizar_interface_selecao()
+            # <<TreeviewSelect>> removido — o controle de seleção agora é
+            # feito por _toggle_checkbox + _atualizar_labels_checkbox
             
-            # Bind no evento de seleção
-            self.tree_lancamentos.bind('<<TreeviewSelect>>', on_selection_change)
-            
-            # Evento de clique com Ctrl para seleção múltipla
+            # Ctrl+Click e Shift+Click: atualizar após o Treeview processar
             def on_ctrl_click(event):
-                # O Treeview já gerencia Ctrl+Click automaticamente com selectmode='extended'
+                self.tree_lancamentos.after_idle(self.atualizar_interface_selecao)
+            
+            def on_shift_click(event):
                 self.tree_lancamentos.after_idle(self.atualizar_interface_selecao)
             
             self.tree_lancamentos.bind('<Control-Button-1>', on_ctrl_click)
-            
-            # Evento de clique com Shift para seleção em intervalo
-            def on_shift_click(event):
-                # O Treeview já gerencia Shift+Click automaticamente com selectmode='extended'
-                self.tree_lancamentos.after_idle(self.atualizar_interface_selecao)
-            
             self.tree_lancamentos.bind('<Shift-Button-1>', on_shift_click)
             
             logger.debug("DEBUG: Eventos de seleção configurados")
@@ -17873,82 +18010,76 @@ class GerenciadorLancamentos:
     def atualizar_interface_selecao(self):
         """Atualiza a interface baseada na seleção atual"""
         try:
-            items_selecionados = self.tree_lancamentos.selection()
-            qtd_selecionados = len(items_selecionados)
-            
-            # Atualizar label de seleção
-            if qtd_selecionados == 0:
-                self.label_selecao.config(text="Nenhum item selecionado")
-                # NOVO: Limpar somatório
-                self.label_somatorio.config(text="")
-            elif qtd_selecionados == 1:
-                self.label_selecao.config(text="1 item selecionado")
-                # NOVO: Calcular e exibir somatório
-                total = self.calcular_somatorio_selecionados()
-                self.label_somatorio.config(
-                    text=f"Valor: R$ {total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                )
+            # Se há itens marcados via checkbox, deixar _atualizar_labels_checkbox
+            # ser o responsável pelos labels — evita sobrescrita
+            if hasattr(self, '_itens_marcados') and self._itens_marcados:
+                # Apenas atualizar estado dos botões
+                qtd = len(self._itens_marcados & set(self.tree_lancamentos.get_children()))
             else:
-                self.label_selecao.config(text=f"{qtd_selecionados} itens selecionados")
-                # NOVO: Calcular e exibir somatório
-                total = self.calcular_somatorio_selecionados()
-                self.label_somatorio.config(
-                    text=f"Total: R$ {total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                )
-            
-            # Controlar estado dos botões (mantém igual)
-            if qtd_selecionados == 0:
+                qtd = len(self.tree_lancamentos.selection())
+
+            if qtd == 0:
+                self.label_selecao.config(text="Nenhum item selecionado")
+                self.label_somatorio.config(text="")
                 self.btn_excluir_individual.config(state='disabled')
                 self.btn_excluir_lote.config(state='disabled')
                 self.btn_restaurar_individual.config(state='disabled')
                 self.btn_restaurar_lote.config(state='disabled')
-                
-            elif qtd_selecionados == 1:
+
+            elif qtd == 1:
                 self.btn_excluir_individual.config(state='normal')
                 self.btn_excluir_lote.config(state='disabled')
                 self.btn_restaurar_individual.config(state='normal')
                 self.btn_restaurar_lote.config(state='disabled')
-                
+
             else:
                 self.btn_excluir_individual.config(state='disabled')
                 self.btn_excluir_lote.config(state='normal')
                 self.btn_restaurar_individual.config(state='disabled')
                 self.btn_restaurar_lote.config(state='normal')
-            
+
         except Exception as e:
             logger.debug(f"Erro ao atualizar interface de seleção: {str(e)}")
 
-    def selecionar_todos_visiveis(self):
-        """Seleciona todos os itens visíveis na lista"""
+    def limpar_selecao(self):
         try:
-            # Obter todos os itens filhos visíveis
+            self._itens_marcados.clear()
+            self.tree_lancamentos.selection_remove(self.tree_lancamentos.selection())
+
+            for item in self.tree_lancamentos.get_children():
+                v = list(self.tree_lancamentos.item(item)['values'])
+                v[0] = '☐'
+                self.tree_lancamentos.item(item, values=v)
+
+            self.atualizar_interface_selecao()
+            logger.debug("DEBUG: Seleção limpa")
+
+        except Exception as e:
+            logger.debug(f"Erro ao limpar seleção: {str(e)}")
+
+
+    def selecionar_todos_visiveis(self):
+        try:
             items_visiveis = self.tree_lancamentos.get_children()
-            
+
             if not items_visiveis:
                 custom_messagebox("info", "Seleção", "Nenhum item visível para selecionar")
                 return
-            
-            # Selecionar todos os itens visíveis
+
+            self._itens_marcados = set(items_visiveis)
             self.tree_lancamentos.selection_set(items_visiveis)
-            
-            # Atualizar interface
-            self.atualizar_interface_selecao()
-            
+
+            for item in items_visiveis:
+                v = list(self.tree_lancamentos.item(item)['values'])
+                v[0] = '☑'
+                self.tree_lancamentos.item(item, values=v)
+
+            self._atualizar_labels_checkbox()
             logger.debug(f"DEBUG: Selecionados {len(items_visiveis)} itens visíveis")
-            
+
         except Exception as e:
             logger.debug(f"Erro ao selecionar todos os itens: {str(e)}")
             custom_messagebox("error", "Erro", f"Erro ao selecionar itens: {str(e)}")
-
-    def limpar_selecao(self):
-        """Limpa a seleção atual"""
-        try:
-            self.tree_lancamentos.selection_remove(self.tree_lancamentos.selection())
-            self.atualizar_interface_selecao()
-            logger.debug("DEBUG: Seleção limpa")
-            
-        except Exception as e:
-            logger.debug(f"Erro ao limpar seleção: {str(e)}")
 
     def obter_dados_selecionados(self):
         """Obtém dados dos itens selecionados para processamento"""
@@ -17966,15 +18097,15 @@ class GerenciadorLancamentos:
                 # Extrair informações principais
                 dados_item = {
                     'item_id': item,  # ID do item no Treeview
-                    'data': valores[0],
-                    'tp_desp': valores[1],
-                    'nome': valores[2],
-                    'referencia': valores[3],
-                    'nf': valores[4],
-                    'valor': valores[5],
-                    'vencimento': valores[6],
-                    'status': valores[7],
-                    'id_lancamento': valores[8]
+                    'data': valores[1],
+                    'tp_desp': valores[2],
+                    'nome': valores[3],
+                    'referencia': valores[4],
+                    'nf': valores[5],
+                    'valor': valores[6],
+                    'vencimento': valores[7],
+                    'status': valores[8],
+                    'id_lancamento': valores[9]
                 }
                 
                 dados_selecionados.append(dados_item)
@@ -18004,11 +18135,11 @@ class GerenciadorLancamentos:
                 try:
                     valores = self.tree_lancamentos.item(item)['values']
                     
-                    if len(valores) < 6:
+                    if len(valores) < 7:
                         continue
                     
-                    # O valor está na 6ª coluna (índice 5)
-                    valor_str = str(valores[5])
+                    # O valor está na 7ª coluna (índice 6)
+                    valor_str = str(valores[6])
                     
                     # Converter valor brasileiro para float
                     # Remove pontos de milhar e substitui vírgula por ponto
@@ -18460,61 +18591,52 @@ class GerenciadorLancamentos:
             return str(tp_desp)
 
     def inicializar_datas_padrao(self):
-        """Inicializa as datas padrão dos filtros baseado no sistema (dias 5 e 20)"""
-        data_inicio_padrao = None
-        data_fim_padrao = None
+        """
+        Define o intervalo de datas como a QUINZENA ATUAL.
 
+        Quinzena do relatório do dia 20:  06/MM  →  20/MM
+        Quinzena do relatório do dia 5:   21/MM  →  05/(MM+1)
+        """
         try:
-            from datetime import datetime, timedelta
-            from calendar import monthrange
-            
-            # Data de hoje
-            hoje = datetime.now().date()
-            dia_atual = hoje.day
-            mes_atual = hoje.month
-            ano_atual = hoje.year
-            
-            # LÓGICA DO SISTEMA: Data fim baseada nos dias 5 e 20
-            if dia_atual <= 5:
-                # Do dia 1 ao 5: data fim = dia 5 do mês atual
-                data_fim_padrao = hoje.replace(day=5)
-            elif dia_atual <= 20:
-                # Do dia 6 ao 20: data fim = dia 20 do mês atual
-                data_fim_padrao = hoje.replace(day=20)
-            else:
-                # Do dia 21 em diante: data fim = dia 5 do próximo mês
-                if mes_atual == 12:
-                    # Se dezembro, vai para janeiro do próximo ano
-                    data_fim_padrao = datetime(ano_atual + 1, 1, 5).date()
-                else:
-                    # Senão, próximo mês do mesmo ano
-                    data_fim_padrao = datetime(ano_atual, mes_atual + 1, 5).date()
-            
-            # Data de início: 30 dias antes da data fim (mais lógico para o sistema)
-            data_inicio_padrao = data_fim_padrao - timedelta(days=30)
+            hoje      = datetime.now().date()
+            dia       = hoje.day
+            mes       = hoje.month
+            ano       = hoje.year
 
-            # Verificar se os widgets existem antes de definir as datas
-            if hasattr(self, 'data_inicio') and self.data_inicio and data_inicio_padrao:
+            if 6 <= dia <= 20:
+                # ── Quinzena "20": do dia 6 ao dia 20 do mês atual
+                data_inicio_padrao = hoje.replace(day=6)
+                data_fim_padrao    = hoje.replace(day=20)
+            else:
+                # ── Quinzena "5": do dia 21 do mês atual ao dia 5 do próximo mês
+                data_inicio_padrao = hoje.replace(day=21)
+
+                if mes == 12:
+                    data_fim_padrao = datetime(ano + 1, 1, 5).date()
+                else:
+                    data_fim_padrao = datetime(ano, mes + 1, 5).date()
+
+                # Caso hoje seja entre 1–5: a quinzena "5" pertence ao mês anterior
+                if dia <= 5:
+                    # Ex.: hoje = 03/07 → quinzena = 21/06 a 05/07
+                    if mes == 1:
+                        data_inicio_padrao = datetime(ano - 1, 12, 21).date()
+                    else:
+                        data_inicio_padrao = datetime(ano, mes - 1, 21).date()
+                    data_fim_padrao = hoje.replace(day=5)
+
+            if hasattr(self, 'data_inicio') and self.data_inicio:
                 self.data_inicio.set_date(data_inicio_padrao)
-            
-            if hasattr(self, 'data_fim') and self.data_fim and data_fim_padrao:
+            if hasattr(self, 'data_fim') and self.data_fim:
                 self.data_fim.set_date(data_fim_padrao)
-            
-            logger.debug(f"DEBUG: Datas padrão definidas - Início: {data_inicio_padrao}, Fim: {data_fim_padrao}")
-            
-            # Definir as datas nos controles
-            self.data_inicio.set_date(data_inicio_padrao)
-            self.data_fim.set_date(data_fim_padrao)
-            
-            logger.debug(f"DEBUG: Datas padrão definidas (sistema dias 5/20):")
-            logger.debug(f"       Hoje: {hoje} (dia {dia_atual})")
-            logger.debug(f"       Data início: {data_inicio_padrao}")
-            logger.debug(f"       Data fim: {data_fim_padrao}")
-            
+
+            logger.debug(
+                f"DEBUG: Quinzena atual → início {data_inicio_padrao}, fim {data_fim_padrao}"
+            )
+
         except Exception as e:
-            logger.debug(f"DEBUG: Erro ao inicializar datas padrão: {str(e)}")
-            import traceback
-            traceback.logger.debug_exc()
+            logger.debug(f"DEBUG: Erro ao inicializar datas padrão: {e}")
+
 
     def obter_ordenacao_padrao(self):
         """
@@ -18731,6 +18853,12 @@ class GerenciadorLancamentos:
                 status = row.get('STATUS', 'ATIVO')
                 if status == '' or pd.isna(status):
                     status = 'ATIVO'
+
+                # Ignorar linhas completamente vazias (sem data e sem nome)
+                nome_vazio = not str(row.get('NOME', '')).strip() or pd.isna(row.get('NOME', ''))
+                data_vazia = not str(row.get('DATA_REL', '')).strip() or pd.isna(row.get('DATA_REL', ''))
+                if nome_vazio and data_vazia:
+                    continue
                 
                 # Determinar tag
                 tags = []
@@ -18750,14 +18878,14 @@ class GerenciadorLancamentos:
                 valor = self.formatar_valor(row['VALOR'])
                 tp_desp = self.formatar_tipo_despesa(row['TP_DESP'])
                 
-                valores_tree = (data_rel, tp_desp, row['NOME'], 
+                valores_tree = ('☐', data_rel, tp_desp, row['NOME'], 
                             row['REFERÊNCIA'], row['NF'], valor, data_vencto, status, id_lancamento)
                 
                 # Inserir item
                 item_id = self.tree_lancamentos.insert('', 'end', 
                     values=valores_tree,
                     tags=tuple(tags))
-                
+            
                 # Adicionar à lista de todos os itens
                 self.todos_itens_tree.append(item_id)
             
@@ -18768,6 +18896,7 @@ class GerenciadorLancamentos:
             
             # Aplicar filtros padrão
             self.aplicar_filtros()
+            self.atualizar_totalizador_visiveis()
             
             logger.debug(f"Carregamento concluído")
             
@@ -19023,19 +19152,18 @@ class GerenciadorLancamentos:
         if not termo_busca_normalizado:
             return True
         
-        # Colunas: ('Data', 'Tipo', 'Nome', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'ID')
-        #           0       1       2       3            4      5        6             7         8
+        # Colunas: ✓=0 Data=1 Tipo=2 Nome=3 Ref=4 NF=5 Valor=6 Venc=7 Status=8 ID=9
         
         try:
             # Buscar em: Nome (2), Referência (3), NF (4)
             campos_busca = [
                 str(item_valores[2]),  # Nome
                 str(item_valores[3]),  # Referência
-                str(item_valores[4]),  # NF
+                str(item_valores[5]),  # NF
             ]
             
             # Adicionar observação se disponível (precisa buscar nos dados originais)
-            id_lancamento = item_valores[8]
+            id_lancamento = item_valores[9]
             if hasattr(self, 'dados_originais') and not self.dados_originais.empty:
                 mask = self.dados_originais['ID_LANCAMENTO'] == id_lancamento
                 dados = self.dados_originais[mask]
@@ -19146,11 +19274,11 @@ class GerenciadorLancamentos:
                         # Item não existe mais
                         continue
                     
-                    if len(valores) < 8:
+                    if len(valores) < 9:
                         continue
                     
-                    data_rel_str = valores[0]
-                    status_item = valores[7]
+                    data_rel_str = valores[1]
+                    status_item = valores[8]
                     
                     # Determinar se item deve ser mostrado
                     mostrar = True
@@ -19252,6 +19380,8 @@ class GerenciadorLancamentos:
                         foreground='gray'
                     )
             
+            self.atualizar_totalizador_visiveis()
+
             # Log resumido do resultado
             logger.debug(f"Filtros aplicados - {itens_visiveis} visíveis, "
                         f"{itens_ocultos} ocultos, {itens_encontrados_busca} encontrados na busca")
@@ -19477,7 +19607,7 @@ class GerenciadorLancamentos:
                 custom_messagebox("error", "Erro", "Dados insuficientes no lançamento selecionado")
                 return
                 
-            id_lancamento = valores[8]  # ID do lançamento (9ª coluna, índice 8)
+            id_lancamento = valores[9]  # ID do lançamento (10ª coluna, índice 9)
             
             # Verificar se o ID é válido
             if not id_lancamento or pd.isna(id_lancamento):
@@ -19568,7 +19698,7 @@ class GerenciadorLancamentos:
                     logger.debug(f"DEBUG: Item com dados insuficientes: {valores}")
                     continue
                 
-                id_lancamento = valores[8]
+                id_lancamento = valores[9]
                 
                 # Validação: Verificar se o ID existe
                 mask = self.dados_originais['ID_LANCAMENTO'] == id_lancamento
@@ -19670,13 +19800,13 @@ class GerenciadorLancamentos:
             return
         
         valores = self.tree_lancamentos.item(item_selecionado[0])['values']
-        tp_desp = valores[1]         # Tipo de despesa
-        nome_lancamento = valores[2]  # Nome
-        referencia = valores[3]      # Referência
-        valor = valores[5]           # Valor
-        data_lancamento = valores[0] # Data
-        status_atual = valores[7]    # Status
-        id_lancamento = valores[8]   # ID
+        tp_desp = valores[2]         # Tipo de despesa
+        nome_lancamento = valores[3]  # Nome
+        referencia = valores[4]      # Referência
+        valor = valores[6]           # Valor
+        data_lancamento = valores[1] # Data
+        status_atual = valores[8]    # Status
+        id_lancamento = valores[9]   # ID
         
         # Verificar se já está excluído
         if status_atual == 'EXCLUIDO':
@@ -19766,13 +19896,13 @@ class GerenciadorLancamentos:
             return
         
         valores = self.tree_lancamentos.item(item_selecionado[0])['values']
-        tp_desp = valores[1]         # Tipo de despesa
-        nome_lancamento = valores[2]  # Nome
-        referencia = valores[3]      # Referência
-        valor = valores[5]           # Valor
-        data_lancamento = valores[0] # Data
-        status_atual = valores[7]    # Status
-        id_lancamento = valores[8]   # ID
+        tp_desp = valores[2]         # Tipo de despesa
+        nome_lancamento = valores[3]  # Nome
+        referencia = valores[4]      # Referência
+        valor = valores[6]           # Valor
+        data_lancamento = valores[1] # Data
+        status_atual = valores[8]    # Status
+        id_lancamento = valores[9]   # ID
         
         # Verificar se já está ativo
         if status_atual != 'EXCLUIDO':
@@ -19866,9 +19996,9 @@ class GerenciadorLancamentos:
             item = selected_items[0]
             valores = self.tree_lancamentos.item(item, 'values')
             
-            # CORREÇÃO: O ID está na última posição (índice 8)
-            # Colunas: ('Data', 'Tipo', 'Nome', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'ID')
-            id_lancamento = valores[8]  # ID é o último elemento
+            # CORREÇÃO: O ID está na última posição (índice 9)
+            # Colunas: (✓, 'Data', 'Tipo', 'Nome', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'ID')
+            id_lancamento = valores[9]  # ID é o último elemento
             
             logger.debug(f"DEBUG: Buscando histórico para ID: {id_lancamento} (tipo: {type(id_lancamento)})")
             
