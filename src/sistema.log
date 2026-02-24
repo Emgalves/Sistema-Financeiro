@@ -11448,3 +11448,9 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-02-24 16:13:06,147 - INFO - Abrindo gestão de medições
 2026-02-24 16:19:23,328 - INFO - Abrindo gestão de medições
 2026-02-24 16:25:58,188 - INFO - Sistema encerrado pelo usuário
+2026-02-24 16:40:05,259 - INFO - Configurações importadas com sucesso via src.config
+2026-02-24 16:40:05,282 - INFO - Configurações importadas com sucesso
+2026-02-24 16:40:05,282 - INFO - Configurações do sistema importadas com sucesso
+2026-02-24 16:40:06,184 - INFO - Sistema iniciado em modo: TESTE
+2026-02-24 16:40:08,406 - INFO - Abrindo gestão de medições
+2026-02-24 17:10:00,813 - INFO - Sistema encerrado pelo usuário
