@@ -10,11 +10,12 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 7,
-    "patch": 0,
-    "release_date": "20/02/2026",
+    "patch": 1,
+    "release_date": "24/02/2026",
     "changes": [
-        "Reorganizada toda a lógica da Gestão de Empreiteiros",
-        "Redesenhado o Relatório Quinzenal de Medições para o modelo do cliente"        
+        "Inclusão de checkbox no Gerenciador de lançamentos para somar selecionados",
+        "Filtro de data do Gerenciador de Lançamentos traz a quinzena atual por padrão"
+        "Correção da aba Contratos da Gestão de Medições para carregar todos os contratos, independente do fornecedor"        
     ]
 }
 
