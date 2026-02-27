@@ -11454,3 +11454,112 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-02-24 16:40:06,184 - INFO - Sistema iniciado em modo: TESTE
 2026-02-24 16:40:08,406 - INFO - Abrindo gestão de medições
 2026-02-24 17:10:00,813 - INFO - Sistema encerrado pelo usuário
+2026-02-27 14:21:57,187 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 14:21:57,218 - INFO - Configurações importadas com sucesso
+2026-02-27 14:21:57,220 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 14:21:57,991 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 14:22:46,849 - INFO - Abrindo gestão de medições
+2026-02-27 14:25:02,138 - INFO - Sistema encerrado pelo usuário
+2026-02-27 14:28:22,433 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 14:28:22,457 - INFO - Configurações importadas com sucesso
+2026-02-27 14:28:22,458 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 14:28:23,262 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 14:28:28,654 - INFO - Abrindo gestão de medições
+2026-02-27 14:32:07,418 - INFO - Sistema encerrado pelo usuário
+2026-02-27 14:37:59,006 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 14:37:59,072 - INFO - Configurações importadas com sucesso
+2026-02-27 14:37:59,073 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 14:37:59,685 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 14:39:18,880 - INFO - Abrindo gestão de medições
+2026-02-27 14:42:17,519 - INFO - Abrindo gestão de medições
+2026-02-27 14:43:09,470 - INFO - Abrindo sistema de entrada de dados
+2026-02-27 14:43:10,284 - INFO - Proteções contra perda de dados configuradas
+2026-02-27 14:43:10,521 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-02-27 14:43:12,510 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-02-27 14:43:44,557 - INFO - ✅ Lançamento ID 221 inserido na linha 220
+2026-02-27 14:43:44,878 - INFO - ✅ Arquivo salvo
+2026-02-27 14:44:12,574 - INFO - ✅ Lançamento ID 222 inserido na linha 221
+2026-02-27 14:44:12,946 - INFO - ✅ Arquivo salvo
+2026-02-27 14:44:13,515 - INFO - ✅ Arquivo salvo com sucesso
+2026-02-27 14:44:27,120 - INFO - ✅ Lançamento ID 223 inserido na linha 222
+2026-02-27 14:44:27,465 - INFO - ✅ Arquivo salvo
+2026-02-27 14:44:28,025 - INFO - ✅ Arquivo salvo com sucesso
+2026-02-27 14:44:41,962 - INFO - ✅ Lançamento ID 224 inserido na linha 223
+2026-02-27 14:44:42,280 - INFO - ✅ Arquivo salvo
+2026-02-27 14:44:42,831 - INFO - ✅ Arquivo salvo com sucesso
+2026-02-27 14:44:57,738 - INFO - ✅ Lançamento ID 225 inserido na linha 224
+2026-02-27 14:44:58,051 - INFO - ✅ Arquivo salvo
+2026-02-27 14:45:05,093 - INFO - Voltando ao menu principal
+2026-02-27 14:45:05,185 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-02-27 14:45:05,249 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-02-27 14:45:05,478 - INFO - ✅ Menu principal restaurado com sucesso
+2026-02-27 14:45:06,461 - INFO - Abrindo gestão de medições
+2026-02-27 14:59:30,768 - INFO - Sistema encerrado pelo usuário
+2026-02-27 14:59:54,285 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 14:59:54,354 - INFO - Configurações importadas com sucesso
+2026-02-27 14:59:54,354 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 14:59:54,923 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 14:59:57,502 - INFO - Abrindo sistema de entrada de dados
+2026-02-27 14:59:59,493 - INFO - Proteções contra perda de dados configuradas
+2026-02-27 14:59:59,768 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-02-27 15:00:02,270 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-02-27 15:00:18,688 - INFO - ✅ Lançamento ID 226 inserido na linha 225
+2026-02-27 15:00:19,173 - INFO - ✅ Arquivo salvo
+2026-02-27 15:00:19,731 - INFO - ✅ Arquivo salvo com sucesso
+2026-02-27 15:01:47,509 - INFO - Voltando ao menu principal
+2026-02-27 15:01:47,605 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-02-27 15:01:47,623 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-02-27 15:01:47,832 - INFO - ✅ Menu principal restaurado com sucesso
+2026-02-27 15:01:52,091 - INFO - Sistema encerrado pelo usuário
+2026-02-27 15:02:01,725 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 15:02:01,746 - INFO - Configurações importadas com sucesso
+2026-02-27 15:02:01,750 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 15:02:02,297 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 15:02:04,277 - INFO - Abrindo gestão de medições
+2026-02-27 15:08:17,752 - INFO - Sistema encerrado pelo usuário
+2026-02-27 15:12:22,100 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 15:12:22,202 - INFO - Configurações importadas com sucesso
+2026-02-27 15:12:22,203 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 15:12:22,979 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 15:12:25,191 - INFO - Abrindo gestão de medições
+2026-02-27 15:23:05,122 - INFO - Abrindo gestão de medições
+2026-02-27 15:25:44,075 - INFO - Sistema encerrado pelo usuário
+2026-02-27 15:26:43,268 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 15:26:43,308 - INFO - Configurações importadas com sucesso
+2026-02-27 15:26:43,311 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 15:26:44,633 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 15:26:46,176 - INFO - Abrindo gestão de medições
+2026-02-27 15:32:41,975 - INFO - Sistema encerrado pelo usuário
+2026-02-27 15:33:08,838 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 15:33:08,903 - INFO - Configurações importadas com sucesso
+2026-02-27 15:33:08,995 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 15:33:09,669 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 15:45:52,998 - INFO - Abrindo gestão de medições
+2026-02-27 15:45:53,848 - ERROR - Erro ao abrir gestão de medições: cannot access local variable 'frame_botoes' where it is not associated with a value
+2026-02-27 15:46:20,702 - INFO - Abrindo gestão de medições
+2026-02-27 15:46:20,849 - ERROR - Erro ao abrir gestão de medições: cannot access local variable 'frame_botoes' where it is not associated with a value
+2026-02-27 15:46:41,389 - INFO - Sistema encerrado pelo usuário
+2026-02-27 16:57:23,291 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 16:57:23,330 - INFO - Configurações importadas com sucesso
+2026-02-27 16:57:23,331 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 16:57:24,838 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 16:57:26,626 - INFO - Abrindo gestão de medições
+2026-02-27 16:57:39,707 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 16:57:39,767 - INFO - Configurações importadas com sucesso
+2026-02-27 16:57:39,824 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 16:57:41,934 - INFO - Proteções contra perda de dados configuradas
+2026-02-27 17:04:34,346 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 17:04:34,372 - INFO - Configurações importadas com sucesso
+2026-02-27 17:04:34,373 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 17:04:34,994 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 17:04:36,911 - INFO - Abrindo gestão de medições
+2026-02-27 17:17:36,495 - INFO - Sistema encerrado pelo usuário
+2026-02-27 17:18:47,931 - INFO - Configurações importadas com sucesso via src.config
+2026-02-27 17:18:47,954 - INFO - Configurações importadas com sucesso
+2026-02-27 17:18:47,955 - INFO - Configurações do sistema importadas com sucesso
+2026-02-27 17:18:48,717 - INFO - Sistema iniciado em modo: TESTE
+2026-02-27 17:18:57,872 - INFO - Abrindo gestão de medições
+2026-02-27 17:19:06,608 - INFO - Proteções contra perda de dados configuradas
+2026-02-27 17:19:43,550 - INFO - Abrindo sistema de entrada de dados
+2026-02-27 17:19:44,387 - INFO - Proteções contra perda de dados configuradas
+2026-02-27 17:19:44,540 - INFO - ✅ Sistema de Entrada de Dados aberto
