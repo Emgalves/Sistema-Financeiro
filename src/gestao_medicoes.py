@@ -452,6 +452,8 @@ class GestaoMedicoes:
                 command=self.buscar_fornecedor_aba).pack(side='left', padx=2)
         ttk.Button(busca_inner, text="↻ Todos",
                 command=self.listar_todos_fornecedores_aba).pack(side='left', padx=2)
+        ttk.Button(busca_inner, text="➕ Novo Fornecedor",
+                command=self.novo_fornecedor).pack(side='left', padx=2)
 
         # Listbox de resultados
         listbox_frame = ttk.Frame(frame_busca)
@@ -1968,14 +1970,49 @@ class GestaoMedicoes:
     def novo_fornecedor(self):
         """Abre janela para cadastro de novo fornecedor"""
         try:
-            # Importar funcionalidade de cadastro de fornecedor
-            from Sistema_Entrada_Dados import SistemaEntradaDados
-            
+            from src.Sistema_Entrada_Dados import SistemaEntradaDados
+
+            # Criar instância apontando para a janela atual como root
             sistema = SistemaEntradaDados(self.root)
-            sistema.novo_fornecedor()
-            
+
+            # Criar a janela do formulário diretamente no contexto do sistema
+            sistema.janela_fornecedor = tk.Toplevel(self.root)
+            sistema.janela_fornecedor.title("Novo Fornecedor")
+            sistema.janela_fornecedor.geometry("800x750")
+            sistema.janela_fornecedor.transient(self.root)
+            sistema.janela_fornecedor.grab_set()
+
+            # Centralizar
+            sistema.janela_fornecedor.update_idletasks()
+            largura, altura = 800, 750
+            pos_x = (sistema.janela_fornecedor.winfo_screenwidth() // 2) - (largura // 2)
+            pos_y = (sistema.janela_fornecedor.winfo_screenheight() // 2) - (altura // 2)
+            sistema.janela_fornecedor.geometry(f"{largura}x{altura}+{pos_x}+{pos_y}")
+            sistema.janela_fornecedor.lift()
+            sistema.janela_fornecedor.focus_force()
+            sistema.janela_fornecedor.attributes('-topmost', True)
+            sistema.janela_fornecedor.after(
+                500, lambda: sistema.janela_fornecedor.attributes('-topmost', False)
+            )
+
+            # Abrir o formulário diretamente
+            sistema.setup_formulario_fornecedor()
+
+            # Ao fechar, atualizar a lista de fornecedores na aba atual
+            sistema.janela_fornecedor.protocol(
+                "WM_DELETE_WINDOW",
+                lambda: [sistema.janela_fornecedor.destroy(),
+                        self.listar_todos_fornecedores_aba()]
+            )
+
         except ImportError:
-            messagebox.showerror("Erro", "Módulo de cadastro de fornecedor não encontrado", parent=self.root)
+            messagebox.showerror(
+                "Erro", "Módulo de cadastro de fornecedor não encontrado", parent=self.root
+            )
+        except Exception as e:
+            messagebox.showerror(
+                "Erro", f"Erro ao abrir cadastro de fornecedor:\n{str(e)}", parent=self.root
+            )
             
     def salvar_contrato(self, janela, cnpj, nome, descricao, data_inicio, data_final, valor_global, observacoes):
         """Salva um novo contrato"""
@@ -4308,7 +4345,7 @@ class GestaoMedicoes:
                 return
                 
             # Calcular data de relatório
-            data_pagamento = dados_medicao['data_pagamento']
+            data_pagamento = dados_medicao['data_medicao']
             dt_vencto = data_pagamento
             
             # Estimar data para relatório

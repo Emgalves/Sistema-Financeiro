@@ -1000,9 +1000,96 @@ class RelatorioContratos:
                 ws_contrato.column_dimensions['D'].width = 40
                 ws_contrato.column_dimensions['E'].width = 15
                 ws_contrato.column_dimensions['F'].width = 12
-            
-            # Salvar o arquivo
-            wb.save(arquivo)
+
+            from openpyxl.worksheet.datavalidation import DataValidation
+
+            # ── Coletar fornecedores únicos já presentes no Resumo Contratos ──────────
+            # A coluna B do Resumo (a partir da linha 10) contém o nome do fornecedor
+            fornecedores_unicos = []
+            for row in ws_resumo.iter_rows(min_row=10, max_col=2, values_only=True):
+                nome = row[1]  # coluna B
+                if nome and str(nome).strip() and str(nome).strip() not in fornecedores_unicos:
+                    fornecedores_unicos.append(str(nome).strip())
+
+            # ── Criar aba de serviços adicionais ─────────────────────────────────────
+            ws_adicional = wb.create_sheet('Servicos_Adicionais')
+
+            ws_adicional['A1'] = "SERVIÇOS ADICIONAIS — Preencher quando o serviço não tem contrato"
+            ws_adicional['A1'].font = Font(size=12, bold=True, color="FF0000")
+            ws_adicional.merge_cells('A1:G1')
+
+            ws_adicional['A2'] = "ATENÇÃO: Selecione o fornecedor na lista suspensa da coluna A."
+            ws_adicional.merge_cells('A2:G2')
+
+            cabecalhos_adic = [
+                'Fornecedor',
+                'Descrição Serviço',
+                'Data Medição',
+                'Data Pagamento',
+                'Referência',
+                'Valor (R$)',
+                'Observação'
+            ]
+            for col, texto in enumerate(cabecalhos_adic, 1):
+                celula = ws_adicional.cell(row=4, column=col, value=texto)
+                celula.font = cabecalho_font
+                celula.fill = PatternFill(start_color='FFE699', end_color='FFE699', fill_type='solid')
+                celula.border = borda
+                celula.alignment = Alignment(horizontal='center')
+
+            # ── Data validation: lista suspensa na coluna A (linhas 5 a 14) ──────────
+            if fornecedores_unicos:
+                # O openpyxl aceita listas inline no formato "\"A\",\"B\",\"C\""
+                # Limite prático do Excel para fórmula inline: ~255 caracteres.
+                # Se ultrapassar, a solução é gravar a lista em uma aba oculta e
+                # referenciar o intervalo. Fazemos isso automaticamente abaixo.
+
+                lista_inline = ','.join(f'"{n}"' for n in fornecedores_unicos)
+
+                if len(lista_inline) <= 255:
+                    # Cabe inline — forma mais simples
+                    dv = DataValidation(
+                        type="list",
+                        formula1=f'"{",".join(fornecedores_unicos)}"',
+                        allow_blank=True,
+                        showDropDown=False   # False = mostra a setinha no Excel
+                    )
+                    dv.sqref = "A5:A14"
+                    ws_adicional.add_data_validation(dv)
+                else:
+                    # Não cabe inline — gravar em aba oculta e referenciar intervalo
+                    ws_listas = wb.create_sheet('_Listas')   # prefixo _ = convenção "auxiliar"
+                    ws_listas.sheet_state = 'hidden'         # oculta no Excel
+
+                    for i, nome in enumerate(fornecedores_unicos, start=1):
+                        ws_listas.cell(row=i, column=1, value=nome)
+
+                    ultima_linha = len(fornecedores_unicos)
+                    formula_ref = f"_Listas!$A$1:$A${ultima_linha}"
+
+                    dv = DataValidation(
+                        type="list",
+                        formula1=formula_ref,
+                        allow_blank=True,
+                        showDropDown=False
+                    )
+                    dv.sqref = "A5:A14"
+                    ws_adicional.add_data_validation(dv)
+
+            # ── Linhas em branco formatadas para preenchimento ───────────────────────
+            for linha in range(5, 15):
+                for col in range(1, 8):
+                    celula = ws_adicional.cell(row=linha, column=col, value=None)
+                    celula.border = borda
+
+            # ── Larguras das colunas ─────────────────────────────────────────────────
+            ws_adicional.column_dimensions['A'].width = 30
+            ws_adicional.column_dimensions['B'].width = 45
+            ws_adicional.column_dimensions['C'].width = 15
+            ws_adicional.column_dimensions['D'].width = 15
+            ws_adicional.column_dimensions['E'].width = 30
+            ws_adicional.column_dimensions['F'].width = 15
+            ws_adicional.column_dimensions['G'].width = 35     
             
             # MODIFICADO: Mensagem mais informativa
             filtro_info = f"\n\nFiltro aplicado: {self.filtro_status.get()}"
@@ -1011,6 +1098,9 @@ class RelatorioContratos:
                 "Sucesso", 
                 f"Relatório exportado com sucesso!{filtro_info}\n{qtd_contratos} contrato(s) exportado(s).\n\nArquivo:\n{arquivo}"
             )
+            
+            # Salvar o arquivo
+            wb.save(arquivo)
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao exportar para Excel: {str(e)}")

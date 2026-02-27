@@ -385,6 +385,161 @@ class ImportadorMedicoes:
         
         return medicoes, erros
     
+    def processar_servicos_adicionais(self, arquivo, arquivo_cliente):
+        medicoes_adic = []
+        erros = []
+
+        try:
+            # ── ETAPA 1: Ler a aba do relatório e fechar imediatamente ──────
+            linhas_adicionais = []
+
+            wb_rel = openpyxl.load_workbook(arquivo, read_only=True, data_only=True)
+
+            if 'Servicos_Adicionais' not in wb_rel.sheetnames:
+                wb_rel.close()
+                return medicoes_adic, erros
+
+            sheet = wb_rel['Servicos_Adicionais']
+
+            for linha in range(5, sheet.max_row + 1):
+                fornecedor = sheet.cell(row=linha, column=1).value
+                descricao  = sheet.cell(row=linha, column=2).value
+                dt_med     = sheet.cell(row=linha, column=3).value
+                dt_pag     = sheet.cell(row=linha, column=4).value
+                referencia = sheet.cell(row=linha, column=5).value
+                valor      = sheet.cell(row=linha, column=6).value
+                observacao = sheet.cell(row=linha, column=7).value
+
+                # Linha vazia = fim
+                if not fornecedor and not descricao and not valor:
+                    break
+
+                linhas_adicionais.append({
+                    'linha': linha,
+                    'fornecedor': fornecedor,
+                    'descricao': descricao,
+                    'dt_med': dt_med,
+                    'dt_pag': dt_pag,
+                    'referencia': referencia,
+                    'valor': valor,
+                    'observacao': observacao
+                })
+
+            wb_rel.close()  # Arquivo do relatório fechado AQUI, de vez
+
+            # ── ETAPA 2: Validar e gravar no arquivo do cliente ─────────────
+            if not linhas_adicionais:
+                return medicoes_adic, erros
+
+            wb_cliente = openpyxl.load_workbook(arquivo_cliente)
+            ws_contratos = wb_cliente['Contratos_Medicao']
+            ws_medicoes  = wb_cliente['Medicoes']
+
+            for item in linhas_adicionais:
+                linha      = item['linha']
+                fornecedor = item['fornecedor']
+                descricao  = item['descricao']
+                dt_med     = item['dt_med']
+                dt_pag     = item['dt_pag']
+                referencia = item['referencia']
+                valor      = item['valor']
+                observacao = item['observacao']
+
+                # Validações
+                if not fornecedor:
+                    erros.append(f"Linha {linha}: Fornecedor obrigatório"); continue
+                if not descricao:
+                    erros.append(f"Linha {linha}: Descrição obrigatória"); continue
+                if not dt_med:
+                    erros.append(f"Linha {linha}: Data de Medição obrigatória"); continue
+                if not valor:
+                    erros.append(f"Linha {linha}: Valor obrigatório"); continue
+
+                try:
+                    valor_float = float(valor)
+                    if valor_float <= 0:
+                        erros.append(f"Linha {linha}: Valor deve ser maior que zero"); continue
+                except (ValueError, TypeError):
+                    erros.append(f"Linha {linha}: Valor inválido '{valor}'"); continue
+
+                # Normalizar datas
+                if isinstance(dt_med, str):
+                    try:
+                        dt_med = datetime.strptime(dt_med, '%d/%m/%Y')
+                    except ValueError:
+                        erros.append(f"Linha {linha}: Data de Medição inválida"); continue
+                if dt_pag is None:
+                    dt_pag = dt_med
+                if isinstance(dt_pag, str):
+                    try:
+                        dt_pag = datetime.strptime(dt_pag, '%d/%m/%Y')
+                    except ValueError:
+                        dt_pag = dt_med
+
+                # Buscar CNPJ do fornecedor
+                cnpj = self.buscar_cnpj_fornecedor(str(fornecedor).strip())
+                if not cnpj:
+                    erros.append(
+                        f"Linha {linha}: Fornecedor '{fornecedor}' não encontrado no cadastro."
+                    )
+                    continue
+
+                # Próximo ID de contrato
+                next_id_contrato = 1
+                for row in ws_contratos.iter_rows(min_row=2, max_col=1, values_only=True):
+                    if row[0] and isinstance(row[0], int) and row[0] >= next_id_contrato:
+                        next_id_contrato = row[0] + 1
+
+                # Criar contrato adicional
+                pl = ws_contratos.max_row + 1
+                ws_contratos.cell(row=pl, column=1,  value=next_id_contrato)
+                ws_contratos.cell(row=pl, column=2,  value=cnpj)
+                ws_contratos.cell(row=pl, column=3,  value=str(fornecedor).strip().upper())
+                ws_contratos.cell(row=pl, column=4,  value=str(descricao).strip().upper())
+                c = ws_contratos.cell(row=pl, column=5, value=dt_med)
+                c.number_format = 'DD/MM/YYYY'
+                ws_contratos.cell(row=pl, column=6,  value=None)
+                c = ws_contratos.cell(row=pl, column=7, value=valor_float)
+                c.number_format = '#.##0,00'
+                c = ws_contratos.cell(row=pl, column=8, value=valor_float)
+                c.number_format = '#.##0,00'
+                ws_contratos.cell(row=pl, column=9,  value=0)
+                ws_contratos.cell(row=pl, column=10, value="CONCLUÍDO")
+                obs = f"SERVIÇO ADICIONAL — {str(observacao).strip().upper() if observacao else ''}"
+                ws_contratos.cell(row=pl, column=11, value=obs)
+
+                # Criar medição vinculada
+                pm = ws_medicoes.max_row + 1
+                ws_medicoes.cell(row=pm, column=1,  value=next_id_contrato)
+                ws_medicoes.cell(row=pm, column=2,  value=1)
+                ws_medicoes.cell(row=pm, column=3,  value=cnpj)
+                ws_medicoes.cell(row=pm, column=4,  value=str(fornecedor).strip().upper())
+                c = ws_medicoes.cell(row=pm, column=5, value=dt_med)
+                c.number_format = 'DD/MM/YYYY'
+                c = ws_medicoes.cell(row=pm, column=6, value=dt_pag)
+                c.number_format = 'DD/MM/YYYY'
+                ref = str(referencia).strip().upper() if referencia else str(descricao).strip().upper()
+                ws_medicoes.cell(row=pm, column=7,  value=ref)
+                c = ws_medicoes.cell(row=pm, column=8, value=valor_float)
+                c.number_format = '#.##0,00'
+                ws_medicoes.cell(row=pm, column=9,  value="PENDENTE")
+                ws_medicoes.cell(row=pm, column=10, value=None)
+                ws_medicoes.cell(row=pm, column=11, value=obs)
+
+                logger.info(
+                    f"✓ Serviço adicional: Contrato {next_id_contrato} | "
+                    f"{fornecedor} | R$ {valor_float:.2f}"
+                )
+
+            wb_cliente.save(arquivo_cliente)
+            wb_cliente.close()
+
+        except Exception as e:
+            erros.append(f"Erro ao processar serviços adicionais: {str(e)}")
+            logger.error(f"Erro em processar_servicos_adicionais: {e}")
+
+        return medicoes_adic, erros
+
     def buscar_cnpj_fornecedor(self, nome_fornecedor):
         if nome_fornecedor in self.cache_fornecedores:
             return self.cache_fornecedores[nome_fornecedor]
@@ -1100,6 +1255,23 @@ class ImportadorMedicoes:
             if not sucesso_saldos:
                 logger.warning(f"Aviso: {mensagem_saldos}")
         
+        
+        # Passo 6b: Processar serviços adicionais (se existirem na planilha)
+        if arquivo_cliente:
+            medicoes_adic, erros_adic = self.processar_servicos_adicionais(
+                arquivo, arquivo_cliente
+            )
+            if erros_adic:
+                erros_resumo = '\n'.join(erros_adic[:5])
+                custom_messagebox(
+                    "warning",
+                    "Avisos — Serviços Adicionais",
+                    f"Alguns serviços adicionais não puderam ser importados:\n\n{erros_resumo}"
+                )
+            elif medicoes_adic is not None:
+                # Opcional: acumular no resumo final
+                pass
+
         # Passo 8: Mover arquivo para pasta Importados (SUBSTITUI renomear)
         arquivo_movido = False
         novo_caminho = None
