@@ -11563,3 +11563,19 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-02-27 17:19:43,550 - INFO - Abrindo sistema de entrada de dados
 2026-02-27 17:19:44,387 - INFO - Proteções contra perda de dados configuradas
 2026-02-27 17:19:44,540 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-03-03 09:31:04,079 - INFO - Configurações importadas com sucesso via src.config
+2026-03-03 09:31:04,110 - INFO - Configurações importadas com sucesso
+2026-03-03 09:31:04,110 - INFO - Configurações do sistema importadas com sucesso
+2026-03-03 09:31:05,493 - INFO - Sistema iniciado em modo: TESTE
+2026-03-03 09:31:09,950 - INFO - Abrindo gestão de medições
+2026-03-03 09:35:47,380 - INFO - Sistema encerrado pelo usuário
+2026-03-03 09:38:20,939 - INFO - Configurações importadas com sucesso via src.config
+2026-03-03 09:38:20,964 - INFO - Configurações importadas com sucesso
+2026-03-03 09:38:20,964 - INFO - Configurações do sistema importadas com sucesso
+2026-03-03 09:38:21,652 - INFO - Sistema iniciado em modo: TESTE
+2026-03-03 09:38:24,603 - INFO - Abrindo gestão de medições
+2026-03-03 09:40:18,722 - INFO - Abrindo sistema de entrada de dados
+2026-03-03 09:40:19,624 - INFO - Proteções contra perda de dados configuradas
+2026-03-03 09:40:19,930 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-03-03 09:40:24,080 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-03-03 09:40:31,395 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
