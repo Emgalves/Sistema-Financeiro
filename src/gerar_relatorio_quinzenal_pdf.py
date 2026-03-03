@@ -267,15 +267,12 @@ class RelatorioQuinzenalPDF:
             df = pd.read_excel(self.arquivo_fornecedores, sheet_name='Fornecedores')
             for _, row in df.iterrows():
                 if _normalizar_doc(row.get('CNPJ/CPF', '')).lstrip('0') == cnpj_num.lstrip('0') and _normalizar_doc(row.get('CNPJ/CPF', '')):
-                    # NOME tem prioridade; RAZAO SOCIAL como fallback
                     nome = (_limpar(row.get('NOME', ''))
                             or _limpar(row.get('RAZÃO SOCIAL', '')))
-                    # Telefone: tentar com e sem dois-pontos no cabecalho
                     telefone = _fmt_fone(
                         _limpar(row.get('TELEFONE:', ''))
                         or _limpar(row.get('TELEFONE', ''))
                     )
-                    # tipo_pessoa define se e CPF ou CNPJ para formatacao correta
                     tipo_pessoa = row.get('tipo_pessoa', None)
                     return {
                         'nome':            nome,
@@ -283,6 +280,7 @@ class RelatorioQuinzenalPDF:
                         'endereco':        _limpar(row.get('ENDEREÇO', '')),
                         'telefone':        telefone,
                         'dados_bancarios': _limpar(row.get('DADOS BANCÁRIOS', '')),
+                        'responsavel':     _limpar(row.get('RESPONSAVEL', '')),  # ← ADICIONAR
                     }
         except Exception as e:
             print(f'Erro ao buscar fornecedor: {e}')
@@ -460,6 +458,7 @@ class RelatorioQuinzenalPDF:
         end   = db.get('endereco', '')        or ''
         fone  = db.get('telefone', '')         or ''
         banco = db.get('dados_bancarios', '') or ''
+        resp  = db.get('responsavel', '') or ''
 
         st_l = ParagraphStyle('l', fontSize=8, fontName='Helvetica-Bold', textColor=AZUL)
         st_v = ParagraphStyle('v', fontSize=8, fontName='Helvetica')
@@ -469,7 +468,7 @@ class RelatorioQuinzenalPDF:
             [_p('NOME / RAZÃO SOCIAL:', 8, True, color=AZUL), _p(nome, 8),
              _p('CPF / CNPJ:', 8, True, color=AZUL),          _p(cnpj, 8)],
             [_p('ENDEREÇO:', 8, True, color=AZUL),             _p(end or '\u2014', 8),
-             _p('RESPONSÁVEL:', 8, True, color=AZUL),           _p('', 8)],
+             _p('RESPONSÁVEL:', 8, True, color=AZUL),           _p(resp, 8)],
             [_p('CONTATOS:', 8, True, color=AZUL),             _p(fone or '\u2014', 8),
              _p('DADOS PAGAMENTO:', 8, True, color=AZUL),      _p(banco or '\u2014', 8)],
         ]
