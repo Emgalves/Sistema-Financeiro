@@ -10,12 +10,12 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 7,
-    "patch": 1,
-    "release_date": "24/02/2026",
+    "patch": 2,
+    "release_date": "03/03/2026",
     "changes": [
-        "Inclusão de checkbox no Gerenciador de lançamentos para somar selecionados",
-        "Filtro de data do Gerenciador de Lançamentos traz a quinzena atual por padrão"
-        "Correção da aba Contratos da Gestão de Medições para carregar todos os contratos, independente do fornecedor"        
+        "Inclusão do campo Responsável no formulário e na base de Fornecedores",
+        "Correção da busca por CNPJ/CPF do Visualizador de Lançamentos por Fornecedor"
+        "Atualização do Relatorio Quinzenal de Mediçoes - PDF para trazer o campo Responsável do Fornecedor"        
     ]
 }
 
