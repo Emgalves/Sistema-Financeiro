@@ -4553,7 +4553,14 @@ class SistemaEntradaDados:
         self.janela_fornecedor.after(100, lambda: self.janela_fornecedor.focus_force())
 
     def setup_formulario_fornecedor(self, modo_edicao=False):
-        """Configura o formulário de cadastro/edição de fornecedor com suporte a CPFs criados"""
+        """
+        Configura o formulário de cadastro/edição de fornecedor com suporte a CPFs criados
+        Para novos campos na planilha:
+        adicionar a coluna na planilha, adicionar a entrada em COLUNAS, 
+        adicionar a entrada no dicionário dados, 
+        e adicionar o widget no setup_formulario_fornecedor
+        """
+
         formulario = ttk.Frame(self.janela_fornecedor)
         formulario.pack(padx=10, pady=5, fill='both', expand=True)
 
@@ -4643,6 +4650,11 @@ class SistemaEntradaDados:
         tk.Label(campos_contato, text="Email:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
         self.campos_form['email'] = tk.Entry(campos_contato, width=50)
         self.campos_form['email'].grid(row=1, column=1, padx=5, pady=2, sticky='ew')
+
+        # Responsável (opcional)
+        tk.Label(campos_contato, text="Responsável:").grid(row=2, column=0, padx=5, pady=2, sticky='w')
+        self.campos_form['responsavel'] = tk.Entry(campos_contato, width=50)
+        self.campos_form['responsavel'].grid(row=2, column=1, padx=5, pady=2, sticky='ew')
 
         # ===== NOVA SEÇÃO: RESUMO DOS DADOS BANCÁRIOS =====
         frame_resumo_bancario = ttk.LabelFrame(formulario, text="📋 Resumo dos Dados Bancários")
@@ -4761,7 +4773,7 @@ class SistemaEntradaDados:
 
         ttk.Button(frame_botoes, 
                 text="Salvar", 
-                command=self.salvar_fornecedor_com_cpf_criado).pack(side='left', padx=5)
+                command=self.salvar_fornecedor).pack(side='left', padx=5)
         ttk.Button(frame_botoes, 
                 text="Cancelar", 
                 command=self.janela_fornecedor.destroy).pack(side='left', padx=5)
@@ -4812,7 +4824,7 @@ class SistemaEntradaDados:
             self.campos_form['nome'].insert(0, fornecedor['nome'] or '')
             self.campos_form['telefone'].insert(0, fornecedor['telefone'] or '')
             self.campos_form['email'].insert(0, fornecedor['email'] or '')
-            self.campos_form['banco'].insert(0, fornecedor['banco'] or '')
+            self.campos_form['banco'].set(fornecedor['banco'] or '')
             self.campos_form['op'].insert(0, fornecedor['op'] or '')
             self.campos_form['agencia'].insert(0, fornecedor['agencia'] or '')
             self.campos_form['conta'].insert(0, fornecedor['conta'] or '')
@@ -4827,6 +4839,7 @@ class SistemaEntradaDados:
             self.campos_form['especificacao'].insert(0, fornecedor['especificacao'] or '')
             self.campos_form['vinculo'].insert(0, fornecedor['vinculo'] or '')
             self.campos_form['endereco'].insert(0, fornecedor['endereco'] or '')
+            self.campos_form['responsavel'].insert(0, fornecedor.get('responsavel') or '')
 
             # Centralizar a janela
             self.janela_fornecedor.update_idletasks()
@@ -5399,7 +5412,6 @@ class SistemaEntradaDados:
             logger.error(traceback.format_exc())
             custom_messagebox("error", "Erro", f"Erro ao selecionar fornecedor:\n{str(e)}")
             
-    # 
     
     def buscar_fornecedor(self):
         """
@@ -5980,7 +5992,7 @@ class SistemaEntradaDados:
                     logger.debug(f"  Tipo: {row_tipo_pessoa}")
                     logger.debug(f"  CNPJ/CPF planilha: {row_cnpj_valor}")
                     
-                    row_completa = list(row) + [None] * (16 - len(row))
+                    row_completa = list(row) + [None] * (18 - len(row))
                     
                     fornecedor_encontrado = {
                         'cnpj_cpf': str(row_completa[0]).strip() if row_completa[0] else '',
@@ -5998,7 +6010,9 @@ class SistemaEntradaDados:
                         'especificacao': str(row_completa[12]).strip() if row_completa[12] else '',
                         'vinculo': str(row_completa[13]).strip() if row_completa[13] else '',
                         'dados_bancarios': str(row_completa[14]).strip() if row_completa[14] else '',
-                        'endereco': str(row_completa[15]).strip() if row_completa[15] else ''
+                        'endereco': str(row_completa[15]).strip() if row_completa[15] else '',
+                        'status': str(row_completa[16]).strip() if row_completa[16] else '',
+                        'responsavel': str(row_completa[17]).strip() if row_completa[17] else ''
                     }
                     
                     break
@@ -6700,151 +6714,302 @@ class SistemaEntradaDados:
         
         return int(cnpj[13]) == digito2
 
-    def salvar_na_base_fornecedores(self, dados):
-        """
-        Salva os dados na planilha de fornecedores
-        VERSÃO CORRIGIDA COM STATUS AUTOMÁTICO
-        """
+    def salvar_fornecedor(self):
+        """Salva ou atualiza fornecedor — lê o formulário, valida e grava na planilha"""
+        
+        # ── 1. VALIDAÇÃO ──────────────────────────────────────────────
+        campos_obrigatorios = ['tipo_pessoa', 'cnpj_cpf', 'razao_social', 'nome', 'categoria']
+        for campo in campos_obrigatorios:
+            if not self.campos_form[campo].get().strip():
+                custom_messagebox("error", "Erro", f"❌ O campo {campo} é obrigatório!")
+                return
+
+        tipo_pessoa = self.campos_form['tipo_pessoa'].get()
+        cnpj_cpf_numeros = ''.join(filter(str.isdigit, self.campos_form['cnpj_cpf'].get()))
+
+        if not self.validar_cnpj_cpf_numeros(cnpj_cpf_numeros):
+            custom_messagebox("error", "Erro",
+                            f"❌ {'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
+            return
+
+        # ── 2. MONTAR DADOS BANCÁRIOS ──────────────────────────────────
+        chave_pix = self.campos_form['chave_pix'].get().strip()
+        if chave_pix:
+            dados_bancarios = f"PIX: {chave_pix}"
+        else:
+            partes = [self.campos_form[c].get().strip()
+                    for c in ('banco', 'op', 'agencia', 'conta') 
+                    if self.campos_form[c].get().strip()]
+            dados_bancarios = ' - '.join(partes)
+
+        # ── 3. DICIONÁRIO ÚNICO DE CAMPOS ─────────────────────────────
+        #   Para adicionar um novo campo no futuro:
+        #   a) inclua a entrada aqui
+        #   b) adicione a coluna na planilha
+        #   Só isso — nenhum outro lugar precisa ser alterado.
+        dados = {
+            'cnpj_cpf':      cnpj_cpf_numeros,
+            'tipo_pessoa':   tipo_pessoa,
+            'razao_social':  self.campos_form['razao_social'].get().upper(),
+            'nome':          self.campos_form['nome'].get().upper(),
+            'telefone':      self.campos_form['telefone'].get(),
+            'email':         self.campos_form['email'].get(),
+            'banco':         self.campos_form['banco'].get(),
+            'op':            self.campos_form['op'].get(),
+            'agencia':       self.campos_form['agencia'].get(),
+            'conta':         self.campos_form['conta'].get(),
+            'chave_pix':     chave_pix,
+            'categoria':     self.campos_form['categoria'].get().upper(),
+            'especificacao': self.campos_form['especificacao'].get().upper(),
+            'vinculo':       self.campos_form['vinculo'].get().upper(),
+            'dados_bancarios': dados_bancarios,
+            'endereco':      self.campos_form['endereco'].get().upper(),
+            'responsavel':   self.campos_form['responsavel'].get().upper(),
+        }
+
+        # ── 4. VERIFICAR CPF CRIADO (lógica preservada) ────────────────
+        eh_cpf_criado = False
+        if tipo_pessoa == 'PF':
+            try:
+                if not hasattr(self, 'gerenciador_cpfs'):
+                    self.gerenciador_cpfs = GerenciadorCPFsCriados()
+                if cnpj_cpf_numeros in self.gerenciador_cpfs.listar_cpfs_disponiveis():
+                    eh_cpf_criado = True
+            except Exception as e:
+                logger.debug(f"Erro ao verificar CPF criado: {str(e)}")
+
+        # ── 5. GRAVAR NA PLANILHA ──────────────────────────────────────
         try:
             from src.config.config import ARQUIVO_FORNECEDORES
             from openpyxl import load_workbook
-            
+
+            # Mapeamento colunas: (índice_zero_based → chave_do_dicionário)
+            # Para adicionar coluna nova: acrescente a entrada aqui e no dicionário acima.
+            COLUNAS = [
+                'cnpj_cpf', 'tipo_pessoa', 'razao_social', 'nome',
+                'telefone', 'email', 'banco', 'op', 'agencia', 'conta',
+                'chave_pix', 'categoria', 'especificacao', 'vinculo',
+                'dados_bancarios', 'endereco', 'status', 'responsavel',
+            ]
+
             wb = load_workbook(ARQUIVO_FORNECEDORES)
             ws = wb['Fornecedores']
-            
-            # ✅ GARANTIR QUE COLUNA STATUS EXISTE
+
+            # Garantir cabeçalho da coluna STATUS
             if ws.cell(1, 17).value != 'STATUS':
                 ws.cell(1, 17, 'STATUS')
-                logger.info("Coluna STATUS criada automaticamente")
-            
-            # Coletar todos os dados existentes
+
+            # Ler todos os registros existentes
             fornecedores = []
-            
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not row or not row[0]:
                     continue
-                
-                # Garantir 17 colunas (incluindo STATUS)
-                row_completa = list(row) + [None] * (17 - len(row))
-                
-                fornecedor = {
-                    'cnpj_cpf': str(row_completa[0]).strip() if row_completa[0] else '',
-                    'tipo_pessoa': str(row_completa[1]).strip() if row_completa[1] else '',
-                    'razao_social': str(row_completa[2]).strip() if row_completa[2] else '',
-                    'nome': str(row_completa[3]).strip() if row_completa[3] else '',
-                    'telefone': str(row_completa[4]).strip() if row_completa[4] else '',
-                    'email': str(row_completa[5]).strip() if row_completa[5] else '',
-                    'banco': str(row_completa[6]).strip() if row_completa[6] else '',
-                    'op': str(row_completa[7]).strip() if row_completa[7] else '',
-                    'agencia': str(row_completa[8]).strip() if row_completa[8] else '',
-                    'conta': str(row_completa[9]).strip() if row_completa[9] else '',
-                    'chave_pix': str(row_completa[10]).strip() if row_completa[10] else '',
-                    'categoria': str(row_completa[11]).strip() if row_completa[11] else '',
-                    'especificacao': str(row_completa[12]).strip() if row_completa[12] else '',
-                    'vinculo': str(row_completa[13]).strip() if row_completa[13] else '',
-                    'dados_bancarios': str(row_completa[14]).strip() if row_completa[14] else '',
-                    'endereco': str(row_completa[15]).strip() if row_completa[15] else '',
-                    'status': str(row_completa[16]).strip().upper() if row_completa[16] else 'ATIVO'
-                }
-                
-                if fornecedor['cnpj_cpf'] and fornecedor['nome']:
-                    fornecedores.append(fornecedor)
-            
-            logger.debug(f"Total de fornecedores carregados: {len(fornecedores)}")
-            
-            # Preparar dados recebidos
-            dados_corrigidos = {}
-            for key, value in dados.items():
-                if value is None or value == 'None':
-                    dados_corrigidos[key] = ''
-                else:
-                    dados_corrigidos[key] = str(value).strip()
-            
-            # Validações
-            if not dados_corrigidos.get('cnpj_cpf'):
-                raise ValueError("CNPJ/CPF não pode estar vazio")
-            if not dados_corrigidos.get('nome'):
-                raise ValueError("Nome não pode estar vazio")
-            
-            # ✅ LÓGICA DE STATUS
-            cnpj_cpf_busca = ''.join(filter(str.isdigit, dados_corrigidos['cnpj_cpf']))
-            fornecedor_encontrado = False
-            
-            for i, fornecedor in enumerate(fornecedores):
-                cnpj_cpf_existente = ''.join(filter(str.isdigit, fornecedor['cnpj_cpf']))
-                
-                if cnpj_cpf_existente == cnpj_cpf_busca:
-                    logger.debug(f"Atualizando fornecedor existente: {fornecedor['nome']}")
-                    
-                    # ✅ PRESERVAR STATUS EXISTENTE ao editar
-                    status_atual = fornecedor.get('status', 'ATIVO')
-                    dados_corrigidos['status'] = status_atual
-                    
-                    logger.debug(f"  STATUS preservado: {status_atual}")
-                    
-                    fornecedores[i] = dados_corrigidos.copy()
-                    fornecedor_encontrado = True
+                row_pad = list(row) + [None] * (len(COLUNAS) - len(row))
+                reg = {col: (str(row_pad[i]).strip() if row_pad[i] else '')
+                    for i, col in enumerate(COLUNAS)}
+                reg['status'] = reg['status'].upper() if reg['status'] else 'ATIVO'
+                if reg['cnpj_cpf'] and reg['nome']:
+                    fornecedores.append(reg)
+
+            # Inserir ou atualizar
+            busca = ''.join(filter(str.isdigit, dados['cnpj_cpf']))
+            encontrado = False
+            for i, reg in enumerate(fornecedores):
+                if ''.join(filter(str.isdigit, reg['cnpj_cpf'])) == busca:
+                    dados['status'] = reg.get('status', 'ATIVO')  # preserva status
+                    fornecedores[i] = dados.copy()
+                    encontrado = True
                     break
-            
-            if not fornecedor_encontrado:
-                # ✅ NOVO FORNECEDOR: Definir STATUS = ATIVO
-                dados_corrigidos['status'] = 'ATIVO'
-                logger.info(f"Novo fornecedor criado como ATIVO: {dados_corrigidos['nome']}")
-                fornecedores.append(dados_corrigidos.copy())
-            
-            # Ordenar
-            try:
-                fornecedores_ordenados = sorted(
-                    fornecedores,
-                    key=lambda x: (str(x.get('nome', '')).upper().strip(), 
-                                str(x.get('cnpj_cpf', '')).strip())
-                )
-            except Exception as e:
-                logger.warning(f"Erro na ordenação: {str(e)}")
-                fornecedores_ordenados = fornecedores
-            
-            # Limpar planilha
+            if not encontrado:
+                dados['status'] = 'ATIVO'
+                fornecedores.append(dados.copy())
+
+            # Reescrever planilha ordenada
+            fornecedores.sort(key=lambda x: x.get('nome', '').upper())
             max_row = ws.max_row
             if max_row > 1:
                 ws.delete_rows(2, max_row - 1)
-            
-            # Reescrever dados
-            for i, fornecedor in enumerate(fornecedores_ordenados, start=2):
-                ws.cell(row=i, column=1, value=fornecedor.get('cnpj_cpf', ''))
-                ws.cell(row=i, column=2, value=fornecedor.get('tipo_pessoa', ''))
-                ws.cell(row=i, column=3, value=fornecedor.get('razao_social', ''))
-                ws.cell(row=i, column=4, value=fornecedor.get('nome', ''))
-                ws.cell(row=i, column=5, value=fornecedor.get('telefone', ''))
-                ws.cell(row=i, column=6, value=fornecedor.get('email', ''))
-                ws.cell(row=i, column=7, value=fornecedor.get('banco', ''))
-                ws.cell(row=i, column=8, value=fornecedor.get('op', ''))
-                ws.cell(row=i, column=9, value=fornecedor.get('agencia', ''))
-                ws.cell(row=i, column=10, value=fornecedor.get('conta', ''))
-                ws.cell(row=i, column=11, value=fornecedor.get('chave_pix', ''))
-                ws.cell(row=i, column=12, value=fornecedor.get('categoria', ''))
-                ws.cell(row=i, column=13, value=fornecedor.get('especificacao', ''))
-                ws.cell(row=i, column=14, value=fornecedor.get('vinculo', ''))
-                ws.cell(row=i, column=15, value=fornecedor.get('dados_bancarios', ''))
-                ws.cell(row=i, column=16, value=fornecedor.get('endereco', ''))
-                ws.cell(row=i, column=17, value=fornecedor.get('status', 'ATIVO'))
-            
-            logger.debug(f"Total salvos: {len(fornecedores_ordenados)}")
-            
-            # Salvar
-            try:
-                wb.save(ARQUIVO_FORNECEDORES)
-                logger.info("Planilha salva com sucesso!")
-            except PermissionError:
-                wb.close()
-                raise PermissionError("Arquivo aberto em outro programa!")
-            
+
+            for i, reg in enumerate(fornecedores, start=2):
+                for j, col in enumerate(COLUNAS, start=1):
+                    ws.cell(row=i, column=j, value=reg.get(col, ''))
+
+            wb.save(ARQUIVO_FORNECEDORES)
             wb.close()
-            
+
+        except PermissionError:
+            custom_messagebox("error", "Erro de Permissão",
+                            "Arquivo aberto em outro programa! Feche o Excel e tente novamente.")
+            return
         except Exception as e:
-            logger.error(f"Erro ao salvar: {str(e)}")
-            import traceback
-            logger.error(traceback.format_exc())
-            raise Exception(f"Erro ao salvar: {str(e)}")
+            logger.error(f"Erro ao salvar fornecedor: {str(e)}")
+            custom_messagebox("error", "Erro", f"❌ Erro ao salvar:\n{str(e)}")
+            return
+
+        # ── 6. PÓS-SALVAMENTO ─────────────────────────────────────────
+        if eh_cpf_criado:
+            try:
+                sucesso = self.gerenciador_cpfs.marcar_cpf_como_usado(
+                    cnpj_cpf_numeros, dados['nome'])
+                msg = ("✅ Fornecedor salvo!\n\n🔄 CPF criado marcado como usado."
+                    if sucesso else
+                    "✅ Fornecedor salvo!\n\n⚠️ Não foi possível marcar o CPF como usado.")
+            except Exception as e:
+                msg = "✅ Fornecedor salvo!"
+        else:
+            msg = "✅ Fornecedor salvo com sucesso!"
+
+        custom_messagebox("info", "Sucesso", msg)
+        self.janela_fornecedor.destroy()
+        self.buscar_fornecedor()
+
+    # def salvar_na_base_fornecedores(self, dados):
+    #     """
+    #     Salva os dados na planilha de fornecedores
+    #     VERSÃO CORRIGIDA COM STATUS AUTOMÁTICO
+    #     """
+    #     try:
+    #         from src.config.config import ARQUIVO_FORNECEDORES
+    #         from openpyxl import load_workbook
+            
+    #         wb = load_workbook(ARQUIVO_FORNECEDORES)
+    #         ws = wb['Fornecedores']
+            
+    #         # ✅ GARANTIR QUE COLUNA STATUS EXISTE
+    #         if ws.cell(1, 17).value != 'STATUS':
+    #             ws.cell(1, 17, 'STATUS')
+    #             logger.info("Coluna STATUS criada automaticamente")
+            
+    #         # Coletar todos os dados existentes
+    #         fornecedores = []
+            
+    #         for row in ws.iter_rows(min_row=2, values_only=True):
+    #             if not row or not row[0]:
+    #                 continue
+                
+    #             # Garantir 18 colunas (incluindo RESPONSAVL)
+    #             row_completa = list(row) + [None] * (18 - len(row))
+                
+    #             fornecedor = {
+    #                 'cnpj_cpf': str(row_completa[0]).strip() if row_completa[0] else '',
+    #                 'tipo_pessoa': str(row_completa[1]).strip() if row_completa[1] else '',
+    #                 'razao_social': str(row_completa[2]).strip() if row_completa[2] else '',
+    #                 'nome': str(row_completa[3]).strip() if row_completa[3] else '',
+    #                 'telefone': str(row_completa[4]).strip() if row_completa[4] else '',
+    #                 'email': str(row_completa[5]).strip() if row_completa[5] else '',
+    #                 'banco': str(row_completa[6]).strip() if row_completa[6] else '',
+    #                 'op': str(row_completa[7]).strip() if row_completa[7] else '',
+    #                 'agencia': str(row_completa[8]).strip() if row_completa[8] else '',
+    #                 'conta': str(row_completa[9]).strip() if row_completa[9] else '',
+    #                 'chave_pix': str(row_completa[10]).strip() if row_completa[10] else '',
+    #                 'categoria': str(row_completa[11]).strip() if row_completa[11] else '',
+    #                 'especificacao': str(row_completa[12]).strip() if row_completa[12] else '',
+    #                 'vinculo': str(row_completa[13]).strip() if row_completa[13] else '',
+    #                 'dados_bancarios': str(row_completa[14]).strip() if row_completa[14] else '',
+    #                 'endereco': str(row_completa[15]).strip() if row_completa[15] else '',
+    #                 'status': str(row_completa[16]).strip().upper() if row_completa[16] else 'ATIVO',
+    #                 'responsavel': str(row_completa[17]).strip() if len(row_completa) > 17 and row_completa[17] else ''
+    #             }
+                
+    #             if fornecedor['cnpj_cpf'] and fornecedor['nome']:
+    #                 fornecedores.append(fornecedor)
+            
+    #         logger.debug(f"Total de fornecedores carregados: {len(fornecedores)}")
+            
+    #         # Preparar dados recebidos
+    #         dados_corrigidos = {}
+    #         for key, value in dados.items():
+    #             if value is None or value == 'None':
+    #                 dados_corrigidos[key] = ''
+    #             else:
+    #                 dados_corrigidos[key] = str(value).strip()
+            
+    #         # Validações
+    #         if not dados_corrigidos.get('cnpj_cpf'):
+    #             raise ValueError("CNPJ/CPF não pode estar vazio")
+    #         if not dados_corrigidos.get('nome'):
+    #             raise ValueError("Nome não pode estar vazio")
+            
+    #         # ✅ LÓGICA DE STATUS
+    #         cnpj_cpf_busca = ''.join(filter(str.isdigit, dados_corrigidos['cnpj_cpf']))
+    #         fornecedor_encontrado = False
+            
+    #         for i, fornecedor in enumerate(fornecedores):
+    #             cnpj_cpf_existente = ''.join(filter(str.isdigit, fornecedor['cnpj_cpf']))
+                
+    #             if cnpj_cpf_existente == cnpj_cpf_busca:
+    #                 logger.debug(f"Atualizando fornecedor existente: {fornecedor['nome']}")
+                    
+    #                 # ✅ PRESERVAR STATUS EXISTENTE ao editar
+    #                 status_atual = fornecedor.get('status', 'ATIVO')
+    #                 dados_corrigidos['status'] = status_atual
+                    
+    #                 logger.debug(f"  STATUS preservado: {status_atual}")
+                    
+    #                 fornecedores[i] = dados_corrigidos.copy()
+    #                 fornecedor_encontrado = True
+    #                 break
+            
+    #         if not fornecedor_encontrado:
+    #             # ✅ NOVO FORNECEDOR: Definir STATUS = ATIVO
+    #             dados_corrigidos['status'] = 'ATIVO'
+    #             logger.info(f"Novo fornecedor criado como ATIVO: {dados_corrigidos['nome']}")
+    #             fornecedores.append(dados_corrigidos.copy())
+            
+    #         # Ordenar
+    #         try:
+    #             fornecedores_ordenados = sorted(
+    #                 fornecedores,
+    #                 key=lambda x: (str(x.get('nome', '')).upper().strip(), 
+    #                             str(x.get('cnpj_cpf', '')).strip())
+    #             )
+    #         except Exception as e:
+    #             logger.warning(f"Erro na ordenação: {str(e)}")
+    #             fornecedores_ordenados = fornecedores
+            
+    #         # Limpar planilha
+    #         max_row = ws.max_row
+    #         if max_row > 1:
+    #             ws.delete_rows(2, max_row - 1)
+            
+    #         # Reescrever dados
+    #         for i, fornecedor in enumerate(fornecedores_ordenados, start=2):
+    #             ws.cell(row=i, column=1, value=fornecedor.get('cnpj_cpf', ''))
+    #             ws.cell(row=i, column=2, value=fornecedor.get('tipo_pessoa', ''))
+    #             ws.cell(row=i, column=3, value=fornecedor.get('razao_social', ''))
+    #             ws.cell(row=i, column=4, value=fornecedor.get('nome', ''))
+    #             ws.cell(row=i, column=5, value=fornecedor.get('telefone', ''))
+    #             ws.cell(row=i, column=6, value=fornecedor.get('email', ''))
+    #             ws.cell(row=i, column=7, value=fornecedor.get('banco', ''))
+    #             ws.cell(row=i, column=8, value=fornecedor.get('op', ''))
+    #             ws.cell(row=i, column=9, value=fornecedor.get('agencia', ''))
+    #             ws.cell(row=i, column=10, value=fornecedor.get('conta', ''))
+    #             ws.cell(row=i, column=11, value=fornecedor.get('chave_pix', ''))
+    #             ws.cell(row=i, column=12, value=fornecedor.get('categoria', ''))
+    #             ws.cell(row=i, column=13, value=fornecedor.get('especificacao', ''))
+    #             ws.cell(row=i, column=14, value=fornecedor.get('vinculo', ''))
+    #             ws.cell(row=i, column=15, value=fornecedor.get('dados_bancarios', ''))
+    #             ws.cell(row=i, column=16, value=fornecedor.get('endereco', ''))
+    #             ws.cell(row=i, column=17, value=fornecedor.get('status', 'ATIVO'))
+    #             ws.cell(row=i, column=18, value=fornecedor.get('responsavel', ''))
+            
+    #         logger.debug(f"Total salvos: {len(fornecedores_ordenados)}")
+            
+    #         # Salvar
+    #         try:
+    #             wb.save(ARQUIVO_FORNECEDORES)
+    #             logger.info("Planilha salva com sucesso!")
+    #         except PermissionError:
+    #             wb.close()
+    #             raise PermissionError("Arquivo aberto em outro programa!")
+            
+    #         wb.close()
+            
+    #     except Exception as e:
+    #         logger.error(f"Erro ao salvar: {str(e)}")
+    #         import traceback
+    #         logger.error(traceback.format_exc())
+    #         raise Exception(f"Erro ao salvar: {str(e)}")
 
     def atualizar_linha_fornecedor(self, row, dados):
         """Atualiza uma linha existente com novos dados"""
@@ -6864,6 +7029,8 @@ class SistemaEntradaDados:
         row[13].value = dados['vinculo']
         row[14].value = dados['dados_bancarios']
         row[15].value = dados['endereco']
+        row[16].value = dados['status']
+        row[17].value = dados['responsavel']
 
     def adicionar_linha_fornecedor(self, ws, linha, dados):
         """Adiciona uma nova linha com os dados do fornecedor"""
@@ -6883,47 +7050,51 @@ class SistemaEntradaDados:
         ws.cell(row=linha, column=14, value=dados['vinculo'])
         ws.cell(row=linha, column=15, value=dados['dados_bancarios'])
         ws.cell(row=linha, column=16, value=dados['endereco'])
+        ws.cell(row=linha, column=17, value=dados['status'])
+        ws.cell(row=linha, column=18, value=dados['responsavel'])
       
-    def atualizar_fornecedor(self):
-        """Atualiza dados do fornecedor existente"""
-        # Validações semelhantes ao salvar_fornecedor
-        campos_obrigatorios = ['razao_social', 'nome', 'categoria']
-        for campo in campos_obrigatorios:
-            if not self.campos_form[campo].get().strip():
-                custom_messagebox("error", "Erro", f"O campo {campo} é obrigatório!")
-                return
+    # def atualizar_fornecedor(self):
+    #     """Atualiza dados do fornecedor existente"""
+    #     # Validações semelhantes ao salvar_fornecedor
+    #     campos_obrigatorios = ['razao_social', 'nome', 'categoria']
+    #     for campo in campos_obrigatorios:
+    #         if not self.campos_form[campo].get().strip():
+    #             custom_messagebox("error", "Erro", f"O campo {campo} é obrigatório!")
+    #             return
 
-        try:
-            wb = load_workbook(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
+    #     try:
+    #         wb = load_workbook(ARQUIVO_FORNECEDORES)
+    #         ws = wb['Fornecedores']
             
-            cnpj_cpf = self.campos_form['cnpj_cpf'].get()
-            for row in ws.iter_rows(min_row=2):
-                if row[0].value == cnpj_cpf:
-                    # Atualizar dados na linha existente
-                    row[1].value = self.campos_form['tipo_pessoa'].get().upper()
-                    row[2].value = self.campos_form['razao_social'].get().upper()
-                    row[3].value = self.campos_form['nome'].get().upper()
-                    row[4].value = self.campos_form['telefone'].get()
-                    row[5].value = self.campos_form['email'].get()
-                    row[6].value = self.campos_form['banco'].get()
-                    row[7].value = self.campos_form['op'].get()
-                    row[8].value = self.campos_form['agencia'].get()
-                    row[9].value = self.campos_form['conta'].get()
-                    row[10].value = self.campos_form['chave_pix'].get()
-                    row[11].value = self.campos_form['categoria'].get()
-                    row[12].value = self.campos_form['especificacao'].get().upper()
-                    row[13].value = self.campos_form['vinculo'].get().upper()
-                    row[14].value = self.campos_form['dados_bancarios'].get().upper()
-                    row[15].value = self.campos_form['endereco'].get().upper()
-                    break
+    #         cnpj_cpf = self.campos_form['cnpj_cpf'].get()
+    #         for row in ws.iter_rows(min_row=2):
+    #             if row[0].value == cnpj_cpf:
+    #                 # Atualizar dados na linha existente
+    #                 row[1].value = self.campos_form['tipo_pessoa'].get().upper()
+    #                 row[2].value = self.campos_form['razao_social'].get().upper()
+    #                 row[3].value = self.campos_form['nome'].get().upper()
+    #                 row[4].value = self.campos_form['telefone'].get()
+    #                 row[5].value = self.campos_form['email'].get()
+    #                 row[6].value = self.campos_form['banco'].get()
+    #                 row[7].value = self.campos_form['op'].get()
+    #                 row[8].value = self.campos_form['agencia'].get()
+    #                 row[9].value = self.campos_form['conta'].get()
+    #                 row[10].value = self.campos_form['chave_pix'].get()
+    #                 row[11].value = self.campos_form['categoria'].get()
+    #                 row[12].value = self.campos_form['especificacao'].get().upper()
+    #                 row[13].value = self.campos_form['vinculo'].get().upper()
+    #                 row[14].value = self.campos_form['dados_bancarios'].get().upper()
+    #                 row[15].value = self.campos_form['endereco'].get().upper()
+    #                 row[16].value = self.campos_form['status'].get().upper()
+    #                 row[17].value = self.campos_form['responsavel'].get().upper()
+    #                 break
 
-            wb.save(ARQUIVO_FORNECEDORES)
-            custom_messagebox("info", "Sucesso", "Fornecedor atualizado com sucesso!")
-            self.janela_fornecedor.destroy()
-            self.buscar_fornecedor()  # Atualiza a lista
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao atualizar fornecedor: {str(e)}")
+    #         wb.save(ARQUIVO_FORNECEDORES)
+    #         custom_messagebox("info", "Sucesso", "Fornecedor atualizado com sucesso!")
+    #         self.janela_fornecedor.destroy()
+    #         self.buscar_fornecedor()  # Atualiza a lista
+    #     except Exception as e:
+    #         custom_messagebox("error", "Erro", f"Erro ao atualizar fornecedor: {str(e)}")
 
     def preencher_dados_fornecedor(self, dados):
         """Preenche os campos do fornecedor na aba de entrada"""
@@ -6936,95 +7107,96 @@ class SistemaEntradaDados:
         self.campos_fornecedor['categoria'].delete(0, tk.END)
         self.campos_fornecedor['categoria'].insert(0, dados[2])
 
-    def salvar_fornecedor_com_cpf_criado(self):
-        """Salva fornecedor e marca CPF criado como usado - VERSÃO CORRIGIDA"""
-        # Validar campos obrigatórios
-        campos_obrigatorios = ['tipo_pessoa', 'cnpj_cpf', 'razao_social', 'nome', 'categoria']
-        for campo in campos_obrigatorios:
-            if not self.campos_form[campo].get().strip():
-                custom_messagebox("error", "Erro", f"❌ O campo {campo} é obrigatório!")
-                return
+    # def salvar_fornecedor_com_cpf_criado(self):
+    #     """Salva fornecedor e marca CPF criado como usado - VERSÃO CORRIGIDA"""
+    #     # Validar campos obrigatórios
+    #     campos_obrigatorios = ['tipo_pessoa', 'cnpj_cpf', 'razao_social', 'nome', 'categoria']
+    #     for campo in campos_obrigatorios:
+    #         if not self.campos_form[campo].get().strip():
+    #             custom_messagebox("error", "Erro", f"❌ O campo {campo} é obrigatório!")
+    #             return
 
-        # Validar CNPJ/CPF
-        tipo_pessoa = self.campos_form['tipo_pessoa'].get()
-        cnpj_cpf_original = self.campos_form['cnpj_cpf'].get().strip()
+    #     # Validar CNPJ/CPF
+    #     tipo_pessoa = self.campos_form['tipo_pessoa'].get()
+    #     cnpj_cpf_original = self.campos_form['cnpj_cpf'].get().strip()
         
-        # Limpar CNPJ/CPF mantendo apenas números
-        cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_original))
+    #     # Limpar CNPJ/CPF mantendo apenas números
+    #     cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_original))
         
-        # Validar com números limpos
-        if not self.validar_cnpj_cpf_numeros(cnpj_cpf_numeros):
-            custom_messagebox("error", "Erro", f"❌ {'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
-            return
+    #     # Validar com números limpos
+    #     if not self.validar_cnpj_cpf_numeros(cnpj_cpf_numeros):
+    #         custom_messagebox("error", "Erro", f"❌ {'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
+    #         return
         
-        # Verificar se é um CPF criado
-        eh_cpf_criado = False
-        if tipo_pessoa == 'PF' and len(cnpj_cpf_numeros) == 11:
-            try:
-                if not hasattr(self, 'gerenciador_cpfs'):
-                    self.gerenciador_cpfs = GerenciadorCPFsCriados()
-                cpfs_disponiveis = self.gerenciador_cpfs.listar_cpfs_disponiveis()
-                if cnpj_cpf_numeros in cpfs_disponiveis:
-                    eh_cpf_criado = True
-            except Exception as e:
-                logger.debug(f"Erro ao verificar CPF criado: {str(e)}")
+    #     # Verificar se é um CPF criado
+    #     eh_cpf_criado = False
+    #     if tipo_pessoa == 'PF' and len(cnpj_cpf_numeros) == 11:
+    #         try:
+    #             if not hasattr(self, 'gerenciador_cpfs'):
+    #                 self.gerenciador_cpfs = GerenciadorCPFsCriados()
+    #             cpfs_disponiveis = self.gerenciador_cpfs.listar_cpfs_disponiveis()
+    #             if cnpj_cpf_numeros in cpfs_disponiveis:
+    #                 eh_cpf_criado = True
+    #         except Exception as e:
+    #             logger.debug(f"Erro ao verificar CPF criado: {str(e)}")
 
-        # Montar dados bancários
-        if self.campos_form['chave_pix'].get():
-            dados_bancarios = f"PIX: {self.campos_form['chave_pix'].get()}"
-        else:
-            dados_bancarios = (f"{self.campos_form['banco'].get()} "
-                            f"{self.campos_form['op'].get()} - "
-                            f"{self.campos_form['agencia'].get()} "
-                            f"{self.campos_form['conta'].get()}").strip()
+    #     # Montar dados bancários
+    #     if self.campos_form['chave_pix'].get():
+    #         dados_bancarios = f"PIX: {self.campos_form['chave_pix'].get()}"
+    #     else:
+    #         dados_bancarios = (f"{self.campos_form['banco'].get()} "
+    #                         f"{self.campos_form['op'].get()} - "
+    #                         f"{self.campos_form['agencia'].get()} "
+    #                         f"{self.campos_form['conta'].get()}").strip()
 
-        # Preparar dados garantindo que tudo seja string
-        dados = {
-            'tipo_pessoa': str(tipo_pessoa),
-            'cnpj_cpf': str(cnpj_cpf_numeros),  # Salvar apenas números
-            'razao_social': str(self.campos_form['razao_social'].get().upper()),
-            'nome': str(self.campos_form['nome'].get().upper()),
-            'telefone': str(self.campos_form['telefone'].get()),
-            'email': str(self.campos_form['email'].get()),
-            'banco': str(self.campos_form['banco'].get()),
-            'op': str(self.campos_form['op'].get()),
-            'agencia': str(self.campos_form['agencia'].get()),
-            'conta': str(self.campos_form['conta'].get()),
-            'chave_pix': str(self.campos_form['chave_pix'].get()),
-            'categoria': str(self.campos_form['categoria'].get().upper()),
-            'especificacao': str(self.campos_form['especificacao'].get().upper()),
-            'vinculo': str(self.campos_form['vinculo'].get().upper()),
-            'dados_bancarios': str(dados_bancarios),
-            'endereco': str(self.campos_form['endereco'].get().upper())
-        }
+    #     # Preparar dados garantindo que tudo seja string
+    #     dados = {
+    #         'tipo_pessoa': str(tipo_pessoa),
+    #         'cnpj_cpf': str(cnpj_cpf_numeros),  # Salvar apenas números
+    #         'razao_social': str(self.campos_form['razao_social'].get().upper()),
+    #         'nome': str(self.campos_form['nome'].get().upper()),
+    #         'telefone': str(self.campos_form['telefone'].get()),
+    #         'email': str(self.campos_form['email'].get()),
+    #         'banco': str(self.campos_form['banco'].get()),
+    #         'op': str(self.campos_form['op'].get()),
+    #         'agencia': str(self.campos_form['agencia'].get()),
+    #         'conta': str(self.campos_form['conta'].get()),
+    #         'chave_pix': str(self.campos_form['chave_pix'].get()),
+    #         'categoria': str(self.campos_form['categoria'].get().upper()),
+    #         'especificacao': str(self.campos_form['especificacao'].get().upper()),
+    #         'vinculo': str(self.campos_form['vinculo'].get().upper()),
+    #         'dados_bancarios': str(dados_bancarios),
+    #         'endereco': str(self.campos_form['endereco'].get().upper()),
+    #         'responsavel': str(self.campos_form['responsavel'].get().upper())           
+    #     }
 
-        try:
-            # Salvar na base de fornecedores
-            self.salvar_na_base_fornecedores(dados)
+    #     try:
+    #         # Salvar na base de fornecedores
+    #         self.salvar_na_base_fornecedores(dados)
             
-            # Se for CPF criado, marcar como usado
-            if eh_cpf_criado:
-                nome_fornecedor = self.campos_form['nome'].get().upper()
-                sucesso_marcacao = self.gerenciador_cpfs.marcar_cpf_como_usado(cnpj_cpf_numeros, nome_fornecedor)
+    #         # Se for CPF criado, marcar como usado
+    #         if eh_cpf_criado:
+    #             nome_fornecedor = self.campos_form['nome'].get().upper()
+    #             sucesso_marcacao = self.gerenciador_cpfs.marcar_cpf_como_usado(cnpj_cpf_numeros, nome_fornecedor)
                 
-                if sucesso_marcacao:
-                    cnpj_cpf_formatado = formatar_documento(cnpj_cpf_numeros)
-                    mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
-                                    f"🔄 CPF criado marcado como usado:\n"
-                                    f"📋 {cnpj_cpf_formatado}\n"
-                                    f"👤 {nome_fornecedor}")
-                else:
-                    mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
-                                    f"⚠️ Aviso: Não foi possível marcar o CPF como usado")
-            else:
-                mensagem_sucesso = f"✅ Fornecedor salvo com sucesso!"
+    #             if sucesso_marcacao:
+    #                 cnpj_cpf_formatado = formatar_documento(cnpj_cpf_numeros)
+    #                 mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
+    #                                 f"🔄 CPF criado marcado como usado:\n"
+    #                                 f"📋 {cnpj_cpf_formatado}\n"
+    #                                 f"👤 {nome_fornecedor}")
+    #             else:
+    #                 mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
+    #                                 f"⚠️ Aviso: Não foi possível marcar o CPF como usado")
+    #         else:
+    #             mensagem_sucesso = f"✅ Fornecedor salvo com sucesso!"
                 
-            custom_messagebox("info", "Sucesso", mensagem_sucesso)
-            self.janela_fornecedor.destroy()
-            self.buscar_fornecedor()  # Atualizar lista
+    #         custom_messagebox("info", "Sucesso", mensagem_sucesso)
+    #         self.janela_fornecedor.destroy()
+    #         self.buscar_fornecedor()  # Atualizar lista
             
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"❌ Erro ao salvar fornecedor:\n{str(e)}")
+    #     except Exception as e:
+    #         custom_messagebox("error", "Erro", f"❌ Erro ao salvar fornecedor:\n{str(e)}")
 
     def gerenciar_cpfs_criados(self):
         """Abre interface para gerenciar fornecedores com CPFs criados - NOVA FUNCIONALIDADE"""
@@ -22418,22 +22590,35 @@ class VisualizadorLancamentosFornecedor:
             logger.debug(f"       Tipo: {tipo_pessoa}")
             
             # Função para normalizar CNPJ/CPF da planilha usando tipo_pessoa
-            def normalizar_cnpj_cpf_planilha(valor, tipo):
+            df_fornecedores = pd.read_excel(ARQUIVO_FORNECEDORES, dtype={'CNPJ/CPF': str})
+
+            lookup_tipo = {}
+            for _, row in df_fornecedores.iterrows():
+                cnpj_raw = str(row['CNPJ/CPF']).strip()
+                numeros_raw = ''.join(filter(str.isdigit, cnpj_raw))
+                tipo = str(row.get('tipo_pessoa', 'PJ')).strip().upper()
+                if not numeros_raw:
+                    continue
+                tipo_final = 'PF' if tipo == 'PF' else 'PJ'
+                chave_completa = numeros_raw.zfill(11) if tipo_final == 'PF' else numeros_raw.zfill(14)
+                lookup_tipo[chave_completa] = tipo_final
+                lookup_tipo[str(int(numeros_raw))] = tipo_final
+
+            def normalizar_cnpj_cpf_planilha(valor):
                 if pd.isna(valor) or valor == '':
                     return ''
                 numeros = ''.join(filter(str.isdigit, str(valor)))
-                
-                # Usar tipo_pessoa da planilha, não inferir
+                if not numeros:
+                    return ''
+                tipo = (lookup_tipo.get(numeros) or
+                        lookup_tipo.get(str(int(numeros))) or
+                        'PJ')
                 if tipo == 'PF':
                     return numeros.zfill(11)
-                else:  # PJ
+                else:
                     return numeros.zfill(14)
-            
-            # Normalizar coluna CNPJ_CPF usando coluna tipo_pessoa
-            df['CNPJ_CPF_NORMALIZADO'] = df.apply(
-                lambda row: normalizar_cnpj_cpf_planilha(row['CNPJ_CPF'], row.get('tipo_pessoa', 'PJ')),
-                axis=1
-            )
+
+            df['CNPJ_CPF_NORMALIZADO'] = df['CNPJ_CPF'].apply(normalizar_cnpj_cpf_planilha)
             
             # === BUSCA PRINCIPAL: Por CNPJ/CPF exato ===
             mask_cnpj = df['CNPJ_CPF_NORMALIZADO'] == cnpj_cpf_normalizado
