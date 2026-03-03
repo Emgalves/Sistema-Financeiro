@@ -250,5 +250,14 @@
             "Filtro de data do Gerenciador de Lançamentos traz a quinzena atual por padrãoCorreção da aba Contratos da Gestão de Medições para carregar todos os contratos, independente do fornecedor"
         ],
         "timestamp": "2026-02-24T16:40:06.117150"
+    },
+    {
+        "version": "1.7.2",
+        "release_date": "03/03/2026",
+        "changes": [
+            "Inclusão do campo Responsável no formulário e na base de Fornecedores",
+            "Correção da busca por CNPJ/CPF do Visualizador de Lançamentos por FornecedorAtualização do Relatorio Quinzenal de Mediçoes - PDF para trazer o campo Responsável do Fornecedor"
+        ],
+        "timestamp": "2026-03-03T10:36:41.567905"
     }
 ]
