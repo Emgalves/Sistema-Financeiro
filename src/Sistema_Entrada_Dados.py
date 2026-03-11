@@ -20008,7 +20008,7 @@ class GerenciadorLancamentos:
                 return
         
         try:
-            id_lancamento = valores[8]
+            id_lancamento = valores[9]
             
             logger.debug(f"DEBUG: Excluindo lançamento ID {id_lancamento}")
             
@@ -20105,7 +20105,7 @@ class GerenciadorLancamentos:
                 return
         
         try:
-            id_lancamento = valores[8]
+            id_lancamento = valores[9]
             
             logger.debug(f"DEBUG: Restaurando lançamento ID {id_lancamento}")
             
