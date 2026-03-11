@@ -14,7 +14,7 @@ VERSION_INFO = {
     "release_date": "03/03/2026",
     "changes": [
         "Inclusão do campo Responsável no formulário e na base de Fornecedores",
-        "Correção da busca por CNPJ/CPF do Visualizador de Lançamentos por Fornecedor"
+        "Correção da busca por CNPJ/CPF do Visualizador de Lançamentos por Fornecedor",
         "Atualização do Relatorio Quinzenal de Mediçoes - PDF para trazer o campo Responsável do Fornecedor"        
     ]
 }
