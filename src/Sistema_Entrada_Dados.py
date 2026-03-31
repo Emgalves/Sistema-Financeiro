@@ -1074,59 +1074,145 @@ class VisualizadorLancamentos:
         return self.dados_para_incluir.copy()
 
     def carregar_rascunho(self):
-        """Carrega dados do arquivo de backup"""
+        """Carrega dados do arquivo de backup - busca no Drive e no Desktop"""
         try:
-            temp_file = os.path.join(os.path.expanduser("~"), "Desktop", 
-                                    "backup_lancamentos.json")
-            
-            if os.path.exists(temp_file):
-                with open(temp_file, 'r', encoding='utf-8') as f:
-                    backup_data = json.load(f)
-                
-                data_backup = datetime.fromisoformat(backup_data['data_sessao'])
-                
+            backups_encontrados = []
+
+            # ── BUSCA 1: Google Drive (prioridade, igual ao verificar_dados_nao_salvos) ──
+            try:
+                pasta_backup = PASTA_CLIENTES / "Backups_Sistema"
+                if pasta_backup.exists():
+                    agora = datetime.now()
+                    limite_tempo = agora - relativedelta(hours=24)
+
+                    for arquivo_backup in pasta_backup.glob("backup_*.json"):
+                        try:
+                            data_modificacao = datetime.fromtimestamp(arquivo_backup.stat().st_mtime)
+                            if data_modificacao >= limite_tempo:
+                                with open(arquivo_backup, 'r', encoding='utf-8') as f:
+                                    backup_data = json.load(f)
+
+                                if backup_data.get('lancamentos') and len(backup_data['lancamentos']) > 0:
+                                    backups_encontrados.append({
+                                        'arquivo': arquivo_backup,
+                                        'data': backup_data,
+                                        'origem': 'Google Drive'
+                                    })
+                        except Exception as e:
+                            logger.debug(f"Erro ao processar backup {arquivo_backup}: {str(e)}")
+                            continue
+            except Exception as e:
+                logger.debug(f"Erro ao buscar backups no Google Drive: {str(e)}")
+
+            # ── BUSCA 2: Desktop – formato novo (específico do cliente) ──
+            if not backups_encontrados:
+                try:
+                    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+                    cliente_ref = (
+                        self.sistema.cliente_atual
+                        if hasattr(self.sistema, 'cliente_atual') and self.sistema.cliente_atual
+                        else None
+                    )
+                    candidatos = []
+
+                    if cliente_ref:
+                        candidatos.append(os.path.join(desktop, f"backup_{cliente_ref}.json"))
+
+                    # Formato genérico antigo como último recurso
+                    candidatos.append(os.path.join(desktop, "backup_lancamentos.json"))
+
+                    for caminho in candidatos:
+                        if os.path.exists(caminho):
+                            data_modificacao = datetime.fromtimestamp(os.path.getmtime(caminho))
+                            if (datetime.now() - data_modificacao).days < 1:
+                                with open(caminho, 'r', encoding='utf-8') as f:
+                                    backup_data = json.load(f)
+                                if backup_data.get('lancamentos'):
+                                    backups_encontrados.append({
+                                        'arquivo': caminho,
+                                        'data': backup_data,
+                                        'origem': 'Desktop Local'
+                                    })
+                                    break   # Usa o primeiro válido encontrado
+                except Exception as e:
+                    logger.debug(f"Erro ao buscar backup no Desktop: {str(e)}")
+
+            # ── Nenhum backup encontrado ──
+            if not backups_encontrados:
                 self._dialogo_aberto = True
-                
-                resposta = custom_messagebox("yesno", 
-                    "📂 Carregar Rascunho",
-                    f"Rascunho encontrado:\n\n"
-                    f"• Cliente: {backup_data['cliente']}\n"
-                    f"• Lançamentos: {backup_data['total_lancamentos']}\n"
-                    f"• Salvo em: {data_backup.strftime('%d/%m/%Y às %H:%M')}\n\n"
-                    "Carregar estes dados?\n"
-                    "(Os dados atuais serão substituídos)")
-                
-                if resposta:
-                    self.sistema.dados_para_incluir = backup_data['lancamentos']
-                    self.sistema.cliente_atual = backup_data['cliente']
-                    
-                    self.dados_para_incluir = backup_data['lancamentos'].copy()
-                    self.atualizar_dados(backup_data['lancamentos'])
-                    
-                    if hasattr(self.sistema, 'cliente_combobox'):
-                        self.sistema.cliente_combobox.set(backup_data['cliente'])
-                        self.sistema.selecionar_cliente(None)
-                    
-                    custom_messagebox("info", "✅ Rascunho Carregado", 
-                                    f"Dados carregados com sucesso!\n"
-                                    f"{len(backup_data['lancamentos'])} lançamentos carregados.")
-                
+                custom_messagebox("info", "📂 Rascunho",
+                                "Nenhum rascunho encontrado\n(Google Drive ou Desktop).")
                 self._dialogo_aberto = False
                 self.janela.lift()
-            else:
+                return
+
+            # ── Usa o backup mais recente ──
+            backups_encontrados.sort(
+                key=lambda x: datetime.fromisoformat(x['data']['data_sessao']),
+                reverse=True
+            )
+            melhor = backups_encontrados[0]
+            backup_data = melhor['data']
+            origem = melhor['origem']
+
+            data_backup = datetime.fromisoformat(backup_data['data_sessao'])
+            cliente_backup = backup_data.get('cliente', '')
+            total = backup_data.get('total_lancamentos', len(backup_data['lancamentos']))
+
+            self._dialogo_aberto = True
+            resposta = custom_messagebox(
+                "yesno",
+                "📂 Carregar Rascunho",
+                f"Rascunho encontrado:\n\n"
+                f"• Cliente: {cliente_backup}\n"
+                f"• Lançamentos: {total}\n"
+                f"• Salvo em: {data_backup.strftime('%d/%m/%Y às %H:%M')}\n"
+                f"• Origem: {origem}\n\n"
+                "Carregar estes dados?\n"
+                "(Os dados atuais serão substituídos)"
+            )
+            self._dialogo_aberto = False
+
+            if resposta:
+                # Atualizar sistema principal
+                self.sistema.dados_para_incluir = backup_data['lancamentos']
+                self.sistema.cliente_atual = cliente_backup
+
+                # Atualizar o próprio visualizador
+                self.dados_para_incluir = backup_data['lancamentos'].copy()
+                self.atualizar_dados(backup_data['lancamentos'])
+
+                # Sincronizar combobox
+                if hasattr(self.sistema, 'cliente_combobox'):
+                    self.sistema.cliente_combobox.set(cliente_backup)
+                    self.sistema.selecionar_cliente(None)
+
+                # Remover backup após carga bem-sucedida
+                try:
+                    if origem == 'Google Drive':
+                        melhor['arquivo'].unlink()
+                    else:
+                        os.remove(melhor['arquivo'])
+                    logger.debug(f"✅ Backup removido após carga manual: {melhor['arquivo']}")
+                except Exception as e:
+                    logger.debug(f"⚠️ Erro ao remover backup após carga: {str(e)}")
+
                 self._dialogo_aberto = True
-                custom_messagebox("info", "📂 Rascunho", 
-                                "Nenhum rascunho encontrado no Desktop.")
+                custom_messagebox("info", "✅ Rascunho Carregado",
+                                f"Dados carregados com sucesso!\n"
+                                f"{total} lançamentos carregados.\n"
+                                f"Origem: {origem}")
                 self._dialogo_aberto = False
-                self.janela.lift()
-                
+
+            self.janela.lift()
+
         except Exception as e:
             self._dialogo_aberto = True
             custom_messagebox("error", "Erro", f"Erro ao carregar rascunho: {str(e)}")
             self._dialogo_aberto = False
             self.janela.lift()
             import traceback
-            traceback.logger.debug_exc()
+            traceback.print_exc()
 
     def popular_tree(self, dados_lancamentos):
         """Popula a TreeView com os dados fornecidos"""
