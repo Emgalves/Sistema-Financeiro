@@ -11177,6 +11177,8 @@ class GestaoContratos:
                     command=self.editar_contrato).pack(side='left', padx=5)
             ttk.Button(frame_botoes, text="Excluir Contrato", 
                     command=self.excluir_contrato).pack(side='left', padx=5)
+            ttk.Button(frame_botoes, text="Gerar Contrato",
+                   command=self.gerar_contrato_adm).pack(side='left', padx=5)
             
             # Botão Fechar com callback personalizado
             ttk.Button(frame_botoes, text="Fechar", 
@@ -11308,6 +11310,53 @@ class GestaoContratos:
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao carregar administradores: {str(e)}")
   
+    def gerar_numero_contrato(self, pasta_clientes: Path, tipo_pessoa: str = 'J') -> str:
+        """
+        Gera o próximo número de contrato no formato AAAA/NNNsufixo.
+    
+        Parâmetros
+        ----------
+        pasta_clientes : Path
+            Caminho para PASTA_CLIENTES (onde ficam os .xlsx dos clientes).
+        tipo_pessoa : str
+            'PJ' ou 'J'  →  sufixo 'J'
+            'PF' ou 'F'  →  sufixo 'F'
+    
+        Retorna
+        -------
+        str  ex.: '2025/001J'
+        """
+        sufixo = 'J' if tipo_pessoa.upper() in ('PJ', 'J') else 'F'
+        ano_atual = datetime.now().year
+        prefixo_ano = str(ano_atual)
+    
+        maior_seq = 0
+        # Padrão: 4 dígitos de ano / 2-3 dígitos numéricos + letra
+        padrao = re.compile(r'^(\d{4})/(\d{2,3})[A-Z]?$', re.IGNORECASE)
+    
+        for xlsx in pasta_clientes.glob('*.xlsx'):
+            try:
+                wb = load_workbook(xlsx, read_only=True, data_only=True)
+                if 'Contratos_ADM' not in wb.sheetnames:
+                    wb.close()
+                    continue
+                ws = wb['Contratos_ADM']
+                for row in ws.iter_rows(min_row=3, max_col=1, values_only=True):
+                    valor = row[0]
+                    if not valor:
+                        continue
+                    m = padrao.match(str(valor).strip())
+                    if m and m.group(1) == prefixo_ano:
+                        seq = int(m.group(2))
+                        if seq > maior_seq:
+                            maior_seq = seq
+                wb.close()
+            except Exception:
+                pass  # arquivo em uso ou corrompido — ignorar
+    
+        proximo = maior_seq + 1
+        return f"{prefixo_ano}/{proximo:03d}{sufixo}"
+
     def criar_novo_contrato(self, janela_principal):
         """Abre janela para criar novo contrato com suporte a parcelas fixas ou eventos"""
         janela = tk.Toplevel(self.parent)
@@ -11341,11 +11390,31 @@ class GestaoContratos:
         # Frame para dados do contrato
         frame_contrato = ttk.LabelFrame(frame, text="Dados do Contrato")
         frame_contrato.pack(fill='x', pady=5)
+        
+        # Nº Contrato – gerado automaticamente (somente leitura)
+        ttk.Label(frame_contrato, text="Nº Contrato:", width=22).grid(
+            row=0, column=0, padx=5, pady=5, sticky='w')
+        num_contrato_var = tk.StringVar()
+        num_contrato = ttk.Entry(frame_contrato, textvariable=num_contrato_var,
+                                state='readonly', width=20)
+        num_contrato.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
+        
+        # Preenche automaticamente ao abrir — usa o tipo do 1º admin (default J)
+        num_contrato_var.set(
+            self.gerar_numero_contrato(
+                Path(self.arquivo_cliente).parent, 
+                tipo_pessoa='J'
+            )
+        )
+ 
+        numero = self.gerar_numero_contrato(PASTA_CLIENTES, tipo_pessoa='J')
+        print(f"DEBUG numero gerado: '{numero}'")
+        num_contrato_var.set(numero)
 
         # Número do Contrato
-        ttk.Label(frame_contrato, text="Nº Contrato:*", width=15).grid(row=0, column=0, padx=5, pady=5, sticky='w')
-        num_contrato = ttk.Entry(frame_contrato, width=20)
-        num_contrato.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
+        # ttk.Label(frame_contrato, text="Nº Contrato:*", width=15).grid(row=0, column=0, padx=5, pady=5, sticky='w')
+        # num_contrato = ttk.Entry(frame_contrato, width=20)
+        # num_contrato.grid(row=0, column=1, padx=5, pady=5, sticky='ew')
 
         # Datas 
         ttk.Label(frame_contrato, text="Data Início:*", width=15).grid(row=1, column=0, padx=5, pady=5, sticky='w')
@@ -11361,20 +11430,44 @@ class GestaoContratos:
         observacoes = ttk.Entry(frame_contrato, width=25)
         observacoes.grid(row=3, column=1, padx=5, pady=5, sticky='ew')
         
-        # Adicionar campo para valor global do contrato
-        ttk.Label(frame_contrato, text="Valor Global:*", width=15).grid(row=4, column=0, padx=5, pady=5, sticky='w')
-        valor_global = ttk.Entry(frame_contrato, width=20)
-        valor_global.grid(row=4, column=1, padx=5, pady=5, sticky='w')
-        
         # Tipo de pagamento (metodo)
-        ttk.Label(frame_contrato, text="Método de Pagamento:*", width=22).grid(row=5, column=0, padx=5, pady=5, sticky='w')
+        ttk.Label(frame_contrato, text="Método de Pagamento:*", width=22).grid(
+            row=4, column=0, padx=5, pady=5, sticky='w')
         metodo_pagamento = ttk.Combobox(frame_contrato, values=[
-            "Percentual da Quinzena", 
-            "Valor Fixo em Parcelas", 
+            "Percentual da Quinzena",
+            "Valor Fixo em Parcelas",
             "Eventos/Fases"
         ], state='readonly', width=20)
-        metodo_pagamento.grid(row=5, column=1, padx=5, pady=5, sticky='w')
-        metodo_pagamento.current(0)  # Valor padrão
+        metodo_pagamento.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        metodo_pagamento.current(0)
+        
+        # ── Valor Global CONDICIONAL (oculto para Percentual da Quinzena) ─
+        lbl_valor_global = ttk.Label(frame_contrato, text="Valor Global:*", width=22)
+        lbl_valor_global.grid(row=5, column=0, padx=5, pady=5, sticky='w')
+        valor_global = ttk.Entry(frame_contrato, width=20)
+        valor_global.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        
+        def _on_metodo_change(event=None):
+            """Oculta/exibe Valor Global conforme método selecionado."""
+            if metodo_pagamento.get() == "Percentual da Quinzena":
+                lbl_valor_global.grid_remove()
+                valor_global.grid_remove()
+                valor_global.delete(0, tk.END)
+                valor_global.insert(0, "0")        # sentinela para salvar()
+            else:
+                lbl_valor_global.grid()
+                valor_global.grid()
+                if valor_global.get() == "0":
+                    valor_global.delete(0, tk.END)
+        
+        metodo_pagamento.bind("<<ComboboxSelected>>", _on_metodo_change)
+        # Disparar uma vez para definir estado inicial
+        _on_metodo_change()
+        
+        # # Adicionar campo para valor global do contrato
+        # ttk.Label(frame_contrato, text="Valor Global:*", width=15).grid(row=4, column=0, padx=5, pady=5, sticky='w')
+        # valor_global = ttk.Entry(frame_contrato, width=20)
+        # valor_global.grid(row=4, column=1, padx=5, pady=5, sticky='w')
         
         # Frame para Administradores
         frame_adm = ttk.LabelFrame(frame, text="Administradores")
@@ -11849,38 +11942,48 @@ class GestaoContratos:
         ).pack(side='left', padx=5)
 
         def salvar():
-            # Validar campos obrigatórios
-            if not num_contrato.get() or not data_inicio.get() or not data_fim.get() or not valor_global.get():
-                custom_messagebox("error", "Erro", "Preencha todos os campos obrigatórios do contrato!")
+            # Validar Nº Contrato
+            if not num_contrato_var.get():
+                custom_messagebox("error", "Erro", "Número do contrato não gerado. Reinicie a janela.")
                 return
-                
-            # Validar valor global
-            try:
-                valor_global_float = float(valor_global.get().replace(',', '.'))
-                if valor_global_float <= 0:
-                    custom_messagebox("error", "Erro", "Valor global deve ser maior que zero!")
+
+            # Validar datas
+            if not data_inicio.get() or not data_fim.get():
+                custom_messagebox("error", "Erro", "Preencha as datas do contrato!")
+                return
+
+            # Validar valor global apenas se o método exigir
+            if metodo_pagamento.get() == "Percentual da Quinzena":
+                valor_global_float = 0.0
+            else:
+                if not valor_global.get() or valor_global.get() == "0":
+                    custom_messagebox("error", "Erro", "Informe o Valor Global do contrato!")
                     return
-            except ValueError:
-                custom_messagebox("error", "Erro", "Valor global inválido!")
-                return
-                
+                try:
+                    valor_global_float = float(valor_global.get().replace(',', '.'))
+                    if valor_global_float <= 0:
+                        custom_messagebox("error", "Erro", "Valor global deve ser maior que zero!")
+                        return
+                except ValueError:
+                    custom_messagebox("error", "Erro", "Valor global inválido!")
+                    return
+
             # Validar administradores
             if not self.tree_adm.get_children():
                 custom_messagebox("error", "Erro", "Adicione pelo menos um administrador!")
                 return
-                
-            # Criar contrato
+
             self.salvar_contrato_com_opcoes(
-                num_contrato.get(),
+                num_contrato_var.get(),
                 data_inicio.get_date(),
                 data_fim.get_date(),
                 observacoes.get(),
                 valor_global_float,
                 metodo_pagamento.get(),
-                {},  # Opções simplificadas pois foram movidas para o administrador
+                {},
                 janela
             )
-            
+
             janela_principal.focus_set()
             self.carregar_contratos()
 
@@ -12790,22 +12893,22 @@ class GestaoContratos:
         """
         Versão modificada para incluir os detalhes de parcelas/eventos na tela do administrador
         """
-        # Verificar se valor global foi informado
-        if not valor_global_entry.get():
-            custom_messagebox("error", "Erro", "Informe o valor global do contrato primeiro")
-            return
-            
-        try:
-            valor_global_float = float(valor_global_entry.get().replace(',', '.'))
-            if valor_global_float <= 0:
-                custom_messagebox("error", "Erro", "Valor global deve ser maior que zero")
-                return
-        except ValueError:
-            custom_messagebox("error", "Erro", "Valor global inválido")
-            return
-            
-        # Obter o método de pagamento selecionado
         metodo = metodo_pagamento_combo.get()
+    
+        if metodo == "Percentual da Quinzena":
+            valor_global_float = 0.0  # não usado neste método
+        else:
+            if not valor_global_entry.get() or valor_global_entry.get() == "0":
+                custom_messagebox("error", "Erro", "Informe o valor global do contrato primeiro")
+                return
+            try:
+                valor_global_float = float(valor_global_entry.get().replace(',', '.'))
+                if valor_global_float <= 0:
+                    custom_messagebox("error", "Erro", "Valor global deve ser maior que zero")
+                    return
+            except ValueError:
+                custom_messagebox("error", "Erro", "Valor global inválido")
+                return
         
         # Criar janela como Toplevel do parent
         janela_admin = tk.Toplevel(self.parent)
@@ -14031,7 +14134,46 @@ class GestaoContratos:
                 
             except Exception as e:
                 custom_messagebox("error", "Erro", f"Erro ao excluir contrato: {str(e)})")
-        
+
+    def gerar_contrato_adm(self):
+        """Gera o contrato Word do contrato selecionado na lista."""
+        selecionado = self.tree_contratos.selection()
+        if not selecionado:
+            custom_messagebox("warning", "Aviso", "Selecione um contrato para gerar!")
+            return
+
+        num_contrato = self.tree_contratos.item(selecionado)['values'][0]
+        raiz = num_contrato.rstrip('JF')
+
+        try:
+            gerador = GeradorContratoADM()
+            gerador.PASTA_CONTRATOS_ADM = PASTA_CLIENTES / "Contratos_ADM"
+
+            paths = gerador.gerar_contratos_do_contrato(
+                nome_cliente           = self.cliente_atual,
+                num_contrato           = raiz,
+                arquivo_cliente        = Path(self.arquivo_cliente),
+                arquivo_clientes_geral = ARQUIVO_CLIENTES,
+                arquivo_fornecedores   = BASE_PATH / 'base_fornecedores.xlsx',
+            )
+            if paths:
+                nomes = "\n".join(Path(p).name for p in paths)
+                custom_messagebox("info", "Sucesso",
+                    f"{len(paths)} contrato(s) gerado(s):\n{nomes}")
+                import os, subprocess
+                for p in paths:
+                    try:
+                        os.startfile(p)
+                    except Exception:
+                        subprocess.run(['xdg-open', p], check=False)
+            else:
+                custom_messagebox("warning", "Aviso",
+                    "Nenhum contrato gerado. Verifique os dados da planilha.")
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            custom_messagebox("error", "Erro", f"Erro ao gerar contrato:\n{str(e)}")
+
 class GestaoTaxasFixas:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
@@ -16493,6 +16635,841 @@ class GestorTaxasAdministracao:
             logger.debug(f"DEBUG: Erro na verificação: {traceback.format_exc()}")
             return False, f"Erro na verificação: {str(e)}"
 
+class GeradorContratoADM:
+    """
+    Gera contratos de administração de obra em formato DOCX.
+ 
+    Suporta os três métodos de pagamento cadastrados em Contratos_ADM:
+      • "Percentual da Quinzena"   → remunera % sobre o movimento quinzenal
+      • "Valor Fixo em Parcelas"   → honorário fixo total em N parcelas
+      • "Eventos/Fases"            → honorário vinculado a marcos da obra
+ 
+    Trata automaticamente o caso PF + PJ (dois admins):
+      → gera um documento por administrador quando há mistura de tipos.
+ 
+    Uso
+    ---
+    gerador = GeradorContratoADM()
+    paths = gerador.gerar_contratos_do_contrato(
+                nome_cliente="EDUARDO MORENO MARQUES",
+                num_contrato="2024/08",
+                arquivo_cliente=PASTA_CLIENTES / "EDUARDO_MORENO_MARQUES.xlsx",
+                arquivo_clientes_geral=ARQUIVO_CLIENTES,
+                arquivo_fornecedores=ARQUIVO_FORNECEDORES,
+    )
+    # paths → lista de caminhos gerados (um por administrador)
+    """
+ 
+    PASTA_CONTRATOS_ADM = None   # definir como PASTA_CLIENTES / "Contratos_ADM"
+ 
+    # ── utilidades ──────────────────────────────────────────────
+ 
+    @staticmethod
+    def _formatar_doc(numero: str) -> str:
+        """Formata CPF (11 dígitos) ou CNPJ (14 dígitos)."""
+        d = re.sub(r'\D', '', str(numero))
+        if len(d) == 11:
+            return f"{d[:3]}.{d[3:6]}.{d[6:9]}-{d[9:]}"
+        if len(d) == 14:
+            return f"{d[:2]}.{d[2:5]}.{d[5:8]}/{d[8:12]}-{d[12:]}"
+        return str(numero)
+ 
+    @staticmethod
+    def _tipo_pessoa(cnpj_cpf: str) -> str:
+        """Retorna 'PF' ou 'PJ' baseado no número de dígitos."""
+        d = re.sub(r'\D', '', str(cnpj_cpf))
+        return 'PF' if len(d) == 11 else 'PJ'
+ 
+    @staticmethod
+    def _extenso(valor: float) -> str:
+        """Valor monetário por extenso (requer num2words)."""
+        try:
+            from num2words import num2words
+            return num2words(valor, lang='pt_BR', to='currency')
+        except ImportError:
+            return f"{valor:.2f} reais"
+ 
+    @staticmethod
+    def _data_extenso(data_obj) -> str:
+        meses = ['janeiro','fevereiro','março','abril','maio','junho',
+                 'julho','agosto','setembro','outubro','novembro','dezembro']
+        if isinstance(data_obj, str):
+            data_obj = datetime.strptime(data_obj, '%d/%m/%Y')
+        return f"{data_obj.day} de {meses[data_obj.month-1]} de {data_obj.year}"
+ 
+    # ── leitura de dados ────────────────────────────────────────
+ 
+    def _ler_dados_contrato(self, arquivo_cliente: Path, num_contrato: str) -> dict:
+        """
+        Lê Contratos_ADM e retorna um dict com todos os dados do
+        contrato e de seus administradores.
+        """
+        wb = load_workbook(arquivo_cliente, data_only=True)
+        ws = wb['Contratos_ADM']
+ 
+        contrato = {
+            'num_contrato': num_contrato,
+            'data_inicio': None,
+            'data_fim': None,
+            'status': None,
+            'observacoes': None,
+            'valor_global': 0.0,
+            'admins': [],        # lista de dicts por administrador
+            'parcelas': [],      # parcelas/eventos cadastrados
+        }
+ 
+        # leitura do cabeçalho do contrato (colunas A-F, linha com num_contrato na col A)
+        for row in ws.iter_rows(min_row=3, values_only=True):
+            if str(row[0]).strip() == str(num_contrato).strip():
+                contrato['data_inicio'] = row[1]
+                contrato['data_fim']    = row[2]
+                contrato['status']      = row[3]
+                contrato['observacoes'] = row[4]
+                contrato['valor_global'] = float(row[5] or 0)
+                break
+ 
+        # leitura dos administradores (coluna G = num_contrato do admin)
+        admins_vistos = set()
+        for row in ws.iter_rows(min_row=3, values_only=True):
+            if str(row[6] or '').strip() == str(num_contrato).strip():
+                cnpj = str(row[7] or '').strip()
+                if cnpj and cnpj not in admins_vistos:
+                    admins_vistos.add(cnpj)
+                    # row[9] = Tipo  row[10] = Valor/Percentual  row[11] = Valor Total  row[12] = Nº Parcelas
+                    try:
+                        valor_total = float(str(row[11] or 0).replace(',','.'))
+                    except ValueError:
+                        valor_total = 0.0
+                    try:
+                        perc_raw = str(row[10] or '').replace('%','').replace(',','.')
+                        percentual = float(perc_raw) if perc_raw else 0.0
+                    except ValueError:
+                        percentual = 0.0
+                    contrato['admins'].append({
+                        'cnpj_cpf':   cnpj,
+                        'nome':       str(row[8] or '').strip(),
+                        'tipo':       str(row[9] or '').strip(),    # 'Percentual' | 'Fixo'
+                        'percentual': percentual,
+                        'valor_total': valor_total,
+                        'num_parcelas': int(row[12] or 0),
+                        'tipo_pessoa': self._tipo_pessoa(cnpj),
+                    })
+ 
+        # leitura das parcelas/eventos (coluna Y = referência do contrato, col Z = número)
+        for row in ws.iter_rows(min_row=3, values_only=True):
+            if str(row[24] or '').strip() == str(num_contrato).strip():
+                try:
+                    valor_parc = float(str(row[29] or 0).replace(',', '.'))
+                except (ValueError, TypeError):
+                    valor_parc = 0.0
+
+                # Percentual: pode estar None (parcelas PF copiadas sem percentual)
+                perc_raw = row[33]
+                if perc_raw is not None:
+                    try:
+                        percentual_ev = float(
+                            str(perc_raw).replace('%', '').replace(',', '.').strip()
+                        )
+                    except (ValueError, TypeError):
+                        percentual_ev = 0.0
+                else:
+                    percentual_ev = 0.0  # será recalculado abaixo se possível
+
+                contrato['parcelas'].append({
+                    'numero':     row[25],
+                    'cnpj_cpf':   str(row[26] or '').strip(),
+                    'nome':       str(row[27] or '').strip(),
+                    'vencimento': row[28],
+                    'valor':      valor_parc,
+                    'status':     str(row[30] or '').strip(),
+                    'descricao':  str(row[32] or '').strip(),
+                    'percentual': percentual_ev,
+                })
+
+        # Após carregar todas as parcelas, recalcular percentuais ausentes
+        # usando o valor_total do admin correspondente
+        for parcela in contrato['parcelas']:
+            if parcela['percentual'] == 0.0 and parcela['valor'] > 0:
+                cnpj_p = parcela['cnpj_cpf']
+                admin_match = next(
+                    (a for a in contrato['admins']
+                    if re.sub(r'\D', '', str(a['cnpj_cpf'])) ==
+                        re.sub(r'\D', '', str(cnpj_p))),
+                    None
+                )
+                if admin_match and admin_match['valor_total'] > 0:
+                    parcela['percentual'] = parcela['valor'] / admin_match['valor_total']
+ 
+        wb.close()
+        return contrato
+ 
+    def _ler_dados_cliente(self, arquivo_clientes_geral: Path, nome_cliente: str) -> dict:
+        """Busca dados do contratante em Clientes.xlsx."""
+        import pandas as pd
+        df = pd.read_excel(arquivo_clientes_geral)
+        row = df[df['Nome'] == nome_cliente]
+        if row.empty:
+            return {'nome': nome_cliente, 'cpf': '', 'cno': '',
+                    'estado_civil': '', 'endereco': '', 'cidade': 'Belo Horizonte'}
+        r = row.iloc[0]
+ 
+        def _safe(col, default=''):
+            import math
+            v = r.get(col, default)
+            return default if (v is None or (isinstance(v, float) and math.isnan(v))) else str(v)
+ 
+        # CPF pode vir como float
+        cpf_raw = r.get('CPF', '')
+        try:
+            cpf_raw = str(int(float(cpf_raw)))
+        except (ValueError, TypeError):
+            cpf_raw = str(cpf_raw or '')
+ 
+        return {
+            'nome':        _safe('Nome'),
+            'cpf':         self._formatar_doc(cpf_raw),
+            'cno':         _safe('CNO'),
+            'estado_civil': _safe('Estado Civil', 'não informado'),
+            'endereco':    _safe('Endereço', 'não informado'),
+            'cidade':      _safe('Cidade', 'Belo Horizonte'),
+            'estado':      _safe('Estado', 'MG'),
+        }
+ 
+    def _ler_dados_fornecedor(self, arquivo_fornecedores: Path, cnpj_cpf: str) -> dict:
+        """
+        Busca dados do administrador (contratado) em base_fornecedores.xlsx.
+        Tolerante a diferentes nomes de coluna e a arquivos sem a aba correta.
+        """
+        import pandas as pd
+        import math
+ 
+        def _safe_val(r, *cols, default=''):
+            for col in cols:
+                v = r.get(col, None)
+                if v is not None and not (isinstance(v, float) and math.isnan(v)):
+                    return str(v).strip()
+            return default
+ 
+        try:
+            df = pd.read_excel(arquivo_fornecedores)
+        except Exception:
+            return {'nome': 'não informado', 'cnpj_cpf': self._formatar_doc(cnpj_cpf),
+                    'endereco': 'não informado', 'dados_bancarios': ''}
+ 
+        # detectar coluna de documento
+        col_doc = None
+        for candidato in ('CNPJ/CPF', 'CPF', 'CNPJ', 'cnpj_cpf', 'documento'):
+            if candidato in df.columns:
+                col_doc = candidato
+                break
+ 
+        if col_doc is None:
+            return {'nome': 'não informado', 'cnpj_cpf': self._formatar_doc(cnpj_cpf),
+                    'endereco': 'não informado', 'dados_bancarios': ''}
+ 
+        cnpj_limpo = re.sub(r'\D', '', cnpj_cpf)
+        df['_cnpj_limpo'] = df[col_doc].apply(
+            lambda x: re.sub(r'\D', '', str(x) if x is not None and str(x) != 'nan' else ''))
+        row = df[df['_cnpj_limpo'] == cnpj_limpo]
+ 
+        if row.empty:
+            return {'nome': 'não informado', 'cnpj_cpf': self._formatar_doc(cnpj_cpf),
+                    'endereco': 'não informado', 'dados_bancarios': ''}
+ 
+        r = row.iloc[0]
+        dados_banc = _safe_val(r, 'DADOS BANCÁRIOS', 'dados_bancarios', 'PIX', 'pix')
+        return {
+            'nome':            _safe_val(r, 'NOME', 'Nome', 'nome', default='não informado'),
+            'cnpj_cpf':        self._formatar_doc(cnpj_cpf),
+            'endereco':        _safe_val(r, 'ENDEREÇO', 'Endereço', 'ENDERECO',
+                                         'endereco', default='não informado'),
+            'dados_bancarios': dados_banc,
+            'razao_social':    _safe_val(r, 'RAZÃO SOCIAL', 'NOME', 'Nome',
+                                         default='não informado'),
+        }
+ 
+    # ── construção do documento Word ────────────────────────────
+ 
+    def _build_doc(self, contrato: dict, admin: dict,
+                   dados_cliente: dict, dados_fornecedor: dict,
+                   metodo: str): #-> 'Document':
+        """
+        Constrói o Document python-docx para um par contratante/contratado.
+ 
+        metodo : "Percentual da Quinzena" | "Valor Fixo em Parcelas" | "Eventos/Fases"
+        """
+        from docx import Document
+        from docx.shared import Pt, Inches, RGBColor
+        from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
+        from docx.enum.style import WD_STYLE_TYPE
+ 
+        doc = Document()
+ 
+        # ── estilos ─────────────────────────────────────────────
+        style_normal = doc.styles['Normal']
+        style_normal.font.name = 'Arial'
+        style_normal.font.size = Pt(11)
+        style_normal.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        style_normal.paragraph_format.line_spacing_rule = WD_LINE_SPACING.ONE_POINT_FIVE
+        style_normal.paragraph_format.space_after = Pt(6)
+ 
+        h1 = doc.styles['Heading 1']
+        h1.font.name = 'Arial'
+        h1.font.size = Pt(12)
+        h1.font.bold = True
+        h1.font.color.rgb = RGBColor(0, 0, 0)
+        h1.paragraph_format.space_before = Pt(12)
+        h1.paragraph_format.space_after  = Pt(6)
+ 
+        # ── margens ─────────────────────────────────────────────
+        for section in doc.sections:
+            section.top_margin    = Inches(1)
+            section.bottom_margin = Inches(1)
+            section.left_margin   = Inches(1)
+            section.right_margin  = Inches(1)
+ 
+        # ── helpers locais ───────────────────────────────────────
+        def par(text='', bold=False, center=False, size=None,
+                space_before=None, space_after=None):
+            p = doc.add_paragraph()
+            if center:
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            if space_before is not None:
+                p.paragraph_format.space_before = Pt(space_before)
+            if space_after is not None:
+                p.paragraph_format.space_after  = Pt(space_after)
+            if text:
+                r = p.add_run(text)
+                r.bold = bold
+                if size:
+                    r.font.size = Pt(size)
+            return p
+ 
+        def heading(text):
+            doc.add_heading(text, level=1)
+ 
+        # ── dados formatados ─────────────────────────────────────
+        nome_cliente    = dados_cliente['nome']
+        cpf_cliente     = dados_cliente['cpf']
+        cno_cliente     = dados_cliente['cno']
+        ec_cliente      = dados_cliente['estado_civil']
+        end_cliente     = dados_cliente['endereco']
+        cidade          = dados_cliente['cidade']
+ 
+        nome_adm        = dados_fornecedor['nome']
+        doc_adm         = dados_fornecedor['cnpj_cpf']
+        end_adm         = dados_fornecedor['endereco']
+        dados_banc      = dados_fornecedor['dados_bancarios']
+        tipo_pessoa_adm = admin['tipo_pessoa']  # 'PF' | 'PJ'
+ 
+        # data do contrato = data_inicio do contrato
+        data_contrato_obj = contrato['data_inicio']
+        if isinstance(data_contrato_obj, str):
+            data_contrato_obj = datetime.strptime(data_contrato_obj, '%d/%m/%Y')
+        data_extenso = self._data_extenso(data_contrato_obj)
+        data_inicio_fmt = (data_contrato_obj.strftime('%d/%m/%Y')
+                           if data_contrato_obj else '')
+        data_fim_obj = contrato['data_fim']
+        data_fim_fmt = (data_fim_obj.strftime('%d/%m/%Y')
+                        if data_fim_obj else '')
+ 
+        # valor e multa
+        valor_global = admin['valor_total']
+        multa_float  = valor_global * 0.10
+        valor_fmt    = f"R$ {valor_global:,.2f}".replace(',','X').replace('.', ',').replace('X','.')
+        multa_fmt    = f"R$ {multa_float:,.2f}".replace(',','X').replace('.', ',').replace('X','.')
+        valor_extenso = self._extenso(valor_global)
+        multa_extenso = self._extenso(multa_float)
+ 
+        # qualificação do contratado (PF / PJ)
+        if tipo_pessoa_adm == 'PJ':
+            qualif_adm = (f"pessoa jurídica inscrita no CNPJ sob o n.º {doc_adm}, "
+                          f"com sede na {end_adm}")
+            denominacao_adm = "CONTRATADA"
+        else:
+            qualif_adm = (f"pessoa física inscrita no CPF sob o n.º {doc_adm}, "
+                          f"residente na {end_adm}")
+            denominacao_adm = "CONTRATADO"
+ 
+        # ── TÍTULO ───────────────────────────────────────────────
+        titulo = doc.add_paragraph()
+        titulo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run_tit = titulo.add_run(
+            "CONTRATO PARTICULAR DE PRESTAÇÃO DE SERVIÇOS DE "
+            "ADMINISTRAÇÃO DE OBRA")
+        run_tit.bold = True
+        run_tit.font.size = Pt(13)
+ 
+        # número e método
+        subtit = doc.add_paragraph()
+        subtit.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        subtit.add_run(
+            f"Contrato n.º {contrato['num_contrato']}  —  Método: {metodo}"
+        ).font.size = Pt(10)
+ 
+        # ── PREÂMBULO ────────────────────────────────────────────
+        p_intro = doc.add_paragraph()
+        p_intro.add_run(
+            f"Aos {data_extenso}, nesta cidade de {cidade}, "
+            f"entre as partes abaixo identificadas:")
+ 
+        p_cliente = doc.add_paragraph()
+        p_cliente.add_run(nome_cliente).bold = True
+        p_cliente.add_run(
+            f", pessoa física inscrita no CNO n.º {cno_cliente} "
+            f"e CPF n.º {cpf_cliente}, {ec_cliente}, "
+            f"residente e domiciliado na {end_cliente}, "
+            f"doravante denominado(a) simplesmente CONTRATANTE; e")
+ 
+        p_adm = doc.add_paragraph()
+        p_adm.add_run(nome_adm).bold = True
+        p_adm.add_run(
+            f", {qualif_adm}, "
+            f"doravante denominado(a) {denominacao_adm}; "
+            f"têm entre si, justo e contratado o seguinte:")
+ 
+        # ── CLÁUSULA PRIMEIRA — OBJETO ───────────────────────────
+        heading("CLÁUSULA PRIMEIRA — OBJETO")
+        doc.add_paragraph(
+            "O presente contrato tem por objeto a prestação de serviços "
+            "de administração e gerenciamento da execução da obra de "
+            f"construção civil localizada no endereço: {end_cliente}, "
+            "compreendendo as atividades de coordenação técnica, "
+            "fiscalização, controle financeiro, supervisão de equipes e "
+            "demais atividades inerentes à função de gestor de obras.")
+ 
+        p1 = doc.add_paragraph()
+        p1.add_run("PARÁGRAFO ÚNICO: ").bold = True
+        p1.add_run(
+            "São atribuições do(a) CONTRATADO(A), sem caráter exaustivo: "
+            "coordenar e fiscalizar a execução dos serviços; supervisionar "
+            "equipes e subcontratados; gerenciar o cronograma físico-"
+            "financeiro; elaborar relatórios quinzenais de prestação de "
+            "contas; realizar cotações e aprovar compras de materiais; "
+            "zelar pelo cumprimento das normas técnicas e de segurança.")
+ 
+        # ── CLÁUSULA SEGUNDA — PRAZO ─────────────────────────────
+        heading("CLÁUSULA SEGUNDA — PRAZO")
+        doc.add_paragraph(
+            f"Os serviços terão início em {data_inicio_fmt} e "
+            f"previsão de término em {data_fim_fmt}, podendo ser "
+            "prorrogados mediante Termo Aditivo assinado pelas partes, "
+            "sem que isso implique em qualquer majoração automática da "
+            "remuneração, salvo acordo expresso.")
+ 
+        # ── CLÁUSULA TERCEIRA — REMUNERAÇÃO (varia por método) ───
+        heading("CLÁUSULA TERCEIRA — REMUNERAÇÃO")
+ 
+        if metodo == "Percentual da Quinzena":
+            # ── Percentual da Quinzena ──
+            perc = admin['percentual']
+            doc.add_paragraph(
+                f"Como remuneração pelos serviços prestados, o(a) "
+                f"CONTRATANTE pagará ao(à) {denominacao_adm} o percentual "
+                f"de {perc:.2f}% ({self._extenso_percentual(perc)} por cento) "
+                "incidente sobre o total de pagamentos realizados em cada "
+                "quinzena de referência do relatório de obra.")
+ 
+            p_q1 = doc.add_paragraph()
+            p_q1.add_run("PARÁGRAFO PRIMEIRO: ").bold = True
+            p_q1.add_run(
+                "A base de cálculo corresponde à soma dos lançamentos "
+                "dos tipos 1 a 6 registrados no relatório de cada "
+                "quinzena (dias 5 e 20 de cada mês), excluídos os "
+                "próprios valores de administração.")
+ 
+            p_q2 = doc.add_paragraph()
+            p_q2.add_run("PARÁGRAFO SEGUNDO: ").bold = True
+            p_q2.add_run(
+                "O pagamento será efetuado até o vencimento constante "
+                "no lançamento quinzenal correspondente, mediante "
+                "transferência bancária ou PIX nos dados informados "
+                "ao final deste instrumento.")
+ 
+            if tipo_pessoa_adm == 'PJ':
+                p_nf = doc.add_paragraph()
+                p_nf.add_run("PARÁGRAFO TERCEIRO — NOTA FISCAL: ").bold = True
+                p_nf.add_run(
+                    "O(A) CONTRATADO(A), por ser pessoa jurídica, "
+                    "deverá emitir Nota Fiscal de Serviços (NFS-e) "
+                    "correspondente a cada pagamento quinzenal, sob "
+                    "pena de retenção do valor até a regularização fiscal.")
+ 
+        elif metodo == "Valor Fixo em Parcelas":
+            # ── Valor Fixo em Parcelas ──
+            num_parc = admin['num_parcelas']
+            valor_parcela = valor_global / num_parc if num_parc else valor_global
+            valor_parc_fmt = (f"R$ {valor_parcela:,.2f}"
+                              .replace(',','X').replace('.', ',').replace('X','.'))
+ 
+            doc.add_paragraph(
+                f"Como remuneração pelos serviços prestados, o(a) "
+                f"CONTRATANTE pagará ao(à) {denominacao_adm} o honorário "
+                f"total de {valor_fmt} ({valor_extenso}), dividido em "
+                f"{num_parc} parcela(s) mensais de {valor_parc_fmt} cada, "
+                "conforme o cronograma de pagamentos constante no Anexo I "
+                "deste instrumento.")
+ 
+            p_f1 = doc.add_paragraph()
+            p_f1.add_run("PARÁGRAFO PRIMEIRO: ").bold = True
+            p_f1.add_run(
+                "Os vencimentos serão definidos a partir do início dos "
+                "serviços, respeitando os dias de pagamento quinzenal "
+                "adotados pelo CONTRATANTE (dias 5 e 20 de cada mês).")
+ 
+            p_f2 = doc.add_paragraph()
+            p_f2.add_run("PARÁGRAFO SEGUNDO: ").bold = True
+            p_f2.add_run(
+                "O valor global é fixo e irreajustável, salvo nas "
+                "hipóteses de aditivo contratual devidamente assinado "
+                "por ambas as partes.")
+ 
+            if tipo_pessoa_adm == 'PJ':
+                p_nf = doc.add_paragraph()
+                p_nf.add_run("PARÁGRAFO TERCEIRO — NOTA FISCAL: ").bold = True
+                p_nf.add_run(
+                    "O(A) CONTRATADO(A) deverá emitir Nota Fiscal de "
+                    "Serviços (NFS-e) correspondente a cada parcela "
+                    "paga, cujo comprovante de emissão deverá ser "
+                    "enviado ao CONTRATANTE até o dia do vencimento.")
+ 
+        elif metodo == "Eventos/Fases":
+            # ── Eventos/Fases ──
+            parcelas_admin = [p for p in contrato['parcelas']
+                              if re.sub(r'\D','',str(p['cnpj_cpf'])) ==
+                                 re.sub(r'\D','',str(admin['cnpj_cpf']))]
+ 
+            doc.add_paragraph(
+                f"Como remuneração pelos serviços prestados, o(a) "
+                f"CONTRATANTE pagará ao(à) {denominacao_adm} o honorário "
+                f"total de {valor_fmt} ({valor_extenso}), distribuído em "
+                f"{len(parcelas_admin)} evento(s)/fase(s) conforme "
+                "tabela abaixo, sendo cada parcela devida após a "
+                "conclusão e ateste do respectivo marco de obra:")
+ 
+            if parcelas_admin:
+                # tabela de eventos
+                from docx.shared import Inches
+                from docx.oxml.ns import qn
+                from docx.oxml import OxmlElement
+                from docx.shared import Pt as DxaPt
+                from docx.enum.table import WD_ALIGN_VERTICAL
+ 
+                tab = doc.add_table(rows=1, cols=4)
+                tab.style = 'Table Grid'
+
+                # Larguras em centésimos de polegada (1440 = 1 polegada)
+                # Evento | Descrição | % | Valor
+                col_widths = [Inches(0.6), Inches(4.0), Inches(0.8), Inches(1.1)]
+
+                # Aplicar largura em cada célula do cabeçalho e forçar no XML da tabela
+                for i, width in enumerate(col_widths):
+                    for cell in tab.columns[i].cells:
+                        cell.width = width
+
+                # Definir largura total da tabela no XML para evitar que o Word redistribua
+                tbl = tab._tbl
+                tblPr = tbl.tblPr
+                tblW = OxmlElement('w:tblW')
+                tblW.set(qn('w:w'), '9360')   # largura total em DXA (6.5 polegadas = 9360)
+                tblW.set(qn('w:type'), 'dxa')
+                tblPr.append(tblW)
+ 
+                def _cell(row_cells, idx, text, bold=False):
+                    cell = row_cells[idx]
+                    cell.text = ''
+                    p = cell.paragraphs[0]
+                    run = p.add_run(text)
+                    run.bold = bold
+                    run.font.size = Pt(9)
+                    return cell
+ 
+                hdr = tab.rows[0].cells
+                _cell(hdr, 0, 'Evento', bold=True)
+                _cell(hdr, 1, 'Descrição', bold=True)
+                _cell(hdr, 2, '%', bold=True)
+                _cell(hdr, 3, 'Valor (R$)', bold=True)
+ 
+                for ev in parcelas_admin:
+                    row_cells = tab.add_row().cells
+                    # Reaplicar larguras nas células de dados
+                    for i, width in enumerate(col_widths):
+                        row_cells[i].width = width
+                    _cell(row_cells, 0, str(ev['numero'] or ''))
+                    desc = str(ev['descricao'] or '')
+                    _cell(row_cells, 1, desc[:120] + ('…' if len(desc) > 120 else ''))
+                    perc_display = ev['percentual']
+                    if perc_display and perc_display < 1:
+                        perc_display = perc_display * 100
+                    _cell(row_cells, 2, f"{perc_display:.1f}%" if perc_display else '')
+                    val = f"{ev['valor']:,.2f}".replace(',','X').replace('.', ',').replace('X','.')
+                    _cell(row_cells, 3, val)
+ 
+            p_e1 = doc.add_paragraph()
+            p_e1.add_run("PARÁGRAFO PRIMEIRO: ").bold = True
+            p_e1.add_run(
+                "O pagamento de cada parcela ficará condicionado à "
+                "entrega e ateste do respectivo marco, formalizado "
+                "pelo CONTRATANTE em até 5 (cinco) dias úteis após "
+                "a comunicação de conclusão pelo(a) CONTRATADO(A).")
+ 
+            p_e2 = doc.add_paragraph()
+            p_e2.add_run("PARÁGRAFO SEGUNDO: ").bold = True
+            p_e2.add_run(
+                "O não ateste sem justificativa técnica fundamentada "
+                "no prazo acima importará em mora do CONTRATANTE, "
+                "sujeitando-o à multa moratória de 0,5% ao dia sobre "
+                "o valor da parcela inadimplida.")
+ 
+            if tipo_pessoa_adm == 'PJ':
+                p_nf = doc.add_paragraph()
+                p_nf.add_run("PARÁGRAFO TERCEIRO — NOTA FISCAL: ").bold = True
+                p_nf.add_run(
+                    "O(A) CONTRATADO(A) deverá emitir Nota Fiscal de "
+                    "Serviços (NFS-e) para cada evento pago, "
+                    "encaminhando-a ao CONTRATANTE junto com a "
+                    "solicitação de ateste.")
+ 
+        # ── CLÁUSULA QUARTA — OBRIGAÇÕES DO CONTRATADO ───────────
+        heading("CLÁUSULA QUARTA — OBRIGAÇÕES DO(A) CONTRATADO(A)")
+        obrigacoes = [
+            "executar os serviços com perícia técnica, observando "
+            "as normas da ABNT e as boas práticas de engenharia;",
+            "elaborar e enviar relatório quinzenal de prestação de "
+            "contas ao CONTRATANTE;",
+            "manter sigilo sobre informações confidenciais da obra "
+            "e do CONTRATANTE;",
+            "comunicar imediatamente ao CONTRATANTE qualquer "
+            "irregularidade ou risco identificado na obra;",
+            "garantir o uso de EPIs pelos colaboradores em obra;",
+            "não subcontratar total ou parcialmente a administração "
+            "da obra sem autorização expressa e por escrito do "
+            "CONTRATANTE.",
+        ]
+        for letra, texto in zip('abcdef', obrigacoes):
+            doc.add_paragraph(f"{letra}) {texto}")
+ 
+        # ── CLÁUSULA QUINTA — OBRIGAÇÕES DO CONTRATANTE ──────────
+        heading("CLÁUSULA QUINTA — OBRIGAÇÕES DO(A) CONTRATANTE")
+        doc.add_paragraph(
+            "a) fornecer ao(à) CONTRATADO(A) todos os projetos, "
+            "aprovações e documentos necessários ao exercício da "
+            "administração;")
+        doc.add_paragraph("b) efetuar os pagamentos nos prazos estipulados;")
+        doc.add_paragraph(
+            "c) comunicar ao(à) CONTRATADO(A) qualquer alteração "
+            "de escopo com antecedência mínima de 5 (cinco) dias úteis.")
+ 
+        # ── CLÁUSULA SEXTA — RESPONSABILIDADE CIVIL ──────────────
+        heading("CLÁUSULA SEXTA — RESPONSABILIDADE CIVIL")
+        doc.add_paragraph(
+            "O(A) CONTRATADO(A) responde por danos causados ao "
+            "CONTRATANTE ou a terceiros em decorrência de ação "
+            "dolosa ou culposa sua ou de seus prepostos, devendo "
+            "ressarcir integralmente os prejuízos comprovados.")
+ 
+        # ── CLÁUSULA SÉTIMA — RESCISÃO ────────────────────────────
+        heading("CLÁUSULA SÉTIMA — RESCISÃO E PENALIDADES")
+        doc.add_paragraph(
+            "Qualquer das partes poderá rescindir este contrato "
+            "mediante notificação escrita com antecedência mínima "
+            "de 30 (trinta) dias. A rescisão imotivada pelo(a) "
+            "CONTRATANTE implicará no pagamento de todas as parcelas "
+            "vencidas e das que venceriam nos 30 dias subsequentes. "
+            "A rescisão por justa causa (descumprimento de cláusula) "
+            "poderá ser imediata, sem esse ônus adicional.")
+ 
+        p_mul = doc.add_paragraph()
+        p_mul.add_run("PARÁGRAFO ÚNICO — MULTA: ").bold = True
+        p_mul.add_run(
+            f"O inadimplemento de qualquer cláusula sujeita a parte "
+            f"infratora à multa não compensatória de {multa_fmt} "
+            f"({multa_extenso}), sem prejuízo de perdas e danos.")
+ 
+        # ── CLÁUSULA OITAVA — DISPOSIÇÕES GERAIS ─────────────────
+        heading("CLÁUSULA OITAVA — DISPOSIÇÕES GERAIS")
+        doc.add_paragraph(
+            "a) Quaisquer alterações de valores ou escopo deverão "
+            "ser objeto de Termo Aditivo;")
+        doc.add_paragraph(
+            "b) É vedado ao(à) CONTRATADO(A) utilizar trabalhadores "
+            "menores de 18 anos;")
+        doc.add_paragraph(
+            "c) O(A) CONTRATANTE terá direito a ação regressiva "
+            "em caso de condenação trabalhista oriunda de "
+            "descumprimento pelo(a) CONTRATADO(A);")
+        doc.add_paragraph(
+            "d) Os comprovantes de transferência bancária constituem "
+            "recibo de quitação dos valores pagos.")
+ 
+        # ── CLÁUSULA NONA — FORO ──────────────────────────────────
+        heading("CLÁUSULA NONA — FORO")
+        doc.add_paragraph(
+            "As partes elegem o foro da Comarca de Belo Horizonte, "
+            "Estado de Minas Gerais, para dirimir quaisquer "
+            "controvérsias oriundas deste contrato, renunciando "
+            "expressamente a qualquer outro, por mais privilegiado "
+            "que seja.")
+ 
+        # ── ENCERRAMENTO ─────────────────────────────────────────
+        doc.add_paragraph(
+            "E, por estarem assim justos e contratados, firmam o "
+            "presente instrumento em duas (02) vias de igual teor "
+            "e forma, na presença das testemunhas abaixo.")
+ 
+        p_dt = doc.add_paragraph()
+        p_dt.paragraph_format.space_before = Pt(10)
+        p_dt.add_run(f"Belo Horizonte — MG, {data_extenso}.")
+ 
+        # ── ASSINATURAS ───────────────────────────────────────────
+        par(space_before=30)
+        par("_" * 55)
+        par_cn = doc.add_paragraph()
+        par_cn.add_run(nome_cliente).bold = True
+ 
+        par(space_before=30)
+        par("_" * 55)
+        par_adm = doc.add_paragraph()
+        par_adm.add_run(nome_adm).bold = True
+ 
+        par(space_before=40)
+        par("Testemunhas:", bold=True)
+        par(space_before=15)
+        par("_" * 55)
+        par("RG n.º ")
+        par(space_before=15)
+        par("_" * 55)
+        par("RG n.º ")
+ 
+        # ── DADOS BANCÁRIOS ───────────────────────────────────────
+        par(space_before=60)
+        par("DADOS BANCÁRIOS PARA PAGAMENTO:", bold=True)
+        par_adm2 = doc.add_paragraph()
+        par_adm2.add_run(nome_adm).bold = True
+        doc.add_paragraph(dados_banc or "Dados bancários não informados.")
+ 
+        return doc
+ 
+    # ── método público principal ─────────────────────────────────
+ 
+    def gerar_contratos_do_contrato(
+            self,
+            nome_cliente: str,
+            num_contrato: str,
+            arquivo_cliente: Path,
+            arquivo_clientes_geral: Path,
+            arquivo_fornecedores: Path,
+            pasta_saida: Path = None,
+            metodo_override: str = None,
+    ) -> list:
+        """
+        Lê o contrato num_contrato da planilha do cliente e gera
+        um arquivo .docx para cada administrador cadastrado.
+ 
+        Parâmetros
+        ----------
+        nome_cliente            : nome do cliente (para busca em Clientes.xlsx)
+        num_contrato            : ex. '2024/08'  (sem sufixo J/F, busca ambos)
+        arquivo_cliente         : caminho para CLIENTE.xlsx
+        arquivo_clientes_geral  : caminho para Clientes.xlsx
+        arquivo_fornecedores    : caminho para base_fornecedores.xlsx
+        pasta_saida             : onde salvar os .docx (default: PASTA_CONTRATOS_ADM)
+        metodo_override         : força um método ("Percentual da Quinzena" etc.)
+ 
+        Retorna
+        -------
+        list[str] : caminhos dos arquivos gerados
+        """
+        if pasta_saida is None:
+            if self.PASTA_CONTRATOS_ADM:
+                pasta_saida = self.PASTA_CONTRATOS_ADM
+            else:
+                pasta_saida = arquivo_cliente.parent / "Contratos_ADM"
+        pasta_saida = Path(pasta_saida)
+        pasta_saida.mkdir(parents=True, exist_ok=True)
+ 
+        # tentar carregar com sufixo J e F
+        contratos_carregados = {}
+        for sufixo in ('J', 'F', ''):
+            num = f"{num_contrato}{sufixo}".strip()
+            try:
+                dados = self._ler_dados_contrato(arquivo_cliente, num)
+                if dados['admins']:
+                    contratos_carregados[num] = dados
+            except Exception:
+                pass
+        if not contratos_carregados:
+            # tenta sem sufixo
+            dados = self._ler_dados_contrato(arquivo_cliente, num_contrato)
+            if dados['admins']:
+                contratos_carregados[num_contrato] = dados
+ 
+        dados_cliente = self._ler_dados_cliente(arquivo_clientes_geral, nome_cliente)
+        arquivos_gerados = []
+ 
+        for num_c, contrato in contratos_carregados.items():
+            for admin in contrato['admins']:
+                dados_forn = self._ler_dados_fornecedor(
+                    arquivo_fornecedores, admin['cnpj_cpf'])
+ 
+                # determinar método
+                if metodo_override:
+                    metodo = metodo_override
+                elif contrato['parcelas']:
+                    # se há parcelas com percentual > 0 e descricao → Eventos/Fases
+                    tem_eventos = any(
+                        p['percentual'] and p['descricao']
+                        for p in contrato['parcelas']
+                        if re.sub(r'\D','',str(p['cnpj_cpf'])) ==
+                           re.sub(r'\D','',str(admin['cnpj_cpf']))
+                    )
+                    tem_data_parc = any(
+                        p['vencimento']
+                        for p in contrato['parcelas']
+                        if re.sub(r'\D','',str(p['cnpj_cpf'])) ==
+                           re.sub(r'\D','',str(admin['cnpj_cpf']))
+                    )
+                    if tem_eventos:
+                        metodo = "Eventos/Fases"
+                    elif tem_data_parc:
+                        metodo = "Valor Fixo em Parcelas"
+                    else:
+                        metodo = "Percentual da Quinzena"
+                elif admin['percentual'] > 0 and admin['valor_total'] == 0:
+                    metodo = "Percentual da Quinzena"
+                elif admin['num_parcelas'] > 1:
+                    metodo = "Valor Fixo em Parcelas"
+                else:
+                    metodo = "Eventos/Fases"
+ 
+                doc = self._build_doc(contrato, admin, dados_cliente,
+                                      dados_forn, metodo)
+ 
+                tp = admin['tipo_pessoa']
+                num_c_safe = re.sub(r'[^\w]', '-', str(num_c))
+                nome_seg = re.sub(r'[^\w]', '_', admin['nome'])[:40]
+                nome_arq = (f"Contrato_ADM_{num_c_safe}_{tp}_{nome_seg}_"
+                            f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx")
+                caminho = pasta_saida / nome_arq
+                doc.save(str(caminho))
+                arquivos_gerados.append(str(caminho))
+ 
+        return arquivos_gerados
+ 
+    @staticmethod
+    def _extenso_percentual(valor: float) -> str:
+        """Converte percentual para extenso. Ex: 7.0 → 'sete'"""
+        try:
+            from num2words import num2words
+            # Separar parte inteira e decimal
+            inteiro = int(valor)
+            decimal = round((valor - inteiro) * 100)
+            if decimal == 0:
+                return num2words(inteiro, lang='pt_BR')
+            else:
+                return f"{num2words(inteiro, lang='pt_BR')} vírgula {num2words(decimal, lang='pt_BR')}"
+        except ImportError:
+            return str(valor)
 class ImportadorRH:
     def __init__(self, sistema_principal):
         self.sistema = sistema_principal
