@@ -11579,3 +11579,11 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-03-03 09:40:19,930 - INFO - ✅ Sistema de Entrada de Dados aberto
 2026-03-03 09:40:24,080 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
 2026-03-03 09:40:31,395 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-04-02 08:35:40,881 - INFO - Configurações importadas com sucesso via src.config
+2026-04-02 08:35:41,291 - INFO - Configurações importadas com sucesso
+2026-04-02 08:35:41,291 - INFO - Configurações do sistema importadas com sucesso
+2026-04-02 08:35:43,840 - INFO - Sistema iniciado em modo: TESTE
+2026-04-02 08:37:15,914 - INFO - Abrindo sistema de entrada de dados
+2026-04-02 08:37:25,389 - INFO - Proteções contra perda de dados configuradas
+2026-04-02 08:37:25,839 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-04-02 08:37:32,799 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
