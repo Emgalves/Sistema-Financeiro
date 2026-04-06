@@ -10,12 +10,11 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 7,
-    "patch": 2,
-    "release_date": "03/03/2026",
+    "patch": 3,
+    "release_date": "08/04/2026",
     "changes": [
-        "Inclusão do campo Responsável no formulário e na base de Fornecedores",
-        "Correção da busca por CNPJ/CPF do Visualizador de Lançamentos por Fornecedor",
-        "Atualização do Relatorio Quinzenal de Mediçoes - PDF para trazer o campo Responsável do Fornecedor"        
+        "Eliminação da necessidade de valor em contratos de administração de obras por percentual",
+        "Inclusão de gerador de contrato de administração de obras via Word"        
     ]
 }
 
