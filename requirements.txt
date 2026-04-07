@@ -6,7 +6,6 @@ cffi==2.0.0
 charset-normalizer==3.4.4
 cryptography==46.0.6
 dateutil==2.9.0.post0
-docx==1.2.0
 et_xmlfile==2.0.0
 idna==3.11
 lxml==6.0.2
