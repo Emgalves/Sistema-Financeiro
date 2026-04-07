@@ -973,7 +973,7 @@ class GestaoMedicoes:
         scrollbar.pack(side="right", fill="y")
 
         # Bind de mudança de aba para carregar dados do contexto
-        self.notebook.bind('<<NotebookTabChanged>>', self.on_tab_changed_contrato)
+        self.notebook.bind('<<NotebookTabChanged>>', self.on_tab_changed_contrato, add='+')
 
     def centralizar_janela(self, janela, largura=600, altura=400):
         """Centraliza a janela na tela e mantém visível - CORRIGIDO v3"""
@@ -1579,6 +1579,12 @@ class GestaoMedicoes:
 
             self.limpar_formulario_contrato()
 
+            # ── Restaurar contexto do fornecedor a partir do contrato ──
+            if contrato.get('nome'):
+                self.nome_fornecedor_selecionado = contrato['nome']
+            if contrato.get('cnpj'):
+                self.cnpj_fornecedor_selecionado = contrato['cnpj']
+
             # Preencher campos com dados do contrato existente
             if contrato['data_inicio']:
                 try:
@@ -1609,6 +1615,9 @@ class GestaoMedicoes:
                 self.txt_observacoes_contrato.insert('1.0', contrato['observacao'])
 
             self.notebook.select(self.aba_contratos_emissao)
+            # Forçar atualização dos labels de contexto imediatamente,
+            # sem depender do evento <<NotebookTabChanged>> (assíncrono no tkinter)
+            self.root.after(50, self._preencher_contexto_aba_contrato)
             logger.info(f"Contrato {id_contrato} carregado para reemissão")
 
         except Exception as e:
