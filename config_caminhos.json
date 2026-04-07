@@ -1,0 +1,14 @@
+{
+    "_instrucoes": [
+        "Este arquivo define o caminho base dos dados do sistema.",
+        "Edite 'caminho_dados' se o servidor ou letra de drive mudar.",
+        "NÃO é necessário rebuild do executável após editar este arquivo.",
+        "Use barras normais / ou barras duplas \\\\ no caminho.",
+        "Exemplos:",
+        "  Servidor por nome : //servidor/Servidor/Relatorios/Financeiro",
+        "  Letra de drive    : Z:/Servidor/Relatorios/Financeiro",
+        "  Google Drive      : H:/.shortcut-targets-by-id/195uuohIL_ZKum7lhwu-OzJCH_CGAb97G/Relatorios"
+    ],
+    "caminho_dados": "//servidor/Servidor/Relatórios/Financeiro",
+    "caminho_dados_alternativo": "Z:/Servidor/Relatórios/Financeiro"
+}
