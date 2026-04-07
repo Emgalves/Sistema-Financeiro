@@ -13,8 +13,9 @@ VERSION_INFO = {
     "patch": 3,
     "release_date": "08/04/2026",
     "changes": [
-        "Eliminação da necessidade de valor em contratos de administração de obras por percentual",
-        "Inclusão de gerador de contrato de administração de obras via Word"        
+        "Inclusão do caminho Z:/servidor",
+        "Correção do módulo Gestão de Medições",
+        "Eliminação da necessidade de valor em contratos de administração de obras por percentual"
     ]
 }
 
