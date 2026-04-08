@@ -11622,3 +11622,31 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-04-07 17:55:19,931 - INFO - Sistema iniciado em modo: TESTE
 2026-04-07 17:55:21,447 - INFO - Abrindo gestão de medições
 2026-04-07 17:56:04,483 - INFO - Sistema encerrado pelo usuário
+2026-04-08 10:00:33,724 - INFO - Configurações importadas com sucesso via src.config
+2026-04-08 10:00:33,746 - INFO - Configurações importadas com sucesso
+2026-04-08 10:00:33,749 - INFO - Configurações do sistema importadas com sucesso
+2026-04-08 10:00:35,333 - INFO - Sistema iniciado em modo: TESTE
+2026-04-08 10:00:39,418 - INFO - Abrindo sistema de entrada de dados
+2026-04-08 10:00:41,084 - INFO - Proteções contra perda de dados configuradas
+2026-04-08 10:00:41,552 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-04-08 10:00:44,470 - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
+2026-04-08 10:04:00,619 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-04-08 10:35:56,885 - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
+2026-04-08 11:25:42,089 - INFO - Configurações importadas com sucesso via src.config
+2026-04-08 11:25:42,140 - INFO - Configurações importadas com sucesso
+2026-04-08 11:25:42,140 - INFO - Configurações do sistema importadas com sucesso
+2026-04-08 11:25:46,499 - INFO - Sistema iniciado em modo: TESTE
+2026-04-08 11:27:00,361 - INFO - Abrindo sistema de entrada de dados
+2026-04-08 11:27:02,042 - INFO - Proteções contra perda de dados configuradas
+2026-04-08 11:27:02,381 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-04-08 11:27:06,240 - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2026-04-08 13:46:03,065 - INFO - Cliente selecionado com sucesso: GILMAR ALMEIDA PORTUGAL
+2026-04-08 13:58:54,230 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-04-08 14:27:26,966 - INFO - Configurações importadas com sucesso via src.config
+2026-04-08 14:27:27,052 - INFO - Configurações importadas com sucesso
+2026-04-08 14:27:27,056 - INFO - Configurações do sistema importadas com sucesso
+2026-04-08 14:27:28,571 - INFO - Sistema iniciado em modo: TESTE
+2026-04-08 14:27:32,529 - INFO - Abrindo sistema de entrada de dados
+2026-04-08 14:27:35,265 - INFO - Proteções contra perda de dados configuradas
+2026-04-08 14:27:35,606 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-04-08 14:27:38,079 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
