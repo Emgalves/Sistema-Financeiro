@@ -160,3 +160,82 @@
 2026-04-07 14:31:10,265 - sistema_relatorios - gestao_medicoes - INFO - Pasta de contratos aberta: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
 2026-04-07 15:06:31,484 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
 2026-04-07 15:06:31,551 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-04-07 15:18:21,922 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 15:50:24,262 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 15:55:36,468 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 16:03:05,365 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 16:20:34,204 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 16:30:32,004 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 17:38:27,944 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 17:48:16,586 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 17:55:04,397 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 17:55:04,398 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-04-07 17:55:04,399 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-04-07 17:55:04,399 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-04-07 17:55:04,400 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-04-07 17:55:21,726 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-04-07 17:55:22,024 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-04-07 17:55:24,280 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-04-07 17:55:24,300 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-04-07 17:55:24,303 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-04-07 17:55:24,303 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-04-07 17:55:26,122 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-04-07 17:55:26,148 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-04-07 17:55:26,166 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-04-07 17:55:26,166 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-04-07 17:55:26,167 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-04-07 17:55:26,167 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-04-07 17:55:26,168 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-04-07 17:55:26,168 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-04-07 17:55:26,169 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-04-07 17:55:34,938 - sistema_relatorios - gestao_medicoes - INFO - Prazo calculado: 22 dias úteis (excluindo data início)
+2026-04-07 17:55:34,938 - sistema_relatorios - gestao_medicoes - INFO - Formulário de contrato limpo
+2026-04-07 17:55:34,942 - sistema_relatorios - gestao_medicoes - INFO - Contrato 13 carregado para reemissão
+2026-04-07 17:55:35,005 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-04-07 17:55:35,034 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-04-07 17:55:35,037 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-04-07 17:55:35,037 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-04-07 17:55:35,038 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-04-07 17:55:35,038 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-04-07 17:55:35,039 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-04-07 17:55:35,039 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-04-07 17:55:35,041 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-04-07 17:55:38,855 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-04-07 17:55:38,881 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-04-07 17:55:38,884 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-04-07 17:55:38,884 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-04-07 17:55:38,885 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-04-07 17:55:38,886 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-04-07 17:55:38,892 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-04-07 17:55:38,893 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-04-07 17:55:38,894 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-04-07 17:55:38,899 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do fornecedor por nome: LUCIANO LISBOA DA SILVA
+2026-04-07 17:55:39,451 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis na planilha de fornecedores: ['CNPJ/CPF', 'tipo_pessoa', 'RAZÃO SOCIAL', 'NOME', 'TELEFONE:', 'EMAIL:', 'BANCO:', 'OP', 'AGENCIA:', 'CONTA:', 'Chave_PIX', 'CATEGORIA: ', 'ESPECIFICACAO', 'VÍNCULO', 'DADOS BANCÁRIOS', 'ENDEREÇO', 'STATUS', 'RESPONSAVEL']
+2026-04-07 17:55:39,457 - sistema_relatorios - gerador_contrato - INFO - ✅ Fornecedor encontrado na planilha
+2026-04-07 17:55:39,458 - sistema_relatorios - gerador_contrato - INFO - CPF/CNPJ: 4571144601 → 04571144601
+2026-04-07 17:55:39,459 - sistema_relatorios - gerador_contrato - WARNING - Endereço não encontrado para fornecedor LUCIANO LISBOA DA SILVA
+2026-04-07 17:55:39,459 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados obtidos: Nome=LUCIANO LISBOA DA SILVA, CNPJ/CPF=04571144601, Endereço=não informado
+2026-04-07 17:55:40,617 - sistema_relatorios - gerador_contrato - INFO - === INICIANDO GERAÇÃO DE CONTRATO ===
+2026-04-07 17:55:40,618 - sistema_relatorios - gerador_contrato - INFO - 📋 Dados do contrato recebidos: ['data', 'cidade', 'cliente_nome', 'cliente_cno', 'cliente_cpf', 'cliente_estado_civil', 'cliente_endereco', 'fornecedor_nome', 'fornecedor_cnpj_cpf', 'fornecedor_endereco', 'endereco_obra', 'dias', 'valor', 'multa', 'dados_bancarios', 'data_condicionada', 'data_inicio', 'data_fim', 'descricao']
+2026-04-07 17:55:40,618 - sistema_relatorios - gerador_contrato - INFO - Usando formato dict - Cliente: BRUNO SANTANA RINALDI
+2026-04-07 17:55:40,619 - sistema_relatorios - gerador_contrato - INFO - Fornecedor CPF/CNPJ do dict: 04571144601
+2026-04-07 17:55:40,619 - sistema_relatorios - gerador_contrato - INFO - Prazo informado: 22 dias
+2026-04-07 17:55:40,619 - sistema_relatorios - gerador_contrato - INFO - Multa informada: R$ 4.000,00
+2026-04-07 17:55:40,620 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados cliente processados: BRUNO SANTANA RINALDI
+2026-04-07 17:55:40,620 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados fornecedor processados: LUCIANO LISBOA DA SILVA - 04571144601
+2026-04-07 17:55:40,621 - sistema_relatorios - gerador_contrato - INFO - ✅ Usando prazo do formulário: 22 dias úteis
+2026-04-07 17:55:40,777 - sistema_relatorios - gerador_contrato - INFO - ✅ Usando multa do formulário: R$ 4000.0
+2026-04-07 17:55:40,778 - sistema_relatorios - gerador_contrato - INFO - ✅ Data do contrato: 07/04/2026 (7 de abril de 2026)
+2026-04-07 17:55:40,779 - sistema_relatorios - gerador_contrato - INFO - ✅ Data início dos serviços: 05/03/2026
+2026-04-07 17:55:40,857 - sistema_relatorios - gerador_contrato - INFO - ✓ Contrato datado de 07/04/2026, serviços de 05/03/2026 a 08/05/2026
+2026-04-07 17:55:40,913 - sistema_relatorios - gerador_contrato - INFO - ✅ Contrato gerado com sucesso: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\Contrato_BRUNO_SANTANA_RINALDI_20260407_175540.docx
+2026-04-07 17:55:46,185 - sistema_relatorios - gestao_medicoes - INFO - Pasta de contratos aberta: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-04-07 17:55:59,788 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-04-07 17:55:59,789 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-04-07 17:59:21,087 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 18:10:51,232 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 18:22:24,000 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 18:42:47,301 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 18:58:11,335 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 19:24:39,108 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-04-07 19:40:40,577 - sistema - logger_config - INFO - Sistema de logging inicializado
