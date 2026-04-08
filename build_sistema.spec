@@ -1,257 +1,136 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""
-Arquivo SPEC otimizado para Sistema de Gestão Financeira
-Resolve problemas com python-docx e garante todos os módulos necessários
-"""
 
 import sys
 import os
-from PyInstaller.utils.hooks import collect_all, collect_submodules, collect_data_files
+from PyInstaller.utils.hooks import collect_submodules
 
 block_cipher = None
 
-# ====================================================================
-# CONFIGURAÇÕES BÁSICAS
-# ====================================================================
-
-NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_PRODUCAO"  # Altere para _TESTE se necessário
+NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_PRODUCAO"
 ARQUIVO_PRINCIPAL = "src/sistema_principal.py"
-ICONE = "logo1.ico"  # ou logo1.png
+ICONE = "logo1.ico"
 
 # ====================================================================
-# COLETA COMPLETA DE MÓDULOS PROBLEMÁTICOS
+# PYTHON-DOCX — incluir pasta inteira como dado + submodulos como imports
 # ====================================================================
 
-# Python-docx (SOLUÇÃO COMPLETA)
 docx_datas = []
-docx_binaries = []
 docx_hiddenimports = []
 
 try:
-    # Coletar TUDO do python-docx
-    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('docx')
-    docx_datas += tmp_datas
-    docx_binaries += tmp_binaries
-    docx_hiddenimports += tmp_hiddenimports
-    
-    # Garantir submódulos específicos
+    import docx as _docx
+    docx_dir = os.path.dirname(_docx.__file__)
+    # Incluir TODA a pasta docx como dado — garante que os .py ficam acessíveis
+    docx_datas.append((docx_dir, 'docx'))
+    print(f"[OK] pasta docx incluída: {docx_dir}")
+except Exception as e:
+    print(f"[AVISO] Erro ao localizar docx: {e}")
+
+try:
     docx_hiddenimports += collect_submodules('docx')
     docx_hiddenimports += [
-        'docx',
-        'docx.shared',
-        'docx.enum',
-        'docx.enum.text',
-        'docx.enum.style',
-        'docx.oxml',
-        'docx.oxml.ns',
-        'docx.oxml.shared',
-        'docx.oxml.text',
-        'docx.oxml.table',
-        'docx.oxml.section',
-        'docx.opc',
-        'docx.opc.constants',
-        'docx.opc.packuri',
-        'docx.opc.part',
-        'docx.opc.parts',
-        'docx.parts',
-        'docx.parts.document',
-        'docx.text',
-        'docx.text.paragraph',
-        'docx.text.run',
-        'docx.document',
-        'docx.table',
-        'docx.section',
-        'docx.styles',
+        'docx', 'docx.api', 'docx.shared', 'docx.enum', 'docx.enum.text',
+        'docx.enum.style', 'docx.enum.dml', 'docx.enum.section', 'docx.enum.table',
+        'docx.oxml', 'docx.oxml.ns', 'docx.oxml.shared', 'docx.oxml.text',
+        'docx.oxml.table', 'docx.oxml.section', 'docx.oxml.styles',
+        'docx.opc', 'docx.opc.constants', 'docx.opc.packuri', 'docx.opc.part',
+        'docx.opc.parts', 'docx.opc.parts.coreprops',
+        'docx.parts', 'docx.parts.document', 'docx.parts.image',
+        'docx.text', 'docx.text.paragraph', 'docx.text.run',
+        'docx.document', 'docx.table', 'docx.section',
+        'docx.styles', 'docx.styles.styles',
+        'docx.image', 'docx.image.png', 'docx.image.jpeg',
+        'docx.blkcntnr', 'docx.drawing', 'docx.shape',
+        'docx.comments', 'docx.settings', 'docx.package',
     ]
-    print("[OK] python-docx coletado com sucesso")
+    print("[OK] python-docx hiddenimports configurados")
 except Exception as e:
-    print(f"[AVISO] Erro ao coletar python-docx: {e}")
+    print(f"[AVISO] Erro nos hiddenimports do docx: {e}")
 
-# LXML (necessário para python-docx)
-lxml_datas = []
-lxml_binaries = []
-lxml_hiddenimports = []
+# ====================================================================
+# LXML
+# ====================================================================
 
+from PyInstaller.utils.hooks import collect_all
+
+lxml_datas, lxml_binaries, lxml_hiddenimports = [], [], []
 try:
-    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('lxml')
-    lxml_datas += tmp_datas
-    lxml_binaries += tmp_binaries
-    lxml_hiddenimports += tmp_hiddenimports
-    
+    lxml_datas, lxml_binaries, lxml_hiddenimports = collect_all('lxml')
     lxml_hiddenimports += collect_submodules('lxml')
-    lxml_hiddenimports += [
-        'lxml',
-        'lxml.etree',
-        'lxml._elementpath',
-        'lxml.builder',
-    ]
-    print("[OK] lxml coletado com sucesso")
+    print("[OK] lxml coletado")
 except Exception as e:
-    print(f"[AVISO] Erro ao coletar lxml: {e}")
-
-# Outros módulos importantes
-outras_datas = []
-outras_binaries = []
-outras_hiddenimports = []
-
-# Coletar openpyxl
-try:
-    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('openpyxl')
-    outras_datas += tmp_datas
-    outras_binaries += tmp_binaries
-    outras_hiddenimports += tmp_hiddenimports
-    print("[OK] openpyxl coletado")
-except:
-    pass
-
-# Coletar pandas
-try:
-    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('pandas')
-    outras_datas += tmp_datas
-    outras_binaries += tmp_binaries
-    outras_hiddenimports += tmp_hiddenimports
-    print("[OK] pandas coletado")
-except:
-    pass
-
-# Coletar PIL/Pillow
-try:
-    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('PIL')
-    outras_datas += tmp_datas
-    outras_binaries += tmp_binaries
-    outras_hiddenimports += tmp_hiddenimports
-    print("[OK] PIL/Pillow coletado")
-except:
-    pass
-
-# Coletar reportlab
-try:
-    tmp_datas, tmp_binaries, tmp_hiddenimports = collect_all('reportlab')
-    outras_datas += tmp_datas
-    outras_binaries += tmp_binaries
-    outras_hiddenimports += tmp_hiddenimports
-    print("[OK] reportlab coletado")
-except:
-    pass
+    print(f"[AVISO] lxml: {e}")
 
 # ====================================================================
-# HIDDEN IMPORTS COMPLETO
+# OUTROS MÓDULOS
 # ====================================================================
 
-hidden_imports = []
-
-# Adicionar todos os hiddenimports coletados
-hidden_imports += docx_hiddenimports
-hidden_imports += lxml_hiddenimports
-hidden_imports += outras_hiddenimports
-
-# Adicionar imports manuais do sistema
-hidden_imports += [
-    # Tkinter
-    'tkinter',
-    'tkinter.ttk',
-    'tkinter.scrolledtext',
-    'tkinter.filedialog',
-    'tkinter.messagebox',
-    
-    # Bibliotecas essenciais
-    'matplotlib',
-    'xlwings',
-    'tkcalendar',
-    'babel',
-    'babel.numbers',
-    'num2words',
-    'num2words.lang_pt_BR',
-    'dotenv',
-    
-    # Módulos do sistema
-    'ambiente_config',
-    'version_control',
-    'Sistema_Entrada_Dados',
-    'src.ambiente_config',
-    'src.version_control',
-    'src.Sistema_Entrada_Dados',
-    
-    # Relatórios
-    'src.relatorios_interface',
-    'src.relatorio_despesas_aprimorado',
-    'src.relatorio_despesas_service',
-    'src.relatorio_tipo_despesa',
-    'src.relatorio_categoria',
-    'src.relatorio_fornecedores',
-    'src.relatorio_contratos_medicoes',
-    'src.relatorio_gerencial_engenheiro',
-    'src.relatorio_gerencial_pdf',
-    
-    # Gestão
-    'src.despesas_rateadas',
-    'src.gestao_medicoes',
-    'src.gestao_taxas',
-    'src.configuracoes_sistema',
-    
-    # Módulos (Gerador de Contratos)
-    'src.modules',
-    'src.modules.gerador_contrato',
-    
-    # Controle
-    'src.controle_pagamentos_taxas',
-    'src.controle_pagamentos',
-    'src.pagamentos_eventos',
-    
-    # Utilitários
-    'src.verificador_sistema',
-    'src.corrigir_imports_sistema',
-    'src.finalizacao_quinzena',
-    'src.correcao_monetaria',
-    'src.teste_certificado_automatico',
-    
-    # Config
-    'src.config.utils',
-    'src.config.dialogs',
-    'src.config.logger_config',
-    'src.config.window_config',
-    'src.config.config',
-]
-
-# Remover duplicatas
-hidden_imports = list(set(hidden_imports))
-
-print(f"[INFO] Total de hidden imports: {len(hidden_imports)}")
+outras_datas, outras_binaries, outras_hiddenimports = [], [], []
+for modulo in ['openpyxl', 'pandas', 'PIL', 'reportlab']:
+    try:
+        d, b, h = collect_all(modulo)
+        outras_datas += d
+        outras_binaries += b
+        outras_hiddenimports += h
+        print(f"[OK] {modulo} coletado")
+    except:
+        pass
 
 # ====================================================================
-# ARQUIVOS DE DADOS
+# HIDDEN IMPORTS
+# ====================================================================
+
+hidden_imports = list(set(
+    docx_hiddenimports + lxml_hiddenimports + outras_hiddenimports + [
+        'tkinter', 'tkinter.ttk', 'tkinter.scrolledtext',
+        'tkinter.filedialog', 'tkinter.messagebox',
+        'matplotlib', 'xlwings', 'tkcalendar',
+        'babel', 'babel.numbers', 'num2words', 'num2words.lang_pt_BR', 'dotenv',
+        'ambiente_config', 'version_control', 'Sistema_Entrada_Dados',
+        'src.ambiente_config', 'src.version_control', 'src.Sistema_Entrada_Dados',
+        'src.relatorios_interface', 'src.relatorio_despesas_aprimorado',
+        'src.relatorio_despesas_service', 'src.relatorio_tipo_despesa',
+        'src.relatorio_categoria', 'src.relatorio_fornecedores',
+        'src.relatorio_contratos_medicoes', 'src.relatorio_gerencial_engenheiro',
+        'src.relatorio_gerencial_pdf',
+        'src.despesas_rateadas', 'src.gestao_medicoes', 'src.gestao_taxas',
+        'src.configuracoes_sistema',
+        'src.modules', 'src.modules.gerador_contrato',
+        'src.controle_pagamentos_taxas', 'src.controle_pagamentos',
+        'src.pagamentos_eventos', 'src.verificador_sistema',
+        'src.corrigir_imports_sistema', 'src.finalizacao_quinzena',
+        'src.correcao_monetaria', 'src.teste_certificado_automatico',
+        'src.config.utils', 'src.config.dialogs', 'src.config.logger_config',
+        'src.config.window_config', 'src.config.config',
+    ]
+))
+
+print(f"[INFO] Total hidden imports: {len(hidden_imports)}")
+
+# ====================================================================
+# DADOS
 # ====================================================================
 
 datas = []
 
-# Logo
 if os.path.exists('logo.png'):
     datas.append(('logo.png', '.'))
     print("[OK] logo.png adicionado")
 
-# Diretório src completo
 if os.path.exists('src'):
     datas.append(('src', 'src'))
-    print("[OK] Diretório src/ adicionado")
+    print("[OK] src/ adicionado")
 
-# Diretório config
 if os.path.exists('config'):
     datas.append(('config', 'config'))
-    print("[OK] Diretório config/ adicionado")
+    print("[OK] config/ adicionado")
 
-# Adicionar dados coletados
-datas += docx_datas
-datas += lxml_datas
-datas += outras_datas
+datas += docx_datas + lxml_datas + outras_datas
 
-# Combinar binários
-binaries = []
-binaries += docx_binaries
-binaries += lxml_binaries
-binaries += outras_binaries
+binaries = [] + lxml_binaries + outras_binaries
 
-print(f"[INFO] Total de arquivos de dados: {len(datas)}")
-print(f"[INFO] Total de binários: {len(binaries)}")
+print(f"[INFO] Total datas: {len(datas)}")
+print(f"[INFO] Total binaries: {len(binaries)}")
 
 # ====================================================================
 # ANÁLISE
@@ -265,32 +144,15 @@ a = Analysis(
     hiddenimports=hidden_imports,
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=[],
-    excludes=[
-        'matplotlib.tests',
-        'numpy.tests',
-        'pandas.tests',
-        'PIL.tests',
-    ],
+    runtime_hooks=['hook_docx_runtime.py'],
+    excludes=['matplotlib.tests', 'numpy.tests', 'pandas.tests', 'PIL.tests'],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
     noarchive=False,
 )
 
-# ====================================================================
-# PYZ (arquivo compactado Python)
-# ====================================================================
-
-pyz = PYZ(
-    a.pure,
-    a.zipped_data,
-    cipher=block_cipher
-)
-
-# ====================================================================
-# EXE (executável)
-# ====================================================================
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
     pyz,
@@ -306,7 +168,7 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,  # Sem console para interface gráfica
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
@@ -314,11 +176,3 @@ exe = EXE(
     entitlements_file=None,
     icon=ICONE if os.path.exists(ICONE) else None,
 )
-
-print("\n" + "="*70)
-print("ARQUIVO SPEC CONFIGURADO COM SUCESSO".center(70))
-print("="*70)
-print(f"\nExecutável: {NOME_EXECUTAVEL}.exe")
-print(f"Ícone: {ICONE if os.path.exists(ICONE) else 'Não definido'}")
-print(f"Console: Desabilitado (interface gráfica)")
-print("\n" + "="*70)
