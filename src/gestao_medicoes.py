@@ -168,9 +168,15 @@ class GestaoMedicoes:
         # Configurar interface
         self.setup_gui()
 
-        self.gerador_contrato = GeradorContrato()
+        self._gerador_contrato = None  # instanciado sob demanda
         self.servicos_selecionados = []
     
+    @property
+    def gerador_contrato(self):
+        if self._gerador_contrato is None:
+            self._gerador_contrato = GeradorContrato()
+        return self._gerador_contrato
+
     def _desativar_topmost(self):
         """
         Desativa topmost após 5 segundos.
@@ -1332,7 +1338,7 @@ class GestaoMedicoes:
 
             # Preencher painel de dados do cliente na aba Seleção
             try:
-                dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
+                dados_cliente = self._obter_dados_cliente(self.cliente_atual)
                 if dados_cliente:
                     def _set(entry, valor):
                         entry.config(state='normal')
@@ -1351,6 +1357,87 @@ class GestaoMedicoes:
 
             self.verificar_aba_medicoes()
 
+    def _obter_dados_cliente(self, nome_cliente):
+        """
+        Lê dados do cliente diretamente do Clientes.xlsx.
+        Independente do GeradorContrato — sem dependência do python-docx.
+        """
+        try:
+            df = pd.read_excel(ARQUIVO_CLIENTES)
+ 
+            # Localizar coluna de nome
+            col_cliente = None
+            for nome_col in ['Nome', 'Cliente', 'cliente', 'CLIENTE', 'nome', 'NOME']:
+                if nome_col in df.columns:
+                    col_cliente = nome_col
+                    break
+ 
+            if not col_cliente:
+                logger.warning("_obter_dados_cliente: coluna de nome não encontrada")
+                return None
+ 
+            cliente_row = df[df[col_cliente] == nome_cliente]
+            if cliente_row.empty:
+                logger.warning(f"_obter_dados_cliente: '{nome_cliente}' não encontrado")
+                return None
+ 
+            cliente = cliente_row.iloc[0]
+ 
+            def _safe(col, default=''):
+                try:
+                    val = cliente.get(col, default)
+                    if pd.isna(val) or val is None:
+                        return default
+                    return str(val).strip()
+                except:
+                    return default
+ 
+            # Formatar CPF/CNPJ
+            cpf_raw = cliente['CPF'] if 'CPF' in cliente.index else None
+            cpf_formatado = 'não informado'
+            if cpf_raw is not None and not pd.isna(cpf_raw):
+                if isinstance(cpf_raw, float):
+                    cpf_str = str(int(cpf_raw))
+                elif isinstance(cpf_raw, int):
+                    cpf_str = str(cpf_raw)
+                else:
+                    cpf_str = str(cpf_raw).strip()
+ 
+                apenas_numeros = ''.join(filter(str.isdigit, cpf_str))
+                if len(apenas_numeros) == 11:
+                    cpf_formatado = f"{apenas_numeros[:3]}.{apenas_numeros[3:6]}.{apenas_numeros[6:9]}-{apenas_numeros[9:11]}"
+                elif len(apenas_numeros) == 14:
+                    cpf_formatado = f"{apenas_numeros[:2]}.{apenas_numeros[2:5]}.{apenas_numeros[5:8]}/{apenas_numeros[8:12]}-{apenas_numeros[12:14]}"
+                else:
+                    cpf_formatado = cpf_str
+ 
+            # Formatar CNO
+            cno_raw = _safe('CNO', '')
+            cno_formatado = ''
+            if cno_raw:
+                if '.' in cno_raw and '/' in cno_raw:
+                    cno_formatado = cno_raw
+                else:
+                    cno_limpo = ''.join(filter(str.isdigit, cno_raw)).zfill(13)
+                    if len(cno_limpo) >= 12:
+                        cno_formatado = f"{cno_limpo[:2]}.{cno_limpo[2:5]}.{cno_limpo[5:10]}/{cno_limpo[10:12]}"
+                    else:
+                        cno_formatado = cno_raw
+ 
+            return {
+                'nome':         _safe(col_cliente, nome_cliente),
+                'cnpj_cpf':     cpf_formatado,
+                'cno':          cno_formatado,
+                'estado_civil': _safe('Estado Civil', 'não informado'),
+                'endereco':     _safe('Endereço', 'não informado'),
+                'cidade':       _safe('Cidade', 'Belo Horizonte'),
+                'estado':       _safe('Estado', 'MG'),
+            }
+ 
+        except Exception as e:
+            logger.error(f"_obter_dados_cliente: erro ao ler dados: {e}")
+            return None
+        
     def continuar_para_fornecedor(self):
         """Avança para a aba de seleção de fornecedor.
         Também limpa o filtro de fornecedor anterior para que a aba
