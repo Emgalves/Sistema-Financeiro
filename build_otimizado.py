@@ -1,7 +1,6 @@
-1# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script de Build Otimizado - Sistema de Gestão Financeira
-VERSÃO CORRIGIDA - Resolve problema do python-docx
 """
 
 import os
@@ -17,30 +16,31 @@ from datetime import datetime
 
 SPEC_FILE = "build_sistema.spec"
 
+# Pasta do docx no venv (fonte para copiar para dist/)
+DOCX_ORIGEM = Path("venv/Lib/site-packages/docx")
+
+# Arquivo de configuração de caminhos (distribuído junto com o exe)
+CONFIG_JSON_ORIGEM = Path("config_caminhos.json")
+
 # ====================================================================
 # FUNÇÕES AUXILIARES
 # ====================================================================
 
 def print_header(texto):
-    """Imprime cabeçalho formatado"""
     print("\n" + "=" * 70)
     print(texto.center(70))
     print("=" * 70)
 
 def print_step(texto):
-    """Imprime passo da execução"""
     print(f"\n>> {texto}")
 
 def print_success(texto):
-    """Imprime mensagem de sucesso"""
     print(f"   [OK] {texto}")
 
 def print_warning(texto):
-    """Imprime mensagem de aviso"""
     print(f"   [AVISO] {texto}")
 
 def print_error(texto):
-    """Imprime mensagem de erro"""
     print(f"   [ERRO] {texto}")
 
 # ====================================================================
@@ -48,9 +48,8 @@ def print_error(texto):
 # ====================================================================
 
 def verificar_dependencias():
-    """Verifica se todas as dependências estão instaladas"""
     print_step("Verificando dependências críticas...")
-    
+
     dependencias = {
         'docx': 'python-docx',
         'lxml': 'lxml',
@@ -60,9 +59,8 @@ def verificar_dependencias():
         'reportlab': 'reportlab',
         'num2words': 'num2words',
     }
-    
+
     faltando = []
-    
     for modulo, nome_pip in dependencias.items():
         try:
             __import__(modulo)
@@ -70,29 +68,21 @@ def verificar_dependencias():
         except ImportError:
             print_error(f"{nome_pip} NÃO INSTALADO!")
             faltando.append(nome_pip)
-    
+
     if faltando:
         print("\n" + "="*70)
         print_error("DEPENDÊNCIAS FALTANDO!")
-        print("\nInstale com:")
-        print(f"pip install {' '.join(faltando)}")
+        print(f"\nInstale com: pip install {' '.join(faltando)}")
         print("="*70)
         return False
-    
+
     return True
 
 def verificar_pyinstaller():
-    """Verifica PyInstaller"""
     print_step("Verificando PyInstaller...")
-    
     try:
-        result = subprocess.run(
-            ["pyinstaller", "--version"],
-            capture_output=True,
-            text=True
-        )
-        version = result.stdout.strip()
-        print_success(f"PyInstaller {version} encontrado")
+        result = subprocess.run(["pyinstaller", "--version"], capture_output=True, text=True)
+        print_success(f"PyInstaller {result.stdout.strip()} encontrado")
         return True
     except FileNotFoundError:
         print_error("PyInstaller não encontrado!")
@@ -100,15 +90,15 @@ def verificar_pyinstaller():
         return False
 
 def verificar_arquivos():
-    """Verifica arquivos necessários"""
     print_step("Verificando arquivos do projeto...")
-    
+
     arquivos_necessarios = [
         "src/sistema_principal.py",
         "src/gestao_medicoes.py",
         "src/modules/gerador_contrato.py",
+        "hook_docx_runtime.py",
     ]
-    
+
     todos_ok = True
     for arquivo in arquivos_necessarios:
         if os.path.exists(arquivo):
@@ -116,23 +106,57 @@ def verificar_arquivos():
         else:
             print_error(f"{arquivo} NÃO ENCONTRADO!")
             todos_ok = False
-    
+
+    # Verificar pasta docx no venv
+    if DOCX_ORIGEM.exists():
+        print_success(f"Pasta docx encontrada: {DOCX_ORIGEM}")
+    else:
+        print_warning(f"Pasta docx não encontrada em {DOCX_ORIGEM}")
+        print_warning("O executável precisará da pasta docx copiada manualmente")
+
+    # Verificar config_caminhos.json
+    if CONFIG_JSON_ORIGEM.exists():
+        print_success(f"config_caminhos.json encontrado")
+    else:
+        print_warning("config_caminhos.json não encontrado — será criado um padrão em dist/")
+
     return todos_ok
 
 def limpar_builds_anteriores():
-    """Remove builds e cache antigos"""
+    print_step("Encerrando processos do executável (se rodando)...")
+    for nome_exe in ["Sistema_Gestao_Financeira_PRODUCAO.exe", "Sistema_Gestao_Financeira_TESTE.exe"]:
+        try:
+            subprocess.run(["taskkill", "/F", "/IM", nome_exe], capture_output=True)
+        except:
+            pass
+
     print_step("Limpando builds anteriores...")
-    
-    # Diretórios
-    dirs_to_clean = ["build", "dist", "__pycache__"]
-    for dir_name in dirs_to_clean:
+    for dir_name in ["build", "__pycache__"]:
         if os.path.exists(dir_name):
             try:
                 shutil.rmtree(dir_name)
                 print_success(f"Removido: {dir_name}/")
             except Exception as e:
                 print_warning(f"Não foi possível remover {dir_name}/: {e}")
-    
+
+    # Limpar dist\ mas preservar config_caminhos.json se existir
+    if os.path.exists("dist"):
+        config_backup = None
+        config_em_dist = Path("dist/config_caminhos.json")
+        if config_em_dist.exists():
+            config_backup = config_em_dist.read_text(encoding='utf-8')
+
+        try:
+            shutil.rmtree("dist")
+            print_success("Removido: dist/")
+        except Exception as e:
+            print_warning(f"Não foi possível remover dist/: {e}")
+
+        if config_backup:
+            os.makedirs("dist", exist_ok=True)
+            config_em_dist.write_text(config_backup, encoding='utf-8')
+            print_success("config_caminhos.json preservado em dist/")
+
     # Limpar .pyc em src
     pyc_files = list(Path("src").rglob("*.pyc"))
     if pyc_files:
@@ -144,18 +168,17 @@ def limpar_builds_anteriores():
         print_success(f"Removidos {len(pyc_files)} arquivos .pyc")
 
 def converter_icone():
-    """Converte PNG para ICO se necessário"""
     png_path = "logo1.png"
     ico_path = "logo1.ico"
-    
+
     if not os.path.exists(png_path):
         print_warning("logo1.png não encontrado - build sem ícone")
         return False
-    
+
     if os.path.exists(ico_path):
         print_success("Ícone .ico já existe")
         return True
-    
+
     try:
         from PIL import Image
         print_step("Convertendo PNG → ICO...")
@@ -163,9 +186,6 @@ def converter_icone():
         img.save(ico_path)
         print_success(f"Ícone criado: {ico_path}")
         return True
-    except ImportError:
-        print_warning("PIL não instalado - build sem ícone")
-        return False
     except Exception as e:
         print_warning(f"Erro ao converter ícone: {e}")
         return False
@@ -175,15 +195,13 @@ def converter_icone():
 # ====================================================================
 
 def escolher_ambiente():
-    """Pergunta qual ambiente construir"""
     print_step("Escolha o ambiente:")
     print("  1 - TESTE")
     print("  2 - PRODUÇÃO")
-    
+
     while True:
         try:
             escolha = input("\nOpção (1-2): ").strip()
-            
             if escolha == "1":
                 return "TESTE"
             elif escolha == "2":
@@ -195,18 +213,16 @@ def escolher_ambiente():
             sys.exit(0)
 
 def atualizar_spec_para_ambiente(ambiente):
-    """Atualiza o arquivo .spec com o ambiente escolhido"""
     print_step(f"Configurando .spec para ambiente {ambiente}...")
-    
+
     if not os.path.exists(SPEC_FILE):
         print_error(f"Arquivo {SPEC_FILE} não encontrado!")
         return False
-    
+
     try:
         with open(SPEC_FILE, 'r', encoding='utf-8') as f:
             conteudo = f.read()
-        
-        # Substituir o nome do executável
+
         if ambiente == "TESTE":
             conteudo = conteudo.replace(
                 'NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_PRODUCAO"',
@@ -217,35 +233,85 @@ def atualizar_spec_para_ambiente(ambiente):
                 'NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_TESTE"',
                 'NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_PRODUCAO"'
             )
-        
+
         with open(SPEC_FILE, 'w', encoding='utf-8') as f:
             f.write(conteudo)
-        
+
         print_success(f"Arquivo .spec configurado para {ambiente}")
         return True
-        
+
     except Exception as e:
         print_error(f"Erro ao atualizar .spec: {e}")
         return False
+
+# ====================================================================
+# PÓS-BUILD — copiar arquivos necessários para dist/
+# ====================================================================
+
+def copiar_arquivos_pos_build(exe_path):
+    """
+    Copia para dist/ os arquivos que precisam ficar junto com o executável:
+      - pasta docx/ (python-docx não é extraído pelo PyInstaller)
+      - config_caminhos.json (configuração de caminho do servidor)
+    """
+    print_step("Copiando arquivos necessários para dist/...")
+    dist_dir = exe_path.parent
+
+    # 1. Copiar pasta docx
+    docx_destino = dist_dir / "docx"
+    if DOCX_ORIGEM.exists():
+        try:
+            if docx_destino.exists():
+                shutil.rmtree(docx_destino)
+            shutil.copytree(str(DOCX_ORIGEM), str(docx_destino))
+            print_success(f"Pasta docx copiada → {docx_destino}")
+        except Exception as e:
+            print_error(f"Erro ao copiar pasta docx: {e}")
+            print_warning("Copie manualmente: xcopy venv\\Lib\\site-packages\\docx dist\\docx /E /I /Y")
+    else:
+        print_warning(f"Pasta docx não encontrada em {DOCX_ORIGEM}")
+        print_warning("Copie manualmente: xcopy venv\\Lib\\site-packages\\docx dist\\docx /E /I /Y")
+
+    # 2. Copiar config_caminhos.json
+    config_destino = dist_dir / "config_caminhos.json"
+    if CONFIG_JSON_ORIGEM.exists():
+        try:
+            shutil.copy2(str(CONFIG_JSON_ORIGEM), str(config_destino))
+            print_success(f"config_caminhos.json copiado → {config_destino}")
+        except Exception as e:
+            print_error(f"Erro ao copiar config_caminhos.json: {e}")
+    else:
+        # Criar um padrão se não existir
+        config_padrao = '''{
+    "_instrucoes": [
+        "Edite 'caminho_dados' se o servidor ou letra de drive mudar.",
+        "NAO e necessario rebuild apos editar este arquivo.",
+        "O caminho deve apontar para a pasta que contem 'Planilhas_Base' e 'Clientes'."
+    ],
+    "caminho_dados": "Z:/Servidor/Relatórios/Financeiro",
+    "caminho_dados_alternativo": "//servidor/Servidor/Relatórios/Financeiro"
+}'''
+        try:
+            config_destino.write_text(config_padrao, encoding='utf-8')
+            print_success(f"config_caminhos.json padrão criado em dist/")
+            print_warning("Edite o arquivo com o caminho correto do servidor antes de distribuir")
+        except Exception as e:
+            print_error(f"Erro ao criar config_caminhos.json: {e}")
+
+    print_success("Arquivos pós-build concluídos")
 
 # ====================================================================
 # BUILD
 # ====================================================================
 
 def executar_build():
-    """Executa o build usando o arquivo .spec"""
     print_header("INICIANDO BUILD")
-    
-    cmd = [
-        "pyinstaller",
-        "--clean",
-        "--noconfirm",
-        SPEC_FILE
-    ]
-    
+
+    cmd = ["pyinstaller", "--clean", "--noconfirm", SPEC_FILE]
+
     print_step("Executando PyInstaller...")
     print(f"   Comando: {' '.join(cmd)}")
-    
+
     try:
         result = subprocess.run(
             cmd,
@@ -255,50 +321,41 @@ def executar_build():
             encoding='utf-8',
             errors='replace'
         )
-        
+
         print_success("PyInstaller executado com sucesso!")
-        
-        # Verificar executável criado
+
         exe_files = list(Path("dist").glob("*.exe"))
-        
         if exe_files:
             exe_path = exe_files[0]
             size_mb = exe_path.stat().st_size / (1024*1024)
-            
             print_header("BUILD CONCLUÍDO!")
             print(f"\n   Arquivo: {exe_path.name}")
             print(f"   Tamanho: {size_mb:.1f} MB")
             print(f"   Caminho: {exe_path.absolute()}")
-            
             return exe_path
         else:
             print_error("Nenhum executável foi criado em dist/")
             return None
-            
+
     except subprocess.CalledProcessError as e:
         print_error("Falha no build!")
-        
         if e.stdout:
             print("\n--- ÚLTIMAS LINHAS DA SAÍDA ---")
             linhas = e.stdout.split('\n')
             print('\n'.join(linhas[-30:]))
-        
         if e.stderr:
             print("\n--- ERROS ---")
             print(e.stderr[-1000:])
-        
         return None
 
 def testar_executavel(exe_path):
-    """Oferece opção de testar o executável"""
     print("\nDeseja testar o executável? (s/n): ", end="")
-    
     try:
         resposta = input().strip().lower()
     except KeyboardInterrupt:
         print("\nSaindo...")
         return
-    
+
     if resposta == 's':
         print(f"\nIniciando {exe_path.name}...")
         try:
@@ -312,50 +369,44 @@ def testar_executavel(exe_path):
 # ====================================================================
 
 def main():
-    """Função principal"""
     print_header("BUILD SISTEMA DE GESTÃO FINANCEIRA")
     print(f"Data/Hora: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-    print("\n🔧 VERSÃO OTIMIZADA - Problema do python-docx RESOLVIDO")
-    
-    # 1. Verificar dependências
+
     if not verificar_dependencias():
         return 1
-    
-    # 2. Verificar PyInstaller
+
     if not verificar_pyinstaller():
         return 1
-    
-    # 3. Verificar arquivos
+
     if not verificar_arquivos():
         print_warning("Alguns arquivos não foram encontrados, mas continuando...")
-    
-    # 4. Limpar builds anteriores
+
     limpar_builds_anteriores()
-    
-    # 5. Converter ícone
     converter_icone()
-    
-    # 6. Escolher ambiente
     ambiente = escolher_ambiente()
-    
-    # 7. Atualizar .spec
+
     if not atualizar_spec_para_ambiente(ambiente):
         return 1
-    
-    # 8. Executar build
+
     exe_path = executar_build()
-    
     if not exe_path:
         print_header("BUILD FALHOU")
         return 1
-    
-    # 9. Oferecer teste
+
+    # Copiar arquivos necessários para dist/ automaticamente
+    copiar_arquivos_pos_build(exe_path)
+
     testar_executavel(exe_path)
-    
+
     print("\n" + "=" * 70)
-    print("✅ Build finalizado com sucesso!".center(70))
-    print("=" * 70 + "\n")
-    
+    print("Build finalizado com sucesso!".center(70))
+    print("=" * 70)
+    print(f"\nArquivos em dist/:")
+    print(f"  - {exe_path.name}")
+    print(f"  - docx/  (python-docx)")
+    print(f"  - config_caminhos.json  (configuração de caminhos)")
+    print(f"\nDistribua TODOS estes itens para o cliente.\n")
+
     return 0
 
 # ====================================================================
