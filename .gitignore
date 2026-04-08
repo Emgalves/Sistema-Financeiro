@@ -1,8 +1,11 @@
-dist/ 
-build/ 
-BackUp/ 
-Git-2.49.0-64-bit.exe 
-dist/ 
-build/ 
-venv/ 
-venv/ 
+dist/
+build/
+BackUp/
+Git-2.49.0-64-bit.exe
+venv/
+
+# Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
