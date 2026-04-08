@@ -7,12 +7,24 @@ import numpy as np
 from openpyxl import load_workbook
 
 # Importações do python-docx
-from docx import Document
-from docx.shared import Pt, Inches, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
-from docx.enum.style import WD_STYLE_TYPE
+def _importar_docx():
+    """Import lazy do python-docx para compatibilidade com PyInstaller"""
+    import importlib, sys
+    # Garante que _MEIPASS está no path antes de importar
+    if hasattr(sys, '_MEIPASS') and sys._MEIPASS not in sys.path:
+        sys.path.insert(0, sys._MEIPASS)
+    docx_mod   = importlib.import_module('docx')
+    shared     = importlib.import_module('docx.shared')
+    enum_text  = importlib.import_module('docx.enum.text')
+    enum_style = importlib.import_module('docx.enum.style')
+    return (
+        docx_mod.Document,
+        shared.Pt, shared.Inches, shared.RGBColor,
+        enum_text.WD_ALIGN_PARAGRAPH, enum_text.WD_LINE_SPACING,
+        enum_style.WD_STYLE_TYPE,
+    )
 
-# Importar configurações do sistema
+
 from src.config.config import (
     ARQUIVO_CLIENTES,
     ARQUIVO_FORNECEDORES,
@@ -42,6 +54,8 @@ class GeradorContrato:
     
     def __init__(self):
         """Inicializa o gerador de contratos"""
+        global Document, Pt, Inches, RGBColor, WD_ALIGN_PARAGRAPH, WD_LINE_SPACING, WD_STYLE_TYPE
+        Document, Pt, Inches, RGBColor, WD_ALIGN_PARAGRAPH, WD_LINE_SPACING, WD_STYLE_TYPE = _importar_docx()
         self.servicos_json = self._carregar_servicos()
         self._garantir_pasta_contratos()
         logger.info("GeradorContrato inicializado com sucesso (usando python-docx)")
