@@ -11650,3 +11650,33 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-04-08 14:27:35,265 - INFO - Proteções contra perda de dados configuradas
 2026-04-08 14:27:35,606 - INFO - ✅ Sistema de Entrada de Dados aberto
 2026-04-08 14:27:38,079 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-05-18 09:24:47,138 - INFO - Configurações importadas com sucesso via src.config
+2026-05-18 09:24:47,453 - INFO - Configurações importadas com sucesso
+2026-05-18 09:24:47,576 - INFO - Configurações do sistema importadas com sucesso
+2026-05-18 09:24:53,607 - INFO - Sistema iniciado em modo: TESTE
+2026-05-18 09:25:04,554 - INFO - Abrindo sistema de relatórios
+2026-05-18 09:27:56,798 - INFO - Abrindo sistema de entrada de dados
+2026-05-18 09:28:00,327 - INFO - Proteções contra perda de dados configuradas
+2026-05-18 09:28:06,351 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-18 09:28:11,920 - INFO - Cliente selecionado com sucesso: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-05-18 09:29:13,921 - INFO - Voltando ao menu principal
+2026-05-18 09:29:14,017 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-05-18 09:29:14,113 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-05-18 09:29:14,319 - INFO - ✅ Menu principal restaurado com sucesso
+2026-05-18 09:29:16,009 - INFO - Abrindo sistema de relatórios
+2026-05-18 09:56:05,309 - INFO - Abrindo sistema de entrada de dados
+2026-05-18 09:56:06,125 - INFO - Proteções contra perda de dados configuradas
+2026-05-18 09:56:06,227 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-18 09:56:10,341 - INFO - Cliente selecionado com sucesso: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-05-18 10:06:27,479 - INFO - Configurações importadas com sucesso via src.config
+2026-05-18 10:06:27,497 - INFO - Configurações importadas com sucesso
+2026-05-18 10:06:27,499 - INFO - Configurações do sistema importadas com sucesso
+2026-05-18 10:06:28,026 - INFO - Sistema iniciado em modo: TESTE
+2026-05-18 10:06:29,968 - INFO - Abrindo sistema de relatórios
+2026-05-18 10:10:25,048 - INFO - Sistema encerrado pelo usuário
+2026-05-18 10:22:08,932 - INFO - Configurações importadas com sucesso via src.config
+2026-05-18 10:22:09,143 - INFO - Configurações importadas com sucesso
+2026-05-18 10:22:09,143 - INFO - Configurações do sistema importadas com sucesso
+2026-05-18 10:22:10,749 - INFO - Sistema iniciado em modo: TESTE
+2026-05-18 10:22:12,525 - INFO - Abrindo sistema de relatórios
+2026-05-18 10:27:35,236 - INFO - Sistema encerrado pelo usuário
