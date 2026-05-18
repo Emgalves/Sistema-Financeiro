@@ -20364,6 +20364,9 @@ class GerenciadorLancamentos:
             
             if ids_mudaram:
                 self.salvar_correcoes_ids(arquivo_cliente, df)
+
+            # corrigir STATUS vazio na planilha
+            self.corrigir_planilha_status(arquivo_cliente, df)
             
             # Salvar dados originais
             self.dados_originais = df.copy()
@@ -21976,7 +21979,8 @@ class GerenciadorLancamentos:
             
             # Adicionar timestamp de edição
             timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            observacao_com_historico = f"{observacao_final} - EDITADO EM: {timestamp}"
+            prefixo = f"{observacao_final} - " if observacao_final.strip() else ""
+            observacao_com_historico = f"{prefixo}EDITADO EM: {timestamp}"
             
             ws.cell(row=linha_encontrada, column=13, value=observacao_com_historico)
             
@@ -22040,14 +22044,13 @@ class GerenciadorLancamentos:
             # Adicionar ao histórico
             nova_entrada = f"EDIÇÃO: {', '.join(alteracoes[:3])} - {timestamp}"  # Limitar a 3 alterações
             
+            novo_historico = nova_entrada
             if historico_atual:
                 # Limitar histórico para não ficar muito longo (manter últimas 5 entradas)
                 historico_partes = historico_atual.split(' | ')
                 if len(historico_partes) >= 5:
                     historico_partes = historico_partes[-4:]  # Manter últimas 4
                 novo_historico = ' | '.join(historico_partes) + ' | ' + nova_entrada
-            else:
-                novo_historico = nova_entrada
             
             ws.cell(row=linha_encontrada, column=16, value=novo_historico)
             
