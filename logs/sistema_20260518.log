@@ -1,0 +1,268 @@
+2026-05-18 09:23:58,262 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-18 09:23:58,335 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-18 09:23:58,353 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-18 09:23:58,400 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-18 09:23:58,424 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-18 09:25:05,137 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-18 09:25:05,356 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-18 09:25:05,411 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-18 09:25:05,524 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-18 09:25:05,579 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-18 09:25:05,660 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 19 clientes
+2026-05-18 09:25:16,560 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 09:25:16,617 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 09:25:18,970 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-18 09:25:19,044 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-18 09:25:19,077 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-18 09:25:19,147 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-18 09:25:19,188 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-18 09:25:19,525 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 09:25:19,582 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 09:25:23,531 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-05-18 09:25:23,637 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:25:23,690 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:25:28,810 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-05-18 09:25:28,828 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-05-18 09:25:28,845 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-05-18 09:25:28,861 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-05-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-05-18 09:25:28,863 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:25:28,867 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:25:28,925 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-05-18 09:25:28,926 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:25:32,417 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-05-18 09:25:32,464 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-05-18 09:25:38,332 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-05-18 09:27:31,362 - sistema_relatorios - relatorios_interface - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2026-05-18 09:27:43,192 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_092533.pdf
+2026-05-18 09:27:45,613 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_092533.pdf
+2026-05-18 09:27:54,743 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-05-18 09:27:54,744 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-05-18 09:27:55,082 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-05-18 09:27:59,979 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 09:28:00,051 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 09:28:00,296 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 09:28:00,296 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 09:28:00,307 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 09:28:00,307 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 09:29:16,078 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-18 09:29:16,131 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-18 09:29:16,132 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-18 09:29:16,138 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-18 09:29:16,142 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-18 09:29:16,143 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 19 clientes
+2026-05-18 09:29:18,052 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 09:29:18,054 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 09:29:18,233 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-18 09:29:18,271 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-18 09:29:18,273 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-18 09:29:18,275 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-18 09:29:18,283 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-18 09:29:31,579 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: ELLIAS MAGALHAES E ABREU LIMA
+2026-05-18 09:29:31,581 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2026-05-18 09:29:31,582 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2026-05-18 09:29:33,425 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-05-18 09:29:33,426 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-05-18 09:29:33,426 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-05-18 09:29:33,429 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-05-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-05-18 09:29:33,429 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2026-05-18 09:29:33,430 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2026-05-18 09:29:33,431 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-05-18 09:29:33,431 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: ELLIAS MAGALHAES E ABREU LIMA.xlsx
+2026-05-18 09:29:39,714 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-05-18 09:29:39,715 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-05-18 09:29:41,239 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-05-18 09:30:08,686 - sistema_relatorios - relatorios_interface - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2026-05-18 09:30:09,016 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_ELLIAS_MAGALHAES_E_ABREU_LIMA_20260518_092940.pdf
+2026-05-18 09:30:11,021 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_ELLIAS_MAGALHAES_E_ABREU_LIMA_20260518_092940.pdf'
+2026-05-18 09:32:28,210 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-05-18 09:32:28,211 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:32:28,211 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:32:30,328 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-05-18 09:32:30,329 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-05-18 09:32:30,329 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-05-18 09:32:30,330 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-05-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-05-18 09:32:30,331 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:32:30,331 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:32:30,332 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-05-18 09:32:30,333 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 09:32:32,926 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-05-18 09:32:32,927 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-05-18 09:32:33,694 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-05-18 09:37:47,439 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_093233.pdf
+2026-05-18 09:37:49,470 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_093233.pdf
+2026-05-18 09:37:54,769 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: NOEL COUTO SANTOS
+2026-05-18 09:37:54,776 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\NOEL COUTO SANTOS.xlsx
+2026-05-18 09:37:54,777 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\NOEL COUTO SANTOS.xlsx
+2026-05-18 09:37:57,119 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-05-18 09:37:57,120 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-05-18 09:37:57,120 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-05-18 09:37:57,121 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-05-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-05-18 09:37:57,121 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\NOEL COUTO SANTOS.xlsx
+2026-05-18 09:37:57,122 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\NOEL COUTO SANTOS.xlsx
+2026-05-18 09:37:57,122 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-05-18 09:37:57,123 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: NOEL COUTO SANTOS.xlsx
+2026-05-18 09:37:58,775 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-05-18 09:37:58,776 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-05-18 09:38:01,210 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-05-18 09:38:31,439 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_NOEL_COUTO_SANTOS_20260518_093800.pdf
+2026-05-18 09:38:33,441 - sistema_relatorios - relatorios_interface - INFO - 🗑️ Arquivo temporário removido: PREVIEW_NOEL_COUTO_SANTOS_20260518_093800.pdf
+2026-05-18 09:38:34,440 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: MARCIA UBERENICE NOGUEIRA
+2026-05-18 09:38:34,441 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\MARCIA UBERENICE NOGUEIRA.xlsx
+2026-05-18 09:38:34,442 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\MARCIA UBERENICE NOGUEIRA.xlsx
+2026-05-18 09:38:37,135 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-05-18 09:38:37,135 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-05-18 09:38:37,136 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-05-18 09:38:37,137 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-05-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-05-18 09:38:37,137 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\MARCIA UBERENICE NOGUEIRA.xlsx
+2026-05-18 09:38:37,138 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\MARCIA UBERENICE NOGUEIRA.xlsx
+2026-05-18 09:38:37,138 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-05-18 09:38:37,139 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: MARCIA UBERENICE NOGUEIRA.xlsx
+2026-05-18 09:38:38,837 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-05-18 09:38:38,838 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-05-18 09:38:39,935 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-05-18 09:38:50,383 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_MARCIA_UBERENICE_NOGUEIRA_20260518_093839.pdf
+2026-05-18 09:38:52,386 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_MARCIA_UBERENICE_NOGUEIRA_20260518_093839.pdf'
+2026-05-18 09:56:03,175 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-05-18 09:56:03,190 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-05-18 09:56:03,430 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-05-18 09:56:05,928 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 09:56:05,929 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 09:56:06,108 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 09:56:06,109 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 09:56:06,113 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 09:56:06,113 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 10:05:32,709 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-18 10:05:32,714 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-18 10:05:32,716 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-18 10:05:32,717 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-18 10:05:32,718 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-18 10:05:46,732 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 10:05:46,735 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 10:05:46,919 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 10:05:46,919 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 10:05:46,921 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 10:05:46,922 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 10:06:25,550 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-18 10:06:25,551 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-18 10:06:25,551 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-18 10:06:25,552 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-18 10:06:25,552 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-18 10:06:30,011 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-18 10:06:30,082 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-18 10:06:30,083 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-18 10:06:30,088 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-18 10:06:30,088 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-18 10:06:30,089 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 19 clientes
+2026-05-18 10:06:31,724 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 10:06:31,725 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 10:06:32,216 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-18 10:06:32,241 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-18 10:06:32,242 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-18 10:06:32,244 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-18 10:06:32,245 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-18 10:06:35,906 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-05-18 10:06:35,907 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:06:35,915 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:06:37,992 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-05-18 10:06:37,993 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-05-18 10:06:37,993 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-05-18 10:06:37,994 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-05-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-05-18 10:06:37,996 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:06:37,997 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:06:37,997 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-05-18 10:06:37,998 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:06:39,755 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-05-18 10:06:39,755 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-05-18 10:06:41,187 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-05-18 10:10:10,736 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_100640.pdf
+2026-05-18 10:10:12,743 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_100640.pdf'
+2026-05-18 10:10:21,247 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-05-18 10:10:21,248 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-05-18 10:10:21,333 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-05-18 10:16:27,332 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-18 10:21:54,488 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-18 10:21:54,489 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-18 10:21:54,489 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-18 10:21:54,490 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-18 10:21:54,490 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-18 10:22:12,834 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-18 10:22:13,091 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-18 10:22:13,093 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-18 10:22:13,117 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-18 10:22:13,118 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-18 10:22:13,119 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 19 clientes
+2026-05-18 10:22:14,614 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 10:22:14,615 - sistema_relatorios - relatorios_interface - INFO - Data calculada automaticamente: 20/05/2026
+2026-05-18 10:22:15,429 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-18 10:22:15,490 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-18 10:22:15,490 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-18 10:22:15,493 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-18 10:22:15,494 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-18 10:22:18,590 - sistema_relatorios - relatorios_interface - INFO - Cliente selecionado: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-05-18 10:22:18,597 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:22:18,606 - sistema_relatorios - relatorios_interface - INFO - Arquivo encontrado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:22:20,188 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-05-18 10:22:20,189 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-05-18 10:22:20,190 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-05-18 10:22:20,190 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-05-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-05-18 10:22:20,191 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:22:20,193 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:22:20,193 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-05-18 10:22:20,194 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:22:21,667 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-05-18 10:22:21,668 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-05-18 10:22:23,984 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-05-18 10:22:47,566 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_102222.pdf
+2026-05-18 10:22:49,557 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_102222.pdf'
+2026-05-18 10:24:40,868 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: despesas
+2026-05-18 10:24:40,869 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO: Relatório de despesas
+2026-05-18 10:24:40,869 - sistema_relatorios - relatorios_interface - INFO - 🎯 PROCESSANDO DESPESAS - ARQUITETURA LIMPA
+2026-05-18 10:24:40,888 - sistema_relatorios - relatorios_interface - INFO - Data final obtida: 2026-05-20 00:00:00 (tipo: <class 'datetime.datetime'>)
+2026-05-18 10:24:40,889 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo encontrado em arquivo_cliente_selecionado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:24:40,890 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo final nas configurações: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:24:40,891 - sistema_relatorios - relatorios_interface - INFO - ✅ Configurações coletadas
+2026-05-18 10:24:40,892 - sistema_relatorios - relatorios_interface - INFO - ✅ Arquivo confirmado: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-05-18 10:24:42,339 - sistema_relatorios - relatorios_interface - INFO - Modo selecionado: Preview
+2026-05-18 10:24:42,340 - sistema_relatorios - relatorios_interface - INFO - 🎯 EXECUTANDO COM PREVIEW DIRETO - PDF TEMPORÁRIO
+2026-05-18 10:24:43,815 - sistema_relatorios - relatorios_interface - INFO - ✅ Janela de decisão criada
+2026-05-18 10:24:45,552 - sistema_relatorios - relatorios_interface - ERROR - Erro ao atualizar progresso: 'Toplevel' object has no attribute 'percent_label'
+2026-05-18 10:24:46,489 - sistema_relatorios - relatorios_interface - INFO - 🗑️ PDF temporário agendado para remoção: PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_102443.pdf
+2026-05-18 10:24:48,507 - sistema_relatorios - relatorios_interface - WARNING - Aviso: Não foi possível remover arquivo temporário: [WinError 32] O arquivo já está sendo usado por outro processo: 'C:\\Users\\Obras\\AppData\\Local\\Temp\\PREVIEW_FERNANDA_LUCENA_PEREIRA_DA_FONSECA_BOTELHO_20260518_102443.pdf'
+2026-05-18 10:27:32,403 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-05-18 10:27:32,404 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-05-18 10:27:32,509 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-05-18 12:05:59,848 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-18 12:05:59,852 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-18 12:05:59,854 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-18 12:05:59,856 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-18 12:05:59,857 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-18 12:06:14,961 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:06:15,022 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:06:15,241 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:06:15,242 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:06:15,244 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:06:15,244 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:07:17,881 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:07:17,881 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:07:17,882 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:07:17,883 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:07:17,886 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:07:17,888 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:07:17,889 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:07:17,889 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:18:03,613 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:18:03,614 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:18:03,616 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:18:03,617 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:18:03,619 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:18:03,620 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:18:03,620 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:18:03,621 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:19:12,673 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:19:12,673 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:19:12,674 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:19:12,674 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:19:12,676 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:19:12,677 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-05-18 12:19:12,677 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-05-18 12:19:12,678 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
