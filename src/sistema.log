@@ -11680,3 +11680,89 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-05-18 10:22:10,749 - INFO - Sistema iniciado em modo: TESTE
 2026-05-18 10:22:12,525 - INFO - Abrindo sistema de relatórios
 2026-05-18 10:27:35,236 - INFO - Sistema encerrado pelo usuário
+2026-05-20 10:11:31,134 - INFO - Configurações importadas com sucesso via src.config
+2026-05-20 10:11:31,211 - INFO - Configurações importadas com sucesso
+2026-05-20 10:11:31,283 - INFO - Configurações do sistema importadas com sucesso
+2026-05-20 10:11:33,333 - INFO - Sistema iniciado em modo: TESTE
+2026-05-20 10:11:35,237 - INFO - Abrindo sistema de relatórios
+2026-05-20 10:11:54,645 - INFO - Abrindo gestão de medições
+2026-05-20 10:21:48,723 - INFO - Abrindo sistema de entrada de dados
+2026-05-20 10:21:49,689 - INFO - Proteções contra perda de dados configuradas
+2026-05-20 10:21:49,947 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-20 10:22:03,222 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 36!
+2026-05-20 10:23:06,239 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 37!
+2026-05-20 10:23:33,851 - INFO - ==================================================
+2026-05-20 10:23:33,851 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-05-20 10:23:33,852 - INFO - ==================================================
+2026-05-20 10:23:33,852 - INFO - Fornecedor: HENRIQUE FARIAS COELHO
+2026-05-20 10:23:35,048 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 418!
+2026-05-20 10:23:35,049 - INFO - Dados carregados: HENRIQUE FARIAS COELHO
+2026-05-20 10:23:35,050 - INFO - Campos preenchidos com sucesso!
+2026-05-20 10:23:35,052 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-05-20 10:23:35,053 - INFO - ==================================================
+2026-05-20 10:23:42,699 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 418!
+2026-05-20 10:24:33,659 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 804!
+2026-05-20 10:25:09,490 - INFO - ==================================================
+2026-05-20 10:25:09,491 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-05-20 10:25:09,491 - INFO - ==================================================
+2026-05-20 10:25:09,492 - INFO - Fornecedor: EDSON ANDRÉ DA SILVA
+2026-05-20 10:25:10,763 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 285!
+2026-05-20 10:25:10,764 - INFO - Dados carregados: EDSON ANDRÉ DA SILVA
+2026-05-20 10:25:10,766 - INFO - Campos preenchidos com sucesso!
+2026-05-20 10:25:10,767 - INFO - ✓ Referência preenchida: HIDRÁULICA
+2026-05-20 10:25:10,771 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-05-20 10:25:10,771 - INFO - ==================================================
+2026-05-20 10:25:15,606 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 285!
+2026-05-20 10:25:39,420 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 286!
+2026-05-20 10:25:50,880 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 287!
+2026-05-20 10:28:04,152 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 931!
+2026-05-20 10:28:28,777 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 645!
+2026-05-20 10:28:58,339 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 884!
+2026-05-20 10:29:23,371 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 934!
+2026-05-20 10:29:52,120 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 492!
+2026-05-20 10:30:17,336 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 798!
+2026-05-20 10:31:22,908 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 825!
+2026-05-20 10:43:25,240 - INFO - Configurações importadas com sucesso via src.config
+2026-05-20 10:43:25,273 - INFO - Configurações importadas com sucesso
+2026-05-20 10:43:25,282 - INFO - Configurações do sistema importadas com sucesso
+2026-05-20 10:43:26,477 - INFO - Sistema iniciado em modo: TESTE
+2026-05-20 10:43:32,070 - INFO - Abrindo sistema de relatórios
+2026-05-20 11:40:11,540 - INFO - Sistema encerrado pelo usuário
+2026-05-20 11:56:13,424 - INFO - Configurações importadas com sucesso via src.config
+2026-05-20 11:56:13,454 - INFO - Configurações importadas com sucesso
+2026-05-20 11:56:13,456 - INFO - Configurações do sistema importadas com sucesso
+2026-05-20 11:56:14,035 - INFO - Sistema iniciado em modo: TESTE
+2026-05-20 11:56:17,005 - INFO - Abrindo sistema de relatórios
+2026-05-20 12:04:04,363 - INFO - Abrindo sistema de entrada de dados
+2026-05-20 12:04:05,823 - INFO - Proteções contra perda de dados configuradas
+2026-05-20 12:04:06,064 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-20 12:11:05,562 - INFO - Voltando ao menu principal
+2026-05-20 12:11:05,657 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-05-20 12:11:05,662 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-05-20 12:11:05,900 - INFO - ✅ Menu principal restaurado com sucesso
+2026-05-20 12:11:12,106 - INFO - Abrindo sistema de relatórios
+2026-05-20 12:13:41,961 - INFO - Abrindo gestão de medições
+2026-05-20 12:20:28,288 - INFO - Abrindo sistema de entrada de dados
+2026-05-20 12:20:28,783 - INFO - Proteções contra perda de dados configuradas
+2026-05-20 12:20:28,864 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-20 12:20:35,514 - INFO - Cliente selecionado com sucesso: EDUARDO MORENO MARQUES
+2026-05-20 12:47:37,507 - INFO - Configurações importadas com sucesso via src.config
+2026-05-20 12:47:37,529 - INFO - Configurações importadas com sucesso
+2026-05-20 12:47:37,530 - INFO - Configurações do sistema importadas com sucesso
+2026-05-20 12:47:38,259 - INFO - Sistema iniciado em modo: TESTE
+2026-05-20 12:47:39,817 - INFO - Abrindo sistema de relatórios
+2026-05-20 12:54:04,624 - INFO - Abrindo sistema de relatórios
+2026-05-20 12:55:30,215 - INFO - Abrindo gestão de medições
+2026-05-20 12:57:11,383 - INFO - Sistema encerrado pelo usuário
+2026-05-20 16:21:21,293 - INFO - Configurações importadas com sucesso via src.config
+2026-05-20 16:21:21,334 - INFO - Configurações importadas com sucesso
+2026-05-20 16:21:21,336 - INFO - Configurações do sistema importadas com sucesso
+2026-05-20 16:21:22,810 - INFO - Sistema iniciado em modo: TESTE
+2026-05-20 16:21:26,576 - INFO - Abrindo sistema de relatórios
+2026-05-20 16:32:33,403 - INFO - Sistema encerrado pelo usuário
+2026-05-20 17:08:51,447 - INFO - Configurações importadas com sucesso via src.config
+2026-05-20 17:08:51,594 - INFO - Configurações importadas com sucesso
+2026-05-20 17:08:51,601 - INFO - Configurações do sistema importadas com sucesso
+2026-05-20 17:08:52,237 - INFO - Sistema iniciado em modo: TESTE
+2026-05-20 17:08:53,925 - INFO - Abrindo sistema de relatórios
+2026-05-20 17:11:53,770 - INFO - Sistema encerrado pelo usuário
