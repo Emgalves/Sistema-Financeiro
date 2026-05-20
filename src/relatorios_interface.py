@@ -283,7 +283,10 @@ class SistemaRelatorios:
 
             elif relatorio["id"] == "gerencial_pdf":
                 self.processar_gerencial_pdf()
-            
+
+            elif relatorio["id"] == "consistencia_dados":
+                self.processar_consistencia_dados()
+
             else:
                 self.processar_outros_relatorios(relatorio)
                 
@@ -679,6 +682,14 @@ class SistemaRelatorios:
                 "modulo": "relatorio_despesas_aprimorado",
                 "classe": "RelatorioLancamentosPendentes",
                 "disponivel": True
+            },
+            {
+                "id": "consistencia_dados",
+                "nome": "Verificação de Consistência de Dados",
+                "descricao": "Verifica registros em 'Dados' sem correspondência em Medições/Contratos ADM e vice-versa",
+                "modulo": "relatorio_consistencia_dados",
+                "classe": "RelatorioConsistenciaDados",
+                "disponivel": True
             }
         ]
         
@@ -808,6 +819,8 @@ class SistemaRelatorios:
             self.setup_opcoes_lancamentos_pendentes(self.right_frame)
         elif relatorio["id"] == "medicoes_quinzenal":
             self.setup_opcoes_quinzenal(self.right_frame)
+        elif relatorio["id"] == "consistencia_dados":
+            self.setup_opcoes_consistencia_dados(self.right_frame)
         else:
             ttk.Label(
                 self.right_frame,
@@ -2751,6 +2764,46 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"💥 ERRO fornecedores: {str(e)}")
             messagebox.showerror("Erro", f"Erro: {str(e)}")
+            self.root.deiconify()
+
+    def setup_opcoes_consistencia_dados(self, parent_frame):
+        """Configura as opções para o relatório de consistência de dados"""
+        frame_cliente = ttk.Frame(parent_frame)
+        frame_cliente.pack(fill='x', padx=10, pady=10)
+
+        ttk.Label(frame_cliente, text="Cliente:").pack(side='left', padx=5)
+
+        self.cliente_consistencia = ttk.Combobox(frame_cliente, width=40)
+        self.cliente_consistencia.pack(side='left', padx=5)
+
+        self.preencher_combobox_clientes(self.cliente_consistencia)
+
+        ttk.Label(
+            parent_frame,
+            text=(
+                "Verifica registros em 'Dados' cujo CNPJ possui contrato ativo,\n"
+                "mas sem correspondência nas abas Medições ou Contratos ADM, e vice-versa."
+            ),
+            foreground='#555',
+            wraplength=420
+        ).pack(anchor='w', padx=10, pady=(0, 10))
+
+    def processar_consistencia_dados(self):
+        """Abre o relatório de consistência entre Dados e Medições/Contratos ADM"""
+        try:
+            cliente_sel = getattr(self, 'cliente_consistencia', None)
+            cliente_nome = cliente_sel.get() if cliente_sel else None
+            if cliente_nome == 'Todos os Clientes':
+                cliente_nome = None
+
+            self.root.withdraw()
+
+            from src.relatorio_consistencia_dados import RelatorioConsistenciaDados
+            RelatorioConsistenciaDados(parent=self.root, cliente_inicial=cliente_nome)
+
+        except Exception as e:
+            logger.error(f"Erro ao abrir consistência de dados: {str(e)}", exc_info=True)
+            messagebox.showerror("Erro", f"Erro ao abrir relatório:\n{str(e)}")
             self.root.deiconify()
 
     def processar_outros_relatorios(self, relatorio):
