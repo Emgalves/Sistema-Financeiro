@@ -71,19 +71,37 @@ def _extrair_id_medicao_da_obs(observacao):
 
 
 def _extrair_parcelas_da_referencia(referencia):
-    """Extrai números de parcela de 'TAXA ADM - X/Y' ou 'TAXA ADM - X,Y/Z'."""
+    """Extrai números de parcela de referências ADM.
+
+    Formatos suportados:
+      'TAXA ADM - X/Y' ou 'TAXA ADM - X,Y/Z'  (formato atual)
+      '... - PARC. X/Y' ou '... - PARCELA X/Y' (formato legado do Sistema de Entrada de Dados)
+    """
     if not referencia:
         return []
-    m = re.search(r'TAXA\s+ADM\s*[-–]\s*([0-9,\s]+)\s*/\s*\d+', str(referencia), re.IGNORECASE)
-    if not m:
-        return []
-    nums = []
-    for p in m.group(1).split(','):
-        try:
-            nums.append(int(p.strip()))
-        except ValueError:
-            pass
-    return nums
+    ref = str(referencia)
+    # Formato atual: TAXA ADM - X/Y (pode ter múltiplas parcelas separadas por vírgula)
+    m = re.search(r'TAXA\s+ADM\s*[-–]\s*([0-9,\s]+)\s*/\s*\d+', ref, re.IGNORECASE)
+    if m:
+        nums = []
+        for p in m.group(1).split(','):
+            try:
+                nums.append(int(p.strip()))
+            except ValueError:
+                pass
+        return nums
+    # Formato legado: "... - PARC. X/Y" ou "... - PARC. X,Y,Z/N" ou "... - PARCELA X/Y"
+    # Inclui variante "SINAL + PARC. X,Y,Z/N"
+    m = re.search(r'PARC(?:ELA)?\.?\s+([0-9,\s]+)\s*/\s*\d+', ref, re.IGNORECASE)
+    if m:
+        nums = []
+        for p in m.group(1).split(','):
+            try:
+                nums.append(int(p.strip()))
+            except ValueError:
+                pass
+        return nums
+    return []
 
 
 # ---------------------------------------------------------------------------
@@ -178,7 +196,7 @@ class RelatorioConsistenciaDados:
         frm_dsa.grid(row=1, column=0, sticky='nsew', padx=(0, 3), pady=(3, 0))
 
         frm_osa = ttk.LabelFrame(frame_grade,
-                                  text="Parcelas ADM vencidas sem pagamento (PENDENTE)",
+                                  text="Parcelas ADM PENDENTE (vencidas e aguardando evento)",
                                   padding=4)
         frm_osa.grid(row=1, column=1, sticky='nsew', padx=(3, 0), pady=(3, 0))
 
@@ -197,12 +215,12 @@ class RelatorioConsistenciaDados:
         }
         self._tree_osm = self._criar_treeview(frm_osm, cols_med, larg_med)
 
-        cols_adm = ('Contrato', 'Parcela', 'CNPJ', 'Nome', 'Vencimento', 'Valor', 'Fase')
+        cols_adm = ('Tipo', 'Contrato', 'Parcela', 'CNPJ', 'Nome', 'Condição', 'Valor', 'Fase')
         larg_adm = {
-            'Contrato': 65, 'Parcela': 50, 'CNPJ': 130, 'Nome': 155,
-            'Vencimento': 80, 'Valor': 85, 'Fase': 200,
+            'Tipo': 100, 'Contrato': 65, 'Parcela': 50, 'CNPJ': 130,
+            'Nome': 140, 'Condição': 120, 'Valor': 85, 'Fase': 180,
         }
-        self._tree_osa = self._criar_treeview(frm_osa, cols_adm, larg_adm)
+        self._tree_osa = self._criar_treeview(frm_osa, cols_adm, larg_adm, selectmode='extended')
 
         # Barra de resumo
         self._setup_resumo_bar(fp)
@@ -214,6 +232,8 @@ class RelatorioConsistenciaDados:
                    command=self._exportar_excel).pack(side='left', padx=4)
         ttk.Button(frame_bot, text="Fechar",
                    command=self._fechar).pack(side='right', padx=4)
+        ttk.Button(frame_bot, text="Vincular Selecionados (Dados ↔ Parcelas ADM)",
+                   command=self._vincular_selecionados).pack(side='left', padx=12)
 
         self._carregar_clientes()
 
@@ -234,7 +254,7 @@ class RelatorioConsistenciaDados:
             ('_lbl_dsm', 'Dados s/ Med.:'),
             ('_lbl_osm', 'Med. s/ lancto.:'),
             ('_lbl_dsa', 'Dados s/ ADM:'),
-            ('_lbl_osa', 'ADM s/ lancto.:'),
+            ('_lbl_osa', 'ADM PENDENTE:'),
         ):
             ttk.Label(inner, text=rotulo, font=('Arial', 9)).pack(side='left', padx=(12, 3))
             lbl = ttk.Label(inner, text="—", font=('Arial', 9, 'bold'))
@@ -242,10 +262,10 @@ class RelatorioConsistenciaDados:
             setattr(self, attr, lbl)
 
     @staticmethod
-    def _criar_treeview(parent, cols, larguras):
+    def _criar_treeview(parent, cols, larguras, selectmode='browse'):
         frame = ttk.Frame(parent)
         frame.pack(fill='both', expand=True, padx=5, pady=5)
-        tree = ttk.Treeview(frame, columns=cols, show='headings')
+        tree = ttk.Treeview(frame, columns=cols, show='headings', selectmode=selectmode)
         for c in cols:
             tree.heading(c, text=c)
             tree.column(c, width=larguras.get(c, 100), anchor='w')
@@ -436,11 +456,15 @@ class RelatorioConsistenciaDados:
         return {'lancadas': lancadas, 'ids': ids_set, 'refs': refs_set, 'vals': vals_set}
 
     def _ler_contratos_adm(self, ws):
-        # processadas: parcelas PENDENTE com Data Vencimento explicita e vencida (Sentido 2)
-        # pares:       parcelas PAGO/VINCULADO por (cnpj, num_parcela) (lookup Sentido 1)
-        # cnpjs:       todos os CNPJs presentes em Contratos_ADM
+        # processadas:     todas as parcelas PENDENTE (Sentido 2)
+        #   tipo='VENCIDA'           → tem Data Vencimento e já passou
+        #   tipo='AGUARDANDO_EVENTO' → sem data (pagamento por evento/fase) ou data futura
+        # pares:            parcelas PAGO/VINCULADO por (cnpj, num_parcela) (lookup Sentido 1)
+        # linhas_vinculadas: linhas da aba Dados referenciadas em parcelas VINCULADO (fallback)
+        # cnpjs:            todos os CNPJs presentes em Contratos_ADM
         processadas = []
         pares = set()
+        linhas_vinculadas = set()
         cnpjs = set()
 
         hoje = datetime.now().date()
@@ -462,21 +486,37 @@ class RelatorioConsistenciaDados:
 
             if status in ('PAGO', 'VINCULADO'):
                 pares.add((cnpj, num_parc))
+                # Extrair linha da aba Dados gravada pela operação de vincular
+                obs = str(_get(row, 35) or '')
+                m_linha = re.search(
+                    r'\[VINCULADO\s+[AÀ]\s+DESPESA\s+DA\s+LINHA\s+(\d+)\s+DE\s+DADOS\]',
+                    obs, re.IGNORECASE
+                )
+                if m_linha:
+                    linhas_vinculadas.add(int(m_linha.group(1)))
 
             elif status == 'PENDENTE':
-                # Apenas contratos com Data Vencimento explicita e vencida
                 venc_raw = _get(row, 28)
-                if venc_raw is None:
-                    continue
-                # openpyxl retorna datetime; normaliza para date
+                fase = str(_get(row, 32) or '').strip()
+
+                # Normalizar data de vencimento
+                venc_date = None
                 if isinstance(venc_raw, datetime):
                     venc_date = venc_raw.date()
                 elif isinstance(venc_raw, _date):
                     venc_date = venc_raw
+
+                # Determinar tipo e label de condição
+                if venc_date is not None and venc_date <= hoje:
+                    tipo = 'VENCIDA'
+                    condicao = venc_date.strftime('%d/%m/%Y')
+                elif venc_date is not None:
+                    tipo = 'AGUARDANDO_EVENTO'
+                    condicao = f"Vence {venc_date.strftime('%d/%m/%Y')}"
                 else:
-                    continue
-                if venc_date > hoje:
-                    continue
+                    tipo = 'AGUARDANDO_EVENTO'
+                    condicao = fase if fase else 'Aguardando evento/fase'
+
                 processadas.append({
                     'num_contrato': str(_get(row, 24) or ''),
                     'num_parcela': num_parc,
@@ -484,11 +524,19 @@ class RelatorioConsistenciaDados:
                     'cnpj_raw': str(_get(row, 26) or ''),
                     'nome': str(_get(row, 27) or '').strip(),
                     'valor': _get(row, 29) or 0,
-                    'vencimento': venc_date.strftime('%d/%m/%Y'),
-                    'fase': str(_get(row, 32) or '').strip(),
+                    'condicao': condicao,
+                    'fase': fase,
+                    'tipo': tipo,
+                    # mantido para compatibilidade com exportação legada
+                    'vencimento': condicao,
                 })
 
-        return {'processadas': processadas, 'pares': pares, 'cnpjs': cnpjs}
+        return {
+            'processadas': processadas,
+            'pares': pares,
+            'linhas_vinculadas': linhas_vinculadas,
+            'cnpjs': cnpjs,
+        }
 
     def _cnpjs_contratos_medicao(self, ws):
         """CNPJs com contrato ATIVO em Contratos_Medicao (empreiteiros)."""
@@ -525,6 +573,10 @@ class RelatorioConsistenciaDados:
         return False
 
     def _tem_correspondencia_adm(self, reg, adm):
+        # Verificação direta: linha desta entrada foi gravada na observação de parcela VINCULADO
+        if reg['linha'] in adm.get('linhas_vinculadas', set()):
+            return True
+        # Verificação por referência: extrai número(s) de parcela e confere em pares
         cnpj = reg['cnpj']
         parcelas = _extrair_parcelas_da_referencia(reg['referencia'])
         return any((cnpj, n) in adm['pares'] for n in parcelas)
@@ -589,12 +641,17 @@ class RelatorioConsistenciaDados:
             ))
 
     def _preencher_tree_adm(self, tree, lista):
+        tree.tag_configure('vencida', foreground='#cc0000')
+        tree.tag_configure('evento', foreground='#b35a00')
         for item in tree.get_children():
             tree.delete(item)
         for p in lista:
-            tree.insert('', 'end', values=(
-                p['num_contrato'], p['num_parcela'], p['cnpj_raw'],
-                p['nome'], p['vencimento'], _fmt_moeda(p['valor']),
+            tipo = p.get('tipo', 'VENCIDA')
+            rotulo = 'Vencida' if tipo == 'VENCIDA' else 'Ag. evento/fase'
+            tag = 'vencida' if tipo == 'VENCIDA' else 'evento'
+            tree.insert('', 'end', tags=(tag,), values=(
+                rotulo, p['num_contrato'], p['num_parcela'], p['cnpj_raw'],
+                p['nome'], p['condicao'], _fmt_moeda(p['valor']),
                 p['fase'][:80],
             ))
 
@@ -691,21 +748,179 @@ class RelatorioConsistenciaDados:
                 ws3.cell(li, 6, float(m['valor'] or 0)).number_format = '#,##0.00'
                 ws3.cell(li, 7, m['data_medicao'])
 
-            # Aba 4 — Parcelas ADM vencidas sem pagamento
-            ws4 = wb.create_sheet('Parcelas ADM vencidas')
-            cols_a = ['Contrato', 'Parcela', 'CNPJ', 'Nome', 'Vencimento', 'Valor (R$)', 'Fase']
-            _cab(ws4, 'Parcelas ADM PENDENTE com vencimento expirado (sem Data Vencimento = ignoradas)', cols_a)
+            # Aba 4 — Parcelas ADM PENDENTE (vencidas e aguardando evento)
+            ws4 = wb.create_sheet('Parcelas ADM PENDENTE')
+            cols_a = ['Tipo', 'Contrato', 'Parcela', 'CNPJ', 'Nome', 'Condição', 'Valor (R$)', 'Fase']
+            _cab(ws4, 'Parcelas ADM PENDENTE: vencidas (data expirada) e aguardando evento/fase (sem data)', cols_a)
             for li, p in enumerate(self._origem_sem_dados_adm, 6):
-                ws4.cell(li, 1, p['num_contrato']); ws4.cell(li, 2, p['num_parcela'])
-                ws4.cell(li, 3, p['cnpj_raw']); ws4.cell(li, 4, p['nome'])
-                ws4.cell(li, 5, p['vencimento'])
-                ws4.cell(li, 6, float(p['valor'] or 0)).number_format = '#,##0.00'
-                ws4.cell(li, 7, p['fase'])
+                tipo_label = 'Vencida' if p.get('tipo') == 'VENCIDA' else 'Ag. evento/fase'
+                ws4.cell(li, 1, tipo_label); ws4.cell(li, 2, p['num_contrato'])
+                ws4.cell(li, 3, p['num_parcela']); ws4.cell(li, 4, p['cnpj_raw'])
+                ws4.cell(li, 5, p['nome']); ws4.cell(li, 6, p['condicao'])
+                ws4.cell(li, 7, float(p['valor'] or 0)).number_format = '#,##0.00'
+                ws4.cell(li, 8, p['fase'])
 
             wb.save(caminho)
             messagebox.showinfo("Sucesso", f"Arquivo exportado:\n{caminho}", parent=self.root)
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao exportar:\n{e}", parent=self.root)
+
+    # ------------------------------------------------------------------
+    # Vincular Selecionados
+    # ------------------------------------------------------------------
+
+    def _vincular_selecionados(self):
+        """Vincula a entrada selecionada em Dados às parcelas ADM PENDENTE selecionadas."""
+        sel_dados = self._tree_dsa.selection()
+        sel_parc  = self._tree_osa.selection()
+
+        if not sel_dados:
+            messagebox.showwarning(
+                "Seleção incompleta",
+                "Selecione uma linha em 'Dados s/ correspondência em Contratos ADM'.",
+                parent=self.root)
+            return
+        if len(sel_dados) > 1:
+            messagebox.showwarning(
+                "Seleção inválida",
+                "Selecione apenas UMA linha de Dados para vincular.",
+                parent=self.root)
+            return
+        if not sel_parc:
+            messagebox.showwarning(
+                "Seleção incompleta",
+                "Selecione ao menos uma parcela em 'Parcelas ADM PENDENTE'.",
+                parent=self.root)
+            return
+
+        # Dados da entrada selecionada
+        vals_dados = self._tree_dsa.item(sel_dados[0])['values']
+        # cols: ('Linha', 'Data', 'CNPJ', 'Nome', 'Referencia', 'Valor', 'Observacao')
+        linha_dados = int(vals_dados[0])
+        data_dados  = str(vals_dados[1])
+        cnpj_dados  = _normalizar_cnpj(str(vals_dados[2]))
+
+        # Dados das parcelas selecionadas
+        # cols: ('Tipo', 'Contrato', 'Parcela', 'CNPJ', 'Nome', 'Condição', 'Valor', 'Fase')
+        parcelas_sel = []
+        for iid in sel_parc:
+            v = self._tree_osa.item(iid)['values']
+            parcelas_sel.append({
+                'num_contrato': str(v[1]),
+                'num_parcela' : int(v[2]),
+                'cnpj'        : _normalizar_cnpj(str(v[3])),
+                'nome'        : str(v[4]),
+            })
+
+        # Validar que todos os CNPJs das parcelas coincidem com o da entrada
+        cnpjs_parc = {p['cnpj'] for p in parcelas_sel}
+        if len(cnpjs_parc) > 1:
+            messagebox.showwarning(
+                "Seleção inválida",
+                "As parcelas selecionadas pertencem a administradores diferentes.\n"
+                "Selecione parcelas do mesmo administrador.",
+                parent=self.root)
+            return
+        if cnpj_dados not in cnpjs_parc:
+            resp = messagebox.askyesno(
+                "CNPJ diferente",
+                f"O CNPJ da entrada em Dados ({vals_dados[2]}) é diferente do CNPJ "
+                f"das parcelas selecionadas ({parcelas_sel[0]['nome']}).\n\n"
+                "Deseja continuar mesmo assim?",
+                parent=self.root)
+            if not resp:
+                return
+
+        # Confirmação final
+        lista_parc = ', '.join(str(p['num_parcela']) for p in parcelas_sel)
+        resp = messagebox.askyesno(
+            "Confirmar vinculação",
+            f"Vincular a entrada da linha {linha_dados} de Dados\n"
+            f"({vals_dados[3]} — {vals_dados[5]})\n\n"
+            f"às parcelas: {lista_parc}\n"
+            f"Administrador: {parcelas_sel[0]['nome']}\n\n"
+            "Confirma?",
+            parent=self.root)
+        if not resp:
+            return
+
+        # Converter data da entrada para objeto date (usado em Data Pagamento)
+        data_pag = None
+        for fmt in ('%d/%m/%Y', '%Y-%m-%d'):
+            try:
+                from datetime import datetime as _dt
+                data_pag = _dt.strptime(data_dados, fmt).date()
+                break
+            except ValueError:
+                pass
+        if data_pag is None:
+            from datetime import date as _today
+            data_pag = _today.today()
+
+        # Executar vinculação na planilha
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb['Contratos_ADM']
+
+            vinculadas = 0
+            nao_encontradas = []
+
+            for parc in parcelas_sel:
+                encontrou = False
+                for row_idx, row in enumerate(
+                        ws.iter_rows(min_row=3, values_only=False), start=3):
+                    num_cont_cell = row[24].value  # col Y
+                    num_parc_cell = row[25].value  # col Z
+                    cnpj_cell     = row[26].value  # col AA
+                    status_cell   = str(row[30].value or '').strip().upper()  # col AE
+
+                    if (str(num_cont_cell or '').strip() == parc['num_contrato'] and
+                            status_cell == 'PENDENTE'):
+                        try:
+                            num_parc_val = int(num_parc_cell)
+                        except (TypeError, ValueError):
+                            continue
+                        if (num_parc_val == parc['num_parcela'] and
+                                _normalizar_cnpj(str(cnpj_cell or '')) == parc['cnpj']):
+                            # Atualizar status e data pagamento
+                            ws.cell(row=row_idx, column=31, value='VINCULADO')
+                            ws.cell(row=row_idx, column=32, value=data_pag)
+                            ws.cell(row=row_idx, column=32).number_format = 'DD/MM/YYYY'
+                            # Registrar linha de Dados na observação
+                            obs_atual = str(ws.cell(row=row_idx, column=36).value or '')
+                            nova_obs = (obs_atual + f' [VINCULADO À DESPESA DA LINHA '
+                                        f'{linha_dados} DE DADOS]').strip()
+                            ws.cell(row=row_idx, column=36, value=nova_obs)
+                            vinculadas += 1
+                            encontrou = True
+                            break
+
+                if not encontrou:
+                    nao_encontradas.append(parc['num_parcela'])
+
+            wb.save(self.arquivo_cliente)
+            wb.close()
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao salvar vinculação:\n{e}", parent=self.root)
+            return
+
+        # Resultado
+        if nao_encontradas:
+            messagebox.showwarning(
+                "Vinculação parcial",
+                f"{vinculadas} parcela(s) vinculada(s).\n"
+                f"Não encontradas (já pagas ou contrato divergente): "
+                f"{', '.join(str(n) for n in nao_encontradas)}",
+                parent=self.root)
+        else:
+            messagebox.showinfo(
+                "Sucesso",
+                f"{vinculadas} parcela(s) vinculada(s) à linha {linha_dados} de Dados.",
+                parent=self.root)
+
+        # Regenerar relatório
+        self._gerar_relatorio()
 
     # ------------------------------------------------------------------
     # Fechar
