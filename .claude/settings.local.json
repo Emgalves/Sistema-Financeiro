@@ -4,7 +4,8 @@
       "Bash(ls \"C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Planilhas_Base/Relatorios_Medicoes/\" 2>&1 | head -30)",
       "Read(//c/Users/Obras/sistema_gestao_testes/testes/Financeiro/Planilhas_Base/Relatorios_Medicoes/**)",
       "Bash(python -c ' *)",
-      "Bash(python -c \"import ast; ast.parse\\(open\\('src/relatorio_consistencia_dados.py', encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")"
+      "Bash(python -c \"import ast; ast.parse\\(open\\('src/relatorio_consistencia_dados.py', encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('src/relatorio_consistencia_dados.py'\\).read\\(\\)\\); print\\('OK'\\)\")"
     ]
   }
 }
