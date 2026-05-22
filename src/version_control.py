@@ -10,12 +10,13 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 7,
-    "patch": 3,
-    "release_date": "08/04/2026",
+    "patch": 4,
+    "release_date": "22/05/2026",
     "changes": [
-        "Inclusão do caminho Z:/servidor",
-        "Correção do módulo Gestão de Medições",
-        "Eliminação da necessidade de valor em contratos de administração de obras por percentual"
+        "Correção de entrada automática do campo Status em Dados",
+        "Inclusão de relatório que compara a gestão de Medições e Taxa de Administração com registros em Dados",
+        "Inclusão de vinculação de parcela de contrato de taxa de administração através do relatório acima",
+        "Inclusão de Relatório que mostra fornecedores individualmnete, por categoria, por cliente, etc."
     ]
 }
 
