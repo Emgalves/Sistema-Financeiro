@@ -1,0 +1,32 @@
+2026-05-21 09:52:14,446 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-21 09:52:14,447 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-21 09:52:14,447 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-21 09:52:14,448 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-21 09:52:14,448 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-21 09:52:29,801 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-21 09:52:29,942 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-21 09:52:29,944 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-21 09:52:29,962 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-21 09:52:29,963 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-21 09:52:29,964 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 19 clientes
+2026-05-21 10:00:48,418 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-05-21 10:00:48,425 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-05-21 10:00:48,533 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-05-21 10:09:38,080 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-21 10:09:38,081 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-21 10:09:38,081 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-21 10:09:38,081 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-21 10:09:38,082 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-21 10:09:42,445 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-21 10:09:42,546 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-21 10:09:42,547 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-21 10:09:42,562 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-21 10:09:42,564 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-21 10:09:42,564 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 19 clientes
+2026-05-21 10:09:53,126 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: por_fornecedor_det
+2026-05-21 10:09:53,127 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: por_fornecedor_det
+2026-05-21 10:16:06,422 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: por_fornecedor_det
+2026-05-21 10:16:06,422 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: por_fornecedor_det
+2026-05-21 10:19:16,284 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-05-21 10:19:16,285 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-05-21 10:19:16,344 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído

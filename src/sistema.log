@@ -11766,3 +11766,114 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-05-20 17:08:52,237 - INFO - Sistema iniciado em modo: TESTE
 2026-05-20 17:08:53,925 - INFO - Abrindo sistema de relatórios
 2026-05-20 17:11:53,770 - INFO - Sistema encerrado pelo usuário
+2026-05-21 09:52:19,447 - INFO - Configurações importadas com sucesso via src.config
+2026-05-21 09:52:19,473 - INFO - Configurações importadas com sucesso
+2026-05-21 09:52:19,473 - INFO - Configurações do sistema importadas com sucesso
+2026-05-21 09:52:21,699 - INFO - Sistema iniciado em modo: TESTE
+2026-05-21 09:52:29,754 - INFO - Abrindo sistema de relatórios
+2026-05-21 10:00:51,568 - INFO - Sistema encerrado pelo usuário
+2026-05-21 10:09:40,331 - INFO - Configurações importadas com sucesso via src.config
+2026-05-21 10:09:40,352 - INFO - Configurações importadas com sucesso
+2026-05-21 10:09:40,352 - INFO - Configurações do sistema importadas com sucesso
+2026-05-21 10:09:40,741 - INFO - Sistema iniciado em modo: TESTE
+2026-05-21 10:09:42,406 - INFO - Abrindo sistema de relatórios
+2026-05-21 10:19:19,634 - INFO - Sistema encerrado pelo usuário
+2026-05-22 08:01:00,218 - INFO - Configurações importadas com sucesso via src.config
+2026-05-22 08:01:00,442 - INFO - Configurações importadas com sucesso
+2026-05-22 08:01:00,442 - INFO - Configurações do sistema importadas com sucesso
+2026-05-22 08:01:01,602 - INFO - Sistema iniciado em modo: TESTE
+2026-05-22 08:43:31,474 - INFO - Abrindo sistema de relatórios
+2026-05-22 08:44:05,082 - INFO - Abrindo sistema de entrada de dados
+2026-05-22 08:44:06,860 - INFO - Proteções contra perda de dados configuradas
+2026-05-22 08:44:07,410 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-22 08:44:09,202 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-05-22 08:47:14,617 - INFO - Voltando ao menu principal
+2026-05-22 08:47:14,695 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-05-22 08:47:14,703 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-05-22 08:47:14,895 - INFO - ✅ Menu principal restaurado com sucesso
+2026-05-22 08:47:17,297 - INFO - Abrindo sistema de relatórios
+2026-05-22 08:51:04,919 - INFO - Abrindo sistema de entrada de dados
+2026-05-22 08:51:05,418 - INFO - Proteções contra perda de dados configuradas
+2026-05-22 08:51:05,508 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-22 08:51:08,193 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-05-22 08:52:07,607 - INFO - Abrindo sistema de entrada de dados
+2026-05-22 08:52:08,216 - INFO - Proteções contra perda de dados configuradas
+2026-05-22 08:52:08,344 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-22 08:52:11,873 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-05-22 08:52:27,343 - INFO - Voltando ao menu principal
+2026-05-22 08:52:27,415 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-05-22 08:52:27,421 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-05-22 08:52:27,588 - INFO - ✅ Menu principal restaurado com sucesso
+2026-05-22 08:52:28,775 - INFO - Abrindo sistema de relatórios
+2026-05-22 08:53:44,742 - INFO - Abrindo sistema de entrada de dados
+2026-05-22 08:53:45,504 - INFO - Proteções contra perda de dados configuradas
+2026-05-22 08:53:45,635 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-22 08:53:47,416 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-05-22 08:54:16,326 - INFO - Voltando ao menu principal
+2026-05-22 08:54:16,396 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-05-22 08:54:16,403 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-05-22 08:54:16,636 - INFO - ✅ Menu principal restaurado com sucesso
+2026-05-22 08:57:32,605 - INFO - Abrindo sistema de relatórios
+2026-05-22 09:01:03,204 - INFO - Abrindo sistema de entrada de dados
+2026-05-22 09:01:03,952 - INFO - Proteções contra perda de dados configuradas
+2026-05-22 09:01:04,091 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-22 09:01:06,325 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-05-22 09:42:51,607 - INFO - Configurações importadas com sucesso via src.config
+2026-05-22 09:42:51,642 - INFO - Configurações importadas com sucesso
+2026-05-22 09:42:51,643 - INFO - Configurações do sistema importadas com sucesso
+2026-05-22 09:42:53,416 - INFO - Sistema iniciado em modo: TESTE
+2026-05-22 09:42:58,117 - INFO - Abrindo sistema de entrada de dados
+2026-05-22 09:42:59,923 - INFO - Proteções contra perda de dados configuradas
+2026-05-22 09:43:00,642 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-22 09:43:02,119 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-05-22 09:54:30,907 - INFO - Configurações importadas com sucesso via src.config
+2026-05-22 09:54:30,930 - INFO - Configurações importadas com sucesso
+2026-05-22 09:54:30,932 - INFO - Configurações do sistema importadas com sucesso
+2026-05-22 09:54:31,611 - INFO - Sistema iniciado em modo: TESTE
+2026-05-22 09:54:37,249 - INFO - Abrindo sistema de entrada de dados
+2026-05-22 09:54:38,593 - INFO - Proteções contra perda de dados configuradas
+2026-05-22 09:54:38,851 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-05-22 09:54:41,056 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-05-22 09:55:07,200 - INFO - Voltando ao menu principal
+2026-05-22 09:55:07,273 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-05-22 09:55:07,304 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-05-22 09:55:07,517 - INFO - ✅ Menu principal restaurado com sucesso
+2026-05-22 09:55:25,216 - INFO - Abrindo sistema de relatórios
+2026-05-22 10:04:52,340 - INFO - Sistema encerrado pelo usuário
+2026-05-22 10:16:03,230 - INFO - Configurações importadas com sucesso via src.config
+2026-05-22 10:16:03,250 - INFO - Configurações importadas com sucesso
+2026-05-22 10:16:03,250 - INFO - Configurações do sistema importadas com sucesso
+2026-05-22 10:16:03,725 - INFO - Sistema iniciado em modo: TESTE
+2026-05-22 10:16:06,857 - INFO - Abrindo sistema de relatórios
+2026-05-22 10:22:22,280 - INFO - Sistema encerrado pelo usuário
+2026-05-22 10:26:38,367 - INFO - Configurações importadas com sucesso via src.config
+2026-05-22 10:26:38,390 - INFO - Configurações importadas com sucesso
+2026-05-22 10:26:38,391 - INFO - Configurações do sistema importadas com sucesso
+2026-05-22 10:26:38,896 - INFO - Sistema iniciado em modo: TESTE
+2026-05-22 10:26:47,597 - INFO - Abrindo sistema de relatórios
+2026-05-22 10:39:37,776 - INFO - Abrindo sistema de relatórios
+2026-05-22 10:43:55,025 - INFO - Sistema encerrado pelo usuário
+2026-05-22 10:44:06,564 - INFO - Configurações importadas com sucesso via src.config
+2026-05-22 10:44:06,598 - INFO - Configurações importadas com sucesso
+2026-05-22 10:44:06,602 - INFO - Configurações do sistema importadas com sucesso
+2026-05-22 10:44:07,937 - INFO - Sistema iniciado em modo: TESTE
+2026-05-22 10:45:21,511 - INFO - Abrindo sistema de relatórios
+2026-05-22 10:46:05,989 - INFO - Sistema encerrado pelo usuário
+2026-05-22 10:46:17,306 - INFO - Configurações importadas com sucesso via src.config
+2026-05-22 10:46:17,324 - INFO - Configurações importadas com sucesso
+2026-05-22 10:46:17,325 - INFO - Configurações do sistema importadas com sucesso
+2026-05-22 10:46:17,537 - INFO - Sistema iniciado em modo: TESTE
+2026-05-22 10:47:08,022 - INFO - Abrindo sistema de relatórios
+2026-05-22 10:48:38,663 - INFO - Sistema encerrado pelo usuário
+2026-05-22 10:52:30,785 - INFO - Configurações importadas com sucesso via src.config
+2026-05-22 10:52:30,804 - INFO - Configurações importadas com sucesso
+2026-05-22 10:52:30,806 - INFO - Configurações do sistema importadas com sucesso
+2026-05-22 10:52:31,293 - INFO - Sistema iniciado em modo: TESTE
+2026-05-22 10:52:33,876 - INFO - Abrindo sistema de relatórios
+2026-05-22 10:59:01,480 - INFO - Sistema encerrado pelo usuário
+2026-05-22 10:59:09,861 - INFO - Configurações importadas com sucesso via src.config
+2026-05-22 10:59:09,878 - INFO - Configurações importadas com sucesso
+2026-05-22 10:59:09,879 - INFO - Configurações do sistema importadas com sucesso
+2026-05-22 10:59:10,171 - INFO - Sistema iniciado em modo: TESTE
+2026-05-22 10:59:12,122 - INFO - Abrindo sistema de relatórios
+2026-05-22 11:03:07,814 - INFO - Sistema encerrado pelo usuário
