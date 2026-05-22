@@ -11187,6 +11187,13 @@ class GestaoContratos:
             # Carregar contratos existentes
             self.carregar_contratos()
 
+            # Auto-selecionar o primeiro contrato para exibir seus administradores imediatamente
+            primeiros = self.tree_contratos.get_children()
+            if primeiros:
+                self.tree_contratos.selection_set(primeiros[0])
+                self.tree_contratos.focus(primeiros[0])
+                self.mostrar_administradores()
+
             # Binding para atualizar administradores quando selecionar contrato
             self.tree_contratos.bind('<<TreeviewSelect>>', self.mostrar_administradores)
 
@@ -11259,13 +11266,13 @@ class GestaoContratos:
             for item in self.tree_adm_contrato.get_children():
                 self.tree_adm_contrato.delete(item)
                 
-            num_contrato = self.tree_contratos.item(selecionado)['values'][0]
-            
+            num_contrato = str(self.tree_contratos.item(selecionado)['values'][0])
+
             wb = load_workbook(self.arquivo_cliente)
             ws = wb['Contratos_ADM']
-            
+
             for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[6] == num_contrato:  # Coluna G - Nº Contrato
+                if str(row[6]) == num_contrato:  # Coluna G - Nº Contrato
                     if row[26]:  # Data Inicial de Pagamento
                         data_inicial = row[26].strftime('%d/%m/%Y') if isinstance(row[26], datetime) else str(row[26])
                     else:
@@ -11299,14 +11306,20 @@ class GestaoContratos:
                         row[7],   # CNPJ/CPF
                         row[8],   # Nome
                         row[9],   # Tipo
-                        valor_perc_formatado,  # ✅ Valor/Percentual formatado
-                        valor_total_formatado,  # ✅ Valor Total formatado
+                        valor_perc_formatado,
+                        valor_total_formatado,
                         row[12],  # Nº Parcelas
-                        data_inicial  # Data Inicial de Pagamento
+                        data_inicial
                     ))
-            
+
+            if not self.tree_adm_contrato.get_children():
+                self.tree_adm_contrato.insert('', 'end', values=(
+                    '—', 'Nenhum administrador cadastrado para este contrato',
+                    '', '', '', '', ''
+                ))
+
             wb.close()
-            
+
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao carregar administradores: {str(e)}")
   
@@ -12076,8 +12089,8 @@ class GestaoContratos:
 
         try:
             dados_contrato = self.tree_contratos.item(selecionado)['values']
-            num_contrato = dados_contrato[0]
-            
+            num_contrato = str(dados_contrato[0])
+
             janela = tk.Toplevel(self.parent)
             janela.title(f"Editar Contrato - {self.cliente_atual}")
             janela.geometry("1000x700")
@@ -12110,9 +12123,9 @@ class GestaoContratos:
 
             # Número do Contrato (readonly)
             ttk.Label(frame_contrato, text="Nº Contrato:").grid(row=0, column=0, padx=5, pady=2, sticky='w')
-            num_contrato_entry = ttk.Entry(frame_contrato, state='readonly', width=30)
+            num_contrato_var = tk.StringVar(value=str(num_contrato))
+            num_contrato_entry = ttk.Entry(frame_contrato, textvariable=num_contrato_var, state='readonly', width=30)
             num_contrato_entry.grid(row=0, column=1, padx=5, pady=2, sticky='w')
-            num_contrato_entry.insert(0, num_contrato)
 
             # Datas
             ttk.Label(frame_contrato, text="Data Início:").grid(row=1, column=0, padx=5, pady=2, sticky='w')
@@ -12155,8 +12168,7 @@ class GestaoContratos:
                 ws = wb['Contratos_ADM']
                 
                 for row in ws.iter_rows(min_row=3, values_only=True):
-                    if row[6] == num_contrato:  # Coluna G - Nº Contrato
-                        # ✅ CORREÇÃO: Formatar valor total
+                    if str(row[6]) == str(num_contrato):  # Coluna G - Nº Contrato
                         valor_total = row[11] or 0  # Coluna L
                         try:
                             valor_total_num = float(str(valor_total).replace(',', '.'))
@@ -12189,7 +12201,7 @@ class GestaoContratos:
                     # Encontrar e deletar linha
                     linhas_deletar = []
                     for idx, row in enumerate(ws.iter_rows(min_row=3), start=3):
-                        if row[6].value == num_contrato and row[7].value == cnpj_cpf:
+                        if str(row[6].value) == str(num_contrato) and str(row[7].value) == str(cnpj_cpf):
                             linhas_deletar.append(idx)
                     
                     for linha in reversed(linhas_deletar):
@@ -12237,7 +12249,7 @@ class GestaoContratos:
                 ws = wb['Contratos_ADM']
                 
                 for row in ws.iter_rows(min_row=3, values_only=True):
-                    if row[24] == num_contrato:  # Coluna Y - Referência (contrato)
+                    if str(row[24]) == str(num_contrato):  # Coluna Y - Referência (contrato)
                         num_parcela = row[25]  # Número
                         
                         # Formatar exibição do número
@@ -12294,7 +12306,7 @@ class GestaoContratos:
                 ws = wb['Contratos_ADM']
                 
                 for row in ws.iter_rows(min_row=3, values_only=True):
-                    if row[24] == num_contrato:  # Este contrato
+                    if str(row[24]) == num_contrato:  # Este contrato
                         cnpj_cpf = row[26]
                         nome = row[27]
                         
@@ -12362,7 +12374,7 @@ class GestaoContratos:
                 
                 todos_gestores = set()
                 for row in ws.iter_rows(min_row=3, values_only=True):
-                    if row[6] == num_contrato:  # Coluna G - gestores do contrato
+                    if str(row[6]) == num_contrato:  # Coluna G - gestores do contrato
                         cnpj_cpf = row[7]
                         nome = row[8]
                         todos_gestores.add((cnpj_cpf, nome))
@@ -12434,7 +12446,7 @@ class GestaoContratos:
                             valor_total_destino = 0
                             
                             for row in ws.iter_rows(min_row=3, values_only=True):
-                                if row[6] == num_contrato and row[7] == cnpj_destino:
+                                if str(row[6]) == num_contrato and str(row[7]) == str(cnpj_destino):
                                     nome_destino = row[8]
                                     # Pegar valor total do gestor
                                     try:
@@ -12449,8 +12461,8 @@ class GestaoContratos:
                             # Se deve substituir, marcar eventos existentes como excluídos
                             if var_substituir.get():
                                 for idx, row in enumerate(ws.iter_rows(min_row=3), start=3):
-                                    if (row[24].value == num_contrato and 
-                                        row[26].value == cnpj_destino):
+                                    if (str(row[24].value) == num_contrato and
+                                        str(row[26].value) == str(cnpj_destino)):
                                         ws.cell(row=idx, column=31, value='EXCLUIDO')  # Status
                             
                             # Copiar cada evento
@@ -12464,7 +12476,7 @@ class GestaoContratos:
                                     # Buscar valor total do gestor de origem
                                     valor_total_origem = 0
                                     for row in ws.iter_rows(min_row=3, values_only=True):
-                                        if row[6] == num_contrato and row[7] == cnpj_origem:
+                                        if str(row[6]) == num_contrato and str(row[7]) == str(cnpj_origem):
                                             try:
                                                 valor_total_origem = float(str(row[11]).replace(',', '.'))
                                             except:
@@ -12530,8 +12542,8 @@ class GestaoContratos:
                 linha_evento = None
                 for idx, row in enumerate(ws.iter_rows(min_row=3), start=3):
                     # ✅ CORREÇÃO: Buscar por CONTRATO + NÚMERO + CNPJ/CPF
-                    if (row[24].value == num_contrato and 
-                        row[25].value == num_evento and 
+                    if (str(row[24].value) == num_contrato and
+                        row[25].value == num_evento and
                         str(row[26].value) == str(cnpj_cpf_evento)):  # Coluna AA - CNPJ/CPF
                         linha_evento = idx
                         break
@@ -12633,8 +12645,8 @@ class GestaoContratos:
                     # ✅ CORREÇÃO: Buscar por CONTRATO + NÚMERO + CNPJ/CPF
                     linhas_deletar = []
                     for idx, row in enumerate(ws.iter_rows(min_row=3), start=3):
-                        if (row[24].value == num_contrato and 
-                            row[25].value == num_evento and 
+                        if (str(row[24].value) == num_contrato and
+                            row[25].value == num_evento and
                             str(row[26].value) == str(cnpj_cpf_evento)):  # Coluna AA - CNPJ/CPF
                             linhas_deletar.append(idx)
                     
@@ -12672,7 +12684,7 @@ class GestaoContratos:
                 
                 gestores_disponiveis = []
                 for row in ws_temp.iter_rows(min_row=3, values_only=True):
-                    if row[6] == num_contrato:  # Coluna G - Nº Contrato
+                    if str(row[6]) == num_contrato:  # Coluna G - Nº Contrato
                         gestor_info = f"{row[8]} ({row[7]})"  # Nome (CNPJ/CPF)
                         if gestor_info not in gestores_disponiveis:
                             gestores_disponiveis.append(gestor_info)
@@ -12695,7 +12707,7 @@ class GestaoContratos:
                 ws_temp = wb_temp['Contratos_ADM']
                 max_num = 0
                 for row in ws_temp.iter_rows(min_row=3, values_only=True):
-                    if row[24] == num_contrato and row[25]:  # Tem número
+                    if str(row[24]) == num_contrato and row[25]:  # Tem número
                         try:
                             num_atual = int(row[25])
                             if num_atual > max_num:
@@ -12775,8 +12787,8 @@ class GestaoContratos:
                         # Verificar se já existe evento com mesmo número e gestor
                         existe = False
                         for row in ws.iter_rows(min_row=3, values_only=True):
-                            if (row[24] == num_contrato and 
-                                row[25] == numero and 
+                            if (str(row[24]) == num_contrato and
+                                row[25] == numero and
                                 str(row[26]) == str(cnpj_cpf)):
                                 existe = True
                                 break
@@ -12858,7 +12870,7 @@ class GestaoContratos:
                     
                     # Atualizar dados básicos do contrato
                     for row in ws.iter_rows(min_row=3):
-                        if row[0].value == num_contrato:
+                        if str(row[0].value) == num_contrato:
                             row[1].value = data_inicio.get_date()
                             row[2].value = data_fim.get_date()
                             row[3].value = status_combo.get()
@@ -16482,7 +16494,7 @@ class GestorTaxasAdministracao:
             contratos_ativos = set()
             for row in ws_contratos.iter_rows(min_row=3, values_only=True):  # Começar da linha 3
                 if row[0] and row[3] == 'ATIVO':  # Coluna A (Nº Contrato) e Coluna D (Status)
-                    contratos_ativos.add(row[0])
+                    contratos_ativos.add(str(row[0]))
                     logger.debug(f"DEBUG: Contrato ativo encontrado: {row[0]}")
             
             logger.debug(f"DEBUG: Contratos ativos: {contratos_ativos}")
@@ -16501,7 +16513,7 @@ class GestorTaxasAdministracao:
                 
                 for row in ws_contratos.iter_rows(min_row=3, values_only=True):
                     # CORREÇÃO 3: Verificar se pertence ao contrato (coluna G) e é do tipo Percentual (coluna J)
-                    if (row[6] == num_contrato and          # Coluna G (Nº Contrato)
+                    if (str(row[6]) == num_contrato and      # Coluna G (Nº Contrato)
                         row[9] == 'Percentual'):            # Coluna J (Tipo)
                         
                         # CORREÇÃO 4: Extrair percentual da coluna K
