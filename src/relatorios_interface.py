@@ -287,6 +287,9 @@ class SistemaRelatorios:
             elif relatorio["id"] == "consistencia_dados":
                 self.processar_consistencia_dados()
 
+            elif relatorio["id"] == "por_fornecedor_det":
+                self.processar_por_fornecedor_det()
+
             else:
                 self.processar_outros_relatorios(relatorio)
                 
@@ -647,7 +650,7 @@ class SistemaRelatorios:
                 "id": "fornecedores",
                 "nome": "Relatório de Principais Fornecedores",
                 "descricao": "Resumo de fornecedores por cliente e global",
-                "modulo": "relatorio_fornecedores",
+                "modulo": "relatorio_fornecedoresrelatorio_fornecedores",
                 "classe": "RelatorioFornecedores",
                 "disponivel": True
             },
@@ -689,6 +692,17 @@ class SistemaRelatorios:
                 "descricao": "Verifica registros em 'Dados' sem correspondência em Medições/Contratos ADM e vice-versa",
                 "modulo": "relatorio_consistencia_dados",
                 "classe": "RelatorioConsistenciaDados",
+                "disponivel": True
+            },
+            {
+                "id": "por_fornecedor_det",
+                "nome": "Relatório Detalhado por Fornecedor",
+                "descricao": (
+                    "Todos os registros por cliente para um fornecedor selecionado, "
+                    "com filtros de período, categoria e vínculo."
+                ),
+                "modulo": "relatorio_por_fornecedor_detalhado",
+                "classe": "RelatorioPorFornecedorDetalhado",
                 "disponivel": True
             }
         ]
@@ -821,6 +835,8 @@ class SistemaRelatorios:
             self.setup_opcoes_quinzenal(self.right_frame)
         elif relatorio["id"] == "consistencia_dados":
             self.setup_opcoes_consistencia_dados(self.right_frame)
+        elif relatorio["id"] == "por_fornecedor_det":
+            self.setup_opcoes_por_fornecedor_det(self.right_frame)
         else:
             ttk.Label(
                 self.right_frame,
@@ -2763,6 +2779,39 @@ class SistemaRelatorios:
             
         except Exception as e:
             logger.error(f"💥 ERRO fornecedores: {str(e)}")
+            messagebox.showerror("Erro", f"Erro: {str(e)}")
+            self.root.deiconify()
+
+    def setup_opcoes_por_fornecedor_det(self, parent_frame):
+        """Painel de opções para o relatório detalhado por fornecedor."""
+        ttk.Label(
+            parent_frame,
+            text=(
+                "Este relatório abre uma janela dedicada onde você pode:\n\n"
+                "  • Buscar e selecionar um fornecedor específico\n"
+                "    (ou deixar em branco para ver todos)\n\n"
+                "  • Filtrar por período (presets ou datas personalizadas)\n\n"
+                "  • Segregar por categoria (ADM, DIV, LOC, MAT, MO, SERV, TAX, TP)\n\n"
+                "  • Filtrar por vínculo do fornecedor\n\n"
+                "  • Ver todos os registros por cliente, por categoria e exportar\n"
+                "    para Excel com três abas: Registros, Por Cliente e Por Categoria."
+            ),
+            justify='left',
+            font=('Arial', 10),
+            wraplength=420
+        ).pack(anchor='w', padx=15, pady=15)
+
+    def processar_por_fornecedor_det(self):
+        """Abre o relatório detalhado por fornecedor."""
+        try:
+            self.root.withdraw()
+            from src.relatorio_por_fornecedor_detalhado import RelatorioPorFornecedorDetalhado
+            app = RelatorioPorFornecedorDetalhado(parent=self.root)
+            app.root.lift()
+            app.root.focus_force()
+            app.root.mainloop()
+        except Exception as e:
+            logger.error(f"ERRO relatório por fornecedor detalhado: {str(e)}")
             messagebox.showerror("Erro", f"Erro: {str(e)}")
             self.root.deiconify()
 
