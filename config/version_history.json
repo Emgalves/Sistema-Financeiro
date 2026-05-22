@@ -268,5 +268,15 @@
             "Inclusão de gerador de contrato de administração de obras via Word"
         ],
         "timestamp": "2026-04-07T10:48:27.508421"
+    },
+    {
+        "version": "1.7.4",
+        "release_date": "28/05/2026",
+        "changes": [
+            "Correção de entrada automática do campo Status em Dados",
+            "Inclusão de relatório que compara a gestão de Medições e Taxa de Administração com registros em Dados",
+            "Inclusão de Relatório que mostra fornecedores individualmnete, por categoria, por cliente, etc."
+        ],
+        "timestamp": "2026-05-22T07:44:40.114479"
     }
 ]
