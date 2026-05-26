@@ -215,49 +215,47 @@ class ImportadorMedicoes:
         """
         medicoes = []
         erros = []
-        
-        # A linha 11 é o cabeçalho, dados começam na linha 12
-        linha_atual = 12
+
+        # Linha 12 = cabeçalho, dados começam na linha 13
+        # Colunas: A=ID (auto se vazio), B=Data Medição, C=Referência, D=Valor, E=Status
+        linha_atual = 13
         medicoes_ids = []
-        
+
         while True:
-            # Ler valores da linha
-            id_medicao = sheet.cell(row=linha_atual, column=1).value  # Coluna A
-            data_medicao = sheet.cell(row=linha_atual, column=2).value  # Coluna B
-            data_pagamento = sheet.cell(row=linha_atual, column=3).value  # Coluna C
-            referencia = sheet.cell(row=linha_atual, column=4).value  # Coluna D
-            valor = sheet.cell(row=linha_atual, column=5).value  # Coluna E
-            status = sheet.cell(row=linha_atual, column=6).value  # Coluna F
-            
-            # Se ID está vazio, acabaram as medições
-            if id_medicao is None or str(id_medicao).strip() == '':
+            id_medicao   = sheet.cell(row=linha_atual, column=1).value  # A
+            data_medicao = sheet.cell(row=linha_atual, column=2).value  # B
+            referencia   = sheet.cell(row=linha_atual, column=3).value  # C
+            valor        = sheet.cell(row=linha_atual, column=4).value  # D
+            status       = sheet.cell(row=linha_atual, column=5).value  # E
+
+            # Fim dos dados quando todas as colunas relevantes estão vazias
+            if data_medicao is None and referencia is None and valor is None:
                 break
-            
-            # Converter ID para inteiro se possível
-            try:
-                id_medicao = int(id_medicao)
-            except (ValueError, TypeError):
-                erros.append(f"Linha {linha_atual}: ID inválido '{id_medicao}'")
-                linha_atual += 1
-                continue
-            
-            # Validar se é uma medição nova
-            # Aceita: status PENDENTE ou vazio (None ou string vazia)
-            # Rejeita: status LANÇADO ou VINCULADO (medições já processadas)
+
+            # Auto-atribuir ID se célula estiver vazia
+            id_auto = id_medicao is None or str(id_medicao).strip() == ''
+            if id_auto:
+                id_medicao = (max(medicoes_ids) + 1) if medicoes_ids else 1
+            else:
+                try:
+                    id_medicao = int(id_medicao)
+                except (ValueError, TypeError):
+                    erros.append(f"Linha {linha_atual}: ID inválido '{id_medicao}'")
+                    linha_atual += 1
+                    continue
+
+            # Aceita PENDENTE ou vazio; pula LANÇADO/VINCULADO (já processados)
             status_str = str(status).upper().strip() if status is not None else ''
-            
-            # Se status está preenchido e NÃO é PENDENTE, pular esta linha
+
             if status_str and status_str != 'PENDENTE':
-                # Adicionar ID à lista de IDs existentes para validar sequência
                 medicoes_ids.append(id_medicao)
                 linha_atual += 1
                 continue
-            
+
             # ===== VALIDAÇÕES =====
-            
-            # 1. Validar sequência de IDs
-            if self.validacoes_ativadas['sequencia_id']:
-                # O ID deve ser sequencial em relação aos anteriores
+
+            # 1. Validar sequência de IDs (só para IDs preenchidos manualmente)
+            if self.validacoes_ativadas['sequencia_id'] and not id_auto:
                 if medicoes_ids:
                     ultimo_id = max(medicoes_ids)
                     if id_medicao != ultimo_id + 1:
@@ -351,24 +349,21 @@ class ImportadorMedicoes:
                 
                 if valor_float > saldo_disponivel:
                     erros.append(
-                        f"Linha {linha_atual}: Valor R$ {valor_float:.2f} ultrapassa o saldo "
-                        f"disponível R$ {saldo_disponivel:.2f}"
+                        f"Contrato {id_contrato} — linha {linha_atual}: as medições ultrapassam o saldo "
+                        f"disponível (R$ {saldo_disponivel:,.2f}). "
+                        f"Se for aditivo, utilize a aba 'Servicos_Adicionais' para criar um novo contrato."
                     )
                     linha_atual += 1
                     continue
             
             # ===== MEDIÇÃO VÁLIDA - ADICIONAR À LISTA =====
-            
-            # Garantir que data_pagamento existe
-            if data_pagamento is None:
-                data_pagamento = data_medicao
-            
+
             medicao = {
                 'id_contrato': id_contrato,
                 'id_medicao': id_medicao,
                 'fornecedor': fornecedor,
                 'data_medicao': data_medicao,
-                'data_pagamento': data_pagamento,
+                'data_pagamento': data_medicao,  # sem coluna própria; usa data de medição
                 'referencia': str(referencia).strip().upper(),
                 'valor': valor_float,
                 'status': 'PENDENTE',
@@ -611,7 +606,8 @@ class ImportadorMedicoes:
             'contratos_processados': 0,
             'medicoes_encontradas': 0,
             'valor_total': 0,
-            'contratos_com_erro': []
+            'contratos_com_erro': [],
+            'aditivos': {},  # {id_contrato: novo_valor_global}
         }
         
         try:
@@ -659,10 +655,23 @@ class ImportadorMedicoes:
                     # Buscar CNPJ do fornecedor
                     cnpj = self.buscar_cnpj_fornecedor(str(fornecedor).strip())
                     
+                    # Ler aditivo (B9): novo Valor Global informado pelo usuário
+                    aditivo_raw = sheet['B9'].value
+                    if aditivo_raw is not None:
+                        try:
+                            aditivo_float = float(aditivo_raw)
+                            if aditivo_float > 0:
+                                resumo['aditivos'][id_contrato] = aditivo_float
+                                valor_pago_aba = sheet['E7'].value
+                                pago = float(valor_pago_aba) if valor_pago_aba else 0
+                                saldo_float = aditivo_float - pago
+                        except (ValueError, TypeError):
+                            erros_total.append(f"{aba_nome}: Valor de aditivo inválido em B9 '{aditivo_raw}'")
+
                     # Extrair medições desta aba
                     medicoes, erros = self.extrair_medicoes_contrato(
-                        sheet, 
-                        id_contrato, 
+                        sheet,
+                        id_contrato,
                         fornecedor,
                         saldo_float
                     )
@@ -1245,10 +1254,13 @@ class ImportadorMedicoes:
         arquivo_cliente = self._obter_arquivo_cliente(cliente_atual)
         sucesso_saldos = False
         mensagem_saldos = ""
-        
+
+        if arquivo_cliente and resumo.get('aditivos'):
+            self._aplicar_aditivos(arquivo_cliente, resumo['aditivos'])
+
         if arquivo_cliente:
             sucesso_saldos, mensagem_saldos = self.atualizar_saldos_contratos(
-                arquivo_cliente, 
+                arquivo_cliente,
                 medicoes_preparadas
             )
             
@@ -1305,6 +1317,25 @@ class ImportadorMedicoes:
             mensagem_final += f"\n📁 Arquivo movido para:\n{Path(novo_caminho).name}\n"
         
         custom_messagebox("info", "Sucesso", mensagem_final)
+    def _aplicar_aditivos(self, arquivo_cliente, aditivos):
+        """Atualiza Valor Global de contratos que receberam aditivo na planilha (B9)."""
+        try:
+            wb = openpyxl.load_workbook(arquivo_cliente)
+            if 'Contratos_Medicao' not in wb.sheetnames:
+                wb.close()
+                return
+            ws = wb['Contratos_Medicao']
+            for row in ws.iter_rows(min_row=2, values_only=False):
+                id_cont = row[0].value
+                if id_cont in aditivos:
+                    row[6].value = aditivos[id_cont]  # coluna G = Valor_Global
+                    row[6].number_format = '#,##0.00'
+                    logger.info(f"Aditivo aplicado: Contrato {id_cont} → Valor Global R$ {aditivos[id_cont]:,.2f}")
+            wb.save(arquivo_cliente)
+            wb.close()
+        except Exception as e:
+            logger.error(f"Erro ao aplicar aditivos: {e}")
+
     def _obter_arquivo_cliente(self, cliente):
         """
         Método auxiliar para obter o caminho do arquivo do cliente
