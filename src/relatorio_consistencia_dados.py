@@ -314,6 +314,18 @@ class RelatorioConsistenciaDados:
     # Geracao do relatorio
     # ------------------------------------------------------------------
 
+    def _limpar_tudo(self):
+        for tree in (self._tree_dsm, self._tree_dsa, self._tree_osm, self._tree_osa):
+            for item in tree.get_children():
+                tree.delete(item)
+        self._dados_sem_origem_med = []
+        self._dados_sem_origem_adm = []
+        self._origem_sem_dados_med = []
+        self._origem_sem_dados_adm = []
+        self._lbl_cliente_res.config(text="Cliente: —")
+        for lbl in (self._lbl_dsm, self._lbl_dsa, self._lbl_osm, self._lbl_osa):
+            lbl.config(text="—", foreground='black')
+
     def _gerar_relatorio(self):
         if not self.cliente_atual:
             messagebox.showwarning("Aviso", "Selecione um cliente.", parent=self.root)
@@ -333,6 +345,7 @@ class RelatorioConsistenciaDados:
         faltam = [a for a in abas_req if a not in wb.sheetnames]
         if faltam:
             wb.close()
+            self._limpar_tudo()
             messagebox.showerror(
                 "Erro", f"Abas necessarias nao encontradas: {', '.join(faltam)}", parent=self.root)
             return
@@ -382,10 +395,18 @@ class RelatorioConsistenciaDados:
     # Leitura das abas
     # ------------------------------------------------------------------
 
+    _TP_DESP_IGNORADOS = {1, 4, 5}  # mão-de-obra, reembolso, despesas pagas pelo cliente
+
     def _ler_dados(self, ws):
         registros = []
         for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
             if not any(row):
+                continue
+            try:
+                tp_desp = int(_get(row, 1) or 0)
+            except (TypeError, ValueError):
+                tp_desp = 0
+            if tp_desp in self._TP_DESP_IGNORADOS:
                 continue
             cnpj = _normalizar_cnpj(_get(row, 2))
             if not cnpj:
