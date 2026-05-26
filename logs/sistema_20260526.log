@@ -1,0 +1,86 @@
+2026-05-26 10:52:23,702 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-26 10:52:23,703 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-26 10:52:23,704 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-26 10:52:23,704 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-26 10:52:23,705 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-26 10:52:45,454 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-26 10:52:45,606 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-26 10:52:45,607 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-26 10:52:45,635 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-26 10:52:45,638 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-26 10:52:45,639 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 19 clientes
+2026-05-26 10:52:46,819 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-26 10:52:46,846 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-26 10:52:46,847 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-26 10:52:46,848 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-26 10:52:46,850 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-26 10:52:48,770 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: consistencia_dados
+2026-05-26 10:52:48,770 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: consistencia_dados
+2026-05-26 11:06:03,621 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-05-26 11:06:03,622 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-05-26 11:06:03,730 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-05-26 11:07:45,316 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-26 11:07:45,317 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-26 11:07:45,318 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-26 11:07:45,318 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-26 11:07:45,319 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-26 11:07:51,417 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-26 11:07:51,498 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-26 11:07:51,500 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-26 11:07:51,503 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-26 11:07:51,504 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-26 11:07:51,505 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 19 clientes
+2026-05-26 11:07:52,685 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-26 11:07:52,712 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-26 11:07:52,713 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-26 11:07:52,715 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-26 11:07:52,716 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-26 11:07:54,212 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: consistencia_dados
+2026-05-26 11:07:54,213 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: consistencia_dados
+2026-05-26 11:47:22,108 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-05-26 11:47:22,194 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-05-26 11:47:22,350 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-05-26 11:47:51,498 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-26 11:47:51,499 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-26 11:47:51,500 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-26 11:47:51,500 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-26 11:47:51,500 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-26 11:47:57,669 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-26 11:47:57,902 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-26 11:47:57,936 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-26 11:47:57,958 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-26 11:47:57,961 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-26 11:47:57,988 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 19 clientes
+2026-05-26 11:48:03,272 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-05-26 11:48:03,300 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX']
+2026-05-26 11:48:03,301 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-05-26 11:48:03,303 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-05-26 11:48:03,304 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 18
+2026-05-26 11:48:05,094 - sistema_relatorios - relatorios_interface - INFO - 🔍 INICIANDO gerar_relatorio para: consistencia_dados
+2026-05-26 11:48:05,095 - sistema_relatorios - relatorios_interface - INFO - 📋 Processando outros relatórios: consistencia_dados
+2026-05-26 11:48:38,438 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-05-26 11:48:38,439 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-05-26 11:48:38,509 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-05-26 11:48:40,433 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-05-26 11:48:40,511 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-05-26 12:11:47,933 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-05-26 12:11:47,952 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-05-26 14:46:30,060 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-26 14:46:30,061 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-26 14:46:30,062 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-26 14:46:30,062 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-26 14:46:30,062 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-26 14:46:43,581 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-05-26 14:46:43,622 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-05-26 14:47:42,496 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-05-26 14:47:42,497 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-05-26 14:49:30,112 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-05-26 14:49:30,113 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-05-26 14:49:30,113 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-05-26 14:49:30,114 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-05-26 14:49:30,114 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-05-26 14:49:36,268 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-05-26 14:49:36,304 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-05-26 14:58:27,820 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-05-26 14:58:27,824 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-05-26 16:44:10,034 - sistema - logger_config - INFO - Sistema de logging inicializado

@@ -11877,3 +11877,34 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-05-22 10:59:10,171 - INFO - Sistema iniciado em modo: TESTE
 2026-05-22 10:59:12,122 - INFO - Abrindo sistema de relatórios
 2026-05-22 11:03:07,814 - INFO - Sistema encerrado pelo usuário
+2026-05-26 10:52:40,279 - INFO - Configurações importadas com sucesso via src.config
+2026-05-26 10:52:40,501 - INFO - Configurações importadas com sucesso
+2026-05-26 10:52:40,502 - INFO - Configurações do sistema importadas com sucesso
+2026-05-26 10:52:42,438 - INFO - Sistema iniciado em modo: TESTE
+2026-05-26 10:52:45,210 - INFO - Abrindo sistema de relatórios
+2026-05-26 11:06:07,245 - INFO - Sistema encerrado pelo usuário
+2026-05-26 11:07:47,849 - INFO - Configurações importadas com sucesso via src.config
+2026-05-26 11:07:47,874 - INFO - Configurações importadas com sucesso
+2026-05-26 11:07:47,875 - INFO - Configurações do sistema importadas com sucesso
+2026-05-26 11:07:48,689 - INFO - Sistema iniciado em modo: TESTE
+2026-05-26 11:07:51,356 - INFO - Abrindo sistema de relatórios
+2026-05-26 11:47:25,259 - INFO - Sistema encerrado pelo usuário
+2026-05-26 11:47:54,196 - INFO - Configurações importadas com sucesso via src.config
+2026-05-26 11:47:54,303 - INFO - Configurações importadas com sucesso
+2026-05-26 11:47:54,304 - INFO - Configurações do sistema importadas com sucesso
+2026-05-26 11:47:55,496 - INFO - Sistema iniciado em modo: TESTE
+2026-05-26 11:47:57,502 - INFO - Abrindo sistema de relatórios
+2026-05-26 11:48:40,142 - INFO - Abrindo gestão de medições
+2026-05-26 12:11:51,080 - INFO - Sistema encerrado pelo usuário
+2026-05-26 14:46:33,979 - INFO - Configurações importadas com sucesso via src.config
+2026-05-26 14:46:34,101 - INFO - Configurações importadas com sucesso
+2026-05-26 14:46:34,114 - INFO - Configurações do sistema importadas com sucesso
+2026-05-26 14:46:35,544 - INFO - Sistema iniciado em modo: TESTE
+2026-05-26 14:46:43,574 - INFO - Abrindo gestão de medições
+2026-05-26 14:47:45,814 - INFO - Sistema encerrado pelo usuário
+2026-05-26 14:49:32,422 - INFO - Configurações importadas com sucesso via src.config
+2026-05-26 14:49:32,445 - INFO - Configurações importadas com sucesso
+2026-05-26 14:49:32,446 - INFO - Configurações do sistema importadas com sucesso
+2026-05-26 14:49:33,160 - INFO - Sistema iniciado em modo: TESTE
+2026-05-26 14:49:36,261 - INFO - Abrindo gestão de medições
+2026-05-26 14:58:31,932 - INFO - Sistema encerrado pelo usuário
