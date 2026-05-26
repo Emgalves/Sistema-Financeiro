@@ -10,6 +10,7 @@ from pathlib import Path
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
+from openpyxl.comments import Comment
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -939,67 +940,108 @@ class RelatorioContratos:
                 saldo = float(contrato['valor_global'] or 0) - float(contrato['valor_pago'] or 0)
                 ws_contrato['B8'] = saldo
                 ws_contrato['B8'].number_format = '#,##0.00'
-                
+                if saldo <= 0:
+                    ws_contrato['B8'].fill = PatternFill(start_color='FF4444', end_color='FF4444', fill_type='solid')
+                    ws_contrato['B8'].font = Font(bold=True, color='FFFFFF')
+                    ws_contrato['B8'].comment = Comment(
+                        "Saldo esgotado.\nSe houver aditivo, preencha B9 com o novo Valor Global do contrato.",
+                        "Sistema"
+                    )
+
                 ws_contrato['D8'] = "Status:"
                 ws_contrato['E8'] = contrato['status']
-                
+
+                ws_contrato['A9'] = "Novo Valor Global (aditivo):"
+                ws_contrato['A9'].font = Font(italic=True, color='666666')
+                ws_contrato['B9'].number_format = '#,##0.00'
+                ws_contrato['B9'].fill = PatternFill(start_color='FFFACD', end_color='FFFACD', fill_type='solid')
+                ws_contrato['B9'].comment = Comment(
+                    "Preencha apenas se houver aditivo.\nO sistema atualizará o Valor Global do contrato ao importar.",
+                    "Sistema"
+                )
+
+                # Totalizadores dinâmicos — atualizados pelo Excel ao editar a tabela
+                ws_contrato['D9'] = "Total novas medições:"
+                ws_contrato['D9'].font = Font(italic=True, color='666666')
+                # Soma coluna D (Valor) onde E (Status) está em branco e B (Data) não está vazia
+                ws_contrato['E9'] = '=SUMPRODUCT((LEN(TRIM(E13:E1000))=0)*(B13:B1000<>"")*D13:D1000)'
+                ws_contrato['E9'].number_format = '#,##0.00'
+
+                ws_contrato['D10'] = "Saldo após importação:"
+                ws_contrato['D10'].font = Font(italic=True, color='666666')
+                ws_contrato['E10'] = "=B8-E9"
+                ws_contrato['E10'].number_format = '#,##0.00'
+                ws_contrato['E10'].comment = Comment(
+                    "Vermelho = novas medições excedem o saldo disponível.\n"
+                    "Se houver aditivo, preencha B9 com o novo Valor Global do contrato.",
+                    "Sistema"
+                )
+
+                from openpyxl.formatting.rule import CellIsRule
+                ws_contrato.conditional_formatting.add(
+                    'E10',
+                    CellIsRule(
+                        operator='lessThan', formula=['0'],
+                        fill=PatternFill(start_color='FF4444', end_color='FF4444', fill_type='solid'),
+                        font=Font(bold=True, color='FFFFFF')
+                    )
+                )
+
                 # Cabeçalho da tabela de medições
-                ws_contrato['A10'] = "Medições do Contrato"
-                ws_contrato['A10'].font = titulo_font
-                ws_contrato.merge_cells('A10:F10')
-                
-                cabecalhos_medicoes = ['ID', 'Data Medição', 'Data Pagamento', 'Referência', 'Valor', 'Status']
+                ws_contrato['A11'] = "Medições do Contrato"
+                ws_contrato['A11'].font = titulo_font
+                ws_contrato.merge_cells('A11:E11')
+
+                cabecalhos_medicoes = ['ID', 'Data Medição', 'Referência', 'Valor', 'Status']
                 for col, texto in enumerate(cabecalhos_medicoes, 1):
-                    celula = ws_contrato.cell(row=11, column=col, value=texto)
+                    celula = ws_contrato.cell(row=12, column=col, value=texto)
                     celula.font = cabecalho_font
                     celula.fill = cabecalho_fill
                     celula.border = borda
                     celula.alignment = Alignment(horizontal='center')
-                
+
+                ws_contrato.cell(row=12, column=1).comment = Comment(
+                    "Preenchido automaticamente.\nDeixe em branco nas novas linhas.",
+                    "Sistema"
+                )
+
                 # Filtrar medições deste contrato
                 medicoes_contrato = [m for m in self.medicoes if m['id_contrato'] == contrato['id']]
-                
+
                 # Ordenar por data
                 medicoes_contrato.sort(key=lambda x: x['data_medicao'] if isinstance(x['data_medicao'], datetime) else datetime.min)
-                
-                # Adicionar medições
-                linha = 12
+
+                cinza = PatternFill(start_color='E0E0E0', end_color='E0E0E0', fill_type='solid')
+
+                # Adicionar medições existentes (linha 13+)
+                linha = 13
                 for medicao in medicoes_contrato:
-                    ws_contrato.cell(row=linha, column=1, value=medicao['id_medicao'])
-                    
-                    # Data medição
+                    id_cell = ws_contrato.cell(row=linha, column=1, value=medicao['id_medicao'])
+                    id_cell.fill = cinza
+
                     if isinstance(medicao['data_medicao'], datetime):
                         ws_contrato.cell(row=linha, column=2, value=medicao['data_medicao'])
                     else:
-                        ws_contrato.cell(row=linha, column=2, value=str(medicao['data_medicao'] if medicao['data_medicao'] else ""))
-                    
-                    # Data pagamento
-                    if isinstance(medicao['data_pagamento'], datetime):
-                        ws_contrato.cell(row=linha, column=3, value=medicao['data_pagamento'])
-                    else:
-                        ws_contrato.cell(row=linha, column=3, value=str(medicao['data_pagamento'] if medicao['data_pagamento'] else ""))
-                    
-                    ws_contrato.cell(row=linha, column=4, value=medicao['referencia'])
-                    ws_contrato.cell(row=linha, column=5, value=float(medicao['valor']) if medicao['valor'] else 0)
-                    ws_contrato.cell(row=linha, column=6, value=medicao['status'])
-                    
-                    # Formatar células
-                    for col in [2, 3]:
-                        cell = ws_contrato.cell(row=linha, column=col)
-                        if isinstance(cell.value, datetime):
-                            cell.number_format = 'DD/MM/YYYY'
-                    
-                    ws_contrato.cell(row=linha, column=5).number_format = '#,##0.00'
-                    
+                        ws_contrato.cell(row=linha, column=2, value=str(medicao['data_medicao'] or ""))
+
+                    ws_contrato.cell(row=linha, column=3, value=medicao['referencia'])
+                    ws_contrato.cell(row=linha, column=4, value=float(medicao['valor']) if medicao['valor'] else 0)
+                    ws_contrato.cell(row=linha, column=5, value=medicao['status'])
+
+                    cell_dt = ws_contrato.cell(row=linha, column=2)
+                    if isinstance(cell_dt.value, datetime):
+                        cell_dt.number_format = 'DD/MM/YYYY'
+
+                    ws_contrato.cell(row=linha, column=4).number_format = '#,##0.00'
+
                     linha += 1
-                
+
                 # Ajustar larguras das colunas
                 ws_contrato.column_dimensions['A'].width = 10
                 ws_contrato.column_dimensions['B'].width = 15
-                ws_contrato.column_dimensions['C'].width = 15
-                ws_contrato.column_dimensions['D'].width = 40
-                ws_contrato.column_dimensions['E'].width = 15
-                ws_contrato.column_dimensions['F'].width = 12
+                ws_contrato.column_dimensions['C'].width = 40
+                ws_contrato.column_dimensions['D'].width = 15
+                ws_contrato.column_dimensions['E'].width = 12
 
             from openpyxl.worksheet.datavalidation import DataValidation
 
