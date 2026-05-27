@@ -460,6 +460,8 @@ class GestaoMedicoes:
                 command=self.listar_todos_fornecedores_aba).pack(side='left', padx=2)
         ttk.Button(busca_inner, text="➕ Novo Fornecedor",
                 command=self.novo_fornecedor).pack(side='left', padx=2)
+        ttk.Button(busca_inner, text="✏️ Editar Fornecedor",
+                command=self.editar_fornecedor_aba).pack(side='left', padx=2)
 
         # Listbox de resultados
         listbox_frame = ttk.Frame(frame_busca)
@@ -525,27 +527,56 @@ class GestaoMedicoes:
             foreground='#0056b3'
         )
         self.lbl_cliente_contratos.pack(anchor='w', padx=5, pady=5)
-        
-        # Frame para lista de contratos
+
+        # --- BARRA DE FILTROS ---
+        frame_filtros = ttk.Frame(frame_principal)
+        frame_filtros.pack(fill='x', padx=5, pady=(0, 4))
+
+        ttk.Label(frame_filtros, text="Status:").pack(side='left', padx=(0, 4))
+        self.var_filtro_status = tk.StringVar(value="Ativo")
+        for texto, valor in [("Todos", "Todos"), ("Ativo", "Ativo"), ("Concluído", "Concluído")]:
+            ttk.Radiobutton(
+                frame_filtros, text=texto,
+                variable=self.var_filtro_status, value=valor,
+                command=self.carregar_contratos
+            ).pack(side='left', padx=2)
+
+        ttk.Label(frame_filtros, text="  Buscar:").pack(side='left', padx=(10, 4))
+        self.var_busca_contratos = tk.StringVar()
+        self.var_busca_contratos.trace_add('write', lambda *_: self.carregar_contratos())
+        ttk.Entry(frame_filtros, textvariable=self.var_busca_contratos, width=22).pack(side='left')
+
+        self.lbl_cont_contratos = ttk.Label(frame_filtros, text="", foreground='#555')
+        self.lbl_cont_contratos.pack(side='right', padx=10)
+
+        # Segunda linha: indicador do filtro de fornecedor ativo
+        frame_forn_filtro = ttk.Frame(frame_principal)
+        frame_forn_filtro.pack(fill='x', padx=5, pady=(0, 2))
+        self.lbl_filtro_forn = ttk.Label(
+            frame_forn_filtro, text="", foreground='#0056b3', font=('Arial', 9)
+        )
+        self.lbl_filtro_forn.pack(side='left')
+        self.btn_limpar_filtro_forn = ttk.Button(
+            frame_forn_filtro, text="✕ Todos os fornecedores",
+            command=self._limpar_filtro_fornecedor, width=22
+        )
+        # O botão só aparece quando há filtro ativo (controlado por _atualizar_lbl_filtro_fornecedor)
+
+        # --- LISTA DE CONTRATOS ---
         frame_contratos = ttk.LabelFrame(frame_principal, text="Contratos Registrados")
         frame_contratos.pack(fill='both', expand=True, pady=5)
-        
-        # Treeview para contratos
-        # Coluna 'ID' é mantida nos values mas oculta na exibição (width=0)
-        # 'Nº/Emp' exibe o número sequencial do contrato dentro do empreiteiro
+
         colunas = ('ID', 'Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo')
         self.tree_contratos = ttk.Treeview(frame_contratos, columns=colunas, show='headings', height=10)
+        self._sort_contratos = {'col': None, 'rev': False}
 
-        # Configurar colunas
+        # Cabeçalhos clicáveis para ordenação
         self.tree_contratos.heading('ID', text='ID')
-        self.tree_contratos.heading('Nº/Emp', text='Nº/Emp')
-        self.tree_contratos.heading('Fornecedor', text='Fornecedor')
-        self.tree_contratos.heading('Descrição', text='Descrição')
-        self.tree_contratos.heading('Data Início', text='Data Início')
-        self.tree_contratos.heading('Data Final', text='Data Final')
-        self.tree_contratos.heading('Valor Global', text='Valor Global')
-        self.tree_contratos.heading('Valor Pago', text='Valor Pago')
-        self.tree_contratos.heading('Saldo', text='Saldo')
+        for col in ('Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo'):
+            self.tree_contratos.heading(
+                col, text=col,
+                command=lambda c=col: self._ordenar_contratos(c)
+            )
 
         # Ajustar larguras das colunas (ID oculto — largura 0)
         self.tree_contratos.column('ID', width=0, minwidth=0, stretch=False)
@@ -775,10 +806,98 @@ class GestaoMedicoes:
             from src.importador_medicoes import ImportadorMedicoes
             importador = ImportadorMedicoes(sistema_principal=self)
             importador.importar_medicoes()
-            # Recarregar contratos e medições após importação
+            ids_alterados = getattr(importador, 'ids_contratos_alterados', [])
+            if ids_alterados:
+                # Garantir que todos os contratos alterados fiquem visíveis,
+                # incluindo os que ficaram CONCLUÍDO após a importação.
+                filtro_status = getattr(self, 'var_filtro_status', None)
+                if filtro_status:
+                    filtro_status.set('Todos')
             self.carregar_contratos()
+            if ids_alterados:
+                self._destacar_contratos_alterados(ids_alterados)
+                self.notebook.select(self.aba_contratos)
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao iniciar importador:\n{str(e)}", parent=self.root)
+
+    def _ordenar_contratos(self, coluna):
+        """Ordena o Treeview de contratos pela coluna clicada (toggle asc/desc)."""
+        estado = self._sort_contratos
+        reverso = (estado['col'] == coluna) and not estado['rev']
+        estado['col'] = coluna
+        estado['rev'] = reverso
+
+        # Coletar itens com o valor da coluna para ordenação
+        idx_col = ('ID', 'Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final',
+                   'Valor Global', 'Valor Pago', 'Saldo').index(coluna)
+
+        def _chave(item_id):
+            val = self.tree_contratos.item(item_id)['values'][idx_col]
+            val_str = str(val or '')
+            # Tentar converter valor monetário para número
+            if val_str.startswith('R$'):
+                try:
+                    return float(val_str.replace('R$', '').replace('.', '').replace(',', '.').strip())
+                except ValueError:
+                    pass
+            # Tentar converter datas (dd/mm/aaaa → aaaa-mm-dd para ordenação correta)
+            if len(val_str) == 10 and val_str[2] == '/' and val_str[5] == '/':
+                try:
+                    from datetime import datetime as _dt
+                    return _dt.strptime(val_str, '%d/%m/%Y')
+                except ValueError:
+                    pass
+            # Tentar número inteiro
+            try:
+                return int(val_str)
+            except ValueError:
+                pass
+            return val_str.lower()
+
+        itens = sorted(self.tree_contratos.get_children(''), key=_chave, reverse=reverso)
+        for pos, item_id in enumerate(itens):
+            self.tree_contratos.move(item_id, '', pos)
+
+        # Atualizar texto dos cabeçalhos com indicador de direção
+        for col in ('Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final',
+                    'Valor Global', 'Valor Pago', 'Saldo'):
+            base = col.rstrip(' ▲▼')
+            if col == coluna:
+                self.tree_contratos.heading(col, text=f"{base} {'▼' if reverso else '▲'}")
+            else:
+                self.tree_contratos.heading(col, text=base)
+
+    def _destacar_contratos_alterados(self, ids_alterados):
+        """Marca com fundo amarelo os contratos cujas medições foram importadas."""
+        ids_set = {str(i) for i in ids_alterados}
+        # foreground padrão para garantir legibilidade sobre fundo amarelo
+        self.tree_contratos.tag_configure('alterado', background='#FFF176', foreground='#000000')
+        for item in self.tree_contratos.get_children():
+            valores = self.tree_contratos.item(item)['values']
+            if valores and str(valores[0]) in ids_set:
+                # Substituir tags completamente para que 'alterado' tenha prioridade
+                self.tree_contratos.item(item, tags=('alterado',))
+
+    def _atualizar_lbl_filtro_fornecedor(self):
+        """Atualiza o indicador visual do filtro de fornecedor na aba Contratos."""
+        if not hasattr(self, 'lbl_filtro_forn'):
+            return
+        nome = getattr(self, 'nome_fornecedor_selecionado', None)
+        cnpj = getattr(self, 'cnpj_fornecedor_selecionado', None)
+        if cnpj:
+            texto = f"Filtro: {nome or cnpj}"
+            self.lbl_filtro_forn.config(text=texto)
+            self.btn_limpar_filtro_forn.pack(side='left', padx=(6, 0))
+        else:
+            self.lbl_filtro_forn.config(text="")
+            self.btn_limpar_filtro_forn.pack_forget()
+
+    def _limpar_filtro_fornecedor(self):
+        """Remove o filtro de fornecedor e recarrega a lista de contratos."""
+        self.cnpj_fornecedor_selecionado = None
+        self.nome_fornecedor_selecionado = None
+        self._atualizar_lbl_filtro_fornecedor()
+        self.carregar_contratos()
 
     def gerar_relatorio_pdf_quinzenal(self):
         """Gera o relatório quinzenal PDF usando o cliente e data selecionados"""
@@ -1630,6 +1749,10 @@ class GestaoMedicoes:
             self.txt_forn_dados_bancarios.insert('1.0', dados_banc)
             self.txt_forn_dados_bancarios.config(state='disabled')
 
+            # Salvar contexto do fornecedor imediatamente (sem precisar clicar "Continuar →")
+            self.nome_fornecedor_selecionado = nome_busca
+            self.cnpj_fornecedor_selecionado = cnpj_cpf
+
             logger.info(f"Fornecedor selecionado na aba: {nome_busca} ({cnpj_cpf})")
 
         except Exception as e:
@@ -1642,11 +1765,18 @@ class GestaoMedicoes:
         if not self.cliente_atual:
             messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
             return
-        if not hasattr(self, 'cnpj_fornecedor_selecionado') or not self.cnpj_fornecedor_selecionado:
-            messagebox.showwarning("Aviso", "Selecione um fornecedor primeiro!", parent=self.root)
+        if not getattr(self, 'cnpj_fornecedor_selecionado', None):
+            resposta = messagebox.askyesno(
+                "Fornecedor não selecionado",
+                "Nenhum fornecedor está selecionado.\n\nDeseja ir para a aba Fornecedor para selecionar um?",
+                parent=self.root
+            )
+            if resposta:
+                self.notebook.select(self.aba_fornecedor)
             return
         self.limpar_formulario_contrato()
         self.notebook.select(self.aba_contratos_emissao)
+        self.root.after(50, self._preencher_contexto_aba_contrato)
 
     def reemitir_contrato(self):
         """Preenche a aba Contrato com dados de um contrato existente para reemissão"""
@@ -1804,12 +1934,20 @@ class GestaoMedicoes:
             # Carregar dados da aba Contratos_Medicao
             ws = wb["Contratos_Medicao"]
 
-            # Filtro por fornecedor selecionado (CNPJ normalizado)
+            # Filtros ativos
             cnpj_filtro = getattr(self, 'cnpj_fornecedor_selecionado', None)
             cnpj_filtro_num = ''.join(filter(str.isdigit, cnpj_filtro)) if cnpj_filtro else ''
+            filtro_status = getattr(self, 'var_filtro_status', None)
+            status_sel = filtro_status.get() if filtro_status else 'Todos'
+            busca_var = getattr(self, 'var_busca_contratos', None)
+            busca_txt = busca_var.get().strip().lower() if busca_var else ''
 
-            # 1ª passagem: construir índice sequencial por empreiteiro (ordem de inserção na planilha)
-            # Chave: CNPJ normalizado → contador
+            # Tags de cor por status
+            self.tree_contratos.tag_configure('concluido', background='#E8E8E8', foreground='#666666')
+            self.tree_contratos.tag_configure('ativo',     background='#FFFFFF')
+            self.tree_contratos.tag_configure('alterado',  background='#FFF176')
+
+            # 1ª passagem: índice sequencial por empreiteiro
             seq_por_cnpj = {}
             id_para_seq = {}
             for row in ws.iter_rows(min_row=2, values_only=True):
@@ -1819,45 +1957,59 @@ class GestaoMedicoes:
                 seq_por_cnpj[cnpj_num] = seq_por_cnpj.get(cnpj_num, 0) + 1
                 id_para_seq[row[0]] = seq_por_cnpj[cnpj_num]
 
-            # 2ª passagem: popular treeview com filtro e numeração sequencial
+            # 2ª passagem: popular treeview
+            total_visiveis = 0
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not row[0]:
                     continue
 
-                # Aplicar filtro por fornecedor se houver um selecionado
+                # Filtro por fornecedor (CNPJ)
                 if cnpj_filtro_num:
                     cnpj_linha = ''.join(filter(str.isdigit, str(row[1] or '')))
                     if cnpj_linha != cnpj_filtro_num:
                         continue
 
-                # Número sequencial deste contrato dentro do empreiteiro
+                # Filtro por status
+                status_linha = str(row[9] or 'ATIVO').strip().upper() if len(row) > 9 else 'ATIVO'
+                if status_sel == 'Ativo' and status_linha not in ('ATIVO', ''):
+                    continue
+                if status_sel == 'Concluído' and status_linha != 'CONCLUÍDO':
+                    continue
+
+                # Filtro por texto (fornecedor ou descrição)
+                if busca_txt:
+                    forn = str(row[2] or '').lower()
+                    desc = str(row[3] or '').lower()
+                    if busca_txt not in forn and busca_txt not in desc:
+                        continue
+
                 num_seq = id_para_seq.get(row[0], '?')
 
-                # Formatar datas
                 data_inicio = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else str(row[4] or '')
                 data_final = ''
                 if row[5]:
                     data_final = row[5].strftime('%d/%m/%Y') if isinstance(row[5], datetime) else str(row[5])
 
-                # Formatar valores
                 valor_global = f"R$ {row[6]:,.2f}" if isinstance(row[6], (int, float)) else str(row[6] or '0,00')
                 valor_pago   = f"R$ {row[7]:,.2f}" if isinstance(row[7], (int, float)) else str(row[7] or '0,00')
                 saldo        = f"R$ {row[8]:,.2f}" if isinstance(row[8], (int, float)) else str(row[8] or '0,00')
 
-                self.tree_contratos.insert('', 'end', values=(
-                    row[0],        # ID global (usado internamente por selecionar/editar/excluir)
-                    num_seq,       # Nº sequencial dentro do empreiteiro
-                    row[2],        # Fornecedor
-                    row[3],        # Descrição
-                    data_inicio,   # Data Início
-                    data_final,    # Data Final
-                    valor_global,  # Valor Global
-                    valor_pago,    # Valor Pago
-                    saldo          # Saldo
+                tag = 'concluido' if status_linha == 'CONCLUÍDO' else 'ativo'
+
+                self.tree_contratos.insert('', 'end', tags=(tag,), values=(
+                    row[0], num_seq, row[2], row[3],
+                    data_inicio, data_final,
+                    valor_global, valor_pago, saldo
                 ))
+                total_visiveis += 1
+
+            # Atualizar contador e indicador de filtro de fornecedor
+            if hasattr(self, 'lbl_cont_contratos'):
+                self.lbl_cont_contratos.config(text=f"{total_visiveis} contrato(s)")
+            self._atualizar_lbl_filtro_fornecedor()
 
             wb.close()
-            
+
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar contratos: {str(e)}", parent=self.root)
     
@@ -2109,7 +2261,109 @@ class GestaoMedicoes:
             messagebox.showerror(
                 "Erro", f"Erro ao abrir cadastro de fornecedor:\n{str(e)}", parent=self.root
             )
-            
+
+    def editar_fornecedor_aba(self):
+        """Abre janela de edição para o fornecedor selecionado na aba Fornecedor"""
+        selecionado = self.lst_fornecedor_aba.curselection()
+        if not selecionado:
+            messagebox.showwarning("Aviso", "Selecione um fornecedor para editar!", parent=self.root)
+            return
+
+        item = self.lst_fornecedor_aba.get(selecionado[0]).strip()
+        if not item:
+            return
+
+        cnpj_busca = None
+        if " - " in item:
+            cnpj_busca = item.rsplit(" - ", 1)[1].strip()
+
+        if not cnpj_busca:
+            messagebox.showwarning("Aviso", "Não foi possível identificar o CNPJ/CPF do fornecedor!", parent=self.root)
+            return
+
+        try:
+            from src.Sistema_Entrada_Dados import SistemaEntradaDados
+
+            sistema = SistemaEntradaDados(self.root)
+            fornecedor = sistema.buscar_fornecedor_completo(cnpj_busca)
+            if not fornecedor:
+                messagebox.showwarning("Aviso", f"Fornecedor não encontrado: {cnpj_busca}", parent=self.root)
+                return
+
+            sistema.janela_fornecedor = tk.Toplevel(self.root)
+            titulo = fornecedor.get('nome') or fornecedor.get('razao_social') or cnpj_busca
+            sistema.janela_fornecedor.title(f"Editar Fornecedor: {titulo}")
+            sistema.janela_fornecedor.geometry("800x750")
+            sistema.janela_fornecedor.transient(self.root)
+
+            sistema.janela_fornecedor.update_idletasks()
+            largura, altura = 800, 750
+            pos_x = (sistema.janela_fornecedor.winfo_screenwidth() // 2) - (largura // 2)
+            pos_y = (sistema.janela_fornecedor.winfo_screenheight() // 2) - (altura // 2)
+            sistema.janela_fornecedor.geometry(f"{largura}x{altura}+{pos_x}+{pos_y}")
+
+            sistema.setup_formulario_fornecedor(modo_edicao=True)
+
+            # Pré-preencher campos com dados existentes
+            cnpj_cpf = str(fornecedor['cnpj_cpf']).strip()
+            tipo_pessoa = 'PJ' if len(''.join(filter(str.isdigit, cnpj_cpf))) > 11 else 'PF'
+
+            sistema.campos_form['cnpj_cpf'].insert(0, cnpj_cpf)
+            sistema.campos_form['cnpj_cpf'].config(state='readonly')
+            sistema.campos_form['tipo_pessoa'].set(tipo_pessoa)
+            sistema.campos_form['tipo_pessoa'].config(state='disabled')
+            sistema.campos_form['razao_social'].insert(0, fornecedor.get('razao_social') or '')
+            sistema.campos_form['razao_social'].config(state='readonly')
+            sistema.campos_form['nome'].insert(0, fornecedor.get('nome') or '')
+            sistema.campos_form['telefone'].insert(0, fornecedor.get('telefone') or '')
+            sistema.campos_form['email'].insert(0, fornecedor.get('email') or '')
+            sistema.campos_form['banco'].set(fornecedor.get('banco') or '')
+            sistema.campos_form['op'].insert(0, fornecedor.get('op') or '')
+            sistema.campos_form['agencia'].insert(0, fornecedor.get('agencia') or '')
+            sistema.campos_form['conta'].insert(0, fornecedor.get('conta') or '')
+            sistema.campos_form['chave_pix'].insert(0, fornecedor.get('chave_pix') or '')
+
+            cat_widget = sistema.campos_form.get('categoria')
+            if cat_widget:
+                if isinstance(cat_widget, ttk.Combobox):
+                    cat_widget.set(fornecedor.get('categoria') or '')
+                else:
+                    cat_widget.insert(0, fornecedor.get('categoria') or '')
+
+            for campo in ('especificacao', 'vinculo', 'endereco', 'responsavel'):
+                widget = sistema.campos_form.get(campo)
+                if widget:
+                    widget.insert(0, fornecedor.get(campo) or '')
+
+            # Ao fechar, recarregar lista e re-selecionar o fornecedor
+            def _ao_fechar():
+                sistema.janela_fornecedor.destroy()
+                self._recarregar_e_selecionar_fornecedor(cnpj_busca)
+
+            sistema.janela_fornecedor.protocol("WM_DELETE_WINDOW", _ao_fechar)
+
+            sistema.janela_fornecedor.lift()
+            sistema.janela_fornecedor.focus_force()
+            sistema.janela_fornecedor.grab_set()
+
+        except ImportError:
+            messagebox.showerror("Erro", "Módulo de cadastro de fornecedor não encontrado", parent=self.root)
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao abrir edição de fornecedor:\n{str(e)}", parent=self.root)
+
+    def _recarregar_e_selecionar_fornecedor(self, cnpj_busca):
+        """Após edição, recarrega a lista e re-seleciona o fornecedor pelo CNPJ."""
+        self.listar_todos_fornecedores_aba()
+        cnpj_num = ''.join(filter(str.isdigit, cnpj_busca))
+        for i in range(self.lst_fornecedor_aba.size()):
+            item = self.lst_fornecedor_aba.get(i)
+            if cnpj_num in ''.join(filter(str.isdigit, item)):
+                self.lst_fornecedor_aba.selection_clear(0, tk.END)
+                self.lst_fornecedor_aba.selection_set(i)
+                self.lst_fornecedor_aba.see(i)
+                self.selecionar_fornecedor_aba()
+                break
+
     def salvar_contrato(self, janela, cnpj, nome, descricao, data_inicio, data_final, valor_global, observacoes):
         """Salva um novo contrato"""
         try:
@@ -5075,18 +5329,30 @@ class GestaoMedicoes:
             
             # Mensagem de resultado
             if encontrados == 0:
+                if usar_filtro_data:
+                    # Retry automático sem filtro de data
+                    messagebox.showinfo(
+                        "Busca",
+                        "Nenhum lançamento encontrado no mesmo mês/ano da medição.\n\n"
+                        "Ampliando busca automaticamente (sem filtro de data)...",
+                        parent=self.root
+                    )
+                    self.buscar_lancamentos_existentes(
+                        tree, dados_medicao, filtro_nome, usar_filtro_data=False
+                    )
+                    return
                 messagebox.showinfo(
-                    "Busca", 
+                    "Busca",
                     "Nenhum lançamento encontrado com os critérios especificados.\n\n"
                     "Possíveis causas:\n"
                     "• Não há lançamento com saldo suficiente\n"
-                    "• Data da medição não coincide com data do lançamento\n"
                     "• CNPJ/CPF não corresponde\n"
                     "• Lançamento já está totalmente vinculado\n\n"
                     "Dicas:\n"
-                    "• Desmarque 'Filtrar por data' para ampliar busca\n"
                     "• Verifique se o lançamento existe na aba Dados\n"
-                    "• Confirme CNPJ/CPF do fornecedor"
+                    "• Confirme CNPJ/CPF do fornecedor\n"
+                    "• Tente buscar só por CNPJ (botão 'Só CNPJ')",
+                    parent=self.root
                 )
             else:
                 # Mensagem de sucesso com informações
