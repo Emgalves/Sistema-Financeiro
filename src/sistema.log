@@ -11908,3 +11908,50 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-05-26 14:49:33,160 - INFO - Sistema iniciado em modo: TESTE
 2026-05-26 14:49:36,261 - INFO - Abrindo gestão de medições
 2026-05-26 14:58:31,932 - INFO - Sistema encerrado pelo usuário
+2026-05-27 11:17:44,071 - INFO - Configurações importadas com sucesso via src.config
+2026-05-27 11:17:44,390 - INFO - Configurações importadas com sucesso
+2026-05-27 11:17:44,390 - INFO - Configurações do sistema importadas com sucesso
+2026-05-27 11:17:45,994 - INFO - Sistema iniciado em modo: TESTE
+2026-05-27 11:17:52,018 - INFO - Abrindo gestão de medições
+2026-05-27 11:22:37,455 - INFO - Sistema encerrado pelo usuário
+2026-05-27 11:26:11,087 - INFO - Configurações importadas com sucesso via src.config
+2026-05-27 11:26:11,108 - INFO - Configurações importadas com sucesso
+2026-05-27 11:26:11,108 - INFO - Configurações do sistema importadas com sucesso
+2026-05-27 11:26:11,739 - INFO - Sistema iniciado em modo: TESTE
+2026-05-27 11:26:13,351 - INFO - Abrindo gestão de medições
+2026-05-27 11:45:31,265 - INFO - Sistema encerrado pelo usuário
+2026-05-27 11:46:21,027 - INFO - Configurações importadas com sucesso via src.config
+2026-05-27 11:46:21,049 - INFO - Configurações importadas com sucesso
+2026-05-27 11:46:21,050 - INFO - Configurações do sistema importadas com sucesso
+2026-05-27 11:46:21,629 - INFO - Sistema iniciado em modo: TESTE
+2026-05-27 11:46:24,336 - INFO - Abrindo gestão de medições
+2026-05-27 11:46:55,165 - INFO - Proteções contra perda de dados configuradas
+2026-05-27 11:46:56,688 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 381!
+2026-05-27 11:48:43,890 - INFO - Proteções contra perda de dados configuradas
+2026-05-27 11:48:45,078 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 381!
+2026-05-27 11:51:49,482 - INFO - Proteções contra perda de dados configuradas
+2026-05-27 11:51:50,561 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 305!
+2026-05-27 11:53:03,932 - INFO - Sistema encerrado pelo usuário
+2026-05-27 11:54:17,496 - INFO - Configurações importadas com sucesso via src.config
+2026-05-27 11:54:17,515 - INFO - Configurações importadas com sucesso
+2026-05-27 11:54:17,515 - INFO - Configurações do sistema importadas com sucesso
+2026-05-27 11:54:18,036 - INFO - Sistema iniciado em modo: TESTE
+2026-05-27 11:54:23,372 - INFO - Sistema encerrado pelo usuário
+2026-05-27 14:36:33,833 - INFO - Configurações importadas com sucesso via src.config
+2026-05-27 14:36:34,044 - INFO - Configurações importadas com sucesso
+2026-05-27 14:36:34,044 - INFO - Configurações do sistema importadas com sucesso
+2026-05-27 14:36:35,347 - INFO - Sistema iniciado em modo: TESTE
+2026-05-27 14:37:44,627 - INFO - Abrindo gestão de medições
+2026-05-27 14:42:58,008 - INFO - Sistema encerrado pelo usuário
+2026-05-27 16:31:33,280 - INFO - Configurações importadas com sucesso via src.config
+2026-05-27 16:31:33,389 - INFO - Configurações importadas com sucesso
+2026-05-27 16:31:33,391 - INFO - Configurações do sistema importadas com sucesso
+2026-05-27 16:31:34,665 - INFO - Sistema iniciado em modo: TESTE
+2026-05-27 16:31:36,282 - INFO - Abrindo gestão de medições
+2026-05-27 16:49:46,475 - INFO - Sistema encerrado pelo usuário
+2026-05-27 16:49:56,022 - INFO - Configurações importadas com sucesso via src.config
+2026-05-27 16:49:56,042 - INFO - Configurações importadas com sucesso
+2026-05-27 16:49:56,043 - INFO - Configurações do sistema importadas com sucesso
+2026-05-27 16:49:56,653 - INFO - Sistema iniciado em modo: TESTE
+2026-05-27 16:50:00,899 - INFO - Abrindo gestão de medições
+2026-05-27 16:55:39,882 - INFO - Sistema encerrado pelo usuário
