@@ -1063,13 +1063,19 @@ class RelatorioContratos:
             ws_adicional['A2'] = "ATENÇÃO: Selecione o fornecedor na lista suspensa da coluna A."
             ws_adicional.merge_cells('A2:G2')
 
+            # Colunas: A=Fornecedor, B=Descrição, C=Data Início, D=Data Fim,
+            #          E=Valor Contrato, F=Data Medição, G=Data Pagamento,
+            #          H=Referência, I=Valor Medição (R$), J=Observação
             cabecalhos_adic = [
                 'Fornecedor',
                 'Descrição Serviço',
+                'Data Início',
+                'Data Fim',
+                'Valor Contrato (R$)',
                 'Data Medição',
                 'Data Pagamento',
                 'Referência',
-                'Valor (R$)',
+                'Valor Medição (R$)',
                 'Observação'
             ]
             for col, texto in enumerate(cabecalhos_adic, 1):
@@ -1079,29 +1085,26 @@ class RelatorioContratos:
                 celula.border = borda
                 celula.alignment = Alignment(horizontal='center')
 
+            # Mesclar cabeçalho para abranger as 10 colunas
+            ws_adicional.merge_cells('A1:J1')
+            ws_adicional.merge_cells('A2:J2')
+
             # ── Data validation: lista suspensa na coluna A (linhas 5 a 14) ──────────
             if fornecedores_unicos:
-                # O openpyxl aceita listas inline no formato "\"A\",\"B\",\"C\""
-                # Limite prático do Excel para fórmula inline: ~255 caracteres.
-                # Se ultrapassar, a solução é gravar a lista em uma aba oculta e
-                # referenciar o intervalo. Fazemos isso automaticamente abaixo.
-
                 lista_inline = ','.join(f'"{n}"' for n in fornecedores_unicos)
 
                 if len(lista_inline) <= 255:
-                    # Cabe inline — forma mais simples
                     dv = DataValidation(
                         type="list",
                         formula1=f'"{",".join(fornecedores_unicos)}"',
                         allow_blank=True,
-                        showDropDown=False   # False = mostra a setinha no Excel
+                        showDropDown=False
                     )
                     dv.sqref = "A5:A14"
                     ws_adicional.add_data_validation(dv)
                 else:
-                    # Não cabe inline — gravar em aba oculta e referenciar intervalo
-                    ws_listas = wb.create_sheet('_Listas')   # prefixo _ = convenção "auxiliar"
-                    ws_listas.sheet_state = 'hidden'         # oculta no Excel
+                    ws_listas = wb.create_sheet('_Listas')
+                    ws_listas.sheet_state = 'hidden'
 
                     for i, nome in enumerate(fornecedores_unicos, start=1):
                         ws_listas.cell(row=i, column=1, value=nome)
@@ -1120,18 +1123,21 @@ class RelatorioContratos:
 
             # ── Linhas em branco formatadas para preenchimento ───────────────────────
             for linha in range(5, 15):
-                for col in range(1, 8):
+                for col in range(1, 11):
                     celula = ws_adicional.cell(row=linha, column=col, value=None)
                     celula.border = borda
 
             # ── Larguras das colunas ─────────────────────────────────────────────────
-            ws_adicional.column_dimensions['A'].width = 30
-            ws_adicional.column_dimensions['B'].width = 45
-            ws_adicional.column_dimensions['C'].width = 15
-            ws_adicional.column_dimensions['D'].width = 15
-            ws_adicional.column_dimensions['E'].width = 30
-            ws_adicional.column_dimensions['F'].width = 15
-            ws_adicional.column_dimensions['G'].width = 35     
+            ws_adicional.column_dimensions['A'].width = 30   # Fornecedor
+            ws_adicional.column_dimensions['B'].width = 45   # Descrição
+            ws_adicional.column_dimensions['C'].width = 14   # Data Início
+            ws_adicional.column_dimensions['D'].width = 14   # Data Fim
+            ws_adicional.column_dimensions['E'].width = 18   # Valor Contrato
+            ws_adicional.column_dimensions['F'].width = 14   # Data Medição
+            ws_adicional.column_dimensions['G'].width = 14   # Data Pagamento
+            ws_adicional.column_dimensions['H'].width = 30   # Referência
+            ws_adicional.column_dimensions['I'].width = 16   # Valor Medição
+            ws_adicional.column_dimensions['J'].width = 35   # Observação     
             
             # MODIFICADO: Mensagem mais informativa
             filtro_info = f"\n\nFiltro aplicado: {self.filtro_status.get()}"
