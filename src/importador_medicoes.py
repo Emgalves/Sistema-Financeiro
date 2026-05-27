@@ -396,14 +396,38 @@ class ImportadorMedicoes:
 
             sheet = wb_rel['Servicos_Adicionais']
 
+            # Detectar formato: novo (10 colunas) ou legado (7 colunas)
+            # Cabeçalho está na linha 4; col C do novo formato = "Data Início"
+            cabecalho_c = str(sheet.cell(row=4, column=3).value or '').strip().lower()
+            formato_novo = 'início' in cabecalho_c or 'inicio' in cabecalho_c
+
             for linha in range(5, sheet.max_row + 1):
                 fornecedor = sheet.cell(row=linha, column=1).value
                 descricao  = sheet.cell(row=linha, column=2).value
-                dt_med     = sheet.cell(row=linha, column=3).value
-                dt_pag     = sheet.cell(row=linha, column=4).value
-                referencia = sheet.cell(row=linha, column=5).value
-                valor      = sheet.cell(row=linha, column=6).value
-                observacao = sheet.cell(row=linha, column=7).value
+
+                if formato_novo:
+                    # A=Fornecedor, B=Descrição, C=Data Início, D=Data Fim,
+                    # E=Valor Contrato, F=Data Medição, G=Data Pagamento,
+                    # H=Referência, I=Valor Medição, J=Observação
+                    dt_inicio      = sheet.cell(row=linha, column=3).value
+                    dt_fim         = sheet.cell(row=linha, column=4).value
+                    valor_contrato = sheet.cell(row=linha, column=5).value
+                    dt_med         = sheet.cell(row=linha, column=6).value
+                    dt_pag         = sheet.cell(row=linha, column=7).value
+                    referencia     = sheet.cell(row=linha, column=8).value
+                    valor          = sheet.cell(row=linha, column=9).value
+                    observacao     = sheet.cell(row=linha, column=10).value
+                else:
+                    # Formato legado: A=Fornecedor, B=Descrição, C=Data Medição,
+                    # D=Data Pagamento, E=Referência, F=Valor, G=Observação
+                    dt_inicio      = None
+                    dt_fim         = None
+                    valor_contrato = None
+                    dt_med         = sheet.cell(row=linha, column=3).value
+                    dt_pag         = sheet.cell(row=linha, column=4).value
+                    referencia     = sheet.cell(row=linha, column=5).value
+                    valor          = sheet.cell(row=linha, column=6).value
+                    observacao     = sheet.cell(row=linha, column=7).value
 
                 # Linha vazia = fim
                 if not fornecedor and not descricao and not valor:
@@ -413,6 +437,9 @@ class ImportadorMedicoes:
                     'linha': linha,
                     'fornecedor': fornecedor,
                     'descricao': descricao,
+                    'dt_inicio': dt_inicio,
+                    'dt_fim': dt_fim,
+                    'valor_contrato': valor_contrato,
                     'dt_med': dt_med,
                     'dt_pag': dt_pag,
                     'referencia': referencia,
@@ -430,17 +457,30 @@ class ImportadorMedicoes:
             ws_contratos = wb_cliente['Contratos_Medicao']
             ws_medicoes  = wb_cliente['Medicoes']
 
-            for item in linhas_adicionais:
-                linha      = item['linha']
-                fornecedor = item['fornecedor']
-                descricao  = item['descricao']
-                dt_med     = item['dt_med']
-                dt_pag     = item['dt_pag']
-                referencia = item['referencia']
-                valor      = item['valor']
-                observacao = item['observacao']
+            def _normalizar_data(val, label, erros, linha):
+                if val is None:
+                    return None, False
+                if isinstance(val, str):
+                    try:
+                        return datetime.strptime(val.strip(), '%d/%m/%Y'), False
+                    except ValueError:
+                        erros.append(f"Linha {linha}: {label} inválida"); return None, True
+                return val, False
 
-                # Validações
+            for item in linhas_adicionais:
+                linha          = item['linha']
+                fornecedor     = item['fornecedor']
+                descricao      = item['descricao']
+                dt_inicio      = item['dt_inicio']
+                dt_fim         = item['dt_fim']
+                valor_contrato = item['valor_contrato']
+                dt_med         = item['dt_med']
+                dt_pag         = item['dt_pag']
+                referencia     = item['referencia']
+                valor          = item['valor']
+                observacao     = item['observacao']
+
+                # Validações obrigatórias
                 if not fornecedor:
                     erros.append(f"Linha {linha}: Fornecedor obrigatório"); continue
                 if not descricao:
@@ -458,18 +498,21 @@ class ImportadorMedicoes:
                     erros.append(f"Linha {linha}: Valor inválido '{valor}'"); continue
 
                 # Normalizar datas
-                if isinstance(dt_med, str):
-                    try:
-                        dt_med = datetime.strptime(dt_med, '%d/%m/%Y')
-                    except ValueError:
-                        erros.append(f"Linha {linha}: Data de Medição inválida"); continue
-                if dt_pag is None:
-                    dt_pag = dt_med
-                if isinstance(dt_pag, str):
-                    try:
-                        dt_pag = datetime.strptime(dt_pag, '%d/%m/%Y')
-                    except ValueError:
-                        dt_pag = dt_med
+                dt_med,    err = _normalizar_data(dt_med, "Data de Medição", erros, linha)
+                if err: continue
+                dt_pag,    _   = _normalizar_data(dt_pag, "Data de Pagamento", erros, linha)
+                if dt_pag is None: dt_pag = dt_med
+                dt_inicio, _   = _normalizar_data(dt_inicio, "Data Início", erros, linha)
+                dt_fim,    _   = _normalizar_data(dt_fim, "Data Fim", erros, linha)
+
+                # Valor do contrato: usa o informado, senão usa o valor da medição
+                try:
+                    valor_contrato_float = float(valor_contrato) if valor_contrato else valor_float
+                except (ValueError, TypeError):
+                    valor_contrato_float = valor_float
+
+                saldo_contrato = max(0.0, valor_contrato_float - valor_float)
+                status_contrato = "CONCLUÍDO" if saldo_contrato == 0 else "ATIVO"
 
                 # Buscar CNPJ do fornecedor
                 cnpj = self.buscar_cnpj_fornecedor(str(fornecedor).strip())
@@ -491,15 +534,17 @@ class ImportadorMedicoes:
                 ws_contratos.cell(row=pl, column=2,  value=cnpj)
                 ws_contratos.cell(row=pl, column=3,  value=str(fornecedor).strip().upper())
                 ws_contratos.cell(row=pl, column=4,  value=str(descricao).strip().upper())
-                c = ws_contratos.cell(row=pl, column=5, value=dt_med)
+                c = ws_contratos.cell(row=pl, column=5, value=dt_inicio or dt_med)
                 c.number_format = 'DD/MM/YYYY'
-                ws_contratos.cell(row=pl, column=6,  value=None)
-                c = ws_contratos.cell(row=pl, column=7, value=valor_float)
+                c = ws_contratos.cell(row=pl, column=6, value=dt_fim)
+                c.number_format = 'DD/MM/YYYY'
+                c = ws_contratos.cell(row=pl, column=7, value=valor_contrato_float)
                 c.number_format = '#.##0,00'
                 c = ws_contratos.cell(row=pl, column=8, value=valor_float)
                 c.number_format = '#.##0,00'
-                ws_contratos.cell(row=pl, column=9,  value=0)
-                ws_contratos.cell(row=pl, column=10, value="CONCLUÍDO")
+                c = ws_contratos.cell(row=pl, column=9, value=saldo_contrato)
+                c.number_format = '#.##0,00'
+                ws_contratos.cell(row=pl, column=10, value=status_contrato)
                 obs = f"SERVIÇO ADICIONAL — {str(observacao).strip().upper() if observacao else ''}"
                 ws_contratos.cell(row=pl, column=11, value=obs)
 
@@ -1001,42 +1046,44 @@ class ImportadorMedicoes:
             # Atualizar cada contrato
             contratos_atualizados = 0
             contratos_concluidos = 0  # Contador de contratos que foram concluídos
-            
+            ids_alterados = []        # IDs dos contratos que tiveram saldo atualizado
+
             for id_contrato, total_pago in totais_por_contrato.items():
                 if id_contrato in contratos_map:
                     contrato_info = contratos_map[id_contrato]
                     row_idx = contrato_info['row_idx']
                     valor_global = float(contrato_info['valor_global'])
                     status_atual = contrato_info['status_atual']
-                    
+
                     # Calcular novo saldo
                     novo_saldo = valor_global - total_pago
-                    
+
                     # Arredondar para evitar problemas com float
                     # (ex: 0.0000001 deve ser considerado 0)
                     if abs(novo_saldo) < 0.01:  # Menos de 1 centavo = 0
                         novo_saldo = 0
-                    
+
                     # Determinar novo status
                     novo_status = status_atual
                     if novo_saldo == 0 and status_atual and status_atual.upper() == "ATIVO":
                         novo_status = "CONCLUÍDO"
                         contratos_concluidos += 1
                         logger.info(f"⭐ Contrato {id_contrato} será marcado como CONCLUÍDO (saldo zerado)")
-                    
+
                     # Atualizar células
                     # Coluna H: Valor_Pago
                     sheet_contratos.cell(row=row_idx, column=8).value = total_pago
-                    
+
                     # Coluna I: Saldo
                     sheet_contratos.cell(row=row_idx, column=9).value = novo_saldo
-                    
+
                     # Coluna J: Status (atualiza apenas se mudou para CONCLUÍDO)
                     if novo_status != status_atual:
                         sheet_contratos.cell(row=row_idx, column=10).value = novo_status
-                    
+
                     contratos_atualizados += 1
-                    
+                    ids_alterados.append(id_contrato)
+
                     # Log detalhado
                     log_msg = f"Contrato {id_contrato}: Valor Pago = R$ {total_pago:,.2f} | Saldo = R$ {novo_saldo:,.2f}"
                     if novo_status != status_atual:
@@ -1054,11 +1101,14 @@ class ImportadorMedicoes:
                 logger.info(f"⭐ {contratos_concluidos} contrato(s) marcado(s) como CONCLUÍDO")
             logger.info("=" * 60)
             
+            # Expor lista de IDs alterados para que a UI possa destacar as linhas
+            self.ids_contratos_alterados = ids_alterados
+
             # Mensagem de retorno
             mensagem = f"{contratos_atualizados} contrato(s) atualizado(s)"
             if contratos_concluidos > 0:
                 mensagem += f" ({contratos_concluidos} concluído(s))"
-            
+
             return True, mensagem
             
         except Exception as e:
