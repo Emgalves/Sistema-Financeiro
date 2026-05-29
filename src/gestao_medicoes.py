@@ -566,13 +566,13 @@ class GestaoMedicoes:
         frame_contratos = ttk.LabelFrame(frame_principal, text="Contratos Registrados")
         frame_contratos.pack(fill='both', expand=True, pady=5)
 
-        colunas = ('ID', 'Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo')
+        colunas = ('ID', 'Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo', 'Pend.')
         self.tree_contratos = ttk.Treeview(frame_contratos, columns=colunas, show='headings', height=10)
         self._sort_contratos = {'col': None, 'rev': False}
 
         # Cabeçalhos clicáveis para ordenação
         self.tree_contratos.heading('ID', text='ID')
-        for col in ('Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo'):
+        for col in ('Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo', 'Pend.'):
             self.tree_contratos.heading(
                 col, text=col,
                 command=lambda c=col: self._ordenar_contratos(c)
@@ -588,6 +588,7 @@ class GestaoMedicoes:
         self.tree_contratos.column('Valor Global', width=110, anchor='e')
         self.tree_contratos.column('Valor Pago', width=110, anchor='e')
         self.tree_contratos.column('Saldo', width=110, anchor='e')
+        self.tree_contratos.column('Pend.', width=45, anchor='center')
         
         # Scrollbars
         scrolly = ttk.Scrollbar(frame_contratos, orient='vertical', command=self.tree_contratos.yview)
@@ -829,7 +830,7 @@ class GestaoMedicoes:
 
         # Coletar itens com o valor da coluna para ordenação
         idx_col = ('ID', 'Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final',
-                   'Valor Global', 'Valor Pago', 'Saldo').index(coluna)
+                   'Valor Global', 'Valor Pago', 'Saldo', 'Pend.').index(coluna)
 
         def _chave(item_id):
             val = self.tree_contratos.item(item_id)['values'][idx_col]
@@ -860,7 +861,7 @@ class GestaoMedicoes:
 
         # Atualizar texto dos cabeçalhos com indicador de direção
         for col in ('Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final',
-                    'Valor Global', 'Valor Pago', 'Saldo'):
+                    'Valor Global', 'Valor Pago', 'Saldo', 'Pend.'):
             base = col.rstrip(' ▲▼')
             if col == coluna:
                 self.tree_contratos.heading(col, text=f"{base} {'▼' if reverso else '▲'}")
@@ -1943,9 +1944,21 @@ class GestaoMedicoes:
             busca_txt = busca_var.get().strip().lower() if busca_var else ''
 
             # Tags de cor por status
-            self.tree_contratos.tag_configure('concluido', background='#E8E8E8', foreground='#666666')
-            self.tree_contratos.tag_configure('ativo',     background='#FFFFFF')
-            self.tree_contratos.tag_configure('alterado',  background='#FFF176')
+            self.tree_contratos.tag_configure('concluido',    background='#E8E8E8', foreground='#666666')
+            self.tree_contratos.tag_configure('ativo',        background='#FFFFFF')
+            self.tree_contratos.tag_configure('alterado',     background='#FFF176')
+            self.tree_contratos.tag_configure('pend',         background='#FFF3E0')  # laranja claro
+            self.tree_contratos.tag_configure('pend_conc',    background='#F5E6CC', foreground='#666666')
+
+            # Contar medições PENDENTE por contrato (antes de popular treeview)
+            pendentes_por_contrato = {}
+            if 'Medicoes' in wb.sheetnames:
+                ws_med = wb['Medicoes']
+                for r_med in ws_med.iter_rows(min_row=2, values_only=True):
+                    id_cont = r_med[0]
+                    st_med = str(r_med[8] or '').strip().upper()
+                    if id_cont and st_med == 'PENDENTE':
+                        pendentes_por_contrato[id_cont] = pendentes_por_contrato.get(id_cont, 0) + 1
 
             # 1ª passagem: índice sequencial por empreiteiro
             seq_por_cnpj = {}
@@ -1994,12 +2007,18 @@ class GestaoMedicoes:
                 valor_pago   = f"R$ {row[7]:,.2f}" if isinstance(row[7], (int, float)) else str(row[7] or '0,00')
                 saldo        = f"R$ {row[8]:,.2f}" if isinstance(row[8], (int, float)) else str(row[8] or '0,00')
 
-                tag = 'concluido' if status_linha == 'CONCLUÍDO' else 'ativo'
+                pend_count = pendentes_por_contrato.get(row[0], 0)
+                pend_str = str(pend_count) if pend_count > 0 else ''
+
+                if pend_count > 0:
+                    tag = 'pend_conc' if status_linha == 'CONCLUÍDO' else 'pend'
+                else:
+                    tag = 'concluido' if status_linha == 'CONCLUÍDO' else 'ativo'
 
                 self.tree_contratos.insert('', 'end', tags=(tag,), values=(
                     row[0], num_seq, row[2], row[3],
                     data_inicio, data_final,
-                    valor_global, valor_pago, saldo
+                    valor_global, valor_pago, saldo, pend_str
                 ))
                 total_visiveis += 1
 
@@ -4665,7 +4684,26 @@ class GestaoMedicoes:
         if valores[5] != "PENDENTE":
             messagebox.showwarning("Aviso", "Esta medição já foi lançada!", parent=self.root)
             return
-            
+
+        # Validar data de pagamento — impedir lançamento acidental de medições com data passada
+        data_pag_str = str(valores[2] or valores[1] or '').strip()
+        if data_pag_str:
+            try:
+                data_pag_dt = datetime.strptime(data_pag_str, '%d/%m/%Y').date()
+                hoje_dt = datetime.now().date()
+                if data_pag_dt < hoje_dt:
+                    messagebox.showwarning(
+                        "Data anterior a hoje",
+                        f"A data de pagamento desta medição ({data_pag_str}) é anterior à data atual "
+                        f"({hoje_dt.strftime('%d/%m/%Y')}).\n\n"
+                        f"Para lançar uma medição retroativa use 'Vincular a Lançamento', "
+                        f"que a associa a um registro já existente na planilha do cliente.",
+                        parent=self.root
+                    )
+                    return
+            except ValueError:
+                pass
+
         # Obter dados completos da medição
         try:
             wb = load_workbook(self.arquivo_cliente)
