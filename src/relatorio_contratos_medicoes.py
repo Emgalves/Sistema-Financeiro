@@ -1058,10 +1058,8 @@ class RelatorioContratos:
 
             ws_adicional['A1'] = "SERVIÇOS ADICIONAIS — Preencher quando o serviço não tem contrato"
             ws_adicional['A1'].font = Font(size=12, bold=True, color="FF0000")
-            ws_adicional.merge_cells('A1:G1')
 
             ws_adicional['A2'] = "ATENÇÃO: Selecione o fornecedor na lista suspensa da coluna A."
-            ws_adicional.merge_cells('A2:G2')
 
             # Colunas: A=Fornecedor, B=Descrição, C=Data Início, D=Data Fim,
             #          E=Valor Contrato, F=Data Medição, G=Data Pagamento,
