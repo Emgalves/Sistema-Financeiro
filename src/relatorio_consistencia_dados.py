@@ -200,18 +200,18 @@ class RelatorioConsistenciaDados:
                                   padding=4)
         frm_osa.grid(row=1, column=1, sticky='nsew', padx=(3, 0), pady=(3, 0))
 
-        cols_dados = ('Linha', 'Data', 'CNPJ', 'Nome', 'Referencia', 'Valor', 'Observacao')
+        cols_dados = ('Linha', 'CNPJ', 'Nome', 'Data', 'Referencia', 'Valor', 'Observacao')
         larg_dados = {
-            'Linha': 45, 'Data': 80, 'CNPJ': 130, 'Nome': 155,
+            'Linha': 45, 'CNPJ': 130, 'Nome': 155, 'Data': 80,
             'Referencia': 210, 'Valor': 85, 'Observacao': 180,
         }
         self._tree_dsm = self._criar_treeview(frm_dsm, cols_dados, larg_dados)
         self._tree_dsa = self._criar_treeview(frm_dsa, cols_dados, larg_dados)
 
-        cols_med = ('Contrato', 'ID Med.', 'CNPJ', 'Nome', 'Referencia', 'Valor', 'Data Med.')
+        cols_med = ('Contrato', 'ID Med.', 'CNPJ', 'Nome', 'Data Med.', 'Referencia', 'Valor')
         larg_med = {
             'Contrato': 60, 'ID Med.': 55, 'CNPJ': 130, 'Nome': 155,
-            'Referencia': 210, 'Valor': 85, 'Data Med.': 80,
+            'Data Med.': 80, 'Referencia': 210, 'Valor': 85,
         }
         self._tree_osm = self._criar_treeview(frm_osm, cols_med, larg_med)
 
@@ -560,16 +560,14 @@ class RelatorioConsistenciaDados:
         }
 
     def _cnpjs_contratos_medicao(self, ws):
-        """CNPJs com contrato ATIVO em Contratos_Medicao (empreiteiros)."""
+        """CNPJs de todos os empreiteiros em Contratos_Medicao (qualquer status)."""
         cnpjs = set()
         for row in ws.iter_rows(min_row=2, values_only=True):
             if not _get(row, 0):
                 continue
-            status = str(_get(row, 9) or 'ATIVO').strip().upper()
-            if status == 'ATIVO':
-                cnpj = _normalizar_cnpj(_get(row, 1))
-                if cnpj:
-                    cnpjs.add(cnpj)
+            cnpj = _normalizar_cnpj(_get(row, 1))
+            if cnpj:
+                cnpjs.add(cnpj)
         return cnpjs
 
     # ------------------------------------------------------------------
@@ -646,7 +644,7 @@ class RelatorioConsistenciaDados:
             tree.delete(item)
         for reg in lista:
             tree.insert('', 'end', values=(
-                reg['linha'], reg['data'], reg['cnpj_raw'], reg['nome'],
+                reg['linha'], reg['cnpj_raw'], reg['nome'], reg['data'],
                 reg['referencia'], _fmt_moeda(reg['valor']),
                 reg['observacao'][:80],
             ))
@@ -657,8 +655,8 @@ class RelatorioConsistenciaDados:
         for m in lista:
             tree.insert('', 'end', values=(
                 m['id_contrato'], m['id_medicao'], m['cnpj_raw'],
-                m['nome'], m['referencia'][:60],
-                _fmt_moeda(m['valor']), m['data_medicao'],
+                m['nome'], m['data_medicao'],
+                m['referencia'][:60], _fmt_moeda(m['valor']),
             ))
 
     def _preencher_tree_adm(self, tree, lista):
@@ -735,14 +733,16 @@ class RelatorioConsistenciaDados:
                     cel.border = borda
                     cel.alignment = Alignment(horizontal='center')
 
-            cols_d = ['Linha', 'Data', 'CNPJ', 'Nome', 'Referencia', 'Valor (R$)', 'Observacao']
+            cols_d = ['Linha', 'CNPJ', 'Nome', 'Data', 'Referencia', 'Valor (R$)', 'Observacao']
 
             # Aba 1 — Dados s/ origem (Med.)
             ws1 = wb.create_sheet('Dados s-origem (Med)')
             _cab(ws1, 'Registros ATIVO em Dados sem correspondencia em Medicoes', cols_d)
             for li, r in enumerate(self._dados_sem_origem_med, 6):
-                ws1.cell(li, 1, r['linha']); ws1.cell(li, 2, r['data'])
-                ws1.cell(li, 3, r['cnpj_raw']); ws1.cell(li, 4, r['nome'])
+                ws1.cell(li, 1, r['linha']); ws1.cell(li, 2, r['cnpj_raw'])
+                ws1.cell(li, 3, r['nome'])
+                cel_data = ws1.cell(li, 4, r['data'])
+                cel_data.number_format = '@'
                 ws1.cell(li, 5, r['referencia'])
                 ws1.cell(li, 6, float(r['valor'] or 0)).number_format = '#,##0.00'
                 ws1.cell(li, 7, r['observacao'])
@@ -751,23 +751,26 @@ class RelatorioConsistenciaDados:
             ws2 = wb.create_sheet('Dados s-origem (ADM)')
             _cab(ws2, 'Registros ATIVO em Dados sem correspondencia em Contratos_ADM', cols_d)
             for li, r in enumerate(self._dados_sem_origem_adm, 6):
-                ws2.cell(li, 1, r['linha']); ws2.cell(li, 2, r['data'])
-                ws2.cell(li, 3, r['cnpj_raw']); ws2.cell(li, 4, r['nome'])
+                ws2.cell(li, 1, r['linha']); ws2.cell(li, 2, r['cnpj_raw'])
+                ws2.cell(li, 3, r['nome'])
+                cel_data = ws2.cell(li, 4, r['data'])
+                cel_data.number_format = '@'
                 ws2.cell(li, 5, r['referencia'])
                 ws2.cell(li, 6, float(r['valor'] or 0)).number_format = '#,##0.00'
                 ws2.cell(li, 7, r['observacao'])
 
             # Aba 3 — Medicoes s/ lancamento
             ws3 = wb.create_sheet('Medicoes s-lancamento')
-            cols_m = ['Contrato', 'ID Med.', 'CNPJ', 'Nome', 'Referencia',
-                      'Valor (R$)', 'Data Med.']
+            cols_m = ['Contrato', 'ID Med.', 'CNPJ', 'Nome', 'Data Med.',
+                      'Referencia', 'Valor (R$)']
             _cab(ws3, 'Medicoes LANCADAS sem entrada em Dados', cols_m)
             for li, m in enumerate(self._origem_sem_dados_med, 6):
                 ws3.cell(li, 1, m['id_contrato']); ws3.cell(li, 2, m['id_medicao'])
                 ws3.cell(li, 3, m['cnpj_raw']); ws3.cell(li, 4, m['nome'])
-                ws3.cell(li, 5, m['referencia'])
-                ws3.cell(li, 6, float(m['valor'] or 0)).number_format = '#,##0.00'
-                ws3.cell(li, 7, m['data_medicao'])
+                cel_data = ws3.cell(li, 5, m['data_medicao'])
+                cel_data.number_format = '@'  # texto — impede Excel de reconverter a data
+                ws3.cell(li, 6, m['referencia'])
+                ws3.cell(li, 7, float(m['valor'] or 0)).number_format = '#,##0.00'
 
             # Aba 4 — Parcelas ADM PENDENTE (vencidas e aguardando evento)
             ws4 = wb.create_sheet('Parcelas ADM PENDENTE')
