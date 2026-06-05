@@ -51,7 +51,12 @@ def _fmt_moeda(valor):
 def _normalizar_cnpj(valor):
     if not valor:
         return ""
-    return re.sub(r'\D', '', str(valor))
+    digits = re.sub(r'\D', '', str(valor))
+    # CPF (11 dígitos) pode estar armazenado com padding de zeros até 14 dígitos
+    # Ex.: "00052447561687" → "52447561687"
+    if len(digits) == 14 and digits.startswith('000'):
+        digits = digits[3:]
+    return digits
 
 
 def _get(row, idx):
@@ -67,7 +72,14 @@ def _extrair_id_medicao_da_obs(observacao):
     if not observacao:
         return None
     m = re.search(r'MEDI[ÇC][AÃ]O\s+(\S+)', str(observacao), re.IGNORECASE)
-    return m.group(1) if m else None
+    if not m:
+        return None
+    raw = m.group(1)
+    # Normaliza float → int: "12.0" → "12", "12" → "12"
+    try:
+        return str(int(float(raw)))
+    except (ValueError, TypeError):
+        return raw
 
 
 def _extrair_parcelas_da_referencia(referencia):
@@ -205,7 +217,7 @@ class RelatorioConsistenciaDados:
             'Linha': 45, 'CNPJ': 130, 'Nome': 155, 'Data': 80,
             'Referencia': 210, 'Valor': 85, 'Observacao': 180,
         }
-        self._tree_dsm = self._criar_treeview(frm_dsm, cols_dados, larg_dados)
+        self._tree_dsm = self._criar_treeview(frm_dsm, cols_dados, larg_dados, selectmode='extended')
         self._tree_dsa = self._criar_treeview(frm_dsa, cols_dados, larg_dados)
 
         cols_med = ('Contrato', 'ID Med.', 'CNPJ', 'Nome', 'Data Med.', 'Referencia', 'Valor')
@@ -230,6 +242,8 @@ class RelatorioConsistenciaDados:
         frame_bot.grid(row=3, column=0, sticky='ew', pady=(2, 0))
         ttk.Button(frame_bot, text="Exportar para Excel",
                    command=self._exportar_excel).pack(side='left', padx=4)
+        ttk.Button(frame_bot, text="Corrigir Categoria",
+                   command=self._corrigir_categoria).pack(side='left', padx=4)
         ttk.Button(frame_bot, text="Fechar",
                    command=self._fechar).pack(side='right', padx=4)
         ttk.Button(frame_bot, text="Vincular Selecionados (Dados ↔ Parcelas ADM)",
@@ -355,6 +369,8 @@ class RelatorioConsistenciaDados:
             medicoes = self._ler_medicoes(wb['Medicoes'])
             adm = self._ler_contratos_adm(wb['Contratos_ADM'])
             empreiteiro_cnpjs = self._cnpjs_contratos_medicao(wb['Contratos_Medicao'])
+            ws_vinc = wb['Vinculacoes'] if 'Vinculacoes' in wb.sheetnames else None
+            medicoes['linhas_vinculadas_med'] = self._ler_vinculacoes(ws_vinc)
         except Exception as e:
             wb.close()
             messagebox.showerror("Erro", f"Erro ao ler abas:\n{e}", parent=self.root)
@@ -371,6 +387,9 @@ class RelatorioConsistenciaDados:
                 continue
             cnpj = reg['cnpj']
             if cnpj in empreiteiro_cnpjs:
+                # Issue 3: só entradas SERV são verificadas contra Medições
+                if reg.get('categoria') != 'SERV':
+                    continue
                 if not self._tem_correspondencia_medicao(reg, medicoes):
                     self._dados_sem_origem_med.append(reg)
             elif cnpj in adm['cnpjs']:
@@ -424,6 +443,7 @@ class RelatorioConsistenciaDados:
                 'valor': _get(row, 8) or 0,
                 'observacao': str(_get(row, 12) or '').strip(),
                 'status': str(_get(row, 13) or '').strip(),
+                'categoria': str(_get(row, 10) or '').strip().upper(),
             })
         return registros
 
@@ -444,7 +464,11 @@ class RelatorioConsistenciaDados:
             if status not in ('LANCADO', 'VINCULADO'):
                 continue
 
-            id_med = str(_get(row, 1) or '').strip()
+            id_med_raw = _get(row, 1)
+            try:
+                id_med = str(int(float(id_med_raw))) if id_med_raw is not None else ''
+            except (ValueError, TypeError):
+                id_med = str(id_med_raw or '').strip()
             cnpj = _normalizar_cnpj(_get(row, 2))
             ref = str(_get(row, 6) or '').strip().lower()
 
@@ -455,9 +479,15 @@ class RelatorioConsistenciaDados:
             data_val = _get(row, 4)
             data_str = (data_val.strftime('%d/%m/%Y')
                         if isinstance(data_val, datetime) else str(data_val or ''))
+            pag_val = _get(row, 5)  # Data_Pagamento
+            pag_str = (pag_val.strftime('%d/%m/%Y')
+                       if isinstance(pag_val, datetime) else str(pag_val or ''))
             valor = _get(row, 7) or 0
             try:
-                vals_set.add((cnpj, data_str, round(float(valor), 2)))
+                v = round(float(valor), 2)
+                vals_set.add((cnpj, data_str, v))
+                if pag_str and pag_str != data_str:
+                    vals_set.add((cnpj, pag_str, v))
             except (TypeError, ValueError):
                 pass
 
@@ -570,6 +600,20 @@ class RelatorioConsistenciaDados:
                 cnpjs.add(cnpj)
         return cnpjs
 
+    def _ler_vinculacoes(self, ws):
+        """Retorna set de linhas da aba Dados vinculadas a medições (aba Vinculacoes)."""
+        linhas = set()
+        if ws is None:
+            return linhas
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            linha = _get(row, 2)  # coluna Linha_Lancamento (índice 2)
+            if linha is not None:
+                try:
+                    linhas.add(int(linha))
+                except (TypeError, ValueError):
+                    pass
+        return linhas
+
     # ------------------------------------------------------------------
     # Correspondencia
     # ------------------------------------------------------------------
@@ -582,7 +626,10 @@ class RelatorioConsistenciaDados:
             return True
         if cnpj and ref and (cnpj, ref) in medicoes['refs']:
             return True
-        # Fallback: CNPJ + data + valor (cobre medicoes VINCULADO com ref divergente)
+        # Vinculacoes: entrada linkada via "Vincular a Lançamento" (VINCULADO sem obs. na Dados)
+        if reg['linha'] in medicoes.get('linhas_vinculadas_med', set()):
+            return True
+        # Fallback: CNPJ + data + valor (inclui Data_Pagamento alternativa)
         try:
             val = round(float(reg['valor'] or 0), 2)
             if (cnpj, reg['data'], val) in medicoes['vals']:
@@ -944,6 +991,78 @@ class RelatorioConsistenciaDados:
                 parent=self.root)
 
         # Regenerar relatório
+        self._gerar_relatorio()
+
+    # ------------------------------------------------------------------
+    # Corrigir Categoria
+    # ------------------------------------------------------------------
+
+    _CATEGORIAS_DISPONIVEIS = ['MAT', 'MO', 'DIV', 'LOC', 'ADM', 'TAX', 'TP', 'SERV']
+
+    def _corrigir_categoria(self):
+        """Altera a CATEGORIA dos registros selecionados em 'Dados s/ correspondência em Medições'."""
+        sel = self._tree_dsm.selection()
+        if not sel:
+            messagebox.showwarning(
+                "Seleção vazia",
+                "Selecione ao menos um registro em\n'Dados s/ correspondência em Medições'.",
+                parent=self.root)
+            return
+
+        n = len(sel)
+
+        # --- diálogo de seleção de categoria ---
+        dlg = tk.Toplevel(self.root)
+        dlg.title("Corrigir Categoria")
+        dlg.resizable(False, False)
+        dlg.grab_set()
+        sw = self.root.winfo_screenwidth()
+        sh = self.root.winfo_screenheight()
+        dlg.geometry(f"320x150+{sw//2 - 160}+{sh//2 - 75}")
+
+        ttk.Label(dlg, text=f"Alterar {n} registro(s) selecionado(s):",
+                  font=('Arial', 10)).pack(padx=16, pady=(14, 2))
+        ttk.Label(dlg, text="Nova categoria:", font=('Arial', 10)).pack(padx=16, anchor='w')
+
+        var_cat = tk.StringVar(value='MAT')
+        cmb = ttk.Combobox(dlg, textvariable=var_cat,
+                           values=self._CATEGORIAS_DISPONIVEIS,
+                           state='readonly', width=14, font=('Arial', 10))
+        cmb.pack(padx=16, pady=4)
+
+        resultado = [None]
+
+        def _ok():
+            resultado[0] = var_cat.get()
+            dlg.destroy()
+
+        bf = ttk.Frame(dlg)
+        bf.pack(pady=10)
+        ttk.Button(bf, text="OK",      command=_ok,          width=10).pack(side='left', padx=6)
+        ttk.Button(bf, text="Cancelar", command=dlg.destroy, width=10).pack(side='left', padx=6)
+        dlg.wait_window()
+
+        if not resultado[0]:
+            return
+
+        nova_cat = resultado[0]
+        linhas = [int(self._tree_dsm.item(iid)['values'][0]) for iid in sel]
+
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb['Dados']
+            for linha in linhas:
+                ws.cell(row=linha, column=11, value=nova_cat)  # coluna CATEGORIA
+            wb.save(self.arquivo_cliente)
+            wb.close()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao salvar:\n{e}", parent=self.root)
+            return
+
+        messagebox.showinfo(
+            "Sucesso",
+            f"{len(linhas)} registro(s) atualizado(s) para categoria '{nova_cat}'.",
+            parent=self.root)
         self._gerar_relatorio()
 
     # ------------------------------------------------------------------
