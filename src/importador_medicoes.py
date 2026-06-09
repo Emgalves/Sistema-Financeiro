@@ -172,6 +172,11 @@ class ImportadorMedicoes:
             # Verificar se tem pelo menos uma aba de contrato
             abas_contratos = [aba for aba in wb.sheetnames if aba.startswith("Contrato ")]
             if len(abas_contratos) == 0:
+                # Aceitar planilha modelo: sem contratos, mas com Servicos_Adicionais
+                if 'Servicos_Adicionais' in wb.sheetnames:
+                    wb.close()
+                    logger.info("Planilha modelo detectada (0 contratos, Servicos_Adicionais presente)")
+                    return True, "Planilha modelo (0 contratos) — apenas Servicos_Adicionais"
                 return False, "Nenhuma aba de contrato encontrada (ex: 'Contrato 1', 'Contrato 2', etc.)"
             
             # Validar estrutura de uma aba de contrato
@@ -454,6 +459,28 @@ class ImportadorMedicoes:
                 return medicoes_adic, erros
 
             wb_cliente = openpyxl.load_workbook(arquivo_cliente)
+
+            # Criar abas com cabeçalhos se ainda não existirem (cliente sem contratos)
+            if 'Contratos_Medicao' not in wb_cliente.sheetnames:
+                ws_new = wb_cliente.create_sheet('Contratos_Medicao')
+                for col, h in enumerate(
+                    ["ID_Contrato", "CNPJ_Fornecedor", "Nome_Fornecedor", "Descricao",
+                     "Data_Inicio", "Data_Final", "Valor_Global", "Valor_Pago",
+                     "Saldo", "Status", "Observacao"], 1
+                ):
+                    ws_new.cell(row=1, column=col, value=h).font = openpyxl.styles.Font(bold=True)
+                logger.info("Aba Contratos_Medicao criada (cliente novo)")
+
+            if 'Medicoes' not in wb_cliente.sheetnames:
+                ws_new = wb_cliente.create_sheet('Medicoes')
+                for col, h in enumerate(
+                    ["ID_Contrato", "ID_Medicao", "CNPJ_Fornecedor", "Nome_Fornecedor",
+                     "Data_Medicao", "Data_Pagamento", "Referencia", "Valor",
+                     "Status", "Data_Lancamento", "Observacao"], 1
+                ):
+                    ws_new.cell(row=1, column=col, value=h).font = openpyxl.styles.Font(bold=True)
+                logger.info("Aba Medicoes criada (cliente novo)")
+
             ws_contratos = wb_cliente['Contratos_Medicao']
             ws_medicoes  = wb_cliente['Medicoes']
 
@@ -504,6 +531,17 @@ class ImportadorMedicoes:
                 if dt_pag is None: dt_pag = dt_med
                 dt_inicio, _   = _normalizar_data(dt_inicio, "Data Início", erros, linha)
                 dt_fim,    _   = _normalizar_data(dt_fim, "Data Fim", erros, linha)
+
+                # Auto-calcular datas do contrato quando não informadas
+                if dt_med:
+                    import calendar
+                    if dt_inicio is None:
+                        dt_inicio = dt_med.replace(day=1)
+                    if dt_fim is None:
+                        data_2m = dt_med + relativedelta(months=2)
+                        dt_fim = data_2m.replace(
+                            day=calendar.monthrange(data_2m.year, data_2m.month)[1]
+                        )
 
                 # Valor do contrato: usa o informado, senão usa o valor da medição
                 try:
@@ -1208,7 +1246,24 @@ class ImportadorMedicoes:
     #         erro_msg = f"Erro ao renomear arquivo: {str(e)}"
     #         logger.error(erro_msg)
     #         return False, None
-    
+
+    def _tem_servicos_adicionais(self, arquivo):
+        """Retorna True se Servicos_Adicionais contiver pelo menos uma linha com dados."""
+        try:
+            wb = openpyxl.load_workbook(arquivo, read_only=True, data_only=True)
+            if 'Servicos_Adicionais' not in wb.sheetnames:
+                wb.close()
+                return False
+            sheet = wb['Servicos_Adicionais']
+            for row in sheet.iter_rows(min_row=5, values_only=True):
+                if any(cell is not None and str(cell).strip() for cell in row[:3]):
+                    wb.close()
+                    return True
+            wb.close()
+            return False
+        except Exception:
+            return False
+
     def importar_medicoes(self):
         """
         Método principal para importar medições de contratos.
@@ -1252,26 +1307,60 @@ class ImportadorMedicoes:
         
         # Passo 3: Processar relatório
         medicoes, erros, resumo = self.processar_relatorio(arquivo)
-        
+        tem_adicionais = self._tem_servicos_adicionais(arquivo)
+
         # Verificar se encontrou medições
         if len(medicoes) == 0:
-            mensagem_resultado = (
-                f"✅ Processamento concluído!\n\n"
-                f"📈 Resumo:\n"
-                f"• Contratos verificados: {resumo['contratos_processados']}\n"
-                f"• Medições novas encontradas: 0\n\n"
-            )
-            
-            if len(erros) > 0:
-                mensagem_resultado += f"⚠️ Foram encontrados {len(erros)} avisos:\n\n"
-                for erro in erros[:5]:
-                    mensagem_resultado += f"• {erro}\n"
-                if len(erros) > 5:
-                    mensagem_resultado += f"• ... e mais {len(erros) - 5} avisos\n"
-            else:
-                mensagem_resultado += "ℹ️ Nenhuma medição nova (status PENDENTE) foi encontrada."
-            
-            custom_messagebox("info", "Resultado", mensagem_resultado)
+            if not tem_adicionais:
+                mensagem_resultado = (
+                    f"✅ Processamento concluído!\n\n"
+                    f"📈 Resumo:\n"
+                    f"• Contratos verificados: {resumo['contratos_processados']}\n"
+                    f"• Medições novas encontradas: 0\n\n"
+                )
+
+                if len(erros) > 0:
+                    mensagem_resultado += f"⚠️ Foram encontrados {len(erros)} avisos:\n\n"
+                    for erro in erros[:5]:
+                        mensagem_resultado += f"• {erro}\n"
+                    if len(erros) > 5:
+                        mensagem_resultado += f"• ... e mais {len(erros) - 5} avisos\n"
+                else:
+                    mensagem_resultado += "ℹ️ Nenhuma medição nova (status PENDENTE) foi encontrada."
+
+                custom_messagebox("info", "Resultado", mensagem_resultado)
+                return
+
+            # Nenhuma medição regular, mas há serviços adicionais para processar
+            if not custom_messagebox("yesno",
+                "Serviços Adicionais Encontrados",
+                f"Nenhuma medição regular (status PENDENTE) foi encontrada nos contratos existentes.\n\n"
+                f"⚠️ Foram encontrados serviços adicionais na aba 'Servicos_Adicionais'.\n\n"
+                f"• Cliente: {cliente_atual}\n\n"
+                f"Deseja importar os serviços adicionais?"
+            ):
+                return
+
+            arquivo_cliente = self._obter_arquivo_cliente(cliente_atual)
+            if arquivo_cliente:
+                medicoes_adic, erros_adic = self.processar_servicos_adicionais(arquivo, arquivo_cliente)
+                if erros_adic:
+                    erros_resumo = '\n'.join(erros_adic[:5])
+                    custom_messagebox(
+                        "warning",
+                        "Avisos — Serviços Adicionais",
+                        f"Alguns serviços adicionais não puderam ser importados:\n\n{erros_resumo}"
+                    )
+
+            if custom_messagebox("yesno",
+                "Mover Arquivo?",
+                "Deseja mover o arquivo importado para a pasta 'Importados'?\n\n"
+                "Isso organiza os arquivos e evita reimportação acidental.\n\n"
+                "Recomendado: SIM"
+            ):
+                self.mover_para_importados(arquivo)
+
+            custom_messagebox("info", "Concluído", "Serviços adicionais importados com sucesso!")
             return
         
         # Passo 4: Mostrar resumo e pedir confirmação
