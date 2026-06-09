@@ -10,13 +10,13 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 7,
-    "patch": 4,
-    "release_date": "22/05/2026",
+    "patch": 5,
+    "release_date": "10/06/2026",
     "changes": [
-        "Correção de entrada automática do campo Status em Dados",
-        "Inclusão de relatório que compara a gestão de Medições e Taxa de Administração com registros em Dados",
-        "Inclusão de vinculação de parcela de contrato de taxa de administração através do relatório acima",
-        "Inclusão de Relatório que mostra fornecedores individualmnete, por categoria, por cliente, etc."
+        "Melhoria no Relatório de Medições, exportado do sistema, com índice e lista de fornecedores co Vínculo = EMPREITEIRO",
+        "Correção no relatório que compara a gestão de Medições e Taxa de Administração com registros em Dados",
+        "Inclusão de Relatório Modelo para exportar para Excel quando não houver contrato de medição cadastrado",
+        "Inclusão de Importação de DIÁRIAS de Colaboradores"
     ]
 }
 
