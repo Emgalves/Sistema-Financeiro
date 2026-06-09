@@ -4558,16 +4558,23 @@ class SistemaEntradaDados:
         
         # Botões de importação reorganizados
         ttk.Button(
-            frame_botoes_import, 
-            text="🚛 Importar Transporte", 
+            frame_botoes_import,
+            text="🚛 Importar Transporte",
             command=self.importar_transporte_cafe,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
-        
+
         ttk.Button(
-            frame_botoes_import, 
-            text="👥 Importar Folha RH", 
+            frame_botoes_import,
+            text="👥 Importar Folha RH",
             command=self.importar_folha_rh,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
+        ttk.Button(
+            frame_botoes_import,
+            text="📋 Importar Diárias",
+            command=self.importar_diarias,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
         
@@ -9137,6 +9144,14 @@ class SistemaEntradaDados:
             importador.importar_transporte_cafe()
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao abrir importador de transporte: {str(e)}")
+
+    def importar_diarias(self):
+        """Chama a importação de diárias através do ImportadorRH"""
+        try:
+            importador = ImportadorRH(self)
+            importador.importar_diarias()
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao abrir importador de diárias: {str(e)}")
 
     def importar_medicoes(self):
         """
@@ -19083,14 +19098,265 @@ class ImportadorRH:
                         if fornecedor.get('agencia'): partes.append(str(fornecedor['agencia']))
                         if fornecedor.get('conta'): partes.append(str(fornecedor['conta']))
                         partes.append(cpf)  # Sempre adicionar CPF
-                        
+
                         return ' - '.join(partes) if partes else 'DADOS BANCÁRIOS NÃO CADASTRADOS'
-            
+
             return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
-            
+
         except Exception as e:
             logger.debug(f"Erro ao buscar dados bancários para {cpf}: {str(e)}")
             return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+
+    def importar_diarias(self):
+        """
+        Importa dados de DIÁRIA de colaboradores.
+        Processa TODAS as abas do arquivo Excel. Em cada aba, detecta automaticamente
+        as colunas pelo nome do cabeçalho. Suporta planilhas com ou sem coluna CPF
+        e com número variável de colunas de presença diária. Quando não há coluna
+        CPF, tenta extrair o número a partir do campo Dados Bancários.
+        """
+        import unicodedata
+        import re
+
+        def _norm(texto):
+            s = unicodedata.normalize('NFKD', str(texto))
+            return ''.join(c for c in s if not unicodedata.combining(c)).strip().upper()
+
+        def _extrair_cpf_banco(texto):
+            # Formato pontilhado: 123.456.789-00
+            m = re.search(r'\d{3}\.\d{3}\.\d{3}-\d{2}', texto)
+            if m:
+                return ''.join(filter(str.isdigit, m.group()))
+            # Após keyword CPF com pontuação variada: CPF.:11111111111 / CPF: 11111111111
+            m = re.search(r'CPF\s*[.:]*\s*(\d{11})', texto, re.IGNORECASE)
+            if m:
+                return m.group(1)
+            return None
+
+        def _processar_aba(df, nome_aba, timestamp, data_rel):
+            """Processa uma aba e retorna (registros_novos, erros_aba)."""
+            registros = []
+            erros = []
+
+            # Localizar linha de cabeçalho
+            header_row_idx = None
+            for i, row in df.iterrows():
+                vals = [_norm(v) for v in row if not pd.isna(v)]
+                if any(v in ('COLABORADOR', 'CPF') for v in vals) and \
+                   any('VALOR' in v and 'DI' in v for v in vals):
+                    header_row_idx = i
+                    break
+
+            if header_row_idx is None:
+                logger.debug(f"Aba '{nome_aba}': cabeçalho não encontrado, ignorada")
+                return registros, erros
+
+            # Mapear colunas pelo cabeçalho
+            header = df.iloc[header_row_idx]
+            col_map = {}
+            for ci, val in enumerate(header):
+                if pd.isna(val):
+                    continue
+                vn = _norm(val)
+                if vn == 'CPF':
+                    col_map['cpf'] = ci
+                elif vn in ('COLABORADOR', 'NOME', 'NOME EMPREGADO'):
+                    col_map['nome'] = ci
+                elif 'VALOR' in vn and 'DI' in vn:
+                    col_map['vr_unit'] = ci
+                elif vn == 'T':
+                    col_map['dias'] = ci
+                elif vn == 'TOTAL':
+                    col_map['total'] = ci
+                elif 'DADOS BANC' in vn or 'CONTA BANC' in vn:
+                    col_map['dados_bancarios'] = ci
+
+            faltando = [c for c in ('nome', 'vr_unit', 'dias') if c not in col_map]
+            if faltando:
+                logger.debug(f"Aba '{nome_aba}': colunas obrigatórias ausentes {faltando}, ignorada")
+                return registros, erros
+
+            logger.debug(f"Aba '{nome_aba}': col_map={col_map}")
+
+            for idx, row in df.iterrows():
+                if idx < header_row_idx + 2:
+                    continue
+
+                try:
+                    def _cel(ci):
+                        if ci < 0 or ci >= len(row):
+                            return None
+                        v = row.iloc[ci]
+                        if pd.isna(v) or str(v).strip() in ('', 'nan', 'NaN', 'NaT'):
+                            return None
+                        return v
+
+                    nome_raw = _cel(col_map['nome'])
+                    if not nome_raw:
+                        continue
+                    nome_limpo = str(nome_raw).strip().upper()
+                    if nome_limpo in ('COLABORADOR', 'NOME', 'FUNCIONARIO', 'FUNCIONÁRIO'):
+                        continue
+
+                    vr_unit_raw = _cel(col_map['vr_unit'])
+                    dias_raw = _cel(col_map['dias'])
+
+                    if not vr_unit_raw:
+                        erros.append(f"[{nome_aba}] Linha {idx+1}: {nome_limpo} - valor diária ausente")
+                        continue
+                    if not dias_raw:
+                        logger.debug(f"[{nome_aba}] Linha {idx+1}: {nome_limpo} - dias ausentes, ignorado")
+                        continue
+
+                    try:
+                        vr_unit_float = float(str(vr_unit_raw).replace(',', '.'))
+                        if vr_unit_float <= 0:
+                            erros.append(f"[{nome_aba}] Linha {idx+1}: {nome_limpo} - valor inválido")
+                            continue
+                    except (ValueError, TypeError):
+                        erros.append(f"[{nome_aba}] Linha {idx+1}: {nome_limpo} - valor não numérico")
+                        continue
+
+                    try:
+                        dias_int = int(float(str(dias_raw).replace(',', '.')))
+                        if dias_int <= 0:
+                            logger.debug(f"[{nome_aba}] Linha {idx+1}: {nome_limpo} - 0 dias, ignorado")
+                            continue
+                    except (ValueError, TypeError):
+                        erros.append(f"[{nome_aba}] Linha {idx+1}: {nome_limpo} - dias não numérico")
+                        continue
+
+                    dados_bancarios = ''
+                    if 'dados_bancarios' in col_map:
+                        db_raw = _cel(col_map['dados_bancarios'])
+                        if db_raw:
+                            dados_bancarios = str(db_raw).strip()
+
+                    cpf_formatado = ''
+                    if 'cpf' in col_map:
+                        cpf_raw = _cel(col_map['cpf'])
+                        if cpf_raw:
+                            cpf_n = ''.join(filter(str.isdigit, str(cpf_raw)))
+                            if len(cpf_n) == 11:
+                                cpf_formatado = f"{cpf_n[:3]}.{cpf_n[3:6]}.{cpf_n[6:9]}-{cpf_n[9:]}"
+                    if not cpf_formatado and dados_bancarios:
+                        cpf_n = _extrair_cpf_banco(dados_bancarios) or ''
+                        if len(cpf_n) == 11:
+                            cpf_formatado = f"{cpf_n[:3]}.{cpf_n[3:6]}.{cpf_n[6:9]}-{cpf_n[9:]}"
+
+                    registros.append({
+                        'data': data_rel,
+                        'cnpj_cpf': cpf_formatado,
+                        'nome': nome_limpo,
+                        'categoria': 'MO',
+                        'tp_desp': '1',
+                        'referencia': 'DIÁRIA',
+                        'etapa_obra': '',
+                        'insumo': '',
+                        'nf': '',
+                        'vr_unit': f"{vr_unit_float:.2f}",
+                        'dias': dias_int,
+                        'valor': f"{vr_unit_float * dias_int:.2f}",
+                        'dt_vencto': data_rel,
+                        'dados_bancarios': dados_bancarios,
+                        'observacao': f"IMPORTADO DIARIAS - {timestamp}",
+                        'forma_pagamento': 'PIX'
+                    })
+                    logger.debug(
+                        f"✅ [{nome_aba}] {nome_limpo} | CPF={cpf_formatado or '?'} | "
+                        f"{dias_int}d × R${vr_unit_float:.2f}"
+                    )
+
+                except Exception as e:
+                    erros.append(f"[{nome_aba}] Linha {idx+1}: Erro - {str(e)}")
+                    logger.debug(f"❌ [{nome_aba}] Linha {idx+1}: {str(e)}")
+
+            return registros, erros
+
+        # --- início do método principal ---
+
+        if not self.sistema.cliente_atual:
+            custom_messagebox("error", "Erro",
+                "Nenhum cliente selecionado. Por favor, selecione um cliente antes de importar diárias.")
+            return
+
+        arquivo = filedialog.askopenfilename(
+            title="Selecione a planilha de DIÁRIAS",
+            filetypes=[
+                ("Arquivos Excel", "*.xlsx *.xls *.xlsm *.xlsb"),
+                ("Todos os formatos suportados", "*.xlsx *.xls *.xlsm *.xlsb")
+            ],
+            initialdir=str(self.pasta_rh)
+        )
+
+        if not arquivo:
+            return
+
+        try:
+            xl = pd.ExcelFile(arquivo)
+            timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            data_rel = self.calcular_data_referencia_transporte()
+            todos_registros = []
+            todos_erros = []
+
+            for nome_aba in xl.sheet_names:
+                df = pd.read_excel(xl, sheet_name=nome_aba, header=None, dtype=str)
+                regs, errs = _processar_aba(df, nome_aba, timestamp, data_rel)
+                todos_registros.extend(regs)
+                todos_erros.extend(errs)
+
+            for erro in todos_erros[:10]:
+                logger.debug(f"  ⚠️ {erro}")
+
+            if not todos_registros:
+                custom_messagebox("warning", "Nenhum Registro",
+                    "Nenhum registro de diárias foi encontrado no arquivo.\n\n"
+                    "Verifique se as abas contêm dados e se o cabeçalho está correto.")
+                return
+
+            for r in todos_registros:
+                self.sistema.dados_para_incluir.append(r)
+
+            etapa_obra = self.solicitar_etapa_obra()
+
+            if etapa_obra is None:
+                self.sistema.dados_para_incluir = [
+                    r for r in self.sistema.dados_para_incluir
+                    if 'IMPORTADO DIARIAS' not in r.get('observacao', '')
+                ]
+                custom_messagebox("info", "Importação Cancelada",
+                    "A importação foi cancelada. Nenhum dado foi salvo.")
+                return
+
+            for r in self.sistema.dados_para_incluir:
+                if 'IMPORTADO DIARIAS' in r.get('observacao', ''):
+                    r['etapa_obra'] = etapa_obra
+
+            sem_cpf = sum(1 for r in todos_registros if not r.get('cnpj_cpf'))
+            avisos = ''
+            if sem_cpf:
+                avisos += f"\n\n⚠️ {sem_cpf} registro(s) sem CPF identificado — verifique os dados bancários."
+            if todos_erros:
+                avisos += f"\n⚠️ {len(todos_erros)} linha(s) ignorada(s)."
+
+            custom_messagebox("info", "Sucesso na Importação",
+                f"📋 Importação de DIÁRIAS concluída!\n\n"
+                f"📊 Resultados:\n"
+                f"• Lançamentos de DIÁRIA: {len(todos_registros)}\n"
+                f"• Abas processadas: {len(xl.sheet_names)}\n\n"
+                f"👤 Cliente: {self.sistema.cliente_atual.upper()}\n"
+                f"🏗️ Etapa: {etapa_obra}"
+                f"{avisos}"
+            )
+
+            if custom_messagebox("yesno", "Visualizar Lançamentos",
+                "Deseja visualizar os lançamentos antes de salvar?"):
+                self.sistema.visualizar_lancamentos()
+
+        except Exception as e:
+            custom_messagebox("error", "Erro", f"Erro ao importar diárias: {str(e)}")
+            import traceback
+            logger.debug(traceback.format_exc())
 
 class GerenciadorLancamentos:
     def __init__(self, sistema_principal):
