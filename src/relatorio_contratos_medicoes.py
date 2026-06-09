@@ -30,7 +30,8 @@ try:
     from src.config.config import (
         ARQUIVO_CLIENTES,
         PASTA_CLIENTES,
-        BASE_PATH
+        BASE_PATH,
+        ARQUIVO_FORNECEDORES
     )
     print("Configurações importadas com sucesso")
 except ImportError as e:
@@ -217,7 +218,13 @@ class RelatorioContratos:
             text="Exportar para Excel",
             command=self.exportar_excel
         ).pack(side='left', padx=5)
-        
+
+        ttk.Button(
+            frame_botoes,
+            text="Planilha Modelo (sem contratos)",
+            command=self.gerar_planilha_modelo
+        ).pack(side='left', padx=5)
+
         ttk.Button(
             frame_botoes,
             text="Voltar ao Menu",
@@ -811,7 +818,8 @@ class RelatorioContratos:
             
             # Criar aba de resumo
             ws_resumo = wb.create_sheet('Resumo Contratos')
-            
+            ws_resumo.sheet_properties.tabColor = "4472C4"
+
             # Estilos
             titulo_font = Font(size=14, bold=True)
             cabecalho_font = Font(size=11, bold=True)
@@ -898,12 +906,17 @@ class RelatorioContratos:
                 # Limitar o nome da aba para 31 caracteres (limite do Excel)
                 nome_aba = f"Contrato {contrato['id']}"
                 ws_contrato = wb.create_sheet(nome_aba)
-                
+                ws_contrato.sheet_properties.tabColor = "00B050" if contrato.get('status', 'ATIVO') == 'ATIVO' else "A6A6A6"
+
                 # Titulo
                 ws_contrato['A1'] = f"Detalhamento do Contrato {contrato['id']}"
                 ws_contrato['A1'].font = titulo_font
                 ws_contrato.merge_cells('A1:F1')
-                
+                link_back = ws_contrato.cell(row=1, column=7, value="← Índice")
+                link_back.hyperlink = "#'Índice'!A1"
+                link_back.font = Font(color="0070C0", underline="single")
+                link_back.alignment = Alignment(horizontal='right')
+
                 # Informações do contrato
                 ws_contrato['A3'] = "ID do Contrato:"
                 ws_contrato['B3'] = contrato['id']
@@ -1055,11 +1068,16 @@ class RelatorioContratos:
 
             # ── Criar aba de serviços adicionais ─────────────────────────────────────
             ws_adicional = wb.create_sheet('Servicos_Adicionais')
+            ws_adicional.sheet_properties.tabColor = "ED7D31"
 
             ws_adicional['A1'] = "SERVIÇOS ADICIONAIS — Preencher quando o serviço não tem contrato"
             ws_adicional['A1'].font = Font(size=12, bold=True, color="FF0000")
 
-            ws_adicional['A2'] = "ATENÇÃO: Selecione o fornecedor na lista suspensa da coluna A."
+            ws_adicional['A2'] = (
+                "ATENÇÃO: Selecione o fornecedor na lista suspensa da coluna A. "
+                "Campos opcionais (preenchidos automaticamente): "
+                "Data Início (1º do mês da medição) | Data Fim (último dia 2 meses adiante) | Data Pagamento (= Data Medição)."
+            )
 
             # Colunas: A=Fornecedor, B=Descrição, C=Data Início, D=Data Fim,
             #          E=Valor Contrato, F=Data Medição, G=Data Pagamento,
@@ -1076,10 +1094,13 @@ class RelatorioContratos:
                 'Valor Medição (R$)',
                 'Observação'
             ]
+            _cols_opt = {3, 4, 7}  # Data Início, Data Fim, Data Pagamento
+            _fill_cabec_opt = PatternFill(start_color='C6E0B4', end_color='C6E0B4', fill_type='solid')
+            _fill_cabec_std = PatternFill(start_color='FFE699', end_color='FFE699', fill_type='solid')
             for col, texto in enumerate(cabecalhos_adic, 1):
                 celula = ws_adicional.cell(row=4, column=col, value=texto)
                 celula.font = cabecalho_font
-                celula.fill = PatternFill(start_color='FFE699', end_color='FFE699', fill_type='solid')
+                celula.fill = _fill_cabec_opt if col in _cols_opt else _fill_cabec_std
                 celula.border = borda
                 celula.alignment = Alignment(horizontal='center')
 
@@ -1120,10 +1141,13 @@ class RelatorioContratos:
                     ws_adicional.add_data_validation(dv)
 
             # ── Linhas em branco formatadas para preenchimento ───────────────────────
+            _fill_opt_linha = PatternFill(start_color='EAF4E2', end_color='EAF4E2', fill_type='solid')
             for linha in range(5, 15):
                 for col in range(1, 11):
                     celula = ws_adicional.cell(row=linha, column=col, value=None)
                     celula.border = borda
+                    if col in _cols_opt:
+                        celula.fill = _fill_opt_linha
 
             # ── Larguras das colunas ─────────────────────────────────────────────────
             ws_adicional.column_dimensions['A'].width = 30   # Fornecedor
@@ -1135,8 +1159,91 @@ class RelatorioContratos:
             ws_adicional.column_dimensions['G'].width = 14   # Data Pagamento
             ws_adicional.column_dimensions['H'].width = 30   # Referência
             ws_adicional.column_dimensions['I'].width = 16   # Valor Medição
-            ws_adicional.column_dimensions['J'].width = 35   # Observação     
-            
+            ws_adicional.column_dimensions['J'].width = 35   # Observação
+
+            # ── Criar aba Índice com hyperlinks para cada contrato ────────────────────
+            ws_indice = wb.create_sheet('Índice')
+            ws_indice.sheet_properties.tabColor = "1F4E79"
+
+            ws_indice['A1'] = f"ÍNDICE — {self.cliente_atual}"
+            ws_indice['A1'].font = Font(size=14, bold=True, color='FFFFFF')
+            ws_indice['A1'].fill = PatternFill(start_color='1F4E79', end_color='1F4E79', fill_type='solid')
+            ws_indice['A1'].alignment = Alignment(horizontal='center', vertical='center')
+            ws_indice.merge_cells('A1:G1')
+            ws_indice.row_dimensions[1].height = 28
+
+            ws_indice['A2'] = (
+                f"Referência: {self.data_referencia.strftime('%d/%m/%Y')}  |  "
+                f"Filtro: {self.filtro_status.get()}"
+            )
+            ws_indice['A2'].font = Font(size=10, italic=True)
+            ws_indice.merge_cells('A2:G2')
+
+            hdrs_idx = ['#', 'ID', 'Fornecedor', 'Descrição', 'Valor Global', 'Status', 'Ir para']
+            for col, texto in enumerate(hdrs_idx, 1):
+                cell = ws_indice.cell(row=4, column=col, value=texto)
+                cell.font = Font(bold=True, color='FFFFFF')
+                cell.fill = PatternFill(start_color='404040', end_color='404040', fill_type='solid')
+                cell.alignment = Alignment(horizontal='center')
+                cell.border = borda
+
+            fill_ativo_idx = PatternFill(start_color='E2EFDA', end_color='E2EFDA', fill_type='solid')
+            fill_concluido_idx = PatternFill(start_color='F2F2F2', end_color='F2F2F2', fill_type='solid')
+
+            for seq, contrato in enumerate(contratos_exportar, 1):
+                lin = 4 + seq
+                nome_aba_c = f"Contrato {contrato['id']}"
+                status_c = contrato.get('status', 'ATIVO')
+                fill_c = fill_ativo_idx if status_c == 'ATIVO' else fill_concluido_idx
+                link_font_c = (
+                    Font(color='0070C0', underline='single')
+                    if status_c == 'ATIVO'
+                    else Font(color='808080', underline='single')
+                )
+
+                dados_idx = [
+                    seq,
+                    contrato['id'],
+                    contrato['nome'],
+                    contrato['descricao'],
+                    float(contrato['valor_global'] or 0),
+                    status_c,
+                ]
+                for col, val in enumerate(dados_idx, 1):
+                    cell = ws_indice.cell(row=lin, column=col, value=val)
+                    cell.fill = fill_c
+                    cell.border = borda
+                    cell.alignment = Alignment(
+                        horizontal='center' if col in (1, 2, 6) else 'left'
+                    )
+                    if col == 5:
+                        cell.number_format = '#,##0.00'
+
+                link_cell = ws_indice.cell(row=lin, column=7, value=f"→ {nome_aba_c}")
+                link_cell.hyperlink = f"#'{nome_aba_c}'!A1"
+                link_cell.font = link_font_c
+                link_cell.fill = fill_c
+                link_cell.border = borda
+                link_cell.alignment = Alignment(horizontal='center')
+
+            # Link para Servicos_Adicionais no final do índice
+            lin_adic = 4 + len(contratos_exportar) + 2
+            cell_adic = ws_indice.cell(row=lin_adic, column=7, value="→ Serviços Adicionais")
+            cell_adic.hyperlink = "#'Servicos_Adicionais'!A1"
+            cell_adic.font = Font(color='C55A11', underline='single', bold=True)
+
+            ws_indice.column_dimensions['A'].width = 5
+            ws_indice.column_dimensions['B'].width = 6
+            ws_indice.column_dimensions['C'].width = 28
+            ws_indice.column_dimensions['D'].width = 42
+            ws_indice.column_dimensions['E'].width = 16
+            ws_indice.column_dimensions['F'].width = 12
+            ws_indice.column_dimensions['G'].width = 22
+
+            # Mover Índice para ser a primeira aba do arquivo
+            wb._sheets.remove(ws_indice)
+            wb._sheets.insert(0, ws_indice)
+
             # MODIFICADO: Mensagem mais informativa
             filtro_info = f"\n\nFiltro aplicado: {self.filtro_status.get()}"
             qtd_contratos = len(contratos_exportar)
@@ -1154,12 +1261,177 @@ class RelatorioContratos:
     def voltar_menu(self):
         """Volta ao menu principal"""
         self.root.destroy()
-        
+
         # Mostrar janela principal
         if self.menu_principal:
             self.menu_principal.deiconify()
             self.menu_principal.lift()
             self.menu_principal.focus_force()
+
+    def _carregar_empreiteiros_ativos(self):
+        """Retorna lista de nomes de empreiteiros ATIVO de base_fornecedores.xlsx."""
+        try:
+            wb = load_workbook(ARQUIVO_FORNECEDORES, read_only=True, data_only=True)
+            ws = wb.active
+            empreiteiros = []
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                vinculo = str(row[13] or '').strip().upper()  # col N
+                status  = str(row[16] or '').strip().upper()  # col Q
+                if vinculo == 'EMPREITEIRO' and status == 'ATIVO':
+                    nome = str(row[3] or row[2] or '').strip()
+                    if nome:
+                        empreiteiros.append(nome)
+            wb.close()
+            return sorted(set(empreiteiros))
+        except Exception as e:
+            messagebox.showwarning(
+                "Aviso",
+                f"Não foi possível carregar a lista de empreiteiros:\n{str(e)}\n\n"
+                "A planilha será gerada sem lista suspensa."
+            )
+            return []
+
+    def gerar_planilha_modelo(self):
+        """Gera planilha modelo para clientes sem nenhum contrato registrado."""
+        nome_cliente = self.cliente_combobox.get()
+        if not nome_cliente:
+            messagebox.showwarning("Aviso", "Selecione um cliente primeiro!")
+            return
+
+        data_str = datetime.now().strftime('%d-%m-%Y')
+        nome_padrao = f"Modelo_{nome_cliente}_{data_str}.xlsx"
+
+        arquivo = filedialog.asksaveasfilename(
+            defaultextension=".xlsx",
+            filetypes=[("Excel files", "*.xlsx")],
+            initialfile=nome_padrao
+        )
+        if not arquivo:
+            return
+
+        try:
+            empreiteiros = self._carregar_empreiteiros_ativos()
+
+            wb = Workbook()
+            if 'Sheet' in wb.sheetnames:
+                wb.remove(wb['Sheet'])
+
+            cabecalho_font = Font(size=11, bold=True)
+            borda = Border(
+                left=Side(style='thin'), right=Side(style='thin'),
+                top=Side(style='thin'), bottom=Side(style='thin')
+            )
+
+            # ── Aba Resumo Contratos (exigida pela validação de importação) ──
+            ws_resumo = wb.create_sheet('Resumo Contratos')
+            ws_resumo.sheet_properties.tabColor = "4472C4"
+
+            ws_resumo['A1'] = f"PLANILHA MODELO — {nome_cliente}"
+            ws_resumo['A1'].font = Font(size=14, bold=True, color='FFFFFF')
+            ws_resumo['A1'].fill = PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid')
+            ws_resumo['A1'].alignment = Alignment(horizontal='center', vertical='center')
+            ws_resumo.merge_cells('A1:H1')
+            ws_resumo.row_dimensions[1].height = 28
+
+            ws_resumo['A3'] = "Nenhum contrato registrado para este cliente."
+            ws_resumo['A3'].font = Font(size=12, bold=True, color='C00000')
+            ws_resumo.merge_cells('A3:H3')
+
+            ws_resumo['A4'] = (
+                "Use a aba 'Servicos_Adicionais' para incluir os primeiros contratos e medições. "
+                "Após preencher, importe pelo botão 'Importar Medições'."
+            )
+            ws_resumo['A4'].font = Font(size=10, italic=True)
+            ws_resumo.merge_cells('A4:H4')
+            ws_resumo.column_dimensions['A'].width = 80
+
+            # ── Aba Servicos_Adicionais ──────────────────────────────────────
+            ws_adicional = wb.create_sheet('Servicos_Adicionais')
+            ws_adicional.sheet_properties.tabColor = "ED7D31"
+
+            ws_adicional['A1'] = "SERVIÇOS ADICIONAIS — Preencher quando o serviço não tem contrato"
+            ws_adicional['A1'].font = Font(size=12, bold=True, color="FF0000")
+            ws_adicional['A2'] = (
+                "ATENÇÃO: Selecione o fornecedor na lista suspensa da coluna A. "
+                "Campos opcionais (preenchidos automaticamente): "
+                "Data Início (1º do mês da medição) | Data Fim (último dia 2 meses adiante) | Data Pagamento (= Data Medição)."
+            )
+
+            cabecalhos_adic = [
+                'Fornecedor', 'Descrição Serviço', 'Data Início', 'Data Fim',
+                'Valor Contrato (R$)', 'Data Medição', 'Data Pagamento',
+                'Referência', 'Valor Medição (R$)', 'Observação'
+            ]
+            _cols_opt = {3, 4, 7}  # Data Início, Data Fim, Data Pagamento
+            _fill_cabec_opt = PatternFill(start_color='C6E0B4', end_color='C6E0B4', fill_type='solid')
+            _fill_cabec_std = PatternFill(start_color='FFE699', end_color='FFE699', fill_type='solid')
+            for col, texto in enumerate(cabecalhos_adic, 1):
+                celula = ws_adicional.cell(row=4, column=col, value=texto)
+                celula.font = cabecalho_font
+                celula.fill = _fill_cabec_opt if col in _cols_opt else _fill_cabec_std
+                celula.border = borda
+                celula.alignment = Alignment(horizontal='center')
+
+            ws_adicional.merge_cells('A1:J1')
+            ws_adicional.merge_cells('A2:J2')
+
+            from openpyxl.worksheet.datavalidation import DataValidation
+
+            if empreiteiros:
+                lista_inline = ','.join(empreiteiros)
+                if len(f'"{lista_inline}"') <= 255:
+                    dv = DataValidation(
+                        type="list",
+                        formula1=f'"{lista_inline}"',
+                        allow_blank=True,
+                        showDropDown=False
+                    )
+                    dv.sqref = "A5:A50"
+                    ws_adicional.add_data_validation(dv)
+                else:
+                    ws_listas = wb.create_sheet('_Listas')
+                    ws_listas.sheet_state = 'hidden'
+                    for i, nome in enumerate(empreiteiros, start=1):
+                        ws_listas.cell(row=i, column=1, value=nome)
+                    dv = DataValidation(
+                        type="list",
+                        formula1=f"_Listas!$A$1:$A${len(empreiteiros)}",
+                        allow_blank=True,
+                        showDropDown=False
+                    )
+                    dv.sqref = "A5:A50"
+                    ws_adicional.add_data_validation(dv)
+
+            _fill_opt_linha = PatternFill(start_color='EAF4E2', end_color='EAF4E2', fill_type='solid')
+            for linha in range(5, 51):
+                for col in range(1, 11):
+                    celula = ws_adicional.cell(row=linha, column=col)
+                    celula.border = borda
+                    if col in _cols_opt:
+                        celula.fill = _fill_opt_linha
+
+            ws_adicional.column_dimensions['A'].width = 35
+            ws_adicional.column_dimensions['B'].width = 45
+            ws_adicional.column_dimensions['C'].width = 14
+            ws_adicional.column_dimensions['D'].width = 14
+            ws_adicional.column_dimensions['E'].width = 18
+            ws_adicional.column_dimensions['F'].width = 14
+            ws_adicional.column_dimensions['G'].width = 14
+            ws_adicional.column_dimensions['H'].width = 30
+            ws_adicional.column_dimensions['I'].width = 16
+            ws_adicional.column_dimensions['J'].width = 35
+
+            wb.save(arquivo)
+            messagebox.showinfo(
+                "Sucesso",
+                f"Planilha modelo gerada!\n\n"
+                f"• {len(empreiteiros)} empreiteiro(s) ATIVO na lista suspensa\n"
+                f"• 46 linhas disponíveis para preenchimento\n\n"
+                f"Arquivo:\n{arquivo}"
+            )
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao gerar planilha modelo: {str(e)}")
 
 def main():
     """Função principal para executar o módulo de forma independente"""
