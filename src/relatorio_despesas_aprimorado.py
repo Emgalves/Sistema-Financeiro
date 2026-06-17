@@ -284,18 +284,14 @@ class RelatorioUI:
                     logger.warning("Método processar_lancamentos_futuros não encontrado, pulando lançamentos futuros")
                     df_futuro = None
                     
-            # Processar workbook
-            workbook = load_workbook(self.arquivo_path, data_only=True)
-            ws_resumo = workbook['RESUMO']
-            nome_cliente = ws_resumo['A3'].value
-                
-            # CORREÇÃO: Obter número do relatório e valor acumulado passando o parâmetro incluir_excluidos
-            numero_relatorio = self.handler.obter_numero_relatorio(ws_resumo, data_rel)
+            # Obter dados do cliente e número do relatório
+            nome_cliente, endereco_cliente = self.handler.obter_dados_cliente(self.arquivo_path)
+            numero_relatorio = self.handler.obter_numero_relatorio(df, data_rel)
             valor_acumulado = self.handler.calcular_acumulado_dados(df, data_rel, incluir_excluidos)
-            
+
             logger.info(f"Número do relatório: {numero_relatorio}")
             logger.info(f"Valor acumulado calculado: {valor_acumulado:,.2f}")
-                
+
             dados_completos = {
                 'df_filtrado': df_filtrado,
                 'df_diaria': df_diaria,
@@ -307,13 +303,13 @@ class RelatorioUI:
                 'incluir_excluidos': incluir_excluidos,
                 'data_relatorio': data_rel,
                 'nome_cliente': nome_cliente,
-                'endereco_cliente': ws_resumo['A4'].value,
+                'endereco_cliente': endereco_cliente,
                 'numero_relatorio': numero_relatorio,
                 'acumulado': valor_acumulado,
                 'incluir_notas': self.incluir_notas.get(),
                 'texto_notas': self.texto_notas.get()
             }
-            
+
             logger.debug("Verificando dados antes de mostrar preview:")
             logger.debug(f"dados_completos['acumulado']: {dados_completos['acumulado']}")
             logger.debug(f"Tipo do acumulado: {type(dados_completos['acumulado'])}")
@@ -365,18 +361,14 @@ class RelatorioUI:
                     logger.warning("Método processar_lancamentos_futuros não encontrado, pulando lançamentos futuros")
                     df_futuro = None
                     
-            # Processar workbook
-            workbook = load_workbook(self.arquivo_path, data_only=True)
-            ws_resumo = workbook['RESUMO']
-            nome_cliente = ws_resumo['A3'].value
-                
-            # CORREÇÃO: Obter número do relatório e valor acumulado passando o parâmetro incluir_excluidos
-            numero_relatorio = self.handler.obter_numero_relatorio(ws_resumo, data_rel)
+            # Obter dados do cliente e número do relatório
+            nome_cliente, endereco_cliente = self.handler.obter_dados_cliente(self.arquivo_path)
+            numero_relatorio = self.handler.obter_numero_relatorio(df, data_rel)
             valor_acumulado = self.handler.calcular_acumulado_dados(df, data_rel, incluir_excluidos)
-            
+
             logger.info(f"Número do relatório: {numero_relatorio}")
             logger.info(f"Valor acumulado calculado: {valor_acumulado:,.2f}")
-                
+
             dados_completos = {
                 'df_filtrado': df_filtrado,
                 'df_diaria': df_diaria,
@@ -388,13 +380,13 @@ class RelatorioUI:
                 'incluir_excluidos': incluir_excluidos,
                 'data_relatorio': data_rel,
                 'nome_cliente': nome_cliente,
-                'endereco_cliente': ws_resumo['A4'].value,
+                'endereco_cliente': endereco_cliente,
                 'numero_relatorio': numero_relatorio,
                 'acumulado': valor_acumulado,
                 'incluir_notas': self.incluir_notas.get(),
                 'texto_notas': self.texto_notas.get()
             }
-            
+
             logger.debug("Verificando dados antes de gerar PDF:")
             logger.debug(f"dados_completos['acumulado']: {dados_completos['acumulado']}")
             logger.debug(f"Tipo do acumulado: {type(dados_completos['acumulado'])}")
@@ -455,73 +447,59 @@ class RelatorioUI:
                     arquivo_nome = os.path.basename(arquivo)
                     progress_label.config(text=f"Processando: {arquivo_nome}")
                     progress_bar['value'] = i
-                    
-                    wb = load_workbook(arquivo, data_only=True)
-                    try:
-                        ws_resumo = wb['RESUMO']
-                        nome_cliente = ws_resumo['A3'].value
-                        logger.debug(f"Cliente: {nome_cliente}")
-                        
-                        data_rel = datetime.strptime(self.data_selecionada.get(), '%d/%m/%Y')
-                        
-                        # CORREÇÃO: Carregar dados usando parâmetro incluir_excluidos
-                        df = self.handler.carregar_dados_excel(arquivo, incluir_excluidos)
-                        df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.handler.processar_dados(
-                            df, data_rel, incluir_excluidos
-                        )
-                        
-                        # CORREÇÃO: Processar lançamentos futuros
-                        df_futuro = None
-                        if self.incluir_futuros.get():
-                            # Verificar se o método existe antes de chamar
-                            if hasattr(self.handler, 'processar_lancamentos_futuros'):
-                                df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
-                            else:
-                                logger.warning("Método processar_lancamentos_futuros não encontrado")
-                                df_futuro = None
-                        
-                        # CORREÇÃO: Obter valor acumulado
-                        numero_relatorio = self.handler.obter_numero_relatorio(ws_resumo, data_rel)
-                        valor_acumulado = self.handler.calcular_acumulado_dados(df, data_rel, incluir_excluidos)
-                        
-                        logger.info(f"Arquivo: {arquivo_nome}")
-                        logger.info(f"Número do relatório: {numero_relatorio}")
-                        logger.info(f"Valor acumulado calculado: {valor_acumulado:,.2f}")
-                        
-                        dados_completos = {
-                            'df_filtrado': df_filtrado,
-                            'df_diaria': df_diaria,
-                            'df_tp_desp_1': df_tp_desp_1,
-                            'df_tp_desp_2': df_tp_desp_2,
-                            'df_futuro': df_futuro,
-                            'df_original': df,
-                            'incluir_futuros': self.incluir_futuros.get(),
-                            'incluir_excluidos': incluir_excluidos,
-                            'data_relatorio': data_rel,
-                            'nome_cliente': nome_cliente,
-                            'endereco_cliente': ws_resumo['A4'].value,
-                            'numero_relatorio': numero_relatorio,
-                            'acumulado': valor_acumulado
-                        }
-                        
-                        # Gerar nome do arquivo
-                        data_formatada = data_rel.strftime('%d-%m-%Y')
-                        nome_arquivo = f"REL - {nome_cliente} - {data_formatada}.pdf"
-                        
-                        # CORREÇÃO: Adicionar sufixo se incluir excluídos
-                        if incluir_excluidos:
-                            nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
-                            
-                        caminho_output = os.path.join(os.path.dirname(arquivo), nome_arquivo)
-                        
-                        # Gerar relatório
-                        self.handler.gerar_relatorio_pdf(dados_completos, caminho_output, arquivo)
-                        
-                        lista_processados.insert(tk.END, f"✓ {arquivo_nome} - Concluído")
-                        lista_processados.see(tk.END)
-                        
-                    finally:
-                        wb.close()
+
+                    nome_cliente, endereco_cliente = self.handler.obter_dados_cliente(arquivo)
+                    logger.debug(f"Cliente: {nome_cliente}")
+
+                    data_rel = datetime.strptime(self.data_selecionada.get(), '%d/%m/%Y')
+
+                    df = self.handler.carregar_dados_excel(arquivo, incluir_excluidos)
+                    df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.handler.processar_dados(
+                        df, data_rel, incluir_excluidos
+                    )
+
+                    df_futuro = None
+                    if self.incluir_futuros.get():
+                        if hasattr(self.handler, 'processar_lancamentos_futuros'):
+                            df_futuro = self.handler.processar_lancamentos_futuros(df, data_rel, incluir_excluidos)
+                        else:
+                            logger.warning("Método processar_lancamentos_futuros não encontrado")
+
+                    numero_relatorio = self.handler.obter_numero_relatorio(df, data_rel)
+                    valor_acumulado = self.handler.calcular_acumulado_dados(df, data_rel, incluir_excluidos)
+
+                    logger.info(f"Arquivo: {arquivo_nome}")
+                    logger.info(f"Número do relatório: {numero_relatorio}")
+                    logger.info(f"Valor acumulado calculado: {valor_acumulado:,.2f}")
+
+                    dados_completos = {
+                        'df_filtrado': df_filtrado,
+                        'df_diaria': df_diaria,
+                        'df_tp_desp_1': df_tp_desp_1,
+                        'df_tp_desp_2': df_tp_desp_2,
+                        'df_futuro': df_futuro,
+                        'df_original': df,
+                        'incluir_futuros': self.incluir_futuros.get(),
+                        'incluir_excluidos': incluir_excluidos,
+                        'data_relatorio': data_rel,
+                        'nome_cliente': nome_cliente,
+                        'endereco_cliente': endereco_cliente,
+                        'numero_relatorio': numero_relatorio,
+                        'acumulado': valor_acumulado
+                    }
+
+                    data_formatada = data_rel.strftime('%d-%m-%Y')
+                    nome_arquivo = f"REL - {nome_cliente} - {data_formatada}.pdf"
+
+                    if incluir_excluidos:
+                        nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
+
+                    caminho_output = os.path.join(os.path.dirname(arquivo), nome_arquivo)
+
+                    self.handler.gerar_relatorio_pdf(dados_completos, caminho_output, arquivo)
+
+                    lista_processados.insert(tk.END, f"✓ {arquivo_nome} - Concluído")
+                    lista_processados.see(tk.END)
 
                 except Exception as e:
                     logger.error(f"Erro ao processar arquivo {arquivo_nome}: {str(e)}", exc_info=True)
@@ -889,15 +867,11 @@ class RelatorioHandler:
             if incluir_futuros:
                 df_futuro = self.processar_lancamentos_futuros(df, data_relatorio)
             
-            # Processar workbook
-            workbook = load_workbook(arquivo_path, data_only=True)
-            ws_resumo = workbook['RESUMO']
-            nome_cliente = ws_resumo['A3'].value
-            
-            # Obter número do relatório e valor acumulado
-            numero_relatorio = self.obter_numero_relatorio(ws_resumo, data_relatorio)
+            # Obter dados do cliente e número do relatório
+            nome_cliente, endereco_cliente = self.obter_dados_cliente(arquivo_path)
+            numero_relatorio = self.obter_numero_relatorio(df, data_relatorio)
             valor_acumulado = self.calcular_acumulado_dados(df, data_relatorio)
-            
+
             dados_completos = {
                 'df_filtrado': df_filtrado,
                 'df_diaria': df_diaria,
@@ -908,7 +882,7 @@ class RelatorioHandler:
                 'incluir_futuros': incluir_futuros,
                 'data_relatorio': data_relatorio,
                 'nome_cliente': nome_cliente,
-                'endereco_cliente': ws_resumo['A4'].value,
+                'endereco_cliente': endereco_cliente,
                 'numero_relatorio': numero_relatorio,
                 'acumulado': valor_acumulado
             }
@@ -942,34 +916,30 @@ class RelatorioHandler:
         )
         return arquivo
 
-    def obter_numero_relatorio(self, ws_resumo, data_relatorio):
+    def obter_numero_relatorio(self, df, data_relatorio):
         """
-        Método para obter o número do relatório baseado na data.
+        Obtém o número do relatório contando períodos (dia 5 e 20) a partir
+        do menor DATA_REL encontrado nos lançamentos da sheet Dados.
         """
         try:
             logger.info(f"\nObtendo número do relatório para data {data_relatorio}")
-            
+
             # Converter data para datetime
             data_ref = pd.to_datetime(data_relatorio).date()
             logger.debug(f"Data de referência processada: {data_ref}")
-            
-            # Encontrar primeira data na planilha
-            primeira_data = None
-            primeira_linha = None
-            
-            for row in range(9, 150):  # Buscar nas primeiras 150 linhas
-                cell_value = ws_resumo.cell(row=row, column=1).value
-                if isinstance(cell_value, (datetime, date)):
-                    primeira_data = cell_value.date() if isinstance(cell_value, datetime) else cell_value
-                    primeira_linha = row
-                    break
-                    
-            if not primeira_data:
-                logger.warning("Nenhuma data encontrada na planilha")
+
+            # Encontrar primeira data nos lançamentos (sheet Dados)
+            df_temp = df.copy()
+            df_temp['DATA_REL'] = pd.to_datetime(df_temp['DATA_REL'], errors='coerce')
+            df_temp = df_temp.dropna(subset=['DATA_REL'])
+
+            if df_temp.empty:
+                logger.warning("Nenhuma data encontrada nos lançamentos")
                 return 1
-                
-            logger.debug(f"Primeira data encontrada: {primeira_data} na linha {primeira_linha}")
-            
+
+            primeira_data = df_temp['DATA_REL'].min().date()
+            logger.debug(f"Primeira data encontrada nos lançamentos: {primeira_data}")
+
             # Usar a primeira data encontrada como data inicial
             data_inicial = primeira_data
             logger.debug(f"Data inicial: {data_inicial}")
@@ -1001,6 +971,61 @@ class RelatorioHandler:
         except Exception as e:
             logger.error(f"Erro ao obter número do relatório: {str(e)}", exc_info=True)
             return 1
+
+    def obter_dados_cliente(self, arquivo_path):
+        """
+        Retorna (nome_cliente, endereco_cliente) buscando em clientes.xlsx (via config)
+        pelo nome do arquivo. Fallback: aba RESUMO (clientes legados). Último fallback: nome do arquivo.
+        """
+        from pathlib import Path
+        nome_arquivo = os.path.splitext(os.path.basename(arquivo_path))[0]
+
+        # 1. clientes.xlsx — usa o caminho canônico do sistema (config)
+        caminho_clientes = None
+        try:
+            try:
+                from src.config.config import ARQUIVO_CLIENTES
+            except ImportError:
+                from config.config import ARQUIVO_CLIENTES
+            caminho_clientes = Path(ARQUIVO_CLIENTES)
+        except Exception as e:
+            logger.warning(f"Não foi possível importar ARQUIVO_CLIENTES: {e}")
+            # fallback: caminhos alternativos conhecidos
+            for p in [Path("dados") / "clientes.xlsx", Path("clientes.xlsx")]:
+                if p.exists():
+                    caminho_clientes = p
+                    break
+
+        if caminho_clientes and caminho_clientes.exists():
+            try:
+                df_cli = pd.read_excel(caminho_clientes, sheet_name='Clientes')
+                linha = df_cli[df_cli['Nome'] == nome_arquivo]
+                if not linha.empty:
+                    nome = linha.iloc[0]['Nome']
+                    col_end = next((c for c in df_cli.columns if 'nder' in c.lower()), None)
+                    endereco = str(linha.iloc[0][col_end] if col_end else '') or ''
+                    logger.info(f"Dados do cliente obtidos de clientes.xlsx: {nome}")
+                    return nome, endereco
+            except Exception as e:
+                logger.warning(f"Não foi possível ler clientes.xlsx: {e}")
+
+        # 2. Fallback: aba RESUMO (clientes legados)
+        try:
+            wb = load_workbook(arquivo_path, data_only=True)
+            if 'RESUMO' in wb.sheetnames:
+                ws = wb['RESUMO']
+                nome = ws['A3'].value or nome_arquivo
+                endereco = ws['A4'].value or ''
+                wb.close()
+                logger.info(f"Dados do cliente obtidos de RESUMO: {nome}")
+                return nome, str(endereco)
+            wb.close()
+        except Exception as e:
+            logger.warning(f"Não foi possível ler aba RESUMO: {e}")
+
+        # 3. Último fallback: nome do arquivo
+        logger.info(f"Usando nome do arquivo como nome do cliente: {nome_arquivo}")
+        return nome_arquivo, ''
 
     def calcular_acumulado_dados(self, df, data_relatorio, incluir_excluidos=False):
         """
@@ -3050,11 +3075,8 @@ class RelatorioLancamentosPendentes:
             df = pd.read_excel(caminho_arquivo, sheet_name='Dados')
             df = df.fillna("")
             
-            wb = load_workbook(caminho_arquivo, data_only=True)
-            ws_resumo = wb['RESUMO']
-            
             # Obter informações do cliente
-            nome_cliente = ws_resumo['A3'].value
+            nome_cliente, _ = self.obter_dados_cliente(caminho_arquivo)
             print(f"Cliente: {nome_cliente}")
             
             # Converter DATA_REL para datetime
