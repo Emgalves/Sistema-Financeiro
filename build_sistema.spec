@@ -6,7 +6,7 @@ from PyInstaller.utils.hooks import collect_submodules
 
 block_cipher = None
 
-NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_TESTE"
+NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_PRODUCAO"
 ARQUIVO_PRINCIPAL = "src/sistema_principal.py"
 ICONE = "logo1.ico"
 
