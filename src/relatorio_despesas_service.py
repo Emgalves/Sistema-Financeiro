@@ -90,10 +90,9 @@ class RelatoriosDespesasService:
                     df_futuro = pd.DataFrame()
             
             # 4. Informações do cliente
-            workbook = load_workbook(config['arquivo'], data_only=True)
-            ws_resumo = workbook['RESUMO']
-            
-            numero_relatorio = self.handler.obter_numero_relatorio(ws_resumo, config['data'])
+            nome_cliente, endereco_cliente = self.handler.obter_dados_cliente(config['arquivo'])
+
+            numero_relatorio = self.handler.obter_numero_relatorio(df_original, config['data'])
             valor_acumulado = self.handler.calcular_acumulado_dados(
                 df_original, config['data'], config['incluir_excluidos']
             )
@@ -129,8 +128,8 @@ class RelatoriosDespesasService:
                 'data_relatorio': config['data'],
                 
                 # Informações do cliente
-                'nome_cliente': ws_resumo['A3'].value,
-                'endereco_cliente': ws_resumo['A4'].value,
+                'nome_cliente': nome_cliente,
+                'endereco_cliente': endereco_cliente,
                 'numero_relatorio': numero_relatorio,
                 'acumulado': valor_acumulado,
                 
@@ -138,8 +137,6 @@ class RelatoriosDespesasService:
                 'incluir_notas': incluir_notas,
                 'texto_notas': texto_notas
             }
-            
-            workbook.close()
             
             # Debug com verificação de tipo e tamanho
             print("📊 DADOS PRONTOS:")
