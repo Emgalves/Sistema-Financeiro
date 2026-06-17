@@ -12257,3 +12257,290 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-06-09 15:35:15,599 - INFO - ✅ Menu principal restaurado com sucesso
 2026-06-09 15:35:17,486 - INFO - Abrindo sistema de relatórios
 2026-06-09 15:40:33,590 - INFO - Sistema encerrado pelo usuário
+2026-06-17 13:56:23,506 - INFO - Configurações importadas com sucesso via src.config
+2026-06-17 13:56:25,111 - INFO - Configurações importadas com sucesso
+2026-06-17 13:56:25,311 - INFO - Configurações do sistema importadas com sucesso
+2026-06-17 13:56:37,228 - INFO - Sistema iniciado em modo: TESTE
+2026-06-17 13:56:43,339 - INFO - Abrindo sistema de entrada de dados
+2026-06-17 13:56:50,704 - INFO - Proteções contra perda de dados configuradas
+2026-06-17 13:56:54,340 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-06-17 13:56:57,805 - INFO - Cliente selecionado com sucesso: EDUARDO DE CARVALHO LIMA
+2026-06-17 13:59:59,670 - INFO - ✅ Edição do lançamento ID 9 salva com sucesso
+2026-06-17 14:00:26,389 - INFO - ✅ Edição do lançamento ID 5 salva com sucesso
+2026-06-17 14:00:53,438 - INFO - ✅ Edição do lançamento ID 3 salva com sucesso
+2026-06-17 14:01:06,091 - INFO - ✅ Edição do lançamento ID 2 salva com sucesso
+2026-06-17 14:01:20,492 - INFO - ✅ Edição do lançamento ID 4 salva com sucesso
+2026-06-17 14:01:35,024 - INFO - ✅ Edição do lançamento ID 6 salva com sucesso
+2026-06-17 14:01:47,172 - INFO - ✅ Edição do lançamento ID 8 salva com sucesso
+2026-06-17 14:01:59,387 - INFO - ✅ Edição do lançamento ID 7 salva com sucesso
+2026-06-17 14:02:06,953 - INFO - Voltando ao menu principal
+2026-06-17 14:02:07,044 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-06-17 14:02:07,123 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-06-17 14:02:07,410 - INFO - ✅ Menu principal restaurado com sucesso
+2026-06-17 14:02:08,425 - INFO - Abrindo sistema de relatórios
+2026-06-17 14:16:07,358 - INFO - Sistema encerrado pelo usuário
+2026-06-17 14:21:31,898 - INFO - Configurações importadas com sucesso via src.config
+2026-06-17 14:21:31,924 - INFO - Configurações importadas com sucesso
+2026-06-17 14:21:31,924 - INFO - Configurações do sistema importadas com sucesso
+2026-06-17 14:21:32,604 - INFO - Sistema iniciado em modo: TESTE
+2026-06-17 14:22:13,066 - INFO - Abrindo sistema de relatórios
+2026-06-17 14:30:27,247 - INFO - Sistema encerrado pelo usuário
+2026-06-17 15:26:43,530 - INFO - Configurações importadas com sucesso via src.config
+2026-06-17 15:26:43,740 - INFO - Configurações importadas com sucesso
+2026-06-17 15:26:43,740 - INFO - Configurações do sistema importadas com sucesso
+2026-06-17 15:26:45,083 - INFO - Sistema iniciado em modo: TESTE
+2026-06-17 15:26:48,683 - INFO - Abrindo sistema de relatórios
+2026-06-17 15:27:33,235 - INFO - Abrindo sistema de entrada de dados
+2026-06-17 15:27:34,763 - INFO - Proteções contra perda de dados configuradas
+2026-06-17 15:27:35,157 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-06-17 15:27:39,352 - INFO - Cliente selecionado com sucesso: EDUARDO DE CARVALHO LIMA
+2026-06-17 15:28:11,231 - INFO - ============================================================
+2026-06-17 15:28:11,232 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-06-17 15:28:11,233 - INFO - ============================================================
+2026-06-17 15:28:11,233 - INFO - Cliente atual: EDUARDO DE CARVALHO LIMA
+2026-06-17 15:28:11,234 - INFO - Dados disponíveis: 13 lançamento(s)
+2026-06-17 15:28:11,234 - INFO - 📋 Últimos 3 lançamentos:
+2026-06-17 15:28:11,235 - INFO -   1. WELLINGTON GOMES PAIVA - DIÁRIA - R$ 2250.00
+2026-06-17 15:28:11,235 - INFO -   2. JOSÉ GERALDO LONGUINHO - DIÁRIA - R$ 2500.00
+2026-06-17 15:28:11,235 - INFO -   3. IZAEL BISPO SILVA OLIVEIRA - DIÁRIA - R$ 2500.00
+2026-06-17 15:28:11,237 - INFO - 🆕 Criando novo visualizador
+2026-06-17 15:28:11,239 - INFO - 🔍 Visualizador iniciado com 13 lançamentos
+2026-06-17 15:28:11,386 - INFO - ✅ Visualizador criado com 13 lançamento(s)
+2026-06-17 15:28:11,392 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-06-17 15:28:11,394 - INFO - ============================================================
+2026-06-17 15:28:17,786 - INFO - Iniciando envio de dados - Cliente: EDUARDO DE CARVALHO LIMA, Registros: 13
+2026-06-17 15:28:17,787 - INFO - Obtendo dados do visualizador
+2026-06-17 15:28:17,788 - INFO - Total de registros a processar: 13
+2026-06-17 15:28:17,789 - INFO - Datas que serão afetadas pela inserção: ['20/06/2026']
+2026-06-17 15:28:17,790 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EDUARDO DE CARVALHO LIMA.xlsx
+2026-06-17 15:28:17,791 - INFO - Verificando integridade dos IDs antes da inserção
+2026-06-17 15:28:17,995 - INFO - 📋 Processando lançamento 1/13: JEAN ALESI DA SILVA - DIÁRIA
+2026-06-17 15:28:17,995 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:17,996 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:17,997 - INFO - Dados: JEAN ALESI DA SILVA | DIÁRIA | NF:  | R$ 3800.00 | 20/06/2026
+2026-06-17 15:28:17,998 - INFO - ✅ Nenhuma duplicata para: JEAN ALESI DA SILVA - DIÁRIA
+2026-06-17 15:28:17,998 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:17,999 - INFO - 📋 Processando lançamento 2/13: JOAO BATISTA DA SILVA - DIÁRIA
+2026-06-17 15:28:17,999 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,000 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,001 - INFO - Dados: JOAO BATISTA DA SILVA | DIÁRIA | NF:  | R$ 2250.00 | 20/06/2026
+2026-06-17 15:28:18,002 - INFO - ✅ Nenhuma duplicata para: JOAO BATISTA DA SILVA - DIÁRIA
+2026-06-17 15:28:18,003 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,004 - INFO - 📋 Processando lançamento 3/13: MATHEUS HENRIQUE RODRIGUES - DIÁRIA
+2026-06-17 15:28:18,004 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,005 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,005 - INFO - Dados: MATHEUS HENRIQUE RODRIGUES | DIÁRIA | NF:  | R$ 1620.00 | 20/06/2026
+2026-06-17 15:28:18,006 - INFO - ✅ Nenhuma duplicata para: MATHEUS HENRIQUE RODRIGUES - DIÁRIA
+2026-06-17 15:28:18,007 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,007 - INFO - 📋 Processando lançamento 4/13: FRANCISCO FERREIRA DOS SANTOS - DIÁRIA
+2026-06-17 15:28:18,010 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,012 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,013 - INFO - Dados: FRANCISCO FERREIRA DOS SANTOS | DIÁRIA | NF:  | R$ 2000.00 | 20/06/2026
+2026-06-17 15:28:18,014 - INFO - ✅ Nenhuma duplicata para: FRANCISCO FERREIRA DOS SANTOS - DIÁRIA
+2026-06-17 15:28:18,015 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,016 - INFO - 📋 Processando lançamento 5/13: JESUSMAR MELQUIADES DA CRUZ - DIÁRIA
+2026-06-17 15:28:18,017 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,018 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,018 - INFO - Dados: JESUSMAR MELQUIADES DA CRUZ | DIÁRIA | NF:  | R$ 2500.00 | 20/06/2026
+2026-06-17 15:28:18,019 - INFO - ✅ Nenhuma duplicata para: JESUSMAR MELQUIADES DA CRUZ - DIÁRIA
+2026-06-17 15:28:18,020 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,020 - INFO - 📋 Processando lançamento 6/13: ADAILSON SILVA NOVAIS - DIÁRIA
+2026-06-17 15:28:18,021 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,022 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,024 - INFO - Dados: ADAILSON SILVA NOVAIS | DIÁRIA | NF:  | R$ 2500.00 | 20/06/2026
+2026-06-17 15:28:18,025 - INFO - ✅ Nenhuma duplicata para: ADAILSON SILVA NOVAIS - DIÁRIA
+2026-06-17 15:28:18,026 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,027 - INFO - 📋 Processando lançamento 7/13: CHARLES JUNIO RODRIGUES - DIÁRIA
+2026-06-17 15:28:18,028 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,029 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,029 - INFO - Dados: CHARLES JUNIO RODRIGUES | DIÁRIA | NF:  | R$ 2500.00 | 20/06/2026
+2026-06-17 15:28:18,030 - INFO - ✅ Nenhuma duplicata para: CHARLES JUNIO RODRIGUES - DIÁRIA
+2026-06-17 15:28:18,031 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,031 - INFO - 📋 Processando lançamento 8/13: WELIO FRANCA DA SILVA - DIÁRIA
+2026-06-17 15:28:18,032 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,032 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,035 - INFO - Dados: WELIO FRANCA DA SILVA | DIÁRIA | NF:  | R$ 1800.00 | 20/06/2026
+2026-06-17 15:28:18,041 - INFO - ✅ Nenhuma duplicata para: WELIO FRANCA DA SILVA - DIÁRIA
+2026-06-17 15:28:18,041 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,042 - INFO - 📋 Processando lançamento 9/13: ADRIEN FELIPE NERES RODRIGUES - DIÁRIA
+2026-06-17 15:28:18,043 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,045 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,045 - INFO - Dados: ADRIEN FELIPE NERES RODRIGUES | DIÁRIA | NF:  | R$ 980.00 | 20/06/2026
+2026-06-17 15:28:18,047 - INFO - ✅ Nenhuma duplicata para: ADRIEN FELIPE NERES RODRIGUES - DIÁRIA
+2026-06-17 15:28:18,048 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,048 - INFO - 📋 Processando lançamento 10/13: ITALO RAFAEL PINHO SANTOS - DIÁRIA
+2026-06-17 15:28:18,049 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,049 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,050 - INFO - Dados: ITALO RAFAEL PINHO SANTOS | DIÁRIA | NF:  | R$ 1620.00 | 20/06/2026
+2026-06-17 15:28:18,051 - INFO - ✅ Nenhuma duplicata para: ITALO RAFAEL PINHO SANTOS - DIÁRIA
+2026-06-17 15:28:18,052 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,052 - INFO - 📋 Processando lançamento 11/13: WELLINGTON GOMES PAIVA - DIÁRIA
+2026-06-17 15:28:18,053 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,054 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,055 - INFO - Dados: WELLINGTON GOMES PAIVA | DIÁRIA | NF:  | R$ 2250.00 | 20/06/2026
+2026-06-17 15:28:18,056 - INFO - ✅ Nenhuma duplicata para: WELLINGTON GOMES PAIVA - DIÁRIA
+2026-06-17 15:28:18,057 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,058 - INFO - 📋 Processando lançamento 12/13: JOSÉ GERALDO LONGUINHO - DIÁRIA
+2026-06-17 15:28:18,058 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,059 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,059 - INFO - Dados: JOSÉ GERALDO LONGUINHO | DIÁRIA | NF:  | R$ 2500.00 | 20/06/2026
+2026-06-17 15:28:18,063 - INFO - ✅ Nenhuma duplicata para: JOSÉ GERALDO LONGUINHO - DIÁRIA
+2026-06-17 15:28:18,065 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,066 - INFO - 📋 Processando lançamento 13/13: IZAEL BISPO SILVA OLIVEIRA - DIÁRIA
+2026-06-17 15:28:18,067 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:28:18,068 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:28:18,069 - INFO - Dados: IZAEL BISPO SILVA OLIVEIRA | DIÁRIA | NF:  | R$ 2500.00 | 20/06/2026
+2026-06-17 15:28:18,071 - INFO - ✅ Nenhuma duplicata para: IZAEL BISPO SILVA OLIVEIRA - DIÁRIA
+2026-06-17 15:28:18,072 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:28:18,072 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-06-17 15:28:18,073 - INFO -    ✅ Lançamentos válidos: 13
+2026-06-17 15:28:18,073 - INFO -    ❌ Possíveis duplicatas: 0
+2026-06-17 15:28:18,074 - INFO - Lançamento inserido com ID 10 na linha 11
+2026-06-17 15:28:18,076 - INFO - Lançamento inserido com ID 11 na linha 12
+2026-06-17 15:28:18,078 - INFO - Lançamento inserido com ID 12 na linha 13
+2026-06-17 15:28:18,080 - INFO - Lançamento inserido com ID 13 na linha 14
+2026-06-17 15:28:18,081 - INFO - Lançamento inserido com ID 14 na linha 15
+2026-06-17 15:28:18,082 - INFO - Lançamento inserido com ID 15 na linha 16
+2026-06-17 15:28:18,084 - INFO - Lançamento inserido com ID 16 na linha 17
+2026-06-17 15:28:18,085 - INFO - Lançamento inserido com ID 17 na linha 18
+2026-06-17 15:28:18,086 - INFO - Lançamento inserido com ID 18 na linha 19
+2026-06-17 15:28:18,088 - INFO - Lançamento inserido com ID 19 na linha 20
+2026-06-17 15:28:18,089 - INFO - Lançamento inserido com ID 20 na linha 21
+2026-06-17 15:28:18,090 - INFO - Lançamento inserido com ID 21 na linha 22
+2026-06-17 15:28:18,091 - INFO - Lançamento inserido com ID 22 na linha 23
+2026-06-17 15:28:18,310 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-06-17 15:28:20,890 - INFO - Limpando 13 registros salvos da visualização
+2026-06-17 15:28:20,903 - INFO - Visualizador fechado - todos os registros foram processados
+2026-06-17 15:28:20,907 - INFO - Dados salvos removidos com sucesso da visualização
+2026-06-17 15:28:27,498 - INFO - Voltando ao menu principal
+2026-06-17 15:28:27,582 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-06-17 15:28:27,601 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-06-17 15:28:27,783 - INFO - ✅ Menu principal restaurado com sucesso
+2026-06-17 15:28:29,258 - INFO - Abrindo sistema de relatórios
+2026-06-17 15:28:56,818 - INFO - Abrindo sistema de entrada de dados
+2026-06-17 15:28:57,363 - INFO - Proteções contra perda de dados configuradas
+2026-06-17 15:28:57,461 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-06-17 15:32:08,866 - INFO - Arquivo do cliente criado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA CLAUDIO NEVES DO VALE.xlsx
+2026-06-17 15:32:16,202 - INFO - Cliente selecionado com sucesso: ANA CLAUDIO NEVES DO VALE
+2026-06-17 15:32:34,306 - INFO - Cliente selecionado com sucesso: ANA CLAUDIA NEVES DO VALE
+2026-06-17 15:32:49,297 - INFO - ==================================================
+2026-06-17 15:32:49,297 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-06-17 15:32:49,298 - INFO - ==================================================
+2026-06-17 15:32:49,298 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-06-17 15:32:50,361 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 58!
+2026-06-17 15:32:50,361 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-06-17 15:32:50,362 - INFO - Campos preenchidos com sucesso!
+2026-06-17 15:32:50,363 - INFO - ✓ Referência preenchida: PLOTAGENS
+2026-06-17 15:32:50,365 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-06-17 15:32:50,366 - INFO - ==================================================
+2026-06-17 15:33:12,288 - INFO - Iniciando adição de dados - Cliente: ANA CLAUDIA NEVES DO VALE
+2026-06-17 15:33:12,290 - INFO - ✅ Dados adicionados - Total: 1
+2026-06-17 15:33:13,380 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 58!
+2026-06-17 15:33:15,879 - INFO - Dados adicionados com sucesso - Cliente: ANA CLAUDIA NEVES DO VALE, Total: 1
+2026-06-17 15:33:43,688 - INFO - ==================================================
+2026-06-17 15:33:43,689 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-06-17 15:33:43,689 - INFO - ==================================================
+2026-06-17 15:33:43,690 - INFO - Fornecedor: LOJA ELETRICA LTDA
+2026-06-17 15:33:44,797 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 571!
+2026-06-17 15:33:44,798 - INFO - Dados carregados: LOJA ELETRICA LTDA
+2026-06-17 15:33:44,799 - INFO - Campos preenchidos com sucesso!
+2026-06-17 15:33:44,799 - INFO - ✓ Referência preenchida: MATERIAL ELÉTRICO
+2026-06-17 15:33:44,802 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-06-17 15:33:44,802 - INFO - ==================================================
+2026-06-17 15:34:05,984 - INFO - Iniciando adição de dados - Cliente: ANA CLAUDIA NEVES DO VALE
+2026-06-17 15:34:05,986 - INFO - ✅ Dados adicionados - Total: 2
+2026-06-17 15:34:07,100 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 571!
+2026-06-17 15:34:08,520 - INFO - Dados adicionados com sucesso - Cliente: ANA CLAUDIA NEVES DO VALE, Total: 2
+2026-06-17 15:34:27,157 - INFO - ============================================================
+2026-06-17 15:34:27,158 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-06-17 15:34:27,158 - INFO - ============================================================
+2026-06-17 15:34:27,159 - INFO - Cliente atual: ANA CLAUDIA NEVES DO VALE
+2026-06-17 15:34:27,159 - INFO - Dados disponíveis: 7 lançamento(s)
+2026-06-17 15:34:27,160 - INFO - 📋 Últimos 3 lançamentos:
+2026-06-17 15:34:27,160 - INFO -   1. JOSE CARLOS DOS REIS - DIÁRIA - R$ 400.00
+2026-06-17 15:34:27,160 - INFO -   2. LEANDRO ALMEIDA  LOPES - DIÁRIA - R$ 500.00
+2026-06-17 15:34:27,161 - INFO -   3. MOISES ROSA DIAS - DIÁRIA - R$ 360.00
+2026-06-17 15:34:27,161 - INFO - 🆕 Criando novo visualizador
+2026-06-17 15:34:27,162 - INFO - 🔍 Visualizador iniciado com 7 lançamentos
+2026-06-17 15:34:27,203 - INFO - ✅ Visualizador criado com 7 lançamento(s)
+2026-06-17 15:34:27,206 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-06-17 15:34:27,207 - INFO - ============================================================
+2026-06-17 15:34:29,408 - INFO - Iniciando envio de dados - Cliente: ANA CLAUDIA NEVES DO VALE, Registros: 7
+2026-06-17 15:34:29,409 - INFO - Obtendo dados do visualizador
+2026-06-17 15:34:29,409 - INFO - Total de registros a processar: 7
+2026-06-17 15:34:29,410 - INFO - Datas que serão afetadas pela inserção: ['20/06/2026']
+2026-06-17 15:34:29,411 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\ANA CLAUDIA NEVES DO VALE.xlsx
+2026-06-17 15:34:29,411 - INFO - Verificando integridade dos IDs antes da inserção
+2026-06-17 15:34:29,438 - INFO - Coluna ID_LANCAMENTO criada
+2026-06-17 15:34:29,451 - INFO - Cabeçalho 'ETAPA_OBRA' adicionado na coluna Q (17)
+2026-06-17 15:34:29,452 - INFO - Cabeçalho 'INSUMO' adicionado na coluna R (18)
+2026-06-17 15:34:29,453 - INFO - 📋 Processando lançamento 1/7: ANCORA PAPELARIA - PLOTAGENS
+2026-06-17 15:34:29,453 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:34:29,454 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:34:29,455 - INFO - Dados: ANCORA PAPELARIA | PLOTAGENS | NF:  | R$ 135.00 | 22/06/2026
+2026-06-17 15:34:29,457 - INFO - ✅ Nenhuma duplicata para: ANCORA PAPELARIA - PLOTAGENS
+2026-06-17 15:34:29,457 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:34:29,458 - INFO - 📋 Processando lançamento 2/7: LOJA ELETRICA LTDA - MATERIAL ELÉTRICO
+2026-06-17 15:34:29,459 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:34:29,460 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:34:29,461 - INFO - Dados: LOJA ELETRICA LTDA | MATERIAL ELÉTRICO | NF:  | R$ 1600.00 | 30/06/2026
+2026-06-17 15:34:29,461 - INFO - ✅ Nenhuma duplicata para: LOJA ELETRICA LTDA - MATERIAL ELÉTRICO
+2026-06-17 15:34:29,462 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:34:29,462 - INFO - 📋 Processando lançamento 3/7: GILSON LEITE DA COSTA - DIÁRIA
+2026-06-17 15:34:29,463 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:34:29,463 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:34:29,464 - INFO - Dados: GILSON LEITE DA COSTA | DIÁRIA | NF:  | R$ 3700.00 | 20/06/2026
+2026-06-17 15:34:29,464 - INFO - ✅ Nenhuma duplicata para: GILSON LEITE DA COSTA - DIÁRIA
+2026-06-17 15:34:29,465 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:34:29,465 - INFO - 📋 Processando lançamento 4/7: ISNALDO GONCALVES DE SOUZA - DIÁRIA
+2026-06-17 15:34:29,466 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:34:29,466 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:34:29,467 - INFO - Dados: ISNALDO GONCALVES DE SOUZA | DIÁRIA | NF:  | R$ 750.00 | 20/06/2026
+2026-06-17 15:34:29,468 - INFO - ✅ Nenhuma duplicata para: ISNALDO GONCALVES DE SOUZA - DIÁRIA
+2026-06-17 15:34:29,468 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:34:29,469 - INFO - 📋 Processando lançamento 5/7: JOSE CARLOS DOS REIS - DIÁRIA
+2026-06-17 15:34:29,470 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:34:29,470 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:34:29,472 - INFO - Dados: JOSE CARLOS DOS REIS | DIÁRIA | NF:  | R$ 400.00 | 20/06/2026
+2026-06-17 15:34:29,473 - INFO - ✅ Nenhuma duplicata para: JOSE CARLOS DOS REIS - DIÁRIA
+2026-06-17 15:34:29,474 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:34:29,475 - INFO - 📋 Processando lançamento 6/7: LEANDRO ALMEIDA  LOPES - DIÁRIA
+2026-06-17 15:34:29,476 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:34:29,477 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:34:29,477 - INFO - Dados: LEANDRO ALMEIDA  LOPES | DIÁRIA | NF:  | R$ 500.00 | 20/06/2026
+2026-06-17 15:34:29,478 - INFO - ✅ Nenhuma duplicata para: LEANDRO ALMEIDA  LOPES - DIÁRIA
+2026-06-17 15:34:29,478 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:34:29,479 - INFO - 📋 Processando lançamento 7/7: MOISES ROSA DIAS - DIÁRIA
+2026-06-17 15:34:29,479 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-17 15:34:29,479 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-17 15:34:29,480 - INFO - Dados: MOISES ROSA DIAS | DIÁRIA | NF:  | R$ 360.00 | 20/06/2026
+2026-06-17 15:34:29,481 - INFO - ✅ Nenhuma duplicata para: MOISES ROSA DIAS - DIÁRIA
+2026-06-17 15:34:29,481 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-17 15:34:29,482 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-06-17 15:34:29,482 - INFO -    ✅ Lançamentos válidos: 7
+2026-06-17 15:34:29,483 - INFO -    ❌ Possíveis duplicatas: 0
+2026-06-17 15:34:29,483 - INFO - Lançamento inserido com ID 1 na linha 2
+2026-06-17 15:34:29,485 - INFO - Lançamento inserido com ID 2 na linha 3
+2026-06-17 15:34:29,486 - INFO - Lançamento inserido com ID 3 na linha 4
+2026-06-17 15:34:29,487 - INFO - Lançamento inserido com ID 4 na linha 5
+2026-06-17 15:34:29,491 - INFO - Lançamento inserido com ID 5 na linha 6
+2026-06-17 15:34:29,492 - INFO - Lançamento inserido com ID 6 na linha 7
+2026-06-17 15:34:29,493 - INFO - Lançamento inserido com ID 7 na linha 8
+2026-06-17 15:34:29,554 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-06-17 15:34:33,518 - INFO - Limpando 7 registros salvos da visualização
+2026-06-17 15:34:33,532 - INFO - Visualizador fechado - todos os registros foram processados
+2026-06-17 15:34:33,538 - INFO - Dados salvos removidos com sucesso da visualização
+2026-06-17 15:34:39,496 - INFO - Voltando ao menu principal
+2026-06-17 15:34:39,584 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-06-17 15:34:39,599 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-06-17 15:34:39,807 - INFO - ✅ Menu principal restaurado com sucesso
+2026-06-17 15:34:41,176 - INFO - Abrindo sistema de relatórios
+2026-06-17 15:45:22,779 - INFO - Sistema encerrado pelo usuário
+2026-06-17 15:49:28,659 - INFO - Configurações importadas com sucesso via src.config
+2026-06-17 15:49:28,688 - INFO - Configurações importadas com sucesso
+2026-06-17 15:49:28,689 - INFO - Configurações do sistema importadas com sucesso
+2026-06-17 15:49:29,265 - INFO - Sistema iniciado em modo: TESTE
+2026-06-17 15:49:30,755 - INFO - Abrindo sistema de relatórios
+2026-06-17 15:51:40,601 - INFO - Sistema encerrado pelo usuário
