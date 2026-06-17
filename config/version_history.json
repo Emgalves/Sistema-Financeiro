@@ -278,5 +278,16 @@
             "Inclusão de Relatório que mostra fornecedores individualmnete, por categoria, por cliente, etc."
         ],
         "timestamp": "2026-05-22T07:44:40.114479"
+    },
+    {
+        "version": "1.7.5",
+        "release_date": "10/06/2026",
+        "changes": [
+            "Melhoria no Relatório de Medições, exportado do sistema, com índice e lista de fornecedores co Vínculo = EMPREITEIRO",
+            "Correção no relatório que compara a gestão de Medições e Taxa de Administração com registros em Dados",
+            "Inclusão de Relatório Modelo para exportar para Excel quando não houver contrato de medição cadastrado",
+            "Inclusão de Importação de DIÁRIAS de Colaboradores"
+        ],
+        "timestamp": "2026-06-09T16:25:25.073318"
     }
 ]
