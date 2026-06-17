@@ -4154,153 +4154,68 @@ class SistemaEntradaDados:
 
 
     def criar_arquivo_cliente(self, nome_cliente, endereco):
-        """Cria um novo arquivo Excel para o cliente baseado no MODELO.xlsx"""
+        """Cria um novo arquivo Excel para o cliente sem depender do MODELO.xlsx"""
         try:
-            logger.debug(f"\nTentando criar arquivo para cliente: {nome_cliente}")
-            logger.debug(f"ARQUIVO_MODELO: {ARQUIVO_MODELO}")
-            logger.debug(f"ARQUIVO_MODELO existe? {os.path.exists(ARQUIVO_MODELO)}")
+            logger.debug(f"\nCriando arquivo para cliente: {nome_cliente}")
             logger.debug(f"PASTA_CLIENTES: {PASTA_CLIENTES}")
-            logger.debug(f"PASTA_CLIENTES existe? {os.path.exists(PASTA_CLIENTES)}")
-            
-            modelo_path = ARQUIVO_MODELO
-            novo_arquivo = PASTA_CLIENTES / f"{nome_cliente}.xlsx"
-            
-            logger.debug(f"Novo arquivo será criado em: {novo_arquivo}")
-            logger.debug(f"Diretório do novo arquivo existe? {os.path.exists(os.path.dirname(novo_arquivo))}")
-                
-            if os.path.exists(novo_arquivo):
-                logger.debug(f"Arquivo {novo_arquivo} já existe!")
-                raise Exception("Arquivo do cliente já existe!")
-                    
-            # Garantir que o diretório existe
-            os.makedirs(os.path.dirname(novo_arquivo), exist_ok=True)
-                
-            logger.debug(f"Tentando copiar de {modelo_path} para {novo_arquivo}")
-            
-            # Copiar o arquivo modelo
-            from shutil import copy2
-            copy2(modelo_path, novo_arquivo)
-            
-            logger.debug("Arquivo copiado com sucesso")
-                
-            # Buscar data inicial do arquivo clientes.xlsx
-            wb_clientes = load_workbook(ARQUIVO_CLIENTES)
-            ws_clientes = wb_clientes['Clientes']
-            
-            data_inicial = None
-            # Procurar o cliente e sua data inicial
-            for row in range(2, ws_clientes.max_row + 1):
-                if ws_clientes.cell(row=row, column=1).value == nome_cliente:
-                    data_valor = ws_clientes.cell(row=row, column=3).value  # Coluna C
-                    if not data_valor:
-                        raise Exception("Data inicial não informada no cadastro do cliente")
-                        
-                    if isinstance(data_valor, datetime):
-                        data_inicial = data_valor.date()
-                    else:
-                        try:
-                            data_inicial = datetime.strptime(str(data_valor), '%Y-%m-%d').date()
-                        except ValueError:
-                            raise Exception("Data inicial deve estar no formato AAAA-MM-DD")
-                    break
-            
-            if not data_inicial:
-                raise Exception("Cliente não encontrado no cadastro")
-                
-            # Validar se é dia 5 ou 20
-            if data_inicial.day not in [5, 20]:
-                raise Exception("A data inicial deve ser dia 5 ou 20 do mês")
-                
-            # Abrir o novo arquivo para edição
-            workbook = load_workbook(novo_arquivo)
-            
-            # Atualizar planilha RESUMO
-            resumo_sheet = workbook["RESUMO"]
-            
-            # Informações básicas
-            resumo_sheet["A3"] = nome_cliente
-            resumo_sheet["A4"] = endereco
-            
-            # Descrições das células
-            resumo_sheet["K3"] = "Data Inicial"
-            
-            # Adicionar data inicial
-            resumo_sheet["L3"] = data_inicial
-            resumo_sheet["L3"].number_format = 'dd/mm/yyyy'
-            
-            # Gerar as 96 datas quinzenais
-            data_atual = data_inicial
-            datas_geradas = []
-            
-            for i in range(96):  # 4 anos = 96 relatórios
-                row = i + 9  # Começar na linha 9
-                
-                # Verificar se a data já foi usada
-                if data_atual in datas_geradas:
-                    raise Exception(f"Data duplicada detectada: {data_atual.strftime('%d/%m/%Y')}")
-                datas_geradas.append(data_atual)
-                
-                # Adicionar data e número do relatório
-                resumo_sheet.cell(row=row, column=1, value=data_atual)
-                resumo_sheet.cell(row=row, column=1).number_format = 'dd/mm/yyyy'
-                resumo_sheet.cell(row=row, column=2, value=i + 1)
-                
-                # Próxima data
-                if data_atual.day == 5:
-                    data_atual = data_atual.replace(day=20)
-                else:  # day == 20
-                    if data_atual.month == 12:
-                        data_atual = data_atual.replace(year=data_atual.year + 1, month=1, day=5)
-                    else:
-                        data_atual = data_atual.replace(month=data_atual.month + 1, day=5)
 
-            # Criar aba Contratos_ADM
+            novo_arquivo = PASTA_CLIENTES / f"{nome_cliente}.xlsx"
+
+            if os.path.exists(novo_arquivo):
+                raise Exception("Arquivo do cliente já existe!")
+
+            os.makedirs(os.path.dirname(novo_arquivo), exist_ok=True)
+
+            workbook = openpyxl.Workbook()
+
+            # ── Aba Dados ──
+            ws_dados = workbook.active
+            ws_dados.title = 'Dados'
+
+            colunas_dados = [
+                'DATA_REL', 'TP_DESP', 'CNPJ_CPF', 'NOME', 'REFERÊNCIA',
+                'NF', 'VR_UNIT', 'DIAS', 'VALOR', 'DT_VENCTO',
+                'CATEGORIA', 'DADOS_BANCARIOS', 'OBSERVAÇÃO', 'STATUS',
+                'ID_LANCAMENTO', 'HISTORICO_ALTERACAO', 'ETAPA_OBRA', 'INSUMO'
+            ]
+            for col, nome_col in enumerate(colunas_dados, 1):
+                cell = ws_dados.cell(row=1, column=col, value=nome_col)
+                cell.font = openpyxl.styles.Font(bold=True)
+
+            # ── Aba Contratos_ADM ──
             contratos_sheet = workbook.create_sheet("Contratos_ADM")
-            
-            # Definir os blocos na linha 1
+
             blocos = ["CONTRATOS", "", "", "", "", "",
-                     "ADMINISTRADORES_CONTRATO", "", "", "", "", "", "",
-                     "ADITIVOS", "", "", "",
-                     "ADMINISTRADORES_ADITIVO", "", "", "", "", "", "",
-                     "PARCELAS", "", "", "", "", "", "", "", "", ""]
-            
+                      "ADMINISTRADORES_CONTRATO", "", "", "", "", "", "",
+                      "ADITIVOS", "", "", "",
+                      "ADMINISTRADORES_ADITIVO", "", "", "", "", "", "",
+                      "PARCELAS", "", "", "", "", "", "", "", "", ""]
+
             for col, valor in enumerate(blocos, 1):
                 contratos_sheet.cell(row=1, column=col, value=valor)
-            
-            # Definir cabeçalhos na linha 2
+
             headers = [
-                # CONTRATOS
                 "Nº Contrato", "Data Início", "Data Fim", "Status", "Observações", "",
-                # ADMINISTRADORES_CONTRATO
-                "Nº Contrato", "CNPJ/CPF", "Nome/Razão Social", "Tipo", "Valor/Percentual", "Valor Total", "Nº Parcelas", 
-                # ADITIVOS
+                "Nº Contrato", "CNPJ/CPF", "Nome/Razão Social", "Tipo", "Valor/Percentual", "Valor Total", "Nº Parcelas",
                 "Nº Contrato", "Nº Aditivo", "Data Início", "Data Fim",
-                # ADMINISTRADORES_ADITIVO
                 "Nº Contrato", "Nº Aditivo", "CNPJ/CPF", "Nome/Razão Social", "Tipo", "Valor/Percentual", "Valor Total",
-                # PARCELAS
                 "Referência", "Número", "CNPJ/CPF", "Nome", "Data Vencimento", "Valor", "Status", "Data Pagamento", "Eventos/Fases", "Percentual %"
             ]
-            
+
             for col, header in enumerate(headers, 1):
                 cell = contratos_sheet.cell(row=2, column=col, value=header)
-                # Formatação do cabeçalho
                 cell.font = openpyxl.styles.Font(bold=True)
                 cell.alignment = openpyxl.styles.Alignment(horizontal='center')
-            
-            # Ajustar largura das colunas
+
             for col in range(1, len(headers) + 1):
                 contratos_sheet.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 15
-            
-            # Salvar alterações
+
             workbook.save(novo_arquivo)
-            wb_clientes.close()
-            
+            logger.info(f"Arquivo do cliente criado: {novo_arquivo}")
             return True
-            
+
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao criar arquivo do cliente: {str(e)}")
-            if 'wb_clientes' in locals():
-                wb_clientes.close()
             return False
 
     
