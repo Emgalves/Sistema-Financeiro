@@ -1197,6 +1197,67 @@ def validar_valor_numerico(valor, nome_campo, permitir_zero=True):
         mostrar_erro(f"O campo '{nome_campo}' deve conter um valor numérico válido!")
         return False, 0.0
 
+def calcular_numero_relatorio(self, data_relatorio):
+        """
+        Calcula o número do relatório quinzenal para uma data específica.
+        Usa self.df_completo (todos os lançamentos do cliente) para encontrar
+        a primeira data, garantindo consistência com RelatorioHandler.
+        df_completo: DataFrame completo da aba Dados do cliente
+        data_relatorio: data do lançamento (datetime, date ou string)
+        
+        PARA USAR:
+        from src.config.utils import calcular_numero_relatorio
+
+        numero = calcular_numero_relatorio(self.df_completo, row['DATA_REL'])
+
+        VERIFICAR:
+        trocar self.df_completo por um parâmetro — e o restante da lógica permanece idêntico
+        
+        """
+        try:
+            import pandas as pd
+
+            data_ref = pd.to_datetime(data_relatorio).date()
+
+            # Encontrar primeira data em TODOS os lançamentos do cliente
+            df_temp = self.df_completo.copy()
+            df_temp['DATA_REL'] = pd.to_datetime(df_temp['DATA_REL'], errors='coerce')
+            df_temp = df_temp.dropna(subset=['DATA_REL'])
+
+            if df_temp.empty:
+                return 1
+
+            if not hasattr(self, '_primeira_data_cache') or self._primeira_data_cache is None:
+                self._primeira_data_cache = df_temp['DATA_REL'].min().date()
+            primeira_data = self._primeira_data_cache
+
+            # Replicar lógica exata de RelatorioHandler.obter_numero_relatorio
+            numero = 1
+            data_atual = primeira_data
+
+            while data_atual <= data_ref:
+                if data_atual == data_ref:
+                    return numero
+
+                if data_atual.day == 5:
+                    data_atual = data_atual.replace(day=20)
+                else:  # day == 20
+                    if data_atual.month == 12:
+                        data_atual = data_atual.replace(
+                            year=data_atual.year + 1, month=1, day=5
+                        )
+                    else:
+                        data_atual = data_atual.replace(
+                            month=data_atual.month + 1, day=5
+                        )
+                numero += 1
+
+            # Data não cai exatamente em dia 5 ou 20 — retorna o período mais próximo
+            return numero
+
+        except Exception as e:
+            logger.debug(f"Erro ao calcular número do relatório: {str(e)}")
+            return ""
 
 # === CONSTANTS ===
 DIAS_QUINZENA = [5, 20]
