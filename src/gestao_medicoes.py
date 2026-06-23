@@ -1950,6 +1950,55 @@ class GestaoMedicoes:
             self.tree_contratos.tag_configure('pend',         background='#FFF3E0')  # laranja claro
             self.tree_contratos.tag_configure('pend_conc',    background='#F5E6CC', foreground='#666666')
 
+            # ── RECÁLCULO SILENCIOSO ─────────────────────────────────────────────
+            # Recalcula Valor_Pago e Saldo em Contratos_Medicao a partir das
+            # medições reais (aba Medicoes), ignorando EXCLUÍDAS.
+            # Corrige divergências causadas por exclusões manuais ou falhas
+            # anteriores, sem exibir mensagem ao usuário.
+            if 'Medicoes' in wb.sheetnames:
+                ws_med_rc = wb['Medicoes']
+                ws_cont_rc = wb['Contratos_Medicao']
+
+                # Somar valores pagos por contrato (apenas medições não excluídas)
+                totais_rc = {}
+                for r in ws_med_rc.iter_rows(min_row=2, values_only=True):
+                    if r[0] and r[7]:
+                        st = str(r[8] or '').strip().upper()
+                        if st in ('EXCLUÍDO', 'EXCLUIDO'):
+                            continue
+                        totais_rc[r[0]] = totais_rc.get(r[0], 0.0) + float(r[7])
+
+                # Comparar com o gravado e corrigir se necessário
+                houve_correcao = False
+                for idx, r in enumerate(ws_cont_rc.iter_rows(min_row=2, values_only=False), 2):
+                    id_cont = r[0].value
+                    if not id_cont:
+                        continue
+                    valor_global = float(r[6].value or 0)
+                    valor_pago_gravado = float(r[7].value or 0)
+                    total_real = totais_rc.get(id_cont, 0.0)
+                    saldo_real = valor_global - total_real
+
+                    # Arredondar para evitar falsos positivos com float
+                    if abs(total_real - valor_pago_gravado) >= 0.01:
+                        r[7].value = total_real
+                        r[7].number_format = '#,##0.00'
+                        r[8].value = saldo_real
+                        r[8].number_format = '#,##0.00'
+                        # Atualizar status se saldo zerou ou voltou a ter saldo
+                        status_atual = str(r[9].value or '').strip().upper()
+                        if saldo_real <= 0 and status_atual == 'ATIVO':
+                            r[9].value = 'CONCLUÍDO'
+                        elif saldo_real > 0 and status_atual == 'CONCLUÍDO':
+                            r[9].value = 'ATIVO'
+                        houve_correcao = True
+
+                if houve_correcao:
+                    wb.save(self.arquivo_cliente)
+                    # Reler a aba para garantir que a treeview use os dados corrigidos
+                    ws = wb['Contratos_Medicao']
+            # ── FIM DO RECÁLCULO SILENCIOSO ───────────────────────────────────────
+
             # Contar medições PENDENTE por contrato (antes de popular treeview)
             pendentes_por_contrato = {}
             if 'Medicoes' in wb.sheetnames:
@@ -4022,8 +4071,12 @@ class GestaoMedicoes:
             ws_medicoes = wb["Medicoes"]
             
             # Gerar ID da medição (próximo número sequencial para o contrato)
+            # Medições EXCLUÍDAS são ignoradas — o ID pode ser reutilizado
             next_id = 1
             for row in ws_medicoes.iter_rows(min_row=2, values_only=True):
+                status_row = str(row[8] or '').strip().upper()
+                if status_row in ('EXCLUÍDO', 'EXCLUIDO'):
+                    continue
                 if row[0] == id_contrato and row[1] and isinstance(row[1], int) and row[1] >= next_id:
                     next_id = row[1] + 1
             
@@ -4128,6 +4181,8 @@ class GestaoMedicoes:
             dados_medicao = None
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
+                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     dados_medicao = {
                         'id_contrato': row[0],
                         'id_medicao': row[1],
@@ -4300,6 +4355,8 @@ class GestaoMedicoes:
             medicao_row = None
             for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
                 if row[0] == id_contrato and row[1] == id_medicao:
+                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     medicao_row = idx
                     break
                     
@@ -4444,6 +4501,8 @@ class GestaoMedicoes:
             
             for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
+                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     dados_medicao = {
                         'id_medicao': row[1],
                         'cnpj': row[2],
@@ -4712,6 +4771,8 @@ class GestaoMedicoes:
             dados_medicao = None
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
+                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     dados_medicao = {
                         'id_contrato': row[0],
                         'id_medicao': row[1],
@@ -4778,9 +4839,11 @@ class GestaoMedicoes:
             # Adicionar à lista de dados para incluir
             self.dados_para_incluir.append(dados_lancamento)
             
-            # Atualizar status da medição na planilha
+            # Atualizar status da medição na planilha (ignora registros EXCLUÍDO)
             for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), 2):
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
+                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     ws.cell(row=idx, column=9, value="LANÇADO")  # Status
                     ws.cell(row=idx, column=10, value=hoje)      # Data_Lancamento
                     break
@@ -4831,10 +4894,12 @@ class GestaoMedicoes:
                 wb = load_workbook(self.arquivo_cliente)
                 ws = wb['Medicoes']
                 
-                # Buscar a medição
+                # Buscar a medição (ignora registros EXCLUÍDO)
                 medicao_encontrada = False
                 for row in ws.iter_rows(min_row=2, values_only=True):
                     if row[0] == self.contrato_atual and row[1] == id_medicao:
+                        if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
+                            continue
                         status_atual = row[8] if row[8] else ""
                         
                         if status_atual in ["LANÇADO", "VINCULADO"]:
@@ -5538,6 +5603,8 @@ class GestaoMedicoes:
             
             for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
+                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     ws_medicoes.cell(row=idx, column=9, value="VINCULADO")  # Status
                     
                     data_cell = ws_medicoes.cell(row=idx, column=10, value=hoje)
@@ -5689,6 +5756,8 @@ class GestaoMedicoes:
             
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
+                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     dados = {
                         'id_medicao': row[1],
                         'cnpj': row[2],
