@@ -4,7 +4,7 @@ import traceback
 
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, date
 
 # Configurar logging para arquivo
 log_dir = os.path.join(os.path.expanduser('~'), 'Desktop', 'logs_sistema')
@@ -753,7 +753,8 @@ class VisualizadorLancamentos:
         
         valores = self.tree.item(item_selecionado)['values']
         dados = {
-            'data': valores[1],
+            'data': valores[0],
+            'nr_relatorio': valores[1],
             'tp_desp': valores[2],
             'cnpj_cpf': valores[3],
             'nome': valores[4],
@@ -19828,6 +19829,7 @@ class GerenciadorLancamentos:
                 dados_item = {
                     'item_id': item,  # ID do item no Treeview
                     'data': valores[1],
+                    'nr_relatorio': valores[1],
                     'tp_desp': valores[2],
                     'nome': valores[3],
                     'referencia': valores[4],
@@ -23241,35 +23243,43 @@ class VisualizadorLancamentosFornecedor:
         filtros_frame = ttk.Frame(frame_filtros)
         filtros_frame.pack(fill='x', padx=10, pady=8)
         
-        # Filtros por período
+        # Filtro por período
         ttk.Label(filtros_frame, text="Período:").grid(row=0, column=0, padx=5, pady=5)
         self.data_inicio = DateEntry(filtros_frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.data_inicio.grid(row=0, column=1, padx=5, pady=5)
-        
+
         ttk.Label(filtros_frame, text="até").grid(row=0, column=2, padx=5, pady=5)
         self.data_fim = DateEntry(filtros_frame, width=12, date_pattern='dd/mm/yyyy', locale='pt_BR')
         self.data_fim.grid(row=0, column=3, padx=5, pady=5)
-    
-    # Filtro por referência
-        
-        # Filtro por referência
-        ttk.Label(filtros_frame, text="Referência:").grid(row=0, column=4, padx=15, pady=5)
+
+        # Todo período
+        self.todos_lancamentos_var = tk.BooleanVar(value=False)
+        self.chk_todos = ttk.Checkbutton(
+            filtros_frame,
+            text="Todos os lançamentos",
+            variable=self.todos_lancamentos_var,
+            command=self.toggle_periodo_completo
+        )
+        self.chk_todos.grid(row=0, column=4, padx=15, pady=5)
+
+        # Filtro por referência  
+        ttk.Label(filtros_frame, text="Referência:").grid(row=0, column=5, padx=15, pady=5)
         self.filtro_referencia = ttk.Entry(filtros_frame, width=20)
-        self.filtro_referencia.grid(row=0, column=5, padx=5, pady=5)
-        
-        # Filtro por status
-        ttk.Label(filtros_frame, text="Status:").grid(row=0, column=6, padx=15, pady=5)
-        self.combo_status = ttk.Combobox(filtros_frame, 
-                                       values=['Todos', 'Ativos', 'Excluídos'], 
-                                       state='readonly', width=10)
+        self.filtro_referencia.grid(row=0, column=6, padx=5, pady=5)
+
+        # Filtro por status  
+        ttk.Label(filtros_frame, text="Status:").grid(row=0, column=7, padx=15, pady=5)
+        self.combo_status = ttk.Combobox(filtros_frame,
+                                        values=['Todos', 'Ativos', 'Excluídos'],
+                                        state='readonly', width=10)
         self.combo_status.set('Ativos')
-        self.combo_status.grid(row=0, column=7, padx=5, pady=5)
-        
-        # Botões de filtro
-        ttk.Button(filtros_frame, text="Filtrar", 
-                  command=self.aplicar_filtros).grid(row=0, column=8, padx=10, pady=5)
-        ttk.Button(filtros_frame, text="Limpar", 
-                  command=self.limpar_filtros).grid(row=0, column=9, padx=5, pady=5)
+        self.combo_status.grid(row=0, column=8, padx=5, pady=5)
+
+        # Botões de filtro  
+        ttk.Button(filtros_frame, text="Filtrar",
+                command=self.aplicar_filtros).grid(row=0, column=9, padx=10, pady=5)
+        ttk.Button(filtros_frame, text="Limpar",
+                command=self.limpar_filtros).grid(row=0, column=10, padx=5, pady=5)
         
         # Campo de busca rápida
         frame_busca = ttk.Frame(filtros_frame)
@@ -23285,13 +23295,13 @@ class VisualizadorLancamentosFornecedor:
         frame_lista.pack(fill='both', expand=True)
         
         # Treeview para lançamentos - ADICIONADA SELEÇÃO MÚLTIPLA
-        colunas = ('Data Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação', 'ID')
+        colunas = ('Data Rel.', 'Nº Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação', 'ID')
         self.tree_lancamentos = ttk.Treeview(frame_lista, columns=colunas, show='headings', 
                                            height=18, selectmode='extended')  # Seleção múltipla
         
         # Configurar cabeçalhos e larguras
-        larguras = {'Data Rel.': 90, 'Tipo': 50, 'Referência': 200, 'NF': 100, 
-                   'Valor': 100, 'Vencimento': 90, 'Status': 80, 'Observação': 250, 'ID': 0}
+        larguras = {'Data Rel.': 90, 'Nº Rel.': 30, 'Tipo': 30, 'Referência': 200, 'NF': 100, 
+                   'Valor': 100, 'Vencimento': 90, 'Status': 80, 'Observação': 220, 'ID': 0}
         
         for col in colunas:
             self.tree_lancamentos.heading(col, text=col)
@@ -23570,7 +23580,7 @@ class VisualizadorLancamentosFornecedor:
         
         try:
             valores = self.tree_lancamentos.item(item_selecionado[0])['values']
-            id_lancamento = valores[8]  # ID do lançamento
+            id_lancamento = valores[9]  # ID do lançamento
             
             # Buscar dados completos do lançamento
             lancamento = None
@@ -23819,10 +23829,10 @@ class VisualizadorLancamentosFornecedor:
         
         valores = self.tree_lancamentos.item(item_selecionado[0])['values']
         nome_fornecedor = self.dados_fornecedor['nome']
-        referencia = valores[2]
-        valor = valores[4]
+        referencia = valores[3]
+        valor = valores[5]
         data_lancamento = valores[0]
-        status_atual = valores[6]
+        status_atual = valores[7]
         
         if status_atual == 'EXCLUIDO':
             custom_messagebox("info", "Informação", "Este lançamento já está excluído")
@@ -23835,7 +23845,7 @@ class VisualizadorLancamentosFornecedor:
                             f"Valor: {valor}\n"
                             f"Data: {data_lancamento}"):
             try:
-                id_lancamento = valores[8]
+                id_lancamento = valores[9]
                 self.atualizar_status_lancamento(id_lancamento, 'EXCLUIDO')
                 
                 # Verificar recálculo de taxas se necessário
@@ -23902,10 +23912,10 @@ class VisualizadorLancamentosFornecedor:
         
         valores = self.tree_lancamentos.item(item_selecionado[0])['values']
         nome_fornecedor = self.dados_fornecedor['nome']
-        referencia = valores[2]
-        valor = valores[4]
+        referencia = valores[3]
+        valor = valores[5]
         data_lancamento = valores[0]
-        status_atual = valores[6]
+        status_atual = valores[7]
         
         if status_atual != 'EXCLUIDO':
             custom_messagebox("info", "Informação", "Este lançamento já está ativo")
@@ -23918,7 +23928,7 @@ class VisualizadorLancamentosFornecedor:
                             f"Valor: {valor}\n"
                             f"Data: {data_lancamento}"):
             try:
-                id_lancamento = valores[8]
+                id_lancamento = valores[9]
                 self.atualizar_status_lancamento(id_lancamento, 'ATIVO')
                 
                 # Verificar recálculo de taxas se necessário
@@ -24033,7 +24043,7 @@ class VisualizadorLancamentosFornecedor:
             
             item = selected_items[0]
             valores = self.tree_lancamentos.item(item, 'values')
-            id_lancamento = valores[8]
+            id_lancamento = valores[9]
             
             # Buscar dados completos do lançamento
             if not hasattr(self, 'dados_originais') or self.dados_originais.empty:
@@ -24127,6 +24137,8 @@ class VisualizadorLancamentosFornecedor:
             # Carregar dados preservando tipos
             df = pd.read_excel(arquivo_cliente, sheet_name='Dados', dtype={'CNPJ_CPF': str})
             df = df.fillna("")
+
+            self.df_completo = df.copy()  # Guardar ANTES do filtro por fornecedor
             
             # Adicionar coluna de status se não existir
             if 'STATUS' not in df.columns:
@@ -24287,6 +24299,57 @@ class VisualizadorLancamentosFornecedor:
             logger.debug(f"Erro ao carregar lançamentos: {traceback.format_exc()}")
             custom_messagebox("error", "Erro", f"Erro ao carregar lançamentos: {str(e)}")                                           
 
+    def calcular_numero_relatorio(self, data_relatorio):
+        """
+        Calcula o número do relatório quinzenal para uma data específica.
+        Usa self.df_completo (todos os lançamentos do cliente) para encontrar
+        a primeira data, garantindo consistência com RelatorioHandler.
+        """
+        try:
+            import pandas as pd
+
+            data_ref = pd.to_datetime(data_relatorio).date()
+
+            # Encontrar primeira data em TODOS os lançamentos do cliente
+            df_temp = self.df_completo.copy()
+            df_temp['DATA_REL'] = pd.to_datetime(df_temp['DATA_REL'], errors='coerce')
+            df_temp = df_temp.dropna(subset=['DATA_REL'])
+
+            if df_temp.empty:
+                return 1
+
+            if not hasattr(self, '_primeira_data_cache') or self._primeira_data_cache is None:
+                self._primeira_data_cache = df_temp['DATA_REL'].min().date()
+            primeira_data = self._primeira_data_cache
+
+            # Replicar lógica exata de RelatorioHandler.obter_numero_relatorio
+            numero = 1
+            data_atual = primeira_data
+
+            while data_atual <= data_ref:
+                if data_atual == data_ref:
+                    return numero
+
+                if data_atual.day == 5:
+                    data_atual = data_atual.replace(day=20)
+                else:  # day == 20
+                    if data_atual.month == 12:
+                        data_atual = data_atual.replace(
+                            year=data_atual.year + 1, month=1, day=5
+                        )
+                    else:
+                        data_atual = data_atual.replace(
+                            month=data_atual.month + 1, day=5
+                        )
+                numero += 1
+
+            # Data não cai exatamente em dia 5 ou 20 — retorna o período mais próximo
+            return numero
+
+        except Exception as e:
+            logger.debug(f"Erro ao calcular número do relatório: {str(e)}")
+            return ""
+        
     def debug_busca_fornecedor(self, cnpj_cpf_fornecedor, nome_fornecedor):
         """Método auxiliar para debug da busca por fornecedor"""
         try:
@@ -24378,7 +24441,50 @@ class VisualizadorLancamentosFornecedor:
                 self.data_inicio.set_date(data_padrao.date())
                 self.data_fim.set_date(datetime.now().date())
             except:
-                pass        
+                pass 
+
+    def toggle_periodo_completo(self):
+        """
+        Ativa/desativa o modo 'todos os lançamentos'.
+        Quando ativado: usa o período máximo e desabilita os DateEntry.
+        Quando desativado: reabilita os DateEntry e restaura datas padrão.
+        """
+        try:
+            if self.todos_lancamentos_var.get():
+                # 1. Calcular período máximo ANTES de desabilitar
+                if hasattr(self, 'df_completo') and not self.df_completo.empty:
+                    import pandas as pd
+                    df_temp = self.df_completo.copy()
+                    df_temp['DATA_REL'] = pd.to_datetime(df_temp['DATA_REL'], errors='coerce')
+                    df_temp = df_temp.dropna(subset=['DATA_REL'])
+
+                    if not df_temp.empty:
+                        primeira_data = df_temp['DATA_REL'].min().date()
+                        self.data_inicio.set_date(primeira_data)
+                    else:
+                        self.data_inicio.set_date(datetime(2000, 1, 1).date())
+                else:
+                    self.data_inicio.set_date(datetime(2000, 1, 1).date())
+
+                self.data_fim.set_date(datetime.now().date())
+
+                # 2. Desabilitar DEPOIS de definir as datas
+                self.data_inicio.config(state='disabled')
+                self.data_fim.config(state='disabled')
+
+            else:
+                # 1. Reabilitar ANTES de definir as datas
+                self.data_inicio.config(state='normal')
+                self.data_fim.config(state='normal')
+
+                # 2. Restaurar datas padrão
+                self.inicializar_datas_padrao()
+
+            self.aplicar_filtros()
+
+        except Exception as e:
+            logger.debug(f"Erro ao alternar período completo: {str(e)}")
+
     def aplicar_filtros(self):
         """Aplica os filtros selecionados"""
         try:
@@ -24419,6 +24525,7 @@ class VisualizadorLancamentosFornecedor:
             hoje = datetime.now().date()
             limite_recente = hoje - relativedelta(days=30)
             
+            self._primeira_data_cache = None  # resetar cache ao filtrar
             for idx, row in df_filtrado.iterrows():
                 status = row.get('STATUS', 'ATIVO')
                 tag = 'excluido' if status == 'EXCLUIDO' else 'normal'
@@ -24429,6 +24536,7 @@ class VisualizadorLancamentosFornecedor:
                 
                 valores = (
                     self.formatar_data(row['DATA_REL']),
+                    self.calcular_numero_relatorio(row['DATA_REL']) if pd.notna(row['DATA_REL']) else "",
                     self.formatar_tipo_despesa(row['TP_DESP']),
                     row.get('REFERÊNCIA', ''),
                     row.get('NF', ''),
@@ -24486,6 +24594,7 @@ class VisualizadorLancamentosFornecedor:
             
             valores = (
                 self.formatar_data(row['DATA_REL']),
+                self.calcular_numero_relatorio(row['DATA_REL']) if pd.notna(row['DATA_REL']) else "",
                 self.formatar_tipo_despesa(row['TP_DESP']),
                 row.get('REFERÊNCIA', ''),
                 row.get('NF', ''),
@@ -24698,12 +24807,12 @@ class VisualizadorLancamentosFornecedor:
                 title="Salvar Lista de Lançamentos",
                 defaultextension=".xlsx",
                 filetypes=[("Excel files", "*.xlsx"), ("All files", "*.*")],
-                initialfile=f"lancamentos_{self.dados_fornecedor['nome'].replace(' ', '_')}.xlsx"
+                initialfile=f"lancamentos_{self.sistema.cliente_atual.replace(' ', '_')}_{self.dados_fornecedor['nome'].replace(' ', '_')}.xlsx"
             )
             
             if arquivo:
-                # Criar DataFrame
-                colunas = ['Data Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação']
+                # Criar DataFrame — ordem igual à do Treeview, sem o ID
+                colunas = ['Data Rel.', 'Nº Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação']
                 df_export = pd.DataFrame(dados_exportar, columns=colunas)
                 
                 # Criar workbook com informações detalhadas
@@ -24732,7 +24841,12 @@ class VisualizadorLancamentosFornecedor:
                         worksheet[f'A{row}'].font = info_font
                     
                     # Ajustar largura das colunas
-                    column_widths = {'A': 12, 'B': 8, 'C': 25, 'D': 15, 'E': 12, 'F': 12, 'G': 10, 'H': 30}
+                    # A=Data Rel., B=Nº Rel., C=Tipo, D=Referência, E=NF,
+                    # F=Valor,    G=Vencimento, H=Status, I=Observação
+                    column_widths = {
+                        'A': 12, 'B': 8, 'C': 8, 'D': 25,
+                        'E': 15, 'F': 12, 'G': 12, 'H': 10, 'I': 30
+                    }
                     for col, width in column_widths.items():
                         worksheet.column_dimensions[col].width = width
                     
@@ -24740,7 +24854,6 @@ class VisualizadorLancamentosFornecedor:
                     if not self.df_fornecedor.empty:
                         resumo_data = []
                         
-                        # Estatísticas básicas
                         df_ativos = self.df_fornecedor[self.df_fornecedor['STATUS'] != 'EXCLUIDO']
                         resumo_data.append(['Estatística', 'Valor'])
                         resumo_data.append(['Total de Lançamentos', len(df_ativos)])
@@ -24749,7 +24862,6 @@ class VisualizadorLancamentosFornecedor:
                         resumo_data.append(['Primeiro Lançamento', df_ativos['DATA_REL'].min().strftime('%d/%m/%Y') if not df_ativos.empty else 'N/A'])
                         resumo_data.append(['Último Lançamento', df_ativos['DATA_REL'].max().strftime('%d/%m/%Y') if not df_ativos.empty else 'N/A'])
                         
-                        # Por referência
                         resumo_data.append(['', ''])
                         resumo_data.append(['TOP REFERÊNCIAS', 'QUANTIDADE'])
                         ref_counts = df_ativos['REFERÊNCIA'].value_counts().head(5)
