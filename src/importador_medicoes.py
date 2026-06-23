@@ -913,9 +913,14 @@ class ImportadorMedicoes:
             
             # ===== PROTEÇÃO CONTRA DUPLICAÇÃO =====
             # Verificar se alguma das medições já existe
+            # Medições EXCLUÍDAS são ignoradas: o registro foi cancelado
+            # e o mesmo ID pode ser reutilizado numa nova medição importada.
             medicoes_existentes = set()
             for row in sheet.iter_rows(min_row=2, values_only=True):
                 if row[0] and row[1]:  # ID_Contrato e ID_Medicao
+                    status_row = str(row[8] or '').strip().upper()
+                    if status_row in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     chave = f"{row[0]}_{row[1]}"  # Exemplo: "3_12"
                     medicoes_existentes.add(chave)
             
@@ -1067,10 +1072,14 @@ class ImportadorMedicoes:
             logger.info(f"Encontrados {len(contratos_map)} contratos na aba Contratos_Medicao")
             
             # Calcular totais pagos por contrato a partir de TODAS as medições
-            # (não apenas as recém-importadas)
+            # (não apenas as recém-importadas), exceto as EXCLUÍDAS
             totais_por_contrato = {}
             for row in sheet_medicoes.iter_rows(min_row=2, values_only=True):
                 if row[0] and row[7]:  # Se tem ID_Contrato e Valor
+                    # Ignorar medições excluídas — não compõem o valor pago
+                    status_med = str(row[8] or '').strip().upper()
+                    if status_med in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     id_contrato = row[0]  # Coluna A
                     valor = float(row[7])  # Coluna H (Valor)
                     
