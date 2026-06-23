@@ -461,15 +461,94 @@ class GeradorContrato:
     
     def numero_por_extenso(self, valor):
         """
-        Converte número para extenso (simplificado)
-        CORRIGIDO: Não multiplica mais por 10
+        Converte número para extenso em português brasileiro.
+        Tenta num2words primeiro; se não estiver instalado, usa implementação interna.
         """
         try:
             from num2words import num2words
-            # CORREÇÃO: valor já vem como float correto, não precisa ajustar
             valor_float = float(valor)
             return num2words(valor_float, lang='pt_BR', to='currency')
-        except:
+        except ImportError:
+            pass
+        except Exception as e:
+            logger.warning(f"num2words falhou ({e}), usando fallback interno")
+
+        # --- Fallback interno: converte reais e centavos por extenso ---
+        try:
+            valor_float = float(valor)
+            reais = int(valor_float)
+            centavos = round((valor_float - reais) * 100)
+
+            unidades  = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis',
+                         'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze',
+                         'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito',
+                         'dezenove']
+            dezenas   = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta',
+                         'sessenta', 'setenta', 'oitenta', 'noventa']
+            centenas  = ['', 'cem', 'duzentos', 'trezentos', 'quatrocentos',
+                         'quinhentos', 'seiscentos', 'setecentos', 'oitocentos',
+                         'novecentos']
+
+            def _centena(n):
+                """Converte 0-999 para extenso"""
+                if n == 0:
+                    return ''
+                if n == 100:
+                    return 'cem'
+                partes = []
+                if n >= 100:
+                    partes.append(centenas[n // 100])
+                    n %= 100
+                if n >= 20:
+                    d = dezenas[n // 10]
+                    u = unidades[n % 10]
+                    partes.append(d + (' e ' + u if u else ''))
+                elif n > 0:
+                    partes.append(unidades[n])
+                return ' e '.join(partes)
+
+            def _numero(n):
+                """Converte inteiro positivo para extenso"""
+                if n == 0:
+                    return 'zero'
+                partes = []
+                bilhoes = n // 1_000_000_000
+                n %= 1_000_000_000
+                milhoes = n // 1_000_000
+                n %= 1_000_000
+                milhares = n // 1_000
+                n %= 1_000
+                resto = n
+
+                if bilhoes:
+                    sufixo = 'bilhão' if bilhoes == 1 else 'bilhões'
+                    partes.append(_centena(bilhoes) + ' ' + sufixo)
+                if milhoes:
+                    sufixo = 'milhão' if milhoes == 1 else 'milhões'
+                    partes.append(_centena(milhoes) + ' ' + sufixo)
+                if milhares:
+                    if milhares == 1:
+                        partes.append('mil')
+                    else:
+                        partes.append(_centena(milhares) + ' mil')
+                if resto:
+                    partes.append(_centena(resto))
+
+                return ' e '.join(partes)
+
+            partes_extenso = []
+            if reais > 0:
+                nome = 'real' if reais == 1 else 'reais'
+                partes_extenso.append(_numero(reais) + ' ' + nome)
+            if centavos > 0:
+                nome = 'centavo' if centavos == 1 else 'centavos'
+                partes_extenso.append(_numero(centavos) + ' ' + nome)
+            if not partes_extenso:
+                return 'zero reais'
+            return ' e '.join(partes_extenso)
+
+        except Exception as e:
+            logger.error(f"Erro no fallback de número por extenso: {e}")
             return f"{valor} reais"
     
     def concatenar_servicos(self, lista_servicos):
@@ -748,10 +827,30 @@ class GeradorContrato:
             run_cliente.bold = True
             p2.add_run(f", pessoa física devidamente inscrita sob o CNO n.º {dados_cliente['cno']} e CPF nº {dados_cliente['cnpj_cpf']}, {dados_cliente['estado_civil']}, residente na {dados_cliente['endereco']}, doravante denominada CONTRATANTE e, de outro ")
             
-            # CONTRATADA
+            # CONTRATADA - detectar pessoa física (CPF, 11 dígitos) ou jurídica (CNPJ, 14 dígitos)
+            cnpj_cpf_forn = dados_fornecedor['cnpj_cpf']
+            apenas_numeros_forn = ''.join(filter(str.isdigit, cnpj_cpf_forn))
+            if len(apenas_numeros_forn) == 14:
+                qualificacao_forn = (
+                    f"pessoa jurídica de direito privado, devidamente inscrita no CNPJ sob o n.º "
+                    f"{cnpj_cpf_forn}, com sede na"
+                )
+                logger.info(f"Fornecedor identificado como PESSOA JURÍDICA: {cnpj_cpf_forn}")
+            else:
+                qualificacao_forn = (
+                    f"pessoa física devidamente inscrita sob o CPF n.º "
+                    f"{cnpj_cpf_forn} com residência na"
+                )
+                logger.info(f"Fornecedor identificado como PESSOA FÍSICA: {cnpj_cpf_forn}")
+
             run_fornecedor = p2.add_run(dados_fornecedor['nome'])
             run_fornecedor.bold = True
-            p2.add_run(f", pessoa física devidamente inscrita sob o CPF n.º {dados_fornecedor['cnpj_cpf']} com residência na {dados_fornecedor['endereco']}, doravante denominado simplesmente de CONTRATADA, ambas representadas por seus representantes legais que ao final firmam o presente contrato, tem entre si, justo e contratado o presente, que se regerá pelas seguintes Cláusulas e Condições:")
+            p2.add_run(
+                f", {qualificacao_forn} {dados_fornecedor['endereco']}, doravante denominado "
+                f"simplesmente de CONTRATADA, ambas representadas por seus representantes legais "
+                f"que ao final firmam o presente contrato, tem entre si, justo e contratado o "
+                f"presente, que se regerá pelas seguintes Cláusulas e Condições:"
+            )
             
             # CLÁUSULA PRIMEIRA - OBJETO
             doc.add_heading('CLÁUSULA PRIMEIRA - OBJETO', level=1)
@@ -916,11 +1015,22 @@ class GeradorContrato:
             doc.add_paragraph("b) a falha do Contratado em executar os trabalhos ora especificados, nas condições estipuladas ou paralisação da obra por mais de 7 (sete) dias sem relevante razão;")
             doc.add_paragraph("c) qualquer outro fato ou ato que, por culpa ou dolo de uma das partes, impossibilite a execução do presente contrato.")
             
-            p_par_unico = doc.add_paragraph()
-            run_par_unico = p_par_unico.add_run("PARÁGRAFO ÚNICO -- ")
-            run_par_unico.bold = True
-            run_par_unico.font.size = Pt(11)
-            p_par_unico.add_run(f"Além das possibilidades elencadas no caput o inadimplemento de quaisquer das cláusulas estabelecidas neste instrumento, facultará a parte que não lhe deu causa, impor sua rescisão cumulada com ressarcimento de eventuais perdas e danos e lucros cessantes e multa pecuniária irredutível e não compensatória, no valor de {multa_formatada} ({multa_extenso}).")
+            # PARÁGRAFO ÚNICO: exibido somente quando há multa (valor > 0)
+            if multa_float > 0:
+                p_par_unico = doc.add_paragraph()
+                run_par_unico = p_par_unico.add_run("PARÁGRAFO ÚNICO -- ")
+                run_par_unico.bold = True
+                run_par_unico.font.size = Pt(11)
+                p_par_unico.add_run(
+                    f"Além das possibilidades elencadas no caput o inadimplemento de quaisquer "
+                    f"das cláusulas estabelecidas neste instrumento, facultará a parte que não lhe "
+                    f"deu causa, impor sua rescisão cumulada com ressarcimento de eventuais perdas "
+                    f"e danos e lucros cessantes e multa pecuniária irredutível e não compensatória, "
+                    f"no valor de {multa_formatada} ({multa_extenso})."
+                )
+                logger.info(f"✅ PARÁGRAFO ÚNICO de multa incluído: {multa_formatada}")
+            else:
+                logger.info("ℹ️ Multa = R$ 0,00 — PARÁGRAFO ÚNICO omitido do contrato")
             
             # CLÁUSULA OITAVA - FORO
             doc.add_heading('CLÁUSULA OITAVA - FORO', level=1)
