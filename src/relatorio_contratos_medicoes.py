@@ -557,6 +557,10 @@ class RelatorioContratos:
             
             for row in ws_medicoes.iter_rows(min_row=2, values_only=True):
                 if row[0]:  # Se tem ID do contrato
+                    # Ignorar medições excluídas — não devem aparecer em nenhuma tela ou exportação
+                    status_med = str(row[8] or '').strip().upper()
+                    if status_med in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     # Verificar se a medição já existia na data de referência
                     data_medicao = row[4]
                     if isinstance(data_medicao, datetime) and data_medicao <= self.data_referencia:
@@ -1026,9 +1030,19 @@ class RelatorioContratos:
 
                 cinza = PatternFill(start_color='E0E0E0', end_color='E0E0E0', fill_type='solid')
 
-                # Adicionar medições existentes (linha 13+)
+                # Calcular próximo ID disponível para novas medições (excluídas não contam)
+                ids_existentes = [
+                    m['id_medicao'] for m in medicoes_contrato
+                    if isinstance(m['id_medicao'], int)
+                    and str(m.get('status', '')).strip().upper() not in ('EXCLUÍDO', 'EXCLUIDO')
+                ]
+                proximo_id = (max(ids_existentes) + 1) if ids_existentes else 1
+
+                # Adicionar medições existentes (linha 13+), exceto as excluídas
                 linha = 13
                 for medicao in medicoes_contrato:
+                    if str(medicao.get('status', '')).strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
+                        continue
                     id_cell = ws_contrato.cell(row=linha, column=1, value=medicao['id_medicao'])
                     id_cell.fill = cinza
 
@@ -1048,6 +1062,15 @@ class RelatorioContratos:
                     ws_contrato.cell(row=linha, column=4).number_format = '#,##0.00'
 
                     linha += 1
+
+                # Pré-preencher IDs nas linhas em branco para novas medições
+                # O usuário preenche as demais colunas; o ID já estará pronto para importação
+                cinza_claro = PatternFill(start_color='E0E0E0', end_color='E0E0E0', fill_type='solid')
+                for i in range(1):  # Reservar 10 linhas para novas medições
+                    id_nova = ws_contrato.cell(row=linha + i, column=1, value=proximo_id + i)
+                    id_nova.fill = cinza_claro
+                    ws_contrato.cell(row=linha + i, column=4).number_format = '#,##0.00'
+                    ws_contrato.cell(row=linha + i, column=2).number_format = 'DD/MM/YYYY'
 
                 # Ajustar larguras das colunas
                 ws_contrato.column_dimensions['A'].width = 10
