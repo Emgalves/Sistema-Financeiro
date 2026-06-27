@@ -19086,8 +19086,10 @@ class ImportadorRH:
                     col_map['total'] = ci
                 elif 'DADOS BANC' in vn or 'CONTA BANC' in vn:
                     col_map['dados_bancarios'] = ci
+                elif 'DATA' in vn and 'PAG' in vn:          # <<< NOVO
+                    col_map['dt_vencto'] = ci 
 
-            faltando = [c for c in ('nome', 'vr_unit', 'dias') if c not in col_map]
+            faltando = [c for c in ('nome', 'vr_unit', 'dias', 'dt_vencto') if c not in col_map]
             if faltando:
                 logger.debug(f"Aba '{nome_aba}': colunas obrigatórias ausentes {faltando}, ignorada")
                 return registros, erros
@@ -19142,6 +19144,23 @@ class ImportadorRH:
                         erros.append(f"[{nome_aba}] Linha {idx+1}: {nome_limpo} - dias não numérico")
                         continue
 
+                    # Data de vencimento: usa DATA PAGTO da planilha; fallback = data_rel
+                    dt_vencto_val = data_rel                                     
+                    if 'dt_vencto' in col_map:                                   # <<< NOVO
+                        dt_raw = _cel(col_map['dt_vencto'])                      # <<< NOVO
+                        if dt_raw:                                                # <<< NOVO
+                            try:                                                  # <<< NOVO
+                                import datetime as _dt                            # <<< NOVO
+                                # pandas pode entregar string ou Timestamp        # <<< NOVO
+                                if hasattr(dt_raw, 'strftime'):                   # <<< NOVO
+                                    dt_vencto_val = dt_raw.strftime('%d/%m/%Y')  # <<< NOVO
+                                else:                                             # <<< NOVO
+                                    parsed = _dt.datetime.strptime(              # <<< NOVO
+                                        str(dt_raw)[:10], '%Y-%m-%d')            # <<< NOVO
+                                    dt_vencto_val = parsed.strftime('%d/%m/%Y')  # <<< NOVO
+                            except Exception:                                     # <<< NOVO
+                                pass  # mantém data_rel como fallback 
+
                     dados_bancarios = ''
                     if 'dados_bancarios' in col_map:
                         db_raw = _cel(col_map['dados_bancarios'])
@@ -19173,7 +19192,7 @@ class ImportadorRH:
                         'vr_unit': f"{vr_unit_float:.2f}",
                         'dias': dias_int,
                         'valor': f"{vr_unit_float * dias_int:.2f}",
-                        'dt_vencto': data_rel,
+                        'dt_vencto': dt_vencto_val,
                         'dados_bancarios': dados_bancarios,
                         'observacao': f"IMPORTADO DIARIAS - {timestamp}",
                         'forma_pagamento': 'PIX'
