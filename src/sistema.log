@@ -12647,3 +12647,115 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-06-23 16:11:57,307 - INFO - Sistema iniciado em modo: TESTE
 2026-06-23 16:11:59,263 - INFO - Abrindo gestão de medições
 2026-06-23 16:16:27,751 - INFO - Sistema encerrado pelo usuário
+2026-06-26 11:07:24,260 - INFO - Configurações importadas com sucesso via src.config
+2026-06-26 11:07:25,425 - INFO - Configurações importadas com sucesso
+2026-06-26 11:07:25,425 - INFO - Configurações do sistema importadas com sucesso
+2026-06-26 11:07:31,915 - INFO - Sistema iniciado em modo: TESTE
+2026-06-26 11:07:34,629 - INFO - Abrindo sistema de entrada de dados
+2026-06-26 11:07:38,224 - INFO - Proteções contra perda de dados configuradas
+2026-06-26 11:07:38,886 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-06-26 11:07:41,858 - INFO - Cliente selecionado com sucesso: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-06-26 11:08:18,075 - INFO - ============================================================
+2026-06-26 11:08:18,077 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-06-26 11:08:18,077 - INFO - ============================================================
+2026-06-26 11:08:18,078 - INFO - Cliente atual: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-06-26 11:08:18,078 - INFO - Dados disponíveis: 10 lançamento(s)
+2026-06-26 11:08:18,079 - INFO - 📋 Últimos 3 lançamentos:
+2026-06-26 11:08:18,079 - INFO -   1. WELLINGTON GOMES PAIVA - DIÁRIA - R$ 1250.00
+2026-06-26 11:08:18,080 - INFO -   2. ITALO RAFAEL PINHO SANTOS - DIÁRIA - R$ 1080.00
+2026-06-26 11:08:18,080 - INFO -   3. ISNALDO GONÇALVES DE SOUZA - DIÁRIA - R$ 1250.00
+2026-06-26 11:08:18,081 - INFO - 🆕 Criando novo visualizador
+2026-06-26 11:08:18,083 - INFO - 🔍 Visualizador iniciado com 10 lançamentos
+2026-06-26 11:08:18,254 - INFO - ✅ Visualizador criado com 10 lançamento(s)
+2026-06-26 11:08:18,255 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-06-26 11:08:18,255 - INFO - ============================================================
+2026-06-26 11:08:26,167 - INFO - Iniciando envio de dados - Cliente: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO, Registros: 10
+2026-06-26 11:08:26,168 - INFO - Obtendo dados do visualizador
+2026-06-26 11:08:26,168 - INFO - Total de registros a processar: 10
+2026-06-26 11:08:26,183 - INFO - Datas que serão afetadas pela inserção: ['05/07/2026']
+2026-06-26 11:08:26,184 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO.xlsx
+2026-06-26 11:08:26,184 - INFO - Verificando integridade dos IDs antes da inserção
+2026-06-26 11:08:27,256 - INFO - 📋 Processando lançamento 1/10: JEAN ALESI DA SILVA - DIÁRIA
+2026-06-26 11:08:27,257 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,257 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,258 - INFO - Dados: JEAN ALESI DA SILVA | DIÁRIA | NF:  | R$ 2280.00 | 05/07/2026
+2026-06-26 11:08:27,607 - INFO - ✅ Nenhuma duplicata para: JEAN ALESI DA SILVA - DIÁRIA
+2026-06-26 11:08:27,608 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,608 - INFO - 📋 Processando lançamento 2/10: JOAO BATISTA DA SILVA - DIÁRIA
+2026-06-26 11:08:27,609 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,610 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,610 - INFO - Dados: JOAO BATISTA DA SILVA | DIÁRIA | NF:  | R$ 1500.00 | 05/07/2026
+2026-06-26 11:08:27,618 - INFO - ✅ Nenhuma duplicata para: JOAO BATISTA DA SILVA - DIÁRIA
+2026-06-26 11:08:27,618 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,619 - INFO - 📋 Processando lançamento 3/10: MATEUS HENRIQUE RODRIGUES - DIÁRIA
+2026-06-26 11:08:27,622 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,623 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,624 - INFO - Dados: MATEUS HENRIQUE RODRIGUES | DIÁRIA | NF:  | R$ 1080.00 | 05/07/2026
+2026-06-26 11:08:27,634 - INFO - ✅ Nenhuma duplicata para: MATEUS HENRIQUE RODRIGUES - DIÁRIA
+2026-06-26 11:08:27,635 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,635 - INFO - 📋 Processando lançamento 4/10: IZAEL BISPO SILVA OLIVEIRA - DIÁRIA
+2026-06-26 11:08:27,638 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,638 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,639 - INFO - Dados: IZAEL BISPO SILVA OLIVEIRA | DIÁRIA | NF:  | R$ 1250.00 | 05/07/2026
+2026-06-26 11:08:27,651 - INFO - ✅ Nenhuma duplicata para: IZAEL BISPO SILVA OLIVEIRA - DIÁRIA
+2026-06-26 11:08:27,651 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,652 - INFO - 📋 Processando lançamento 5/10: FRANCISCO FERREIRA DOS SANTOS - DIÁRIA
+2026-06-26 11:08:27,652 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,654 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,654 - INFO - Dados: FRANCISCO FERREIRA DOS SANTOS | DIÁRIA | NF:  | R$ 1250.00 | 05/07/2026
+2026-06-26 11:08:27,664 - INFO - ✅ Nenhuma duplicata para: FRANCISCO FERREIRA DOS SANTOS - DIÁRIA
+2026-06-26 11:08:27,665 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,665 - INFO - 📋 Processando lançamento 6/10: JESUSMAR MELQUIADES DA CRUZ - DIÁRIA
+2026-06-26 11:08:27,666 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,666 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,667 - INFO - Dados: JESUSMAR MELQUIADES DA CRUZ | DIÁRIA | NF:  | R$ 1500.00 | 05/07/2026
+2026-06-26 11:08:27,679 - INFO - ✅ Nenhuma duplicata para: JESUSMAR MELQUIADES DA CRUZ - DIÁRIA
+2026-06-26 11:08:27,680 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,680 - INFO - 📋 Processando lançamento 7/10: ADAILSON SILVA NOVAIS - DIÁRIA
+2026-06-26 11:08:27,680 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,681 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,681 - INFO - Dados: ADAILSON SILVA NOVAIS | DIÁRIA | NF:  | R$ 1500.00 | 05/07/2026
+2026-06-26 11:08:27,692 - INFO - ✅ Nenhuma duplicata para: ADAILSON SILVA NOVAIS - DIÁRIA
+2026-06-26 11:08:27,694 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,695 - INFO - 📋 Processando lançamento 8/10: WELLINGTON GOMES PAIVA - DIÁRIA
+2026-06-26 11:08:27,696 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,697 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,697 - INFO - Dados: WELLINGTON GOMES PAIVA | DIÁRIA | NF:  | R$ 1250.00 | 05/07/2026
+2026-06-26 11:08:27,712 - INFO - ✅ Nenhuma duplicata para: WELLINGTON GOMES PAIVA - DIÁRIA
+2026-06-26 11:08:27,712 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,713 - INFO - 📋 Processando lançamento 9/10: ITALO RAFAEL PINHO SANTOS - DIÁRIA
+2026-06-26 11:08:27,713 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,714 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,714 - INFO - Dados: ITALO RAFAEL PINHO SANTOS | DIÁRIA | NF:  | R$ 1080.00 | 05/07/2026
+2026-06-26 11:08:27,725 - INFO - ✅ Nenhuma duplicata para: ITALO RAFAEL PINHO SANTOS - DIÁRIA
+2026-06-26 11:08:27,728 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,729 - INFO - 📋 Processando lançamento 10/10: ISNALDO GONÇALVES DE SOUZA - DIÁRIA
+2026-06-26 11:08:27,729 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-06-26 11:08:27,730 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-06-26 11:08:27,730 - INFO - Dados: ISNALDO GONÇALVES DE SOUZA | DIÁRIA | NF:  | R$ 1250.00 | 05/07/2026
+2026-06-26 11:08:27,741 - INFO - ✅ Nenhuma duplicata para: ISNALDO GONÇALVES DE SOUZA - DIÁRIA
+2026-06-26 11:08:27,741 - INFO -    ✅ Marcado como VÁLIDO
+2026-06-26 11:08:27,742 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-06-26 11:08:27,742 - INFO -    ✅ Lançamentos válidos: 10
+2026-06-26 11:08:27,744 - INFO -    ❌ Possíveis duplicatas: 0
+2026-06-26 11:08:27,746 - INFO - Lançamento inserido com ID 185 na linha 186
+2026-06-26 11:08:27,748 - INFO - Lançamento inserido com ID 186 na linha 187
+2026-06-26 11:08:27,750 - INFO - Lançamento inserido com ID 187 na linha 188
+2026-06-26 11:08:27,752 - INFO - Lançamento inserido com ID 188 na linha 189
+2026-06-26 11:08:27,755 - INFO - Lançamento inserido com ID 189 na linha 190
+2026-06-26 11:08:27,756 - INFO - Lançamento inserido com ID 190 na linha 191
+2026-06-26 11:08:27,759 - INFO - Lançamento inserido com ID 191 na linha 192
+2026-06-26 11:08:27,762 - INFO - Lançamento inserido com ID 192 na linha 193
+2026-06-26 11:08:27,766 - INFO - Lançamento inserido com ID 193 na linha 194
+2026-06-26 11:08:27,767 - INFO - Lançamento inserido com ID 194 na linha 195
+2026-06-26 11:08:28,088 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-06-26 11:08:32,621 - INFO - Limpando 10 registros salvos da visualização
+2026-06-26 11:08:32,637 - INFO - Visualizador fechado - todos os registros foram processados
+2026-06-26 11:08:32,662 - INFO - Dados salvos removidos com sucesso da visualização
+2026-06-26 11:08:35,693 - INFO - Voltando ao menu principal
+2026-06-26 11:08:35,787 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-06-26 11:08:35,810 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-06-26 11:08:36,095 - INFO - ✅ Menu principal restaurado com sucesso
+2026-06-26 11:08:37,253 - INFO - Abrindo sistema de relatórios
+2026-06-26 11:19:17,792 - INFO - Sistema encerrado pelo usuário
