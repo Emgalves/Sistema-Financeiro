@@ -772,101 +772,136 @@ class SistemaRelatorios:
             messagebox.showerror("Erro", f"Erro ao carregar configurações: {str(e)}")
 
     def mostrar_opcoes_relatorio(self, event=None):
-        """Versão corrigida que usa estrutura original"""
-        
+        """Versão com scroll: usa Canvas + Scrollbar no painel direito
+        para que conteúdo extra (como o Controle de Repasse - Mão de
+        Obra) role em vez de empurrar os botões para fora da tela."""
+ 
         # Limpar frame direito
         for widget in self.right_frame.winfo_children():
             widget.destroy()
-        
+ 
         # Obter relatório selecionado
         selecao = self.tree_relatorios.selection()
         if not selecao:
             return
-            
+ 
         rel_id = selecao[0]
         relatorio = next((r for r in self.relatorios if r["id"] == rel_id), None)
-        
+ 
         if not relatorio:
             return
-        
-        # Mostrar informações do relatório
+ 
+        # === CONTAINER COM SCROLL (mesmo padrão de mostrar_configuracoes_quinzenal) ===
+        canvas = tk.Canvas(self.right_frame, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(self.right_frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+ 
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+ 
+        canvas_window = canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+ 
+        # Faz o conteúdo interno acompanhar a largura do canvas (senão
+        # os textos com wraplength ficam espremidos na largura mínima)
+        def _ajustar_largura(event):
+            canvas.itemconfig(canvas_window, width=event.width)
+        canvas.bind("<Configure>", _ajustar_largura)
+ 
+        # Scroll com a roda do mouse — só ativo enquanto o cursor está
+        # sobre este painel, para não capturar o scroll de outras áreas
+        # da tela (ex.: a lista de relatórios à esquerda)
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+ 
+        def _bind_scroll(event):
+            canvas.bind_all("<MouseWheel>", _on_mousewheel)
+ 
+        def _unbind_scroll(event):
+            canvas.unbind_all("<MouseWheel>")
+ 
+        canvas.bind("<Enter>", _bind_scroll)
+        canvas.bind("<Leave>", _unbind_scroll)
+ 
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+ 
+        # === CONTEÚDO — igual a antes, só que dentro de scrollable_frame ===
         ttk.Label(
-            self.right_frame, 
-            text=relatorio["nome"], 
+            scrollable_frame,
+            text=relatorio["nome"],
             font=('Arial', 14, 'bold')
-        ).pack(pady=(10,5), anchor='w')
-        
+        ).pack(pady=(10, 5), anchor='w')
+ 
         ttk.Label(
-            self.right_frame, 
+            scrollable_frame,
             text=relatorio["descricao"],
             wraplength=400
-        ).pack(pady=(0,20), anchor='w')
-        
+        ).pack(pady=(0, 20), anchor='w')
+ 
         # Se o relatório não estiver disponível
         if not relatorio["disponivel"]:
             ttk.Label(
-                self.right_frame,
+                scrollable_frame,
                 text="Este relatório está em desenvolvimento e ainda não está disponível.",
                 foreground='red'
             ).pack(pady=20)
             return
-        
+ 
         # Adicionar separador visual
-        ttk.Separator(self.right_frame, orient='horizontal').pack(fill='x', pady=(0, 15))
-        
-        # Configurar opções específicas diretamente no right_frame (sem frame duplicado)
+        ttk.Separator(scrollable_frame, orient='horizontal').pack(fill='x', pady=(0, 15))
+ 
+        # Configurar opções específicas dentro do scrollable_frame
         if relatorio["id"] == "despesas":
-            self.setup_opcoes_despesas(self.right_frame)
+            self.setup_opcoes_despesas(scrollable_frame)
         elif relatorio["id"] == "contratos":
-            self.setup_opcoes_contratos(self.right_frame)
+            self.setup_opcoes_contratos(scrollable_frame)
         elif relatorio["id"] == "categoria":
-            self.setup_opcoes_categoria(self.right_frame)
+            self.setup_opcoes_categoria(scrollable_frame)
         elif relatorio["id"] == "tipo_despesa":
-            self.setup_opcoes_tipo_despesa(self.right_frame)
+            self.setup_opcoes_tipo_despesa(scrollable_frame)
         elif relatorio["id"] == "fornecedores":
-            self.setup_opcoes_fornecedores(self.right_frame)
+            self.setup_opcoes_fornecedores(scrollable_frame)
         elif relatorio["id"] == "gerencial_engenheiro":
-            self.setup_opcoes_gerencial_engenheiro(self.right_frame)
+            self.setup_opcoes_gerencial_engenheiro(scrollable_frame)
         elif relatorio["id"] == "gerencial_pdf":
-            self.setup_opcoes_gerencial_pdf(self.right_frame)
+            self.setup_opcoes_gerencial_pdf(scrollable_frame)
         elif relatorio["id"] == "lancamentos_pendentes":
-            self.setup_opcoes_lancamentos_pendentes(self.right_frame)
+            self.setup_opcoes_lancamentos_pendentes(scrollable_frame)
         elif relatorio["id"] == "medicoes_quinzenal":
-            self.setup_opcoes_quinzenal(self.right_frame)
+            self.setup_opcoes_quinzenal(scrollable_frame)
         elif relatorio["id"] == "consistencia_dados":
-            self.setup_opcoes_consistencia_dados(self.right_frame)
+            self.setup_opcoes_consistencia_dados(scrollable_frame)
         elif relatorio["id"] == "por_fornecedor_det":
-            self.setup_opcoes_por_fornecedor_det(self.right_frame)
+            self.setup_opcoes_por_fornecedor_det(scrollable_frame)
         else:
             ttk.Label(
-                self.right_frame,
+                scrollable_frame,
                 text="Opções específicas para este relatório serão implementadas em breve."
             ).pack(pady=20)
-        
-        # === ÚNICA MUDANÇA: BOTÃO PERSONALIZADO APENAS PARA DESPESAS ===
-        btn_frame = ttk.Frame(self.right_frame)
+ 
+        # === BOTÕES — agora dentro do scrollable_frame também ===
+        btn_frame = ttk.Frame(scrollable_frame)
         btn_frame.pack(fill='x', pady=20)
-        
+ 
         if relatorio["id"] == "despesas":
-                       
-            # Botão de validação (opcional)
             ttk.Button(
                 btn_frame,
                 text="✅ Validar Configurações",
                 command=lambda: self.validar_e_mostrar_resumo(),
                 style='TButton'
             ).pack(side='left', padx=5)
-            
-            # Botão principal otimizado
+ 
             ttk.Button(
                 btn_frame,
                 text="🚀 Processar e Gerar Relatório",
                 command=lambda: self.gerar_relatorio(relatorio),
                 style='Accentuated.TButton'
             ).pack(side='right', padx=5)
-            
+ 
         else:
-            # ORIGINAL: Botão padrão para outros relatórios
             ttk.Button(
                 btn_frame,
                 text="Gerar Relatório",
@@ -1250,7 +1285,9 @@ class SistemaRelatorios:
                 locale='pt_BR'
             )
             self.data_entry.pack(side='left', padx=5)
-            
+
+            self.data_entry.bind("<<DateEntrySelected>>", lambda e: self._atualizar_paineis_saldo_apos_mudar_data())
+
             # Botão para validar data manual
             ttk.Button(
                 self.frame_data_manual,
@@ -1323,6 +1360,49 @@ class SistemaRelatorios:
             width=25
         ).pack(side='left')
         
+        # === CONTROLE DE REPASSE - MÃO DE OBRA ===
+        # Só aparece quando o cliente selecionado tem a aba REPASSES_MO
+        # (clientes "fictícios" de gestão de mão de obra, ex.: RVR - SPRC).
+        # Fica escondido por padrão (não dá .pack() aqui) — quem decide
+        # mostrar ou esconder é atualizar_painel_saldo_mo().
+        self.frame_repasse_mo = ttk.LabelFrame(
+            cliente_inner_frame, text="Controle de Repasse - Mão de Obra"
+        )
+ 
+        self.label_saldo_mo = ttk.Label(
+            self.frame_repasse_mo,
+            text="",
+            font=('Arial', 10, 'bold')
+        )
+        self.label_saldo_mo.pack(anchor='w', padx=10, pady=(10, 5))
+ 
+        ttk.Button(
+            self.frame_repasse_mo,
+            text="➕ Registrar novo repasse",
+            command=self.abrir_janela_registrar_repasse
+        ).pack(anchor='w', padx=10, pady=(0, 10))
+
+        # === CONTROLE DE SALDO - CAIXA DE OBRA ===
+        # Mesma lógica do painel de MO: só aparece quando o cliente
+        # selecionado tem a aba REPASSES_CAIXA (clientes reais com
+        # caixa controlado pela construtora).
+        self.frame_repasse_caixa = ttk.LabelFrame(
+            cliente_inner_frame, text="Controle de Saldo - Caixa de Obra"
+        )
+
+        self.label_saldo_caixa = ttk.Label(
+            self.frame_repasse_caixa,
+            text="",
+            font=('Arial', 10, 'bold')
+        )
+        self.label_saldo_caixa.pack(anchor='w', padx=10, pady=(10, 5))
+
+        ttk.Button(
+            self.frame_repasse_caixa,
+            text="➕ Registrar novo aporte",
+            command=self.abrir_janela_registrar_aporte_caixa
+        ).pack(anchor='w', padx=10, pady=(0, 10))
+
         # === OPÇÕES DE PROCESSAMENTO ===
         frame_opcoes = ttk.LabelFrame(parent_frame, text="Opções de Processamento")
         frame_opcoes.pack(fill='x', padx=10, pady=10)
@@ -1491,6 +1571,8 @@ class SistemaRelatorios:
                     )
                 
                 logger.info(f"Arquivo encontrado: {caminho_arquivo}")
+                self.atualizar_painel_saldo_mo()
+                self.atualizar_painel_saldo_caixa()
                 
             else:
                 self.status_cliente_label.config(
@@ -1618,6 +1700,8 @@ class SistemaRelatorios:
                         )
                     
                     logger.info(f"Arquivo selecionado manualmente: {arquivo}")
+                    self.atualizar_painel_saldo_mo()
+                    self.atualizar_painel_saldo_caixa()
                     
                 except Exception as e:
                     messagebox.showerror(
@@ -1645,6 +1729,339 @@ class SistemaRelatorios:
                 text="Cliente será selecionado através da combobox acima",
                 foreground='blue'
             )
+        
+        if hasattr(self, 'frame_repasse_mo'):
+            self.frame_repasse_mo.pack_forget()
+
+        if hasattr(self, 'frame_repasse_caixa'):
+            self.frame_repasse_caixa.pack_forget()
+
+    def atualizar_painel_saldo_mo(self):
+        """
+        Mostra/esconde e atualiza o painel de saldo de mão de obra,
+        dependendo se o arquivo do cliente selecionado tem a aba
+        REPASSES_MO (ou seja, é um cliente de gestão de mão de obra).
+ 
+        O saldo mostrado aqui é calculado com data = hoje, só para dar
+        um indicador rápido na tela. O saldo que efetivamente entra no
+        PDF é recalculado com a data do relatório no momento de gerar.
+        """
+        if not hasattr(self, 'frame_repasse_mo'):
+            return
+ 
+        arquivo = getattr(self, 'arquivo_cliente_selecionado', None)
+ 
+        if not arquivo or not os.path.exists(arquivo):
+            self.frame_repasse_mo.pack_forget()
+            return
+ 
+        try:
+            handler = self.despesas_service.handler
+ 
+            if not handler.eh_cliente_gestao_mo(arquivo):
+                self.frame_repasse_mo.pack_forget()
+                return
+ 
+            df_repasses = handler.carregar_repasses_mo(arquivo)
+            df_dados = handler.carregar_dados_excel(arquivo, incluir_excluidos=False)
+            data_ref = self.obter_data_relatorio_final()
+            saldo = handler.calcular_saldo_mao_de_obra(
+                df_repasses, df_dados, data_ref, incluir_excluidos=False
+            )
+ 
+            valor_formatado = handler.formatar_numero(saldo['saldo_atual'])
+ 
+            if saldo['saldo_atual'] < 0:
+                cor = 'red'
+            elif saldo['alerta_saldo_baixo']:
+                cor = 'orange'
+            else:
+                cor = 'green'
+ 
+            self.label_saldo_mo.config(
+                text=f"💰 Saldo atual (mão de obra): R$ {valor_formatado}",
+                foreground=cor
+            )
+ 
+            self.frame_repasse_mo.pack(fill='x', pady=(10, 0))
+ 
+        except Exception as e:
+            logger.warning(f"Não foi possível calcular saldo de mão de obra: {e}")
+            self.frame_repasse_mo.pack_forget()
+ 
+    def abrir_janela_registrar_repasse(self):
+        """
+        Abre janela para lançar um novo repasse de mão de obra no
+        arquivo do cliente atualmente selecionado. Mesmo padrão visual
+        de abrir_janela_notas_despesas.
+        """
+        arquivo = getattr(self, 'arquivo_cliente_selecionado', None)
+        if not arquivo or not os.path.exists(arquivo):
+            messagebox.showerror("Erro", "Selecione um cliente com arquivo válido antes.")
+            return
+ 
+        janela = tk.Toplevel(self.root)
+        janela.title("Registrar Novo Repasse - Mão de Obra")
+        janela.geometry("420x320")
+        janela.transient(self.root)
+        janela.grab_set()
+ 
+        janela.update_idletasks()
+        x = (janela.winfo_screenwidth() // 2) - (janela.winfo_width() // 2)
+        y = (janela.winfo_screenheight() // 2) - (janela.winfo_height() // 2)
+        janela.geometry(f"+{x}+{y}")
+ 
+        frame_principal = ttk.Frame(janela, padding="20")
+        frame_principal.pack(fill='both', expand=True)
+ 
+        ttk.Label(
+            frame_principal,
+            text=f"Cliente: {getattr(self, 'cliente_atual', os.path.basename(arquivo))}",
+            font=('Helvetica', 10, 'bold')
+        ).pack(anchor='w', pady=(0, 15))
+ 
+        # --- Valor ---
+        ttk.Label(frame_principal, text="Valor do repasse (R$):").pack(anchor='w')
+        valor_var = tk.StringVar(master=janela, value="")
+        entry_valor = ttk.Entry(frame_principal, textvariable=valor_var, width=20)
+        entry_valor.pack(anchor='w', pady=(0, 15))
+        entry_valor.focus_set()
+ 
+        # --- Data ---
+        ttk.Label(frame_principal, text="Data do repasse:").pack(anchor='w')
+        try:
+            from tkcalendar import DateEntry
+            data_entry = DateEntry(
+                frame_principal,
+                width=18,
+                date_pattern='dd/mm/yyyy',
+                locale='pt_BR'
+            )
+            data_entry.pack(anchor='w', pady=(0, 15))
+        except Exception as e:
+            logger.warning(f"DateEntry indisponível ({e}); usando campo de texto simples")
+            data_entry = None
+            data_var = tk.StringVar(master=janela, value=datetime.now().strftime('%d/%m/%Y'))
+            ttk.Entry(frame_principal, textvariable=data_var, width=18).pack(anchor='w', pady=(0, 15))
+ 
+        # --- Referência (opcional) ---
+        ttk.Label(frame_principal, text="Referência (opcional):").pack(anchor='w')
+        ref_var = tk.StringVar(master=janela, value="")
+        ttk.Entry(frame_principal, textvariable=ref_var, width=40).pack(anchor='w', pady=(0, 20))
+ 
+        frame_botoes = ttk.Frame(frame_principal)
+        frame_botoes.pack(fill='x')
+ 
+        def confirmar():
+            texto_valor = valor_var.get().strip().replace('R$', '').replace(' ', '')
+            texto_valor = texto_valor.replace('.', '').replace(',', '.') if ',' in texto_valor else texto_valor
+ 
+            try:
+                valor = float(texto_valor)
+                if valor <= 0:
+                    raise ValueError("Valor deve ser maior que zero")
+            except ValueError:
+                messagebox.showerror("Erro", "Informe um valor numérico válido, maior que zero.")
+                return
+ 
+            try:
+                if data_entry is not None:
+                    data_repasse = data_entry.get_date()
+                else:
+                    data_repasse = datetime.strptime(data_var.get(), '%d/%m/%Y').date()
+            except Exception:
+                messagebox.showerror("Erro", "Data inválida. Use o formato dd/mm/aaaa.")
+                return
+ 
+            referencia = ref_var.get().strip() or f"Repasse - {data_repasse.strftime('%d/%m/%Y')}"
+ 
+            confirmado = messagebox.askyesno(
+                "Confirmar repasse",
+                f"Confirma o lançamento de:\n\n"
+                f"Valor: R$ {valor:,.2f}\n"
+                f"Data: {data_repasse.strftime('%d/%m/%Y')}\n"
+                f"Referência: {referencia}\n\n"
+                f"Arquivo: {os.path.basename(arquivo)}"
+            )
+            if not confirmado:
+                return
+ 
+            try:
+                self.despesas_service.handler.registrar_repasse_mo(
+                    arquivo, valor, data_repasse, referencia
+                )
+                messagebox.showinfo("Sucesso", "Repasse registrado com sucesso.")
+                janela.destroy()
+                self.atualizar_painel_saldo_mo()
+            except Exception as e:
+                logger.error(f"Erro ao registrar repasse: {str(e)}", exc_info=True)
+                messagebox.showerror("Erro", f"Não foi possível registrar o repasse:\n{str(e)}")
+ 
+        def cancelar():
+            janela.destroy()
+ 
+        ttk.Button(frame_botoes, text="✅ Confirmar", command=confirmar).pack(side='left', padx=(0, 10))
+        ttk.Button(frame_botoes, text="❌ Cancelar", command=cancelar).pack(side='left')
+
+    def atualizar_painel_saldo_caixa(self):
+        """
+        Mostra/esconde e atualiza o painel de saldo de caixa de obra,
+        dependendo se o arquivo do cliente selecionado tem a aba
+        REPASSES_CAIXA (cliente real com caixa controlado).
+        """
+        if not hasattr(self, 'frame_repasse_caixa'):
+            return
+
+        arquivo = getattr(self, 'arquivo_cliente_selecionado', None)
+
+        if not arquivo or not os.path.exists(arquivo):
+            self.frame_repasse_caixa.pack_forget()
+            return
+
+        try:
+            handler = self.despesas_service.handler
+
+            if not handler.eh_cliente_com_caixa(arquivo):
+                self.frame_repasse_caixa.pack_forget()
+                return
+
+            df_repasses = handler.carregar_repasses_caixa(arquivo)
+            df_dados = handler.carregar_dados_excel(arquivo, incluir_excluidos=False)
+            data_ref = self.obter_data_relatorio_final()
+            saldo = handler.calcular_saldo_caixa(
+                df_repasses, df_dados, data_ref, incluir_excluidos=False
+            )
+
+            valor_formatado = handler.formatar_numero(saldo['saldo_atual'])
+
+            if saldo['saldo_atual'] < 0:
+                cor = 'red'
+            elif saldo['alerta_saldo_baixo']:
+                cor = 'orange'
+            else:
+                cor = 'green'
+
+            self.label_saldo_caixa.config(
+                text=f"🏦 Saldo atual (caixa de obra): R$ {valor_formatado}",
+                foreground=cor
+            )
+
+            self.frame_repasse_caixa.pack(fill='x', pady=(10, 0))
+
+        except Exception as e:
+            logger.warning(f"Não foi possível calcular saldo de caixa de obra: {e}")
+            self.frame_repasse_caixa.pack_forget()
+
+    def abrir_janela_registrar_aporte_caixa(self):
+        """
+        Abre janela para lançar um novo aporte de caixa de obra no
+        arquivo do cliente atualmente selecionado. Mesmo padrão visual
+        de abrir_janela_registrar_repasse (MO).
+        """
+        arquivo = getattr(self, 'arquivo_cliente_selecionado', None)
+        if not arquivo or not os.path.exists(arquivo):
+            messagebox.showerror("Erro", "Selecione um cliente com arquivo válido antes.")
+            return
+
+        janela = tk.Toplevel(self.root)
+        janela.title("Registrar Novo Aporte - Caixa de Obra")
+        janela.geometry("420x320")
+        janela.transient(self.root)
+        janela.grab_set()
+
+        janela.update_idletasks()
+        x = (janela.winfo_screenwidth() // 2) - (janela.winfo_width() // 2)
+        y = (janela.winfo_screenheight() // 2) - (janela.winfo_height() // 2)
+        janela.geometry(f"+{x}+{y}")
+
+        frame_principal = ttk.Frame(janela, padding="20")
+        frame_principal.pack(fill='both', expand=True)
+
+        ttk.Label(
+            frame_principal,
+            text=f"Cliente: {getattr(self, 'cliente_atual', os.path.basename(arquivo))}",
+            font=('Helvetica', 10, 'bold')
+        ).pack(anchor='w', pady=(0, 15))
+
+        ttk.Label(frame_principal, text="Valor do aporte (R$):").pack(anchor='w')
+        valor_var = tk.StringVar(master=janela, value="")
+        entry_valor = ttk.Entry(frame_principal, textvariable=valor_var, width=20)
+        entry_valor.pack(anchor='w', pady=(0, 15))
+        entry_valor.focus_set()
+
+        ttk.Label(frame_principal, text="Data do aporte:").pack(anchor='w')
+        try:
+            from tkcalendar import DateEntry
+            data_entry = DateEntry(
+                frame_principal,
+                width=18,
+                date_pattern='dd/mm/yyyy',
+                locale='pt_BR'
+            )
+            data_entry.pack(anchor='w', pady=(0, 15))
+        except Exception as e:
+            logger.warning(f"DateEntry indisponível ({e}); usando campo de texto simples")
+            data_entry = None
+            data_var = tk.StringVar(master=janela, value=datetime.now().strftime('%d/%m/%Y'))
+            ttk.Entry(frame_principal, textvariable=data_var, width=18).pack(anchor='w', pady=(0, 15))
+
+        ttk.Label(frame_principal, text="Referência (opcional):").pack(anchor='w')
+        ref_var = tk.StringVar(master=janela, value="")
+        ttk.Entry(frame_principal, textvariable=ref_var, width=40).pack(anchor='w', pady=(0, 20))
+
+        frame_botoes = ttk.Frame(frame_principal)
+        frame_botoes.pack(fill='x')
+
+        def confirmar():
+            texto_valor = valor_var.get().strip().replace('R$', '').replace(' ', '')
+            texto_valor = texto_valor.replace('.', '').replace(',', '.') if ',' in texto_valor else texto_valor
+
+            try:
+                valor = float(texto_valor)
+                if valor <= 0:
+                    raise ValueError("Valor deve ser maior que zero")
+            except ValueError:
+                messagebox.showerror("Erro", "Informe um valor numérico válido, maior que zero.")
+                return
+
+            try:
+                if data_entry is not None:
+                    data_repasse = data_entry.get_date()
+                else:
+                    data_repasse = datetime.strptime(data_var.get(), '%d/%m/%Y').date()
+            except Exception:
+                messagebox.showerror("Erro", "Data inválida. Use o formato dd/mm/aaaa.")
+                return
+
+            referencia = ref_var.get().strip() or f"Aporte - {data_repasse.strftime('%d/%m/%Y')}"
+
+            confirmado = messagebox.askyesno(
+                "Confirmar aporte",
+                f"Confirma o lançamento de:\n\n"
+                f"Valor: R$ {valor:,.2f}\n"
+                f"Data: {data_repasse.strftime('%d/%m/%Y')}\n"
+                f"Referência: {referencia}\n\n"
+                f"Arquivo: {os.path.basename(arquivo)}"
+            )
+            if not confirmado:
+                return
+
+            try:
+                self.despesas_service.handler.registrar_repasse_caixa(
+                    arquivo, valor, data_repasse, referencia
+                )
+                messagebox.showinfo("Sucesso", "Aporte registrado com sucesso.")
+                janela.destroy()
+                self.atualizar_painel_saldo_caixa()
+            except Exception as e:
+                logger.error(f"Erro ao registrar aporte: {str(e)}", exc_info=True)
+                messagebox.showerror("Erro", f"Não foi possível registrar o aporte:\n{str(e)}")
+
+        def cancelar():
+            janela.destroy()
+
+        ttk.Button(frame_botoes, text="✅ Confirmar", command=confirmar).pack(side='left', padx=(0, 10))
+        ttk.Button(frame_botoes, text="❌ Cancelar", command=cancelar).pack(side='left')
 
     def atualizar_lista_clientes_despesas(self):
         """Atualiza a lista de clientes especificamente para despesas"""
@@ -1695,7 +2112,9 @@ class SistemaRelatorios:
                     self.data_entry.set_date(data_auto)
                     
                 logger.info(f"Modo automático ativado: {data_auto.strftime('%d/%m/%Y')}")
-                
+
+                self._atualizar_paineis_saldo_apos_mudar_data()
+
             else:
                 # Usar data manual - mostrar seleção
                 self.frame_data_manual.pack(fill='x', padx=10, pady=5)
@@ -1713,12 +2132,26 @@ class SistemaRelatorios:
                 
                 if valida:
                     messagebox.showinfo("Validação de Data", mensagem)
+                    self._atualizar_paineis_saldo_apos_mudar_data()
                 else:
                     messagebox.showerror("Data Inválida", mensagem)
                     
         except Exception as e:
             logger.error(f"Erro ao validar data manual: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao validar data: {str(e)}")
+
+    def _atualizar_paineis_saldo_apos_mudar_data(self):
+        """
+        Atualiza os painéis de saldo (MO e Caixa) sempre que a data do
+        relatório mudar - seja pelo modo automático recalculando, seja
+        pela seleção manual de uma nova data. Sem isso, o painel fica
+        mostrando o saldo calculado com a data anterior até o usuário
+        trocar de cliente e voltar.
+        """
+        if hasattr(self, 'atualizar_painel_saldo_mo'):
+            self.atualizar_painel_saldo_mo()
+        if hasattr(self, 'atualizar_painel_saldo_caixa'):
+            self.atualizar_painel_saldo_caixa()
 
     def obter_data_relatorio_final(self):
         """Versão corrigida que retorna data sem hora"""
