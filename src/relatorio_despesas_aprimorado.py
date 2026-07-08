@@ -1085,6 +1085,270 @@ class RelatorioHandler:
             logger.error(f"Erro ao calcular acumulado: {str(e)}", exc_info=True)
             return 0.0
 
+    def _cliente_tem_aba(self, arquivo_excel, nome_aba):
+        """Verifica se o arquivo do cliente tem uma aba especifica -
+        mesmo mecanismo usado para MO e para Caixa, so muda o nome da aba."""
+        try:
+            wb = load_workbook(arquivo_excel, read_only=True)
+            existe = nome_aba in wb.sheetnames
+            wb.close()
+            return existe
+        except Exception as e:
+            logger.warning(f"Nao foi possivel verificar aba {nome_aba}: {e}")
+            return False
+    
+    
+    def _carregar_repasses(self, arquivo_excel, nome_aba):
+        """Le uma aba de repasses (REPASSES_MO ou REPASSES_CAIXA) - mesmo
+        formato nos dois casos: ID | DATA_REPASSE | VALOR | REFERENCIA | STATUS"""
+        try:
+            df = pd.read_excel(arquivo_excel, sheet_name=nome_aba)
+            if df.empty:
+                return pd.DataFrame(columns=['ID', 'DATA_REPASSE', 'VALOR', 'REFERENCIA', 'STATUS'])
+    
+            if 'STATUS' not in df.columns:
+                df['STATUS'] = 'ATIVO'
+    
+            df = df[df['STATUS'] != 'CANCELADO'].copy()
+            df['DATA_REPASSE'] = pd.to_datetime(df['DATA_REPASSE'], errors='coerce')
+            df['VALOR'] = pd.to_numeric(df['VALOR'], errors='coerce').fillna(0)
+            df = df.dropna(subset=['DATA_REPASSE'])
+            return df
+    
+        except Exception as e:
+            logger.warning(f"Nao foi possivel carregar {nome_aba} ({e}). Assumindo zero repasses.")
+            return pd.DataFrame(columns=['ID', 'DATA_REPASSE', 'VALOR', 'REFERENCIA', 'STATUS'])
+    
+    
+    def _calcular_inicio_periodo_quinzena(self, data_ref):
+        """
+        Dado o fim de uma quinzena (data_ref, sempre dia 5 ou dia 20),
+        devolve o início dessa mesma quinzena:
+          - dia 20  -> início é dia 6 do mesmo mês
+          - dia 5   -> início é dia 21 do mês anterior
+          - qualquer outro dia (caso atípico) -> aproxima por 14 dias
+            antes, só para não quebrar o cálculo
+
+        Usado para decidir se um REPASSE/APORTE foi "recebido no
+        período" ou é "saldo anterior" - diferente das despesas, cuja
+        DATA_REL já vem sempre igual à data do relatório (por como o
+        sistema lança despesas), os repasses são registrados com a
+        data real em que o dinheiro entrou, que pode ser qualquer dia
+        dentro da quinzena - não necessariamente o dia de fechamento.
+        """
+        if data_ref.day == 20:
+            return data_ref.replace(day=6)
+        elif data_ref.day == 5:
+            return (data_ref - pd.DateOffset(months=1)).replace(day=21)
+        else:
+            return data_ref - pd.Timedelta(days=14)
+
+    def _calcular_saldo_generico(self, df_repasses, df_dados, data_relatorio,
+                                tp_desp_filtro, incluir_excluidos=False):
+        """
+        Mesma logica usada para MO e Caixa: repasses acumulados ate a data
+        do relatorio, menos despesas acumuladas ate a mesma data.
+    
+        tp_desp_filtro:
+        - None  -> soma QUALQUER TP_DESP lancado no arquivo (uso: clientes
+            ficticios de mao de obra - REPASSES_MO. O arquivo fictício so
+            existe para administrar o repasse, entao tudo que for lancado
+            nele conta contra o saldo, nao so TP_DESP=1).
+        - 6     -> soma so TP_DESP=6 (uso: Caixa de Obra de clientes reais,
+            onde o arquivo tem despesas de todo tipo e so uma parte delas
+            (a paga pelo caixa controlado) deve contar nesse saldo).
+        """
+        data_ref = pd.to_datetime(data_relatorio)
+        inicio_periodo = self._calcular_inicio_periodo_quinzena(data_ref)
+    
+        if df_repasses is None or df_repasses.empty:
+            repasse_periodo = 0.0
+            repasse_acumulado = 0.0
+            repasse_anterior = 0.0
+        else:
+            repasse_ate_data = df_repasses[df_repasses['DATA_REPASSE'] <= data_ref]
+            repasse_acumulado = float(repasse_ate_data['VALOR'].sum())
+            # "Do período" = caiu dentro da janela da quinzena atual
+            # (não só exatamente no dia de fechamento) - repasses são
+            # lançados com a data real do depósito, que varia dentro
+            # da quinzena.
+            repasse_periodo = float(
+                df_repasses.loc[
+                    (df_repasses['DATA_REPASSE'] >= inicio_periodo) &
+                    (df_repasses['DATA_REPASSE'] <= data_ref),
+                    'VALOR'
+                ].sum()
+            )
+            repasse_anterior = repasse_acumulado - repasse_periodo
+    
+        df = df_dados.copy()
+        if not incluir_excluidos and 'STATUS' in df.columns:
+            df = df[df['STATUS'] != 'EXCLUIDO']
+    
+        if tp_desp_filtro is not None:
+            df = df[df['TP_DESP'] == tp_desp_filtro].copy()
+    
+        df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
+        df = df.dropna(subset=['DATA_REL'])
+        df['VALOR'] = pd.to_numeric(df['VALOR'], errors='coerce').fillna(0)
+    
+        # Despesas mantêm a comparação exata: o sistema sempre grava
+        # DATA_REL igual à data de fechamento do relatório (confirmado
+        # nos dados reais), então "período" == "igual à data_ref" já
+        # está correto para elas - não precisa de janela.
+        despesa_ate_data = df[df['DATA_REL'] <= data_ref]
+        despesa_acumulada = float(despesa_ate_data['VALOR'].sum())
+        despesa_periodo = float(df.loc[df['DATA_REL'] == data_ref, 'VALOR'].sum())
+        despesa_anterior = despesa_acumulada - despesa_periodo
+    
+        saldo_anterior = repasse_anterior - despesa_anterior
+        saldo_atual = repasse_acumulado - despesa_acumulada
+    
+        return {
+            'repasse_periodo': repasse_periodo,
+            'repasse_acumulado': repasse_acumulado,
+            'despesa_periodo': despesa_periodo,
+            'despesa_acumulada': despesa_acumulada,
+            'saldo_anterior': saldo_anterior,
+            'saldo_atual': saldo_atual,
+            'alerta_saldo_baixo': saldo_atual < despesa_periodo,
+        }
+    
+    
+    def _criar_bloco_saldo(self, saldo, titulo, label_credito, label_debito, aviso_credito_zero=None):
+        """
+        Monta a tabela ReportLab para um bloco de controle de saldo (MO ou
+        Caixa). titulo/label_credito/label_debito sao os unicos textos
+        que mudam entre os dois usos.
+        """
+        linhas = [
+            ['SALDO ANTERIOR', self.formatar_numero(saldo['saldo_anterior'])],
+            [label_credito, self.formatar_numero(saldo['repasse_periodo'])],
+            [label_debito, self.formatar_numero(saldo['despesa_periodo'])],
+            ['(=) SALDO ATUAL', self.formatar_numero(saldo['saldo_atual'])],
+        ]
+    
+        tabela = Table(linhas, colWidths=[190, 70])
+        estilo = TableStyle([
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('LINEABOVE', (0, -1), (-1, -1), 0.75, colors.grey),
+            ('TOPPADDING', (0, -1), (-1, -1), 4),
+        ])
+    
+        if saldo['saldo_atual'] < 0:
+            estilo.add('TEXTCOLOR', (0, -1), (-1, -1), colors.red)
+        elif saldo['alerta_saldo_baixo']:
+            estilo.add('TEXTCOLOR', (0, -1), (-1, -1), colors.orange)
+    
+        tabela.setStyle(estilo)
+    
+        elementos = [
+            Paragraph(titulo, self.config.style_heading),
+            tabela,
+        ]
+    
+        aviso = None
+        if saldo['saldo_atual'] < 0:
+            aviso = (
+                f"Saldo negativo de R$ {self.formatar_numero(abs(saldo['saldo_atual']))}."
+            )
+            elementos.append(Spacer(1, 6))
+            elementos.append(Paragraph(
+                aviso,
+                self.config.style_normal if hasattr(self.config, 'style_normal') else self.config.style_heading
+            ))
+    
+        return elementos, aviso
+    
+    
+    def _registrar_repasse(self, arquivo_excel, nome_aba, valor, data_repasse, referencia=''):
+        """Adiciona uma linha numa aba de repasses (REPASSES_MO ou
+        REPASSES_CAIXA), criando a aba se ainda nao existir."""
+        wb = load_workbook(arquivo_excel)
+    
+        if nome_aba not in wb.sheetnames:
+            ws = wb.create_sheet(nome_aba)
+            ws.append(['ID', 'DATA_REPASSE', 'VALOR', 'REFERENCIA', 'STATUS'])
+            proximo_id = 1
+        else:
+            ws = wb[nome_aba]
+            ids_existentes = [
+                row[0].value for row in ws.iter_rows(min_row=2) if row[0].value is not None
+            ]
+            proximo_id = (max(ids_existentes) + 1) if ids_existentes else 1
+    
+        ws.append([
+            proximo_id,
+            pd.to_datetime(data_repasse).to_pydatetime(),
+            float(valor),
+            referencia,
+            'ATIVO',
+        ])
+    
+        wb.save(arquivo_excel)
+        wb.close()
+        logger.info(f"Repasse registrado em {nome_aba}: R$ {valor:,.2f} em {data_repasse} ({arquivo_excel})")
+
+    # ------------------------------------------------------------
+    # MÃO DE OBRA - wrappers publicos (MESMOS NOMES de antes, mesmo
+    # comportamento externo - so muda a implementacao por dentro)
+    # ------------------------------------------------------------
+    
+    def eh_cliente_gestao_mo(self, arquivo_excel):
+        return self._cliente_tem_aba(arquivo_excel, 'REPASSES_MO')
+    
+    def carregar_repasses_mo(self, arquivo_excel):
+        return self._carregar_repasses(arquivo_excel, 'REPASSES_MO')
+    
+    def calcular_saldo_mao_de_obra(self, df_repasses, df_dados, data_relatorio, incluir_excluidos=False):
+        # tp_desp_filtro=None: soma QUALQUER lançamento do arquivo fictício,
+        # não só TP_DESP=1. O arquivo fictício existe só para administrar
+        # esse repasse, então tudo que for lançado nele conta no saldo.
+        return self._calcular_saldo_generico(
+            df_repasses, df_dados, data_relatorio, tp_desp_filtro=None, incluir_excluidos=incluir_excluidos
+        )
+    
+    def criar_bloco_saldo_mao_de_obra(self, saldo):
+        return self._criar_bloco_saldo(
+            saldo,
+            titulo="CONTROLE DE SALDO - REPASSE MÃO DE OBRA",
+            label_credito="(+) REPASSE RECEBIDO NO PERÍODO",
+            label_debito="(-) DESPESAS LANÇADAS NO PERÍODO",
+        )
+    
+    def registrar_repasse_mo(self, arquivo_excel, valor, data_repasse, referencia=''):
+        return self._registrar_repasse(arquivo_excel, 'REPASSES_MO', valor, data_repasse, referencia)
+    
+    
+    # ------------------------------------------------------------
+    # CAIXA DE OBRA - NOVOS wrappers publicos (mesmo padrao, TP_DESP=6)
+    # ------------------------------------------------------------
+    
+    def eh_cliente_com_caixa(self, arquivo_excel):
+        return self._cliente_tem_aba(arquivo_excel, 'REPASSES_CAIXA')
+    
+    def carregar_repasses_caixa(self, arquivo_excel):
+        return self._carregar_repasses(arquivo_excel, 'REPASSES_CAIXA')
+    
+    def calcular_saldo_caixa(self, df_repasses, df_dados, data_relatorio, incluir_excluidos=False):
+        return self._calcular_saldo_generico(
+            df_repasses, df_dados, data_relatorio, tp_desp_filtro=6, incluir_excluidos=incluir_excluidos
+        )
+    
+    def criar_bloco_saldo_caixa(self, saldo):
+        return self._criar_bloco_saldo(
+            saldo,
+            titulo="CONTROLE DE SALDO - CAIXA DE OBRA",
+            label_credito="(+) APORTE RECEBIDO NO PERÍODO",
+            label_debito="(-) PAGAMENTOS CAIXA DE OBRA NO PERÍODO",
+        )
+    
+    def registrar_repasse_caixa(self, arquivo_excel, valor, data_repasse, referencia=''):
+        return self._registrar_repasse(arquivo_excel, 'REPASSES_CAIXA', valor, data_repasse, referencia)
+
     def carregar_dados_excel(self, arquivo_excel, incluir_excluidos=False):
         """Versão modificada que considera status de exclusão"""
         try:
@@ -2793,6 +3057,42 @@ class RelatorioHandler:
         
             elementos.append(tabela_resumo)
             
+            saldo_mo = None
+            saldo_caixa = None
+            bloco_mo, aviso_mo = None, None
+            bloco_caixa, aviso_caixa = None, None
+        
+            if self.eh_cliente_gestao_mo(arquivo_excel):
+                saldo_mo = self.calcular_saldo_mao_de_obra(
+                    self.carregar_repasses_mo(arquivo_excel),
+                    dados_pdf.get('df_original'),
+                    dados_pdf.get('data_relatorio'),
+                    dados_pdf.get('incluir_excluidos', False)
+                )
+                bloco_mo, aviso_mo = self.criar_bloco_saldo_mao_de_obra(saldo_mo)
+        
+            if self.eh_cliente_com_caixa(arquivo_excel):
+                saldo_caixa = self.calcular_saldo_caixa(
+                    self.carregar_repasses_caixa(arquivo_excel),
+                    dados_pdf.get('df_original'),
+                    dados_pdf.get('data_relatorio'),
+                    dados_pdf.get('incluir_excluidos', False)
+                )
+                bloco_caixa, aviso_caixa = self.criar_bloco_saldo_caixa(saldo_caixa)
+        
+            if bloco_mo and bloco_caixa:
+                # Os dois se aplicam (caso raro, mas possivel) - lado a lado
+                tabela_lado_a_lado = Table([[bloco_mo, bloco_caixa]], colWidths=[270, 270])
+                tabela_lado_a_lado.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP')]))
+                elementos.append(Spacer(1, 10))
+                elementos.append(tabela_lado_a_lado)
+            elif bloco_mo:
+                elementos.append(Spacer(1, 10))
+                elementos.extend(bloco_mo)
+            elif bloco_caixa:
+                elementos.append(Spacer(1, 10))
+                elementos.extend(bloco_caixa)
+
             # ⭐ ADICIONAR NOTAS NA PRIMEIRA PÁGINA (após o resumo) ⭐
             self.adicionar_notas(elementos, dados, incluir_quebra_pagina=False)
             
