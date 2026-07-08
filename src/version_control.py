@@ -9,18 +9,14 @@ from pathlib import Path
 # Informações da versão atual
 VERSION_INFO = {
     "major": 1,
-    "minor": 7,
-    "patch": 7,
-    "release_date": "29/06/2026",
+    "minor": 8,
+    "patch": 0,
+    "release_date": "08/072026",
     "changes": [
-        "Melhoria no Relatório de Medições, exportado do sistema, com índice, próximo ID e lista de fornecedores co Vínculo = EMPREITEIRO",
-        "Correção no relatório que compara a gestão de Medições e Taxa de Administração com registros em Dados",
-        "Inclusão de Relatório Modelo para exportar para Excel quando não houver contrato de medição cadastrado",
-        "Inclusão de Importação de DIÁRIAS de Colaboradores, com data de vencimento",
-        "Eliminação do arquivo MODELO.xlsx, agora o sistema gera a planilha do cliente, garantindo compatibilidade e melhorias contínuas",
-        "Alterado o cálculo do número do Relatório de Despesas, considerando a data de lançamento mais antiga",
-        "Incluído o Nº do Relatório na consulta por Fornecedor",
-        "Correções pontuais no Contrato de Prestação de Serviços"
+        "Cadastro de cliente — checkboxes para marcar fictício/vinculado e caixa controlado, com as abas de controle nascendo junto (ou confirmação explícita, se for num cliente já existente)",
+        "Repasse Mão de Obra (clientes fictícios) — cálculo, painel na tela, botão de registro, bloco no PDF",
+        "Saldo Caixa de Obra (clientes reais com conta controlada) — cálculo, painel na tela, botão de registro, bloco no PDF",
+        "Layout — melhoria nas telas de criar/editar cliente compactadas, sem os espaços tortos"
     ]
 }
 
