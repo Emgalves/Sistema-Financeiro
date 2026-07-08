@@ -2925,235 +2925,359 @@ class SistemaEntradaDados:
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao criar arquivo de clientes: {str(e)}")
  
+    def _listar_clientes_reais_para_vinculo(self):
+        """
+        Le os nomes cadastrados em Clientes.xlsx para popular o combobox
+        'Cliente vinculado'. Exclui clientes ja marcados como GESTAO_MO
+        (um ficticio nao deveria apontar para outro ficticio). Se a
+        coluna TIPO_CLIENTE ainda nao existir no arquivo (primeira vez
+        rodando isso), lista todos os clientes normalmente.
+        """
+        try:
+            if not os.path.exists(ARQUIVO_CLIENTES):
+                return []
+
+            wb = load_workbook(ARQUIVO_CLIENTES, read_only=True, data_only=True)
+            ws = wb['Clientes']
+
+            cabecalho = [c.value for c in next(ws.iter_rows(min_row=1, max_row=1))]
+            col_tipo = cabecalho.index('TIPO_CLIENTE') + 1 if 'TIPO_CLIENTE' in cabecalho else None
+
+            nomes = []
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row or not row[0]:
+                    continue
+                if col_tipo is not None and row[col_tipo - 1] == 'GESTAO_MO':
+                    continue
+                nomes.append(row[0])
+
+            wb.close()
+            return sorted(nomes)
+
+        except Exception as e:
+            logger.warning(f"Não foi possível carregar clientes para vínculo: {e}")
+            return []
+
     def criar_novo_cliente(self):
-        """Abre janela para cadastro de novo cliente - VERSÃO REORGANIZADA"""
+        """Abre janela para cadastro de novo cliente - LAYOUT COMPACTO
+        (campos curtos agrupados na mesma linha) + suporte a cliente
+        fictício de gestão de mão de obra e caixa controlado"""
         janela_cliente = tk.Toplevel(self.root)
         janela_cliente.title("Novo Cliente")
-        janela_cliente.geometry("800x900")
-
-        # Frame principal com scrollbar
+        janela_cliente.geometry("700x850")
+ 
         canvas = tk.Canvas(janela_cliente)
         scrollbar = ttk.Scrollbar(janela_cliente, orient="vertical", command=canvas.yview)
         frame = ttk.Frame(canvas, padding="20")
-
+ 
         frame.bind(
             "<Configure>",
             lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
-
+ 
         canvas.create_window((0, 0), window=frame, anchor="nw")
         canvas.configure(yscrollcommand=scrollbar.set)
-
+ 
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
-
+ 
         # ===== SEÇÃO: IDENTIFICAÇÃO =====
         ttk.Label(frame, text="IDENTIFICAÇÃO", font=('Arial', 12, 'bold')).grid(
             row=0, column=0, columnspan=2, pady=(0, 10), sticky='w'
         )
-
-        ttk.Label(frame, text="Nome do Cliente:*").grid(row=1, column=0, padx=5, pady=5, sticky='w')
-        nome_entry = ttk.Entry(frame, width=70)
-        nome_entry.grid(row=1, column=1, padx=5, pady=5)
-
+ 
+        frame_nome = ttk.Frame(frame)
+        frame_nome.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+        ttk.Label(frame_nome, text="Nome do Cliente:*").pack(side='left')
+        nome_entry = ttk.Entry(frame_nome, width=85)
+        nome_entry.pack(side='left', padx=(5, 0))
+ 
         # ===== SEÇÃO: ENDEREÇO =====
         ttk.Separator(frame, orient='horizontal').grid(
             row=2, column=0, columnspan=2, sticky='ew', pady=15
         )
-        
+ 
         ttk.Label(frame, text="ENDEREÇO", font=('Arial', 12, 'bold')).grid(
             row=3, column=0, columnspan=2, pady=(0, 10), sticky='w'
         )
-
-        ttk.Label(frame, text="Logradouro:*").grid(row=4, column=0, padx=5, pady=5, sticky='w')
-        logradouro_entry = ttk.Entry(frame, width=70)
-        logradouro_entry.grid(row=4, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Número:*").grid(row=5, column=0, padx=5, pady=5, sticky='w')
-        numero_entry = ttk.Entry(frame, width=70)
-        numero_entry.grid(row=5, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Complemento:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
-        complemento_entry = ttk.Entry(frame, width=70)
-        complemento_entry.grid(row=6, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Localidade (Bairro/Condomínio):*").grid(row=7, column=0, padx=5, pady=5, sticky='w')
-        localidade_entry = ttk.Entry(frame, width=70)
-        localidade_entry.grid(row=7, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="CEP:").grid(row=8, column=0, padx=5, pady=5, sticky='w')
-        cep_entry = ttk.Entry(frame, width=70)
+ 
+        frame_logradouro = ttk.Frame(frame)
+        frame_logradouro.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+        ttk.Label(frame_logradouro, text="Logradouro:*").pack(side='left')
+        logradouro_entry = ttk.Entry(frame_logradouro, width=90)
+        logradouro_entry.pack(side='left', padx=(5, 0))
+ 
+        # Número / Complemento / CEP na mesma linha
+        frame_end_linha = ttk.Frame(frame)
+        frame_end_linha.grid(row=5, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+        ttk.Label(frame_end_linha, text="Número:*").pack(side='left')
+        numero_entry = ttk.Entry(frame_end_linha, width=8)
+        numero_entry.pack(side='left', padx=(5, 20))
+ 
+        ttk.Label(frame_end_linha, text="Complemento:").pack(side='left')
+        complemento_entry = ttk.Entry(frame_end_linha, width=20)
+        complemento_entry.pack(side='left', padx=(5, 20))
+ 
+        ttk.Label(frame_end_linha, text="CEP:").pack(side='left')
+        cep_entry = ttk.Entry(frame_end_linha, width=12)
         cep_entry.bind('<KeyRelease>', formatar_cep_campo)
-        cep_entry.grid(row=8, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Cidade:*").grid(row=9, column=0, padx=5, pady=5, sticky='w')
-        cidade_entry = ttk.Entry(frame, width=70)
-        cidade_entry.grid(row=9, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Estado:*").grid(row=10, column=0, padx=5, pady=5, sticky='w')
+        cep_entry.pack(side='left', padx=(5, 0))
+ 
+        frame_localidade = ttk.Frame(frame)
+        frame_localidade.grid(row=6, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+        ttk.Label(frame_localidade, text="Localidade (Bairro/Condomínio):*").pack(side='left')
+        localidade_entry = ttk.Entry(frame_localidade, width=72)
+        localidade_entry.pack(side='left', padx=(5, 0))
+ 
+        # Cidade / Estado na mesma linha
+        frame_cidade_estado = ttk.Frame(frame)
+        frame_cidade_estado.grid(row=7, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+        ttk.Label(frame_cidade_estado, text="Cidade:*").pack(side='left')
+        cidade_entry = ttk.Entry(frame_cidade_estado, width=30)
+        cidade_entry.pack(side='left', padx=(5, 20))
+ 
+        ttk.Label(frame_cidade_estado, text="Estado:*").pack(side='left')
         estado_var = tk.StringVar(value="MG")
-        estados = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", 
-                "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", 
+        estados = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
+                "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN",
                 "RS", "RO", "RR", "SC", "SP", "SE", "TO"]
-        estado_combo = ttk.Combobox(frame, textvariable=estado_var, values=estados, width=10, state='readonly')
-        estado_combo.grid(row=10, column=1, padx=5, pady=5, sticky='w')
-
+        estado_combo = ttk.Combobox(frame_cidade_estado, textvariable=estado_var, values=estados, width=6, state='readonly')
+        estado_combo.pack(side='left', padx=(5, 0))
+ 
         # ===== SEÇÃO: DADOS DA OBRA =====
         ttk.Separator(frame, orient='horizontal').grid(
-            row=11, column=0, columnspan=2, sticky='ew', pady=15
+            row=8, column=0, columnspan=2, sticky='ew', pady=15
         )
-        
+ 
         ttk.Label(frame, text="DADOS DA OBRA", font=('Arial', 12, 'bold')).grid(
-            row=12, column=0, columnspan=2, pady=(0, 10), sticky='w'
+            row=9, column=0, columnspan=2, pady=(0, 10), sticky='w'
         )
-
-        ttk.Label(frame, text="Data Inicial:* (Dia 5 ou 20)").grid(row=13, column=0, padx=5, pady=5, sticky='w')
+ 
+        # Data Inicial / Metragem / CNO na mesma linha
+        frame_obra_linha = ttk.Frame(frame)
+        frame_obra_linha.grid(row=10, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+        ttk.Label(frame_obra_linha, text="Data Inicial:* (dia 5 ou 20)").pack(side='left')
         data_entry = DateEntry(
-            frame,
-            width=20,
+            frame_obra_linha,
+            width=12,
             date_pattern='yyyy-mm-dd',
             locale='pt_BR'
         )
-        data_entry.grid(row=13, column=1, padx=5, pady=5, sticky='w')
-
-        ttk.Label(frame, text="Metragem do Alvará (m²):").grid(row=14, column=0, padx=5, pady=5, sticky='w')
-        metragem_entry = ttk.Entry(frame, width=20)
-        metragem_entry.grid(row=14, column=1, padx=5, pady=5, sticky='w')
-
-        ttk.Label(frame, text="CNO:").grid(row=15, column=0, padx=5, pady=5, sticky='w')
-        cno_entry = ttk.Entry(frame, width=70)
+        data_entry.pack(side='left', padx=(5, 20))
+ 
+        ttk.Label(frame_obra_linha, text="Metragem (m²):").pack(side='left')
+        metragem_entry = ttk.Entry(frame_obra_linha, width=10)
+        metragem_entry.pack(side='left', padx=(5, 20))
+ 
+        ttk.Label(frame_obra_linha, text="CNO:").pack(side='left')
+        cno_entry = ttk.Entry(frame_obra_linha, width=20)
         cno_entry.bind('<KeyRelease>', formatar_cno_campo)
-        cno_entry.grid(row=15, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Grupo:").grid(row=16, column=0, padx=5, pady=5, sticky='w')
+        cno_entry.pack(side='left', padx=(5, 0))
+ 
+        frame_grupo_linha = ttk.Frame(frame)
+        frame_grupo_linha.grid(row=11, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+        ttk.Label(frame_grupo_linha, text="Grupo:").pack(side='left')
         grupo_var = tk.StringVar(value=" ")
-        frame_grupo = ttk.Frame(frame)
-        frame_grupo.grid(row=16, column=1, padx=5, pady=5, sticky='w')
-        
+ 
         for i in range(1, 5):
             ttk.Radiobutton(
-                frame_grupo, 
-                text=f"Grupo {i}", 
-                variable=grupo_var, 
+                frame_grupo_linha,
+                text=f"Grupo {i}",
+                variable=grupo_var,
                 value=f"Grupo {i}"
-            ).pack(side='left', padx=5)
-
+            ).pack(side='left', padx=(10 if i == 1 else 5, 0))
+ 
+        # ===== SEÇÃO: TIPO DE CLIENTE / VÍNCULO =====
+        ttk.Separator(frame, orient='horizontal').grid(
+            row=12, column=0, columnspan=2, sticky='ew', pady=15
+        )
+ 
+        ttk.Label(frame, text="TIPO DE CLIENTE", font=('Arial', 12, 'bold')).grid(
+            row=13, column=0, columnspan=2, pady=(0, 10), sticky='w'
+        )
+ 
+        eh_ficticio_var = tk.BooleanVar(value=False)
+ 
+        def alternar_cliente_vinculado():
+            if eh_ficticio_var.get():
+                cliente_vinculado_combo.config(state='readonly')
+            else:
+                cliente_vinculado_var.set('')
+                cliente_vinculado_combo.config(state='disabled')
+ 
+        ttk.Checkbutton(
+            frame,
+            text="Este é um cliente fictício de gestão de mão de obra "
+                 "(ex.: RVR - SPRC - CASA JD PETROPOLIS)",
+            variable=eh_ficticio_var,
+            command=alternar_cliente_vinculado
+        ).grid(row=14, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+        ttk.Label(
+            frame,
+            text="Cria automaticamente a aba de Controle de Repasse - Mão de Obra "
+                 "neste arquivo, para uso no Relatório de Despesas.",
+            font=('Arial', 9, 'italic'),
+            foreground='gray',
+            wraplength=560,
+            justify='left'
+        ).grid(row=15, column=0, columnspan=2, padx=5, pady=(0, 5), sticky='w')
+ 
+        frame_vinculado = ttk.Frame(frame)
+        frame_vinculado.grid(row=16, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+        ttk.Label(frame_vinculado, text="Cliente vinculado (real):").pack(side='left')
+        cliente_vinculado_var = tk.StringVar(value='')
+        cliente_vinculado_combo = ttk.Combobox(
+            frame_vinculado,
+            textvariable=cliente_vinculado_var,
+            values=self._listar_clientes_reais_para_vinculo(),
+            width=40,
+            state='disabled'
+        )
+        cliente_vinculado_combo.pack(side='left', padx=(5, 0))
+ 
+        tem_caixa_var = tk.BooleanVar(value=False)
+ 
+        ttk.Checkbutton(
+            frame,
+            text="Este cliente possui caixa de obra controlado pela construtora "
+                 "(gera Controle de Saldo - Caixa de Obra)",
+            variable=tem_caixa_var
+        ).grid(row=17, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+        ttk.Label(
+            frame,
+            text="Uso: quando o cliente faz aportes numa conta que a construtora "
+                 "movimenta para pagamentos de baixa monta (PAGAMENTOS CAIXA DE OBRA).",
+            font=('Arial', 9, 'italic'),
+            foreground='gray',
+            wraplength=560,
+            justify='left'
+        ).grid(row=18, column=0, columnspan=2, padx=5, pady=(0, 5), sticky='w')
+ 
         # ===== SEÇÃO: ADMINISTRAÇÃO =====
         ttk.Separator(frame, orient='horizontal').grid(
-            row=17, column=0, columnspan=2, sticky='ew', pady=15
+            row=19, column=0, columnspan=2, sticky='ew', pady=15
         )
-        
+ 
         ttk.Label(frame, text="ADMINISTRAÇÃO", font=('Arial', 12, 'bold')).grid(
-            row=18, column=0, columnspan=2, pady=(0, 10), sticky='w'
+            row=20, column=0, columnspan=2, pady=(0, 10), sticky='w'
         )
-
-        ttk.Label(frame, text="Tipo de Taxa de Administração:*").grid(row=19, column=0, padx=5, pady=5, sticky='w')
+ 
+        frame_taxa = ttk.Frame(frame)
+        frame_taxa.grid(row=21, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+        ttk.Label(frame_taxa, text="Tipo de Taxa de Administração:*").pack(side='left')
         tipo_taxa_var = tk.StringVar(value=" ")
-        frame_tipo = ttk.Frame(frame)
-        frame_tipo.grid(row=19, column=1, padx=5, pady=5, sticky='w')
-        
-        ttk.Radiobutton(frame_tipo, text="Percentual", variable=tipo_taxa_var, value="Percentual").pack(side='left', padx=10)
-        ttk.Radiobutton(frame_tipo, text="Fixo", variable=tipo_taxa_var, value="Fixo").pack(side='left', padx=10)
-        ttk.Radiobutton(frame_tipo, text="Sem Taxa", variable=tipo_taxa_var, value="Sem Taxa").pack(side='left', padx=10)
-
+ 
+        ttk.Radiobutton(frame_taxa, text="Percentual", variable=tipo_taxa_var, value="Percentual").pack(side='left', padx=(10, 5))
+        ttk.Radiobutton(frame_taxa, text="Fixo", variable=tipo_taxa_var, value="Fixo").pack(side='left', padx=5)
+        ttk.Radiobutton(frame_taxa, text="Sem Taxa", variable=tipo_taxa_var, value="Sem Taxa").pack(side='left', padx=5)
+ 
         # ===== SEÇÃO: DADOS PESSOAIS =====
         ttk.Separator(frame, orient='horizontal').grid(
-            row=20, column=0, columnspan=2, sticky='ew', pady=15
+            row=22, column=0, columnspan=2, sticky='ew', pady=15
         )
-        
+ 
         ttk.Label(frame, text="DADOS PESSOAIS DO PROPRIETÁRIO", font=('Arial', 12, 'bold')).grid(
-            row=21, column=0, columnspan=2, pady=(0, 10), sticky='w'
+            row=23, column=0, columnspan=2, pady=(0, 10), sticky='w'
         )
-
-        ttk.Label(frame, text="CPF:").grid(row=22, column=0, padx=5, pady=5, sticky='w')
-        cpf_entry = ttk.Entry(frame, width=70)
+ 
+        # CPF / Estado Civil na mesma linha
+        frame_pessoal = ttk.Frame(frame)
+        frame_pessoal.grid(row=24, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+        ttk.Label(frame_pessoal, text="CPF:").pack(side='left')
+        cpf_entry = ttk.Entry(frame_pessoal, width=18)
         cpf_entry.bind('<KeyRelease>', formatar_cpf_campo)
-        cpf_entry.grid(row=22, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Estado Civil:").grid(row=23, column=0, padx=5, pady=5, sticky='w')
+        cpf_entry.pack(side='left', padx=(5, 20))
+ 
+        ttk.Label(frame_pessoal, text="Estado Civil:").pack(side='left')
         estado_civil_var = tk.StringVar(value=" ")
-        frame_estado_civil = ttk.Frame(frame)
-        frame_estado_civil.grid(row=23, column=1, padx=5, pady=5, sticky='w')
-        
         for ec in ["Casado(a)", "Solteiro(a)", "Divorciado(a)", "Viúvo(a)"]:
-            ttk.Radiobutton(frame_estado_civil, text=ec, variable=estado_civil_var, value=ec).pack(side='left', padx=5)
-
+            ttk.Radiobutton(frame_pessoal, text=ec, variable=estado_civil_var, value=ec).pack(side='left', padx=5)
+ 
         # ===== SEÇÃO: DADOS BANCÁRIOS =====
         ttk.Separator(frame, orient='horizontal').grid(
-            row=24, column=0, columnspan=2, sticky='ew', pady=15
+            row=25, column=0, columnspan=2, sticky='ew', pady=15
         )
-        
+ 
         ttk.Label(frame, text="DADOS BANCÁRIOS", font=('Arial', 12, 'bold')).grid(
-            row=25, column=0, columnspan=2, pady=(0, 5), sticky='w'
+            row=26, column=0, columnspan=2, pady=(0, 5), sticky='w'
         )
         ttk.Label(frame, text="(Para transações entre obras)", font=('Arial', 9, 'italic'), foreground='gray').grid(
-            row=26, column=0, columnspan=2, pady=(0, 10), sticky='w'
+            row=27, column=0, columnspan=2, pady=(0, 10), sticky='w'
         )
-
-        ttk.Label(frame, text="Banco:").grid(row=27, column=0, padx=5, pady=5, sticky='w')
-        banco_entry = ttk.Entry(frame, width=70)
-        banco_entry.grid(row=27, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Agência:").grid(row=28, column=0, padx=5, pady=5, sticky='w')
-        agencia_entry = ttk.Entry(frame, width=70)
-        agencia_entry.grid(row=28, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Conta:").grid(row=29, column=0, padx=5, pady=5, sticky='w')
-        conta_entry = ttk.Entry(frame, width=70)
-        conta_entry.grid(row=29, column=1, padx=5, pady=5)
-
-        ttk.Label(frame, text="Tipo de Conta:").grid(row=30, column=0, padx=5, pady=5, sticky='w')
+ 
+        # Banco / Agência / Conta na mesma linha
+        frame_banco_linha1 = ttk.Frame(frame)
+        frame_banco_linha1.grid(row=28, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+        ttk.Label(frame_banco_linha1, text="Banco:").pack(side='left')
+        banco_entry = ttk.Entry(frame_banco_linha1, width=22)
+        banco_entry.pack(side='left', padx=(5, 20))
+ 
+        ttk.Label(frame_banco_linha1, text="Agência:").pack(side='left')
+        agencia_entry = ttk.Entry(frame_banco_linha1, width=10)
+        agencia_entry.pack(side='left', padx=(5, 20))
+ 
+        ttk.Label(frame_banco_linha1, text="Conta:").pack(side='left')
+        conta_entry = ttk.Entry(frame_banco_linha1, width=14)
+        conta_entry.pack(side='left', padx=(5, 0))
+ 
+        # Tipo de Conta / PIX na mesma linha
+        frame_banco_linha2 = ttk.Frame(frame)
+        frame_banco_linha2.grid(row=29, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+        ttk.Label(frame_banco_linha2, text="Tipo:").pack(side='left')
         tipo_conta_var = tk.StringVar(value=" ")
-        frame_tipo_conta = ttk.Frame(frame)
-        frame_tipo_conta.grid(row=30, column=1, padx=5, pady=5, sticky='w')
-        
-        ttk.Radiobutton(frame_tipo_conta, text="Corrente", variable=tipo_conta_var, value="Corrente").pack(side='left', padx=10)
-        ttk.Radiobutton(frame_tipo_conta, text="Poupança", variable=tipo_conta_var, value="Poupança").pack(side='left', padx=10)
-
-        ttk.Label(frame, text="PIX:").grid(row=31, column=0, padx=5, pady=5, sticky='w')
-        pix_entry = ttk.Entry(frame, width=70)
-        pix_entry.grid(row=31, column=1, padx=5, pady=5)
-
+        ttk.Radiobutton(frame_banco_linha2, text="Corrente", variable=tipo_conta_var, value="Corrente").pack(side='left', padx=(5, 5))
+        ttk.Radiobutton(frame_banco_linha2, text="Poupança", variable=tipo_conta_var, value="Poupança").pack(side='left', padx=(0, 20))
+ 
+        ttk.Label(frame_banco_linha2, text="PIX:").pack(side='left')
+        pix_entry = ttk.Entry(frame_banco_linha2, width=35)
+        pix_entry.pack(side='left', padx=(5, 0))
+ 
         # ===== SEÇÃO: OBSERVAÇÕES =====
         ttk.Separator(frame, orient='horizontal').grid(
-            row=32, column=0, columnspan=2, sticky='ew', pady=15
+            row=30, column=0, columnspan=2, sticky='ew', pady=15
         )
-
-        ttk.Label(frame, text="Observações:").grid(row=33, column=0, padx=5, pady=5, sticky='w')
-        obs_entry = ttk.Entry(frame, width=70)
-        obs_entry.grid(row=33, column=1, padx=5, pady=5)
-
+ 
+        frame_obs = ttk.Frame(frame)
+        frame_obs.grid(row=31, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+        ttk.Label(frame_obs, text="Observações:").pack(side='left')
+        obs_entry = ttk.Entry(frame_obs, width=90)
+        obs_entry.pack(side='left', padx=(5, 0))
+ 
         # ===== NAVEGAÇÃO POR ENTER =====
         campos_entry = [
             nome_entry, logradouro_entry, numero_entry, complemento_entry,
-            localidade_entry, cep_entry, cidade_entry, estado_combo,
+            cep_entry, localidade_entry, cidade_entry, estado_combo,
             data_entry, metragem_entry, cno_entry,
             cpf_entry, banco_entry, agencia_entry, conta_entry,
             pix_entry, obs_entry
         ]
-
+ 
         def proximo_campo(event, campos, index):
-            """Avança para próximo campo com Enter"""
             if index < len(campos) - 1:
                 campos[index + 1].focus_set()
                 return "break"
             else:
                 btn_salvar.focus_set()
                 return "break"
-
+ 
         for i, campo in enumerate(campos_entry):
             campo.bind('<Return>', lambda e, idx=i: proximo_campo(e, campos_entry, idx))
-
-        # ===== VALIDAÇÕES =====
+ 
         def validar_data(*args):
-            """Valida se a data selecionada é dia 5 ou 20"""
             data = data_entry.get_date()
             if data.day not in [5, 20]:
                 messagebox.showinfo(
                     "Data Inválida",
                     "A data inicial deve ser dia 5 ou 20 do mês."
                 )
-                # Ajustar para próximo dia válido
                 if data.day < 5:
                     data = data.replace(day=5)
                 elif data.day < 20:
@@ -3164,12 +3288,11 @@ class SistemaEntradaDados:
                     else:
                         data = data.replace(month=data.month + 1, day=5)
                 data_entry.set_date(data)
-
+ 
         data_entry.bind("<<DateEntrySelected>>", validar_data)
-
+ 
         # ===== FUNÇÃO SALVAR =====
         def salvar_cliente():
-            # Coletar dados
             nome = nome_entry.get().strip().upper()
             logradouro = logradouro_entry.get().strip().upper()
             numero = numero_entry.get().strip().upper()
@@ -3178,8 +3301,7 @@ class SistemaEntradaDados:
             cep = cep_entry.get().strip()
             cidade = cidade_entry.get().strip().upper()
             estado = estado_var.get()
-            
-            # Validações básicas
+ 
             if not nome:
                 messagebox.showerror("Erro", "Nome é obrigatório!")
                 nome_entry.focus_set()
@@ -3200,15 +3322,26 @@ class SistemaEntradaDados:
                 messagebox.showerror("Erro", "Cidade é obrigatória!")
                 cidade_entry.focus_set()
                 return
-
-            # Construir endereço concatenado
+ 
+            eh_ficticio = eh_ficticio_var.get()
+            cliente_vinculado = cliente_vinculado_var.get().strip() if eh_ficticio else ''
+            if eh_ficticio and not cliente_vinculado:
+                messagebox.showerror(
+                    "Erro",
+                    "Selecione o cliente real vinculado a este cliente fictício de "
+                    "gestão de mão de obra."
+                )
+                cliente_vinculado_combo.focus_set()
+                return
+ 
+            tem_caixa = tem_caixa_var.get()
+ 
             partes_endereco = [logradouro, numero]
             if complemento:
                 partes_endereco.append(complemento)
-            
+ 
             endereco = f"{', '.join(partes_endereco)} - {localidade} - {cidade}/{estado}"
-
-            # Validar data
+ 
             try:
                 data = datetime.strptime(data_entry.get(), '%Y-%m-%d').date()
                 if data.day not in [5, 20]:
@@ -3217,8 +3350,7 @@ class SistemaEntradaDados:
             except ValueError:
                 messagebox.showerror("Erro", "Data inválida!")
                 return
-
-            # Validar metragem (se preenchida)
+ 
             metragem = None
             if metragem_entry.get().strip():
                 try:
@@ -3227,21 +3359,18 @@ class SistemaEntradaDados:
                     messagebox.showerror("Erro", "Metragem inválida! Use formato: 999.99")
                     metragem_entry.focus_set()
                     return
-
+ 
             try:
                 wb = load_workbook(ARQUIVO_CLIENTES)
                 ws = wb['Clientes']
-
-                # Verificar se cliente já existe
+ 
                 for row in ws.iter_rows(min_row=2, values_only=True):
                     if row[0] and row[0].upper() == nome:
                         messagebox.showerror("Erro", "Cliente já cadastrado!")
                         return
-
-                # Adicionar novo cliente
+ 
                 proxima_linha = ws.max_row + 1
-                
-                # Colunas A-K (existentes)
+ 
                 ws.cell(row=proxima_linha, column=1, value=nome)
                 ws.cell(row=proxima_linha, column=2, value=endereco)
                 ws.cell(row=proxima_linha, column=3, value=data)
@@ -3253,8 +3382,7 @@ class SistemaEntradaDados:
                 ws.cell(row=proxima_linha, column=9, value=estado_civil_var.get())
                 ws.cell(row=proxima_linha, column=10, value=cidade)
                 ws.cell(row=proxima_linha, column=11, value=grupo_var.get())
-                
-                # Colunas L-W (novas)
+ 
                 ws.cell(row=proxima_linha, column=12, value=logradouro)
                 ws.cell(row=proxima_linha, column=13, value=numero)
                 ws.cell(row=proxima_linha, column=14, value=complemento)
@@ -3267,33 +3395,43 @@ class SistemaEntradaDados:
                 ws.cell(row=proxima_linha, column=21, value=conta_entry.get().strip())
                 ws.cell(row=proxima_linha, column=22, value=tipo_conta_var.get())
                 ws.cell(row=proxima_linha, column=23, value=pix_entry.get().strip())
-
+ 
+                if ws.cell(row=1, column=24).value != 'TIPO_CLIENTE':
+                    ws.cell(row=1, column=24, value='TIPO_CLIENTE')
+                if ws.cell(row=1, column=25).value != 'CLIENTE_VINCULADO':
+                    ws.cell(row=1, column=25, value='CLIENTE_VINCULADO')
+                if ws.cell(row=1, column=26).value != 'CAIXA_CONTROLADO':
+                    ws.cell(row=1, column=26, value='CAIXA_CONTROLADO')
+ 
+                ws.cell(row=proxima_linha, column=24, value='GESTAO_MO' if eh_ficticio else '')
+                ws.cell(row=proxima_linha, column=25, value=cliente_vinculado if eh_ficticio else '')
+                ws.cell(row=proxima_linha, column=26, value='SIM' if tem_caixa else '')
+ 
                 wb.save(ARQUIVO_CLIENTES)
-
-                # Criar arquivo do cliente
-                if self.criar_arquivo_cliente(nome, endereco):
+ 
+                if self.criar_arquivo_cliente(nome, endereco, eh_ficticio=eh_ficticio, tem_caixa=tem_caixa):
                     messagebox.showinfo("Sucesso", "Cliente cadastrado com sucesso!")
                     self.atualizar_lista_clientes()
                     janela_cliente.destroy()
-
+ 
             except Exception as e:
                 messagebox.showerror("Erro", f"Erro ao cadastrar cliente: {str(e)}")
-
+ 
         # ===== BOTÕES =====
         ttk.Separator(frame, orient='horizontal').grid(
-            row=34, column=0, columnspan=2, sticky='ew', pady=15
+            row=32, column=0, columnspan=2, sticky='ew', pady=15
         )
-
+ 
         frame_botoes = ttk.Frame(frame)
-        frame_botoes.grid(row=35, column=0, columnspan=2, pady=10)
-
+        frame_botoes.grid(row=33, column=0, columnspan=2, pady=10)
+ 
         btn_salvar = ttk.Button(frame_botoes, text="Salvar", command=salvar_cliente, style='Big.TButton')
         btn_salvar.pack(side='left', padx=5)
-
+ 
         ttk.Button(frame_botoes, text="Cancelar", command=janela_cliente.destroy, style='Big.TButton').pack(side='left', padx=5)
-
-        # Focar no primeiro campo
+ 
         nome_entry.focus_set()
+ 
 
     def selecionar_cliente(self, event):
         """
@@ -3404,20 +3542,22 @@ class SistemaEntradaDados:
 
 
     def editar_cliente(self):
-        """Edita o cliente selecionado - VERSÃO REORGANIZADA E CORRIGIDA"""
+        """Edita o cliente selecionado - LAYOUT COMPACTO (mesmo padrão
+        de criar_novo_cliente) + suporte a cliente fictício de gestão
+        de mão de obra e caixa controlado"""
         cliente_selecionado = self.cliente_combobox.get()
-        
+ 
         if not cliente_selecionado:
             messagebox.showwarning("Aviso", "Selecione um cliente para editar")
             return
-
+ 
         try:
             # Carregar dados do cliente
             wb = load_workbook(ARQUIVO_CLIENTES)
             ws = wb['Clientes']
-            
+ 
             dados_cliente = None
-            
+ 
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if row[0] == cliente_selecionado:
                     dados_cliente = {
@@ -3445,149 +3585,188 @@ class SistemaEntradaDados:
                         'agencia': row[19] if len(row) > 19 and row[19] else '',
                         'conta': row[20] if len(row) > 20 and row[20] else '',
                         'tipo_conta': row[21] if len(row) > 21 and row[21] else '',
-                        'pix': row[22] if len(row) > 22 and row[22] else ''
+                        'pix': row[22] if len(row) > 22 and row[22] else '',
+                        # Colunas X-Z (novas - tipo de cliente / vínculo / caixa)
+                        'tipo_cliente': row[23] if len(row) > 23 and row[23] else '',
+                        'cliente_vinculado': row[24] if len(row) > 24 and row[24] else '',
+                        'caixa_controlado': row[25] if len(row) > 25 and row[25] else '',
                     }
                     break
-            
+ 
             wb.close()
-            
+ 
             if not dados_cliente:
                 messagebox.showerror("Erro", "Cliente não encontrado!")
                 return
-                
+ 
+            # Estado original dos checkboxes de controle - usado para
+            # detectar se o usuário está LIGANDO algum deles agora
+            # (e então pedir confirmação antes de criar a aba)
+            eh_ficticio_inicial = (dados_cliente.get('tipo_cliente') == 'GESTAO_MO')
+            tem_caixa_inicial = (dados_cliente.get('caixa_controlado') == 'SIM')
+ 
             # Criar janela de edição
             janela_edicao = tk.Toplevel(self.root)
             janela_edicao.title(f"Editar Cliente - {cliente_selecionado}")
-            janela_edicao.geometry("800x900")
-
-            # Frame principal com scrollbar
+            janela_edicao.geometry("700x850")
+ 
             canvas = tk.Canvas(janela_edicao)
             scrollbar = ttk.Scrollbar(janela_edicao, orient="vertical", command=canvas.yview)
             frame = ttk.Frame(canvas, padding="20")
-
+ 
             frame.bind(
                 "<Configure>",
                 lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
             )
-
+ 
             canvas.create_window((0, 0), window=frame, anchor="nw")
             canvas.configure(yscrollcommand=scrollbar.set)
-
+ 
             canvas.pack(side="left", fill="both", expand=True)
             scrollbar.pack(side="right", fill="y")
-
+ 
             # ===== FUNÇÃO AUXILIAR PARA INSERIR VALORES =====
             def inserir_valor_entry(entry, valor):
                 """Insere valor em Entry de forma segura"""
                 entry.delete(0, tk.END)
                 if valor:
                     entry.insert(0, str(valor))
-
+ 
             # ===== SEÇÃO: IDENTIFICAÇÃO =====
             ttk.Label(frame, text="IDENTIFICAÇÃO", font=('Arial', 12, 'bold')).grid(
                 row=0, column=0, columnspan=2, pady=(0, 10), sticky='w'
             )
-
-            ttk.Label(frame, text="Nome do Cliente:*").grid(row=1, column=0, padx=5, pady=5, sticky='w')
-            nome_entry = ttk.Entry(frame, width=70)
+ 
+            frame_nome = ttk.Frame(frame)
+            frame_nome.grid(row=1, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+            ttk.Label(frame_nome, text="Nome do Cliente:*").pack(side='left')
+            nome_entry = ttk.Entry(frame_nome, width=85)
             inserir_valor_entry(nome_entry, dados_cliente['nome'])
-            nome_entry.grid(row=1, column=1, padx=5, pady=5)
-
+            nome_entry.pack(side='left', padx=(5, 0))
+ 
             # ===== SEÇÃO: ENDEREÇO =====
             ttk.Separator(frame, orient='horizontal').grid(
                 row=2, column=0, columnspan=2, sticky='ew', pady=15
             )
-            
+ 
             ttk.Label(frame, text="ENDEREÇO", font=('Arial', 12, 'bold')).grid(
                 row=3, column=0, columnspan=2, pady=(0, 10), sticky='w'
             )
-
-            ttk.Label(frame, text="Logradouro:*").grid(row=4, column=0, padx=5, pady=5, sticky='w')
-            logradouro_entry = ttk.Entry(frame, width=70)
+ 
+            frame_logradouro = ttk.Frame(frame)
+            frame_logradouro.grid(row=4, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+            ttk.Label(frame_logradouro, text="Logradouro:*").pack(side='left')
+            logradouro_entry = ttk.Entry(frame_logradouro, width=90)
             inserir_valor_entry(logradouro_entry, dados_cliente.get('logradouro', ''))
-            logradouro_entry.grid(row=4, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Número:*").grid(row=5, column=0, padx=5, pady=5, sticky='w')
-            numero_entry = ttk.Entry(frame, width=70)
+            logradouro_entry.pack(side='left', padx=(5, 0))
+ 
+            # Número / Complemento / CEP na mesma linha
+            frame_end_linha = ttk.Frame(frame)
+            frame_end_linha.grid(row=5, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+            ttk.Label(frame_end_linha, text="Número:*").pack(side='left')
+            numero_entry = ttk.Entry(frame_end_linha, width=8)
             inserir_valor_entry(numero_entry, dados_cliente.get('numero', ''))
-            numero_entry.grid(row=5, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Complemento:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
-            complemento_entry = ttk.Entry(frame, width=70)
+            numero_entry.pack(side='left', padx=(5, 20))
+ 
+            ttk.Label(frame_end_linha, text="Complemento:").pack(side='left')
+            complemento_entry = ttk.Entry(frame_end_linha, width=20)
             inserir_valor_entry(complemento_entry, dados_cliente.get('complemento', ''))
-            complemento_entry.grid(row=6, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Localidade (Bairro/Condomínio):*").grid(row=7, column=0, padx=5, pady=5, sticky='w')
-            localidade_entry = ttk.Entry(frame, width=70)
-            inserir_valor_entry(localidade_entry, dados_cliente.get('localidade', ''))
-            localidade_entry.grid(row=7, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="CEP:").grid(row=8, column=0, padx=5, pady=5, sticky='w')
-            cep_entry = ttk.Entry(frame, width=70)
+            complemento_entry.pack(side='left', padx=(5, 20))
+ 
+            ttk.Label(frame_end_linha, text="CEP:").pack(side='left')
+            cep_entry = ttk.Entry(frame_end_linha, width=12)
             inserir_valor_entry(cep_entry, dados_cliente.get('cep', ''))
             cep_entry.bind('<KeyRelease>', formatar_cep_campo)
-            cep_entry.grid(row=8, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Cidade:*").grid(row=9, column=0, padx=5, pady=5, sticky='w')
-            cidade_entry = ttk.Entry(frame, width=70)
+            cep_entry.pack(side='left', padx=(5, 0))
+ 
+            frame_localidade = ttk.Frame(frame)
+            frame_localidade.grid(row=6, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+            ttk.Label(frame_localidade, text="Localidade (Bairro/Condomínio):*").pack(side='left')
+            localidade_entry = ttk.Entry(frame_localidade, width=72)
+            inserir_valor_entry(localidade_entry, dados_cliente.get('localidade', ''))
+            localidade_entry.pack(side='left', padx=(5, 0))
+ 
+            # Cidade / Estado na mesma linha
+            frame_cidade_estado = ttk.Frame(frame)
+            frame_cidade_estado.grid(row=7, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+            ttk.Label(frame_cidade_estado, text="Cidade:*").pack(side='left')
+            cidade_entry = ttk.Entry(frame_cidade_estado, width=30)
             inserir_valor_entry(cidade_entry, dados_cliente.get('cidade', ''))
-            cidade_entry.grid(row=9, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Estado:*").grid(row=10, column=0, padx=5, pady=5, sticky='w')
+            cidade_entry.pack(side='left', padx=(5, 20))
+ 
+            ttk.Label(frame_cidade_estado, text="Estado:*").pack(side='left')
             estado_var = tk.StringVar(value=dados_cliente.get('estado', 'MG'))
-            estados = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", 
-                    "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", 
+            estados = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
+                    "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN",
                     "RS", "RO", "RR", "SC", "SP", "SE", "TO"]
-            estado_combo = ttk.Combobox(frame, textvariable=estado_var, values=estados, width=10, state='readonly')
-            estado_combo.grid(row=10, column=1, padx=5, pady=5, sticky='w')
-
+            estado_combo = ttk.Combobox(frame_cidade_estado, textvariable=estado_var, values=estados, width=6, state='readonly')
+            estado_combo.pack(side='left', padx=(5, 0))
+ 
             # ===== SEÇÃO: DADOS DA OBRA =====
             ttk.Separator(frame, orient='horizontal').grid(
-                row=11, column=0, columnspan=2, sticky='ew', pady=15
+                row=8, column=0, columnspan=2, sticky='ew', pady=15
             )
-            
+ 
             ttk.Label(frame, text="DADOS DA OBRA", font=('Arial', 12, 'bold')).grid(
-                row=12, column=0, columnspan=2, pady=(0, 10), sticky='w'
+                row=9, column=0, columnspan=2, pady=(0, 10), sticky='w'
             )
-
-            ttk.Label(frame, text="Data Inicial:*").grid(row=13, column=0, padx=5, pady=5, sticky='w')
+ 
+            # Data Inicial / Metragem / CNO na mesma linha
+            frame_obra_linha = ttk.Frame(frame)
+            frame_obra_linha.grid(row=10, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+            ttk.Label(frame_obra_linha, text="Data Inicial:*").pack(side='left')
             data_inicial_entry = DateEntry(
-                frame,
-                width=20,
+                frame_obra_linha,
+                width=12,
                 date_pattern='yyyy-mm-dd',
                 locale='pt_BR'
             )
             if dados_cliente['data_inicial']:
                 data_inicial_entry.set_date(dados_cliente['data_inicial'])
-            data_inicial_entry.grid(row=13, column=1, padx=5, pady=5, sticky='w')
-
-            # Data Final
-            ttk.Label(frame, text="Data Final:").grid(row=14, column=0, padx=5, pady=5, sticky='w')
-            
+            data_inicial_entry.pack(side='left', padx=(5, 20))
+ 
+            ttk.Label(frame_obra_linha, text="Metragem (m²):").pack(side='left')
+            metragem_entry = ttk.Entry(frame_obra_linha, width=10)
+            if dados_cliente.get('metragem_alvara'):
+                inserir_valor_entry(metragem_entry, str(dados_cliente['metragem_alvara']))
+            metragem_entry.pack(side='left', padx=(5, 20))
+ 
+            ttk.Label(frame_obra_linha, text="CNO:").pack(side='left')
+            cno_entry = ttk.Entry(frame_obra_linha, width=20)
+            inserir_valor_entry(cno_entry, dados_cliente.get('cno', ''))
+            cno_entry.bind('<KeyRelease>', formatar_cno_campo)
+            cno_entry.pack(side='left', padx=(5, 0))
+ 
+            # Obra finalizada / Data Final na mesma linha (exclusivo da edição)
+            frame_data_final = ttk.Frame(frame)
+            frame_data_final.grid(row=11, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
             tem_data_final = tk.BooleanVar(value=bool(dados_cliente['data_final']))
-            
+ 
             check_data_final = ttk.Checkbutton(
-                frame, 
-                text="Obra finalizada",
+                frame_data_final,
+                text="Obra finalizada - Data Final:",
                 variable=tem_data_final
             )
-            check_data_final.grid(row=14, column=1, padx=5, pady=5, sticky='w')
-            
+            check_data_final.pack(side='left')
+ 
             data_final_entry = DateEntry(
-                frame,
-                width=20,
+                frame_data_final,
+                width=12,
                 date_pattern='yyyy-mm-dd',
                 locale='pt_BR'
             )
-            
+            data_final_entry.pack(side='left', padx=(5, 0))
+ 
             if dados_cliente['data_final']:
                 data_final_entry.set_date(dados_cliente['data_final'])
             else:
                 data_final_entry.delete(0, tk.END)
                 data_final_entry.config(state='disabled')
-            
-            data_final_entry.grid(row=15, column=1, padx=5, pady=5, sticky='w')
-
+ 
             def toggle_data_final():
                 if tem_data_final.get():
                     data_final_entry.config(state='normal')
@@ -3596,135 +3775,200 @@ class SistemaEntradaDados:
                 else:
                     data_final_entry.delete(0, tk.END)
                     data_final_entry.config(state='disabled')
-            
+ 
             check_data_final.config(command=toggle_data_final)
-
-            ttk.Label(frame, text="Metragem do Alvará (m²):").grid(row=16, column=0, padx=5, pady=5, sticky='w')
-            metragem_entry = ttk.Entry(frame, width=20)
-            if dados_cliente.get('metragem_alvara'):
-                inserir_valor_entry(metragem_entry, str(dados_cliente['metragem_alvara']))
-            metragem_entry.grid(row=16, column=1, padx=5, pady=5, sticky='w')
-
-            ttk.Label(frame, text="CNO:").grid(row=17, column=0, padx=5, pady=5, sticky='w')
-            cno_entry = ttk.Entry(frame, width=70)
-            inserir_valor_entry(cno_entry, dados_cliente.get('cno', ''))
-            cno_entry.bind('<KeyRelease>', formatar_cno_campo)
-            cno_entry.grid(row=17, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Grupo:").grid(row=18, column=0, padx=5, pady=5, sticky='w')
+ 
+            frame_grupo_linha = ttk.Frame(frame)
+            frame_grupo_linha.grid(row=12, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+            ttk.Label(frame_grupo_linha, text="Grupo:").pack(side='left')
             grupo_var = tk.StringVar(value=dados_cliente.get('grupo', ''))
-            frame_grupo = ttk.Frame(frame)
-            frame_grupo.grid(row=18, column=1, padx=5, pady=5, sticky='w')
-            
             for i in range(1, 5):
                 ttk.Radiobutton(
-                    frame_grupo, 
-                    text=f"Grupo {i}", 
-                    variable=grupo_var, 
+                    frame_grupo_linha,
+                    text=f"Grupo {i}",
+                    variable=grupo_var,
                     value=f"Grupo {i}"
-                ).pack(side='left', padx=5)
-
+                ).pack(side='left', padx=(10 if i == 1 else 5, 0))
+ 
+            # ===== SEÇÃO: TIPO DE CLIENTE / VÍNCULO =====
+            ttk.Separator(frame, orient='horizontal').grid(
+                row=13, column=0, columnspan=2, sticky='ew', pady=15
+            )
+ 
+            ttk.Label(frame, text="TIPO DE CLIENTE", font=('Arial', 12, 'bold')).grid(
+                row=14, column=0, columnspan=2, pady=(0, 10), sticky='w'
+            )
+ 
+            eh_ficticio_var = tk.BooleanVar(value=(dados_cliente.get('tipo_cliente') == 'GESTAO_MO'))
+ 
+            def alternar_cliente_vinculado():
+                if eh_ficticio_var.get():
+                    cliente_vinculado_combo.config(state='readonly')
+                else:
+                    cliente_vinculado_var.set('')
+                    cliente_vinculado_combo.config(state='disabled')
+ 
+            ttk.Checkbutton(
+                frame,
+                text="Este é um cliente fictício de gestão de mão de obra "
+                     "(ex.: RVR - SPRC - CASA JD PETROPOLIS)",
+                variable=eh_ficticio_var,
+                command=alternar_cliente_vinculado
+            ).grid(row=15, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+            ttk.Label(
+                frame,
+                text="Cria a aba de Controle de Repasse - Mão de Obra, para uso no Relatório de Despesas.",
+                font=('Arial', 9, 'italic'),
+                foreground='gray',
+                wraplength=560,
+                justify='left'
+            ).grid(row=16, column=0, columnspan=2, padx=5, pady=(0, 5), sticky='w')
+ 
+            frame_vinculado = ttk.Frame(frame)
+            frame_vinculado.grid(row=17, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+            ttk.Label(frame_vinculado, text="Cliente vinculado (real):").pack(side='left')
+            cliente_vinculado_var = tk.StringVar(value=dados_cliente.get('cliente_vinculado', ''))
+ 
+            valores_vinculo = self._listar_clientes_reais_para_vinculo()
+            valor_atual_vinculo = dados_cliente.get('cliente_vinculado', '')
+            if valor_atual_vinculo and valor_atual_vinculo not in valores_vinculo:
+                valores_vinculo = [valor_atual_vinculo] + valores_vinculo
+ 
+            cliente_vinculado_combo = ttk.Combobox(
+                frame_vinculado,
+                textvariable=cliente_vinculado_var,
+                values=valores_vinculo,
+                width=40,
+                state='readonly' if eh_ficticio_var.get() else 'disabled'
+            )
+            cliente_vinculado_combo.pack(side='left', padx=(5, 0))
+ 
+            tem_caixa_var = tk.BooleanVar(value=(dados_cliente.get('caixa_controlado') == 'SIM'))
+ 
+            ttk.Checkbutton(
+                frame,
+                text="Este cliente possui caixa de obra controlado pela construtora "
+                     "(gera Controle de Saldo - Caixa de Obra)",
+                variable=tem_caixa_var
+            ).grid(row=18, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+            ttk.Label(
+                frame,
+                text="Uso: quando existe uma conta bancária que o Financeiro movimenta (PAGAMENTOS CAIXA DE OBRA).",
+                font=('Arial', 9, 'italic'),
+                foreground='gray',
+                wraplength=580,
+                justify='left'
+            ).grid(row=19, column=0, columnspan=2, padx=5, pady=(0, 5), sticky='w')
+ 
             # ===== SEÇÃO: ADMINISTRAÇÃO =====
             ttk.Separator(frame, orient='horizontal').grid(
-                row=19, column=0, columnspan=2, sticky='ew', pady=15
+                row=20, column=0, columnspan=2, sticky='ew', pady=15
             )
-            
+ 
             ttk.Label(frame, text="ADMINISTRAÇÃO", font=('Arial', 12, 'bold')).grid(
-                row=20, column=0, columnspan=2, pady=(0, 10), sticky='w'
+                row=21, column=0, columnspan=2, pady=(0, 10), sticky='w'
             )
-
-            ttk.Label(frame, text="Tipo de Taxa:*").grid(row=21, column=0, padx=5, pady=5, sticky='w')
+ 
+            frame_taxa = ttk.Frame(frame)
+            frame_taxa.grid(row=22, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+            ttk.Label(frame_taxa, text="Tipo de Taxa:*").pack(side='left')
             tipo_taxa_var = tk.StringVar(value=dados_cliente.get('tipo_taxa', 'Percentual'))
-            
-            frame_tipo = ttk.Frame(frame)
-            frame_tipo.grid(row=21, column=1, padx=5, pady=5, sticky='w')
-            
-            ttk.Radiobutton(frame_tipo, text="Percentual", variable=tipo_taxa_var, value="Percentual").pack(side='left', padx=10)
-            ttk.Radiobutton(frame_tipo, text="Fixo", variable=tipo_taxa_var, value="Fixo").pack(side='left', padx=10)
-            ttk.Radiobutton(frame_tipo, text="Sem Taxa", variable=tipo_taxa_var, value="Sem Taxa").pack(side='left', padx=10)
-
+            ttk.Radiobutton(frame_taxa, text="Percentual", variable=tipo_taxa_var, value="Percentual").pack(side='left', padx=(10, 5))
+            ttk.Radiobutton(frame_taxa, text="Fixo", variable=tipo_taxa_var, value="Fixo").pack(side='left', padx=5)
+            ttk.Radiobutton(frame_taxa, text="Sem Taxa", variable=tipo_taxa_var, value="Sem Taxa").pack(side='left', padx=5)
+ 
             # ===== SEÇÃO: DADOS PESSOAIS =====
             ttk.Separator(frame, orient='horizontal').grid(
-                row=22, column=0, columnspan=2, sticky='ew', pady=15
+                row=23, column=0, columnspan=2, sticky='ew', pady=15
             )
-            
+ 
             ttk.Label(frame, text="DADOS PESSOAIS DO PROPRIETÁRIO", font=('Arial', 12, 'bold')).grid(
-                row=23, column=0, columnspan=2, pady=(0, 10), sticky='w'
+                row=24, column=0, columnspan=2, pady=(0, 10), sticky='w'
             )
-
-            ttk.Label(frame, text="CPF:").grid(row=24, column=0, padx=5, pady=5, sticky='w')
-            cpf_entry = ttk.Entry(frame, width=70)
+ 
+            # CPF / Estado Civil na mesma linha
+            frame_pessoal = ttk.Frame(frame)
+            frame_pessoal.grid(row=25, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+            ttk.Label(frame_pessoal, text="CPF:").pack(side='left')
+            cpf_entry = ttk.Entry(frame_pessoal, width=18)
             inserir_valor_entry(cpf_entry, dados_cliente.get('cpf', ''))
             cpf_entry.bind('<KeyRelease>', formatar_cpf_campo)
-            cpf_entry.grid(row=24, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Estado Civil:").grid(row=25, column=0, padx=5, pady=5, sticky='w')
+            cpf_entry.pack(side='left', padx=(5, 20))
+ 
+            ttk.Label(frame_pessoal, text="Estado Civil:").pack(side='left')
             estado_civil_var = tk.StringVar(value=dados_cliente.get('estado_civil', ''))
-            frame_estado_civil = ttk.Frame(frame)
-            frame_estado_civil.grid(row=25, column=1, padx=5, pady=5, sticky='w')
-            
             for ec in ["Casado(a)", "Solteiro(a)", "Divorciado(a)", "Viúvo(a)"]:
-                ttk.Radiobutton(frame_estado_civil, text=ec, variable=estado_civil_var, value=ec).pack(side='left', padx=5)
-
+                ttk.Radiobutton(frame_pessoal, text=ec, variable=estado_civil_var, value=ec).pack(side='left', padx=5)
+ 
             # ===== SEÇÃO: DADOS BANCÁRIOS =====
             ttk.Separator(frame, orient='horizontal').grid(
                 row=26, column=0, columnspan=2, sticky='ew', pady=15
             )
-            
+ 
             ttk.Label(frame, text="DADOS BANCÁRIOS", font=('Arial', 12, 'bold')).grid(
                 row=27, column=0, columnspan=2, pady=(0, 5), sticky='w'
             )
             ttk.Label(frame, text="(Para transações entre obras)", font=('Arial', 9, 'italic'), foreground='gray').grid(
                 row=28, column=0, columnspan=2, pady=(0, 10), sticky='w'
             )
-
-            ttk.Label(frame, text="Banco:").grid(row=29, column=0, padx=5, pady=5, sticky='w')
-            banco_entry = ttk.Entry(frame, width=70)
+ 
+            # Banco / Agência / Conta na mesma linha
+            frame_banco_linha1 = ttk.Frame(frame)
+            frame_banco_linha1.grid(row=29, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+            ttk.Label(frame_banco_linha1, text="Banco:").pack(side='left')
+            banco_entry = ttk.Entry(frame_banco_linha1, width=22)
             inserir_valor_entry(banco_entry, dados_cliente.get('banco', ''))
-            banco_entry.grid(row=29, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Agência:").grid(row=30, column=0, padx=5, pady=5, sticky='w')
-            agencia_entry = ttk.Entry(frame, width=70)
+            banco_entry.pack(side='left', padx=(5, 20))
+ 
+            ttk.Label(frame_banco_linha1, text="Agência:").pack(side='left')
+            agencia_entry = ttk.Entry(frame_banco_linha1, width=10)
             inserir_valor_entry(agencia_entry, dados_cliente.get('agencia', ''))
-            agencia_entry.grid(row=30, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Conta:").grid(row=31, column=0, padx=5, pady=5, sticky='w')
-            conta_entry = ttk.Entry(frame, width=70)
+            agencia_entry.pack(side='left', padx=(5, 20))
+ 
+            ttk.Label(frame_banco_linha1, text="Conta:").pack(side='left')
+            conta_entry = ttk.Entry(frame_banco_linha1, width=14)
             inserir_valor_entry(conta_entry, dados_cliente.get('conta', ''))
-            conta_entry.grid(row=31, column=1, padx=5, pady=5)
-
-            ttk.Label(frame, text="Tipo de Conta:").grid(row=32, column=0, padx=5, pady=5, sticky='w')
+            conta_entry.pack(side='left', padx=(5, 0))
+ 
+            # Tipo de Conta / PIX na mesma linha
+            frame_banco_linha2 = ttk.Frame(frame)
+            frame_banco_linha2.grid(row=30, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+ 
+            ttk.Label(frame_banco_linha2, text="Tipo:").pack(side='left')
             tipo_conta_var = tk.StringVar(value=dados_cliente.get('tipo_conta', ''))
-            frame_tipo_conta = ttk.Frame(frame)
-            frame_tipo_conta.grid(row=32, column=1, padx=5, pady=5, sticky='w')
-            
-            ttk.Radiobutton(frame_tipo_conta, text="Corrente", variable=tipo_conta_var, value="Corrente").pack(side='left', padx=10)
-            ttk.Radiobutton(frame_tipo_conta, text="Poupança", variable=tipo_conta_var, value="Poupança").pack(side='left', padx=10)
-
-            ttk.Label(frame, text="PIX:").grid(row=33, column=0, padx=5, pady=5, sticky='w')
-            pix_entry = ttk.Entry(frame, width=70)
+            ttk.Radiobutton(frame_banco_linha2, text="Corrente", variable=tipo_conta_var, value="Corrente").pack(side='left', padx=(5, 5))
+            ttk.Radiobutton(frame_banco_linha2, text="Poupança", variable=tipo_conta_var, value="Poupança").pack(side='left', padx=(0, 20))
+ 
+            ttk.Label(frame_banco_linha2, text="PIX:").pack(side='left')
+            pix_entry = ttk.Entry(frame_banco_linha2, width=35)
             inserir_valor_entry(pix_entry, dados_cliente.get('pix', ''))
-            pix_entry.grid(row=33, column=1, padx=5, pady=5)
-
+            pix_entry.pack(side='left', padx=(5, 0))
+ 
             # ===== SEÇÃO: OBSERVAÇÕES =====
             ttk.Separator(frame, orient='horizontal').grid(
-                row=34, column=0, columnspan=2, sticky='ew', pady=15
+                row=31, column=0, columnspan=2, sticky='ew', pady=15
             )
-
-            ttk.Label(frame, text="Observações:").grid(row=35, column=0, padx=5, pady=5, sticky='w')
-            obs_entry = ttk.Entry(frame, width=70)
+ 
+            frame_obs = ttk.Frame(frame)
+            frame_obs.grid(row=32, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+            ttk.Label(frame_obs, text="Observações:").pack(side='left')
+            obs_entry = ttk.Entry(frame_obs, width=90)
             inserir_valor_entry(obs_entry, dados_cliente.get('observacoes', ''))
-            obs_entry.grid(row=35, column=1, padx=5, pady=5)
-
+            obs_entry.pack(side='left', padx=(5, 0))
+ 
             # ===== NAVEGAÇÃO POR ENTER =====
             campos_entry = [
                 nome_entry, logradouro_entry, numero_entry, complemento_entry,
-                localidade_entry, cep_entry, cidade_entry, estado_combo,
+                cep_entry, localidade_entry, cidade_entry, estado_combo,
                 data_inicial_entry, metragem_entry, cno_entry,
                 cpf_entry, banco_entry, agencia_entry, conta_entry,
                 pix_entry, obs_entry
             ]
-
+ 
             def proximo_campo(event, campos, index):
                 """Avança para próximo campo com Enter"""
                 if index < len(campos) - 1:
@@ -3733,14 +3977,13 @@ class SistemaEntradaDados:
                 else:
                     btn_salvar.focus_set()
                     return "break"
-
+ 
             for i, campo in enumerate(campos_entry):
                 campo.bind('<Return>', lambda e, idx=i: proximo_campo(e, campos_entry, idx))
-
+ 
             # ===== FUNÇÃO SALVAR =====
             def salvar_alteracoes():
                 try:
-                    # Coletar dados
                     nome = nome_entry.get().strip().upper()
                     logradouro = logradouro_entry.get().strip().upper()
                     numero = numero_entry.get().strip().upper()
@@ -3749,8 +3992,7 @@ class SistemaEntradaDados:
                     cep = cep_entry.get().strip()
                     cidade = cidade_entry.get().strip().upper()
                     estado = estado_var.get()
-                    
-                    # Validações básicas
+ 
                     if not nome:
                         messagebox.showerror("Erro", "Nome é obrigatório!")
                         nome_entry.focus_set()
@@ -3771,15 +4013,51 @@ class SistemaEntradaDados:
                         messagebox.showerror("Erro", "Cidade é obrigatória!")
                         cidade_entry.focus_set()
                         return
-
-                    # Construir endereço concatenado
+ 
+                    eh_ficticio = eh_ficticio_var.get()
+                    cliente_vinculado = cliente_vinculado_var.get().strip() if eh_ficticio else ''
+                    if eh_ficticio and not cliente_vinculado:
+                        messagebox.showerror(
+                            "Erro",
+                            "Selecione o cliente real vinculado a este cliente fictício de "
+                            "gestão de mão de obra."
+                        )
+                        cliente_vinculado_combo.focus_set()
+                        return
+ 
+                    tem_caixa = tem_caixa_var.get()
+ 
+                    # Confirmação extra: só pede se alguma aba de controle
+                    # for CRIADA agora (checkbox que estava desmarcado e
+                    # foi marcado). Desmarcar não apaga a aba nem pede
+                    # confirmação - só controla exibição no relatório
+                    # (eh_cliente_gestao_mo / eh_cliente_com_caixa olham a
+                    # presença da aba, não esse checkbox).
+                    novas_abas = []
+                    if eh_ficticio and not eh_ficticio_inicial:
+                        novas_abas.append("REPASSES_MO (Controle de Repasse - Mão de Obra)")
+                    if tem_caixa and not tem_caixa_inicial:
+                        novas_abas.append("REPASSES_CAIXA (Controle de Saldo - Caixa de Obra)")
+ 
+                    if novas_abas:
+                        lista_abas = "\n".join(f"  • {a}" for a in novas_abas)
+                        confirmado = messagebox.askyesno(
+                            "Confirmar criação de controle",
+                            f"Esta alteração vai criar a(s) seguinte(s) aba(s) no "
+                            f"arquivo do cliente:\n\n{lista_abas}\n\n"
+                            f"Isso passa a exibir o(s) painel(is) correspondente(s) "
+                            f"no Relatório de Despesas a partir de agora.\n\n"
+                            f"Confirma a criação?"
+                        )
+                        if not confirmado:
+                            return
+ 
                     partes_endereco = [logradouro, numero]
                     if complemento:
                         partes_endereco.append(complemento)
-                    
+ 
                     endereco = f"{', '.join(partes_endereco)} - {localidade} - {cidade}/{estado}"
-
-                    # Validar metragem (se preenchida)
+ 
                     metragem = None
                     if metragem_entry.get().strip():
                         try:
@@ -3788,41 +4066,37 @@ class SistemaEntradaDados:
                             messagebox.showerror("Erro", "Metragem inválida!")
                             metragem_entry.focus_set()
                             return
-
+ 
                     wb = load_workbook(ARQUIVO_CLIENTES)
                     ws = wb['Clientes']
-
-                    # Remover registro antigo
+ 
                     linhas_para_remover = []
                     for idx, row in enumerate(ws.iter_rows(min_row=2), start=2):
                         if row[0].value == cliente_selecionado:
                             linhas_para_remover.append(idx)
-
+ 
                     for linha in reversed(linhas_para_remover):
                         ws.delete_rows(linha)
-
-                    # Adicionar registro atualizado
+ 
                     proxima_linha = ws.max_row + 1
-                    
-                    # Colunas A-K
+ 
                     ws.cell(row=proxima_linha, column=1, value=nome)
                     ws.cell(row=proxima_linha, column=2, value=endereco)
                     ws.cell(row=proxima_linha, column=3, value=data_inicial_entry.get_date())
                     ws.cell(row=proxima_linha, column=4, value=obs_entry.get().strip().upper())
-                    
+ 
                     if tem_data_final.get():
                         ws.cell(row=proxima_linha, column=5, value=data_final_entry.get_date())
                     else:
                         ws.cell(row=proxima_linha, column=5, value=None)
-                    
+ 
                     ws.cell(row=proxima_linha, column=6, value=tipo_taxa_var.get())
                     ws.cell(row=proxima_linha, column=7, value=cpf_entry.get().strip())
                     ws.cell(row=proxima_linha, column=8, value=cno_entry.get().strip())
                     ws.cell(row=proxima_linha, column=9, value=estado_civil_var.get())
                     ws.cell(row=proxima_linha, column=10, value=cidade)
                     ws.cell(row=proxima_linha, column=11, value=grupo_var.get())
-                    
-                    # Colunas L-W
+ 
                     ws.cell(row=proxima_linha, column=12, value=logradouro)
                     ws.cell(row=proxima_linha, column=13, value=numero)
                     ws.cell(row=proxima_linha, column=14, value=complemento)
@@ -3835,39 +4109,85 @@ class SistemaEntradaDados:
                     ws.cell(row=proxima_linha, column=21, value=conta_entry.get().strip())
                     ws.cell(row=proxima_linha, column=22, value=tipo_conta_var.get())
                     ws.cell(row=proxima_linha, column=23, value=pix_entry.get().strip())
-
+ 
+                    if ws.cell(row=1, column=24).value != 'TIPO_CLIENTE':
+                        ws.cell(row=1, column=24, value='TIPO_CLIENTE')
+                    if ws.cell(row=1, column=25).value != 'CLIENTE_VINCULADO':
+                        ws.cell(row=1, column=25, value='CLIENTE_VINCULADO')
+                    if ws.cell(row=1, column=26).value != 'CAIXA_CONTROLADO':
+                        ws.cell(row=1, column=26, value='CAIXA_CONTROLADO')
+ 
+                    ws.cell(row=proxima_linha, column=24, value='GESTAO_MO' if eh_ficticio else '')
+                    ws.cell(row=proxima_linha, column=25, value=cliente_vinculado if eh_ficticio else '')
+                    ws.cell(row=proxima_linha, column=26, value='SIM' if tem_caixa else '')
+ 
                     wb.save(ARQUIVO_CLIENTES)
-                    
+ 
                     # Renomear arquivo se mudou o nome
-                    if nome != cliente_selecionado:
-                        caminho_antigo = PASTA_CLIENTES / f"{cliente_selecionado}.xlsx"
-                        caminho_novo = PASTA_CLIENTES / f"{nome}.xlsx"
-                        if os.path.exists(caminho_antigo):
-                            os.rename(caminho_antigo, caminho_novo)
-
+                    caminho_antigo = PASTA_CLIENTES / f"{cliente_selecionado}.xlsx"
+                    caminho_novo = PASTA_CLIENTES / f"{nome}.xlsx"
+                    if nome != cliente_selecionado and os.path.exists(caminho_antigo):
+                        os.rename(caminho_antigo, caminho_novo)
+ 
+                    # Garantir abas de controle, se aplicável - IDEMPOTENTE
+                    # (só cria se ainda não existir; não duplica, não apaga
+                    # dados existentes se a aba já estava lá)
+                    if eh_ficticio or tem_caixa:
+                        try:
+                            if os.path.exists(caminho_novo):
+                                wb_cliente = load_workbook(caminho_novo)
+                                alterado = False
+ 
+                                if eh_ficticio and 'REPASSES_MO' not in wb_cliente.sheetnames:
+                                    ws_r = wb_cliente.create_sheet('REPASSES_MO')
+                                    ws_r.append(['ID', 'DATA_REPASSE', 'VALOR', 'REFERENCIA', 'STATUS'])
+                                    alterado = True
+                                    logger.info(f"Aba REPASSES_MO criada ao editar cliente: {nome}")
+ 
+                                if tem_caixa and 'REPASSES_CAIXA' not in wb_cliente.sheetnames:
+                                    ws_c = wb_cliente.create_sheet('REPASSES_CAIXA')
+                                    ws_c.append(['ID', 'DATA_REPASSE', 'VALOR', 'REFERENCIA', 'STATUS'])
+                                    alterado = True
+                                    logger.info(f"Aba REPASSES_CAIXA criada ao editar cliente: {nome}")
+ 
+                                if alterado:
+                                    wb_cliente.save(caminho_novo)
+                                wb_cliente.close()
+                            else:
+                                logger.warning(
+                                    f"Arquivo do cliente não encontrado em {caminho_novo} - "
+                                    f"não foi possível criar as abas de controle."
+                                )
+                        except Exception as e:
+                            logger.warning(f"Não foi possível preparar abas de controle para {nome}: {e}")
+                            messagebox.showwarning(
+                                "Atenção",
+                                f"Cliente atualizado, mas não foi possível preparar as abas "
+                                f"de controle automaticamente:\n{e}"
+                            )
+ 
                     messagebox.showinfo("Sucesso", "Cliente atualizado com sucesso!")
                     self.atualizar_lista_clientes()
                     janela_edicao.destroy()
-
+ 
                 except Exception as e:
                     messagebox.showerror("Erro", f"Erro ao salvar: {str(e)}")
-
+ 
             # ===== BOTÕES =====
             ttk.Separator(frame, orient='horizontal').grid(
-                row=36, column=0, columnspan=2, sticky='ew', pady=15
+                row=33, column=0, columnspan=2, sticky='ew', pady=15
             )
-
+ 
             frame_botoes = ttk.Frame(frame)
-            frame_botoes.grid(row=37, column=0, columnspan=2, pady=10)
-
+            frame_botoes.grid(row=34, column=0, columnspan=2, pady=10)
+ 
             btn_salvar = ttk.Button(frame_botoes, text="Salvar", command=salvar_alteracoes, style='Big.TButton')
             btn_salvar.pack(side='left', padx=5)
-
+ 
             ttk.Button(frame_botoes, text="Cancelar", command=janela_edicao.destroy, style='Big.TButton').pack(side='left', padx=5)
-
-            # Focar no primeiro campo
+ 
             nome_entry.focus_set()
-
+ 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao abrir editor: {str(e)}")
 
@@ -4154,8 +4474,16 @@ class SistemaEntradaDados:
             logger.error(f"Erro detalhado: {str(e)}")
 
 
-    def criar_arquivo_cliente(self, nome_cliente, endereco):
-        """Cria um novo arquivo Excel para o cliente sem depender do MODELO.xlsx"""
+    def criar_arquivo_cliente(self, nome_cliente, endereco, eh_ficticio=False, tem_caixa=False):
+        """Cria um novo arquivo Excel para o cliente sem depender do MODELO.xlsx
+
+        eh_ficticio=True: cria a aba REPASSES_MO (cliente ficticio de
+        gestao de mao de obra).
+        tem_caixa=True: cria a aba REPASSES_CAIXA (cliente real com
+        caixa de obra controlado pela construtora).
+        Os dois sao independentes - um arquivo pode ter as duas abas,
+        nenhuma, ou so uma delas.
+        """
         try:
             logger.debug(f"\nCriando arquivo para cliente: {nome_cliente}")
             logger.debug(f"PASTA_CLIENTES: {PASTA_CLIENTES}")
@@ -4169,7 +4497,7 @@ class SistemaEntradaDados:
 
             workbook = openpyxl.Workbook()
 
-            # ── Aba Dados ──
+            # -- Aba Dados --
             ws_dados = workbook.active
             ws_dados.title = 'Dados'
 
@@ -4183,7 +4511,7 @@ class SistemaEntradaDados:
                 cell = ws_dados.cell(row=1, column=col, value=nome_col)
                 cell.font = openpyxl.styles.Font(bold=True)
 
-            # ── Aba Contratos_ADM ──
+            # -- Aba Contratos_ADM --
             contratos_sheet = workbook.create_sheet("Contratos_ADM")
 
             blocos = ["CONTRATOS", "", "", "", "", "",
@@ -4210,6 +4538,24 @@ class SistemaEntradaDados:
 
             for col in range(1, len(headers) + 1):
                 contratos_sheet.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 15
+
+            # -- Aba REPASSES_MO (cliente ficticio de gestao de MO) --
+            if eh_ficticio:
+                ws_repasses_mo = workbook.create_sheet("REPASSES_MO")
+                colunas_repasses = ['ID', 'DATA_REPASSE', 'VALOR', 'REFERENCIA', 'STATUS']
+                for col, nome_col in enumerate(colunas_repasses, 1):
+                    cell = ws_repasses_mo.cell(row=1, column=col, value=nome_col)
+                    cell.font = openpyxl.styles.Font(bold=True)
+                logger.debug(f"Aba REPASSES_MO incluida para cliente ficticio: {nome_cliente}")
+
+            # -- Aba REPASSES_CAIXA (cliente real com caixa controlado) --
+            if tem_caixa:
+                ws_repasses_caixa = workbook.create_sheet("REPASSES_CAIXA")
+                colunas_repasses = ['ID', 'DATA_REPASSE', 'VALOR', 'REFERENCIA', 'STATUS']
+                for col, nome_col in enumerate(colunas_repasses, 1):
+                    cell = ws_repasses_caixa.cell(row=1, column=col, value=nome_col)
+                    cell.font = openpyxl.styles.Font(bold=True)
+                logger.debug(f"Aba REPASSES_CAIXA incluida para cliente com caixa controlado: {nome_cliente}")
 
             workbook.save(novo_arquivo)
             logger.info(f"Arquivo do cliente criado: {novo_arquivo}")
