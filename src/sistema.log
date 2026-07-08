@@ -12759,3 +12759,445 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-06-26 11:08:36,095 - INFO - ✅ Menu principal restaurado com sucesso
 2026-06-26 11:08:37,253 - INFO - Abrindo sistema de relatórios
 2026-06-26 11:19:17,792 - INFO - Sistema encerrado pelo usuário
+2026-06-29 09:46:50,451 - INFO - Configurações importadas com sucesso via src.config
+2026-06-29 09:46:50,773 - INFO - Configurações importadas com sucesso
+2026-06-29 09:46:50,774 - INFO - Configurações do sistema importadas com sucesso
+2026-06-29 09:46:52,899 - INFO - Sistema iniciado em modo: TESTE
+2026-06-29 09:47:02,645 - INFO - Abrindo gestão de medições
+2026-06-29 10:53:44,699 - INFO - Sistema encerrado pelo usuário
+2026-06-29 10:53:56,439 - INFO - Configurações importadas com sucesso via src.config
+2026-06-29 10:53:56,463 - INFO - Configurações importadas com sucesso
+2026-06-29 10:53:56,464 - INFO - Configurações do sistema importadas com sucesso
+2026-06-29 10:53:57,492 - INFO - Sistema iniciado em modo: TESTE
+2026-06-29 10:53:59,302 - INFO - Abrindo gestão de medições
+2026-06-29 11:25:18,431 - INFO - Sistema encerrado pelo usuário
+2026-07-01 08:46:14,118 - INFO - Configurações importadas com sucesso via src.config
+2026-07-01 08:46:14,168 - INFO - Configurações importadas com sucesso
+2026-07-01 08:46:14,169 - INFO - Configurações do sistema importadas com sucesso
+2026-07-01 08:46:17,038 - INFO - Sistema iniciado em modo: TESTE
+2026-07-01 08:46:49,675 - INFO - Abrindo sistema de relatórios
+2026-07-01 18:06:46,817 - INFO - Sistema encerrado pelo usuário
+2026-07-07 19:29:01,811 - INFO - Configurações importadas com sucesso via src.config
+2026-07-07 19:29:01,840 - INFO - Configurações importadas com sucesso
+2026-07-07 19:29:01,840 - INFO - Configurações do sistema importadas com sucesso
+2026-07-07 19:29:03,538 - INFO - Sistema iniciado em modo: TESTE
+2026-07-07 19:29:16,704 - INFO - Abrindo sistema de relatórios
+2026-07-07 19:30:36,639 - INFO - Abrindo sistema de relatórios
+2026-07-07 19:39:04,988 - INFO - Sistema encerrado pelo usuário
+2026-07-07 20:07:11,279 - INFO - Configurações importadas com sucesso via src.config
+2026-07-07 20:07:11,306 - INFO - Configurações importadas com sucesso
+2026-07-07 20:07:11,329 - INFO - Configurações do sistema importadas com sucesso
+2026-07-07 20:07:12,381 - INFO - Sistema iniciado em modo: TESTE
+2026-07-07 20:07:14,347 - INFO - Abrindo sistema de relatórios
+2026-07-07 20:13:33,915 - INFO - Sistema encerrado pelo usuário
+2026-07-07 20:17:34,390 - INFO - Configurações importadas com sucesso via src.config
+2026-07-07 20:17:34,449 - INFO - Configurações importadas com sucesso
+2026-07-07 20:17:34,455 - INFO - Configurações do sistema importadas com sucesso
+2026-07-07 20:17:37,933 - INFO - Sistema iniciado em modo: TESTE
+2026-07-07 20:17:44,552 - INFO - Abrindo sistema de relatórios
+2026-07-08 07:26:28,022 - INFO - Configurações importadas com sucesso via src.config
+2026-07-08 07:26:28,053 - INFO - Configurações importadas com sucesso
+2026-07-08 07:26:28,054 - INFO - Configurações do sistema importadas com sucesso
+2026-07-08 07:26:29,072 - INFO - Sistema iniciado em modo: TESTE
+2026-07-08 07:26:30,902 - INFO - Abrindo sistema de relatórios
+2026-07-08 11:30:24,391 - INFO - Configurações importadas com sucesso via src.config
+2026-07-08 11:30:24,423 - INFO - Configurações importadas com sucesso
+2026-07-08 11:30:24,423 - INFO - Configurações do sistema importadas com sucesso
+2026-07-08 11:30:26,314 - INFO - Sistema iniciado em modo: TESTE
+2026-07-08 11:30:33,716 - INFO - Abrindo sistema de entrada de dados
+2026-07-08 11:30:35,616 - INFO - Proteções contra perda de dados configuradas
+2026-07-08 11:30:36,174 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-08 12:20:00,963 - INFO - Configurações importadas com sucesso via src.config
+2026-07-08 12:20:00,988 - INFO - Configurações importadas com sucesso
+2026-07-08 12:20:00,990 - INFO - Configurações do sistema importadas com sucesso
+2026-07-08 12:20:02,007 - INFO - Sistema iniciado em modo: TESTE
+2026-07-08 12:20:04,836 - INFO - Abrindo sistema de relatórios
+2026-07-08 12:22:40,394 - INFO - Sistema encerrado pelo usuário
+2026-07-08 15:28:01,904 - INFO - Configurações importadas com sucesso via src.config
+2026-07-08 15:28:01,957 - INFO - Configurações importadas com sucesso
+2026-07-08 15:28:01,958 - INFO - Configurações do sistema importadas com sucesso
+2026-07-08 15:28:03,679 - INFO - Sistema iniciado em modo: TESTE
+2026-07-08 15:29:49,005 - INFO - Abrindo sistema de entrada de dados
+2026-07-08 15:29:51,115 - INFO - Proteções contra perda de dados configuradas
+2026-07-08 15:29:51,578 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-08 15:33:32,001 - INFO - Arquivo do cliente criado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\RVR - SPRC - CASA JD PETROPOLIS.xlsx
+2026-07-08 15:33:42,007 - INFO - Cliente selecionado com sucesso: RVR - SPRC - CASA JD PETROPOLIS
+2026-07-08 15:34:09,371 - INFO - ==================================================
+2026-07-08 15:34:09,372 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:34:09,372 - INFO - ==================================================
+2026-07-08 15:34:09,373 - INFO - Fornecedor: GILSON LEITE DA COSTA
+2026-07-08 15:34:10,479 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 383!
+2026-07-08 15:34:10,480 - INFO - Dados carregados: GILSON LEITE DA COSTA
+2026-07-08 15:34:10,481 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:34:10,484 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:34:10,485 - INFO - ==================================================
+2026-07-08 15:34:47,643 - INFO - Iniciando adição de dados - Cliente: RVR - SPRC - CASA JD PETROPOLIS
+2026-07-08 15:34:47,645 - INFO - ✅ Dados adicionados - Total: 1
+2026-07-08 15:34:48,743 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 383!
+2026-07-08 15:34:50,442 - INFO - Dados adicionados com sucesso - Cliente: RVR - SPRC - CASA JD PETROPOLIS, Total: 1
+2026-07-08 15:34:51,907 - INFO - ==================================================
+2026-07-08 15:34:51,907 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:34:51,908 - INFO - ==================================================
+2026-07-08 15:34:51,908 - INFO - Fornecedor: GILSON LEITE DA COSTA
+2026-07-08 15:34:52,991 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 383!
+2026-07-08 15:34:52,992 - INFO - Dados carregados: GILSON LEITE DA COSTA
+2026-07-08 15:34:52,993 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:34:52,995 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:34:52,995 - INFO - ==================================================
+2026-07-08 15:35:47,618 - INFO - Iniciando adição de dados - Cliente: RVR - SPRC - CASA JD PETROPOLIS
+2026-07-08 15:35:47,620 - INFO - ✅ Dados adicionados - Total: 2
+2026-07-08 15:35:52,304 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 383!
+2026-07-08 15:35:54,003 - INFO - Dados adicionados com sucesso - Cliente: RVR - SPRC - CASA JD PETROPOLIS, Total: 3
+2026-07-08 15:36:27,612 - INFO - ============================================================
+2026-07-08 15:36:27,612 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-07-08 15:36:27,613 - INFO - ============================================================
+2026-07-08 15:36:27,614 - INFO - Cliente atual: RVR - SPRC - CASA JD PETROPOLIS
+2026-07-08 15:36:27,614 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-07-08 15:36:27,615 - INFO - 📋 Últimos 3 lançamentos:
+2026-07-08 15:36:27,616 - INFO -   1. GILSON LEITE DA COSTA - DIÁRIA - R$ 4920.00
+2026-07-08 15:36:27,617 - INFO -   2. GILSON LEITE DA COSTA - TRANSPORTE - R$ 1269.60
+2026-07-08 15:36:27,617 - INFO -   3. GILSON LEITE DA COSTA - CAFÉ - R$ 138.00
+2026-07-08 15:36:27,618 - INFO - 🆕 Criando novo visualizador
+2026-07-08 15:36:27,619 - INFO - 🔍 Visualizador iniciado com 3 lançamentos
+2026-07-08 15:36:27,770 - INFO - ✅ Visualizador criado com 3 lançamento(s)
+2026-07-08 15:36:27,772 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-07-08 15:36:27,773 - INFO - ============================================================
+2026-07-08 15:37:11,291 - INFO - Iniciando envio de dados - Cliente: RVR - SPRC - CASA JD PETROPOLIS, Registros: 3
+2026-07-08 15:37:11,292 - INFO - Obtendo dados do visualizador
+2026-07-08 15:37:11,292 - INFO - Total de registros a processar: 3
+2026-07-08 15:37:11,293 - INFO - Datas que serão afetadas pela inserção: ['05/07/2026']
+2026-07-08 15:37:11,294 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\RVR - SPRC - CASA JD PETROPOLIS.xlsx
+2026-07-08 15:37:11,294 - INFO - Verificando integridade dos IDs antes da inserção
+2026-07-08 15:37:11,350 - INFO - 📋 Processando lançamento 1/3: GILSON LEITE DA COSTA - DIÁRIA
+2026-07-08 15:37:11,351 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:37:11,351 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:37:11,352 - INFO - Dados: GILSON LEITE DA COSTA | DIÁRIA | NF:  | R$ 4920.00 | 06/07/2026
+2026-07-08 15:37:11,352 - INFO - ✅ Nenhuma duplicata para: GILSON LEITE DA COSTA - DIÁRIA
+2026-07-08 15:37:11,353 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:37:11,353 - INFO - 📋 Processando lançamento 2/3: GILSON LEITE DA COSTA - TRANSPORTE
+2026-07-08 15:37:11,353 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:37:11,354 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:37:11,354 - INFO - Dados: GILSON LEITE DA COSTA | TRANSPORTE | NF:  | R$ 1269.60 | 06/07/2026
+2026-07-08 15:37:11,355 - INFO - ✅ Nenhuma duplicata para: GILSON LEITE DA COSTA - TRANSPORTE
+2026-07-08 15:37:11,356 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:37:11,356 - INFO - 📋 Processando lançamento 3/3: GILSON LEITE DA COSTA - CAFÉ
+2026-07-08 15:37:11,357 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:37:11,357 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:37:11,358 - INFO - Dados: GILSON LEITE DA COSTA | CAFÉ | NF:  | R$ 138.00 | 06/07/2026
+2026-07-08 15:37:11,358 - INFO - ✅ Nenhuma duplicata para: GILSON LEITE DA COSTA - CAFÉ
+2026-07-08 15:37:11,359 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:37:11,359 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-07-08 15:37:11,360 - INFO -    ✅ Lançamentos válidos: 3
+2026-07-08 15:37:11,360 - INFO -    ❌ Possíveis duplicatas: 0
+2026-07-08 15:37:11,362 - INFO - Lançamento inserido com ID 1 na linha 2
+2026-07-08 15:37:11,363 - INFO - Lançamento inserido com ID 2 na linha 3
+2026-07-08 15:37:11,364 - INFO - Lançamento inserido com ID 3 na linha 4
+2026-07-08 15:37:11,435 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-07-08 15:37:17,473 - INFO - Limpando 3 registros salvos da visualização
+2026-07-08 15:37:17,490 - INFO - Visualizador fechado - todos os registros foram processados
+2026-07-08 15:37:17,491 - INFO - Dados salvos removidos com sucesso da visualização
+2026-07-08 15:38:20,497 - INFO - ==================================================
+2026-07-08 15:38:20,498 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:38:20,499 - INFO - ==================================================
+2026-07-08 15:38:20,499 - INFO - Fornecedor: JADIR SILVEIRA DA SILVA
+2026-07-08 15:38:21,749 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 551!
+2026-07-08 15:38:21,750 - INFO - Dados carregados: JADIR SILVEIRA DA SILVA
+2026-07-08 15:38:21,751 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:38:21,752 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:38:21,753 - INFO - ==================================================
+2026-07-08 15:38:38,953 - INFO - Iniciando adição de dados - Cliente: RVR - SPRC - CASA JD PETROPOLIS
+2026-07-08 15:38:38,955 - INFO - ✅ Dados adicionados - Total: 1
+2026-07-08 15:38:40,094 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 551!
+2026-07-08 15:38:41,130 - INFO - Dados adicionados com sucesso - Cliente: RVR - SPRC - CASA JD PETROPOLIS, Total: 1
+2026-07-08 15:38:52,425 - INFO - ==================================================
+2026-07-08 15:38:52,426 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:38:52,426 - INFO - ==================================================
+2026-07-08 15:38:52,427 - INFO - Fornecedor: JOSE CARLOS DOS REIS
+2026-07-08 15:38:53,701 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 576!
+2026-07-08 15:38:53,701 - INFO - Dados carregados: JOSE CARLOS DOS REIS
+2026-07-08 15:38:53,702 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:38:53,704 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:38:53,705 - INFO - ==================================================
+2026-07-08 15:39:08,882 - INFO - Iniciando adição de dados - Cliente: RVR - SPRC - CASA JD PETROPOLIS
+2026-07-08 15:39:08,883 - INFO - ✅ Dados adicionados - Total: 2
+2026-07-08 15:39:10,068 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 576!
+2026-07-08 15:39:11,465 - INFO - Dados adicionados com sucesso - Cliente: RVR - SPRC - CASA JD PETROPOLIS, Total: 2
+2026-07-08 15:39:13,522 - INFO - ============================================================
+2026-07-08 15:39:13,523 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-07-08 15:39:13,523 - INFO - ============================================================
+2026-07-08 15:39:13,524 - INFO - Cliente atual: RVR - SPRC - CASA JD PETROPOLIS
+2026-07-08 15:39:13,524 - INFO - Dados disponíveis: 2 lançamento(s)
+2026-07-08 15:39:13,525 - INFO - 📋 Últimos 3 lançamentos:
+2026-07-08 15:39:13,525 - INFO -   1. JADIR SILVEIRA DA SILVA - DIÁRIA - R$ 2400.00
+2026-07-08 15:39:13,526 - INFO -   2. JOSE CARLOS DOS REIS - DIÁRIA - R$ 420.00
+2026-07-08 15:39:13,526 - INFO - 🆕 Criando novo visualizador
+2026-07-08 15:39:13,527 - INFO - 🔍 Visualizador iniciado com 2 lançamentos
+2026-07-08 15:39:13,573 - INFO - ✅ Visualizador criado com 2 lançamento(s)
+2026-07-08 15:39:13,575 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-07-08 15:39:13,576 - INFO - ============================================================
+2026-07-08 15:39:21,189 - WARNING - Erro ao preencher data relatório: time data '☐' does not match format '%d/%m/%Y'
+2026-07-08 15:39:27,729 - INFO - ============================================================
+2026-07-08 15:39:27,730 - INFO - INICIANDO SALVAMENTO DE EDIÇÃO INDIVIDUAL
+2026-07-08 15:39:27,730 - INFO - Índice do lançamento: 0
+2026-07-08 15:39:27,732 - INFO - Dados para atualização:
+2026-07-08 15:39:27,732 - INFO -   data: 08/07/2026
+2026-07-08 15:39:27,733 - INFO -   tp_desp: 1
+2026-07-08 15:39:27,733 - INFO -   cnpj_cpf: 390.732.542-72
+2026-07-08 15:39:27,734 - INFO -   nome: JADIR SILVEIRA DA SILVA
+2026-07-08 15:39:27,734 - INFO -   forma_pagamento: PIX
+2026-07-08 15:39:27,735 - INFO -   referencia: DIÁRIA
+2026-07-08 15:39:27,735 - INFO -   etapa_obra: 
+2026-07-08 15:39:27,736 - INFO -   insumo: 
+2026-07-08 15:39:27,736 - INFO -   nf: 
+2026-07-08 15:39:27,737 - INFO -   vr_unit: 160.00
+2026-07-08 15:39:27,737 - INFO -   dias: 5.0
+2026-07-08 15:39:27,738 - INFO -   valor: 800.00
+2026-07-08 15:39:27,738 - INFO -   dt_vencto: 06/07/2026
+2026-07-08 15:39:27,739 - INFO -   categoria: MO
+2026-07-08 15:39:27,739 - INFO -   dados_bancarios: PIX: (31) 99978-3597
+2026-07-08 15:39:27,740 - INFO -   observacao: 
+2026-07-08 15:39:27,741 - INFO - ============================================================
+2026-07-08 15:39:27,742 - INFO - CALLBACK: atualizar_lancamento
+2026-07-08 15:39:27,742 - INFO - Índice recebido: 0
+2026-07-08 15:39:27,743 - INFO - Tipo do índice: <class 'int'>
+2026-07-08 15:39:27,743 - INFO - Total de lançamentos disponíveis: 2
+2026-07-08 15:39:29,003 - INFO - ✓ LANÇAMENTO ATUALIZADO COM SUCESSO!
+2026-07-08 15:39:29,003 - INFO - ============================================================
+2026-07-08 15:39:29,004 - INFO - ✓ EDIÇÃO SALVA COM SUCESSO!
+2026-07-08 15:39:29,004 - INFO - ============================================================
+2026-07-08 15:39:37,297 - INFO - Iniciando envio de dados - Cliente: RVR - SPRC - CASA JD PETROPOLIS, Registros: 2
+2026-07-08 15:39:37,298 - INFO - Obtendo dados do visualizador
+2026-07-08 15:39:37,299 - INFO - Total de registros a processar: 2
+2026-07-08 15:39:37,299 - INFO - Datas que serão afetadas pela inserção: ['08/07/2026', '05/07/2026']
+2026-07-08 15:39:37,300 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\RVR - SPRC - CASA JD PETROPOLIS.xlsx
+2026-07-08 15:39:37,301 - INFO - Verificando integridade dos IDs antes da inserção
+2026-07-08 15:39:37,349 - INFO - 📋 Processando lançamento 1/2: JADIR SILVEIRA DA SILVA - DIÁRIA
+2026-07-08 15:39:37,350 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:39:37,351 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:39:37,351 - INFO - Dados: JADIR SILVEIRA DA SILVA | DIÁRIA | NF:  | R$ 800.00 | 06/07/2026
+2026-07-08 15:39:37,352 - INFO - ✅ Nenhuma duplicata para: JADIR SILVEIRA DA SILVA - DIÁRIA
+2026-07-08 15:39:37,352 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:39:37,353 - INFO - 📋 Processando lançamento 2/2: JOSE CARLOS DOS REIS - DIÁRIA
+2026-07-08 15:39:37,353 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:39:37,355 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:39:37,355 - INFO - Dados: JOSE CARLOS DOS REIS | DIÁRIA | NF:  | R$ 420.00 | 06/07/2026
+2026-07-08 15:39:37,356 - INFO - ✅ Nenhuma duplicata para: JOSE CARLOS DOS REIS - DIÁRIA
+2026-07-08 15:39:37,357 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:39:37,357 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-07-08 15:39:37,358 - INFO -    ✅ Lançamentos válidos: 2
+2026-07-08 15:39:37,358 - INFO -    ❌ Possíveis duplicatas: 0
+2026-07-08 15:39:37,360 - INFO - Lançamento inserido com ID 4 na linha 5
+2026-07-08 15:39:37,361 - INFO - Lançamento inserido com ID 5 na linha 6
+2026-07-08 15:39:37,412 - INFO - Iniciando verificação de recálculo para 2 datas
+2026-07-08 15:39:39,456 - INFO - Limpando 2 registros salvos da visualização
+2026-07-08 15:39:39,473 - INFO - Visualizador fechado - todos os registros foram processados
+2026-07-08 15:39:39,474 - INFO - Dados salvos removidos com sucesso da visualização
+2026-07-08 15:40:07,925 - INFO - ✅ Edição do lançamento ID 4 salva com sucesso
+2026-07-08 15:40:26,713 - INFO - Voltando ao menu principal
+2026-07-08 15:40:26,798 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-08 15:40:26,806 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-08 15:40:26,988 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-08 15:40:28,097 - INFO - Abrindo sistema de relatórios
+2026-07-08 15:42:22,464 - INFO - Abrindo sistema de entrada de dados
+2026-07-08 15:42:23,005 - INFO - Proteções contra perda de dados configuradas
+2026-07-08 15:42:23,088 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-08 15:43:38,297 - INFO - Arquivo do cliente criado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EMILIA MARGARETH GONZAGA ALVES.xlsx
+2026-07-08 15:43:44,825 - INFO - Cliente selecionado com sucesso: EMILIA MARGARETH GONZAGA ALVES
+2026-07-08 15:43:56,944 - INFO - ==================================================
+2026-07-08 15:43:56,944 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:43:56,945 - INFO - ==================================================
+2026-07-08 15:43:56,945 - INFO - Fornecedor: ROGÉRIO VASCONCELOS SANTOS
+2026-07-08 15:43:58,147 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 935!
+2026-07-08 15:43:58,148 - INFO - Dados carregados: ROGÉRIO VASCONCELOS SANTOS
+2026-07-08 15:43:58,149 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:43:58,151 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:43:58,152 - INFO - ==================================================
+2026-07-08 15:44:39,151 - INFO - Iniciando adição de dados - Cliente: EMILIA MARGARETH GONZAGA ALVES
+2026-07-08 15:44:39,153 - INFO - ✅ Dados adicionados - Total: 1
+2026-07-08 15:44:40,358 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 935!
+2026-07-08 15:44:41,830 - INFO - Dados adicionados com sucesso - Cliente: EMILIA MARGARETH GONZAGA ALVES, Total: 1
+2026-07-08 15:44:49,303 - INFO - ==================================================
+2026-07-08 15:44:49,304 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:44:49,304 - INFO - ==================================================
+2026-07-08 15:44:49,305 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-07-08 15:44:50,469 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 66!
+2026-07-08 15:44:50,469 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-07-08 15:44:50,470 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:44:50,471 - INFO - ✓ Referência preenchida: PLOTAGENS
+2026-07-08 15:44:50,473 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:44:50,473 - INFO - ==================================================
+2026-07-08 15:45:01,279 - INFO - Iniciando adição de dados - Cliente: EMILIA MARGARETH GONZAGA ALVES
+2026-07-08 15:45:01,281 - INFO - ✅ Dados adicionados - Total: 2
+2026-07-08 15:45:02,465 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 66!
+2026-07-08 15:45:03,847 - INFO - Dados adicionados com sucesso - Cliente: EMILIA MARGARETH GONZAGA ALVES, Total: 2
+2026-07-08 15:45:22,895 - INFO - ==================================================
+2026-07-08 15:45:22,896 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:45:22,896 - INFO - ==================================================
+2026-07-08 15:45:22,897 - INFO - Fornecedor: ADALMO ANTONIO DA SILVA
+2026-07-08 15:45:24,036 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 11!
+2026-07-08 15:45:24,037 - INFO - Dados carregados: ADALMO ANTONIO DA SILVA
+2026-07-08 15:45:24,038 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:45:24,041 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:45:24,041 - INFO - ==================================================
+2026-07-08 15:45:47,063 - INFO - Iniciando adição de dados - Cliente: EMILIA MARGARETH GONZAGA ALVES
+2026-07-08 15:45:47,065 - INFO - ✅ Dados adicionados - Total: 3
+2026-07-08 15:45:48,297 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 11!
+2026-07-08 15:45:49,551 - INFO - Dados adicionados com sucesso - Cliente: EMILIA MARGARETH GONZAGA ALVES, Total: 3
+2026-07-08 15:46:34,063 - INFO - ==================================================
+2026-07-08 15:46:34,063 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:46:34,064 - INFO - ==================================================
+2026-07-08 15:46:34,064 - INFO - Fornecedor: ELITE EPIS
+2026-07-08 15:46:35,241 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 344!
+2026-07-08 15:46:35,241 - INFO - Dados carregados: ELITE EPIS
+2026-07-08 15:46:35,242 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:46:35,243 - INFO - ✓ Referência preenchida: EQUIPAMENTOS DE PROTEÇÃO
+2026-07-08 15:46:35,245 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:46:35,246 - INFO - ==================================================
+2026-07-08 15:47:05,535 - INFO - Iniciando adição de dados - Cliente: EMILIA MARGARETH GONZAGA ALVES
+2026-07-08 15:47:05,536 - INFO - ✅ Dados adicionados - Total: 4
+2026-07-08 15:47:06,751 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 344!
+2026-07-08 15:47:08,046 - INFO - Dados adicionados com sucesso - Cliente: EMILIA MARGARETH GONZAGA ALVES, Total: 4
+2026-07-08 15:47:20,879 - INFO - ==================================================
+2026-07-08 15:47:20,879 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:47:20,880 - INFO - ==================================================
+2026-07-08 15:47:20,881 - INFO - Fornecedor: MOTOBOY
+2026-07-08 15:47:22,129 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 781!
+2026-07-08 15:47:22,130 - INFO - Dados carregados: MOTOBOY
+2026-07-08 15:47:22,131 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:47:22,133 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:47:22,134 - INFO - ==================================================
+2026-07-08 15:47:39,470 - INFO - Iniciando adição de dados - Cliente: EMILIA MARGARETH GONZAGA ALVES
+2026-07-08 15:47:39,472 - INFO - ✅ Dados adicionados - Total: 5
+2026-07-08 15:47:40,743 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 781!
+2026-07-08 15:47:42,936 - INFO - Dados adicionados com sucesso - Cliente: EMILIA MARGARETH GONZAGA ALVES, Total: 5
+2026-07-08 15:47:54,374 - INFO - ==================================================
+2026-07-08 15:47:54,375 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-08 15:47:54,375 - INFO - ==================================================
+2026-07-08 15:47:54,376 - INFO - Fornecedor: VR AREIA E BRITA
+2026-07-08 15:47:55,628 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1080!
+2026-07-08 15:47:55,629 - INFO - Dados carregados: VR AREIA E BRITA
+2026-07-08 15:47:55,630 - INFO - Campos preenchidos com sucesso!
+2026-07-08 15:47:55,632 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-08 15:47:55,633 - INFO - ==================================================
+2026-07-08 15:48:20,390 - INFO - Iniciando adição de dados - Cliente: EMILIA MARGARETH GONZAGA ALVES
+2026-07-08 15:48:20,392 - INFO - ✅ Dados adicionados - Total: 6
+2026-07-08 15:48:21,550 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1080!
+2026-07-08 15:48:23,400 - INFO - Dados adicionados com sucesso - Cliente: EMILIA MARGARETH GONZAGA ALVES, Total: 6
+2026-07-08 15:48:24,951 - INFO - ============================================================
+2026-07-08 15:48:24,952 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-07-08 15:48:24,952 - INFO - ============================================================
+2026-07-08 15:48:24,953 - INFO - Cliente atual: EMILIA MARGARETH GONZAGA ALVES
+2026-07-08 15:48:24,953 - INFO - Dados disponíveis: 6 lançamento(s)
+2026-07-08 15:48:24,954 - INFO - 📋 Últimos 3 lançamentos:
+2026-07-08 15:48:24,954 - INFO -   1. ELITE EPIS - EPI - R$ 560.00
+2026-07-08 15:48:24,955 - INFO -   2. MOTOBOY - FRETE - R$ 85.00
+2026-07-08 15:48:24,955 - INFO -   3. VR AREIA E BRITA - AREIA E BRITA - R$ 2350.00
+2026-07-08 15:48:24,956 - INFO - 🆕 Criando novo visualizador
+2026-07-08 15:48:24,956 - INFO - 🔍 Visualizador iniciado com 6 lançamentos
+2026-07-08 15:48:24,998 - INFO - ✅ Visualizador criado com 6 lançamento(s)
+2026-07-08 15:48:24,999 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-07-08 15:48:25,001 - INFO - ============================================================
+2026-07-08 15:48:42,054 - INFO - Iniciando envio de dados - Cliente: EMILIA MARGARETH GONZAGA ALVES, Registros: 6
+2026-07-08 15:48:42,055 - INFO - Obtendo dados do visualizador
+2026-07-08 15:48:42,055 - INFO - Total de registros a processar: 6
+2026-07-08 15:48:42,056 - INFO - Datas que serão afetadas pela inserção: ['20/07/2026']
+2026-07-08 15:48:42,057 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\EMILIA MARGARETH GONZAGA ALVES.xlsx
+2026-07-08 15:48:42,057 - INFO - Verificando integridade dos IDs antes da inserção
+2026-07-08 15:48:42,109 - INFO - 📋 Processando lançamento 1/6: ROGÉRIO VASCONCELOS SANTOS - ABERTURA CRO
+2026-07-08 15:48:42,110 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:48:42,111 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:48:42,111 - INFO - Dados: ROGÉRIO VASCONCELOS SANTOS | ABERTURA CRO | NF:  | R$ 580.00 | 06/07/2026
+2026-07-08 15:48:42,112 - INFO - ✅ Nenhuma duplicata para: ROGÉRIO VASCONCELOS SANTOS - ABERTURA CRO
+2026-07-08 15:48:42,113 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:48:42,114 - INFO - 📋 Processando lançamento 2/6: ANCORA PAPELARIA - PLOTAGENS
+2026-07-08 15:48:42,114 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:48:42,114 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:48:42,115 - INFO - Dados: ANCORA PAPELARIA | PLOTAGENS | NF:  | R$ 180.00 | 06/07/2026
+2026-07-08 15:48:42,116 - INFO - ✅ Nenhuma duplicata para: ANCORA PAPELARIA - PLOTAGENS
+2026-07-08 15:48:42,116 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:48:42,117 - INFO - 📋 Processando lançamento 3/6: ADALMO ANTONIO DA SILVA - DIÁRIA
+2026-07-08 15:48:42,118 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:48:42,118 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:48:42,119 - INFO - Dados: ADALMO ANTONIO DA SILVA | DIÁRIA | NF:  | R$ 2100.00 | 06/07/2026
+2026-07-08 15:48:42,119 - INFO - ✅ Nenhuma duplicata para: ADALMO ANTONIO DA SILVA - DIÁRIA
+2026-07-08 15:48:42,120 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:48:42,121 - INFO - 📋 Processando lançamento 4/6: ELITE EPIS - EPI
+2026-07-08 15:48:42,121 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:48:42,122 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:48:42,122 - INFO - Dados: ELITE EPIS | EPI | NF:  | R$ 560.00 | 10/07/2026
+2026-07-08 15:48:42,122 - INFO - ✅ Nenhuma duplicata para: ELITE EPIS - EPI
+2026-07-08 15:48:42,123 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:48:42,124 - INFO - 📋 Processando lançamento 5/6: MOTOBOY - FRETE
+2026-07-08 15:48:42,124 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:48:42,125 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:48:42,126 - INFO - Dados: MOTOBOY | FRETE | NF:  | R$ 85.00 | 06/07/2026
+2026-07-08 15:48:42,126 - INFO - ✅ Nenhuma duplicata para: MOTOBOY - FRETE
+2026-07-08 15:48:42,127 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:48:42,127 - INFO - 📋 Processando lançamento 6/6: VR AREIA E BRITA - AREIA E BRITA
+2026-07-08 15:48:42,128 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-08 15:48:42,128 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-08 15:48:42,129 - INFO - Dados: VR AREIA E BRITA | AREIA E BRITA | NF:  | R$ 2350.00 | 10/07/2026
+2026-07-08 15:48:42,129 - INFO - ✅ Nenhuma duplicata para: VR AREIA E BRITA - AREIA E BRITA
+2026-07-08 15:48:42,130 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-08 15:48:42,130 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-07-08 15:48:42,132 - INFO -    ✅ Lançamentos válidos: 6
+2026-07-08 15:48:42,134 - INFO -    ❌ Possíveis duplicatas: 0
+2026-07-08 15:48:42,135 - INFO - Lançamento inserido com ID 1 na linha 2
+2026-07-08 15:48:42,136 - INFO - Lançamento inserido com ID 2 na linha 3
+2026-07-08 15:48:42,137 - INFO - Lançamento inserido com ID 3 na linha 4
+2026-07-08 15:48:42,138 - INFO - Lançamento inserido com ID 4 na linha 5
+2026-07-08 15:48:42,139 - INFO - Lançamento inserido com ID 5 na linha 6
+2026-07-08 15:48:42,139 - INFO - Lançamento inserido com ID 6 na linha 7
+2026-07-08 15:48:42,187 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-07-08 15:48:44,325 - INFO - Limpando 6 registros salvos da visualização
+2026-07-08 15:48:44,345 - INFO - Visualizador fechado - todos os registros foram processados
+2026-07-08 15:48:44,348 - INFO - Dados salvos removidos com sucesso da visualização
+2026-07-08 15:48:46,246 - INFO - Voltando ao menu principal
+2026-07-08 15:48:46,348 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-08 15:48:46,349 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-08 15:48:46,506 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-08 15:48:47,870 - INFO - Abrindo sistema de relatórios
+2026-07-08 15:52:46,733 - INFO - Abrindo sistema de entrada de dados
+2026-07-08 15:52:47,506 - INFO - Proteções contra perda de dados configuradas
+2026-07-08 15:52:47,604 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-08 15:54:19,812 - INFO - Voltando ao menu principal
+2026-07-08 15:54:19,918 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-08 15:54:19,921 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-08 15:54:20,167 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-08 15:54:21,180 - INFO - Abrindo sistema de relatórios
+2026-07-08 15:57:02,523 - INFO - Abrindo sistema de relatórios
+2026-07-08 16:10:30,319 - INFO - Sistema encerrado pelo usuário
+2026-07-08 16:11:25,916 - INFO - Configurações importadas com sucesso via src.config
+2026-07-08 16:11:25,986 - INFO - Configurações importadas com sucesso
+2026-07-08 16:11:25,991 - INFO - Configurações do sistema importadas com sucesso
+2026-07-08 16:11:27,246 - INFO - Sistema iniciado em modo: TESTE
+2026-07-08 16:11:32,486 - INFO - Abrindo sistema de relatórios
+2026-07-08 16:13:04,533 - INFO - Sistema encerrado pelo usuário
+2026-07-08 16:19:04,751 - INFO - Configurações importadas com sucesso via src.config
+2026-07-08 16:19:04,773 - INFO - Configurações importadas com sucesso
+2026-07-08 16:19:04,774 - INFO - Configurações do sistema importadas com sucesso
+2026-07-08 16:19:05,594 - INFO - Sistema iniciado em modo: TESTE
+2026-07-08 16:19:07,316 - INFO - Abrindo sistema de relatórios
+2026-07-08 16:22:29,988 - INFO - Sistema encerrado pelo usuário
+2026-07-08 16:29:38,722 - INFO - Configurações importadas com sucesso via src.config
+2026-07-08 16:29:38,776 - INFO - Configurações importadas com sucesso
+2026-07-08 16:29:38,802 - INFO - Configurações do sistema importadas com sucesso
+2026-07-08 16:29:40,556 - INFO - Sistema iniciado em modo: TESTE
+2026-07-08 16:29:43,272 - INFO - Abrindo sistema de relatórios
+2026-07-08 16:40:03,319 - INFO - Sistema encerrado pelo usuário
+2026-07-08 16:40:35,899 - INFO - Configurações importadas com sucesso via src.config
+2026-07-08 16:40:35,932 - INFO - Configurações importadas com sucesso
+2026-07-08 16:40:35,934 - INFO - Configurações do sistema importadas com sucesso
+2026-07-08 16:40:36,662 - INFO - Sistema iniciado em modo: TESTE
+2026-07-08 16:40:38,461 - INFO - Abrindo sistema de relatórios
+2026-07-08 16:43:34,316 - INFO - Abrindo sistema de relatórios
+2026-07-08 16:49:26,186 - INFO - Sistema encerrado pelo usuário
+2026-07-08 16:55:41,788 - INFO - Configurações importadas com sucesso via src.config
+2026-07-08 16:55:41,813 - INFO - Configurações importadas com sucesso
+2026-07-08 16:55:41,813 - INFO - Configurações do sistema importadas com sucesso
+2026-07-08 16:55:42,532 - INFO - Sistema iniciado em modo: TESTE
+2026-07-08 16:55:45,928 - INFO - Abrindo sistema de relatórios
+2026-07-08 17:01:55,788 - INFO - Sistema encerrado pelo usuário
