@@ -259,7 +259,10 @@ except Exception as e:
     raise
 
 from src.config.window_config import configurar_janela
-    
+
+from src.fornecedores.gerenciador_cpfs_criados import GerenciadorCPFsCriados
+from src.widgets.combobox_autocompletar import ComboboxAutocompletar
+from src.fornecedores.cache_fornecedores import CacheFornecedores    
 
 # Modificação para usar o método de utils.py
 from src.config.utils import buscar_dados_bancarios_fornecedor
@@ -1446,15 +1449,34 @@ class EditorLancamento:
         self.referencia.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
         row += 1
 
-        # Etapa da Obra
+        # Etapa da Obra — agora com autocompletar, vinculado à lista real
+        from src.configuracoes_sistema import GerenciadorConfiguracoes
+        from src.widgets.combobox_autocompletar import ComboboxAutocompletar
+
         ttk.Label(frame_despesa, text="Etapa da Obra:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        self.etapa_obra = ttk.Entry(frame_despesa, width=30)
+        etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()
+        self.etapa_obra = ComboboxAutocompletar(
+            frame_despesa,
+            values=etapas_obra,
+            config_key='etapas_obra',
+            config_manager=GerenciadorConfiguracoes,
+            width=28,
+            state='normal'
+        )
         self.etapa_obra.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
         row += 1
-        
-        # Insumo
+
+        # Insumo — agora com autocompletar, vinculado à lista real
         ttk.Label(frame_despesa, text="Insumo:").grid(row=row, column=0, sticky='w', padx=5, pady=2)
-        self.insumo = ttk.Entry(frame_despesa, width=30)
+        insumos = GerenciadorConfiguracoes.get_insumos()
+        self.insumo = ComboboxAutocompletar(
+            frame_despesa,
+            values=insumos,
+            config_key='insumos',
+            config_manager=GerenciadorConfiguracoes,
+            width=28,
+            state='normal'
+        )
         self.insumo.grid(row=row, column=1, sticky='ew', padx=5, pady=2)
         row += 1
 
@@ -1824,12 +1846,6 @@ class EditorEmMassa:
         self._criar_campo_checkbox(campos_frame, 4, "dt_vencto", "Data de Vencimento:", 
                                    DateEntry, date_pattern='dd/mm/yyyy', locale='pt_BR', width=20)
         
-        # self._criar_campo_checkbox(campos_frame, 5, "forma_pagamento", "Forma de Pagamento:", 
-        #                            ttk.Combobox, values=['PIX', 'TED', 'DINHEIRO'], 
-        #                            state='readonly', width=20)
-        
-        # self._criar_campo_checkbox(campos_frame, 6, "observacao", "Observação:", 
-        #                            ttk.Entry, width=30)
         
         # Frame de atalhos
         atalhos_frame = ttk.Frame(campos_frame)
@@ -2049,336 +2065,6 @@ class EditorEmMassa:
         self._fechando = True
         self.janela.grab_release()
         self.janela.destroy()
-
-class GerenciadorCPFsCriados:
-    def __init__(self):
-        self.arquivo_fornecedores = ARQUIVO_FORNECEDORES
-        
-    def gerar_cpf_valido(self):
-        """Gera um CPF válido seguindo EXATAMENTE o algoritmo oficial"""
-        import random
-        
-        # Gerar os 9 primeiros dígitos (evitar sequências óbvias)
-        while True:
-            cpf = [random.randint(0, 9) for _ in range(9)]
-            
-            # Evitar CPFs com todos os dígitos iguais (000.000.000, 111.111.111, etc.)
-            if len(set(cpf)) > 1:
-                break
-        
-        # Calcular PRIMEIRO dígito verificador
-        soma = 0
-        for i in range(9):
-            soma += cpf[i] * (10 - i)
-        
-        resto = soma % 11
-        if resto < 2:
-            primeiro_digito = 0
-        else:
-            primeiro_digito = 11 - resto
-        
-        cpf.append(primeiro_digito)
-        
-        # Calcular SEGUNDO dígito verificador
-        soma = 0
-        for i in range(10):
-            soma += cpf[i] * (11 - i)
-        
-        resto = soma % 11
-        if resto < 2:
-            segundo_digito = 0
-        else:
-            segundo_digito = 11 - resto
-        
-        cpf.append(segundo_digito)
-        
-        return ''.join(map(str, cpf))
-    
-    def validar_cpf_gerado(self, cpf):
-        """Valida se o CPF gerado está correto"""
-        if len(cpf) != 11:
-            return False
-        
-        # Verificar se não são todos iguais
-        if cpf == cpf[0] * 11:
-            return False
-        
-        # Calcular primeiro dígito
-        soma = 0
-        for i in range(9):
-            soma += int(cpf[i]) * (10 - i)
-        resto = soma % 11
-        digito1 = 0 if resto < 2 else 11 - resto
-        
-        if int(cpf[9]) != digito1:
-            return False
-        
-        # Calcular segundo dígito
-        soma = 0
-        for i in range(10):
-            soma += int(cpf[i]) * (11 - i)
-        resto = soma % 11
-        digito2 = 0 if resto < 2 else 11 - resto
-        
-        return int(cpf[10]) == digito2
-    
-    def obter_proximo_cpf_disponivel(self):
-        """Busca o próximo CPF disponível na aba CPF"""
-        try:
-            wb = load_workbook(self.arquivo_fornecedores)
-            
-            # Verificar se a aba CPF existe
-            if 'CPF' not in wb.sheetnames:
-                logger.debug("Criando aba CPF...")
-                # Criar a aba CPF se não existir
-                ws_cpf = wb.create_sheet('CPF')
-                ws_cpf.cell(row=1, column=1, value='CPF_CRIADO')
-                ws_cpf.cell(row=1, column=2, value='STATUS')
-                ws_cpf.cell(row=1, column=3, value='USADO_POR')
-                ws_cpf.cell(row=1, column=4, value='DATA_USO')
-                wb.save(self.arquivo_fornecedores)
-            else:
-                ws_cpf = wb['CPF']
-            
-            # Buscar primeiro CPF disponível
-            cpf_disponivel = None
-            linha_disponivel = None
-            
-            for row in range(2, ws_cpf.max_row + 1):
-                cpf_valor = ws_cpf.cell(row=row, column=1).value
-                status = ws_cpf.cell(row=row, column=2).value
-                
-                if cpf_valor and (not status or status == 'DISPONIVEL'):
-                    # Validar se o CPF é realmente válido
-                    if self.validar_cpf_gerado(str(cpf_valor)):
-                        cpf_disponivel = str(cpf_valor)
-                        linha_disponivel = row
-                        logger.debug(f"CPF disponível encontrado: {cpf_disponivel}")
-                        break
-                    else:
-                        logger.debug(f"CPF inválido encontrado na planilha: {cpf_valor}, removendo...")
-                        # Marcar como inválido
-                        ws_cpf.cell(row=row, column=2, value='INVALIDO')
-            
-            # Se não encontrou nenhum disponível, gerar novos
-            if not cpf_disponivel:
-                logger.debug("Gerando novos CPFs...")
-                # Gerar 20 novos CPFs válidos
-                cpfs_gerados = 0
-                tentativas = 0
-                max_tentativas = 100
-                
-                while cpfs_gerados < 20 and tentativas < max_tentativas:
-                    tentativas += 1
-                    novo_cpf = self.gerar_cpf_valido()
-                    
-                    # Validar o CPF gerado
-                    if self.validar_cpf_gerado(novo_cpf):
-                        # Verificar se já existe
-                        if not self.cpf_ja_existe(ws_cpf, novo_cpf):
-                            proxima_linha = ws_cpf.max_row + 1
-                            ws_cpf.cell(row=proxima_linha, column=1, value=novo_cpf)
-                            ws_cpf.cell(row=proxima_linha, column=2, value='DISPONIVEL')
-                            cpfs_gerados += 1
-                            
-                            logger.debug(f"CPF válido gerado: {novo_cpf}")
-                            
-                            if not cpf_disponivel:  # Pegar o primeiro gerado
-                                cpf_disponivel = novo_cpf
-                                linha_disponivel = proxima_linha
-                    else:
-                        logger.debug(f"CPF inválido gerado (descartado): {novo_cpf}")
-                
-                if cpfs_gerados > 0:
-                    wb.save(self.arquivo_fornecedores)
-                    logger.debug(f"Total de CPFs válidos gerados: {cpfs_gerados}")
-                else:
-                    logger.debug("ERRO: Não foi possível gerar CPFs válidos")
-            
-            wb.close()
-            
-            if cpf_disponivel:
-                logger.debug(f"Retornando CPF: {cpf_disponivel}")
-                # Validar uma última vez antes de retornar
-                if self.validar_cpf_gerado(cpf_disponivel):
-                    return cpf_disponivel, linha_disponivel
-                else:
-                    logger.debug(f"ERRO: CPF retornado é inválido: {cpf_disponivel}")
-                    return None, None
-            else:
-                return None, None
-            
-        except Exception as e:
-            logger.debug(f"Erro ao obter CPF disponível: {str(e)}")
-            import traceback
-            logger.debug(traceback.format_exc())
-            return None, None
-    
-    def cpf_ja_existe(self, worksheet, cpf):
-        """Verifica se o CPF já existe na planilha"""
-        for row in range(2, worksheet.max_row + 1):
-            if str(worksheet.cell(row=row, column=1).value) == str(cpf):
-                return True
-        return False
-    
-    def marcar_cpf_como_usado(self, cpf, nome_fornecedor):
-        """Marca um CPF como usado"""
-        try:
-            wb = load_workbook(self.arquivo_fornecedores)
-            ws_cpf = wb['CPF']
-            
-            for row in range(2, ws_cpf.max_row + 1):
-                if str(ws_cpf.cell(row=row, column=1).value) == str(cpf):
-                    ws_cpf.cell(row=row, column=2, value='USADO')
-                    ws_cpf.cell(row=row, column=3, value=nome_fornecedor)
-                    ws_cpf.cell(row=row, column=4, value=datetime.now().strftime('%d/%m/%Y %H:%M'))
-                    break
-            
-            wb.save(self.arquivo_fornecedores)
-            wb.close()
-            return True
-            
-        except Exception as e:
-            logger.debug(f"Erro ao marcar CPF como usado: {str(e)}")
-            return False
-    
-    def listar_cpfs_disponiveis(self):
-        """Lista todos os CPFs disponíveis"""
-        try:
-            wb = load_workbook(self.arquivo_fornecedores)
-            
-            if 'CPF' not in wb.sheetnames:
-                wb.close()
-                return []
-            
-            ws_cpf = wb['CPF']
-            cpfs_disponiveis = []
-            
-            for row in range(2, ws_cpf.max_row + 1):
-                cpf_valor = ws_cpf.cell(row=row, column=1).value
-                status = ws_cpf.cell(row=row, column=2).value
-                
-                if cpf_valor and (not status or status == 'DISPONIVEL'):
-                    # Validar antes de adicionar à lista
-                    if self.validar_cpf_gerado(str(cpf_valor)):
-                        cpfs_disponiveis.append(str(cpf_valor))
-            
-            wb.close()
-            return cpfs_disponiveis
-            
-        except Exception as e:
-            logger.debug(f"Erro ao listar CPFs disponíveis: {str(e)}")
-            return []     
-        
-    def marcar_cpf_como_disponivel(self, cpf):
-        """Marca um CPF como disponível novamente na aba CPF"""
-        try:
-            wb = load_workbook(self.arquivo_fornecedores)
-            
-            if 'CPF' not in wb.sheetnames:
-                wb.close()
-                return False
-            
-            ws_cpf = wb['CPF']
-            
-            # Procurar o CPF e marcar como disponível
-            for row in range(2, ws_cpf.max_row + 1):
-                if str(ws_cpf.cell(row=row, column=1).value).strip() == str(cpf):
-                    ws_cpf.cell(row=row, column=2, value='DISPONIVEL')  # Status
-                    ws_cpf.cell(row=row, column=3, value='')  # Limpar nome do fornecedor
-                    ws_cpf.cell(row=row, column=4, value='')  # Limpar data de uso
-                    break
-            
-            wb.save(self.arquivo_fornecedores)
-            wb.close()
-            return True
-            
-        except Exception as e:
-            logger.debug(f"Erro ao marcar CPF como disponível: {str(e)}")
-            return False
-
-    def listar_todos_cpfs_criados(self):
-        """Lista todos os CPFs criados da aba CPF (disponíveis e usados)"""
-        try:
-            wb = load_workbook(self.arquivo_fornecedores, data_only=True)
-            
-            if 'CPF' not in wb.sheetnames:
-                wb.close()
-                return []
-            
-            ws_cpf = wb['CPF']
-            cpfs = []
-            
-            for row in range(2, ws_cpf.max_row + 1):
-                cpf_valor = ws_cpf.cell(row=row, column=1).value
-                if cpf_valor:  # Se tem CPF
-                    cpfs.append(str(cpf_valor).strip())
-            
-            wb.close()
-            return cpfs
-            
-        except Exception as e:
-            logger.debug(f"Erro ao listar todos os CPFs criados: {str(e)}")
-            return []
-
-    def listar_cpfs_usados(self):
-        """Lista apenas os CPFs que estão marcados como USADO na aba CPF"""
-        try:
-            wb = load_workbook(self.arquivo_fornecedores, data_only=True)
-            
-            if 'CPF' not in wb.sheetnames:
-                wb.close()
-                return []
-            
-            ws_cpf = wb['CPF']
-            cpfs_usados = []
-            
-            for row in range(2, ws_cpf.max_row + 1):
-                cpf_valor = ws_cpf.cell(row=row, column=1).value
-                status = ws_cpf.cell(row=row, column=2).value
-                
-                if cpf_valor and status and str(status).strip().upper() == 'USADO':
-                    cpfs_usados.append(str(cpf_valor).strip())
-            
-            wb.close()
-            return cpfs_usados
-            
-        except Exception as e:
-            logger.debug(f"Erro ao listar CPFs usados: {str(e)}")
-            return []
-
-    def obter_detalhes_cpf_usado(self, cpf):
-        """Obtém detalhes de um CPF usado (nome do fornecedor e data de uso)"""
-        try:
-            wb = load_workbook(self.arquivo_fornecedores, data_only=True)
-            
-            if 'CPF' not in wb.sheetnames:
-                wb.close()
-                return None
-            
-            ws_cpf = wb['CPF']
-            
-            for row in range(2, ws_cpf.max_row + 1):
-                cpf_valor = ws_cpf.cell(row=row, column=1).value
-                
-                if str(cpf_valor).strip() == str(cpf):
-                    status = ws_cpf.cell(row=row, column=2).value
-                    usado_por = ws_cpf.cell(row=row, column=3).value
-                    data_uso = ws_cpf.cell(row=row, column=4).value
-                    
-                    wb.close()
-                    return {
-                        'status': str(status) if status else '',
-                        'usado_por': str(usado_por) if usado_por else '',
-                        'data_uso': str(data_uso) if data_uso else ''
-                    }
-            
-            wb.close()
-            return None
-            
-        except Exception as e:
-            logger.debug(f"Erro ao obter detalhes do CPF: {str(e)}")
-            return None
 
 class SistemaEntradaDados:
 
@@ -7218,154 +6904,6 @@ class SistemaEntradaDados:
         self.janela_fornecedor.destroy()
         self.buscar_fornecedor()
 
-    # def salvar_na_base_fornecedores(self, dados):
-    #     """
-    #     Salva os dados na planilha de fornecedores
-    #     VERSÃO CORRIGIDA COM STATUS AUTOMÁTICO
-    #     """
-    #     try:
-    #         from src.config.config import ARQUIVO_FORNECEDORES
-    #         from openpyxl import load_workbook
-            
-    #         wb = load_workbook(ARQUIVO_FORNECEDORES)
-    #         ws = wb['Fornecedores']
-            
-    #         # ✅ GARANTIR QUE COLUNA STATUS EXISTE
-    #         if ws.cell(1, 17).value != 'STATUS':
-    #             ws.cell(1, 17, 'STATUS')
-    #             logger.info("Coluna STATUS criada automaticamente")
-            
-    #         # Coletar todos os dados existentes
-    #         fornecedores = []
-            
-    #         for row in ws.iter_rows(min_row=2, values_only=True):
-    #             if not row or not row[0]:
-    #                 continue
-                
-    #             # Garantir 18 colunas (incluindo RESPONSAVL)
-    #             row_completa = list(row) + [None] * (18 - len(row))
-                
-    #             fornecedor = {
-    #                 'cnpj_cpf': str(row_completa[0]).strip() if row_completa[0] else '',
-    #                 'tipo_pessoa': str(row_completa[1]).strip() if row_completa[1] else '',
-    #                 'razao_social': str(row_completa[2]).strip() if row_completa[2] else '',
-    #                 'nome': str(row_completa[3]).strip() if row_completa[3] else '',
-    #                 'telefone': str(row_completa[4]).strip() if row_completa[4] else '',
-    #                 'email': str(row_completa[5]).strip() if row_completa[5] else '',
-    #                 'banco': str(row_completa[6]).strip() if row_completa[6] else '',
-    #                 'op': str(row_completa[7]).strip() if row_completa[7] else '',
-    #                 'agencia': str(row_completa[8]).strip() if row_completa[8] else '',
-    #                 'conta': str(row_completa[9]).strip() if row_completa[9] else '',
-    #                 'chave_pix': str(row_completa[10]).strip() if row_completa[10] else '',
-    #                 'categoria': str(row_completa[11]).strip() if row_completa[11] else '',
-    #                 'especificacao': str(row_completa[12]).strip() if row_completa[12] else '',
-    #                 'vinculo': str(row_completa[13]).strip() if row_completa[13] else '',
-    #                 'dados_bancarios': str(row_completa[14]).strip() if row_completa[14] else '',
-    #                 'endereco': str(row_completa[15]).strip() if row_completa[15] else '',
-    #                 'status': str(row_completa[16]).strip().upper() if row_completa[16] else 'ATIVO',
-    #                 'responsavel': str(row_completa[17]).strip() if len(row_completa) > 17 and row_completa[17] else ''
-    #             }
-                
-    #             if fornecedor['cnpj_cpf'] and fornecedor['nome']:
-    #                 fornecedores.append(fornecedor)
-            
-    #         logger.debug(f"Total de fornecedores carregados: {len(fornecedores)}")
-            
-    #         # Preparar dados recebidos
-    #         dados_corrigidos = {}
-    #         for key, value in dados.items():
-    #             if value is None or value == 'None':
-    #                 dados_corrigidos[key] = ''
-    #             else:
-    #                 dados_corrigidos[key] = str(value).strip()
-            
-    #         # Validações
-    #         if not dados_corrigidos.get('cnpj_cpf'):
-    #             raise ValueError("CNPJ/CPF não pode estar vazio")
-    #         if not dados_corrigidos.get('nome'):
-    #             raise ValueError("Nome não pode estar vazio")
-            
-    #         # ✅ LÓGICA DE STATUS
-    #         cnpj_cpf_busca = ''.join(filter(str.isdigit, dados_corrigidos['cnpj_cpf']))
-    #         fornecedor_encontrado = False
-            
-    #         for i, fornecedor in enumerate(fornecedores):
-    #             cnpj_cpf_existente = ''.join(filter(str.isdigit, fornecedor['cnpj_cpf']))
-                
-    #             if cnpj_cpf_existente == cnpj_cpf_busca:
-    #                 logger.debug(f"Atualizando fornecedor existente: {fornecedor['nome']}")
-                    
-    #                 # ✅ PRESERVAR STATUS EXISTENTE ao editar
-    #                 status_atual = fornecedor.get('status', 'ATIVO')
-    #                 dados_corrigidos['status'] = status_atual
-                    
-    #                 logger.debug(f"  STATUS preservado: {status_atual}")
-                    
-    #                 fornecedores[i] = dados_corrigidos.copy()
-    #                 fornecedor_encontrado = True
-    #                 break
-            
-    #         if not fornecedor_encontrado:
-    #             # ✅ NOVO FORNECEDOR: Definir STATUS = ATIVO
-    #             dados_corrigidos['status'] = 'ATIVO'
-    #             logger.info(f"Novo fornecedor criado como ATIVO: {dados_corrigidos['nome']}")
-    #             fornecedores.append(dados_corrigidos.copy())
-            
-    #         # Ordenar
-    #         try:
-    #             fornecedores_ordenados = sorted(
-    #                 fornecedores,
-    #                 key=lambda x: (str(x.get('nome', '')).upper().strip(), 
-    #                             str(x.get('cnpj_cpf', '')).strip())
-    #             )
-    #         except Exception as e:
-    #             logger.warning(f"Erro na ordenação: {str(e)}")
-    #             fornecedores_ordenados = fornecedores
-            
-    #         # Limpar planilha
-    #         max_row = ws.max_row
-    #         if max_row > 1:
-    #             ws.delete_rows(2, max_row - 1)
-            
-    #         # Reescrever dados
-    #         for i, fornecedor in enumerate(fornecedores_ordenados, start=2):
-    #             ws.cell(row=i, column=1, value=fornecedor.get('cnpj_cpf', ''))
-    #             ws.cell(row=i, column=2, value=fornecedor.get('tipo_pessoa', ''))
-    #             ws.cell(row=i, column=3, value=fornecedor.get('razao_social', ''))
-    #             ws.cell(row=i, column=4, value=fornecedor.get('nome', ''))
-    #             ws.cell(row=i, column=5, value=fornecedor.get('telefone', ''))
-    #             ws.cell(row=i, column=6, value=fornecedor.get('email', ''))
-    #             ws.cell(row=i, column=7, value=fornecedor.get('banco', ''))
-    #             ws.cell(row=i, column=8, value=fornecedor.get('op', ''))
-    #             ws.cell(row=i, column=9, value=fornecedor.get('agencia', ''))
-    #             ws.cell(row=i, column=10, value=fornecedor.get('conta', ''))
-    #             ws.cell(row=i, column=11, value=fornecedor.get('chave_pix', ''))
-    #             ws.cell(row=i, column=12, value=fornecedor.get('categoria', ''))
-    #             ws.cell(row=i, column=13, value=fornecedor.get('especificacao', ''))
-    #             ws.cell(row=i, column=14, value=fornecedor.get('vinculo', ''))
-    #             ws.cell(row=i, column=15, value=fornecedor.get('dados_bancarios', ''))
-    #             ws.cell(row=i, column=16, value=fornecedor.get('endereco', ''))
-    #             ws.cell(row=i, column=17, value=fornecedor.get('status', 'ATIVO'))
-    #             ws.cell(row=i, column=18, value=fornecedor.get('responsavel', ''))
-            
-    #         logger.debug(f"Total salvos: {len(fornecedores_ordenados)}")
-            
-    #         # Salvar
-    #         try:
-    #             wb.save(ARQUIVO_FORNECEDORES)
-    #             logger.info("Planilha salva com sucesso!")
-    #         except PermissionError:
-    #             wb.close()
-    #             raise PermissionError("Arquivo aberto em outro programa!")
-            
-    #         wb.close()
-            
-    #     except Exception as e:
-    #         logger.error(f"Erro ao salvar: {str(e)}")
-    #         import traceback
-    #         logger.error(traceback.format_exc())
-    #         raise Exception(f"Erro ao salvar: {str(e)}")
-
     def atualizar_linha_fornecedor(self, row, dados):
         """Atualiza uma linha existente com novos dados"""
         row[0].value = dados['cnpj_cpf']
@@ -7408,48 +6946,6 @@ class SistemaEntradaDados:
         ws.cell(row=linha, column=17, value=dados['status'])
         ws.cell(row=linha, column=18, value=dados['responsavel'])
       
-    # def atualizar_fornecedor(self):
-    #     """Atualiza dados do fornecedor existente"""
-    #     # Validações semelhantes ao salvar_fornecedor
-    #     campos_obrigatorios = ['razao_social', 'nome', 'categoria']
-    #     for campo in campos_obrigatorios:
-    #         if not self.campos_form[campo].get().strip():
-    #             custom_messagebox("error", "Erro", f"O campo {campo} é obrigatório!")
-    #             return
-
-    #     try:
-    #         wb = load_workbook(ARQUIVO_FORNECEDORES)
-    #         ws = wb['Fornecedores']
-            
-    #         cnpj_cpf = self.campos_form['cnpj_cpf'].get()
-    #         for row in ws.iter_rows(min_row=2):
-    #             if row[0].value == cnpj_cpf:
-    #                 # Atualizar dados na linha existente
-    #                 row[1].value = self.campos_form['tipo_pessoa'].get().upper()
-    #                 row[2].value = self.campos_form['razao_social'].get().upper()
-    #                 row[3].value = self.campos_form['nome'].get().upper()
-    #                 row[4].value = self.campos_form['telefone'].get()
-    #                 row[5].value = self.campos_form['email'].get()
-    #                 row[6].value = self.campos_form['banco'].get()
-    #                 row[7].value = self.campos_form['op'].get()
-    #                 row[8].value = self.campos_form['agencia'].get()
-    #                 row[9].value = self.campos_form['conta'].get()
-    #                 row[10].value = self.campos_form['chave_pix'].get()
-    #                 row[11].value = self.campos_form['categoria'].get()
-    #                 row[12].value = self.campos_form['especificacao'].get().upper()
-    #                 row[13].value = self.campos_form['vinculo'].get().upper()
-    #                 row[14].value = self.campos_form['dados_bancarios'].get().upper()
-    #                 row[15].value = self.campos_form['endereco'].get().upper()
-    #                 row[16].value = self.campos_form['status'].get().upper()
-    #                 row[17].value = self.campos_form['responsavel'].get().upper()
-    #                 break
-
-    #         wb.save(ARQUIVO_FORNECEDORES)
-    #         custom_messagebox("info", "Sucesso", "Fornecedor atualizado com sucesso!")
-    #         self.janela_fornecedor.destroy()
-    #         self.buscar_fornecedor()  # Atualiza a lista
-    #     except Exception as e:
-    #         custom_messagebox("error", "Erro", f"Erro ao atualizar fornecedor: {str(e)}")
 
     def preencher_dados_fornecedor(self, dados):
         """Preenche os campos do fornecedor na aba de entrada"""
@@ -7462,96 +6958,6 @@ class SistemaEntradaDados:
         self.campos_fornecedor['categoria'].delete(0, tk.END)
         self.campos_fornecedor['categoria'].insert(0, dados[2])
 
-    # def salvar_fornecedor_com_cpf_criado(self):
-    #     """Salva fornecedor e marca CPF criado como usado - VERSÃO CORRIGIDA"""
-    #     # Validar campos obrigatórios
-    #     campos_obrigatorios = ['tipo_pessoa', 'cnpj_cpf', 'razao_social', 'nome', 'categoria']
-    #     for campo in campos_obrigatorios:
-    #         if not self.campos_form[campo].get().strip():
-    #             custom_messagebox("error", "Erro", f"❌ O campo {campo} é obrigatório!")
-    #             return
-
-    #     # Validar CNPJ/CPF
-    #     tipo_pessoa = self.campos_form['tipo_pessoa'].get()
-    #     cnpj_cpf_original = self.campos_form['cnpj_cpf'].get().strip()
-        
-    #     # Limpar CNPJ/CPF mantendo apenas números
-    #     cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_original))
-        
-    #     # Validar com números limpos
-    #     if not self.validar_cnpj_cpf_numeros(cnpj_cpf_numeros):
-    #         custom_messagebox("error", "Erro", f"❌ {'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
-    #         return
-        
-    #     # Verificar se é um CPF criado
-    #     eh_cpf_criado = False
-    #     if tipo_pessoa == 'PF' and len(cnpj_cpf_numeros) == 11:
-    #         try:
-    #             if not hasattr(self, 'gerenciador_cpfs'):
-    #                 self.gerenciador_cpfs = GerenciadorCPFsCriados()
-    #             cpfs_disponiveis = self.gerenciador_cpfs.listar_cpfs_disponiveis()
-    #             if cnpj_cpf_numeros in cpfs_disponiveis:
-    #                 eh_cpf_criado = True
-    #         except Exception as e:
-    #             logger.debug(f"Erro ao verificar CPF criado: {str(e)}")
-
-    #     # Montar dados bancários
-    #     if self.campos_form['chave_pix'].get():
-    #         dados_bancarios = f"PIX: {self.campos_form['chave_pix'].get()}"
-    #     else:
-    #         dados_bancarios = (f"{self.campos_form['banco'].get()} "
-    #                         f"{self.campos_form['op'].get()} - "
-    #                         f"{self.campos_form['agencia'].get()} "
-    #                         f"{self.campos_form['conta'].get()}").strip()
-
-    #     # Preparar dados garantindo que tudo seja string
-    #     dados = {
-    #         'tipo_pessoa': str(tipo_pessoa),
-    #         'cnpj_cpf': str(cnpj_cpf_numeros),  # Salvar apenas números
-    #         'razao_social': str(self.campos_form['razao_social'].get().upper()),
-    #         'nome': str(self.campos_form['nome'].get().upper()),
-    #         'telefone': str(self.campos_form['telefone'].get()),
-    #         'email': str(self.campos_form['email'].get()),
-    #         'banco': str(self.campos_form['banco'].get()),
-    #         'op': str(self.campos_form['op'].get()),
-    #         'agencia': str(self.campos_form['agencia'].get()),
-    #         'conta': str(self.campos_form['conta'].get()),
-    #         'chave_pix': str(self.campos_form['chave_pix'].get()),
-    #         'categoria': str(self.campos_form['categoria'].get().upper()),
-    #         'especificacao': str(self.campos_form['especificacao'].get().upper()),
-    #         'vinculo': str(self.campos_form['vinculo'].get().upper()),
-    #         'dados_bancarios': str(dados_bancarios),
-    #         'endereco': str(self.campos_form['endereco'].get().upper()),
-    #         'responsavel': str(self.campos_form['responsavel'].get().upper())           
-    #     }
-
-    #     try:
-    #         # Salvar na base de fornecedores
-    #         self.salvar_na_base_fornecedores(dados)
-            
-    #         # Se for CPF criado, marcar como usado
-    #         if eh_cpf_criado:
-    #             nome_fornecedor = self.campos_form['nome'].get().upper()
-    #             sucesso_marcacao = self.gerenciador_cpfs.marcar_cpf_como_usado(cnpj_cpf_numeros, nome_fornecedor)
-                
-    #             if sucesso_marcacao:
-    #                 cnpj_cpf_formatado = formatar_documento(cnpj_cpf_numeros)
-    #                 mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
-    #                                 f"🔄 CPF criado marcado como usado:\n"
-    #                                 f"📋 {cnpj_cpf_formatado}\n"
-    #                                 f"👤 {nome_fornecedor}")
-    #             else:
-    #                 mensagem_sucesso = (f"✅ Fornecedor salvo com sucesso!\n\n"
-    #                                 f"⚠️ Aviso: Não foi possível marcar o CPF como usado")
-    #         else:
-    #             mensagem_sucesso = f"✅ Fornecedor salvo com sucesso!"
-                
-    #         custom_messagebox("info", "Sucesso", mensagem_sucesso)
-    #         self.janela_fornecedor.destroy()
-    #         self.buscar_fornecedor()  # Atualizar lista
-            
-    #     except Exception as e:
-    #         custom_messagebox("error", "Erro", f"❌ Erro ao salvar fornecedor:\n{str(e)}")
 
     def gerenciar_cpfs_criados(self):
         """Abre interface para gerenciar fornecedores com CPFs criados - NOVA FUNCIONALIDADE"""
@@ -21812,14 +21218,14 @@ class GerenciadorLancamentos:
                 
                 # Montar estrutura de dados
                 dados_item = {
-                    'data': valores[0],
-                    'tp_desp': str(valores[1]),
-                    'nome': valores[2],
-                    'referencia': valores[3],
-                    'nf': valores[4],
-                    'valor': valores[5],
-                    'dt_vencto': valores[6],
-                    'status': valores[7],
+                    'data': valores[1],
+                    'tp_desp': str(valores[2]),
+                    'nome': valores[3],       
+                    'referencia': valores[4],
+                    'nf': valores[5],
+                    'valor': valores[6],
+                    'dt_vencto': valores[7],
+                    'status': valores[8],
                     'id_lancamento': id_lancamento,
                     'cnpj_cpf': str(lancamento_completo.get('CNPJ_CPF', '')),
                     'categoria': str(lancamento_completo.get('CATEGORIA', '')),
@@ -22524,6 +21930,12 @@ class GerenciadorLancamentos:
             # ===== OBSERVAÇÃO COM HISTÓRICO DE EDIÇÃO (Coluna M) =====
             observacao_atual = ws.cell(row=linha_encontrada, column=13).value or ""
             observacao_editada = dados_editados.get('observacao', '')
+
+            # Garantir que ambos sejam string antes de .strip()
+            if not isinstance(observacao_atual, str):
+                observacao_atual = '' if pd.isna(observacao_atual) else str(observacao_atual)
+            if not isinstance(observacao_editada, str):
+                observacao_editada = '' if pd.isna(observacao_editada) else str(observacao_editada)
             
             # Limpar edições anteriores da observação
             if 'EDITADO EM:' in observacao_atual:
@@ -23123,8 +22535,8 @@ class EditorEmMassaGerenciador:
             ('data', 'Data do Relatório', 'date'),
             ('tp_desp', 'Tipo de Despesa', 'combo_tipo'),
             ('referencia', 'Referência', 'entry'),
-            ('etapa_obra', 'Etapa da Obra', 'entry'),
-            ('insumo', 'Insumo', 'entry'),
+            ('etapa_obra', 'Etapa da Obra', 'combo_autocomplete_etapa'),   # ← mudou
+            ('insumo', 'Insumo', 'combo_autocomplete_insumo'),             # ← mudou
             ('nf', 'NF', 'entry'),
             ('dt_vencto', 'Data de Vencimento', 'date'),
             ('observacao', 'Observação', 'text')
@@ -23151,6 +22563,22 @@ class EditorEmMassaGerenciador:
                                     values=['1', '2', '3', '4', '5', '6', '7'])
             elif campo_tipo == 'text':
                 widget = tk.Text(parent, width=30, height=3, state='disabled')
+            elif campo_tipo == 'combo_autocomplete_etapa':
+                from src.configuracoes_sistema import GerenciadorConfiguracoes
+                from src.widgets.combobox_autocompletar import ComboboxAutocompletar
+                etapas_obra = GerenciadorConfiguracoes.get_etapas_obra()
+                widget = ComboboxAutocompletar(parent, values=etapas_obra,
+                                    config_key='etapas_obra',
+                                    config_manager=GerenciadorConfiguracoes,
+                                    width=30, state='disabled')
+            elif campo_tipo == 'combo_autocomplete_insumo':
+                from src.configuracoes_sistema import GerenciadorConfiguracoes
+                from src.widgets.combobox_autocompletar import ComboboxAutocompletar
+                insumos = GerenciadorConfiguracoes.get_insumos()
+                widget = ComboboxAutocompletar(parent, values=insumos,
+                                    config_key='insumos',
+                                    config_manager=GerenciadorConfiguracoes,
+                                    width=30, state='disabled')
             else:  # entry
                 widget = ttk.Entry(parent, width=30, state='disabled')
             
@@ -23284,12 +22712,12 @@ class EditorEmMassaGerenciador:
                     if tipo == 'date':
                         valor = widget.get_date().strftime('%d/%m/%Y')
                     elif tipo == 'text':
-                        valor = widget.get('1.0', 'end-1c').strip()
-                    elif isinstance(widget, ttk.Combobox):
-                        valor = widget.get()
-                    else:
-                        valor = widget.get()
-                    
+                        valor = widget.get('1.0', 'end-1c').strip().upper()
+                    elif tipo == 'combo_tipo':
+                        valor = widget.get()  # tipo despesa é só número, não precisa upper
+                    else:  # entry, combo_autocomplete_etapa, combo_autocomplete_insumo
+                        valor = widget.get().upper()
+                        
                     novos_valores[campo_id] = valor
                     logger.debug(f"DEBUG: Campo {campo_id} = '{valor}'")
                     
@@ -23402,17 +22830,6 @@ class EditorEmMassaGerenciador:
             custom_messagebox("error", "Erro", f"Erro ao aplicar alterações: {str(e)}")
     
     def preparar_dados_para_salvamento(self, dados_originais, novos_valores):
-        """
-        Prepara dados para salvamento mesclando originais com novos valores
-        
-        Args:
-            dados_originais: Dados originais do lançamento
-            novos_valores: Novos valores dos campos marcados
-            
-        Returns:
-            dict: Dados completos para salvamento
-        """
-        # Começar com os dados originais
         dados_completos = {
             'data': dados_originais.get('DATA_REL'),
             'tp_desp': dados_originais.get('TP_DESP'),
@@ -23430,6 +22847,14 @@ class EditorEmMassaGerenciador:
             'etapa_obra': dados_originais.get('ETAPA_OBRA', ''),
             'insumo': dados_originais.get('INSUMO', '')
         }
+
+        # Normalizar campos de texto que podem vir como NaN (float) do pandas
+        for campo_texto in ['nf', 'observacao', 'etapa_obra', 'insumo', 'categoria', 'dados_bancarios', 'cnpj_cpf']:
+            valor = dados_completos.get(campo_texto)
+            if valor is None or (isinstance(valor, float) and pd.isna(valor)):
+                dados_completos[campo_texto] = ''
+            else:
+                dados_completos[campo_texto] = str(valor)
         
         # Converter data original se necessário
         if dados_completos['data'] and not isinstance(dados_completos['data'], str):
@@ -25280,165 +24705,165 @@ class VisualizadorLancamentosFornecedor:
         except (ValueError, TypeError):
             return str(tp_desp)
 
-class ComboboxAutocompletar(ttk.Combobox):
-    """Combobox personalizada com funcionalidade de autocompletar e adição dinâmica"""
+# class ComboboxAutocompletar(ttk.Combobox):
+#     """Combobox personalizada com funcionalidade de autocompletar e adição dinâmica"""
     
-    def __init__(self, parent, values=None, config_key=None, config_manager=None, **kwargs):
-        """
-        Inicializa o Combobox com autocompletar
+#     def __init__(self, parent, values=None, config_key=None, config_manager=None, **kwargs):
+#         """
+#         Inicializa o Combobox com autocompletar
         
-        Args:
-            parent: Widget pai
-            values: Lista inicial de valores
-            config_key: Chave no arquivo de configuração ('etapas_obra' ou 'insumos')
-            config_manager: Instância do GerenciadorConfiguracoes
-            **kwargs: Argumentos adicionais para ttk.Combobox
-        """
-        super().__init__(parent, **kwargs)
+#         Args:
+#             parent: Widget pai
+#             values: Lista inicial de valores
+#             config_key: Chave no arquivo de configuração ('etapas_obra' ou 'insumos')
+#             config_manager: Instância do GerenciadorConfiguracoes
+#             **kwargs: Argumentos adicionais para ttk.Combobox
+#         """
+#         super().__init__(parent, **kwargs)
         
-        self.config_key = config_key
-        self.config_manager = config_manager
-        self.valores_originais = values or []
+#         self.config_key = config_key
+#         self.config_manager = config_manager
+#         self.valores_originais = values or []
         
-        # Configurar valores iniciais
-        self['values'] = self.valores_originais
+#         # Configurar valores iniciais
+#         self['values'] = self.valores_originais
         
-        # Bind de eventos
-        self.bind('<KeyRelease>', self.on_keyrelease)
-        self.bind('<Button-1>', self.on_click)
-        self.bind('<FocusOut>', self.on_focus_out)
-        self.bind('<Return>', self.on_enter)
+#         # Bind de eventos
+#         self.bind('<KeyRelease>', self.on_keyrelease)
+#         self.bind('<Button-1>', self.on_click)
+#         self.bind('<FocusOut>', self.on_focus_out)
+#         self.bind('<Return>', self.on_enter)
         
-        # Variável para controlar se está filtrando
-        self.filtrando = False
+#         # Variável para controlar se está filtrando
+#         self.filtrando = False
     
-    def on_keyrelease(self, event):
-        """Evento chamado quando uma tecla é liberada"""
-        if event.keysym in ['Up', 'Down', 'Left', 'Right', 'Return', 'Tab']:
-            return
+#     def on_keyrelease(self, event):
+#         """Evento chamado quando uma tecla é liberada"""
+#         if event.keysym in ['Up', 'Down', 'Left', 'Right', 'Return', 'Tab']:
+#             return
         
-        texto_digitado = self.get().upper()
+#         texto_digitado = self.get().upper()
         
-        if not texto_digitado:
-            # Se não há texto, mostrar todos os valores
-            self['values'] = self.valores_originais
-            self.filtrando = False
-            return
+#         if not texto_digitado:
+#             # Se não há texto, mostrar todos os valores
+#             self['values'] = self.valores_originais
+#             self.filtrando = False
+#             return
         
-        # Filtrar valores que começam com o texto digitado
-        valores_filtrados = [v for v in self.valores_originais if v.upper().startswith(texto_digitado)]
+#         # Filtrar valores que começam com o texto digitado
+#         valores_filtrados = [v for v in self.valores_originais if v.upper().startswith(texto_digitado)]
         
-        if valores_filtrados:
-            # Atualizar lista com valores filtrados
-            self['values'] = valores_filtrados
-            self.filtrando = True
+#         if valores_filtrados:
+#             # Atualizar lista com valores filtrados
+#             self['values'] = valores_filtrados
+#             self.filtrando = True
             
-            # Autocompletar com o primeiro resultado
-            if len(valores_filtrados) == 1:
-                valor_completo = valores_filtrados[0]
-                self.delete(0, tk.END)
-                self.insert(0, valor_completo)
-                self.selection_range(len(texto_digitado), len(valor_completo))
-        else:
-            # Nenhuma correspondência encontrada
-            self['values'] = []
-            self.filtrando = True
+#             # Autocompletar com o primeiro resultado
+#             if len(valores_filtrados) == 1:
+#                 valor_completo = valores_filtrados[0]
+#                 self.delete(0, tk.END)
+#                 self.insert(0, valor_completo)
+#                 self.selection_range(len(texto_digitado), len(valor_completo))
+#         else:
+#             # Nenhuma correspondência encontrada
+#             self['values'] = []
+#             self.filtrando = True
     
-    def on_click(self, event):
-        """Evento de clique - mostrar todos os valores"""
-        if not self.filtrando:
-            self['values'] = self.valores_originais
+#     def on_click(self, event):
+#         """Evento de clique - mostrar todos os valores"""
+#         if not self.filtrando:
+#             self['values'] = self.valores_originais
     
-    def on_focus_out(self, event):
-        """Evento quando perde o foco - verificar se precisa adicionar novo item"""
-        texto_digitado = self.get().strip().upper()
+#     def on_focus_out(self, event):
+#         """Evento quando perde o foco - verificar se precisa adicionar novo item"""
+#         texto_digitado = self.get().strip().upper()
         
-        if texto_digitado and texto_digitado not in [v.upper() for v in self.valores_originais]:
-            # Perguntar se quer adicionar o novo item
-            self.confirmar_adicao_item(texto_digitado)
+#         if texto_digitado and texto_digitado not in [v.upper() for v in self.valores_originais]:
+#             # Perguntar se quer adicionar o novo item
+#             self.confirmar_adicao_item(texto_digitado)
         
-        # Restaurar lista completa
-        self['values'] = self.valores_originais
-        self.filtrando = False
+#         # Restaurar lista completa
+#         self['values'] = self.valores_originais
+#         self.filtrando = False
     
-    def on_enter(self, event):
-        """Evento Enter - confirmar seleção ou adicionar novo item"""
-        texto_digitado = self.get().strip().upper()
+#     def on_enter(self, event):
+#         """Evento Enter - confirmar seleção ou adicionar novo item"""
+#         texto_digitado = self.get().strip().upper()
         
-        if texto_digitado and texto_digitado not in [v.upper() for v in self.valores_originais]:
-            self.confirmar_adicao_item(texto_digitado)
+#         if texto_digitado and texto_digitado not in [v.upper() for v in self.valores_originais]:
+#             self.confirmar_adicao_item(texto_digitado)
         
-        # Restaurar lista completa
-        self['values'] = self.valores_originais
-        self.filtrando = False
+#         # Restaurar lista completa
+#         self['values'] = self.valores_originais
+#         self.filtrando = False
     
-    def confirmar_adicao_item(self, novo_item):
-        """Confirma se o usuário quer adicionar um novo item"""
-        tipo_item = "Etapa da Obra" if self.config_key == "etapas_obra" else "Insumo"
+#     def confirmar_adicao_item(self, novo_item):
+#         """Confirma se o usuário quer adicionar um novo item"""
+#         tipo_item = "Etapa da Obra" if self.config_key == "etapas_obra" else "Insumo"
         
-        resposta = messagebox.askyesno(
-            "Adicionar Novo Item",
-            f"O {tipo_item.lower()} '{novo_item}' não existe na lista.\n\n"
-            f"Deseja adicioná-lo aos parâmetros do sistema?",
-            parent=self.winfo_toplevel()
-        )
+#         resposta = messagebox.askyesno(
+#             "Adicionar Novo Item",
+#             f"O {tipo_item.lower()} '{novo_item}' não existe na lista.\n\n"
+#             f"Deseja adicioná-lo aos parâmetros do sistema?",
+#             parent=self.winfo_toplevel()
+#         )
         
-        if resposta:
-            self.adicionar_novo_item(novo_item)
+#         if resposta:
+#             self.adicionar_novo_item(novo_item)
     
-    def adicionar_novo_item(self, novo_item):
-        """Adiciona um novo item ao arquivo de configurações"""
-        try:
-            # Carregar configurações atuais
-            from src.configuracoes_sistema import GerenciadorConfiguracoes
-            config = GerenciadorConfiguracoes.carregar_configuracoes()
+#     def adicionar_novo_item(self, novo_item):
+#         """Adiciona um novo item ao arquivo de configurações"""
+#         try:
+#             # Carregar configurações atuais
+#             from src.configuracoes_sistema import GerenciadorConfiguracoes
+#             config = GerenciadorConfiguracoes.carregar_configuracoes()
             
-            if not config:
-                messagebox.showerror("Erro", "Não foi possível carregar as configurações.")
-                return
+#             if not config:
+#                 messagebox.showerror("Erro", "Não foi possível carregar as configurações.")
+#                 return
             
-            # Verificar se a seção existe
-            if self.config_key not in config:
-                config[self.config_key] = {'lista': [], 'historico_alteracoes': []}
+#             # Verificar se a seção existe
+#             if self.config_key not in config:
+#                 config[self.config_key] = {'lista': [], 'historico_alteracoes': []}
             
-            # Adicionar o novo item
-            if novo_item not in config[self.config_key]['lista']:
-                config[self.config_key]['lista'].append(novo_item)
-                config[self.config_key]['lista'].sort()
+#             # Adicionar o novo item
+#             if novo_item not in config[self.config_key]['lista']:
+#                 config[self.config_key]['lista'].append(novo_item)
+#                 config[self.config_key]['lista'].sort()
                 
-                # Salvar no arquivo
-                config_path = GerenciadorConfiguracoes.CONFIG_PATH
-                with open(config_path, 'w', encoding='utf-8') as f:
-                    json.dump(config, f, indent=4, ensure_ascii=False)
+#                 # Salvar no arquivo
+#                 config_path = GerenciadorConfiguracoes.CONFIG_PATH
+#                 with open(config_path, 'w', encoding='utf-8') as f:
+#                     json.dump(config, f, indent=4, ensure_ascii=False)
                 
-                # Atualizar cache
-                GerenciadorConfiguracoes._atualizar_cache(config)
+#                 # Atualizar cache
+#                 GerenciadorConfiguracoes._atualizar_cache(config)
                 
-                # Atualizar valores do combobox
-                self.valores_originais = config[self.config_key]['lista']
-                self['values'] = self.valores_originais
+#                 # Atualizar valores do combobox
+#                 self.valores_originais = config[self.config_key]['lista']
+#                 self['values'] = self.valores_originais
                 
-                # Definir o novo valor no combobox
-                self.set(novo_item)
+#                 # Definir o novo valor no combobox
+#                 self.set(novo_item)
                 
-                tipo_item = "Etapa da Obra" if self.config_key == "etapas_obra" else "Insumo"
-                messagebox.showinfo(
-                    "Sucesso", 
-                    f"{tipo_item} '{novo_item}' adicionado com sucesso!",
-                    parent=self.winfo_toplevel()
-                )
+#                 tipo_item = "Etapa da Obra" if self.config_key == "etapas_obra" else "Insumo"
+#                 messagebox.showinfo(
+#                     "Sucesso", 
+#                     f"{tipo_item} '{novo_item}' adicionado com sucesso!",
+#                     parent=self.winfo_toplevel()
+#                 )
             
-        except Exception as e:
-            messagebox.showerror(
-                "Erro", 
-                f"Erro ao adicionar item: {str(e)}",
-                parent=self.winfo_toplevel()
-            )
+#         except Exception as e:
+#             messagebox.showerror(
+#                 "Erro", 
+#                 f"Erro ao adicionar item: {str(e)}",
+#                 parent=self.winfo_toplevel()
+#             )
     
-    def atualizar_valores(self, novos_valores):
-        """Atualiza a lista de valores do combobox"""
-        self.valores_originais = novos_valores
-        self['values'] = self.valores_originais
+#     def atualizar_valores(self, novos_valores):
+#         """Atualiza a lista de valores do combobox"""
+#         self.valores_originais = novos_valores
+#         self['values'] = self.valores_originais
 
 class GerenciadorAgenda:
     def __init__(self, sistema_principal):
@@ -29380,74 +28805,74 @@ class RelatorioAgenda:
             logger.debug(f"DEBUG: Erro ao gerar relatório mensal: {str(e)}")
             return None
 
-class CacheFornecedores:
-    """Cache para otimizar buscas de fornecedores"""
+# class CacheFornecedores:
+#     """Cache para otimizar buscas de fornecedores"""
     
-    def __init__(self):
-        self.cache_fornecedores = None
-        self.cache_timestamp = None
-        self.cache_duracao = 300  # 5 minutos
+#     def __init__(self):
+#         self.cache_fornecedores = None
+#         self.cache_timestamp = None
+#         self.cache_duracao = 300  # 5 minutos
     
-    def carregar_cache_se_necessario(self, arquivo_fornecedores):
-        """Carrega cache se necessário ou se arquivo foi modificado"""
-        try:
-            import os
-            from datetime import datetime
+#     def carregar_cache_se_necessario(self, arquivo_fornecedores):
+#         """Carrega cache se necessário ou se arquivo foi modificado"""
+#         try:
+#             import os
+#             from datetime import datetime
             
-            agora = datetime.now()
-            arquivo_modificado = os.path.getmtime(arquivo_fornecedores)
+#             agora = datetime.now()
+#             arquivo_modificado = os.path.getmtime(arquivo_fornecedores)
             
-            # Verificar se precisa recarregar
-            precisa_recarregar = (
-                self.cache_fornecedores is None or
-                self.cache_timestamp is None or
-                (agora - self.cache_timestamp).seconds > self.cache_duracao or
-                arquivo_modificado > self.cache_timestamp.timestamp()
-            )
+#             # Verificar se precisa recarregar
+#             precisa_recarregar = (
+#                 self.cache_fornecedores is None or
+#                 self.cache_timestamp is None or
+#                 (agora - self.cache_timestamp).seconds > self.cache_duracao or
+#                 arquivo_modificado > self.cache_timestamp.timestamp()
+#             )
             
-            if precisa_recarregar:
-                logger.debug("DEBUG: Recarregando cache de fornecedores...")
-                self.cache_fornecedores = self._carregar_fornecedores(arquivo_fornecedores)
-                self.cache_timestamp = agora
-                logger.debug(f"DEBUG: Cache carregado com {len(self.cache_fornecedores)} fornecedores")
+#             if precisa_recarregar:
+#                 logger.debug("DEBUG: Recarregando cache de fornecedores...")
+#                 self.cache_fornecedores = self._carregar_fornecedores(arquivo_fornecedores)
+#                 self.cache_timestamp = agora
+#                 logger.debug(f"DEBUG: Cache carregado com {len(self.cache_fornecedores)} fornecedores")
             
-            return self.cache_fornecedores
+#             return self.cache_fornecedores
             
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao carregar cache: {str(e)}")
-            return []
+#         except Exception as e:
+#             logger.debug(f"DEBUG: Erro ao carregar cache: {str(e)}")
+#             return []
     
-    def _carregar_fornecedores(self, arquivo_fornecedores):
-        """Carrega todos os fornecedores em memória"""
-        fornecedores = []
+#     def _carregar_fornecedores(self, arquivo_fornecedores):
+#         """Carrega todos os fornecedores em memória"""
+#         fornecedores = []
         
-        try:
-            wb = load_workbook(arquivo_fornecedores, data_only=True)
-            ws = wb['Fornecedores']
+#         try:
+#             wb = load_workbook(arquivo_fornecedores, data_only=True)
+#             ws = wb['Fornecedores']
             
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0] or not row[3]:  # Pular se não tem CNPJ ou nome
-                    continue
+#             for row in ws.iter_rows(min_row=2, values_only=True):
+#                 if not row[0] or not row[3]:  # Pular se não tem CNPJ ou nome
+#                     continue
                 
-                fornecedor = {
-                    'cnpj_cpf': str(row[0]).strip(),
-                    'nome': str(row[3]).strip().upper(),
-                    'categoria': str(row[11] or '').strip(),
-                    'banco': str(row[4] or '').strip(),
-                    'op': str(row[5] or '').strip(),
-                    'agencia': str(row[6] or '').strip(),
-                    'conta': str(row[7] or '').strip(),
-                    'chave_pix': str(row[8] or '').strip()
-                }
+#                 fornecedor = {
+#                     'cnpj_cpf': str(row[0]).strip(),
+#                     'nome': str(row[3]).strip().upper(),
+#                     'categoria': str(row[11] or '').strip(),
+#                     'banco': str(row[4] or '').strip(),
+#                     'op': str(row[5] or '').strip(),
+#                     'agencia': str(row[6] or '').strip(),
+#                     'conta': str(row[7] or '').strip(),
+#                     'chave_pix': str(row[8] or '').strip()
+#                 }
                 
-                fornecedores.append(fornecedor)
+#                 fornecedores.append(fornecedor)
             
-            wb.close()
+#             wb.close()
             
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao carregar fornecedores: {str(e)}")
+#         except Exception as e:
+#             logger.debug(f"DEBUG: Erro ao carregar fornecedores: {str(e)}")
         
-        return fornecedores
+#         return fornecedores
 
 class ConfiguracaoTaxas:
     """
