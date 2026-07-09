@@ -318,5 +318,16 @@
             "Correções pontuais no Contrato de Prestação de Serviços"
         ],
         "timestamp": "2026-06-27T08:58:27.612165"
+    },
+    {
+        "version": "1.8.0",
+        "release_date": "08/072026",
+        "changes": [
+            "Cadastro de cliente — checkboxes para marcar fictício/vinculado e caixa controlado, com as abas de controle nascendo junto (ou confirmação explícita, se for num cliente já existente)",
+            "Repasse Mão de Obra (clientes fictícios) — cálculo, painel na tela, botão de registro, bloco no PDF",
+            "Saldo Caixa de Obra (clientes reais com conta controlada) — cálculo, painel na tela, botão de registro, bloco no PDF",
+            "Layout — melhoria nas telas de criar/editar cliente compactadas, sem os espaços tortos"
+        ],
+        "timestamp": "2026-07-08T17:18:57.360822"
     }
 ]
