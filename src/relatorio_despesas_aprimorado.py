@@ -686,6 +686,22 @@ class RelatorioConfig:
             spaceBefore=20,
             spaceAfter=12
         )
+
+        # Subtítulo - para informações complementares (ex.: Controle de
+        # Saldo), que não devem competir visualmente com os títulos
+        # principais de seção (RESUMO DAS DESPESAS, DETALHES DAS DESPESAS)
+        self.style_subheading = ParagraphStyle(
+            'SubheadingStyle',
+            parent=self.styles['Heading1'],
+            fontName='Helvetica-Bold',
+            fontSize=9,
+            leading=11,
+            alignment=TA_LEFT,
+            leftIndent=0,
+            textColor=colors.black,
+            spaceBefore=6,
+            spaceAfter=6
+        )
         
         self.style_normal = ParagraphStyle(
             'NormalStyle',
@@ -1246,7 +1262,7 @@ class RelatorioHandler:
         tabela.setStyle(estilo)
     
         elementos = [
-            Paragraph(titulo, self.config.style_heading),
+            Paragraph(titulo, self.config.style_subheading),
             tabela,
         ]
     
@@ -3080,18 +3096,34 @@ class RelatorioHandler:
                 )
                 bloco_caixa, aviso_caixa = self.criar_bloco_saldo_caixa(saldo_caixa)
         
-            if bloco_mo and bloco_caixa:
-                # Os dois se aplicam (caso raro, mas possivel) - lado a lado
-                tabela_lado_a_lado = Table([[bloco_mo, bloco_caixa]], colWidths=[270, 270])
-                tabela_lado_a_lado.setStyle(TableStyle([('VALIGN', (0, 0), (-1, -1), 'TOP')]))
+            # Monta a lista de blocos que se aplicam (0, 1 ou 2), empilhados
+            # verticalmente se os dois se aplicarem (caso raro)
+            blocos_saldo = []
+            if bloco_mo:
+                blocos_saldo.extend(bloco_mo)
+            if bloco_caixa:
+                if blocos_saldo:
+                    blocos_saldo.append(Spacer(1, 10))
+                blocos_saldo.extend(bloco_caixa)
+
+            if blocos_saldo:
+                # Alinhado com a coluna direita do resumo (TOTAL DA OBRA):
+                # mesma largura de coluna vazia (400+60=460) + coluna do
+                # bloco (280), reaproveitando exatamente os colWidths de
+                # tabela_resumo logo acima. IMPORTANTE: não zerar o
+                # padding aqui - tabela_resumo usa o padding padrão do
+                # ReportLab (6pt), então esta tabela precisa do mesmo
+                # padding padrão para o início bater certinho. Zerar
+                # (como estava antes) desalinha a coluna esquerda.
+                tabela_saldo_alinhada = Table(
+                    [['', blocos_saldo]],
+                    colWidths=[460, 280]
+                )
+                tabela_saldo_alinhada.setStyle(TableStyle([
+                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                ]))
                 elementos.append(Spacer(1, 10))
-                elementos.append(tabela_lado_a_lado)
-            elif bloco_mo:
-                elementos.append(Spacer(1, 10))
-                elementos.extend(bloco_mo)
-            elif bloco_caixa:
-                elementos.append(Spacer(1, 10))
-                elementos.extend(bloco_caixa)
+                elementos.append(tabela_saldo_alinhada)
 
             # ⭐ ADICIONAR NOTAS NA PRIMEIRA PÁGINA (após o resumo) ⭐
             self.adicionar_notas(elementos, dados, incluir_quebra_pagina=False)
