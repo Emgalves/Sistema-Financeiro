@@ -1965,7 +1965,7 @@ class SistemaRelatorios:
 
         janela = tk.Toplevel(self.root)
         janela.title("Registrar Novo Aporte - Caixa de Obra")
-        janela.geometry("420x320")
+        janela.geometry("440x400")
         janela.transient(self.root)
         janela.grab_set()
 
@@ -1986,8 +1986,18 @@ class SistemaRelatorios:
         ttk.Label(frame_principal, text="Valor do aporte (R$):").pack(anchor='w')
         valor_var = tk.StringVar(master=janela, value="")
         entry_valor = ttk.Entry(frame_principal, textvariable=valor_var, width=20)
-        entry_valor.pack(anchor='w', pady=(0, 15))
+        entry_valor.pack(anchor='w', pady=(0, 2))
         entry_valor.focus_set()
+
+        ttk.Label(
+            frame_principal,
+            text="Use valor negativo para registrar que parte de um aporte já\n"
+                 "recebido foi destinada ao pagamento direto das despesas do\n"
+                 "relatório (tipos 1, 2, 3, 4 ou 7) — detalhe no campo Referência.",
+            font=('Arial', 8, 'italic'),
+            foreground='gray',
+            justify='left'
+        ).pack(anchor='w', pady=(0, 13))
 
         ttk.Label(frame_principal, text="Data do aporte:").pack(anchor='w')
         try:
@@ -2018,10 +2028,10 @@ class SistemaRelatorios:
 
             try:
                 valor = float(texto_valor)
-                if valor <= 0:
-                    raise ValueError("Valor deve ser maior que zero")
+                if valor == 0:
+                    raise ValueError("Valor não pode ser zero")
             except ValueError:
-                messagebox.showerror("Erro", "Informe um valor numérico válido, maior que zero.")
+                messagebox.showerror("Erro", "Informe um valor numérico válido, diferente de zero.")
                 return
 
             try:
@@ -2035,10 +2045,11 @@ class SistemaRelatorios:
 
             referencia = ref_var.get().strip() or f"Aporte - {data_repasse.strftime('%d/%m/%Y')}"
 
+            valor_formatado_confirmacao = self.despesas_service.handler.formatar_numero(valor)
             confirmado = messagebox.askyesno(
                 "Confirmar aporte",
                 f"Confirma o lançamento de:\n\n"
-                f"Valor: R$ {valor:,.2f}\n"
+                f"Valor: R$ {valor_formatado_confirmacao}\n"
                 f"Data: {data_repasse.strftime('%d/%m/%Y')}\n"
                 f"Referência: {referencia}\n\n"
                 f"Arquivo: {os.path.basename(arquivo)}"
