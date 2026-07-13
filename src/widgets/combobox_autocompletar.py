@@ -3,8 +3,16 @@ Widget de Combobox com autocompletar e adição dinâmica de itens novos
 (usado para campos como Etapa da Obra e Insumo).
 
 Extraído de Sistema_Entrada_Dados.py em [DATA_DA_EXTRACAO].
-Nenhuma alteração de lógica foi feita nesta extração — apenas mudança
-de localização e ajuste de imports.
+
+Atualizado em [DATA_DA_ATUALIZACAO] para adotar um comportamento híbrido
+de filtragem, combinando o autocomplete original desta classe com o
+padrão usado em ImportadorRH.solicitar_etapa_obra:
+  - Busca por prefixo tem prioridade e autocompleta com o primeiro
+    resultado da lista filtrada (não exige mais resultado único).
+  - Quando não há match por prefixo, cai para busca por substring em
+    qualquer parte do texto, sem forçar preenchimento automático.
+  - Backspace/Delete apenas filtram a lista, sem re-forçar o
+    autocomplete — evita o campo "grudar" no mesmo valor ao apagar.
 """
 import json
 import tkinter as tk
@@ -43,11 +51,29 @@ class ComboboxAutocompletar(ttk.Combobox):
         # Variável para controlar se está filtrando
         self.filtrando = False
 
+    # Teclas que não devem disparar filtragem/autocomplete
+    _TECLAS_NAVEGACAO = {
+        'Up', 'Down', 'Left', 'Right', 'Return', 'Tab', 'Escape',
+        'Shift_L', 'Shift_R', 'Control_L', 'Control_R', 'Alt_L', 'Alt_R'
+    }
+    # Teclas de edição que filtram a lista, mas não devem forçar
+    # o preenchimento automático (senão o usuário nunca consegue apagar)
+    _TECLAS_APAGANDO = {'BackSpace', 'Delete'}
+
     def on_keyrelease(self, event):
-        """Evento chamado quando uma tecla é liberada"""
-        if event.keysym in ['Up', 'Down', 'Left', 'Right', 'Return', 'Tab']:
+        """Evento chamado quando uma tecla é liberada — filtra e autocompleta.
+
+        Comportamento híbrido:
+        1) Tenta por PREFIXO primeiro. Se houver resultado(s), mostra no
+           dropdown e autocompleta com o primeiro deles (exceto ao apagar).
+        2) Sem match por prefixo, cai para busca por SUBSTRING em qualquer
+           parte do texto — não força preenchimento, só filtra a lista,
+           já que o termo digitado pode não ser o início do item.
+        """
+        if event.keysym in self._TECLAS_NAVEGACAO:
             return
 
+        apagando = event.keysym in self._TECLAS_APAGANDO
         texto_digitado = self.get().upper()
 
         if not texto_digitado:
@@ -56,22 +82,34 @@ class ComboboxAutocompletar(ttk.Combobox):
             self.filtrando = False
             return
 
-        # Filtrar valores que começam com o texto digitado
-        valores_filtrados = [v for v in self.valores_originais if v.upper().startswith(texto_digitado)]
+        # 1) Busca por prefixo (comportamento principal)
+        valores_por_prefixo = [v for v in self.valores_originais if v.upper().startswith(texto_digitado)]
 
-        if valores_filtrados:
-            # Atualizar lista com valores filtrados
-            self['values'] = valores_filtrados
+        if valores_por_prefixo:
+            self['values'] = valores_por_prefixo
             self.filtrando = True
 
-            # Autocompletar com o primeiro resultado
-            if len(valores_filtrados) == 1:
-                valor_completo = valores_filtrados[0]
+            # Autocompletar com o primeiro resultado — mas só ao digitar
+            # para frente. Ao apagar (Backspace/Delete), deixa o texto
+            # do jeito que o usuário digitou, sem re-preencher.
+            if not apagando:
+                valor_completo = valores_por_prefixo[0]
                 self.delete(0, tk.END)
                 self.insert(0, valor_completo)
                 self.selection_range(len(texto_digitado), len(valor_completo))
+            return
+
+        # 2) Fallback: busca por substring em qualquer parte do texto
+        valores_por_substring = [v for v in self.valores_originais if texto_digitado in v.upper()]
+
+        if valores_por_substring:
+            # Apenas restringe o dropdown. Não preenche automaticamente,
+            # pois o termo digitado não corresponde ao início do item.
+            self['values'] = valores_por_substring
+            self.filtrando = True
         else:
-            # Nenhuma correspondência encontrada
+            # Nenhuma correspondência: dropdown fica vazio, texto do
+            # usuário permanece livre (permite o fluxo de "adicionar novo item").
             self['values'] = []
             self.filtrando = True
 
