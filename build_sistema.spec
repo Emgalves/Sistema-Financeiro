@@ -8,7 +8,7 @@ block_cipher = None
 
 NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_PRODUCAO"
 ARQUIVO_PRINCIPAL = "src/sistema_principal.py"
-ICONE = "logo1.ico"
+ICONE = "logo3.ico"
 
 # ====================================================================
 # PYTHON-DOCX — incluir pasta inteira como dado + submodulos como imports
@@ -66,7 +66,7 @@ except Exception as e:
 # ====================================================================
 
 outras_datas, outras_binaries, outras_hiddenimports = [], [], []
-for modulo in ['openpyxl', 'pandas', 'PIL', 'reportlab']:
+for modulo in ['openpyxl', 'pandas', 'PIL', 'reportlab', 'num2words']:
     try:
         d, b, h = collect_all(modulo)
         outras_datas += d
@@ -85,7 +85,7 @@ hidden_imports = list(set(
         'tkinter', 'tkinter.ttk', 'tkinter.scrolledtext',
         'tkinter.filedialog', 'tkinter.messagebox',
         'matplotlib', 'xlwings', 'tkcalendar',
-        'babel', 'babel.numbers', 'num2words', 'num2words.lang_pt_BR', 'dotenv',
+        'babel', 'babel.numbers', 'dotenv',
         'ambiente_config', 'version_control', 'Sistema_Entrada_Dados',
         'src.ambiente_config', 'src.version_control', 'src.Sistema_Entrada_Dados',
         'src.relatorios_interface', 'src.relatorio_despesas_aprimorado',
@@ -116,6 +116,18 @@ datas = []
 if os.path.exists('logo.png'):
     datas.append(('logo.png', '.'))
     print("[OK] logo.png adicionado")
+
+if os.path.exists('logo3.png'):
+    datas.append(('logo3.png', '.'))
+    print("[OK] logo3.png adicionado")
+else:
+    print("[AVISO] logo3.png não encontrado na raiz do projeto — sistema_principal.py e window_config.py não vão achá-lo no .exe")
+
+if os.path.exists('logo3.ico'):
+    datas.append(('logo3.ico', '.'))
+    print("[OK] logo3.ico adicionado")
+else:
+    print("[AVISO] logo3.ico não encontrado na raiz do projeto — window_config.py não vai achar o ícone no .exe")
 
 if os.path.exists('src'):
     datas.append(('src', 'src'))
