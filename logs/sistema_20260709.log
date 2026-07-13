@@ -205,3 +205,18 @@
 2026-07-09 18:43:37,743 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
 2026-07-09 18:43:37,746 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
 2026-07-09 18:43:37,747 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-07-09 19:55:14,540 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-07-09 19:55:14,541 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-07-09 19:55:14,541 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-07-09 19:55:14,542 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-07-09 19:55:14,542 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-07-09 19:57:14,129 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-07-09 19:57:14,130 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-07-09 19:57:14,130 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-07-09 19:57:14,131 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-07-09 19:57:14,131 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-07-09 19:58:33,212 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-07-09 19:58:33,214 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-07-09 19:58:33,215 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-07-09 19:58:33,215 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-07-09 19:58:33,217 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
