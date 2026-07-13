@@ -759,7 +759,14 @@ class GestaoMedicoes:
         ttk.Label(frame_data_pdf, text="Data de referência:").pack(side='left', padx=(0, 8))
         self.ent_data_relatorio_pdf = DateEntry(frame_data_pdf, width=14,
                                                 date_pattern='dd/mm/yyyy', locale='pt_BR')
-        self.ent_data_relatorio_pdf.set_date(datetime.now())
+        # Sugere a próxima quinzena (dia 5 ou 20), mesma regra usada na
+        # Interface de Relatório (src.config_relatorio_quinzenal).
+        try:
+            from src.config_relatorio_quinzenal import calcular_data_rel_automatica
+            data_sugerida = calcular_data_rel_automatica()
+        except Exception:
+            data_sugerida = datetime.now()
+        self.ent_data_relatorio_pdf.set_date(data_sugerida)
         self.ent_data_relatorio_pdf.pack(side='left')
 
         # Indicador do filtro de fornecedor ativo
@@ -3718,6 +3725,7 @@ class GestaoMedicoes:
                 'cliente_estado_civil': dados_cliente['estado_civil'],
                 'cliente_endereco': dados_cliente['endereco'],
                 'fornecedor_nome': dados_fornecedor['nome'],
+                'fornecedor_razao_social': dados_fornecedor.get('razao_social') or dados_fornecedor['nome'],
                 'fornecedor_cnpj_cpf': dados_fornecedor['cnpj_cpf'],
                 'fornecedor_endereco': dados_fornecedor['endereco'],
                 'endereco_obra': self.ent_endereco_obra.get(),
