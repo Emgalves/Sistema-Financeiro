@@ -185,7 +185,7 @@ class RelatorioQuinzenalPDF:
             else self._localizar_fornecedores()
         )
         self.cliente_info = {}
-        self.logo_path    = Path(__file__).parent / 'logo.png'
+        self.logo_path    = Path(__file__).parent / 'logo3.png'
 
     # ------------------------------------------------------------------
     def _localizar_fornecedores(self):
@@ -635,8 +635,12 @@ class RelatorioQuinzenalPDF:
         ml = doc.leftMargin
         mr = doc.leftMargin + doc.width
 
-        # Logo — proporção 404x124, altura=14mm → largura≈46mm
-        self._draw_logo(cnv, ml, 274*mm, 46*mm, 14*mm)
+        # Logo — logo3.png tem proporção real ~2,034:1; drawImage com preserveAspectRatio=True
+        # encaixa a imagem dentro da caixa sem distorcer, qualquer que seja a proporção.
+        # Caixa aumentada de 46x14mm para 46x20mm (a logo estava pequena demais) —
+        # y ajustado de 274 para 268mm para manter o topo da logo no mesmo lugar
+        # (274+14=288 == 268+20=288) e crescer para baixo, no espaço que já estava vazio.
+        self._draw_logo(cnv, ml, 268*mm, 46*mm, 20*mm)
 
         # Dados empresa (direita, alinhados ao topo)
         cnv.setFont('Helvetica', 6.5)
@@ -684,7 +688,10 @@ class RelatorioQuinzenalPDF:
         ml = doc.leftMargin
         mr = doc.leftMargin + doc.width
 
-        self._draw_logo(cnv, ml, 278*mm, 25*mm, 8*mm)
+        # Logo maior que antes (8mm -> 10mm de altura), topo mantido no mesmo
+        # lugar (278+8=286 == 276+10=286) para não colidir com o nome do
+        # cliente logo abaixo (272mm)
+        self._draw_logo(cnv, ml, 276*mm, 25*mm, 10*mm)
 
         cnv.setFont('Helvetica', 6.5)
         cnv.setFillColor(PRETO)
