@@ -274,14 +274,21 @@ class SistemaGestaoFinanceira:
         """Cria o conteúdo principal da interface"""
         # Frame principal
         main_frame = ttk.Frame(self.root)
-        main_frame.pack(expand=True, fill="both", padx=20, pady=20)
+        main_frame.pack(expand=True, fill="both", padx=20, pady=18)
         aplicar_estilo_ambiente(main_frame, 'frame')
 
         # Logo - com tratamento de erro
         try:
-            self.logo_path = resource_path("logo.png")
+            self.logo_path = resource_path("logo3.png")
             if os.path.exists(self.logo_path):
-                self.logo = PhotoImage(file=self.logo_path)
+                # logo3.png é a versão cortada (sem margem transparente
+                # desperdiçada), proporção real ~2:1, por isso é redimensionada
+                # com Pillow antes de ser exibida (PhotoImage puro do tkinter
+                # não redimensiona).
+                from PIL import Image, ImageTk
+                imagem_logo = Image.open(self.logo_path).convert("RGBA")
+                imagem_logo.thumbnail((340, 170), Image.LANCZOS)
+                self.logo = ImageTk.PhotoImage(imagem_logo)
                 logo_label = ttk.Label(main_frame, image=self.logo)
                 logo_label.pack(pady=10)
             else:
@@ -308,7 +315,7 @@ class SistemaGestaoFinanceira:
         
         # Grid para cards
         grid = ttk.Frame(main_frame)
-        grid.pack(expand=True, pady=20)
+        grid.pack(expand=True, pady=16)
         aplicar_estilo_ambiente(grid, 'frame')
 
         # Cards do sistema
@@ -338,7 +345,7 @@ class SistemaGestaoFinanceira:
         
         # Frame para botões inferiores
         bottom_frame = ttk.Frame(main_frame)
-        bottom_frame.pack(pady=20)
+        bottom_frame.pack(pady=16)
         aplicar_estilo_ambiente(bottom_frame, 'frame')
         
         # Versão e ambiente à esquerda
