@@ -19,7 +19,9 @@ import json
 import zipfile
 import base64
 import ssl
+import logging
 
+logger = logging.getLogger("sistema")
 
 class ProcessadorNFeHibrido:
     """Classe principal para processamento híbrido de NFe"""
@@ -750,55 +752,13 @@ class ProcessadorNFeHibrido:
             messagebox.showwarning("Aviso", "Nenhum texto no clipboard!")
     
     def configurar_certificado(self):
-        """Configura certificado digital"""
-        print("SISTEMA_HIBRIDO: Usando versão corrigida")
+        """Configura certificado digital (interface via consultor_sefaz_a1,
+        com fallback para configuração rápida)."""
         try:
             return self.sistema.consultor_sefaz_a1.configurar_certificado_interface()
-        except:
-            # Fallback para método direto
+        except Exception as e:
+            logger.debug(f"Fallback ao configurar certificado: {e}")
             return self.sistema.configurar_certificado_rapido()
-
-        janela_cert = tk.Toplevel(self.janela_nfe)
-        janela_cert.title("Configurar Certificado Digital")
-        janela_cert.geometry("500x300")
-        janela_cert.grab_set()
-        
-        frame_cert = ttk.LabelFrame(janela_cert, text="Certificado Digital A1 (.pfx)", padding=10)
-        frame_cert.pack(fill='both', expand=True, padx=10, pady=10)
-        
-        # Arquivo do certificado
-        tk.Label(frame_cert, text="Arquivo do Certificado (.pfx):").pack(anchor='w', pady=5)
-        
-        frame_arquivo = ttk.Frame(frame_cert)
-        frame_arquivo.pack(fill='x', pady=5)
-        
-        self.entry_cert_path = tk.Entry(frame_arquivo, width=50)
-        self.entry_cert_path.pack(side='left', fill='x', expand=True, padx=(0, 5))
-        
-        ttk.Button(frame_arquivo, text="📁", 
-                  command=self.selecionar_certificado).pack(side='right')
-        
-        # Senha do certificado
-        tk.Label(frame_cert, text="Senha do Certificado:").pack(anchor='w', pady=(10, 5))
-        self.entry_cert_senha = tk.Entry(frame_cert, show='*', width=30)
-        self.entry_cert_senha.pack(anchor='w', pady=5)
-        
-        # Botões
-        frame_btns_cert = ttk.Frame(frame_cert)
-        frame_btns_cert.pack(fill='x', pady=10)
-        
-        ttk.Button(frame_btns_cert, text="✅ Salvar", 
-                  command=lambda: self.salvar_configuracao_certificado(janela_cert)).pack(side='left', padx=5)
-        
-        ttk.Button(frame_btns_cert, text="🧪 Testar", 
-                  command=self.testar_certificado).pack(side='left', padx=5)
-        
-        ttk.Button(frame_btns_cert, text="❌ Cancelar", 
-                  command=janela_cert.destroy).pack(side='right', padx=5)
-        
-        # Carregar configuração atual se existir
-        if self.certificado_path:
-            self.entry_cert_path.insert(0, self.certificado_path)
     
     def selecionar_certificado(self):
         """Seleciona arquivo de certificado"""
