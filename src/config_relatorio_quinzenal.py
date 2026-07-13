@@ -518,132 +518,87 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
             else:
                 # Usar data automática
                 data_ref = data_automatica
-            
-            # === PASSO 1: VERIFICAR SE HÁ DADOS ANTES DE PEDIR ARQUIVO ===
-            # Criar janela de verificação
-            verificacao = tk.Toplevel(sistema_relatorios.root)
-            verificacao.title("Verificando dados")
-            verificacao.geometry("350x100")
-            verificacao.transient(sistema_relatorios.root)
-            verificacao.grab_set()
-            
-            # Centralizar
-            verificacao.update_idletasks()
-            x = (verificacao.winfo_screenwidth() // 2) - 175
-            y = (verificacao.winfo_screenheight() // 2) - 50
-            verificacao.geometry(f"+{x}+{y}")
-            
-            frame_verif = ttk.Frame(verificacao, padding=20)
-            frame_verif.pack(fill='both', expand=True)
-            
-            ttk.Label(frame_verif, text="Verificando medições...", font=('Arial', 11)).pack(pady=10)
-            
-            progress_bar_verif = ttk.Progressbar(frame_verif, mode='indeterminate', length=250)
-            progress_bar_verif.pack()
-            progress_bar_verif.start()
-            
-            verificacao.update()
-            
-            # Criar gerador e verificar dados
+
             if RelatorioQuinzenalPDF is None:
                 raise ImportError("Módulo gerar_relatorio_quinzenal_pdf não encontrado")
-            
-            gerador = RelatorioQuinzenalPDF(
-                arquivo_cliente,
-                arquivo_clientes_var.get()
-            )
-            
-            # Carregar dados do cliente
-            gerador.carregar_dados_cliente()
-            
-            # Verificar se há medições na quinzena
-            contratos_encontrados = gerador.filtrar_medicoes_quinzena(data_ref)
-            
-            progress_bar_verif.stop()
-            verificacao.destroy()
-            
-            # Se não encontrou medições, avisar e parar
-            if not contratos_encontrados:
-                data_inicio, data_fim = gerador.identificar_quinzena(data_ref)
-                messagebox.showinfo(
-                    "Aviso",
-                    f"Nenhuma medição foi encontrada na quinzena especificada.\n\n"
-                    f"Cliente: {cliente}\n"
-                    f"Período verificado:\n"
-                    f"  • De: {data_inicio.strftime('%d/%m/%Y')}\n"
-                    f"  • Até: {data_fim.strftime('%d/%m/%Y')}\n\n"
-                    f"Verifique a data de referência."
-                )
-                return
-            
-            # === PASSO 2: HÁ DADOS! AGORA PODE PEDIR ARQUIVO DE SAÍDA ===
-            # Sugerir nome do arquivo
+
+            # Sugerir nome do arquivo e pedir local de salvamento
             nome_cliente_arquivo = cliente.replace(' ', '_').upper()
             nome_sugerido = f"REL_MEDICOES_{nome_cliente_arquivo}_{data_ref.strftime('%d-%m-%Y')}.pdf"
-            
-            # Solicitar local de salvamento
+
             arquivo_saida = filedialog.asksaveasfilename(
                 title="Salvar Relatório PDF",
                 defaultextension=".pdf",
                 filetypes=[("PDF files", "*.pdf")],
                 initialfile=nome_sugerido
             )
-            
+
             if not arquivo_saida:
                 return
-            
-            # === PASSO 3: GERAR O PDF ===
-            # Criar janela de progresso
+
+            # === GERAR O PDF ===
+            # gerador.gerar_pdf() já faz todo o trabalho internamente (carrega
+            # o cliente, filtra a quinzena, monta o PDF) e retorna None se não
+            # encontrar nenhuma medição no período — não precisamos (e a
+            # classe atual não tem) métodos separados de pré-verificação.
+            gerador = RelatorioQuinzenalPDF(
+                arquivo_cliente,
+                arquivo_clientes_var.get()
+            )
+
             progress = tk.Toplevel(sistema_relatorios.root)
             progress.title("Gerando PDF")
             progress.geometry("400x120")
             progress.transient(sistema_relatorios.root)
             progress.grab_set()
-            
+
             # Centralizar
             progress.update_idletasks()
             x = (progress.winfo_screenwidth() // 2) - 200
             y = (progress.winfo_screenheight() // 2) - 60
             progress.geometry(f"+{x}+{y}")
-            
+
             frame_prog = ttk.Frame(progress, padding=20)
             frame_prog.pack(fill='both', expand=True)
-            
+
             ttk.Label(frame_prog, text="Gerando relatório...", font=('Arial', 11)).pack(pady=10)
-            
+
             progress_bar = ttk.Progressbar(frame_prog, mode='indeterminate', length=300)
             progress_bar.pack()
             progress_bar.start()
-            
+
             progress.update()
-            
-            # Gerar PDF (já temos os dados carregados no gerador)
-            resultado = gerador.gerar_pdf(data_ref, arquivo_saida)
-            
-            progress_bar.stop()
-            progress.destroy()
-            
-            # === PASSO 4: MOSTRAR RESULTADO ===
+
+            try:
+                resultado = gerador.gerar_pdf(data_ref, arquivo_saida)
+            finally:
+                # Garante que a janela de progresso feche mesmo se gerar_pdf
+                # levantar uma exceção — antes, um erro aqui deixava a janela
+                # "Gerando PDF" presa na tela até o usuário fechar manualmente.
+                progress_bar.stop()
+                progress.destroy()
+
+            # === MOSTRAR RESULTADO ===
             if resultado:
-                # Perguntar se quer abrir
-                total_contratos = len(gerador.contratos_quinzena) if hasattr(gerador, 'contratos_quinzena') else 0
-                
                 resposta = messagebox.askyesno(
                     "Sucesso!",
                     f"✅ Relatório gerado com sucesso!\n\n"
                     f"Cliente: {cliente}\n"
-                    f"Arquivo: {Path(resultado).name}\n"
-                    f"Total de contratos: {total_contratos}\n\n"
+                    f"Arquivo: {Path(resultado).name}\n\n"
                     f"Deseja abrir o PDF?"
                 )
                 
                 if resposta:
                     sistema_relatorios.abrir_arquivo(resultado)
             else:
-                # Não deveria chegar aqui, pois já verificamos antes
-                messagebox.showwarning(
+                # gerar_pdf() retorna None quando não encontra nenhuma
+                # medição na quinzena da data informada
+                messagebox.showinfo(
                     "Aviso",
-                    "Não foi possível gerar o relatório."
+                    f"Nenhuma medição foi encontrada na quinzena especificada.\n\n"
+                    f"Cliente: {cliente}\n"
+                    f"Data de referência: {data_ref.strftime('%d/%m/%Y')}\n\n"
+                    f"Verifique a data de referência."
                 )
         
         except Exception as e:
