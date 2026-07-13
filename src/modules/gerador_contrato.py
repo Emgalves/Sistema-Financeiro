@@ -338,13 +338,17 @@ class GeradorContrato:
                 endereco = str(endereco_raw).strip()
                 logger.info(f"✅ Endereço encontrado: {endereco}")
             
+            nome_fantasia = self._get_safe_value(fornecedor, 'NOME', 'não informado')
+            razao_social = self._get_safe_value(fornecedor, 'RAZÃO SOCIAL', nome_fantasia)
+
             dados = {
-                'nome': self._get_safe_value(fornecedor, 'NOME', 'não informado'),
+                'nome': nome_fantasia,
+                'razao_social': razao_social if razao_social else nome_fantasia,
                 'cnpj_cpf': formatar_cnpj_cpf(cnpj_cpf),
                 'endereco': endereco
             }
             
-            logger.info(f"Dados do fornecedor obtidos: {dados['nome']}")
+            logger.info(f"Dados do fornecedor obtidos: {dados['razao_social']} (nome fantasia: {dados['nome']})")
             return dados
             
         except Exception as e:
@@ -698,14 +702,28 @@ class GeradorContrato:
                     'estado': dados_contrato.get('estado', 'MG')
                 }
                 
+                nome_fornecedor_dict = dados_contrato.get('fornecedor_nome', 'não informado')
+                razao_social_dict = dados_contrato.get('fornecedor_razao_social')
+
+                # Se o chamador não informou explicitamente a razão social, busca na planilha
+                # pelo CNPJ/CPF para não cair de volta no nome fantasia.
+                if not razao_social_dict and cnpj_fornecedor and cnpj_fornecedor != 'não informado':
+                    fornecedor_planilha = self.obter_dados_fornecedor(cnpj_fornecedor)
+                    if fornecedor_planilha:
+                        razao_social_dict = fornecedor_planilha.get('razao_social')
+
+                if not razao_social_dict:
+                    razao_social_dict = nome_fornecedor_dict
+
                 dados_fornecedor = {
-                    'nome': dados_contrato.get('fornecedor_nome', 'não informado'),
+                    'nome': nome_fornecedor_dict,
+                    'razao_social': razao_social_dict,
                     'cnpj_cpf': cnpj_fornecedor,
                     'endereco': dados_contrato.get('fornecedor_endereco', 'não informado')
                 }
                 
                 logger.info(f"✅ Dados cliente processados: {dados_cliente.get('nome')}")
-                logger.info(f"✅ Dados fornecedor processados: {dados_fornecedor.get('nome')} - {dados_fornecedor.get('cnpj_cpf')}")
+                logger.info(f"✅ Dados fornecedor processados: {dados_fornecedor.get('razao_social')} (nome fantasia: {dados_fornecedor.get('nome')}) - {dados_fornecedor.get('cnpj_cpf')}")
                 
                 dados_bancarios = dados_contrato.get('dados_bancarios', 'Dados bancários não cadastrados')
                 endereco_obra = dados_contrato.get('endereco_obra', dados_cliente['endereco'])
@@ -843,14 +861,35 @@ class GeradorContrato:
                 )
                 logger.info(f"Fornecedor identificado como PESSOA FÍSICA: {cnpj_cpf_forn}")
 
-            run_fornecedor = p2.add_run(dados_fornecedor['nome'])
-            run_fornecedor.bold = True
-            p2.add_run(
-                f", {qualificacao_forn} {dados_fornecedor['endereco']}, doravante denominado "
-                f"simplesmente de CONTRATADA, ambas representadas por seus representantes legais "
-                f"que ao final firmam o presente contrato, tem entre si, justo e contratado o "
-                f"presente, que se regerá pelas seguintes Cláusulas e Condições:"
+            razao_social_forn = dados_fornecedor.get('razao_social') or dados_fornecedor['nome']
+            nome_fantasia_forn = dados_fornecedor.get('nome') or razao_social_forn
+
+            # Só menciona o nome fantasia quando ele realmente difere da razão social,
+            # para facilitar a identificação do fornecedor no dia a dia da obra.
+            usa_nome_fantasia = bool(
+                nome_fantasia_forn
+                and nome_fantasia_forn.strip().upper() != razao_social_forn.strip().upper()
             )
+
+            run_fornecedor = p2.add_run(razao_social_forn)
+            run_fornecedor.bold = True
+
+            if usa_nome_fantasia:
+                logger.info(f"ℹ️ Nome fantasia incluído na qualificação: {nome_fantasia_forn}")
+                p2.add_run(
+                    f", {qualificacao_forn} {dados_fornecedor['endereco']}, também denominada "
+                    f"\u201c{nome_fantasia_forn}\u201d, doravante denominado "
+                    f"simplesmente de CONTRATADA, ambas representadas por seus representantes legais "
+                    f"que ao final firmam o presente contrato, tem entre si, justo e contratado o "
+                    f"presente, que se regerá pelas seguintes Cláusulas e Condições:"
+                )
+            else:
+                p2.add_run(
+                    f", {qualificacao_forn} {dados_fornecedor['endereco']}, doravante denominado "
+                    f"simplesmente de CONTRATADA, ambas representadas por seus representantes legais "
+                    f"que ao final firmam o presente contrato, tem entre si, justo e contratado o "
+                    f"presente, que se regerá pelas seguintes Cláusulas e Condições:"
+                )
             
             # CLÁUSULA PRIMEIRA - OBJETO
             doc.add_heading('CLÁUSULA PRIMEIRA - OBJETO', level=1)
@@ -1063,7 +1102,7 @@ class GeradorContrato:
             
             p_nome_fornecedor = doc.add_paragraph()
             p_nome_fornecedor.alignment = WD_ALIGN_PARAGRAPH.LEFT  # ALINHADO À ESQUERDA
-            run_nome_fornecedor = p_nome_fornecedor.add_run(dados_fornecedor['nome'])
+            run_nome_fornecedor = p_nome_fornecedor.add_run(dados_fornecedor.get('razao_social') or dados_fornecedor['nome'])
             run_nome_fornecedor.bold = True
             
             # CORREÇÃO: TESTEMUNHAS - com separação entre as duas linhas
@@ -1095,7 +1134,7 @@ class GeradorContrato:
             run_dados_banc.bold = True
             
             p_fornec_banco = doc.add_paragraph()
-            run_fornec_banco = p_fornec_banco.add_run(dados_fornecedor['nome'])
+            run_fornec_banco = p_fornec_banco.add_run(dados_fornecedor.get('razao_social') or dados_fornecedor['nome'])
             run_fornec_banco.bold = True
             
             doc.add_paragraph(dados_bancarios)
