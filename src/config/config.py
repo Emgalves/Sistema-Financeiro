@@ -11,14 +11,14 @@ SEMPRE VERIFICAR ESTES ARQUIVOS PARA MANTER CONSISTÊNCIA:
 
 CAMINHOS DE PRODUÇÃO:
   Os caminhos de produção são lidos do arquivo config_caminhos.json,
-  localizado na mesma pasta do executável (ex: S:\Gestão\config_caminhos.json).
+  localizado na mesma pasta do executável (ex: S:\\Gestão\\config_caminhos.json).
   Se o servidor ou letra de drive mudar, basta editar esse arquivo —
   sem necessidade de rebuild do executável.
 
   O JSON deve apontar para a pasta que contém diretamente
   'Planilhas_Base' e 'Clientes', ou seja:
-    - Sua máquina : H:\...\.shortcut-targets-by-id\...\Relatórios\Financeiro
-    - Cliente     : Z:\Servidor\Relatórios\Financeiro
+    - Sua máquina : H:\\...\\.shortcut-targets-by-id\\...\\Relatórios\\Financeiro
+    - Cliente     : Z:\\Servidor\\Relatórios\\Financeiro
 """
 
 from pathlib import Path
@@ -56,8 +56,8 @@ print(f"💻 Sistema operacional: {platform.system()}")
 
 # BASE_DADOS = pasta que contém diretamente 'Planilhas_Base' e 'Clientes'
 # Exemplos:
-#   Sua máquina : H:\...\.shortcut-targets-by-id\...\Relatórios\Financeiro
-#   Cliente     : Z:\Servidor\Relatórios\Financeiro
+#   Sua máquina : H:\\...\\.shortcut-targets-by-id\\...\\Relatórios\\Financeiro
+#   Cliente     : Z:\\Servidor\\Relatórios\\Financeiro
 BASE_DADOS = None
 GOOGLE_DRIVE_PATH = None  # mantido por compatibilidade com outros módulos
 
