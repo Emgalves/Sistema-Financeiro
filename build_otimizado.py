@@ -168,22 +168,33 @@ def limpar_builds_anteriores():
         print_success(f"Removidos {len(pyc_files)} arquivos .pyc")
 
 def converter_icone():
-    png_path = "logo1.png"
-    ico_path = "logo1.ico"
+    # IMPORTANTE: usa logo3_icone.png (versão quadrada, com o desenho
+    # centralizado), NÃO logo3.png. logo3.png é a versão retangular (~2:1)
+    # usada em banners/cabeçalhos — convertê-la direto para .ico esmagaria
+    # a imagem forçando-a num quadrado.
+    png_path = "logo3_icone.png"
+    ico_path = "logo3.ico"
 
     if not os.path.exists(png_path):
-        print_warning("logo1.png não encontrado - build sem ícone")
+        print_warning("logo3_icone.png não encontrado - build sem ícone")
         return False
 
-    if os.path.exists(ico_path):
-        print_success("Ícone .ico já existe")
+    # Regenerar sempre que o .png for mais novo que o .ico (ou o .ico não existir),
+    # em vez de pular silenciosamente quando já existe um .ico desatualizado.
+    if os.path.exists(ico_path) and os.path.getmtime(ico_path) >= os.path.getmtime(png_path):
+        print_success("Ícone .ico já existe e está atualizado")
         return True
 
     try:
         from PIL import Image
         print_step("Convertendo PNG → ICO...")
-        img = Image.open(png_path)
-        img.save(ico_path)
+        img = Image.open(png_path).convert("RGBA")
+        # logo3_icone.png já é quadrada (desenho centralizado com margem) —
+        # gerar múltiplas resoluções no .ico para que Windows escolha o
+        # tamanho certo em cada contexto (ícone de arquivo, barra de
+        # tarefas, título da janela etc.)
+        tamanhos = [(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]
+        img.save(ico_path, sizes=tamanhos)
         print_success(f"Ícone criado: {ico_path}")
         return True
     except Exception as e:
