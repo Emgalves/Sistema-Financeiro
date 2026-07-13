@@ -54,10 +54,10 @@ except ImportError:
     PASTA_CLIENTES = BASE_PATH / "dados" / "clientes"
 
 # Caminho do logo (deve estar na mesma pasta do script ou configurado)
-LOGO_PATH = Path(__file__).parent / "logo1.png"
+LOGO_PATH = Path(__file__).parent / "logo3.png"
 if not LOGO_PATH.exists():
     # Tentar na pasta de saída
-    LOGO_PATH = BASE_PATH / "outputs" / "logo1.png"
+    LOGO_PATH = BASE_PATH / "outputs" / "logo3.png"
 
 try:
     from src.config.window_config import configurar_janela
@@ -777,8 +777,9 @@ Estrutura: Grupo → Cliente → Contratos → Medições"""
         if self.incluir_logo.get() and LOGO_PATH.exists():
             from reportlab.platypus import Image
             
-            # Logo
-            logo_img = Image(str(LOGO_PATH),  width=120, height=60)
+            # Logo — logo3.png tem proporção real ~2:1 (medida do conteúdo real
+            # do arquivo, não é quadrada); width=88/height=43 preserva a proporção
+            logo_img = Image(str(LOGO_PATH),  width=88, height=43)
             
             # Título
             titulo_texto = Paragraph("RELATÓRIO GERENCIAL DE OBRAS", style_titulo)
@@ -906,7 +907,12 @@ Estrutura: Grupo → Cliente → Contratos → Medições"""
         elementos.append(Spacer(1, 10*mm))
         
         # === DETALHAMENTO POR CLIENTE ===
-        for cliente_dados in self.dados_consolidados['clientes']:
+        for indice_cliente, cliente_dados in enumerate(self.dados_consolidados['clientes']):
+            # Salto de página a cada novo cliente, exceto o primeiro
+            # (que já começa logo após o resumo geral do grupo)
+            if indice_cliente > 0:
+                elementos.append(PageBreak())
+
             # Cabeçalho do cliente
             texto_cliente = f"<b>{cliente_dados['nome']}</b>"
             if cliente_dados['documento']:
