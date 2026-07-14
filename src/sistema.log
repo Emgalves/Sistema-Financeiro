@@ -13595,3 +13595,512 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-07-13 15:46:40,105 - INFO - Sistema iniciado em modo: TESTE
 2026-07-13 15:46:42,366 - INFO - Abrindo sistema de relatórios
 2026-07-13 15:47:27,453 - INFO - Sistema encerrado pelo usuário
+2026-07-14 09:41:36,850 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 09:41:36,871 - INFO - Configurações importadas com sucesso
+2026-07-14 09:41:36,872 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 09:41:38,393 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 09:41:45,175 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 09:41:46,552 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 09:41:46,829 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 09:41:49,419 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 09:42:07,007 - INFO - ==================================================
+2026-07-14 09:42:07,008 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-14 09:42:07,008 - INFO - ==================================================
+2026-07-14 09:42:07,009 - INFO - Fornecedor: ANCORA PAPELARIA
+2026-07-14 09:42:08,228 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 66!
+2026-07-14 09:42:08,229 - INFO - Dados carregados: ANCORA PAPELARIA
+2026-07-14 09:42:08,230 - INFO - Campos preenchidos com sucesso!
+2026-07-14 09:42:08,230 - INFO - ✓ Referência preenchida: PLOTAGENS
+2026-07-14 09:42:08,232 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-14 09:42:08,233 - INFO - ==================================================
+2026-07-14 09:42:22,263 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-07-14 09:42:22,265 - INFO - ✅ Dados adicionados - Total: 1
+2026-07-14 09:42:23,593 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 66!
+2026-07-14 09:42:24,822 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2026-07-14 09:42:36,527 - INFO - ==================================================
+2026-07-14 09:42:36,527 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-14 09:42:36,528 - INFO - ==================================================
+2026-07-14 09:42:36,529 - INFO - Fornecedor: BRUNO SANTANA RINALDI
+2026-07-14 09:42:37,704 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 150!
+2026-07-14 09:42:37,705 - INFO - Dados carregados: BRUNO SANTANA RINALDI
+2026-07-14 09:42:37,705 - INFO - Campos preenchidos com sucesso!
+2026-07-14 09:42:37,708 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-14 09:42:37,708 - INFO - ==================================================
+2026-07-14 09:43:02,799 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-07-14 09:43:02,800 - INFO - ✅ Dados adicionados - Total: 2
+2026-07-14 09:43:04,085 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 150!
+2026-07-14 09:43:05,918 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 2
+2026-07-14 09:45:02,990 - INFO - ==================================================
+2026-07-14 09:45:02,991 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-14 09:45:02,991 - INFO - ==================================================
+2026-07-14 09:45:02,992 - INFO - Fornecedor: LOCFER
+2026-07-14 09:45:04,102 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 654!
+2026-07-14 09:45:04,102 - INFO - Dados carregados: LOCFER
+2026-07-14 09:45:05,370 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 654!
+2026-07-14 09:45:05,370 - INFO - Campos preenchidos com sucesso!
+2026-07-14 09:45:05,372 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-14 09:45:05,373 - INFO - ==================================================
+2026-07-14 09:45:20,950 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-07-14 09:45:20,951 - INFO - ✅ Dados adicionados - Total: 3
+2026-07-14 09:45:22,115 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 654!
+2026-07-14 09:45:23,637 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2026-07-14 09:46:48,071 - INFO - ============================================================
+2026-07-14 09:46:48,071 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-07-14 09:46:48,072 - INFO - ============================================================
+2026-07-14 09:46:48,072 - INFO - Cliente atual: BRUNO SANTANA RINALDI
+2026-07-14 09:46:48,072 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-07-14 09:46:48,073 - INFO - 📋 Últimos 3 lançamentos:
+2026-07-14 09:46:48,073 - INFO -   1. ANCORA PAPELARIA - PLOTAGENS - R$ 180.00
+2026-07-14 09:46:48,074 - INFO -   2. BRUNO SANTANA RINALDI - TESTE ALTERAÇÃO DADOS BANCARIOS NA EDIÇÃO - R$ 2500.00
+2026-07-14 09:46:48,075 - INFO -   3. LOCFER - MARTELETE - R$ 560.00
+2026-07-14 09:46:48,075 - INFO - 🆕 Criando novo visualizador
+2026-07-14 09:46:48,076 - INFO - 🔍 Visualizador iniciado com 3 lançamentos
+2026-07-14 09:46:48,253 - INFO - ✅ Visualizador criado com 3 lançamento(s)
+2026-07-14 09:46:48,254 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-07-14 09:46:48,255 - INFO - ============================================================
+2026-07-14 09:46:52,877 - WARNING - Erro ao preencher data relatório: time data '☐' does not match format '%d/%m/%Y'
+2026-07-14 09:47:13,845 - INFO - ============================================================
+2026-07-14 09:47:13,846 - INFO - INICIANDO SALVAMENTO DE EDIÇÃO INDIVIDUAL
+2026-07-14 09:47:13,846 - INFO - Índice do lançamento: 1
+2026-07-14 09:47:13,847 - INFO - Dados para atualização:
+2026-07-14 09:47:13,848 - INFO -   data: 14/07/2026
+2026-07-14 09:47:13,848 - INFO -   tp_desp: 2
+2026-07-14 09:47:13,848 - INFO -   cnpj_cpf: 370.817.078-40
+2026-07-14 09:47:13,849 - INFO -   nome: BRUNO SANTANA RINALDI
+2026-07-14 09:47:13,849 - INFO -   forma_pagamento: PIX
+2026-07-14 09:47:13,850 - INFO -   referencia: TESTE ALTERAÇÃO DADOS BANCARIOS NA EDIÇÃO
+2026-07-14 09:47:13,850 - INFO -   etapa_obra: 
+2026-07-14 09:47:13,851 - INFO -   insumo: 
+2026-07-14 09:47:13,851 - INFO -   nf: 
+2026-07-14 09:47:13,852 - INFO -   vr_unit: 2500.00
+2026-07-14 09:47:13,852 - INFO -   dias: 1.0
+2026-07-14 09:47:13,853 - INFO -   valor: 2500.00
+2026-07-14 09:47:13,853 - INFO -   dt_vencto: 30/07/2026
+2026-07-14 09:47:13,854 - INFO -   categoria: ADM
+2026-07-14 09:47:13,854 - INFO -   dados_bancarios: PIX: 31987640939
+2026-07-14 09:47:13,855 - INFO -   observacao: 
+2026-07-14 09:47:13,855 - INFO - ============================================================
+2026-07-14 09:47:13,856 - INFO - CALLBACK: atualizar_lancamento
+2026-07-14 09:47:13,857 - INFO - Índice recebido: 1
+2026-07-14 09:47:13,858 - INFO - Tipo do índice: <class 'int'>
+2026-07-14 09:47:13,858 - INFO - Total de lançamentos disponíveis: 3
+2026-07-14 09:47:15,151 - INFO - ✓ LANÇAMENTO ATUALIZADO COM SUCESSO!
+2026-07-14 09:47:15,151 - INFO - ============================================================
+2026-07-14 09:47:15,152 - INFO - ✓ EDIÇÃO SALVA COM SUCESSO!
+2026-07-14 09:47:15,152 - INFO - ============================================================
+2026-07-14 09:48:04,310 - WARNING - Tentativa de trocar cliente com 3 lançamentos pendentes
+2026-07-14 09:48:12,322 - INFO - Troca de cliente CANCELADA pelo usuário - dados pendentes preservados
+2026-07-14 09:48:25,126 - INFO - ============================================================
+2026-07-14 09:48:25,127 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-07-14 09:48:25,127 - INFO - ============================================================
+2026-07-14 09:48:25,127 - INFO - Cliente atual: BRUNO SANTANA RINALDI
+2026-07-14 09:48:25,128 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-07-14 09:48:25,128 - INFO - 📋 Últimos 3 lançamentos:
+2026-07-14 09:48:25,129 - INFO -   1. ANCORA PAPELARIA - PLOTAGENS - R$ 180.00
+2026-07-14 09:48:25,129 - INFO -   2. BRUNO SANTANA RINALDI - TESTE ALTERAÇÃO DADOS BANCARIOS NA EDIÇÃO - R$ 2500.00
+2026-07-14 09:48:25,130 - INFO -   3. LOCFER - MARTELETE - R$ 560.00
+2026-07-14 09:48:25,130 - INFO - 🆕 Criando novo visualizador
+2026-07-14 09:48:25,131 - INFO - 🔍 Visualizador iniciado com 3 lançamentos
+2026-07-14 09:48:25,195 - INFO - ✅ Visualizador criado com 3 lançamento(s)
+2026-07-14 09:48:25,199 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-07-14 09:48:25,201 - INFO - ============================================================
+2026-07-14 09:48:32,805 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2026-07-14 09:48:32,806 - INFO - Obtendo dados do visualizador
+2026-07-14 09:48:32,807 - INFO - Total de registros a processar: 3
+2026-07-14 09:48:32,807 - INFO - Datas que serão afetadas pela inserção: ['14/07/2026', '20/07/2026']
+2026-07-14 09:48:32,808 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2026-07-14 09:48:32,808 - INFO - Verificando integridade dos IDs antes da inserção
+2026-07-14 09:48:33,395 - INFO - 📋 Processando lançamento 1/3: ANCORA PAPELARIA - PLOTAGENS
+2026-07-14 09:48:33,396 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-14 09:48:33,396 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-14 09:48:33,397 - INFO - Dados: ANCORA PAPELARIA | PLOTAGENS | NF:  | R$ 180.00 | 21/07/2026
+2026-07-14 09:48:33,418 - INFO - ✅ Nenhuma duplicata para: ANCORA PAPELARIA - PLOTAGENS
+2026-07-14 09:48:33,419 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-14 09:48:33,419 - INFO - 📋 Processando lançamento 2/3: BRUNO SANTANA RINALDI - TESTE ALTERAÇÃO DADOS BANCARIOS NA EDIÇÃO
+2026-07-14 09:48:33,420 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-14 09:48:33,421 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-14 09:48:33,421 - INFO - Dados: BRUNO SANTANA RINALDI | TESTE ALTERAÇÃO DADOS BANCARIOS NA EDIÇÃO | NF:  | R$ 2500.00 | 30/07/2026
+2026-07-14 09:48:33,437 - INFO - ✅ Nenhuma duplicata para: BRUNO SANTANA RINALDI - TESTE ALTERAÇÃO DADOS BANCARIOS NA EDIÇÃO
+2026-07-14 09:48:33,437 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-14 09:48:33,438 - INFO - 📋 Processando lançamento 3/3: LOCFER - MARTELETE
+2026-07-14 09:48:33,439 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-14 09:48:33,441 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-14 09:48:33,444 - INFO - Dados: LOCFER | MARTELETE | NF:  | R$ 560.00 | 27/07/2026
+2026-07-14 09:48:33,455 - INFO - ✅ Nenhuma duplicata para: LOCFER - MARTELETE
+2026-07-14 09:48:33,456 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-14 09:48:33,457 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-07-14 09:48:33,458 - INFO -    ✅ Lançamentos válidos: 3
+2026-07-14 09:48:33,459 - INFO -    ❌ Possíveis duplicatas: 0
+2026-07-14 09:48:33,461 - INFO - Lançamento inserido com ID 269 na linha 263
+2026-07-14 09:48:33,464 - INFO - Lançamento inserido com ID 270 na linha 264
+2026-07-14 09:48:33,467 - INFO - Lançamento inserido com ID 271 na linha 265
+2026-07-14 09:48:34,047 - INFO - Iniciando verificação de recálculo para 2 datas
+2026-07-14 09:48:36,269 - INFO - Limpando 3 registros salvos da visualização
+2026-07-14 09:48:36,299 - INFO - Visualizador fechado - todos os registros foram processados
+2026-07-14 09:48:36,301 - INFO - Dados salvos removidos com sucesso da visualização
+2026-07-14 09:58:18,294 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 09:58:18,326 - INFO - Configurações importadas com sucesso
+2026-07-14 09:58:18,348 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 09:58:20,680 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 09:58:23,114 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 09:58:24,894 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 09:58:25,153 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 09:58:27,518 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 09:58:46,625 - INFO - ==================================================
+2026-07-14 09:58:46,626 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-14 09:58:46,626 - INFO - ==================================================
+2026-07-14 09:58:46,627 - INFO - Fornecedor: ADALMO ANTONIO DA SILVA
+2026-07-14 09:58:48,080 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 11!
+2026-07-14 09:58:48,080 - INFO - Dados carregados: ADALMO ANTONIO DA SILVA
+2026-07-14 09:58:48,081 - INFO - Campos preenchidos com sucesso!
+2026-07-14 09:58:48,083 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-14 09:58:48,084 - INFO - ==================================================
+2026-07-14 09:59:10,937 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-07-14 09:59:10,939 - INFO - ✅ Dados adicionados - Total: 1
+2026-07-14 09:59:12,117 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 11!
+2026-07-14 09:59:13,594 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2026-07-14 09:59:15,161 - INFO - ==================================================
+2026-07-14 09:59:15,162 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-14 09:59:15,162 - INFO - ==================================================
+2026-07-14 09:59:15,163 - INFO - Fornecedor: ADALMO ANTONIO DA SILVA
+2026-07-14 09:59:16,331 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 11!
+2026-07-14 09:59:16,331 - INFO - Dados carregados: ADALMO ANTONIO DA SILVA
+2026-07-14 09:59:16,332 - INFO - Campos preenchidos com sucesso!
+2026-07-14 09:59:16,334 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-14 09:59:16,335 - INFO - ==================================================
+2026-07-14 09:59:42,865 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-07-14 09:59:42,867 - INFO - ✅ Dados adicionados - Total: 2
+2026-07-14 09:59:46,525 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 11!
+2026-07-14 09:59:47,977 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2026-07-14 09:59:50,138 - INFO - ============================================================
+2026-07-14 09:59:50,139 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-07-14 09:59:50,139 - INFO - ============================================================
+2026-07-14 09:59:50,140 - INFO - Cliente atual: BRUNO SANTANA RINALDI
+2026-07-14 09:59:50,140 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-07-14 09:59:50,141 - INFO - 📋 Últimos 3 lançamentos:
+2026-07-14 09:59:50,141 - INFO -   1. ADALMO ANTONIO DA SILVA - SALÁRIO - R$ 3560.00
+2026-07-14 09:59:50,142 - INFO -   2. ADALMO ANTONIO DA SILVA - TRANSPORTE - R$ 660.00
+2026-07-14 09:59:50,142 - INFO -   3. ADALMO ANTONIO DA SILVA - CAFÉ - R$ 72.00
+2026-07-14 09:59:50,143 - INFO - 🆕 Criando novo visualizador
+2026-07-14 09:59:50,143 - INFO - 🔍 Visualizador iniciado com 3 lançamentos
+2026-07-14 09:59:50,297 - INFO - ✅ Visualizador criado com 3 lançamento(s)
+2026-07-14 09:59:50,298 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-07-14 09:59:50,298 - INFO - ============================================================
+2026-07-14 10:00:42,641 - INFO - ============================================================
+2026-07-14 10:00:42,641 - INFO - INICIANDO EDIÇÃO EM MASSA
+2026-07-14 10:00:42,642 - INFO - Quantidade de lançamentos: 3
+2026-07-14 10:00:42,642 - INFO - Campos marcados para edição: ['dados_bancarios']
+2026-07-14 10:00:46,365 - INFO - Aplicando alterações nos lançamentos...
+2026-07-14 10:00:46,365 - INFO - ============================================================
+2026-07-14 10:00:46,366 - INFO - CALLBACK: atualizar_lancamento
+2026-07-14 10:00:46,367 - INFO - Índice recebido: 0
+2026-07-14 10:00:46,367 - INFO - Tipo do índice: <class 'int'>
+2026-07-14 10:00:46,368 - INFO - Total de lançamentos disponíveis: 3
+2026-07-14 10:00:47,517 - INFO - ✓ LANÇAMENTO ATUALIZADO COM SUCESSO!
+2026-07-14 10:00:47,517 - INFO - ============================================================
+2026-07-14 10:00:47,518 - INFO - ============================================================
+2026-07-14 10:00:47,518 - INFO - CALLBACK: atualizar_lancamento
+2026-07-14 10:00:47,518 - INFO - Índice recebido: 1
+2026-07-14 10:00:47,520 - INFO - Tipo do índice: <class 'int'>
+2026-07-14 10:00:47,520 - INFO - Total de lançamentos disponíveis: 3
+2026-07-14 10:00:48,807 - INFO - ✓ LANÇAMENTO ATUALIZADO COM SUCESSO!
+2026-07-14 10:00:48,808 - INFO - ============================================================
+2026-07-14 10:00:48,809 - INFO - ============================================================
+2026-07-14 10:00:48,809 - INFO - CALLBACK: atualizar_lancamento
+2026-07-14 10:00:48,809 - INFO - Índice recebido: 2
+2026-07-14 10:00:48,810 - INFO - Tipo do índice: <class 'int'>
+2026-07-14 10:00:48,810 - INFO - Total de lançamentos disponíveis: 3
+2026-07-14 10:00:50,017 - INFO - ✓ LANÇAMENTO ATUALIZADO COM SUCESSO!
+2026-07-14 10:00:50,018 - INFO - ============================================================
+2026-07-14 10:00:50,018 - INFO - Edição concluída: 3 sucessos, 0 erros
+2026-07-14 10:00:50,019 - INFO - ============================================================
+2026-07-14 10:01:03,033 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2026-07-14 10:01:03,034 - INFO - Obtendo dados do visualizador
+2026-07-14 10:01:03,034 - INFO - Total de registros a processar: 3
+2026-07-14 10:01:03,035 - INFO - Datas que serão afetadas pela inserção: ['20/07/2026']
+2026-07-14 10:01:03,036 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2026-07-14 10:01:03,037 - INFO - Verificando integridade dos IDs antes da inserção
+2026-07-14 10:01:03,579 - INFO - 📋 Processando lançamento 1/3: ADALMO ANTONIO DA SILVA - SALÁRIO
+2026-07-14 10:01:03,579 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-14 10:01:03,580 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-14 10:01:03,580 - INFO - Dados: ADALMO ANTONIO DA SILVA | SALÁRIO | NF:  | R$ 3560.00 | 21/07/2026
+2026-07-14 10:01:03,597 - INFO - ✅ Nenhuma duplicata para: ADALMO ANTONIO DA SILVA - SALÁRIO
+2026-07-14 10:01:03,597 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-14 10:01:03,598 - INFO - 📋 Processando lançamento 2/3: ADALMO ANTONIO DA SILVA - TRANSPORTE
+2026-07-14 10:01:03,598 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-14 10:01:03,599 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-14 10:01:03,599 - INFO - Dados: ADALMO ANTONIO DA SILVA | TRANSPORTE | NF:  | R$ 660.00 | 21/07/2026
+2026-07-14 10:01:03,613 - INFO - ✅ Nenhuma duplicata para: ADALMO ANTONIO DA SILVA - TRANSPORTE
+2026-07-14 10:01:03,613 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-14 10:01:03,614 - INFO - 📋 Processando lançamento 3/3: ADALMO ANTONIO DA SILVA - CAFÉ
+2026-07-14 10:01:03,614 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-14 10:01:03,615 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-14 10:01:03,616 - INFO - Dados: ADALMO ANTONIO DA SILVA | CAFÉ | NF:  | R$ 72.00 | 21/07/2026
+2026-07-14 10:01:03,632 - INFO - ✅ Nenhuma duplicata para: ADALMO ANTONIO DA SILVA - CAFÉ
+2026-07-14 10:01:03,633 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-14 10:01:03,633 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-07-14 10:01:03,633 - INFO -    ✅ Lançamentos válidos: 3
+2026-07-14 10:01:03,634 - INFO -    ❌ Possíveis duplicatas: 0
+2026-07-14 10:01:03,636 - INFO - Lançamento inserido com ID 272 na linha 266
+2026-07-14 10:01:03,639 - INFO - Lançamento inserido com ID 273 na linha 267
+2026-07-14 10:01:03,643 - INFO - Lançamento inserido com ID 274 na linha 268
+2026-07-14 10:01:04,158 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-07-14 10:01:06,569 - INFO - Limpando 3 registros salvos da visualização
+2026-07-14 10:01:06,588 - INFO - Visualizador fechado - todos os registros foram processados
+2026-07-14 10:01:06,591 - INFO - Dados salvos removidos com sucesso da visualização
+2026-07-14 10:01:54,792 - INFO - Voltando ao menu principal
+2026-07-14 10:01:54,905 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-14 10:01:54,915 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-14 10:01:55,102 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-14 10:01:58,879 - INFO - Sistema encerrado pelo usuário
+2026-07-14 10:15:08,180 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 10:15:08,204 - INFO - Configurações importadas com sucesso
+2026-07-14 10:15:08,205 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 10:15:09,445 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 10:15:10,660 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 10:15:12,162 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 10:15:12,429 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 10:15:15,001 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 10:15:22,708 - INFO - ==================================================
+2026-07-14 10:15:22,708 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-14 10:15:22,709 - INFO - ==================================================
+2026-07-14 10:15:22,709 - INFO - Fornecedor: JEAN ALESI DA SILVA
+2026-07-14 10:15:23,899 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 557!
+2026-07-14 10:15:23,900 - INFO - Dados carregados: JEAN ALESI DA SILVA
+2026-07-14 10:15:23,901 - INFO - Campos preenchidos com sucesso!
+2026-07-14 10:15:23,903 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-14 10:15:23,904 - INFO - ==================================================
+2026-07-14 10:15:54,180 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-07-14 10:15:54,182 - INFO - ✅ Dados adicionados - Total: 1
+2026-07-14 10:15:55,365 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 557!
+2026-07-14 10:15:57,291 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2026-07-14 10:15:59,173 - INFO - ==================================================
+2026-07-14 10:15:59,173 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-14 10:15:59,174 - INFO - ==================================================
+2026-07-14 10:15:59,174 - INFO - Fornecedor: JEAN ALESI DA SILVA
+2026-07-14 10:16:00,351 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 557!
+2026-07-14 10:16:00,352 - INFO - Dados carregados: JEAN ALESI DA SILVA
+2026-07-14 10:16:00,353 - INFO - Campos preenchidos com sucesso!
+2026-07-14 10:16:00,355 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-14 10:16:00,355 - INFO - ==================================================
+2026-07-14 10:16:17,883 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-07-14 10:16:17,885 - INFO - ✅ Dados adicionados - Total: 2
+2026-07-14 10:16:20,239 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 557!
+2026-07-14 10:16:21,436 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 3
+2026-07-14 10:16:24,021 - INFO - ============================================================
+2026-07-14 10:16:24,021 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-07-14 10:16:24,022 - INFO - ============================================================
+2026-07-14 10:16:24,022 - INFO - Cliente atual: BRUNO SANTANA RINALDI
+2026-07-14 10:16:24,023 - INFO - Dados disponíveis: 3 lançamento(s)
+2026-07-14 10:16:24,023 - INFO - 📋 Últimos 3 lançamentos:
+2026-07-14 10:16:24,024 - INFO -   1. JEAN ALESI DA SILVA - SALÁRIO - R$ 3650.00
+2026-07-14 10:16:24,024 - INFO -   2. JEAN ALESI DA SILVA - TRANSPORTE - R$ 600.00
+2026-07-14 10:16:24,025 - INFO -   3. JEAN ALESI DA SILVA - CAFÉ - R$ 60.00
+2026-07-14 10:16:24,025 - INFO - 🆕 Criando novo visualizador
+2026-07-14 10:16:24,026 - INFO - 🔍 Visualizador iniciado com 3 lançamentos
+2026-07-14 10:16:24,187 - INFO - ✅ Visualizador criado com 3 lançamento(s)
+2026-07-14 10:16:24,188 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-07-14 10:16:24,189 - INFO - ============================================================
+2026-07-14 10:17:21,979 - INFO - ============================================================
+2026-07-14 10:17:21,980 - INFO - INICIANDO EDIÇÃO EM MASSA
+2026-07-14 10:17:21,981 - INFO - Quantidade de lançamentos: 3
+2026-07-14 10:17:21,981 - INFO - Campos marcados para edição: ['dados_bancarios']
+2026-07-14 10:17:23,967 - INFO - Aplicando alterações nos lançamentos...
+2026-07-14 10:17:23,975 - INFO - ============================================================
+2026-07-14 10:17:23,975 - INFO - CALLBACK: atualizar_lancamento
+2026-07-14 10:17:23,977 - INFO - Índice recebido: 0
+2026-07-14 10:17:23,979 - INFO - Tipo do índice: <class 'int'>
+2026-07-14 10:17:23,982 - INFO - Total de lançamentos disponíveis: 3
+2026-07-14 10:17:25,316 - INFO - ✓ LANÇAMENTO ATUALIZADO COM SUCESSO!
+2026-07-14 10:17:25,317 - INFO - ============================================================
+2026-07-14 10:17:25,317 - INFO - ============================================================
+2026-07-14 10:17:25,318 - INFO - CALLBACK: atualizar_lancamento
+2026-07-14 10:17:25,318 - INFO - Índice recebido: 1
+2026-07-14 10:17:25,319 - INFO - Tipo do índice: <class 'int'>
+2026-07-14 10:17:25,319 - INFO - Total de lançamentos disponíveis: 3
+2026-07-14 10:17:26,883 - INFO - ✓ LANÇAMENTO ATUALIZADO COM SUCESSO!
+2026-07-14 10:17:26,884 - INFO - ============================================================
+2026-07-14 10:17:26,884 - INFO - ============================================================
+2026-07-14 10:17:26,885 - INFO - CALLBACK: atualizar_lancamento
+2026-07-14 10:17:26,885 - INFO - Índice recebido: 2
+2026-07-14 10:17:26,886 - INFO - Tipo do índice: <class 'int'>
+2026-07-14 10:17:26,886 - INFO - Total de lançamentos disponíveis: 3
+2026-07-14 10:17:28,141 - INFO - ✓ LANÇAMENTO ATUALIZADO COM SUCESSO!
+2026-07-14 10:17:28,142 - INFO - ============================================================
+2026-07-14 10:17:28,142 - INFO - Edição concluída: 3 sucessos, 0 erros
+2026-07-14 10:17:28,143 - INFO - ============================================================
+2026-07-14 10:17:55,467 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 3
+2026-07-14 10:17:55,468 - INFO - Obtendo dados do visualizador
+2026-07-14 10:17:55,469 - INFO - Total de registros a processar: 3
+2026-07-14 10:17:55,470 - INFO - Datas que serão afetadas pela inserção: ['20/07/2026']
+2026-07-14 10:17:55,470 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2026-07-14 10:17:55,471 - INFO - Verificando integridade dos IDs antes da inserção
+2026-07-14 10:17:56,053 - INFO - 📋 Processando lançamento 1/3: JEAN ALESI DA SILVA - SALÁRIO
+2026-07-14 10:17:56,053 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-14 10:17:56,054 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-14 10:17:56,054 - INFO - Dados: JEAN ALESI DA SILVA | SALÁRIO | NF:  | R$ 3650.00 | 21/07/2026
+2026-07-14 10:17:56,070 - INFO - ✅ Nenhuma duplicata para: JEAN ALESI DA SILVA - SALÁRIO
+2026-07-14 10:17:56,071 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-14 10:17:56,071 - INFO - 📋 Processando lançamento 2/3: JEAN ALESI DA SILVA - TRANSPORTE
+2026-07-14 10:17:56,072 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-14 10:17:56,072 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-14 10:17:56,073 - INFO - Dados: JEAN ALESI DA SILVA | TRANSPORTE | NF:  | R$ 600.00 | 21/07/2026
+2026-07-14 10:17:56,086 - INFO - ✅ Nenhuma duplicata para: JEAN ALESI DA SILVA - TRANSPORTE
+2026-07-14 10:17:56,087 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-14 10:17:56,087 - INFO - 📋 Processando lançamento 3/3: JEAN ALESI DA SILVA - CAFÉ
+2026-07-14 10:17:56,088 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-14 10:17:56,088 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-14 10:17:56,089 - INFO - Dados: JEAN ALESI DA SILVA | CAFÉ | NF:  | R$ 60.00 | 21/07/2026
+2026-07-14 10:17:56,105 - INFO - ✅ Nenhuma duplicata para: JEAN ALESI DA SILVA - CAFÉ
+2026-07-14 10:17:56,106 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-14 10:17:56,106 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-07-14 10:17:56,106 - INFO -    ✅ Lançamentos válidos: 3
+2026-07-14 10:17:56,107 - INFO -    ❌ Possíveis duplicatas: 0
+2026-07-14 10:17:56,109 - INFO - Lançamento inserido com ID 275 na linha 269
+2026-07-14 10:17:56,111 - INFO - Lançamento inserido com ID 276 na linha 270
+2026-07-14 10:17:56,114 - INFO - Lançamento inserido com ID 277 na linha 271
+2026-07-14 10:17:56,686 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-07-14 10:17:59,162 - INFO - Limpando 3 registros salvos da visualização
+2026-07-14 10:17:59,179 - INFO - Visualizador fechado - todos os registros foram processados
+2026-07-14 10:17:59,184 - INFO - Dados salvos removidos com sucesso da visualização
+2026-07-14 10:49:39,120 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 10:49:39,140 - INFO - Configurações importadas com sucesso
+2026-07-14 10:49:39,141 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 10:49:40,548 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 10:49:41,856 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 10:49:44,538 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 10:49:45,044 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 10:49:47,444 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 10:49:50,723 - INFO - ============================================================
+2026-07-14 10:49:50,724 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-07-14 10:49:50,725 - INFO - ============================================================
+2026-07-14 10:49:50,726 - INFO - Cliente atual: BRUNO SANTANA RINALDI
+2026-07-14 10:49:50,727 - INFO - Dados disponíveis: 0 lançamento(s)
+2026-07-14 10:49:50,728 - WARNING - ⚠️ NENHUM LANÇAMENTO PENDENTE!
+2026-07-14 10:49:50,733 - INFO - 🆕 Criando novo visualizador
+2026-07-14 10:49:50,736 - INFO - 🔍 Visualizador iniciado com 0 lançamentos
+2026-07-14 10:49:51,015 - INFO - ✅ Visualizador criado com 0 lançamento(s)
+2026-07-14 10:49:51,017 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-07-14 10:49:51,017 - INFO - ============================================================
+2026-07-14 11:36:29,683 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 11:36:29,717 - INFO - Configurações importadas com sucesso
+2026-07-14 11:36:29,717 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 11:36:32,859 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 11:41:50,367 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 11:41:51,991 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 11:41:52,298 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 11:41:54,164 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 11:51:22,924 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 11:51:22,956 - INFO - Configurações importadas com sucesso
+2026-07-14 11:51:22,957 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 11:51:24,699 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 11:51:26,148 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 11:51:30,105 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 11:51:30,546 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 11:51:32,474 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 12:00:51,594 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 12:00:51,640 - INFO - Configurações importadas com sucesso
+2026-07-14 12:00:51,642 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 12:00:53,045 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 12:06:50,935 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 12:06:52,587 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 12:06:52,879 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 12:06:55,926 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 12:23:05,406 - INFO - Voltando ao menu principal
+2026-07-14 12:23:05,550 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-14 12:23:05,596 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-14 12:23:05,856 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-14 12:23:06,722 - INFO - Abrindo gestão de medições
+2026-07-14 13:48:25,203 - INFO - Sistema encerrado pelo usuário
+2026-07-14 13:51:20,132 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 13:51:20,172 - INFO - Configurações importadas com sucesso
+2026-07-14 13:51:20,172 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 13:51:21,786 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 13:51:33,187 - INFO - Abrindo sistema de relatórios
+2026-07-14 13:53:58,195 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 13:53:59,082 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 13:53:59,428 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 13:54:02,004 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 14:03:37,135 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 14:03:37,164 - INFO - Configurações importadas com sucesso
+2026-07-14 14:03:37,165 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 14:03:38,614 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 14:03:40,759 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 14:03:42,377 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 14:03:42,649 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 14:03:45,879 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-07-14 14:31:45,303 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 14:31:45,357 - INFO - Configurações importadas com sucesso
+2026-07-14 14:31:45,357 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 14:31:47,756 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 14:32:49,486 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 14:32:51,146 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 14:32:51,417 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 14:32:53,297 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 14:55:02,555 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 14:55:02,584 - INFO - Configurações importadas com sucesso
+2026-07-14 14:55:02,585 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 14:55:05,303 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 14:55:06,894 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 14:55:09,718 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 14:55:10,318 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 14:55:13,486 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-14 15:20:23,625 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 15:20:23,700 - INFO - Configurações importadas com sucesso
+2026-07-14 15:20:23,701 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 15:20:26,508 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 15:21:53,605 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 15:21:55,264 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 15:21:55,518 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 15:26:22,260 - INFO - Arquivo do cliente criado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\MARIA TERESA GONZAGA ALVES.xlsx
+2026-07-14 15:31:01,416 - INFO - Cliente selecionado com sucesso: MARIA TERESA GONZAGA ALVES
+2026-07-14 15:33:55,625 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 15:33:55,650 - INFO - Configurações importadas com sucesso
+2026-07-14 15:33:55,650 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 15:33:56,875 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 15:34:10,241 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 15:34:11,755 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 15:34:12,044 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 15:35:34,777 - INFO - Arquivo do cliente criado: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\MARIA TERESA GONZAGA ALVES.xlsx
+2026-07-14 15:42:40,670 - INFO - Voltando ao menu principal
+2026-07-14 15:42:40,801 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-14 15:42:40,802 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-14 15:42:40,985 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-14 15:43:56,180 - INFO - Sistema encerrado pelo usuário
+2026-07-14 17:00:11,195 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 17:00:11,232 - INFO - Configurações importadas com sucesso
+2026-07-14 17:00:11,234 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 17:00:13,357 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 17:00:23,452 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 17:00:25,141 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 17:00:25,442 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 17:00:29,466 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-07-14 17:00:48,708 - INFO - Voltando ao menu principal
+2026-07-14 17:00:48,826 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-14 17:00:48,851 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-14 17:00:49,271 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-14 17:00:50,372 - INFO - Abrindo gestão de medições
+2026-07-14 17:01:06,836 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 17:01:07,114 - ERROR - Erro ao selecionar cliente: 'SistemaEntradaDados' object has no attribute 'cliente_label'
+2026-07-14 17:04:36,195 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 17:04:41,325 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 17:08:46,313 - INFO - Configurações importadas com sucesso via src.config
+2026-07-14 17:08:46,340 - INFO - Configurações importadas com sucesso
+2026-07-14 17:08:46,341 - INFO - Configurações do sistema importadas com sucesso
+2026-07-14 17:08:47,616 - INFO - Sistema iniciado em modo: TESTE
+2026-07-14 17:11:35,321 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 17:11:36,815 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 17:11:37,098 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 17:11:41,958 - INFO - Cliente selecionado com sucesso: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-07-14 17:11:46,465 - INFO - Voltando ao menu principal
+2026-07-14 17:11:46,570 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-14 17:11:46,585 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-14 17:11:46,853 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-14 17:11:48,329 - INFO - Abrindo gestão de medições
+2026-07-14 17:12:01,625 - INFO - Abrindo sistema de entrada de dados
+2026-07-14 17:12:02,211 - INFO - Proteções contra perda de dados configuradas
+2026-07-14 17:12:02,299 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-14 17:12:02,300 - INFO - Cliente selecionado com sucesso: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
