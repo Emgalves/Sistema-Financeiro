@@ -427,6 +427,20 @@ class GestaoMedicoes:
 
         self.atualizar_lista_clientes()
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.selecionar_cliente)
+
+        # Pré-selecionar o último cliente usado em outro módulo (ex.: Entrada de Dados)
+        try:
+            try:
+                from src.estado_compartilhado import estado_sessao
+            except ImportError:
+                from estado_compartilhado import estado_sessao
+
+            valores_disponiveis = self.cliente_combobox['values']
+            if estado_sessao.ultimo_cliente and estado_sessao.ultimo_cliente in valores_disponiveis:
+                self.cliente_combobox.set(estado_sessao.ultimo_cliente)
+                self.selecionar_cliente()
+        except Exception as e:
+            logger.warning(f"Não foi possível pré-selecionar último cliente: {e}")
         
     def setup_aba_fornecedor(self):
         """Configura a aba de seleção de fornecedor/empreiteiro"""
@@ -1438,6 +1452,13 @@ class GestaoMedicoes:
         self.cliente_atual = self.cliente_combobox.get()
 
         if self.cliente_atual:
+            # Lembrar este cliente para outros módulos (ex.: Entrada de Dados)
+            try:
+                from src.estado_compartilhado import estado_sessao
+            except ImportError:
+                from estado_compartilhado import estado_sessao
+            estado_sessao.ultimo_cliente = self.cliente_atual
+
             if not cliente_esta_ativo(self.cliente_atual):
                 messagebox.showwarning(
                     "Cliente Inativo",
