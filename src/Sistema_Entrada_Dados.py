@@ -267,6 +267,12 @@ from src.taxas_administracao.gestao_taxas_fixas import GestaoTaxasFixas
 from src.taxas_administracao.gestao_contratos import GestaoContratos
 from src.taxas_administracao.gestor_taxas_administracao import GestorTaxasAdministracao 
 from src.parcelamento.gestor_parcelas import GestorParcelas  
+from src.leitura_guias import (
+    extrair_dados_guia,
+    GuiaNaoReconhecida,
+    NOME_FORNECEDOR_POR_TIPO,
+    competencia_para_mm_aaaa,
+)
 
 # Modificação para usar o método de utils.py
 from src.config.utils import buscar_dados_bancarios_fornecedor
@@ -4702,6 +4708,15 @@ class SistemaEntradaDados:
             frame_botoes_import,
             text="📋 Importar Diárias",
             command=self.importar_diarias,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
+        # Dentro de setup_aba_fornecedor, no frame_botoes_import que já existe
+        # (junto de "Importar Transporte", "Importar Folha RH" etc.)
+        ttk.Button(
+            frame_botoes_import,
+            text="📄 Importar Guia (FGTS/DARF)",
+            command=self.importar_guia_recorrente,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
         
@@ -9931,7 +9946,104 @@ class SistemaEntradaDados:
             logger.error(f"Erro ao processar NFe: {str(e)}")
             custom_messagebox("error", "Erro", f"Erro ao processar NFe:\n{str(e)}")
             return False
-    
+
+
+    # ========== MÉTODOS AUXILIARES IMPORTAÇÃO GDF E DARF ==========
+
+    def _localizar_compromisso_agenda(self, dados):
+        if not self.gerenciador_agenda or not self.gerenciador_agenda.dados_agenda:
+            return 'agenda_nao_carregada'
+
+        # Proteção contra dados_agenda desatualizado de outro cliente
+        if self.gerenciador_agenda.dados_agenda:
+            item_amostra = self.gerenciador_agenda.dados_agenda[0]
+            cliente_do_carregamento = item_amostra.get('cliente')
+            if cliente_do_carregamento and cliente_do_carregamento != self.cliente_atual:
+                return 'agenda_de_outro_cliente'
+
+        nome_esperado = NOME_FORNECEDOR_POR_TIPO.get(dados['tipo'])
+        if not nome_esperado:
+            return None
+
+        competencia_pdf = (
+            competencia_para_mm_aaaa(dados.get('competencia', ''), 'FGTS')
+            if dados['tipo'] == 'FGTS'
+            else competencia_para_mm_aaaa(dados.get('periodo_apuracao', ''), 'DARF')
+        )
+        if not competencia_pdf:
+            return None
+
+        for item in self.gerenciador_agenda.dados_agenda:
+            if item.get('origem') != 'CONFIGURACAO' or item.get('status') != 'PENDENTE':
+                continue
+            if item.get('fornecedor', '').strip().upper() != nome_esperado.upper():
+                continue
+
+            tipo_ref = item.get('tipo_referencia_mes', 'anterior')
+            competencia_item = self.gerenciador_agenda.calcular_mes_referencia_compromisso(
+                item['data_rel'], tipo_ref
+            )
+            if competencia_item == competencia_pdf:
+                return item
+
+        return None
+
+    def importar_guia_recorrente(self):
+        if not self.cliente_atual:
+            custom_messagebox("error", "Erro", "Selecione um cliente antes de importar uma guia!")
+            return
+
+        caminho = filedialog.askopenfilename(title="Selecione o PDF da guia", filetypes=[("PDF", "*.pdf")])
+        if not caminho:
+            return
+
+        try:
+            dados = extrair_dados_guia(caminho)
+        except GuiaNaoReconhecida as e:
+            custom_messagebox("error", "Erro", str(e))
+            return
+
+        if dados['campos_faltando']:
+            custom_messagebox("warning", "Atenção",
+                f"Não extraído automaticamente: {', '.join(dados['campos_faltando'])}.")
+
+        item_agenda = self._localizar_compromisso_agenda(dados)
+
+        if item_agenda == 'agenda_nao_carregada':
+            custom_messagebox("info", "Abra a Agenda primeiro",
+                f"Para importar uma guia de {self.cliente_atual}, abra a Agenda ao menos uma vez "
+                "nesta sessão (ela carrega os compromissos pendentes usados na comparação).")
+            return
+
+        if item_agenda == 'agenda_de_outro_cliente':
+            custom_messagebox("info", "Agenda desatualizada",
+                f"A Agenda carregada não é a de {self.cliente_atual}. "
+                "Abra a Agenda deste cliente antes de importar a guia.")
+            return
+
+        if not item_agenda:
+            custom_messagebox("warning", "Compromisso não encontrado",
+                f"Guia lida (Valor: R$ {dados['valor']:.2f}), mas nenhum compromisso "
+                f"'{NOME_FORNECEDOR_POR_TIPO.get(dados['tipo'])}' pendente com a competência "
+                "correspondente foi localizado na Agenda.")
+            return
+
+        valores_item_sintetico = (
+            '',
+            item_agenda['vencimento'].strftime('%d/%m/%Y'),
+            item_agenda['status'],
+            item_agenda['fornecedor'],
+            item_agenda['referencia'],
+            f"R$ {dados['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+            item_agenda['tipo'],
+            item_agenda['observacao'],
+            item_agenda['id_origem'],
+        )
+
+        self.gerenciador_agenda.abrir_confirmacao_lancamento(
+            valores_item_sintetico, dados_pre_extraidos=dados
+        )
+
     # ===== FUNÇÕES UTILITÁRIAS PARA VERIFICAÇÃO E RECÁLCULO =====
     def abrir_finalizacao_quinzena(self):
         """Abre a finalização de quinzena"""
@@ -21437,7 +21549,7 @@ class GerenciadorAgenda:
         
         ttk.Button(frame_botoes, text="OK", command=janela_alerta.destroy).pack(side='right')
 
-    def abrir_confirmacao_lancamento(self, valores_item):
+    def abrir_confirmacao_lancamento(self, valores_item, dados_pre_extraidos=None):
         """
         ✅ VERSÃO CORRIGIDA - Campos editáveis corretos + Combobox Etapa Obra
         """
@@ -21579,6 +21691,24 @@ class GerenciadorAgenda:
             dt_vencto.set_date(datetime.now().date())
         dt_vencto.grid(row=6, column=3, padx=5, pady=5, sticky='w')
         
+        # ✅ NOVO: se veio de importação de guia, sobrescrever valor e vencimento
+        # com o dado real extraído do PDF (a Agenda só tinha valor estimado 0,00)
+        if dados_pre_extraidos:
+            valor_entry.delete(0, tk.END)
+            valor_entry.insert(0, f"{dados_pre_extraidos['valor']:.2f}".replace('.', ','))
+
+            if dados_pre_extraidos.get('vencimento'):
+                try:
+                    dt_vencto.set_date(datetime.strptime(dados_pre_extraidos['vencimento'], '%d/%m/%Y').date())
+                except ValueError:
+                    pass
+
+            frame_origem_pdf = ttk.LabelFrame(main_frame, text="📄 Origem: Guia Importada")
+            frame_origem_pdf.pack(fill='x', pady=(0, 10), before=frame_form)
+            ttk.Label(frame_origem_pdf,
+                text=f"Valor e vencimento preenchidos automaticamente a partir do PDF ({dados_pre_extraidos['tipo']}).",
+                font=('TkDefaultFont', 9), foreground='#16a34a').pack(padx=5, pady=3)
+
         # ✅ LINHA 7: NF e Forma Pagamento (EDITÁVEL)
         ttk.Label(frame_form, text="📄 NF:", font=('TkDefaultFont', 9)).grid(
             row=7, column=0, padx=5, pady=5, sticky='w')
