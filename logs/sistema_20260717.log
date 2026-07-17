@@ -1,0 +1,109 @@
+2026-07-17 12:23:30,552 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-07-17 12:23:30,554 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-07-17 12:23:30,558 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-07-17 12:23:30,562 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-07-17 12:23:30,592 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-07-17 12:23:47,004 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-07-17 12:23:47,038 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-07-17 12:24:04,372 - sistema_relatorios - gestao_medicoes - INFO - Prazo calculado: 21 dias úteis (excluindo data início)
+2026-07-17 12:24:04,385 - sistema_relatorios - gestao_medicoes - INFO - Formulário de contrato limpo
+2026-07-17 12:24:04,392 - sistema_relatorios - gestao_medicoes - INFO - Prazo calculado: 119 dias úteis (excluindo data início)
+2026-07-17 12:24:04,402 - sistema_relatorios - gestao_medicoes - INFO - Contrato 15 carregado para reemissão
+2026-07-17 12:24:04,670 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-07-17 12:24:04,689 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-07-17 12:24:04,690 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-07-17 12:24:04,691 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-07-17 12:24:04,691 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: EDUARDO MORENO MARQUES
+2026-07-17 12:24:04,724 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX', 'TIPO_CLIENTE', 'CLIENTE_VINCULADO', 'CAIXA_CONTROLADO']
+2026-07-17 12:24:04,726 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 068.507.098-01 (tipo: <class 'str'>)
+2026-07-17 12:24:04,727 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 068.507.098-01
+2026-07-17 12:24:04,727 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 06850709801
+2026-07-17 12:24:04,728 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 068.507.098-01
+2026-07-17 12:24:04,728 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.020.78896/64
+2026-07-17 12:24:04,731 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 068.507.098-01
+2026-07-17 12:24:04,732 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: EDUARDO MORENO MARQUES
+2026-07-17 12:24:28,915 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: EDUARDO MORENO MARQUES
+2026-07-17 12:24:28,950 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX', 'TIPO_CLIENTE', 'CLIENTE_VINCULADO', 'CAIXA_CONTROLADO']
+2026-07-17 12:24:28,953 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 068.507.098-01 (tipo: <class 'str'>)
+2026-07-17 12:24:28,953 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 068.507.098-01
+2026-07-17 12:24:28,954 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 06850709801
+2026-07-17 12:24:28,955 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 068.507.098-01
+2026-07-17 12:24:28,956 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.020.78896/64
+2026-07-17 12:24:28,957 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 068.507.098-01
+2026-07-17 12:24:28,958 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: EDUARDO MORENO MARQUES
+2026-07-17 12:24:28,959 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do fornecedor por nome: BRUNO MAGALHÃES
+2026-07-17 12:24:29,602 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis na planilha de fornecedores: ['CNPJ/CPF', 'tipo_pessoa', 'RAZÃO SOCIAL', 'NOME', 'TELEFONE:', 'EMAIL:', 'BANCO:', 'OP', 'AGENCIA:', 'CONTA:', 'Chave_PIX', 'CATEGORIA: ', 'ESPECIFICACAO', 'VÍNCULO', 'DADOS BANCÁRIOS', 'ENDEREÇO', 'STATUS', 'RESPONSAVEL']
+2026-07-17 12:24:29,609 - sistema_relatorios - gerador_contrato - INFO - ✅ Fornecedor encontrado na planilha
+2026-07-17 12:24:29,610 - sistema_relatorios - gerador_contrato - INFO - CPF/CNPJ: 29016807000102 → 29.016.807/0001-02
+2026-07-17 12:24:29,610 - sistema_relatorios - gerador_contrato - INFO - ✅ Endereço encontrado: RUA NATAL, 670 - SANTO ANDRE, BELO HORIZONTE/MG
+2026-07-17 12:24:29,611 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados obtidos: Nome=BRUNO MAGALHÃES, CNPJ/CPF=29.016.807/0001-02, Endereço=RUA NATAL, 670 - SANTO ANDRE, BELO HORIZONTE/MG
+2026-07-17 12:24:30,819 - sistema_relatorios - gerador_contrato - INFO - === INICIANDO GERAÇÃO DE CONTRATO ===
+2026-07-17 12:24:30,819 - sistema_relatorios - gerador_contrato - INFO - 📋 Dados do contrato recebidos: ['data', 'cidade', 'cliente_nome', 'cliente_cno', 'cliente_cpf', 'cliente_estado_civil', 'cliente_endereco', 'fornecedor_nome', 'fornecedor_razao_social', 'fornecedor_cnpj_cpf', 'fornecedor_endereco', 'endereco_obra', 'dias', 'valor', 'multa', 'dados_bancarios', 'data_condicionada', 'data_inicio', 'data_fim', 'descricao']
+2026-07-17 12:24:30,820 - sistema_relatorios - gerador_contrato - INFO - Usando formato dict - Cliente: EDUARDO MORENO MARQUES
+2026-07-17 12:24:30,820 - sistema_relatorios - gerador_contrato - INFO - Fornecedor CPF/CNPJ do dict: 29.016.807/0001-02
+2026-07-17 12:24:30,821 - sistema_relatorios - gerador_contrato - INFO - Prazo informado: 119 dias
+2026-07-17 12:24:30,822 - sistema_relatorios - gerador_contrato - INFO - Multa informada: 
+2026-07-17 12:24:30,822 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados cliente processados: EDUARDO MORENO MARQUES
+2026-07-17 12:24:30,823 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados fornecedor processados: BRUNO MAGALHÃES (nome fantasia: BRUNO MAGALHÃES) - 29.016.807/0001-02
+2026-07-17 12:24:30,823 - sistema_relatorios - gerador_contrato - INFO - ✅ Usando prazo do formulário: 119 dias úteis
+2026-07-17 12:24:31,019 - sistema_relatorios - gerador_contrato - ERROR - Erro ao gerar contrato: could not convert string to float: ''
+2026-07-17 12:29:03,671 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-07-17 12:29:03,753 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-07-17 12:29:21,393 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-07-17 12:29:21,393 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-07-17 12:29:21,395 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-07-17 12:29:21,395 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-07-17 12:29:21,396 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-07-17 12:31:24,431 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-07-17 12:31:24,451 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-07-17 12:31:41,447 - sistema_relatorios - gestao_medicoes - INFO - Prazo calculado: 21 dias úteis (excluindo data início)
+2026-07-17 12:31:41,447 - sistema_relatorios - gestao_medicoes - INFO - Formulário de contrato limpo
+2026-07-17 12:31:41,449 - sistema_relatorios - gestao_medicoes - INFO - Prazo calculado: 119 dias úteis (excluindo data início)
+2026-07-17 12:31:41,452 - sistema_relatorios - gestao_medicoes - INFO - Contrato 15 carregado para reemissão
+2026-07-17 12:31:41,737 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-07-17 12:31:41,740 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-07-17 12:31:41,741 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-07-17 12:31:41,741 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-07-17 12:31:41,742 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: EDUARDO MORENO MARQUES
+2026-07-17 12:31:41,773 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX', 'TIPO_CLIENTE', 'CLIENTE_VINCULADO', 'CAIXA_CONTROLADO']
+2026-07-17 12:31:41,775 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 068.507.098-01 (tipo: <class 'str'>)
+2026-07-17 12:31:41,775 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 068.507.098-01
+2026-07-17 12:31:41,776 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 06850709801
+2026-07-17 12:31:41,779 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 068.507.098-01
+2026-07-17 12:31:41,780 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.020.78896/64
+2026-07-17 12:31:41,781 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 068.507.098-01
+2026-07-17 12:31:41,781 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: EDUARDO MORENO MARQUES
+2026-07-17 12:31:55,072 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: EDUARDO MORENO MARQUES
+2026-07-17 12:31:55,148 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX', 'TIPO_CLIENTE', 'CLIENTE_VINCULADO', 'CAIXA_CONTROLADO']
+2026-07-17 12:31:55,149 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 068.507.098-01 (tipo: <class 'str'>)
+2026-07-17 12:31:55,150 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 068.507.098-01
+2026-07-17 12:31:55,150 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 06850709801
+2026-07-17 12:31:55,151 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 068.507.098-01
+2026-07-17 12:31:55,151 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.020.78896/64
+2026-07-17 12:31:55,152 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 068.507.098-01
+2026-07-17 12:31:55,152 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: EDUARDO MORENO MARQUES
+2026-07-17 12:31:55,153 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do fornecedor por nome: BRUNO MAGALHÃES
+2026-07-17 12:31:55,734 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis na planilha de fornecedores: ['CNPJ/CPF', 'tipo_pessoa', 'RAZÃO SOCIAL', 'NOME', 'TELEFONE:', 'EMAIL:', 'BANCO:', 'OP', 'AGENCIA:', 'CONTA:', 'Chave_PIX', 'CATEGORIA: ', 'ESPECIFICACAO', 'VÍNCULO', 'DADOS BANCÁRIOS', 'ENDEREÇO', 'STATUS', 'RESPONSAVEL']
+2026-07-17 12:31:55,739 - sistema_relatorios - gerador_contrato - INFO - ✅ Fornecedor encontrado na planilha
+2026-07-17 12:31:55,740 - sistema_relatorios - gerador_contrato - INFO - CPF/CNPJ: 29016807000102 → 29.016.807/0001-02
+2026-07-17 12:31:55,740 - sistema_relatorios - gerador_contrato - INFO - ✅ Endereço encontrado: RUA NATAL, 670 - SANTO ANDRE, BELO HORIZONTE/MG
+2026-07-17 12:31:55,741 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados obtidos: Nome=BRUNO MAGALHÃES, CNPJ/CPF=29.016.807/0001-02, Endereço=RUA NATAL, 670 - SANTO ANDRE, BELO HORIZONTE/MG
+2026-07-17 12:31:56,968 - sistema_relatorios - gerador_contrato - INFO - === INICIANDO GERAÇÃO DE CONTRATO ===
+2026-07-17 12:31:56,968 - sistema_relatorios - gerador_contrato - INFO - 📋 Dados do contrato recebidos: ['data', 'cidade', 'cliente_nome', 'cliente_cno', 'cliente_cpf', 'cliente_estado_civil', 'cliente_endereco', 'fornecedor_nome', 'fornecedor_razao_social', 'fornecedor_cnpj_cpf', 'fornecedor_endereco', 'endereco_obra', 'dias', 'valor', 'multa', 'dados_bancarios', 'data_condicionada', 'data_inicio', 'data_fim', 'descricao']
+2026-07-17 12:31:56,969 - sistema_relatorios - gerador_contrato - INFO - Usando formato dict - Cliente: EDUARDO MORENO MARQUES
+2026-07-17 12:31:56,970 - sistema_relatorios - gerador_contrato - INFO - Fornecedor CPF/CNPJ do dict: 29.016.807/0001-02
+2026-07-17 12:31:56,970 - sistema_relatorios - gerador_contrato - INFO - Prazo informado: 119 dias
+2026-07-17 12:31:56,970 - sistema_relatorios - gerador_contrato - INFO - Multa informada: R$ 0,00
+2026-07-17 12:31:56,971 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados cliente processados: EDUARDO MORENO MARQUES
+2026-07-17 12:31:56,972 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados fornecedor processados: BRUNO MAGALHÃES (nome fantasia: BRUNO MAGALHÃES) - 29.016.807/0001-02
+2026-07-17 12:31:56,972 - sistema_relatorios - gerador_contrato - INFO - ✅ Usando prazo do formulário: 119 dias úteis
+2026-07-17 12:31:57,125 - sistema_relatorios - gerador_contrato - INFO - ✅ Usando multa do formulário: R$ 0.0
+2026-07-17 12:31:57,128 - sistema_relatorios - gerador_contrato - INFO - ✅ Data do contrato: 15/10/2025 (15 de outubro de 2025)
+2026-07-17 12:31:57,129 - sistema_relatorios - gerador_contrato - INFO - ✅ Data início dos serviços: 15/10/2025
+2026-07-17 12:31:57,199 - sistema_relatorios - gerador_contrato - INFO - Fornecedor identificado como PESSOA JURÍDICA: 29.016.807/0001-02
+2026-07-17 12:31:57,220 - sistema_relatorios - gerador_contrato - INFO - ✓ Contrato datado de 15/10/2025, serviços de 15/10/2025 a 31/03/2026
+2026-07-17 12:31:57,238 - sistema_relatorios - gerador_contrato - INFO - ℹ️ Multa = R$ 0,00 — PARÁGRAFO ÚNICO omitido do contrato
+2026-07-17 12:31:57,276 - sistema_relatorios - gerador_contrato - INFO - ✅ Contrato gerado com sucesso: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos\Contrato_EDUARDO_MORENO_MARQUES_20260717_123157.docx
+2026-07-17 12:32:03,701 - sistema_relatorios - gestao_medicoes - INFO - Pasta de contratos aberta: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-07-17 12:33:11,688 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-07-17 12:33:11,695 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
