@@ -3817,7 +3817,7 @@ class GestaoMedicoes:
             self.ent_valor_global.bind('<FocusOut>', self.formatar_valor_global)
 
             self.ent_multa.delete(0, tk.END)
-            self.ent_multa.insert(0, "R$ 4.000,00")
+            self.ent_multa.insert(0, "R$ 0,00")
 
             # Limpar endereço da obra
             self.ent_endereco_obra.delete(0, tk.END)
