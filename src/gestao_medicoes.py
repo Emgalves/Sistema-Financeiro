@@ -353,7 +353,16 @@ class GestaoMedicoes:
         self.notebook.bind('<<NotebookTabChanged>>', self._ao_trocar_aba)
 
     def _ao_trocar_aba(self, event=None):
-        """Carrega contratos automaticamente ao entrar na aba Contratos."""
+        """Carrega contratos automaticamente ao entrar na aba Contratos, e mantém
+        os labels 'Cliente: X' de todas as abas sincronizados — proteção contra
+        qualquer atualização perdida por timing (ex.: pré-seleção automática
+        rodando antes de alguma aba estar montada)."""
+        texto_cliente = f"Cliente: {self.cliente_atual}" if self.cliente_atual else "Cliente: Nenhum selecionado"
+        for attr in ('lbl_cliente_contratos', 'lbl_cliente_medicoes',
+                    'lbl_cliente_fornecedor', 'lbl_cliente_relatorios'):
+            if hasattr(self, attr):
+                getattr(self, attr).config(text=texto_cliente)
+
         aba_atual = self.notebook.select()
         if aba_atual == str(self.aba_contratos):
             if self.cliente_atual and self.arquivo_cliente:

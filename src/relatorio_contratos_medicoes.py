@@ -481,12 +481,17 @@ class RelatorioContratos:
         nome_cliente = self.cliente_combobox.get()
         if not nome_cliente:
             return
-        
+
         self.cliente_atual = nome_cliente
-        
+
+        # Manter o label sincronizado assim que o cliente é definido,
+        # sem depender de gerar_relatorio() já ter sido chamado.
+        if hasattr(self, 'lbl_cliente_resumo'):
+            self.lbl_cliente_resumo.config(text=f"Cliente: {self.cliente_atual}")
+
         # Construir caminho do arquivo do cliente
         self.arquivo_cliente = PASTA_CLIENTES / f"{nome_cliente}.xlsx"
-        
+
         if not self.arquivo_cliente.exists():
             messagebox.showerror("Erro", f"Arquivo do cliente não encontrado: {self.arquivo_cliente}")
             return
