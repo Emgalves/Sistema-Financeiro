@@ -267,12 +267,12 @@ from src.taxas_administracao.gestao_taxas_fixas import GestaoTaxasFixas
 from src.taxas_administracao.gestao_contratos import GestaoContratos
 from src.taxas_administracao.gestor_taxas_administracao import GestorTaxasAdministracao 
 from src.parcelamento.gestor_parcelas import GestorParcelas  
-from src.leitura_guias import (
-    extrair_dados_guia,
-    GuiaNaoReconhecida,
-    NOME_FORNECEDOR_POR_TIPO,
-    competencia_para_mm_aaaa,
-)
+# from src.leitura_guias import (
+#     extrair_dados_guia,
+#     GuiaNaoReconhecida,
+#     NOME_FORNECEDOR_POR_TIPO,
+#     competencia_para_mm_aaaa,
+# )
 
 # Modificação para usar o método de utils.py
 from src.config.utils import buscar_dados_bancarios_fornecedor
@@ -4683,7 +4683,7 @@ class SistemaEntradaDados:
         ttk.Separator(self.aba_fornecedor, orient='horizontal').pack(fill='x', padx=10, pady=5)
         
         # Frame para importações
-        frame_importacoes = ttk.LabelFrame(self.aba_fornecedor, text="Importação de Dados")
+        frame_importacoes = ttk.LabelFrame(self.aba_fornecedor, text="Importação de Dados de Planilhas")
         frame_importacoes.pack(fill='x', padx=10, pady=5)
         
         frame_botoes_import = ttk.Frame(frame_importacoes)
@@ -4692,37 +4692,37 @@ class SistemaEntradaDados:
         # Botões de importação reorganizados
         ttk.Button(
             frame_botoes_import,
-            text="🚛 Importar Transporte",
+            text="🚛 Transporte",
             command=self.importar_transporte_cafe,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
 
         ttk.Button(
             frame_botoes_import,
-            text="👥 Importar Folha RH",
+            text="👥 Folha RH",
             command=self.importar_folha_rh,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
 
         ttk.Button(
             frame_botoes_import,
-            text="📋 Importar Diárias",
+            text="📋 Diárias",
             command=self.importar_diarias,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
 
         # Dentro de setup_aba_fornecedor, no frame_botoes_import que já existe
         # (junto de "Importar Transporte", "Importar Folha RH" etc.)
-        ttk.Button(
-            frame_botoes_import,
-            text="📄 Importar Guia (FGTS/DARF)",
-            command=self.importar_guia_recorrente,
-            style='Medium.TButton'
-        ).pack(side='left', padx=5)
+        # ttk.Button(
+        #     frame_botoes_import,
+        #     text="📄 Importar Guia (FGTS/DARF)",
+        #     command=self.importar_guia_recorrente,
+        #     style='Medium.TButton'
+        # ).pack(side='left', padx=5)
         
         ttk.Button(
             frame_botoes_import, 
-            text="📊 Importar Medições",  # ← NOVO BOTÃO
+            text="📊 Medições",  # ← NOVO BOTÃO
             command=self.importar_medicoes,
             style='Medium.TButton'
         ).pack(side='left', padx=5)
@@ -9950,99 +9950,99 @@ class SistemaEntradaDados:
 
     # ========== MÉTODOS AUXILIARES IMPORTAÇÃO GDF E DARF ==========
 
-    def _localizar_compromisso_agenda(self, dados):
-        if not self.gerenciador_agenda or not self.gerenciador_agenda.dados_agenda:
-            return 'agenda_nao_carregada'
+    # def _localizar_compromisso_agenda(self, dados):
+    #     if not self.gerenciador_agenda or not self.gerenciador_agenda.dados_agenda:
+    #         return 'agenda_nao_carregada'
 
-        # Proteção contra dados_agenda desatualizado de outro cliente
-        if self.gerenciador_agenda.dados_agenda:
-            item_amostra = self.gerenciador_agenda.dados_agenda[0]
-            cliente_do_carregamento = item_amostra.get('cliente')
-            if cliente_do_carregamento and cliente_do_carregamento != self.cliente_atual:
-                return 'agenda_de_outro_cliente'
+    #     # Proteção contra dados_agenda desatualizado de outro cliente
+    #     if self.gerenciador_agenda.dados_agenda:
+    #         item_amostra = self.gerenciador_agenda.dados_agenda[0]
+    #         cliente_do_carregamento = item_amostra.get('cliente')
+    #         if cliente_do_carregamento and cliente_do_carregamento != self.cliente_atual:
+    #             return 'agenda_de_outro_cliente'
 
-        nome_esperado = NOME_FORNECEDOR_POR_TIPO.get(dados['tipo'])
-        if not nome_esperado:
-            return None
+    #     nome_esperado = NOME_FORNECEDOR_POR_TIPO.get(dados['tipo'])
+    #     if not nome_esperado:
+    #         return None
 
-        competencia_pdf = (
-            competencia_para_mm_aaaa(dados.get('competencia', ''), 'FGTS')
-            if dados['tipo'] == 'FGTS'
-            else competencia_para_mm_aaaa(dados.get('periodo_apuracao', ''), 'DARF')
-        )
-        if not competencia_pdf:
-            return None
+    #     competencia_pdf = (
+    #         competencia_para_mm_aaaa(dados.get('competencia', ''), 'FGTS')
+    #         if dados['tipo'] == 'FGTS'
+    #         else competencia_para_mm_aaaa(dados.get('periodo_apuracao', ''), 'DARF')
+    #     )
+    #     if not competencia_pdf:
+    #         return None
 
-        for item in self.gerenciador_agenda.dados_agenda:
-            if item.get('origem') != 'CONFIGURACAO' or item.get('status') != 'PENDENTE':
-                continue
-            if item.get('fornecedor', '').strip().upper() != nome_esperado.upper():
-                continue
+    #     for item in self.gerenciador_agenda.dados_agenda:
+    #         if item.get('origem') != 'CONFIGURACAO' or item.get('status') != 'PENDENTE':
+    #             continue
+    #         if item.get('fornecedor', '').strip().upper() != nome_esperado.upper():
+    #             continue
 
-            tipo_ref = item.get('tipo_referencia_mes', 'anterior')
-            competencia_item = self.gerenciador_agenda.calcular_mes_referencia_compromisso(
-                item['data_rel'], tipo_ref
-            )
-            if competencia_item == competencia_pdf:
-                return item
+    #         tipo_ref = item.get('tipo_referencia_mes', 'anterior')
+    #         competencia_item = self.gerenciador_agenda.calcular_mes_referencia_compromisso(
+    #             item['data_rel'], tipo_ref
+    #         )
+    #         if competencia_item == competencia_pdf:
+    #             return item
 
-        return None
+    #     return None
 
-    def importar_guia_recorrente(self):
-        if not self.cliente_atual:
-            custom_messagebox("error", "Erro", "Selecione um cliente antes de importar uma guia!")
-            return
+    # def importar_guia_recorrente(self):
+    #     if not self.cliente_atual:
+    #         custom_messagebox("error", "Erro", "Selecione um cliente antes de importar uma guia!")
+    #         return
 
-        caminho = filedialog.askopenfilename(title="Selecione o PDF da guia", filetypes=[("PDF", "*.pdf")])
-        if not caminho:
-            return
+    #     caminho = filedialog.askopenfilename(title="Selecione o PDF da guia", filetypes=[("PDF", "*.pdf")])
+    #     if not caminho:
+    #         return
 
-        try:
-            dados = extrair_dados_guia(caminho)
-        except GuiaNaoReconhecida as e:
-            custom_messagebox("error", "Erro", str(e))
-            return
+    #     try:
+    #         dados = extrair_dados_guia(caminho)
+    #     except GuiaNaoReconhecida as e:
+    #         custom_messagebox("error", "Erro", str(e))
+    #         return
 
-        if dados['campos_faltando']:
-            custom_messagebox("warning", "Atenção",
-                f"Não extraído automaticamente: {', '.join(dados['campos_faltando'])}.")
+    #     if dados['campos_faltando']:
+    #         custom_messagebox("warning", "Atenção",
+    #             f"Não extraído automaticamente: {', '.join(dados['campos_faltando'])}.")
 
-        item_agenda = self._localizar_compromisso_agenda(dados)
+    #     item_agenda = self._localizar_compromisso_agenda(dados)
 
-        if item_agenda == 'agenda_nao_carregada':
-            custom_messagebox("info", "Abra a Agenda primeiro",
-                f"Para importar uma guia de {self.cliente_atual}, abra a Agenda ao menos uma vez "
-                "nesta sessão (ela carrega os compromissos pendentes usados na comparação).")
-            return
+    #     if item_agenda == 'agenda_nao_carregada':
+    #         custom_messagebox("info", "Abra a Agenda primeiro",
+    #             f"Para importar uma guia de {self.cliente_atual}, abra a Agenda ao menos uma vez "
+    #             "nesta sessão (ela carrega os compromissos pendentes usados na comparação).")
+    #         return
 
-        if item_agenda == 'agenda_de_outro_cliente':
-            custom_messagebox("info", "Agenda desatualizada",
-                f"A Agenda carregada não é a de {self.cliente_atual}. "
-                "Abra a Agenda deste cliente antes de importar a guia.")
-            return
+    #     if item_agenda == 'agenda_de_outro_cliente':
+    #         custom_messagebox("info", "Agenda desatualizada",
+    #             f"A Agenda carregada não é a de {self.cliente_atual}. "
+    #             "Abra a Agenda deste cliente antes de importar a guia.")
+    #         return
 
-        if not item_agenda:
-            custom_messagebox("warning", "Compromisso não encontrado",
-                f"Guia lida (Valor: R$ {dados['valor']:.2f}), mas nenhum compromisso "
-                f"'{NOME_FORNECEDOR_POR_TIPO.get(dados['tipo'])}' pendente com a competência "
-                "correspondente foi localizado na Agenda.")
-            return
+    #     if not item_agenda:
+    #         custom_messagebox("warning", "Compromisso não encontrado",
+    #             f"Guia lida (Valor: R$ {dados['valor']:.2f}), mas nenhum compromisso "
+    #             f"'{NOME_FORNECEDOR_POR_TIPO.get(dados['tipo'])}' pendente com a competência "
+    #             "correspondente foi localizado na Agenda.")
+    #         return
 
-        valores_item_sintetico = (
-            '',
-            item_agenda['vencimento'].strftime('%d/%m/%Y'),
-            item_agenda['status'],
-            item_agenda['fornecedor'],
-            item_agenda['referencia'],
-            f"R$ {dados['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
-            item_agenda['tipo'],
-            item_agenda['observacao'],
-            item_agenda['id_origem'],
-        )
+    #     valores_item_sintetico = (
+    #         '',
+    #         item_agenda['vencimento'].strftime('%d/%m/%Y'),
+    #         item_agenda['status'],
+    #         item_agenda['fornecedor'],
+    #         item_agenda['referencia'],
+    #         f"R$ {dados['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+    #         item_agenda['tipo'],
+    #         item_agenda['observacao'],
+    #         item_agenda['id_origem'],
+    #     )
 
-        self.gerenciador_agenda.abrir_confirmacao_lancamento(
-            valores_item_sintetico, dados_pre_extraidos=dados
-        )
+    #     self.gerenciador_agenda.abrir_confirmacao_lancamento(
+    #         valores_item_sintetico, dados_pre_extraidos=dados
+    #     )
 
     # ===== FUNÇÕES UTILITÁRIAS PARA VERIFICAÇÃO E RECÁLCULO =====
     def abrir_finalizacao_quinzena(self):
@@ -20548,11 +20548,33 @@ class GerenciadorAgenda:
                 valores[0] = '☐'
                 self.tree_agenda.item(item_id, values=valores)
  
+    def _obter_cnpj_medicao(self, item):
+        """
+        ✅ NOVO: Retorna o CNPJ/CPF do fornecedor de um item de medição,
+        tratando corretamente tanto medições individuais quanto agrupadas.
+ 
+        - MEDICAO (individual): CNPJ fica em item['dados_medicao']['cnpj']
+          (ver carregar_medicoes_pendentes).
+        - MEDICAO_AGRUPADA: CNPJ fica em item['cnpj_fornecedor']
+          (ver agrupar_medicoes_por_fornecedor) — este item NÃO tem a
+          chave 'dados_medicao'.
+        """
+        if not item:
+            return ''
+ 
+        if item.get('origem') == 'MEDICAO_AGRUPADA':
+            return str(item.get('cnpj_fornecedor', '') or '').strip()
+ 
+        return str(item.get('dados_medicao', {}).get('cnpj', '') or '').strip()
+
     def _obter_cnpj_do_item(self, item):
-        """✅ NOVO: Localiza o CNPJ/CPF do fornecedor de um item da agenda"""
+        """✅ Localiza o CNPJ/CPF do fornecedor de um item da agenda"""
         try:
             if item['origem'] in ['MEDICAO', 'MEDICAO_AGRUPADA']:
-                return item.get('dados_medicao', {}).get('cnpj', '') or None
+                # ✅ CORRIGIDO: usa o método que sabe checar a chave certa
+                # (dados_medicao.cnpj para individual, cnpj_fornecedor para agrupada)
+                cnpj = self._obter_cnpj_medicao(item)
+                return cnpj or None
  
             fornecedor_dados = self.sistema.buscar_fornecedor_por_nome_agenda(item['fornecedor'])
             if fornecedor_dados:
@@ -21872,7 +21894,7 @@ class GerenciadorAgenda:
         # ✅ Preencher fornecedor inicial
         try:
             if item_agenda and item_agenda['origem'] in ['MEDICAO', 'MEDICAO_AGRUPADA']:
-                cnpj_medicao = item_agenda.get('dados_medicao', {}).get('cnpj', '')
+                cnpj_medicao = self._obter_cnpj_medicao(item_agenda)  # ✅ CORRIGIDO
  
                 if cnpj_medicao:
                     fornecedor_dados = self.sistema.buscar_fornecedor_por_cnpj_agenda(cnpj_medicao)
@@ -21896,9 +21918,9 @@ class GerenciadorAgenda:
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao buscar fornecedor inicial: {e}")
             if item_agenda:
-                nome.insert(0, item_agenda.get('fornecedor', valores_item[3]))  # ✅ ÍNDICE CORRIGIDO
+                nome.insert(0, item_agenda.get('fornecedor', valores_item[3]))
             else:
-                nome.insert(0, valores_item[3])  # ✅ ÍNDICE CORRIGIDO
+                nome.insert(0, valores_item[3])
 
         # ========== CONFIRMAÇÃO RÁPIDA ==========
         def confirmar_rapido():
