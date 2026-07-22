@@ -10,13 +10,20 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 8,
-    "patch": 0,
-    "release_date": "08/072026",
+    "patch": 1,
+    "release_date": "22/07/2026",
     "changes": [
-        "Cadastro de cliente — checkboxes para marcar fictício/vinculado e caixa controlado, com as abas de controle nascendo junto (ou confirmação explícita, se for num cliente já existente)",
-        "Repasse Mão de Obra (clientes fictícios) — cálculo, painel na tela, botão de registro, bloco no PDF",
-        "Saldo Caixa de Obra (clientes reais com conta controlada) — cálculo, painel na tela, botão de registro, bloco no PDF",
-        "Layout — melhoria nas telas de criar/editar cliente compactadas, sem os espaços tortos"
+        "Cadastro de cliente — está gerando cadastro na base de fornecedores, sempre que marcado",
+        "Gerenciador: Corrigida a falha de Edição em Massa",
+        "Visualizador: liberada a edição de dados bancários",
+        "Saldo Caixa de Obra: adaptado para aceitar valores negativos",
+        "Contrato de Empreiteiros trazendo Razão Social e Nome, quando diferentes, e com multa inicial R$0,00",
+        "Funcionalidade desenvolvida para permitir manter cliente quando mudar de Entrada de Dados para Gestão de Medições e vice-e-versa",
+        "Agenda: Confirmação em massa rápidasempre que houver valor no registro",
+        "Agenda: Edição de dados bancários, quando necessário, apenas para o registro confirmado",
+        "Correção na importação de Diárias para aceitar 1/2 diária",
+        "Relatório de Medições, no módulo Gestão de Medições, com data sugerida",
+        "Relatório de Medições corrigido no módulo de Relatórios"
     ]
 }
 
