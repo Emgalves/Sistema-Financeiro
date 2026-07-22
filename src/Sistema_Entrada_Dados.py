@@ -12522,7 +12522,7 @@ class ImportadorRH:
                         continue
 
                     try:
-                        dias_int = int(float(str(dias_raw).replace(',', '.')))
+                        dias_int = float(str(dias_raw).replace(',', '.'))
                         if dias_int <= 0:
                             logger.debug(f"[{nome_aba}] Linha {idx+1}: {nome_limpo} - 0 dias, ignorado")
                             continue
