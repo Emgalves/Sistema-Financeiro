@@ -14171,3 +14171,43 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-07-17 12:29:27,333 - INFO - Sistema iniciado em modo: TESTE
 2026-07-17 12:31:24,112 - INFO - Abrindo gestão de medições
 2026-07-17 18:38:17,097 - INFO - Sistema encerrado pelo usuário
+2026-07-22 16:33:03,783 - INFO - Configurações importadas com sucesso via src.config
+2026-07-22 16:33:04,138 - INFO - Configurações importadas com sucesso
+2026-07-22 16:33:04,166 - INFO - Configurações do sistema importadas com sucesso
+2026-07-22 16:33:07,659 - INFO - Sistema iniciado em modo: TESTE
+2026-07-22 16:34:34,411 - INFO - Abrindo gestão de medições
+2026-07-22 16:35:01,299 - INFO - Abrindo sistema de entrada de dados
+2026-07-22 16:35:02,250 - INFO - Proteções contra perda de dados configuradas
+2026-07-22 16:35:02,606 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-22 16:35:02,633 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-22 16:35:19,123 - INFO - Voltando ao menu principal
+2026-07-22 16:35:19,237 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-22 16:35:19,299 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-22 16:35:19,635 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-22 16:35:20,635 - INFO - Abrindo gestão de medições
+2026-07-22 16:38:01,922 - INFO - Abrindo sistema de relatórios
+2026-07-22 16:39:41,313 - INFO - Abrindo gestão de medições
+2026-07-22 16:49:37,998 - INFO - Abrindo sistema de entrada de dados
+2026-07-22 16:49:38,717 - INFO - Proteções contra perda de dados configuradas
+2026-07-22 16:49:38,824 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-22 16:49:38,825 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-22 17:04:23,644 - INFO - Configurações importadas com sucesso via src.config
+2026-07-22 17:04:23,705 - INFO - Configurações importadas com sucesso
+2026-07-22 17:04:23,710 - INFO - Configurações do sistema importadas com sucesso
+2026-07-22 17:04:25,409 - INFO - Sistema iniciado em modo: TESTE
+2026-07-22 17:04:30,185 - INFO - Abrindo sistema de entrada de dados
+2026-07-22 17:04:32,070 - INFO - Proteções contra perda de dados configuradas
+2026-07-22 17:04:32,337 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-22 17:04:35,253 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-22 17:06:47,394 - INFO - ==================================================
+2026-07-22 17:06:47,402 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-22 17:06:47,403 - INFO - ==================================================
+2026-07-22 17:06:47,404 - INFO - Fornecedor: ALISON FRANCISCO LEITE
+2026-07-22 17:06:49,321 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 45!
+2026-07-22 17:06:49,322 - INFO - Dados carregados: ALISON FRANCISCO LEITE
+2026-07-22 17:06:49,323 - INFO - Campos preenchidos com sucesso!
+2026-07-22 17:06:49,324 - INFO - ✓ Referência preenchida: EMPREITEIRO ELÉTRICO
+2026-07-22 17:06:49,329 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-22 17:06:49,331 - INFO - ==================================================
+2026-07-22 17:07:38,913 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 45!
+2026-07-22 17:07:51,014 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1073!
