@@ -14211,3 +14211,137 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-07-22 17:06:49,331 - INFO - ==================================================
 2026-07-22 17:07:38,913 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 45!
 2026-07-22 17:07:51,014 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1073!
+2026-07-23 07:56:05,371 - INFO - Configurações importadas com sucesso via src.config
+2026-07-23 07:56:05,583 - INFO - Configurações importadas com sucesso
+2026-07-23 07:56:05,584 - INFO - Configurações do sistema importadas com sucesso
+2026-07-23 07:56:07,584 - INFO - Sistema iniciado em modo: TESTE
+2026-07-23 07:56:25,886 - INFO - Abrindo sistema de relatórios
+2026-07-23 08:56:38,209 - INFO - Sistema encerrado pelo usuário
+2026-07-23 10:07:44,728 - INFO - Configurações importadas com sucesso via src.config
+2026-07-23 10:07:44,849 - INFO - Configurações importadas com sucesso
+2026-07-23 10:07:44,850 - INFO - Configurações do sistema importadas com sucesso
+2026-07-23 10:07:48,523 - INFO - Sistema iniciado em modo: TESTE
+2026-07-23 10:07:55,794 - INFO - Abrindo configurações do sistema
+2026-07-23 10:08:48,250 - INFO - Abrindo sistema de entrada de dados
+2026-07-23 10:08:49,380 - INFO - Proteções contra perda de dados configuradas
+2026-07-23 10:08:50,085 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-23 10:08:53,407 - INFO - Cliente selecionado com sucesso: ELLIAS MAGALHAES E ABREU LIMA
+2026-07-23 10:10:28,660 - INFO - Configurações importadas com sucesso via src.config
+2026-07-23 10:10:28,748 - INFO - Configurações importadas com sucesso
+2026-07-23 10:10:28,749 - INFO - Configurações do sistema importadas com sucesso
+2026-07-23 10:10:30,112 - INFO - Sistema iniciado em modo: TESTE
+2026-07-23 10:10:32,513 - INFO - Abrindo configurações do sistema
+2026-07-23 10:11:01,257 - INFO - Abrindo sistema de entrada de dados
+2026-07-23 10:11:02,593 - INFO - Proteções contra perda de dados configuradas
+2026-07-23 10:11:03,165 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-23 10:11:06,481 - INFO - Cliente selecionado com sucesso: FREDERICO LAVORATO ARANTES
+2026-07-29 12:46:34,460 - INFO - Configurações importadas com sucesso via src.config
+2026-07-29 12:46:34,831 - INFO - Configurações importadas com sucesso
+2026-07-29 12:46:34,831 - INFO - Configurações do sistema importadas com sucesso
+2026-07-29 12:46:38,659 - INFO - Sistema iniciado em modo: TESTE
+2026-07-29 12:46:48,203 - INFO - Abrindo sistema de relatórios
+2026-07-29 14:50:20,735 - INFO - Sistema encerrado pelo usuário
+2026-07-30 09:33:10,794 - INFO - Configurações importadas com sucesso via src.config
+2026-07-30 09:33:10,941 - INFO - Configurações importadas com sucesso
+2026-07-30 09:33:10,957 - INFO - Configurações do sistema importadas com sucesso
+2026-07-30 09:33:13,443 - INFO - Sistema iniciado em modo: TESTE
+2026-07-30 09:36:46,944 - INFO - Abrindo sistema de relatórios
+2026-07-30 09:41:42,718 - INFO - Abrindo sistema de relatórios
+2026-07-30 10:09:22,881 - INFO - Sistema encerrado pelo usuário
+2026-07-30 10:31:07,616 - INFO - Configurações importadas com sucesso via src.config
+2026-07-30 10:31:07,649 - INFO - Configurações importadas com sucesso
+2026-07-30 10:31:07,650 - INFO - Configurações do sistema importadas com sucesso
+2026-07-30 10:31:09,808 - INFO - Sistema iniciado em modo: TESTE
+2026-07-30 10:31:13,298 - INFO - Abrindo sistema de relatórios
+2026-07-30 10:47:19,150 - INFO - Sistema encerrado pelo usuário
+2026-07-30 10:50:28,805 - INFO - Configurações importadas com sucesso via src.config
+2026-07-30 10:50:28,843 - INFO - Configurações importadas com sucesso
+2026-07-30 10:50:28,846 - INFO - Configurações do sistema importadas com sucesso
+2026-07-30 10:50:30,950 - INFO - Sistema iniciado em modo: TESTE
+2026-07-30 10:51:26,674 - INFO - Abrindo sistema de relatórios
+2026-07-30 10:53:36,329 - INFO - Abrindo sistema de relatórios
+2026-07-30 11:55:13,784 - INFO - Abrindo sistema de entrada de dados
+2026-07-30 11:55:14,835 - INFO - Proteções contra perda de dados configuradas
+2026-07-30 11:55:15,470 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-30 11:55:17,541 - INFO - Cliente selecionado com sucesso: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-07-30 11:56:55,151 - INFO - Voltando ao menu principal
+2026-07-30 11:56:55,264 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-30 11:56:55,269 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-30 11:56:55,503 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-30 11:56:56,199 - INFO - Abrindo gestão de medições
+2026-07-30 13:18:37,107 - INFO - Abrindo gestão de medições
+2026-07-30 13:33:40,721 - INFO - Abrindo gestão de medições
+2026-07-30 13:39:51,872 - INFO - Sistema encerrado pelo usuário
+2026-07-30 16:28:34,074 - INFO - Configurações importadas com sucesso via src.config
+2026-07-30 16:28:34,195 - INFO - Configurações importadas com sucesso
+2026-07-30 16:28:34,198 - INFO - Configurações do sistema importadas com sucesso
+2026-07-30 16:28:35,587 - INFO - Sistema iniciado em modo: TESTE
+2026-07-30 16:31:01,520 - INFO - Abrindo sistema de relatórios
+2026-07-30 16:54:26,023 - INFO - Abrindo sistema de entrada de dados
+2026-07-30 16:54:27,475 - INFO - Proteções contra perda de dados configuradas
+2026-07-30 16:54:28,119 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-30 16:54:29,731 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-30 16:54:57,950 - INFO - ==================================================
+2026-07-30 16:54:57,950 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-30 16:54:57,951 - INFO - ==================================================
+2026-07-30 16:54:57,951 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-30 16:54:59,031 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 16:54:59,032 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-30 16:54:59,033 - INFO - Campos preenchidos com sucesso!
+2026-07-30 16:54:59,034 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-30 16:54:59,037 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-30 16:54:59,038 - INFO - ==================================================
+2026-07-30 16:55:52,324 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 16:55:53,782 - INFO - ==================================================
+2026-07-30 16:55:53,782 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-30 16:55:53,783 - INFO - ==================================================
+2026-07-30 16:55:53,783 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-30 16:55:54,949 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 16:55:54,950 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-30 16:55:54,951 - INFO - Campos preenchidos com sucesso!
+2026-07-30 16:55:54,952 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-30 16:55:54,955 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-30 16:55:54,955 - INFO - ==================================================
+2026-07-30 16:57:55,686 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 16:58:31,677 - INFO - ==================================================
+2026-07-30 16:58:31,677 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-30 16:58:31,678 - INFO - ==================================================
+2026-07-30 16:58:31,678 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-30 16:58:32,808 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 16:58:32,808 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-30 16:58:32,809 - INFO - Campos preenchidos com sucesso!
+2026-07-30 16:58:32,810 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-30 16:58:32,812 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-30 16:58:32,813 - INFO - ==================================================
+2026-07-30 16:59:03,325 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 16:59:35,516 - INFO - ==================================================
+2026-07-30 16:59:35,517 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-30 16:59:35,518 - INFO - ==================================================
+2026-07-30 16:59:35,518 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-30 16:59:36,796 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 16:59:36,797 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-30 16:59:36,798 - INFO - Campos preenchidos com sucesso!
+2026-07-30 16:59:36,798 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-30 16:59:36,800 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-30 16:59:36,801 - INFO - ==================================================
+2026-07-30 17:00:51,291 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-07-30 17:00:51,293 - INFO - ✅ Dados adicionados - Total: 1
+2026-07-30 17:00:52,462 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 17:00:54,878 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2026-07-30 17:21:15,465 - INFO - ==================================================
+2026-07-30 17:21:15,476 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-30 17:21:15,487 - INFO - ==================================================
+2026-07-30 17:21:15,493 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-30 17:21:17,544 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 17:21:17,545 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-30 17:21:17,547 - INFO - Campos preenchidos com sucesso!
+2026-07-30 17:21:17,548 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-30 17:21:17,550 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-30 17:21:17,551 - INFO - ==================================================
+2026-07-30 17:22:07,840 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-30 17:22:20,972 - INFO - Configurações importadas com sucesso via src.config
+2026-07-30 17:22:20,995 - INFO - Configurações importadas com sucesso
+2026-07-30 17:22:20,996 - INFO - Configurações do sistema importadas com sucesso
+2026-07-30 17:22:22,359 - INFO - Sistema iniciado em modo: TESTE
+2026-07-30 17:22:24,292 - INFO - Abrindo sistema de relatórios
+2026-07-30 17:31:39,384 - INFO - Sistema encerrado pelo usuário
