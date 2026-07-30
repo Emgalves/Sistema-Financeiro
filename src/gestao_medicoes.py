@@ -3902,12 +3902,19 @@ class GestaoMedicoes:
             ws = wb["Medicoes"]
             
             # Percorrer as linhas (pulando o cabeçalho)
-            for row in ws.iter_rows(min_row=2, values_only=True):
+            # CORREÇÃO: usamos o número da linha física da planilha (idx) como
+            # identificador único de cada item da lista (iid do Treeview). Isso
+            # é o que permite reaproveitar o ID_Medicao exibido sem ambiguidade:
+            # duas linhas podem mostrar o mesmo "número da medição" na tela,
+            # mas cada uma corresponde a um item de lista com identificador
+            # interno diferente, e as ações (excluir/lançar/vincular/editar)
+            # atuam sempre na linha física exata que foi selecionada.
+            for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), 2):
                 if row[0] == self.contrato_atual:  # Filtrar pelo ID do contrato atual
                     # === FILTRO DE EXCLUSÃO ===
                     # Não mostrar medições com status "EXCLUÍDO"
-                    status = row[8] if row[8] else ""
-                    if status == "EXCLUÍDO":
+                    status = str(row[8] or '').strip().upper()
+                    if status in ('EXCLUÍDO', 'EXCLUIDO'):
                         continue  # Pula esta linha
                     
                     # Formatação de dados
@@ -3920,8 +3927,8 @@ class GestaoMedicoes:
                         data_pagamento = str(row[5] or "")
                         valor = str(row[7] or "R$ 0,00")
                     
-                    # Adicionar à treeview
-                    self.tree_medicoes.insert('', 'end', values=(
+                    # Adicionar à treeview (iid = linha física da planilha)
+                    self.tree_medicoes.insert('', 'end', iid=str(idx), values=(
                         row[1],             # ID Medição
                         data_medicao,       # Data Medição
                         data_pagamento,     # Data Pagamento
@@ -4109,12 +4116,15 @@ class GestaoMedicoes:
             ws_medicoes = wb["Medicoes"]
             
             # Gerar ID da medição (próximo número sequencial para o contrato)
-            # Medições EXCLUÍDAS são ignoradas — o ID pode ser reutilizado
+            # CORREÇÃO: o ID NUNCA é reutilizado, mesmo que a medição esteja
+            # EXCLUÍDA. Reaproveitar IDs de medições excluídas fazia com que
+            # duas linhas diferentes da planilha compartilhassem a mesma
+            # chave (ID_Contrato, ID_Medicao), quebrando a premissa de
+            # unicidade usada em excluir_medicao, lancar_medicao,
+            # vincular_medicao e atualizar_medicao — causando duplicidade de
+            # medições e valores lançados/pagos incorretos.
             next_id = 1
             for row in ws_medicoes.iter_rows(min_row=2, values_only=True):
-                status_row = str(row[8] or '').strip().upper()
-                if status_row in ('EXCLUÍDO', 'EXCLUIDO'):
-                    continue
                 if row[0] == id_contrato and row[1] and isinstance(row[1], int) and row[1] >= next_id:
                     next_id = row[1] + 1
             
@@ -4391,12 +4401,26 @@ class GestaoMedicoes:
             
             # Buscar medição pelo ID
             medicao_row = None
+            linhas_ativas_encontradas = []  # CORREÇÃO: detectar chave duplicada
             for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
                 if row[0] == id_contrato and row[1] == id_medicao:
                     if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
                         continue
-                    medicao_row = idx
-                    break
+                    linhas_ativas_encontradas.append(idx)
+                    if medicao_row is None:
+                        medicao_row = idx
+            
+            if len(linhas_ativas_encontradas) > 1:
+                wb.close()
+                messagebox.showerror(
+                    "Erro - Dados Inconsistentes",
+                    f"❌ OPERAÇÃO BLOQUEADA POR SEGURANÇA!\n\n"
+                    f"Há mais de uma linha ativa (não excluída) para o Contrato "
+                    f"{id_contrato} / Medição #{id_medicao}.\n\n"
+                    f"Corrija a duplicidade manualmente na planilha antes de editar.",
+                    parent=self.root
+                )
+                return
                     
             if not medicao_row:
                 messagebox.showerror("Erro", "Medição não encontrada!", parent=self.root)
@@ -4530,31 +4554,46 @@ class GestaoMedicoes:
                 messagebox.showinfo("Informação", "Esta medição já está excluída!", parent=self.root)
                 return
             
+            # CORREÇÃO: a linha física da planilha é o identificador (iid do
+            # Treeview, definido em carregar_medicoes). Acessamos ela
+            # diretamente em vez de re-buscar por (Contrato, ID_Medicao), que
+            # pode se repetir entre uma medição excluída e uma nova que
+            # reaproveitou o mesmo número. Isso garante que a exclusão sempre
+            # atua exatamente na linha que o usuário selecionou na tela.
+            linha_medicao = int(selecionado[0])
+            
             # Buscar dados completos da medição
             wb = load_workbook(self.arquivo_cliente)
             ws_medicoes = wb["Medicoes"]
             
-            dados_medicao = None
-            linha_medicao = None
+            row = next(ws_medicoes.iter_rows(min_row=linha_medicao, max_row=linha_medicao, values_only=True), None)
             
-            for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
-                if row[0] == self.contrato_atual and row[1] == id_medicao:
-                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
-                        continue
-                    dados_medicao = {
-                        'id_medicao': row[1],
-                        'cnpj': row[2],
-                        'nome': row[3],
-                        'data_medicao': row[4],
-                        'data_pagamento': row[5],
-                        'referencia': row[6],
-                        'valor': row[7],
-                        'status': row[8],
-                        'data_lancamento': row[9],
-                        'observacao': row[10]
-                    }
-                    linha_medicao = idx
-                    break
+            # Confere se a linha ainda corresponde ao contrato atual e não foi
+            # excluída por outra sessão/usuário entre o carregamento da lista
+            # e este clique.
+            if (not row or row[0] != self.contrato_atual
+                    or str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO')):
+                wb.close()
+                messagebox.showerror(
+                    "Erro",
+                    "Medição não encontrada ou já foi alterada por outra ação!\n\n"
+                    "Atualize a lista (recarregue as medições) e tente novamente.",
+                    parent=self.root
+                )
+                return
+            
+            dados_medicao = {
+                'id_medicao': row[1],
+                'cnpj': row[2],
+                'nome': row[3],
+                'data_medicao': row[4],
+                'data_pagamento': row[5],
+                'referencia': row[6],
+                'valor': row[7],
+                'status': row[8],
+                'data_lancamento': row[9],
+                'observacao': row[10]
+            }
             
             if not dados_medicao:
                 wb.close()
@@ -4806,26 +4845,38 @@ class GestaoMedicoes:
             wb = load_workbook(self.arquivo_cliente)
             ws = wb["Medicoes"]
             
-            dados_medicao = None
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0] == self.contrato_atual and row[1] == id_medicao:
-                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
-                        continue
-                    dados_medicao = {
-                        'id_contrato': row[0],
-                        'id_medicao': row[1],
-                        'cnpj': row[2],
-                        'nome': row[3],
-                        'data_medicao': row[4],
-                        'data_pagamento': row[5],
-                        'referencia': row[6],
-                        'valor': row[7],
-                        'status': row[8],
-                        'data_lancamento': row[9],
-                        'observacao': row[10]
-                    }
-                    break
-                    
+            # CORREÇÃO: a linha física da planilha (iid do Treeview) identifica
+            # exatamente qual registro foi selecionado, mesmo que o número de
+            # medição exibido (id_medicao) esteja repetido com um registro
+            # excluído antigo.
+            linha_medicao = int(selecionado[0])
+            row = next(ws.iter_rows(min_row=linha_medicao, max_row=linha_medicao, values_only=True), None)
+            
+            if (not row or row[0] != self.contrato_atual
+                    or str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO')):
+                messagebox.showerror(
+                    "Erro",
+                    "Medição não encontrada ou já foi alterada por outra ação!\n\n"
+                    "Atualize a lista (recarregue as medições) e tente novamente.",
+                    parent=self.root
+                )
+                wb.close()
+                return
+            
+            dados_medicao = {
+                'id_contrato': row[0],
+                'id_medicao': row[1],
+                'cnpj': row[2],
+                'nome': row[3],
+                'data_medicao': row[4],
+                'data_pagamento': row[5],
+                'referencia': row[6],
+                'valor': row[7],
+                'status': row[8],
+                'data_lancamento': row[9],
+                'observacao': row[10]
+            }
+
             if not dados_medicao:
                 messagebox.showerror("Erro", "Medição não encontrada!", parent=self.root)
                 wb.close()
@@ -4877,14 +4928,10 @@ class GestaoMedicoes:
             # Adicionar à lista de dados para incluir
             self.dados_para_incluir.append(dados_lancamento)
             
-            # Atualizar status da medição na planilha (ignora registros EXCLUÍDO)
-            for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), 2):
-                if row[0] == self.contrato_atual and row[1] == id_medicao:
-                    if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
-                        continue
-                    ws.cell(row=idx, column=9, value="LANÇADO")  # Status
-                    ws.cell(row=idx, column=10, value=hoje)      # Data_Lancamento
-                    break
+            # CORREÇÃO: atualiza diretamente a linha física já identificada,
+            # sem re-buscar por (contrato, id_medicao).
+            ws.cell(row=linha_medicao, column=9, value="LANÇADO")  # Status
+            ws.cell(row=linha_medicao, column=10, value=hoje)      # Data_Lancamento
                     
             # Salvar alterações
             wb.save(self.arquivo_cliente)
@@ -4934,10 +4981,12 @@ class GestaoMedicoes:
                 
                 # Buscar a medição (ignora registros EXCLUÍDO)
                 medicao_encontrada = False
+                linhas_ativas_encontradas = []  # CORREÇÃO: detectar chave duplicada
                 for row in ws.iter_rows(min_row=2, values_only=True):
                     if row[0] == self.contrato_atual and row[1] == id_medicao:
                         if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
                             continue
+                        linhas_ativas_encontradas.append(row[1])
                         status_atual = row[8] if row[8] else ""
                         
                         if status_atual in ["LANÇADO", "VINCULADO"]:
@@ -4950,7 +4999,21 @@ class GestaoMedicoes:
                             )
                             return
                         medicao_encontrada = True
-                        break
+
+                # CORREÇÃO: bloqueia se houver mais de uma linha ativa com a
+                # mesma chave (Contrato, ID_Medicao) em vez de vincular
+                # silenciosamente a primeira encontrada.
+                if len(linhas_ativas_encontradas) > 1:
+                    wb.close()
+                    messagebox.showerror(
+                        "Erro - Dados Inconsistentes",
+                        f"❌ OPERAÇÃO BLOQUEADA POR SEGURANÇA!\n\n"
+                        f"Há mais de uma linha ativa (não excluída) para o Contrato "
+                        f"{self.contrato_atual} / Medição #{id_medicao}.\n\n"
+                        f"Corrija a duplicidade manualmente na planilha antes de vincular.",
+                        parent=self.root
+                    )
+                    return
                 
                 wb.close()
                 
@@ -5638,6 +5701,26 @@ class GestaoMedicoes:
             
             # Atualizar status e dados da medição
             hoje = datetime.now()
+            
+            # CORREÇÃO: conta quantas linhas ativas (não excluídas) casam com
+            # a chave antes de gravar, para nunca atualizar a linha errada
+            # quando o ID_Medicao estiver reaproveitado.
+            linhas_ativas_encontradas = [
+                idx for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2)
+                if row[0] == self.contrato_atual and row[1] == id_medicao
+                and str(row[8] or '').strip().upper() not in ('EXCLUÍDO', 'EXCLUIDO')
+            ]
+            if len(linhas_ativas_encontradas) > 1:
+                wb.close()
+                messagebox.showerror(
+                    "Erro - Dados Inconsistentes",
+                    f"❌ OPERAÇÃO BLOQUEADA POR SEGURANÇA!\n\n"
+                    f"Há mais de uma linha ativa (não excluída) para o Contrato "
+                    f"{self.contrato_atual} / Medição #{id_medicao}.\n\n"
+                    f"Corrija a duplicidade manualmente na planilha antes de vincular.",
+                    parent=self.root
+                )
+                return
             
             for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
