@@ -695,12 +695,27 @@ class RelatorioConfig:
             parent=self.styles['Heading1'],
             fontName='Helvetica-Bold',
             fontSize=9,
-            leading=11,
+            leading=10,
             alignment=TA_LEFT,
             leftIndent=0,
             textColor=colors.black,
-            spaceBefore=6,
-            spaceAfter=6
+            spaceBefore=2,
+            spaceAfter=3
+        )
+
+        # Estilo compacto para o aviso de saldo negativo dentro do bloco
+        # de Controle de Saldo (MO/Caixa) - precisa ser pequeno para o
+        # bloco inteiro caber ao lado do Resumo, na mesma página, sem
+        # empurrar para a página seguinte.
+        self.style_aviso_saldo = ParagraphStyle(
+            'AvisoSaldoStyle',
+            parent=self.styles['Normal'],
+            fontName='Helvetica-Bold',
+            fontSize=7,
+            leading=8,
+            textColor=colors.red,
+            spaceBefore=2,
+            spaceAfter=0
         )
         
         self.style_normal = ParagraphStyle(
@@ -1170,18 +1185,47 @@ class RelatorioHandler:
             ficticios de mao de obra - REPASSES_MO. O arquivo fictício so
             existe para administrar o repasse, entao tudo que for lancado
             nele conta contra o saldo, nao so TP_DESP=1).
-        - 6     -> soma so TP_DESP=6 (uso: Caixa de Obra de clientes reais,
-            onde o arquivo tem despesas de todo tipo e so uma parte delas
-            (a paga pelo caixa controlado) deve contar nesse saldo).
+        - 6     -> soma so TP_DESP=6 (uso padrao: Caixa de Obra de clientes
+            reais, onde o arquivo tem despesas de todo tipo e so uma parte
+            delas (a paga pelo caixa controlado) deve contar nesse saldo).
+        - lista (ex.: [1,2,3,4,6]) -> soma qualquer TP_DESP presente na
+            lista (uso: alguns clientes de Caixa de Obra cujo aporte cobre
+            tambem outros tipos de despesa, nao so a Caixa - configuravel
+            por cliente, ver _obter_tipos_despesa_caixa).
+
+        CORTE DE HISTORICO (automatico, sem configuracao manual): a data
+        do PRIMEIRO repasse/aporte ja registrado (df_repasses['DATA_REPASSE'].min())
+        vira automaticamente o inicio do controle. Nao existe historico
+        de repasse antes do primeiro repasse por definicao, entao nao ha
+        necessidade de configurar isso manualmente - e nao ha risco de
+        escolher a data errada, jah que ela vem dos proprios dados.
+
+        Uso: clientes antigos (ex.: obra iniciada anos atras) onde o
+        controle de saldo (MO ou Caixa) so passou a ser usado agora -
+        sem esse corte, o calculo tentaria cobrir anos de despesas
+        historicas sem nenhum repasse/aporte correspondente registrado,
+        dando um saldo negativo gigante e sem sentido.
+
+        Regra de fronteira: despesas datadas EXATAMENTE no dia do
+        primeiro repasse so contam se esse dia for o proprio relatorio
+        sendo gerado agora (data_relatorio). Caso contrario (o primeiro
+        repasse foi registrado na data de um relatorio ANTERIOR, como
+        "saldo de abertura"), essas despesas sao tratadas como ja
+        cobertas por aquele repasse de abertura e NAO sao somadas de
+        novo - senao o "saldo anterior" ficaria negativo mesmo com o
+        repasse de abertura calculado corretamente para cobri-las.
         """
         data_ref = pd.to_datetime(data_relatorio)
         inicio_periodo = self._calcular_inicio_periodo_quinzena(data_ref)
+        corte = None
     
         if df_repasses is None or df_repasses.empty:
             repasse_periodo = 0.0
             repasse_acumulado = 0.0
             repasse_anterior = 0.0
         else:
+            corte = df_repasses['DATA_REPASSE'].min()
+
             repasse_ate_data = df_repasses[df_repasses['DATA_REPASSE'] <= data_ref]
             repasse_acumulado = float(repasse_ate_data['VALOR'].sum())
             # "Do período" = caiu dentro da janela da quinzena atual
@@ -1202,11 +1246,28 @@ class RelatorioHandler:
             df = df[df['STATUS'] != 'EXCLUIDO']
     
         if tp_desp_filtro is not None:
-            df = df[df['TP_DESP'] == tp_desp_filtro].copy()
+            if isinstance(tp_desp_filtro, (list, tuple, set)):
+                df = df[df['TP_DESP'].isin(tp_desp_filtro)].copy()
+            else:
+                df = df[df['TP_DESP'] == tp_desp_filtro].copy()
     
         df['DATA_REL'] = pd.to_datetime(df['DATA_REL'], errors='coerce')
         df = df.dropna(subset=['DATA_REL'])
         df['VALOR'] = pd.to_numeric(df['VALOR'], errors='coerce').fillna(0)
+
+        if corte is not None:
+            if corte == data_ref:
+                # O primeiro repasse foi registrado para o PROPRIO
+                # relatorio sendo gerado agora (caso comum: cliente novo,
+                # primeiro repasse e primeiras despesas no mesmo dia) -
+                # inclui normalmente as despesas dessa data.
+                df = df[df['DATA_REL'] >= corte]
+            else:
+                # O primeiro repasse foi registrado numa data de um
+                # relatorio ANTERIOR (saldo de abertura) - as despesas
+                # exatamente dessa data ja sao consideradas cobertas por
+                # aquele repasse de abertura, entao ficam de fora.
+                df = df[df['DATA_REL'] > corte]
     
         # Despesas mantêm a comparação exata: o sistema sempre grava
         # DATA_REL igual à data de fechamento do relatório (confirmado
@@ -1248,10 +1309,12 @@ class RelatorioHandler:
         estilo = TableStyle([
             ('ALIGN', (0, 0), (0, -1), 'LEFT'),
             ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
-            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('FONTSIZE', (0, 0), (-1, -1), 7.5),
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('LINEABOVE', (0, -1), (-1, -1), 0.75, colors.grey),
-            ('TOPPADDING', (0, -1), (-1, -1), 4),
+            ('TOPPADDING', (0, 0), (-1, -1), 1.5),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 1.5),
+            ('TOPPADDING', (0, -1), (-1, -1), 3),
         ])
     
         if saldo['saldo_atual'] < 0:
@@ -1271,10 +1334,9 @@ class RelatorioHandler:
             aviso = (
                 f"Saldo negativo de R$ {self.formatar_numero(abs(saldo['saldo_atual']))}."
             )
-            elementos.append(Spacer(1, 6))
             elementos.append(Paragraph(
                 aviso,
-                self.config.style_normal if hasattr(self.config, 'style_normal') else self.config.style_heading
+                self.config.style_aviso_saldo if hasattr(self.config, 'style_aviso_saldo') else self.config.style_heading
             ))
     
         return elementos, aviso
@@ -1319,12 +1381,17 @@ class RelatorioHandler:
     def carregar_repasses_mo(self, arquivo_excel):
         return self._carregar_repasses(arquivo_excel, 'REPASSES_MO')
     
-    def calcular_saldo_mao_de_obra(self, df_repasses, df_dados, data_relatorio, incluir_excluidos=False):
+    def calcular_saldo_mao_de_obra(self, df_repasses, df_dados, data_relatorio,
+                                    incluir_excluidos=False, arquivo_excel=None):
         # tp_desp_filtro=None: soma QUALQUER lançamento do arquivo fictício,
         # não só TP_DESP=1. O arquivo fictício existe só para administrar
         # esse repasse, então tudo que for lançado nele conta no saldo.
+        # O corte de histórico é automático - ver _calcular_saldo_generico.
+        # arquivo_excel fica no parâmetro por simetria com calcular_saldo_caixa
+        # e para uso futuro, mas não é usado aqui hoje.
         return self._calcular_saldo_generico(
-            df_repasses, df_dados, data_relatorio, tp_desp_filtro=None, incluir_excluidos=incluir_excluidos
+            df_repasses, df_dados, data_relatorio, tp_desp_filtro=None,
+            incluir_excluidos=incluir_excluidos
         )
     
     def criar_bloco_saldo_mao_de_obra(self, saldo):
@@ -1340,26 +1407,104 @@ class RelatorioHandler:
     
     
     # ------------------------------------------------------------
-    # CAIXA DE OBRA - NOVOS wrappers publicos (mesmo padrao, TP_DESP=6)
+    # CAIXA DE OBRA - NOVOS wrappers publicos (mesmo padrao, TP_DESP=6
+    # por padrao, mas configuravel por cliente - ver abaixo)
     # ------------------------------------------------------------
     
     def eh_cliente_com_caixa(self, arquivo_excel):
         return self._cliente_tem_aba(arquivo_excel, 'REPASSES_CAIXA')
-    
+
+    def _obter_tipos_despesa_caixa(self, arquivo_excel):
+        """
+        Le quais TP_DESP contam no saldo de Caixa de Obra DESTE cliente
+        especifico. Guardado na propria aba REPASSES_CAIXA do arquivo do
+        cliente (celula G1), nao num cadastro central - assim, mudar isso
+        para um cliente nunca afeta nenhum outro (mesmo principio de
+        eh_cliente_com_caixa: cada arquivo se autodescreve).
+
+        Padrao (celula vazia ou aba sem essa configuracao ainda): [6]
+        - so Pagamentos Caixa de Obra, comportamento historico, sem
+        mudanca para nenhum cliente que ja usa a ferramenta hoje.
+
+        Alguns clientes enviam um aporte que ja cobre, alem da Caixa de
+        Obra, as despesas tipo 1 (mao de obra), 2 (transferencias),
+        3 (boletos) e 4 (ressarcimentos) da quinzena - para esses,
+        definir_escopo_caixa grava "1,2,3,4,6" nessa celula.
+        """
+        try:
+            wb = load_workbook(arquivo_excel, read_only=True, data_only=True)
+            if 'REPASSES_CAIXA' not in wb.sheetnames:
+                wb.close()
+                return [6]
+
+            valor_config = wb['REPASSES_CAIXA']['G1'].value
+            wb.close()
+
+            if not valor_config or not str(valor_config).strip():
+                return [6]
+
+            tipos = [int(t.strip()) for t in str(valor_config).split(',') if t.strip()]
+            return tipos if tipos else [6]
+
+        except Exception as e:
+            logger.warning(f"Não foi possível ler o escopo de despesas do caixa ({e}); usando padrão [6].")
+            return [6]
+
+    def definir_escopo_caixa(self, arquivo_excel, incluir_despesas_1234=False):
+        """
+        Define se o Caixa de Obra deste cliente cobre so TP_DESP=6
+        (padrao, incluir_despesas_1234=False) ou tambem os tipos 1, 2, 3
+        e 4 (incluir_despesas_1234=True) - para o caso de clientes cujo
+        aporte ja e enviado cobrindo a quinzena inteira, nao so a Caixa.
+
+        So afeta o arquivo deste cliente. Requer que a aba REPASSES_CAIXA
+        ja exista (cliente precisa ja estar marcado como "tem caixa").
+        """
+        wb = load_workbook(arquivo_excel)
+
+        if 'REPASSES_CAIXA' not in wb.sheetnames:
+            wb.close()
+            raise ValueError(
+                "Este cliente ainda não tem a aba REPASSES_CAIXA "
+                "(marque 'possui caixa de obra controlado' antes)."
+            )
+
+        ws = wb['REPASSES_CAIXA']
+        ws['G1'] = '1,2,3,4,6' if incluir_despesas_1234 else ''
+
+        wb.save(arquivo_excel)
+        wb.close()
+        logger.info(
+            f"Escopo do Caixa de Obra atualizado em {arquivo_excel}: "
+            f"{'inclui despesas 1,2,3,4' if incluir_despesas_1234 else 'padrão (só TP_DESP=6)'}"
+        )
+
     def carregar_repasses_caixa(self, arquivo_excel):
         return self._carregar_repasses(arquivo_excel, 'REPASSES_CAIXA')
     
-    def calcular_saldo_caixa(self, df_repasses, df_dados, data_relatorio, incluir_excluidos=False):
+    def calcular_saldo_caixa(self, df_repasses, df_dados, data_relatorio,
+                              incluir_excluidos=False, arquivo_excel=None):
+        # Se arquivo_excel for informado, respeita o escopo configurado
+        # para ESSE cliente (ver _obter_tipos_despesa_caixa). Sem
+        # arquivo_excel (uso antigo/retrocompatível), mantém o padrão [6].
+        # O corte de histórico é automático (1º repasse) - ver
+        # _calcular_saldo_generico - não depende de arquivo_excel.
+        tipos = self._obter_tipos_despesa_caixa(arquivo_excel) if arquivo_excel else [6]
         return self._calcular_saldo_generico(
-            df_repasses, df_dados, data_relatorio, tp_desp_filtro=6, incluir_excluidos=incluir_excluidos
+            df_repasses, df_dados, data_relatorio, tp_desp_filtro=tipos,
+            incluir_excluidos=incluir_excluidos
         )
     
-    def criar_bloco_saldo_caixa(self, saldo):
+    def criar_bloco_saldo_caixa(self, saldo, escopo_ampliado=False):
+        label_debito = (
+            "(-) DESPESAS CUSTEADAS PELO CAIXA NO PERÍODO" if escopo_ampliado
+            else "(-) PAGAMENTOS CAIXA DE OBRA NO PERÍODO"
+        )
         return self._criar_bloco_saldo(
             saldo,
             titulo="CONTROLE DE SALDO - CAIXA DE OBRA",
             label_credito="(+) APORTE RECEBIDO NO PERÍODO",
-            label_debito="(-) PAGAMENTOS CAIXA DE OBRA NO PERÍODO",
+            label_debito=label_debito,
         )
     
     def registrar_repasse_caixa(self, arquivo_excel, valor, data_repasse, referencia=''):
@@ -3071,8 +3216,6 @@ class RelatorioHandler:
                 colWidths=[400, 60, 280]
             )
         
-            elementos.append(tabela_resumo)
-            
             saldo_mo = None
             saldo_caixa = None
             bloco_mo, aviso_mo = None, None
@@ -3083,7 +3226,8 @@ class RelatorioHandler:
                     self.carregar_repasses_mo(arquivo_excel),
                     dados_pdf.get('df_original'),
                     dados_pdf.get('data_relatorio'),
-                    dados_pdf.get('incluir_excluidos', False)
+                    dados_pdf.get('incluir_excluidos', False),
+                    arquivo_excel=arquivo_excel
                 )
                 bloco_mo, aviso_mo = self.criar_bloco_saldo_mao_de_obra(saldo_mo)
         
@@ -3092,9 +3236,11 @@ class RelatorioHandler:
                     self.carregar_repasses_caixa(arquivo_excel),
                     dados_pdf.get('df_original'),
                     dados_pdf.get('data_relatorio'),
-                    dados_pdf.get('incluir_excluidos', False)
+                    dados_pdf.get('incluir_excluidos', False),
+                    arquivo_excel=arquivo_excel
                 )
-                bloco_caixa, aviso_caixa = self.criar_bloco_saldo_caixa(saldo_caixa)
+                escopo_ampliado = len(self._obter_tipos_despesa_caixa(arquivo_excel)) > 1
+                bloco_caixa, aviso_caixa = self.criar_bloco_saldo_caixa(saldo_caixa, escopo_ampliado=escopo_ampliado)
         
             # Monta a lista de blocos que se aplicam (0, 1 ou 2), empilhados
             # verticalmente se os dois se aplicarem (caso raro)
@@ -3122,8 +3268,17 @@ class RelatorioHandler:
                 tabela_saldo_alinhada.setStyle(TableStyle([
                     ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                 ]))
-                elementos.append(Spacer(1, 10))
-                elementos.append(tabela_saldo_alinhada)
+                # KeepTogether: resumo + bloco de saldo sempre na MESMA
+                # página, nunca separados. O bloco de saldo já foi
+                # deixado compacto (ver _criar_bloco_saldo) para caber
+                # nessa página junto com o resumo.
+                elementos.append(KeepTogether([
+                    tabela_resumo,
+                    Spacer(1, 10),
+                    tabela_saldo_alinhada,
+                ]))
+            else:
+                elementos.append(tabela_resumo)
 
             # ⭐ ADICIONAR NOTAS NA PRIMEIRA PÁGINA (após o resumo) ⭐
             self.adicionar_notas(elementos, dados, incluir_quebra_pagina=False)
