@@ -1374,7 +1374,15 @@ class SistemaRelatorios:
             text="",
             font=('Arial', 10, 'bold')
         )
-        self.label_saldo_mo.pack(anchor='w', padx=10, pady=(10, 5))
+        self.label_saldo_mo.pack(anchor='w', padx=10, pady=(10, 0))
+
+        self.label_corte_mo = ttk.Label(
+            self.frame_repasse_mo,
+            text="",
+            font=('Arial', 8, 'italic'),
+            foreground='gray'
+        )
+        self.label_corte_mo.pack(anchor='w', padx=10, pady=(0, 5))
  
         ttk.Button(
             self.frame_repasse_mo,
@@ -1395,12 +1403,33 @@ class SistemaRelatorios:
             text="",
             font=('Arial', 10, 'bold')
         )
-        self.label_saldo_caixa.pack(anchor='w', padx=10, pady=(10, 5))
+        self.label_saldo_caixa.pack(anchor='w', padx=10, pady=(10, 0))
+
+        self.label_corte_caixa = ttk.Label(
+            self.frame_repasse_caixa,
+            text="",
+            font=('Arial', 8, 'italic'),
+            foreground='gray'
+        )
+        self.label_corte_caixa.pack(anchor='w', padx=10, pady=(0, 5))
 
         ttk.Button(
             self.frame_repasse_caixa,
             text="➕ Registrar novo aporte",
             command=self.abrir_janela_registrar_aporte_caixa
+        ).pack(anchor='w', padx=10, pady=(0, 5))
+
+        # Checkbox de escopo: alguns clientes enviam o aporte já cobrindo
+        # a quinzena inteira (tipos 1, 2, 3, 4), não só a Caixa de Obra
+        # (tipo 6). Isso é configurável por cliente - marcar aqui só afeta
+        # o cliente selecionado no momento (fica gravado no arquivo dele).
+        self.escopo_caixa_ampliado_var = tk.BooleanVar(master=self.root, value=False)
+
+        ttk.Checkbutton(
+            self.frame_repasse_caixa,
+            text="Aporte também cobre despesas tipo 1, 2, 3 e 4 (não só a Caixa)",
+            variable=self.escopo_caixa_ampliado_var,
+            command=self.alternar_escopo_caixa_ampliado
         ).pack(anchor='w', padx=10, pady=(0, 10))
 
         # === OPÇÕES DE PROCESSAMENTO ===
@@ -1766,7 +1795,7 @@ class SistemaRelatorios:
             df_dados = handler.carregar_dados_excel(arquivo, incluir_excluidos=False)
             data_ref = self.obter_data_relatorio_final()
             saldo = handler.calcular_saldo_mao_de_obra(
-                df_repasses, df_dados, data_ref, incluir_excluidos=False
+                df_repasses, df_dados, data_ref, incluir_excluidos=False, arquivo_excel=arquivo
             )
  
             valor_formatado = handler.formatar_numero(saldo['saldo_atual'])
@@ -1782,6 +1811,16 @@ class SistemaRelatorios:
                 text=f"💰 Saldo atual (mão de obra): R$ {valor_formatado}",
                 foreground=cor
             )
+
+            # Data de início do controle é automática (data do 1º repasse
+            # já registrado) - só exibe como informação, não é editável.
+            if df_repasses is not None and not df_repasses.empty:
+                primeira_data = df_repasses['DATA_REPASSE'].min()
+                self.label_corte_mo.config(
+                    text=f"(considerando lançamentos a partir de {primeira_data.strftime('%d/%m/%Y')}, 1º repasse)"
+                )
+            else:
+                self.label_corte_mo.config(text="")
  
             self.frame_repasse_mo.pack(fill='x', pady=(10, 0))
  
@@ -1929,8 +1968,14 @@ class SistemaRelatorios:
             df_dados = handler.carregar_dados_excel(arquivo, incluir_excluidos=False)
             data_ref = self.obter_data_relatorio_final()
             saldo = handler.calcular_saldo_caixa(
-                df_repasses, df_dados, data_ref, incluir_excluidos=False
+                df_repasses, df_dados, data_ref, incluir_excluidos=False, arquivo_excel=arquivo
             )
+
+            # Carrega o estado atual do escopo (sem disparar o callback de
+            # salvar - .set() programático não aciona o command do Checkbutton)
+            if hasattr(self, 'escopo_caixa_ampliado_var'):
+                tipos_atuais = handler._obter_tipos_despesa_caixa(arquivo)
+                self.escopo_caixa_ampliado_var.set(len(tipos_atuais) > 1)
 
             valor_formatado = handler.formatar_numero(saldo['saldo_atual'])
 
@@ -1946,11 +1991,51 @@ class SistemaRelatorios:
                 foreground=cor
             )
 
+            data_inicio_controle = (
+                df_repasses['DATA_REPASSE'].min()
+                if df_repasses is not None and not df_repasses.empty else None
+            )
+            if data_inicio_controle is not None:
+                self.label_corte_caixa.config(
+                    text=f"(considerando lançamentos a partir de {data_inicio_controle.strftime('%d/%m/%Y')}, 1º aporte)"
+                )
+            else:
+                self.label_corte_caixa.config(text="")
+
             self.frame_repasse_caixa.pack(fill='x', pady=(10, 0))
 
         except Exception as e:
             logger.warning(f"Não foi possível calcular saldo de caixa de obra: {e}")
             self.frame_repasse_caixa.pack_forget()
+
+    def alternar_escopo_caixa_ampliado(self):
+        """
+        Chamado quando o usuário marca/desmarca "Aporte também cobre
+        despesas tipo 1, 2, 3 e 4" para o cliente selecionado. Grava a
+        configuração no arquivo DESSE cliente (não afeta nenhum outro) e
+        recalcula o painel na hora, já refletindo a mudança.
+        """
+        arquivo = getattr(self, 'arquivo_cliente_selecionado', None)
+        if not arquivo or not os.path.exists(arquivo):
+            return
+
+        novo_valor = self.escopo_caixa_ampliado_var.get()
+
+        try:
+            self.despesas_service.handler.definir_escopo_caixa(
+                arquivo, incluir_despesas_1234=novo_valor
+            )
+            logger.info(
+                f"Escopo do Caixa de Obra alterado para "
+                f"{'ampliado (1,2,3,4,6)' if novo_valor else 'padrão (6)'}: {arquivo}"
+            )
+            self.atualizar_painel_saldo_caixa()
+
+        except Exception as e:
+            logger.error(f"Erro ao alterar escopo do caixa: {str(e)}", exc_info=True)
+            messagebox.showerror("Erro", f"Não foi possível salvar essa configuração:\n{str(e)}")
+            # Reverte o checkbox visualmente já que a gravação falhou
+            self.escopo_caixa_ampliado_var.set(not novo_valor)
 
     def abrir_janela_registrar_aporte_caixa(self):
         """
