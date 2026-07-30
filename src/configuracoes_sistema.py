@@ -281,7 +281,7 @@ class GerenciadorConfiguracoes:
     def __init__(self, parent=None):
         self.root = tk.Toplevel(parent) if parent else tk.Tk()
         self.root.title("Configurações do Sistema")
-        self.root.geometry("990x950")
+        self.root.geometry("990x980")
         
         # ═══════════════════════════════════════════════════════════════
         # CORREÇÃO MINIMALISTA: Manter janela visível sem roubar foco
@@ -1218,6 +1218,14 @@ class GerenciadorConfiguracoes:
         self.campos_editar['recorrencia'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='ew')
         row_edit += 1
         
+        # Tipo de despesa
+        ttk.Label(frame_editar, text="Tipo Despesa:").grid(row=row_edit, column=0, padx=5, pady=3, sticky='w')
+        self.campos_editar['tipo_despesa'] = ttk.Combobox(frame_editar,
+                                                        values=['2', '3', '5', '6'],
+                                                        state='readonly', width=10)
+        self.campos_editar['tipo_despesa'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='w')
+        row_edit += 1
+        
         # Campos novos de edição
         ttk.Label(frame_editar, text="Mês Ref.:").grid(row=row_edit, column=0, padx=5, pady=3, sticky='w')
         self.campos_editar['mes_referencia'] = ttk.Combobox(frame_editar,
@@ -1481,6 +1489,10 @@ class GerenciadorConfiguracoes:
             
             self.campos_editar['recorrencia'].set(compromisso['recorrencia'])
             
+            # Tipo de despesa
+            tipo_despesa = compromisso.get('tipo_despesa', 3)
+            self.campos_editar['tipo_despesa'].set(str(tipo_despesa))
+            
             # NOVOS CAMPOS
             # Mês de referência
             mes_ref = compromisso.get('mes_referencia')
@@ -1533,6 +1545,7 @@ class GerenciadorConfiguracoes:
             novo_nome = self.campos_editar['nome'].get().strip().upper()
             novo_dia = int(self.campos_editar['dia_vencimento'].get())
             nova_recorrencia = self.campos_editar['recorrencia'].get()
+            novo_tipo_despesa = int(self.campos_editar['tipo_despesa'].get())
             
             # Processar mês de referência
             novo_mes_ref = None
@@ -1571,6 +1584,7 @@ class GerenciadorConfiguracoes:
                     comp['nome'] = novo_nome
                     comp['dia_vencimento'] = novo_dia
                     comp['recorrencia'] = nova_recorrencia
+                    comp['tipo_despesa'] = novo_tipo_despesa
                     comp['valor_estimado'] = novo_valor
                     comp['mes_referencia'] = novo_mes_ref  # NOVO
                     comp['meses_ocorrencias'] = novos_meses_ocorr  # NOVO
