@@ -14345,3 +14345,579 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-07-30 17:22:22,359 - INFO - Sistema iniciado em modo: TESTE
 2026-07-30 17:22:24,292 - INFO - Abrindo sistema de relatórios
 2026-07-30 17:31:39,384 - INFO - Sistema encerrado pelo usuário
+2026-07-31 09:12:46,579 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 09:12:46,676 - INFO - Configurações importadas com sucesso
+2026-07-31 09:12:46,694 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 09:12:49,337 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 09:13:27,262 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 09:13:28,826 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 09:13:29,092 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 09:13:31,161 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 09:13:40,046 - INFO - ==================================================
+2026-07-31 09:13:40,046 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 09:13:40,047 - INFO - ==================================================
+2026-07-31 09:13:40,048 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-31 09:13:41,225 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 09:13:41,226 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-31 09:13:41,227 - INFO - Campos preenchidos com sucesso!
+2026-07-31 09:13:41,229 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-31 09:13:41,231 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 09:13:41,231 - INFO - ==================================================
+2026-07-31 09:18:45,110 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 09:38:18,122 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 09:38:18,151 - INFO - Configurações importadas com sucesso
+2026-07-31 09:38:18,151 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 09:38:20,664 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 09:39:38,435 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 09:39:40,697 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 09:39:40,969 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 09:39:43,604 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 09:39:52,251 - INFO - ==================================================
+2026-07-31 09:39:52,252 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 09:39:52,252 - INFO - ==================================================
+2026-07-31 09:39:52,253 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-31 09:39:53,612 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 09:39:53,613 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-31 09:39:53,615 - INFO - Campos preenchidos com sucesso!
+2026-07-31 09:39:53,615 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-31 09:39:53,618 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 09:39:53,618 - INFO - ==================================================
+2026-07-31 09:55:33,715 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 09:55:33,741 - INFO - Configurações importadas com sucesso
+2026-07-31 09:55:33,743 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 09:55:34,797 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 09:55:37,269 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 09:55:39,316 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 09:55:39,595 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 09:55:41,844 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 09:55:50,590 - INFO - ==================================================
+2026-07-31 09:55:50,591 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 09:55:50,591 - INFO - ==================================================
+2026-07-31 09:55:50,592 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-31 09:55:51,765 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 09:55:51,766 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-31 09:55:51,768 - INFO - Campos preenchidos com sucesso!
+2026-07-31 09:55:51,769 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-31 09:55:51,771 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 09:55:51,772 - INFO - ==================================================
+2026-07-31 09:56:28,108 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 09:56:59,292 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 09:56:59,310 - INFO - Configurações importadas com sucesso
+2026-07-31 09:56:59,310 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 09:57:00,173 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 09:58:26,292 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 09:58:28,214 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 09:58:28,601 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 09:58:30,352 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 09:58:41,092 - INFO - ==================================================
+2026-07-31 09:58:41,092 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 09:58:41,093 - INFO - ==================================================
+2026-07-31 09:58:41,094 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-31 09:58:42,283 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 09:58:42,283 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-31 09:58:42,286 - INFO - Campos preenchidos com sucesso!
+2026-07-31 09:58:42,287 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-31 09:58:42,290 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 09:58:42,290 - INFO - ==================================================
+2026-07-31 10:09:24,221 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 10:10:32,380 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 10:10:32,400 - INFO - Configurações importadas com sucesso
+2026-07-31 10:10:32,401 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 10:10:33,548 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 10:12:04,814 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 10:12:07,084 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 10:12:07,335 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 10:12:09,757 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 10:12:37,614 - INFO - ==================================================
+2026-07-31 10:12:37,615 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 10:12:37,615 - INFO - ==================================================
+2026-07-31 10:12:37,616 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-31 10:12:38,822 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 10:12:38,823 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-31 10:12:38,825 - INFO - Campos preenchidos com sucesso!
+2026-07-31 10:12:38,826 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-31 10:12:38,828 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 10:12:38,829 - INFO - ==================================================
+2026-07-31 10:16:09,340 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 10:39:42,413 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 10:39:42,453 - INFO - Configurações importadas com sucesso
+2026-07-31 10:39:42,457 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 10:39:45,515 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 10:40:46,587 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 10:40:48,657 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 10:40:48,920 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 10:40:51,194 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 10:41:05,922 - INFO - ==================================================
+2026-07-31 10:41:05,923 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 10:41:05,924 - INFO - ==================================================
+2026-07-31 10:41:05,924 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-31 10:41:07,101 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 10:41:07,102 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-31 10:41:07,103 - INFO - Campos preenchidos com sucesso!
+2026-07-31 10:41:07,104 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-31 10:41:07,107 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 10:41:07,107 - INFO - ==================================================
+2026-07-31 10:43:37,985 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-07-31 10:43:37,987 - INFO - ✅ Dados adicionados - Total: 1
+2026-07-31 10:43:39,237 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 10:43:40,818 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2026-07-31 10:43:42,537 - INFO - ==================================================
+2026-07-31 10:43:42,538 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 10:43:42,538 - INFO - ==================================================
+2026-07-31 10:43:42,539 - INFO - Fornecedor: CASA FERREIRA GONÇALVES
+2026-07-31 10:43:43,873 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 10:43:43,873 - INFO - Dados carregados: CASA FERREIRA GONÇALVES
+2026-07-31 10:43:43,874 - INFO - Campos preenchidos com sucesso!
+2026-07-31 10:43:43,875 - INFO - ✓ Referência preenchida: MATERIAL HIDRÁULICO
+2026-07-31 10:43:43,877 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 10:43:43,878 - INFO - ==================================================
+2026-07-31 10:45:13,638 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 180!
+2026-07-31 10:45:28,469 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2026-07-31 10:45:28,471 - INFO - Usando dados_para_incluir existentes
+2026-07-31 10:45:28,471 - INFO - Total de registros a processar: 1
+2026-07-31 10:45:28,473 - INFO - Datas que serão afetadas pela inserção: ['05/08/2026']
+2026-07-31 10:45:28,474 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2026-07-31 10:45:28,475 - INFO - Verificando integridade dos IDs antes da inserção
+2026-07-31 10:45:29,729 - INFO - 📋 Processando lançamento 1/1: CASA FERREIRA GONÇALVES - MATERIAL HIDRÁULICO
+2026-07-31 10:45:29,732 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 10:45:29,732 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 10:45:29,733 - INFO - Dados: CASA FERREIRA GONÇALVES | MATERIAL HIDRÁULICO | NF: 12345 | R$ 1560.00 | 06/08/2026
+2026-07-31 10:45:29,750 - INFO - ✅ Nenhuma duplicata para: CASA FERREIRA GONÇALVES - MATERIAL HIDRÁULICO
+2026-07-31 10:45:29,750 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-31 10:45:29,751 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-07-31 10:45:29,751 - INFO -    ✅ Lançamentos válidos: 1
+2026-07-31 10:45:29,752 - INFO -    ❌ Possíveis duplicatas: 0
+2026-07-31 10:45:29,753 - INFO - Lançamento inserido com ID 245 na linha 239
+2026-07-31 10:45:30,441 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-07-31 10:45:47,432 - INFO - Limpando 1 registros salvos da visualização
+2026-07-31 10:45:47,434 - INFO - Dados salvos removidos com sucesso da visualização
+2026-07-31 10:45:47,435 - INFO - Voltando ao menu principal
+2026-07-31 10:45:47,540 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-31 10:45:47,540 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-31 10:45:47,677 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-31 10:45:49,249 - INFO - Abrindo configurações do sistema
+2026-07-31 10:46:02,600 - INFO - Sistema encerrado pelo usuário
+2026-07-31 11:22:34,706 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 11:22:34,748 - INFO - Configurações importadas com sucesso
+2026-07-31 11:22:34,751 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 11:22:36,812 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 11:22:39,298 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 11:22:42,786 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 11:22:43,622 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 11:22:45,329 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 11:22:59,881 - INFO - ==================================================
+2026-07-31 11:22:59,882 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 11:22:59,882 - INFO - ==================================================
+2026-07-31 11:22:59,883 - INFO - Fornecedor: LOJA ELETRICA LTDA
+2026-07-31 11:23:01,085 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 661!
+2026-07-31 11:23:01,085 - INFO - Dados carregados: LOJA ELETRICA LTDA
+2026-07-31 11:23:01,086 - INFO - Campos preenchidos com sucesso!
+2026-07-31 11:23:01,087 - INFO - ✓ Referência preenchida: MATERIAL ELÉTRICO
+2026-07-31 11:23:01,090 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 11:23:01,090 - INFO - ==================================================
+2026-07-31 12:01:27,638 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 661!
+2026-07-31 12:05:03,791 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 12:05:03,834 - INFO - Configurações importadas com sucesso
+2026-07-31 12:05:03,835 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 12:05:05,808 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 12:06:13,768 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 12:06:15,736 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 12:06:16,111 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 12:06:20,487 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 12:06:29,856 - INFO - ==================================================
+2026-07-31 12:06:29,856 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 12:06:29,857 - INFO - ==================================================
+2026-07-31 12:06:29,858 - INFO - Fornecedor: LOJA ELETRICA LTDA
+2026-07-31 12:06:31,057 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 661!
+2026-07-31 12:06:31,057 - INFO - Dados carregados: LOJA ELETRICA LTDA
+2026-07-31 12:06:31,058 - INFO - Campos preenchidos com sucesso!
+2026-07-31 12:06:31,060 - INFO - ✓ Referência preenchida: MATERIAL ELÉTRICO
+2026-07-31 12:06:31,062 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 12:06:31,062 - INFO - ==================================================
+2026-07-31 12:25:24,143 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 661!
+2026-07-31 12:26:20,326 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 12:26:20,357 - INFO - Configurações importadas com sucesso
+2026-07-31 12:26:20,360 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 12:26:22,011 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 12:29:06,719 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 12:29:08,589 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 12:29:09,100 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 12:29:12,414 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 12:29:20,183 - INFO - ==================================================
+2026-07-31 12:29:20,183 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 12:29:20,184 - INFO - ==================================================
+2026-07-31 12:29:20,184 - INFO - Fornecedor: LOJA ELETRICA LTDA
+2026-07-31 12:29:21,368 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 661!
+2026-07-31 12:29:21,369 - INFO - Dados carregados: LOJA ELETRICA LTDA
+2026-07-31 12:29:21,370 - INFO - Campos preenchidos com sucesso!
+2026-07-31 12:29:21,372 - INFO - ✓ Referência preenchida: MATERIAL ELÉTRICO
+2026-07-31 12:29:21,374 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 12:29:21,375 - INFO - ==================================================
+2026-07-31 12:35:28,532 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 661!
+2026-07-31 12:41:41,892 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 12:41:41,914 - INFO - Configurações importadas com sucesso
+2026-07-31 12:41:41,914 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 12:41:42,958 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 12:42:50,162 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 12:42:52,081 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 12:42:52,471 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 12:42:55,017 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 12:43:02,889 - INFO - ==================================================
+2026-07-31 12:43:02,889 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 12:43:02,890 - INFO - ==================================================
+2026-07-31 12:43:02,891 - INFO - Fornecedor: LOJA ELETRICA LTDA
+2026-07-31 12:43:04,068 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 661!
+2026-07-31 12:43:04,069 - INFO - Dados carregados: LOJA ELETRICA LTDA
+2026-07-31 12:43:04,070 - INFO - Campos preenchidos com sucesso!
+2026-07-31 12:43:04,071 - INFO - ✓ Referência preenchida: MATERIAL ELÉTRICO
+2026-07-31 12:43:04,073 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 12:43:04,074 - INFO - ==================================================
+2026-07-31 12:51:10,073 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 661!
+2026-07-31 12:51:56,432 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 12:51:56,507 - INFO - Configurações importadas com sucesso
+2026-07-31 12:51:56,509 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 12:51:57,926 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 12:52:00,622 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 12:52:02,916 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 12:52:03,174 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 12:52:05,437 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 12:52:28,333 - INFO - ==================================================
+2026-07-31 12:52:28,334 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 12:52:28,334 - INFO - ==================================================
+2026-07-31 12:52:28,335 - INFO - Fornecedor: A. DE ARTE
+2026-07-31 12:52:29,541 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 2!
+2026-07-31 12:52:29,541 - INFO - Dados carregados: A. DE ARTE
+2026-07-31 12:52:30,724 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 2!
+2026-07-31 12:52:30,725 - INFO - Campos preenchidos com sucesso!
+2026-07-31 12:52:30,727 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 12:52:30,729 - INFO - ==================================================
+2026-07-31 12:58:43,070 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 2!
+2026-07-31 13:59:47,972 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 13:59:48,013 - INFO - Configurações importadas com sucesso
+2026-07-31 13:59:48,013 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 13:59:50,197 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 14:01:58,337 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 14:02:00,491 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 14:02:00,753 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 14:02:03,000 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 14:03:47,274 - INFO - ✅ Edição do lançamento ID 241 salva com sucesso
+2026-07-31 14:04:33,773 - INFO - ✅ Lançamento ID 246 inserido na linha 240
+2026-07-31 14:04:34,141 - INFO - ✅ Arquivo salvo
+2026-07-31 14:22:02,471 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 14:22:02,501 - INFO - Configurações importadas com sucesso
+2026-07-31 14:22:02,501 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 14:22:04,204 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 14:22:05,545 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 14:22:07,861 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 14:22:08,163 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 14:22:10,296 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 14:22:24,785 - INFO - ==================================================
+2026-07-31 14:22:24,785 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-07-31 14:22:24,786 - INFO - ==================================================
+2026-07-31 14:22:24,786 - INFO - Fornecedor: ARCELORMITTAL BRASIL
+2026-07-31 14:22:25,983 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 86!
+2026-07-31 14:22:25,983 - INFO - Dados carregados: ARCELORMITTAL BRASIL
+2026-07-31 14:22:25,984 - INFO - Campos preenchidos com sucesso!
+2026-07-31 14:22:25,986 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-07-31 14:22:25,987 - INFO - ==================================================
+2026-07-31 14:27:19,460 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 86!
+2026-07-31 14:59:39,138 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 14:59:39,165 - INFO - Configurações importadas com sucesso
+2026-07-31 14:59:39,166 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 14:59:40,471 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 15:00:49,033 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 15:00:50,554 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 15:00:50,814 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 15:00:53,225 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-07-31 16:37:01,340 - INFO - ============================================================
+2026-07-31 16:37:01,366 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-07-31 16:37:01,368 - INFO - ============================================================
+2026-07-31 16:37:01,368 - INFO - Cliente atual: BRUNO SANTANA RINALDI
+2026-07-31 16:37:01,369 - INFO - Dados disponíveis: 10 lançamento(s)
+2026-07-31 16:37:01,369 - INFO - 📋 Últimos 3 lançamentos:
+2026-07-31 16:37:01,372 - INFO -   1. WELLINGTON GOMES PAIVA - DIÁRIA - R$ 1250.00
+2026-07-31 16:37:01,373 - INFO -   2. ITALO RAFAEL PINHO SANTOS - DIÁRIA - R$ 1080.00
+2026-07-31 16:37:01,375 - INFO -   3. ISNALDO GONÇALVES DE SOUZA - DIÁRIA - R$ 1250.00
+2026-07-31 16:37:01,376 - INFO - 🆕 Criando novo visualizador
+2026-07-31 16:37:01,380 - INFO - 🔍 Visualizador iniciado com 10 lançamentos
+2026-07-31 16:37:01,682 - INFO - ✅ Visualizador criado com 10 lançamento(s)
+2026-07-31 16:37:01,684 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-07-31 16:37:01,684 - INFO - ============================================================
+2026-07-31 16:37:07,502 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 10
+2026-07-31 16:37:07,511 - INFO - Obtendo dados do visualizador
+2026-07-31 16:37:07,512 - INFO - Total de registros a processar: 10
+2026-07-31 16:37:07,542 - INFO - Datas que serão afetadas pela inserção: ['05/08/2026']
+2026-07-31 16:37:07,543 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2026-07-31 16:37:07,546 - INFO - Verificando integridade dos IDs antes da inserção
+2026-07-31 16:37:08,579 - INFO - 📋 Processando lançamento 1/10: JEAN ALESI DA SILVA - DIÁRIA
+2026-07-31 16:37:08,581 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,581 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,582 - INFO - Dados: JEAN ALESI DA SILVA | DIÁRIA | NF:  | R$ 2280.00 | 06/07/2026
+2026-07-31 16:37:08,599 - WARNING - 🚨 DUPLICATA DETECTADA (Referência Exata)!
+2026-07-31 16:37:08,599 - WARNING -    Linha: 221
+2026-07-31 16:37:08,600 - WARNING -    ❌ Marcado como DUPLICATA
+2026-07-31 16:37:08,600 - INFO - 📋 Processando lançamento 2/10: JOAO BATISTA DA SILVA - DIÁRIA
+2026-07-31 16:37:08,601 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,601 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,601 - INFO - Dados: JOAO BATISTA DA SILVA | DIÁRIA | NF:  | R$ 1500.00 | 06/07/2026
+2026-07-31 16:37:08,617 - WARNING - 🚨 DUPLICATA DETECTADA (Referência Exata)!
+2026-07-31 16:37:08,618 - WARNING -    Linha: 222
+2026-07-31 16:37:08,618 - WARNING -    ❌ Marcado como DUPLICATA
+2026-07-31 16:37:08,618 - INFO - 📋 Processando lançamento 3/10: MATEUS HENRIQUE RODRIGUES - DIÁRIA
+2026-07-31 16:37:08,619 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,619 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,619 - INFO - Dados: MATEUS HENRIQUE RODRIGUES | DIÁRIA | NF:  | R$ 1080.00 | 06/07/2026
+2026-07-31 16:37:08,633 - WARNING - 🚨 DUPLICATA DETECTADA (Referência Exata)!
+2026-07-31 16:37:08,634 - WARNING -    Linha: 223
+2026-07-31 16:37:08,634 - WARNING -    ❌ Marcado como DUPLICATA
+2026-07-31 16:37:08,635 - INFO - 📋 Processando lançamento 4/10: IZAEL BISPO SILVA OLIVEIRA - DIÁRIA
+2026-07-31 16:37:08,635 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,636 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,636 - INFO - Dados: IZAEL BISPO SILVA OLIVEIRA | DIÁRIA | NF:  | R$ 1250.00 | 06/07/2026
+2026-07-31 16:37:08,656 - WARNING - 🚨 DUPLICATA DETECTADA (Referência Exata)!
+2026-07-31 16:37:08,657 - WARNING -    Linha: 224
+2026-07-31 16:37:08,658 - WARNING -    ❌ Marcado como DUPLICATA
+2026-07-31 16:37:08,659 - INFO - 📋 Processando lançamento 5/10: FRANCISCO FERREIRA DOS SANTOS - DIÁRIA
+2026-07-31 16:37:08,659 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,660 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,661 - INFO - Dados: FRANCISCO FERREIRA DOS SANTOS | DIÁRIA | NF:  | R$ 1250.00 | 06/07/2026
+2026-07-31 16:37:08,676 - WARNING - 🚨 DUPLICATA DETECTADA (Referência Exata)!
+2026-07-31 16:37:08,677 - WARNING -    Linha: 225
+2026-07-31 16:37:08,677 - WARNING -    ❌ Marcado como DUPLICATA
+2026-07-31 16:37:08,678 - INFO - 📋 Processando lançamento 6/10: JESUSMAR MELQUIADES DA CRUZ - DIÁRIA
+2026-07-31 16:37:08,678 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,679 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,679 - INFO - Dados: JESUSMAR MELQUIADES DA CRUZ | DIÁRIA | NF:  | R$ 1500.00 | 06/07/2026
+2026-07-31 16:37:08,692 - WARNING - 🚨 DUPLICATA DETECTADA (Referência Exata)!
+2026-07-31 16:37:08,693 - WARNING -    Linha: 226
+2026-07-31 16:37:08,694 - WARNING -    ❌ Marcado como DUPLICATA
+2026-07-31 16:37:08,694 - INFO - 📋 Processando lançamento 7/10: ADAILSON SILVA NOVAIS - DIÁRIA
+2026-07-31 16:37:08,695 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,695 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,696 - INFO - Dados: ADAILSON SILVA NOVAIS | DIÁRIA | NF:  | R$ 1500.00 | 06/07/2026
+2026-07-31 16:37:08,709 - WARNING - 🚨 DUPLICATA DETECTADA (Referência Exata)!
+2026-07-31 16:37:08,710 - WARNING -    Linha: 227
+2026-07-31 16:37:08,710 - WARNING -    ❌ Marcado como DUPLICATA
+2026-07-31 16:37:08,711 - INFO - 📋 Processando lançamento 8/10: WELLINGTON GOMES PAIVA - DIÁRIA
+2026-07-31 16:37:08,711 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,711 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,712 - INFO - Dados: WELLINGTON GOMES PAIVA | DIÁRIA | NF:  | R$ 1250.00 | 06/07/2026
+2026-07-31 16:37:08,725 - WARNING - 🚨 DUPLICATA DETECTADA (Referência Exata)!
+2026-07-31 16:37:08,726 - WARNING -    Linha: 228
+2026-07-31 16:37:08,726 - WARNING -    ❌ Marcado como DUPLICATA
+2026-07-31 16:37:08,727 - INFO - 📋 Processando lançamento 9/10: ITALO RAFAEL PINHO SANTOS - DIÁRIA
+2026-07-31 16:37:08,727 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,728 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,728 - INFO - Dados: ITALO RAFAEL PINHO SANTOS | DIÁRIA | NF:  | R$ 1080.00 | 06/07/2026
+2026-07-31 16:37:08,738 - WARNING - 🚨 DUPLICATA DETECTADA (Referência Exata)!
+2026-07-31 16:37:08,739 - WARNING -    Linha: 229
+2026-07-31 16:37:08,741 - WARNING -    ❌ Marcado como DUPLICATA
+2026-07-31 16:37:08,742 - INFO - 📋 Processando lançamento 10/10: ISNALDO GONÇALVES DE SOUZA - DIÁRIA
+2026-07-31 16:37:08,743 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-07-31 16:37:08,744 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-07-31 16:37:08,744 - INFO - Dados: ISNALDO GONÇALVES DE SOUZA | DIÁRIA | NF:  | R$ 1250.00 | 06/07/2026
+2026-07-31 16:37:08,755 - INFO - ✅ Nenhuma duplicata para: ISNALDO GONÇALVES DE SOUZA - DIÁRIA
+2026-07-31 16:37:08,756 - INFO -    ✅ Marcado como VÁLIDO
+2026-07-31 16:37:08,757 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-07-31 16:37:08,758 - INFO -    ✅ Lançamentos válidos: 1
+2026-07-31 16:37:08,759 - INFO -    ❌ Possíveis duplicatas: 9
+2026-07-31 16:37:08,759 - WARNING - Detectados 9 possíveis lançamentos duplicados
+2026-07-31 16:37:18,711 - INFO - Usuário optou por continuar. Processando 1 lançamentos únicos
+2026-07-31 16:37:18,714 - INFO - Lançamento inserido com ID 247 na linha 241
+2026-07-31 16:37:19,335 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-07-31 16:37:23,279 - INFO - Removendo 9 duplicatas da visualização
+2026-07-31 16:37:23,282 - INFO - Visualizador atualizado com 1 registros únicos
+2026-07-31 16:37:23,282 - INFO - Duplicatas removidas com sucesso
+2026-07-31 16:37:23,288 - INFO - Limpando 1 registros salvos da visualização
+2026-07-31 16:37:23,308 - INFO - Visualizador fechado - todos os registros foram processados
+2026-07-31 16:37:23,317 - INFO - Dados salvos removidos com sucesso da visualização
+2026-07-31 17:14:57,717 - INFO - Configurações importadas com sucesso via src.config
+2026-07-31 17:14:57,740 - INFO - Configurações importadas com sucesso
+2026-07-31 17:14:57,743 - INFO - Configurações do sistema importadas com sucesso
+2026-07-31 17:14:59,222 - INFO - Sistema iniciado em modo: TESTE
+2026-07-31 17:15:41,387 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 17:15:42,982 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 17:15:43,292 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 17:22:30,048 - INFO - Voltando ao menu principal
+2026-07-31 17:22:30,242 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-07-31 17:22:30,243 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-07-31 17:22:30,433 - INFO - ✅ Menu principal restaurado com sucesso
+2026-07-31 17:22:31,488 - INFO - Abrindo gestão de medições
+2026-07-31 17:23:30,927 - INFO - Abrindo sistema de relatórios
+2026-07-31 18:11:51,011 - INFO - Abrindo sistema de entrada de dados
+2026-07-31 18:11:51,684 - INFO - Proteções contra perda de dados configuradas
+2026-07-31 18:11:51,781 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-07-31 18:11:51,806 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-07-31 18:12:07,816 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 10:58:28,336 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 10:58:28,369 - INFO - Configurações importadas com sucesso
+2026-08-01 10:58:28,370 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 10:58:30,053 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 11:04:55,753 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 11:04:57,671 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 11:04:57,932 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 11:05:00,845 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-01 11:05:56,107 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 11:54:34,940 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 11:54:35,116 - INFO - Configurações importadas com sucesso
+2026-08-01 11:54:35,128 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 11:54:37,970 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 11:54:56,228 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 11:54:59,102 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 11:54:59,712 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 11:55:11,680 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-01 11:55:27,855 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 12:03:33,022 - INFO - Voltando ao menu principal
+2026-08-01 12:03:33,274 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-01 12:03:33,332 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-01 12:03:33,538 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-01 12:03:37,760 - INFO - Sistema encerrado pelo usuário
+2026-08-01 12:28:30,551 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 12:28:30,605 - INFO - Configurações importadas com sucesso
+2026-08-01 12:28:30,608 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 12:28:33,158 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 12:29:26,086 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 12:29:27,983 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 12:29:28,282 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 12:29:46,806 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-01 12:30:56,272 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-08-01 12:31:06,527 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-01 12:31:16,429 - INFO - ==================================================
+2026-08-01 12:31:16,430 - INFO - INICIANDO SELEÇÃO DE FORNECEDOR
+2026-08-01 12:31:16,430 - INFO - ==================================================
+2026-08-01 12:31:16,431 - INFO - Fornecedor: VALDECI VIEGAS DE AMORIM
+2026-08-01 12:31:17,652 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 12:31:17,652 - INFO - Dados carregados: VALDECI VIEGAS DE AMORIM
+2026-08-01 12:31:17,653 - INFO - Campos preenchidos com sucesso!
+2026-08-01 12:31:17,656 - INFO - SELEÇÃO CONCLUÍDA COM SUCESSO!
+2026-08-01 12:31:17,657 - INFO - ==================================================
+2026-08-01 12:32:10,157 - INFO - Iniciando adição de dados - Cliente: BRUNO SANTANA RINALDI
+2026-08-01 12:32:10,159 - INFO - ✅ Dados adicionados - Total: 1
+2026-08-01 12:32:11,373 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 12:32:13,806 - INFO - Dados adicionados com sucesso - Cliente: BRUNO SANTANA RINALDI, Total: 1
+2026-08-01 12:32:17,294 - INFO - ============================================================
+2026-08-01 12:32:17,295 - INFO - 📊 ABRINDO VISUALIZADOR DE LANÇAMENTOS
+2026-08-01 12:32:17,295 - INFO - ============================================================
+2026-08-01 12:32:17,296 - INFO - Cliente atual: BRUNO SANTANA RINALDI
+2026-08-01 12:32:17,296 - INFO - Dados disponíveis: 1 lançamento(s)
+2026-08-01 12:32:17,297 - INFO - 📋 Últimos 3 lançamentos:
+2026-08-01 12:32:17,297 - INFO -   1. VALDECI VIEGAS DE AMORIM - PRESTAÇÃO DE SERVIÇOS - R$ 1560.00
+2026-08-01 12:32:17,298 - INFO - 🆕 Criando novo visualizador
+2026-08-01 12:32:17,298 - INFO - 🔍 Visualizador iniciado com 1 lançamentos
+2026-08-01 12:32:17,456 - INFO - ✅ Visualizador criado com 1 lançamento(s)
+2026-08-01 12:32:17,457 - INFO - ✅ VISUALIZADOR ABERTO COM SUCESSO
+2026-08-01 12:32:17,457 - INFO - ============================================================
+2026-08-01 12:32:20,053 - INFO - Iniciando envio de dados - Cliente: BRUNO SANTANA RINALDI, Registros: 1
+2026-08-01 12:32:20,054 - INFO - Obtendo dados do visualizador
+2026-08-01 12:32:20,055 - INFO - Total de registros a processar: 1
+2026-08-01 12:32:20,056 - INFO - Datas que serão afetadas pela inserção: ['05/08/2026']
+2026-08-01 12:32:20,056 - INFO - Salvando em: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\BRUNO SANTANA RINALDI.xlsx
+2026-08-01 12:32:20,057 - INFO - Verificando integridade dos IDs antes da inserção
+2026-08-01 12:32:20,703 - INFO - 📋 Processando lançamento 1/1: VALDECI VIEGAS DE AMORIM - PRESTAÇÃO DE SERVIÇOS
+2026-08-01 12:32:20,704 - INFO - 🔍 EXECUTANDO VERIFICAÇÃO DE DUPLICIDADE!
+2026-08-01 12:32:20,704 - INFO - === VERIFICANDO DUPLICIDADE ===
+2026-08-01 12:32:20,705 - INFO - Dados: VALDECI VIEGAS DE AMORIM | PRESTAÇÃO DE SERVIÇOS | NF:  | R$ 1560.00 | 10/08/2026
+2026-08-01 12:32:20,718 - INFO - ✅ Nenhuma duplicata para: VALDECI VIEGAS DE AMORIM - PRESTAÇÃO DE SERVIÇOS
+2026-08-01 12:32:20,718 - INFO -    ✅ Marcado como VÁLIDO
+2026-08-01 12:32:20,719 - INFO - 
+📊 RESUMO DA VERIFICAÇÃO:
+2026-08-01 12:32:20,719 - INFO -    ✅ Lançamentos válidos: 1
+2026-08-01 12:32:20,720 - INFO -    ❌ Possíveis duplicatas: 0
+2026-08-01 12:32:20,722 - INFO - Lançamento inserido com ID 248 na linha 242
+2026-08-01 12:32:21,579 - INFO - Iniciando verificação de recálculo para 1 datas
+2026-08-01 12:32:24,093 - INFO - Limpando 1 registros salvos da visualização
+2026-08-01 12:32:24,109 - INFO - Visualizador fechado - todos os registros foram processados
+2026-08-01 12:32:24,113 - INFO - Dados salvos removidos com sucesso da visualização
+2026-08-01 12:36:52,202 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 12:36:52,226 - INFO - Configurações importadas com sucesso
+2026-08-01 12:36:52,227 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 12:36:53,443 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 12:36:55,435 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 12:36:58,292 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 12:36:59,095 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 12:37:00,681 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-01 12:37:59,064 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 12:49:05,302 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 12:49:05,332 - INFO - Configurações importadas com sucesso
+2026-08-01 12:49:05,335 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 12:49:07,062 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 12:49:08,726 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 12:49:10,367 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 12:49:10,707 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 12:49:26,503 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 12:52:03,235 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 12:52:03,264 - INFO - Configurações importadas com sucesso
+2026-08-01 12:52:03,266 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 12:52:04,538 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 12:52:17,813 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 12:52:19,288 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 12:52:19,553 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 12:52:32,795 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 13:32:03,389 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 13:32:03,485 - INFO - Configurações importadas com sucesso
+2026-08-01 13:32:03,624 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 13:32:05,705 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 13:32:35,846 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 13:32:37,644 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 13:32:37,957 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 13:32:49,233 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 13:43:30,374 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 13:43:30,399 - INFO - Configurações importadas com sucesso
+2026-08-01 13:43:30,399 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 13:43:31,957 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 13:43:40,608 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 13:43:42,408 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 13:43:42,670 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 13:43:54,315 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 13:50:29,165 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 13:50:29,192 - INFO - Configurações importadas com sucesso
+2026-08-01 13:50:29,193 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 13:50:30,617 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 13:50:32,485 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 13:50:34,647 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 13:50:34,922 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 13:50:47,016 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 13:58:36,641 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 13:58:36,702 - INFO - Configurações importadas com sucesso
+2026-08-01 13:58:36,704 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 13:58:39,147 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 13:58:42,314 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 13:58:44,213 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 13:58:44,624 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 13:58:56,928 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-01 15:26:16,143 - INFO - Voltando ao menu principal
+2026-08-01 15:26:16,290 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-01 15:26:16,302 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-01 15:26:16,571 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-01 15:26:17,967 - INFO - Abrindo sistema de relatórios
+2026-08-01 15:28:33,405 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 15:28:34,030 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 15:28:34,132 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 15:30:07,230 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 762!
+2026-08-01 15:37:24,338 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 763!
+2026-08-01 15:38:33,778 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 764!
+2026-08-01 15:43:12,779 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 762!
+2026-08-01 16:25:47,499 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 16:25:47,545 - INFO - Configurações importadas com sucesso
+2026-08-01 16:25:47,561 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 16:25:53,448 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 16:28:54,902 - INFO - Abrindo sistema de relatórios
+2026-08-01 16:38:33,340 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 16:38:35,553 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 16:38:36,196 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 16:52:41,277 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 16:52:41,314 - INFO - Configurações importadas com sucesso
+2026-08-01 16:52:41,316 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 16:52:44,936 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 16:54:18,516 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 16:54:20,326 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 16:54:20,635 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-01 17:04:06,308 - INFO - Configurações importadas com sucesso via src.config
+2026-08-01 17:04:06,363 - INFO - Configurações importadas com sucesso
+2026-08-01 17:04:06,369 - INFO - Configurações do sistema importadas com sucesso
+2026-08-01 17:04:08,551 - INFO - Sistema iniciado em modo: TESTE
+2026-08-01 17:04:19,935 - INFO - Abrindo sistema de entrada de dados
+2026-08-01 17:04:22,613 - INFO - Proteções contra perda de dados configuradas
+2026-08-01 17:04:23,425 - INFO - ✅ Sistema de Entrada de Dados aberto
