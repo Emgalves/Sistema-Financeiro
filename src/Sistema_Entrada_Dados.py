@@ -266,7 +266,11 @@ from src.fornecedores.cache_fornecedores import CacheFornecedores
 from src.taxas_administracao.gestao_taxas_fixas import GestaoTaxasFixas
 from src.taxas_administracao.gestao_contratos import GestaoContratos
 from src.taxas_administracao.gestor_taxas_administracao import GestorTaxasAdministracao 
-from src.parcelamento.gestor_parcelas import GestorParcelas  
+from src.parcelamento.gestor_parcelas import GestorParcelas
+from src.fornecedores.regularizar_fornecedor import (
+    regularizar_fornecedor, fundir_fornecedores, detectar_possiveis_duplicatas
+)
+
 # from src.leitura_guias import (
 #     extrair_dados_guia,
 #     GuiaNaoReconhecida,
@@ -4605,7 +4609,7 @@ class SistemaEntradaDados:
         # Adicionar evento de duplo clique para selecionar fornecedor
         self.tree_fornecedores.bind('<Double-1>', lambda e: self.selecionar_fornecedor())
 
-        # Frame para botões de ação do fornecedor
+        # Frame para botões de ação do fornecedor (dia a dia)
         frame_acoes = ttk.Frame(self.aba_fornecedor)
         frame_acoes.pack(fill='x', padx=10, pady=5)
 
@@ -4624,16 +4628,34 @@ class SistemaEntradaDados:
         ttk.Button(frame_acoes, 
                 text="Selecionar", 
                 command=self.selecionar_fornecedor).pack(side='left', padx=5)
-        
-        ttk.Button(frame_acoes,
+
+        # Separador para dividir visualmente as seções
+        ttk.Separator(self.aba_fornecedor, orient='horizontal').pack(fill='x', padx=10, pady=5)
+
+        # Frame para manutenção/correção de cadastro (nova seção, linha própria)
+        frame_manutencao_cadastro = ttk.LabelFrame(self.aba_fornecedor, text="🛠️ Manutenção de Cadastro")
+        frame_manutencao_cadastro.pack(fill='x', padx=10, pady=5)
+
+        frame_botoes_manutencao = ttk.Frame(frame_manutencao_cadastro)
+        frame_botoes_manutencao.pack(fill='x', padx=5, pady=8)
+
+        ttk.Button(frame_botoes_manutencao,
                 text="🗑️ Gerenciar CPFs Criados",
-                command=self.gerenciar_cpfs_criados,).pack(side='left', padx=5)
-                    
-        # Label explicativo
-        ttk.Label(frame_acoes,
-                text="(Excluir forn. temporários)",
+                command=self.gerenciar_cpfs_criados).pack(side='left', padx=5)
+
+        ttk.Button(frame_botoes_manutencao,
+                text="🔧 Regularizar Cadastro",
+                command=self.abrir_regularizar_fornecedor).pack(side='left', padx=5)
+
+        ttk.Button(frame_botoes_manutencao,
+                text="🔗 Mesclar Duplicados",
+                command=self.abrir_fundir_fornecedores).pack(side='left', padx=5)
+
+        ttk.Label(frame_botoes_manutencao,
+                text="(corrigir CPF/nome errado, unir cadastros duplicados)",
                 font=('Arial', 8),
                 foreground='gray').pack(side='left', padx=10)
+        
 
         self.adicionar_botao_gerenciar_lancamentos()
 
@@ -4652,33 +4674,27 @@ class SistemaEntradaDados:
             frame_botoes_taxas, 
             text="Controle de Pagamentos de Taxa",
             command=self.abrir_controle_pagamentos,
-            style='Medium.TButton'
         ).pack(side='left', padx=5)
 
         ttk.Button(
             frame_botoes_taxas, 
             text="Finalização de Quinzena",
             command=self.abrir_finalizacao_quinzena,
-            style='Medium.TButton'
         ).pack(side='left', padx=5)
 
         ttk.Button(
             frame_botoes_taxas, 
             text="Correção Monetária",
             command=self.abrir_correcao_monetaria,
-            style='Medium.TButton'
         ).pack(side='left', padx=5)
-
-        frame_botoes_verificacao = ttk.Frame(frame_taxas)
-        frame_botoes_verificacao.pack(fill='x', padx=5, pady=(0, 8))
 
         ttk.Button(
-            frame_botoes_verificacao, 
-            text="🔍 Verificar Consistência das Taxas",
-            command=lambda: self.verificar_e_mostrar_consistencia(),
-            style='Medium.TButton'
-        ).pack(side='left', padx=5)
+                    frame_botoes_taxas, 
+                    text="🔍 Verificar Consistência das Taxas",
+                    command=lambda: self.verificar_e_mostrar_consistencia(),
+                ).pack(side='left', padx=5)
 
+       
         # Separador para dividir visualmente as seções
         ttk.Separator(self.aba_fornecedor, orient='horizontal').pack(fill='x', padx=10, pady=5)
         
@@ -7578,6 +7594,365 @@ class SistemaEntradaDados:
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao exportar: {str(e)}")
 
+    def abrir_regularizar_fornecedor(self):
+        from src.fornecedores import regularizar_fornecedor
+        from src.config import ARQUIVO_FORNECEDORES, PASTA_CLIENTES
+        from datetime import datetime
+        import os
+
+        selecionado = self.tree_fornecedores.selection()
+        if not selecionado:
+            custom_messagebox("warning", "Aviso", "Selecione um fornecedor primeiro!")
+            return
+
+        doc_antigo = self.tree_fornecedores.item(selecionado[0])['tags'][0].replace('ID:', '')
+        fornecedor = self.buscar_fornecedor_completo(doc_antigo)
+        if not fornecedor:
+            custom_messagebox("error", "Erro", "Não foi possível carregar os dados atuais do fornecedor.")
+            return
+
+        janela = tk.Toplevel(self.root)
+        janela.title("🔧 Regularizar Cadastro de Fornecedor")
+        janela.geometry("650x460")
+        janela.transient(self.root)
+        janela.grab_set()
+        janela.update_idletasks()
+        largura, altura = 650, 460
+        pos_x = (janela.winfo_screenwidth() // 2) - (largura // 2)
+        pos_y = (janela.winfo_screenheight() // 2) - (altura // 2)
+        janela.geometry(f"{largura}x{altura}+{pos_x}+{pos_y}")
+        janela.lift()
+        janela.focus_force()
+        janela.attributes('-topmost', True)
+        janela.after(500, lambda: janela.attributes('-topmost', False))
+
+        main = ttk.Frame(janela, padding=15)
+        main.pack(fill='both', expand=True)
+
+        ttk.Label(main, text="🔧 Regularizar Cadastro", font=('Arial', 16, 'bold')).pack(pady=(0, 5))
+        ttk.Label(main,
+                text="Use apenas para corrigir dado ERRADO (digitação, nome incompleto).\n"
+                    "Para unir dois cadastros de fornecedores diferentes que são a mesma "
+                    "pessoa/empresa, use 'Mesclar Fornecedores Duplicados'.",
+                font=('Arial', 9), foreground='gray', justify='left').pack(pady=(0, 15))
+
+        campos_frame = ttk.LabelFrame(main, text="Dados atuais → corrigidos")
+        campos_frame.pack(fill='x', pady=(0, 10))
+        campos = ttk.Frame(campos_frame, padding=10)
+        campos.pack(fill='x')
+
+        ttk.Label(campos, text="CNPJ/CPF atual:").grid(row=0, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text=fornecedor['cnpj_cpf'], font=('Arial', 9, 'bold')).grid(row=0, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="CNPJ/CPF correto:").grid(row=1, column=0, sticky='w', pady=4)
+        entry_doc = ttk.Entry(campos, width=25)
+        entry_doc.insert(0, fornecedor['cnpj_cpf'])
+        entry_doc.grid(row=1, column=1, sticky='w', padx=5)
+
+        ttk.Label(campos, text="Nome atual:").grid(row=2, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text=fornecedor['nome'], font=('Arial', 9, 'bold')).grid(row=2, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="Nome correto:").grid(row=3, column=0, sticky='w', pady=4)
+        entry_nome = ttk.Entry(campos, width=50)
+        entry_nome.insert(0, fornecedor['nome'])
+        entry_nome.grid(row=3, column=1, sticky='w', padx=5)
+
+        ttk.Label(campos, text="Razão social atual:").grid(row=4, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text=fornecedor['razao_social'], font=('Arial', 9, 'bold')).grid(row=4, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="Razão social correta:").grid(row=5, column=0, sticky='w', pady=4)
+        entry_razao = ttk.Entry(campos, width=50)
+        entry_razao.insert(0, fornecedor['razao_social'])
+        entry_razao.grid(row=5, column=1, sticky='w', padx=5)
+
+        ttk.Label(main, text="💡 Deixe igual ao que já está se não precisar corrigir aquele campo.",
+                font=('Arial', 8), foreground='gray').pack(anchor='w')
+
+        label_progresso = ttk.Label(main, text="", font=('Arial', 8), foreground='#0056b3')
+        label_progresso.pack(anchor='w', pady=(5, 0))
+
+        def progresso(i, total, nome_arquivo):
+            label_progresso.config(text=f"Verificando {i}/{total}: {nome_arquivo}...")
+            janela.update_idletasks()
+
+        def _ler_campos():
+            doc_novo = entry_doc.get().strip()
+            nome_novo = entry_nome.get().strip()
+            razao_novo = entry_razao.get().strip()
+            doc_novo = doc_novo if doc_novo.replace('.', '').replace('-', '').replace('/', '') != doc_antigo else None
+            nome_novo = nome_novo if nome_novo.upper() != fornecedor['nome'].upper() else None
+            razao_novo = razao_novo if razao_novo.upper() != fornecedor['razao_social'].upper() else None
+            if not (doc_novo or nome_novo or razao_novo):
+                custom_messagebox("warning", "Aviso", "Nenhum campo foi alterado.")
+                return None, None, None
+            return doc_novo, nome_novo, razao_novo
+
+        def pre_visualizar():
+            doc_novo, nome_novo, razao_novo = _ler_campos()
+            if doc_novo is None and nome_novo is None and razao_novo is None:
+                return
+            label_progresso.config(text="Iniciando pré-visualização...")
+            janela.update_idletasks()
+            preview = regularizar_fornecedor(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_antigo=doc_antigo, doc_novo=doc_novo, nome_novo=nome_novo,
+                razao_novo=razao_novo, dry_run=True, callback_progresso=progresso,
+            )
+            label_progresso.config(text="")
+            custom_messagebox(
+                "error" if preview.erro else "info",
+                "Erro" if preview.erro else "Pré-visualização (nada foi gravado)",
+                preview.erro or preview.resumo()
+            )
+
+        def confirmar_e_aplicar():
+            doc_novo, nome_novo, razao_novo = _ler_campos()
+            if doc_novo is None and nome_novo is None and razao_novo is None:
+                return
+
+            label_progresso.config(text="Verificando o que seria alterado...")
+            janela.update_idletasks()
+            preview = regularizar_fornecedor(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_antigo=doc_antigo, doc_novo=doc_novo, nome_novo=nome_novo,
+                razao_novo=razao_novo, dry_run=True, callback_progresso=progresso,
+            )
+            label_progresso.config(text="")
+            if preview.erro:
+                custom_messagebox("error", "Erro", preview.erro)
+                return
+            if not preview.alteracoes:
+                custom_messagebox("info", "Nada a fazer", "Nenhuma alteração seria feita.")
+                return
+
+            arquivos_afetados = sorted(set(a.arquivo for a in preview.alteracoes))
+            resposta = custom_messagebox(
+                "question", "Confirmar Regularização",
+                f"{len(preview.alteracoes)} célula(s) serão alteradas em "
+                f"{len(arquivos_afetados)} arquivo(s):\n\n"
+                + "\n".join(f"  • {a}" for a in arquivos_afetados[:8])
+                + (f"\n  ... e mais {len(arquivos_afetados) - 8}" if len(arquivos_afetados) > 8 else "")
+                + "\n\nConfirma?"
+            )
+            if not resposta:
+                return
+
+            nome_base = os.path.basename(ARQUIVO_FORNECEDORES)
+            arquivos_cliente_afetados = [
+                os.path.join(PASTA_CLIENTES, a) for a in arquivos_afetados if a != nome_base
+            ]
+
+            pasta_logs = os.path.join(os.path.dirname(ARQUIVO_FORNECEDORES), 'logs_regularizacao')
+            os.makedirs(pasta_logs, exist_ok=True)
+            log_debug = os.path.join(pasta_logs, f"debug_{doc_antigo}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+
+            label_progresso.config(text="Aplicando alterações...")
+            janela.update_idletasks()
+            resultado = regularizar_fornecedor(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_antigo=doc_antigo, doc_novo=doc_novo, nome_novo=nome_novo,
+                razao_novo=razao_novo, dry_run=False, callback_progresso=progresso,
+                arquivo_log_debug=log_debug,
+                arquivos_cliente=arquivos_cliente_afetados,
+            )
+
+            resultado.salvar_log(os.path.join(
+                pasta_logs, f"regularizacao_{doc_antigo}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            ))
+
+            custom_messagebox(
+                "warning" if resultado.arquivos_com_falha else "info",
+                "Concluído com pendências" if resultado.arquivos_com_falha else "Regularização concluída",
+                resultado.resumo()
+            )
+            janela.destroy()
+            self.buscar_fornecedor()
+
+        frame_botoes = ttk.Frame(main)
+        frame_botoes.pack(fill='x', pady=(15, 0))
+        ttk.Button(frame_botoes, text="👁️ Pré-visualizar (não grava)",
+                command=pre_visualizar).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="✅ Confirmar e Aplicar",
+                command=confirmar_e_aplicar).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="❌ Cancelar",
+                command=janela.destroy).pack(side='right', padx=5)
+        
+    def abrir_fundir_fornecedores(self):
+        """
+        Abre janela para mesclar dois (ou mais) cadastros de fornecedores que
+        representam a mesma pessoa/empresa (ex.: CPF criado + CPF real depois
+        obtido). Mostra os candidatos detectados automaticamente e também
+        permite informar o par manualmente.
+        """
+        from src.fornecedores import fundir_fornecedores, detectar_possiveis_duplicatas
+        from src.config import ARQUIVO_FORNECEDORES, PASTA_CLIENTES
+        from datetime import datetime
+        import os
+
+        janela = tk.Toplevel(self.root)
+        janela.title("🔗 Mesclar Fornecedores Duplicados")
+        janela.geometry("900x650")
+        janela.transient(self.root)
+        janela.grab_set()
+
+        main = ttk.Frame(janela, padding=15)
+        main.pack(fill='both', expand=True)
+
+        ttk.Label(main, text="🔗 Mesclar Cadastros Duplicados",
+                font=('Arial', 16, 'bold')).pack(pady=(0, 5))
+        ttk.Label(main, text="Selecione um candidato detectado automaticamente, ou informe o par manualmente abaixo.",
+                font=('Arial', 9), foreground='gray').pack(pady=(0, 15))
+
+        # ---- Candidatos automáticos ----
+        frame_cand = ttk.LabelFrame(main, text="Candidatos detectados (score >= 0.75)")
+        frame_cand.pack(fill='both', expand=True, pady=(0, 15))
+
+        tree = ttk.Treeview(frame_cand, columns=('score', 'prov', 'doc_prov', 'cand', 'doc_cand'),
+                            show='headings', height=10)
+        tree.heading('score', text='Score')
+        tree.heading('prov', text='Nome (CPF criado)')
+        tree.heading('doc_prov', text='Doc. provisório')
+        tree.heading('cand', text='Nome (candidato)')
+        tree.heading('doc_cand', text='Doc. candidato')
+        for col, w in [('score', 60), ('prov', 220), ('doc_prov', 130), ('cand', 220), ('doc_cand', 130)]:
+            tree.column(col, width=w, anchor='w')
+        tree.pack(fill='both', expand=True, padx=10, pady=10)
+
+        try:
+            candidatos, orfaos = detectar_possiveis_duplicatas(ARQUIVO_FORNECEDORES, limiar=0.75)
+        except Exception as e:
+            candidatos, orfaos = [], []
+            custom_messagebox("warning", "Aviso", f"Não foi possível rodar a detecção automática:\n{e}")
+
+        # Ao preencher a lista de candidatos:
+        mapa_candidatos = {}  # iid da linha -> (doc_provisorio, doc_candidato), só em memória Python
+        for c in candidatos:
+            iid = tree.insert('', 'end', values=(
+                f"{c['score']:.2f}", c['nome_provisorio'], c['doc_provisorio'],
+                c['nome_candidato'], c['doc_candidato']
+            ))
+            mapa_candidatos[iid] = (c['doc_provisorio'], c['doc_candidato'])
+
+        if orfaos:
+            ttk.Label(frame_cand,
+                    text=f"⚠️ {len(orfaos)} CPF(s) criado(s) 'USADO' sem cadastro correspondente "
+                        f"(não são duplicata — provavelmente precisam ser liberados à parte).",
+                    font=('Arial', 8), foreground='#a06000').pack(anchor='w', padx=10, pady=(0, 5))
+
+        def preencher_do_candidato():
+            sel = tree.selection()
+            if not sel:
+                custom_messagebox("warning", "Aviso", "Selecione um candidato na lista acima primeiro.")
+                return
+            doc_prov, doc_cand = mapa_candidatos[sel[0]]   # <- direto do dicionário Python, nunca do Tcl
+            entry_vencedor.delete(0, tk.END)
+            entry_vencedor.insert(0, doc_cand)
+            entry_perdedores.delete(0, tk.END)
+            entry_perdedores.insert(0, doc_prov)
+
+        ttk.Button(frame_cand, text="⬇️ Usar candidato selecionado nos campos abaixo",
+                command=preencher_do_candidato).pack(pady=(0, 10))
+
+        # ---- Campos manuais ----
+        frame_manual = ttk.LabelFrame(main, text="Documentos para mesclar")
+        frame_manual.pack(fill='x', pady=(0, 15))
+        campos = ttk.Frame(frame_manual, padding=10)
+        campos.pack(fill='x')
+
+        ttk.Label(campos, text="CPF/CNPJ VENCEDOR (fica ativo):").grid(row=0, column=0, sticky='w', pady=4)
+        entry_vencedor = ttk.Entry(campos, width=25)
+        entry_vencedor.grid(row=0, column=1, sticky='w', padx=5)
+
+        ttk.Label(campos, text="CPF/CNPJ PERDEDOR(ES) (vírgula p/ mais de um):").grid(row=1, column=0, sticky='w', pady=4)
+        entry_perdedores = ttk.Entry(campos, width=40)
+        entry_perdedores.grid(row=1, column=1, sticky='w', padx=5)
+
+        var_liberar_cpf = tk.BooleanVar(value=True)
+        ttk.Checkbutton(campos, text="Liberar CPF criado do(s) perdedor(es) para reuso",
+                        variable=var_liberar_cpf).grid(row=2, column=0, columnspan=2, sticky='w', pady=4)
+
+        # ---- Ações ----
+        frame_botoes = ttk.Frame(main)
+        frame_botoes.pack(fill='x')
+
+        def _ler_docs():
+            doc_vencedor = entry_vencedor.get().strip()
+            docs_perdedores = [d.strip() for d in entry_perdedores.get().split(',') if d.strip()]
+            if not doc_vencedor or not docs_perdedores:
+                custom_messagebox("warning", "Aviso", "Informe o vencedor e ao menos um perdedor.")
+                return None, None
+            return doc_vencedor, docs_perdedores
+
+        def pre_visualizar():
+            doc_vencedor, docs_perdedores = _ler_docs()
+            if not doc_vencedor:
+                return
+            resultado = fundir_fornecedores(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
+                liberar_cpfs_criados=var_liberar_cpf.get(), dry_run=True,
+            )
+            custom_messagebox(
+                "error" if resultado.erro else "info",
+                "Erro" if resultado.erro else "Pré-visualização (nada foi gravado)",
+                resultado.erro or resultado.resumo()
+            )
+
+        def confirmar_e_aplicar():
+            doc_vencedor, docs_perdedores = _ler_docs()
+            if not doc_vencedor:
+                return
+
+            preview = fundir_fornecedores(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
+                liberar_cpfs_criados=var_liberar_cpf.get(), dry_run=True,
+            )
+            if preview.erro:
+                custom_messagebox("error", "Erro", preview.erro)
+                return
+            if not preview.alteracoes:
+                custom_messagebox("info", "Nada a fazer", "Nenhuma alteração seria feita.")
+                return
+
+            arquivos_afetados = sorted(set(a.arquivo for a in preview.alteracoes))
+            resposta = custom_messagebox(
+                "question", "⚠️ Confirmar Fusão de Cadastros",
+                f"{len(docs_perdedores)} cadastro(s) perdedor(es) serão mesclados no vencedor "
+                f"{doc_vencedor}.\n\n"
+                f"{len(preview.alteracoes)} célula(s) alteradas em {len(arquivos_afetados)} arquivo(s):\n"
+                + "\n".join(f"  • {a}" for a in arquivos_afetados[:8])
+                + (f"\n  ... e mais {len(arquivos_afetados) - 8}" if len(arquivos_afetados) > 8 else "")
+                + "\n\nOs perdedores ficarão INATIVOS (não excluídos)."
+                + "\n\nEsta ação não é desfeita automaticamente. Confirma?"
+            )
+            if not resposta:
+                return
+
+            resultado = fundir_fornecedores(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
+                liberar_cpfs_criados=var_liberar_cpf.get(), dry_run=False,
+            )
+
+            pasta_logs = os.path.join(os.path.dirname(ARQUIVO_FORNECEDORES), 'logs_regularizacao')
+            os.makedirs(pasta_logs, exist_ok=True)
+            resultado.salvar_log(os.path.join(
+                pasta_logs, f"fusao_{doc_vencedor}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            ))
+
+            custom_messagebox(
+                "warning" if resultado.arquivos_com_falha else "info",
+                "Concluído com pendências" if resultado.arquivos_com_falha else "Fusão concluída",
+                resultado.resumo()
+            )
+            janela.destroy()
+            self.buscar_fornecedor()
+
+        ttk.Button(frame_botoes, text="👁️ Pré-visualizar (não grava)",
+                command=pre_visualizar).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="✅ Confirmar e Aplicar",
+                command=confirmar_e_aplicar).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="❌ Cancelar",
+                command=janela.destroy).pack(side='right', padx=5)
+
     def abrir_visualizador_fornecedor(self):
         """Abre o visualizador de lançamentos para o fornecedor selecionado"""
         selecionado = self.tree_fornecedores.selection()
@@ -7904,8 +8279,8 @@ class SistemaEntradaDados:
         self.campos_despesa['referencia'].bind('<Return>', lambda e: self.campos_despesa['vr_unit'].focus())
         self.campos_despesa['vr_unit'].bind('<Return>', lambda e: self.campos_despesa['dias'].focus())
         self.campos_despesa['dias'].bind('<Return>', lambda e: self.campos_despesa['etapa_obra'].focus())
-        self.campos_despesa['etapa_obra'].bind('<Return>', lambda e: self.campos_despesa['insumo'].focus())
-        self.campos_despesa['insumo'].bind('<Return>', lambda e: self.campos_despesa['nf'].focus())
+        self.campos_despesa['etapa_obra'].bind('<Return>', lambda e: self.campos_despesa['insumo'].focus(), add='+')
+        self.campos_despesa['insumo'].bind('<Return>', lambda e: self.campos_despesa['nf'].focus(), add='+')
         self.campos_despesa['nf'].bind('<Return>', lambda e: self.campos_despesa['dt_vencto'].focus())
         self.campos_despesa['dt_vencto'].bind('<Return>', lambda e: self.campos_despesa['observacao'].focus())
         
