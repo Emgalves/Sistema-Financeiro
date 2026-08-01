@@ -12,7 +12,7 @@ import requests
 import pandas as pd
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 import re
 import json

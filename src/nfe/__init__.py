@@ -2,12 +2,8 @@
 # Este arquivo torna a pasta src um pacote Python
 
 # Importações básicas que serão usadas por outros módulos
-from pathlib import Path
-import os
-import sys
-
-# Define BASE_PATH como uma constante global
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Exporta subpacotes
-__all__ = ['config']
+from .consulta_sefaz_certificado import ConsultorSefazA1
+from .integrador_nfe_sistema import IntegradorNFeFinanceiroMateriais
+from .sistema_hibrido_nfe import (ProcessadorNFeHibrido, IntegradorSistemaExistente, 
+                              GerenciadorCertificado, LogImportacaoNFe
+)
