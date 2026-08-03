@@ -347,5 +347,17 @@
             "Relatório de Medições corrigido no módulo de Relatórios"
         ],
         "timestamp": "2026-07-22T14:58:13.823983"
+    },
+    {
+        "version": "1.8.2",
+        "release_date": "02/08/2026",
+        "changes": [
+            "Saldo Caixa de Obra: adaptado para pagar todas as despesas, se necessário",
+            "Relatório de Medições sem mudança de página enre dados do contrato e seu extrato",
+            "Gestão de Medições: correção do método de edição de medições",
+            "Função nova: Regularização de dados fiscais, razaão social e nome, em base de fornecedores em todos os arquivos onde existam dados a serem corrigidos",
+            "Função nova: Mesclar fornecedores duplicados, mantendo apenas um registro e atualizando todos os arquivos relacionados"
+        ],
+        "timestamp": "2026-08-02T14:43:38.118288"
     }
 ]
