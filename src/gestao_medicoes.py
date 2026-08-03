@@ -522,6 +522,23 @@ class GestaoMedicoes:
 
         dados_grid.columnconfigure(1, weight=1)
 
+
+        # --- MANUTENÇÃO DE CADASTRO (corrigir CPF/nome errado no fornecedor) ---
+        frame_manutencao_forn = ttk.LabelFrame(frame_principal, text="🛠️ Manutenção de Cadastro")
+        frame_manutencao_forn.pack(fill='x', pady=5, padx=5)
+
+        manutencao_inner = ttk.Frame(frame_manutencao_forn)
+        manutencao_inner.pack(fill='x', padx=10, pady=8)
+
+        ttk.Button(manutencao_inner,
+                text="🔧 Regularizar Cadastro",
+                command=self.abrir_regularizar_fornecedor).pack(side='left', padx=5)
+
+        ttk.Label(manutencao_inner,
+                text="(corrigir CPF/CNPJ ou nome errado do fornecedor selecionado acima)",
+                font=('Arial', 8),
+                foreground='gray').pack(side='left', padx=10)
+                        
         # --- BOTÕES ---
         frame_botoes = ttk.Frame(frame_principal)
         frame_botoes.pack(fill='x', pady=15)
@@ -535,6 +552,260 @@ class GestaoMedicoes:
                 text="← Voltar",
                 command=lambda: self.notebook.select(self.aba_selecao),
                 style='Big.TButton').pack(side='left', padx=10)
+
+        # Botão para voltar ao menu principal
+        ttk.Button(frame_principal, text="Voltar ao Menu Principal", 
+                command=self.voltar_menu).pack(side='bottom', pady=10)
+        
+# ==============================================================================
+# ADICIONAR em src/gestao_medicoes.py, como método da classe GestaoMedicoes
+# (por exemplo, logo após setup_aba_fornecedor, junto dos outros métodos
+# "--- Métodos da aba Fornecedor ---": buscar_fornecedor_aba,
+# listar_todos_fornecedores_aba, selecionar_fornecedor_aba,
+# continuar_para_contratos_filtrado).
+# ==============================================================================
+
+    def abrir_regularizar_fornecedor(self):
+        """Corrige CPF/CNPJ ou nome ERRADO do fornecedor selecionado na aba,
+        propagando a correção para base_fornecedores.xlsx e para o histórico
+        em todos os arquivos de cliente que referenciam o documento antigo.
+
+        Réplica, para esta aba (Listbox), da ferramenta já existente em
+        SistemaEntradaDados.abrir_regularizar_fornecedor — mesma função
+        src.fornecedores.regularizar_fornecedor por trás, sem alterações.
+        """
+        import re
+        from datetime import datetime
+        from openpyxl import load_workbook
+        from src.fornecedores import regularizar_fornecedor
+
+        try:
+            from src.config import ARQUIVO_FORNECEDORES, PASTA_CLIENTES
+        except ImportError:
+            from src.config.config import ARQUIVO_FORNECEDORES, PASTA_CLIENTES
+
+        # --- 1) Obter o fornecedor atualmente selecionado na aba ---------
+        # self.ent_forn_cnpj já vem preenchido (formatado) por
+        # selecionar_fornecedor_aba() no momento em que o usuário clicou
+        # no item da listbox — é a mesma fonte usada para os campos
+        # readonly de Endereço e Dados Bancários logo acima.
+        cnpj_fmt_atual = self.ent_forn_cnpj.get().strip()
+        if not cnpj_fmt_atual:
+            messagebox.showwarning(
+                "Aviso", "Selecione um fornecedor primeiro!", parent=self.root)
+            return
+
+        doc_antigo = re.sub(r'\D', '', cnpj_fmt_atual)
+
+        # Buscar nome e razão social diretamente na base — mesma leitura de
+        # colunas usada em selecionar_fornecedor_aba (0=CNPJ/CPF,
+        # 2=RAZÃO SOCIAL, 3=NOME) — para não duplicar uma segunda
+        # convenção de colunas dentro do mesmo módulo.
+        try:
+            wb = load_workbook(ARQUIVO_FORNECEDORES)
+            ws = wb['Fornecedores']
+            razao_atual = nome_atual = ''
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if not row[0]:
+                    continue
+                if self.formatar_documento(row[0]) == cnpj_fmt_atual:
+                    razao_atual = str(row[2]).strip() if len(row) > 2 and row[2] else ''
+                    nome_atual = str(row[3]).strip() if len(row) > 3 and row[3] else ''
+                    break
+            wb.close()
+        except Exception as e:
+            messagebox.showerror(
+                "Erro", f"Não foi possível carregar os dados atuais do fornecedor:\n{str(e)}",
+                parent=self.root)
+            return
+
+        if not nome_atual and not razao_atual:
+            messagebox.showerror(
+                "Erro", "Não foi possível carregar os dados atuais do fornecedor.",
+                parent=self.root)
+            return
+
+        fornecedor = {
+            'cnpj_cpf': cnpj_fmt_atual,
+            'nome': nome_atual,
+            'razao_social': razao_atual,
+        }
+
+        # --- 2) Janela modal (idêntica em estrutura à de SistemaEntradaDados) ---
+        janela = tk.Toplevel(self.root)
+        janela.title("🔧 Regularizar Cadastro de Fornecedor")
+        janela.geometry("650x460")
+        janela.transient(self.root)
+        janela.grab_set()
+        janela.update_idletasks()
+        largura, altura = 650, 460
+        pos_x = (janela.winfo_screenwidth() // 2) - (largura // 2)
+        pos_y = (janela.winfo_screenheight() // 2) - (altura // 2)
+        janela.geometry(f"{largura}x{altura}+{pos_x}+{pos_y}")
+        janela.lift()
+        janela.focus_force()
+        janela.attributes('-topmost', True)
+        janela.after(500, lambda: janela.attributes('-topmost', False))
+
+        main = ttk.Frame(janela, padding=15)
+        main.pack(fill='both', expand=True)
+
+        ttk.Label(main, text="🔧 Regularizar Cadastro", font=('Arial', 16, 'bold')).pack(pady=(0, 5))
+        ttk.Label(main,
+                text="Use apenas para corrigir dado ERRADO (digitação, nome incompleto).\n"
+                    "Para unir dois cadastros de fornecedores diferentes que são a mesma "
+                    "pessoa/empresa, use 'Mesclar Fornecedores Duplicados' na aba de Entrada de Dados.",
+                font=('Arial', 9), foreground='gray', justify='left').pack(pady=(0, 15))
+
+        campos_frame = ttk.LabelFrame(main, text="Dados atuais → corrigidos")
+        campos_frame.pack(fill='x', pady=(0, 10))
+        campos = ttk.Frame(campos_frame, padding=10)
+        campos.pack(fill='x')
+
+        ttk.Label(campos, text="CNPJ/CPF atual:").grid(row=0, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text=fornecedor['cnpj_cpf'], font=('Arial', 9, 'bold')).grid(row=0, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="CNPJ/CPF correto:").grid(row=1, column=0, sticky='w', pady=4)
+        entry_doc = ttk.Entry(campos, width=25)
+        entry_doc.insert(0, fornecedor['cnpj_cpf'])
+        entry_doc.grid(row=1, column=1, sticky='w', padx=5)
+
+        ttk.Label(campos, text="Nome atual:").grid(row=2, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text=fornecedor['nome'] or '—', font=('Arial', 9, 'bold')).grid(row=2, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="Nome correto:").grid(row=3, column=0, sticky='w', pady=4)
+        entry_nome = ttk.Entry(campos, width=50)
+        entry_nome.insert(0, fornecedor['nome'])
+        entry_nome.grid(row=3, column=1, sticky='w', padx=5)
+
+        ttk.Label(campos, text="Razão social atual:").grid(row=4, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text=fornecedor['razao_social'] or '—', font=('Arial', 9, 'bold')).grid(row=4, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="Razão social correta:").grid(row=5, column=0, sticky='w', pady=4)
+        entry_razao = ttk.Entry(campos, width=50)
+        entry_razao.insert(0, fornecedor['razao_social'])
+        entry_razao.grid(row=5, column=1, sticky='w', padx=5)
+
+        ttk.Label(main, text="💡 Deixe igual ao que já está se não precisar corrigir aquele campo.",
+                font=('Arial', 8), foreground='gray').pack(anchor='w')
+
+        label_progresso = ttk.Label(main, text="", font=('Arial', 8), foreground='#0056b3')
+        label_progresso.pack(anchor='w', pady=(5, 0))
+
+        def progresso(i, total, nome_arquivo):
+            label_progresso.config(text=f"Verificando {i}/{total}: {nome_arquivo}...")
+            janela.update_idletasks()
+
+        def _ler_campos():
+            doc_novo = entry_doc.get().strip()
+            nome_novo = entry_nome.get().strip()
+            razao_novo = entry_razao.get().strip()
+            doc_novo = doc_novo if doc_novo.replace('.', '').replace('-', '').replace('/', '') != doc_antigo else None
+            nome_novo = nome_novo if nome_novo.upper() != (fornecedor['nome'] or '').upper() else None
+            razao_novo = razao_novo if razao_novo.upper() != (fornecedor['razao_social'] or '').upper() else None
+            if not (doc_novo or nome_novo or razao_novo):
+                messagebox.showwarning("Aviso", "Nenhum campo foi alterado.", parent=janela)
+                return None, None, None
+            return doc_novo, nome_novo, razao_novo
+
+        def pre_visualizar():
+            doc_novo, nome_novo, razao_novo = _ler_campos()
+            if doc_novo is None and nome_novo is None and razao_novo is None:
+                return
+            label_progresso.config(text="Iniciando pré-visualização...")
+            janela.update_idletasks()
+            preview = regularizar_fornecedor(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_antigo=doc_antigo, doc_novo=doc_novo, nome_novo=nome_novo,
+                razao_novo=razao_novo, dry_run=True, callback_progresso=progresso,
+            )
+            label_progresso.config(text="")
+            if preview.erro:
+                messagebox.showerror("Erro", preview.erro, parent=janela)
+            else:
+                messagebox.showinfo("Pré-visualização (nada foi gravado)", preview.resumo(), parent=janela)
+
+        def confirmar_e_aplicar():
+            doc_novo, nome_novo, razao_novo = _ler_campos()
+            if doc_novo is None and nome_novo is None and razao_novo is None:
+                return
+
+            label_progresso.config(text="Verificando o que seria alterado...")
+            janela.update_idletasks()
+            preview = regularizar_fornecedor(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_antigo=doc_antigo, doc_novo=doc_novo, nome_novo=nome_novo,
+                razao_novo=razao_novo, dry_run=True, callback_progresso=progresso,
+            )
+            label_progresso.config(text="")
+            if preview.erro:
+                messagebox.showerror("Erro", preview.erro, parent=janela)
+                return
+            if not preview.alteracoes:
+                messagebox.showinfo("Nada a fazer", "Nenhuma alteração seria feita.", parent=janela)
+                return
+
+            arquivos_afetados = sorted(set(a.arquivo for a in preview.alteracoes))
+            resposta = messagebox.askyesno(
+                "Confirmar Regularização",
+                f"{len(preview.alteracoes)} célula(s) serão alteradas em "
+                f"{len(arquivos_afetados)} arquivo(s):\n\n"
+                + "\n".join(f"  • {a}" for a in arquivos_afetados[:8])
+                + (f"\n  ... e mais {len(arquivos_afetados) - 8}" if len(arquivos_afetados) > 8 else "")
+                + "\n\nConfirma?",
+                parent=janela
+            )
+            if not resposta:
+                return
+
+            nome_base = os.path.basename(ARQUIVO_FORNECEDORES)
+            arquivos_cliente_afetados = [
+                os.path.join(PASTA_CLIENTES, a) for a in arquivos_afetados if a != nome_base
+            ]
+
+            pasta_logs = os.path.join(os.path.dirname(ARQUIVO_FORNECEDORES), 'logs_regularizacao')
+            os.makedirs(pasta_logs, exist_ok=True)
+            log_debug = os.path.join(pasta_logs, f"debug_{doc_antigo}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+
+            label_progresso.config(text="Aplicando alterações...")
+            janela.update_idletasks()
+            resultado = regularizar_fornecedor(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_antigo=doc_antigo, doc_novo=doc_novo, nome_novo=nome_novo,
+                razao_novo=razao_novo, dry_run=False, callback_progresso=progresso,
+                arquivo_log_debug=log_debug,
+                arquivos_cliente=arquivos_cliente_afetados,
+            )
+
+            resultado.salvar_log(os.path.join(
+                pasta_logs, f"regularizacao_{doc_antigo}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            ))
+
+            if resultado.arquivos_com_falha:
+                messagebox.showwarning("Concluído com pendências", resultado.resumo(), parent=self.root)
+            else:
+                messagebox.showinfo("Regularização concluída", resultado.resumo(), parent=self.root)
+
+            janela.destroy()
+
+            # --- Refresh: a listbox e os campos readonly desta aba podem
+            # estar exibindo dados agora desatualizados (CNPJ/nome mudou).
+            # Atualiza a lista e limpa a seleção — o usuário precisa
+            # reselecionar o fornecedor antes de continuar.
+            self.listar_todos_fornecedores_aba()
+            for entry in (self.ent_forn_cnpj, self.ent_forn_endereco):
+                entry.config(state='normal')
+                entry.delete(0, tk.END)
+                entry.config(state='readonly')
+            self.txt_forn_dados_bancarios.config(state='normal')
+            self.txt_forn_dados_bancarios.delete('1.0', tk.END)
+            self.txt_forn_dados_bancarios.config(state='disabled')
+
+        frame_botoes_reg = ttk.Frame(main)
+        frame_botoes_reg.pack(fill='x', pady=(15, 0))
+        ttk.Button(frame_botoes_reg, text="👁️ Pré-visualizar (não grava)",
+                command=pre_visualizar).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_reg, text="✅ Confirmar e Aplicar",
+                command=confirmar_e_aplicar).pack(side='left', padx=5)
+        ttk.Button(frame_botoes_reg, text="❌ Cancelar",
+                command=janela.destroy).pack(side='right', padx=5)
 
     def setup_aba_contratos(self):
         """Configura a aba de contratos"""
@@ -556,7 +827,7 @@ class GestaoMedicoes:
         frame_filtros.pack(fill='x', padx=5, pady=(0, 4))
 
         ttk.Label(frame_filtros, text="Status:").pack(side='left', padx=(0, 4))
-        self.var_filtro_status = tk.StringVar(value="Ativo")
+        self.var_filtro_status = tk.StringVar(value="Todos")
         for texto, valor in [("Todos", "Todos"), ("Ativo", "Ativo"), ("Concluído", "Concluído")]:
             ttk.Radiobutton(
                 frame_filtros, text=texto,
@@ -640,6 +911,10 @@ class GestaoMedicoes:
         ttk.Button(frame_botoes, text="Voltar",
                   command=lambda: self.notebook.select(self.aba_fornecedor)).pack(side='right', padx=5)
 
+        # Botão para voltar ao menu principal
+        ttk.Button(frame_principal, text="Voltar ao Menu Principal", 
+                  command=self.voltar_menu).pack(side='bottom', pady=10)
+        
         # Binding para duplo clique
         self.tree_contratos.bind('<Double-1>', lambda e: self.selecionar_contrato())
 
@@ -712,9 +987,17 @@ class GestaoMedicoes:
         ttk.Button(frame_botoes, text="Editar Medição", 
                 command=self.editar_medicao).pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Excluir Medição", 
-           command=self.excluir_medicao).pack(side='left')
-        ttk.Button(frame_botoes, text="Lançar no Cliente", 
-                command=self.lancar_medicao).pack(side='left', padx=5)
+        command=self.excluir_medicao).pack(side='left')
+        # ✅ DESABILITADO: "Lançar no Cliente" criava um lançamento direto nesta
+        # tela, sem passar pela Agenda. Isso é hoje prerrogativa exclusiva do
+        # financeiro, que confirma medições PENDENTES pela Agenda (Confirmar
+        # Lançamento / Confirmar Selecionados em Lote). Mantido no código
+        # (lancar_medicao) e visível na tela, mas sem ação, para não confundir a
+        # usuária do módulo com um caminho que não deve mais ser usado — e para
+        # não perder o rastro caso precise ser reativado no futuro.
+        btn_lancar = ttk.Button(frame_botoes, text="Lançar no Cliente", 
+                command=self.lancar_medicao, state='disabled')
+        btn_lancar.pack(side='left', padx=5)
         ttk.Button(frame_botoes, text="Vincular a Lançamento", 
                 command=self.vincular_medicao, 
                 style='Accent.TButton').pack(side='left', padx=5)
@@ -1879,40 +2162,57 @@ class GestaoMedicoes:
             messagebox.showerror("Erro", f"Erro ao carregar contrato para reemissão:\n{str(e)}", parent=self.root)
             
     def verificar_aba_medicoes(self):
-        """Verifica se a aba de medições existe na planilha do cliente e cria se necessário"""
+        """Verifica se a aba de medições existe na planilha do cliente; cria se
+        necessário (cliente novo) ou migra o cabeçalho (cliente já existente)."""
         try:
             if not os.path.exists(self.arquivo_cliente):
                 messagebox.showerror("Erro", f"Arquivo do cliente '{self.cliente_atual}' não encontrado!", parent=self.root)
                 return False
-                
+
             wb = load_workbook(self.arquivo_cliente)
-            
-            # Verificar se a aba de medições já existe
+
+            headers = [
+                "ID_Contrato", "ID_Medicao", "CNPJ_Fornecedor", "Nome_Fornecedor",
+                "Data_Medicao", "Data_Pagamento", "Referencia", "Valor",
+                "Status", "Data_Lancamento", "Observacao",
+                "Data_Rel"  # ✅ NOVA COLUNA — período do relatório (5 ou 20), fixo,
+                            # independente de ajuste de dia útil na Data_Pagamento
+            ]
+
             if "Medicoes" not in wb.sheetnames:
-                # Criar aba de medições
+                # Cliente novo: cria a aba já com as 12 colunas
                 ws = wb.create_sheet("Medicoes")
-                
-                # Definir cabeçalhos
-                headers = [
-                    "ID_Contrato", "ID_Medicao", "CNPJ_Fornecedor", "Nome_Fornecedor", 
-                    "Data_Medicao", "Data_Pagamento", "Referencia", "Valor", 
-                    "Status", "Data_Lancamento", "Observacao"
-                ]
-                
+
                 for col, header in enumerate(headers, 1):
                     cell = ws.cell(row=1, column=col, value=header)
                     cell.font = openpyxl.styles.Font(bold=True)
                     cell.alignment = openpyxl.styles.Alignment(horizontal='center')
-                
-                # Ajustar largura das colunas
+
                 for col in range(1, len(headers) + 1):
                     ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 15
-                
+
                 wb.save(self.arquivo_cliente)
+                wb.close()
                 return True
-            
+
+            # ✅ MIGRAÇÃO: a aba já existe, mas pode estar no formato antigo
+            # (11 colunas, sem Data_Rel). Detecta pelo cabeçalho da coluna 12 —
+            # não mexe em nenhuma linha de dados já gravada, só adiciona o
+            # cabeçalho que está faltando.
+            ws = wb["Medicoes"]
+            cabecalho_col12 = ws.cell(row=1, column=12).value
+
+            if not cabecalho_col12:
+                cell = ws.cell(row=1, column=12, value="Data_Rel")
+                cell.font = openpyxl.styles.Font(bold=True)
+                cell.alignment = openpyxl.styles.Alignment(horizontal='center')
+                ws.column_dimensions['L'].width = 15
+                wb.save(self.arquivo_cliente)
+                logger.info(f"✅ Coluna Data_Rel adicionada à aba Medicoes de '{self.cliente_atual}'")
+
+            wb.close()
             return True
-        
+
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao verificar aba de medições: {str(e)}", parent=self.root)
             return False
@@ -2563,12 +2863,20 @@ class GestaoMedicoes:
             wb.save(self.arquivo_cliente)
             wb.close()
             
-            messagebox.showinfo("Sucesso", "Contrato cadastrado com sucesso!", parent=self.root)
-            
+            messagebox.showinfo("Sucesso", "Contrato cadastrado com sucesso!",
+                                 parent=(janela or self.root))
+ 
             # CORREÇÃO: Só fechar janela se foi passada
             if janela:
                 janela.destroy()
-            
+            else:
+                # janela=None identifica o fluxo da aba integrada
+                # (incluir_contrato_na_aba, aba "Contrato" do Notebook) — não
+                # há janela modal para fechar. Nesse caso, volta sozinho para
+                # a aba Contratos, mesma ação do botão "Voltar" dessa tela,
+                # para não depender de um clique extra depois do OK.
+                self.notebook.select(self.aba_contratos)
+ 
             # Atualizar lista de contratos
             self.carregar_contratos()
             
@@ -2726,29 +3034,46 @@ class GestaoMedicoes:
             messagebox.showerror("Erro", f"Erro ao editar contrato: {str(e)}", parent=self.root)
 
     def verificar_medicoes_contrato(self, id_contrato):
-        """Verifica se o contrato possui medições registradas"""
+        """
+        Verifica se o contrato possui medições ATIVAS registradas.
+
+        ✅ CORRIGIDO (2 bugs):
+        1. A checagem antiga comparava id_contrato com a coluna B (ID_Medicao),
+        não com a coluna A (ID_Contrato) — comparação entre valores de
+        naturezas diferentes, sujeita a falso positivo/negativo por
+        coincidência numérica.
+        2. A checagem antiga não ignorava medições com status EXCLUÍDO. Como a
+        exclusão de medição é lógica (a linha permanece na planilha, só
+        muda o status), um contrato só com medições excluídas ficava
+        bloqueado para exclusão para sempre, achando que ainda tinha
+        vínculo ativo.
+        """
         try:
             wb = load_workbook(self.arquivo_cliente)
-            
-            # Verificar se a aba de medições existe
+
             if "Medicoes" not in wb.sheetnames:
                 wb.close()
                 return False
-            
+
             ws = wb["Medicoes"]
-            
-            # Verificar se há medições para este contrato
+
             for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[1] == id_contrato:  # Coluna B contém ID_Contrato
-                    wb.close()
-                    return True
-            
+                if row[0] != id_contrato:  # ✅ Coluna A = ID_Contrato
+                    continue
+
+                status_medicao = str(row[8] or '').strip().upper()  # Coluna I = Status
+                if status_medicao in ('EXCLUÍDO', 'EXCLUIDO'):
+                    continue  # ✅ Medição excluída não conta como vínculo ativo
+
+                wb.close()
+                return True
+
             wb.close()
             return False
-            
+
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao verificar medições: {str(e)}", parent=self.root)
-            return True  # Em caso de erro, assume que tem medições (segurança)
+            return True  # Em caso de erro, assume que tem medições (segurança) — mantido
 
     def excluir_contrato(self):
         """Exclui o contrato selecionado (apenas se não tiver medições)"""
@@ -2760,8 +3085,8 @@ class GestaoMedicoes:
         # Obter dados do contrato selecionado
         valores = self.tree_contratos.item(selecionado)['values']
         id_contrato = valores[0]
-        fornecedor = valores[1]
-        descricao = valores[2]
+        fornecedor = valores[2]
+        descricao = valores[3]
         
         try:
             # Verificar se o contrato possui medições
@@ -3993,9 +4318,24 @@ class GestaoMedicoes:
         data_pagamento = DateEntry(frame_medicao, width=12, background='darkblue',
                                 foreground='white', borderwidth=2, date_pattern='dd/mm/yyyy')
         data_pagamento.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        
-        # Calcular data de pagamento padrão (data da medição)
-        # data_pagamento = data_medicao
+
+        # ✅ Usa a função existente para sugerir a data E para definir o período
+        # do relatório (dia_referencia). O valor é capturado AQUI, uma única vez,
+        # e viaja como variável até o Salvar — não é recalculado a partir do que
+        # estiver na Data_Pagamento na hora de salvar. Isso é proposital: mesmo
+        # que o usuário edite a data manualmente, ou que uma regra de dia útil
+        # desloque a data sugerida, o período do relatório permanece o que foi
+        # decidido aqui, sem depender de inferir o dia do mês depois.
+        try:
+            from src.config_relatorio_quinzenal import calcular_data_rel_automatica
+            data_rel_automatica = calcular_data_rel_automatica()
+            dia_referencia_capturado = data_rel_automatica.day  # sempre 5 ou 20
+        except Exception:
+            data_rel_automatica = datetime.now()
+            dia_referencia_capturado = 20 if 6 <= data_rel_automatica.day <= 20 else 5
+            logger.warning("⚠️ Falha ao importar calcular_data_rel_automatica — usando fallback local")
+
+        data_pagamento.set_date(data_rel_automatica)
         
         # Referência
         ttk.Label(frame_medicao, text="Referência:*").grid(row=2, column=0, padx=5, pady=5, sticky='e')
@@ -4020,16 +4360,17 @@ class GestaoMedicoes:
         frame_botoes.pack(fill='x', pady=10)
         
         ttk.Button(frame_botoes, 
-                 text="Salvar", 
-                 command=lambda: self.salvar_medicao(
-                     janela,
-                     self.contrato_atual,
-                     data_medicao.get(),
-                     data_pagamento.get(),
-                     referencia.get(),
-                     valor.get(),
-                     observacoes.get("1.0", "end-1c")
-                 )).pack(side='left', padx=5)
+         text="Salvar", 
+         command=lambda: self.salvar_medicao(
+             janela,
+             self.contrato_atual,
+             data_medicao.get(),
+             data_pagamento.get(),
+             referencia.get(),
+             valor.get(),
+             observacoes.get("1.0", "end-1c"),
+             dia_referencia_capturado  # ✅ vem de calcular_data_rel_automatica(), sem campo manual
+         )).pack(side='left', padx=5)
         
         ttk.Button(frame_botoes, 
                  text="Cancelar", 
@@ -4079,14 +4420,25 @@ class GestaoMedicoes:
             logger.error(f"Erro ao obter dados do contrato: {str(e)}")
             return None
     
-    def salvar_medicao(self, janela, id_contrato, data_medicao, data_pagamento, referencia, valor, observacoes):
-        """Salva uma nova medição"""
+    def salvar_medicao(self, janela, id_contrato, data_medicao, data_pagamento, referencia, valor, observacoes, dia_referencia=None):
+        """
+        Salva uma nova medição.
+
+        dia_referencia: 5 ou 20 — define em qual relatório da Agenda esta
+        medição vai aparecer (grava na coluna Data_Rel). É independente da
+        Data_Pagamento efetiva, que pode ser ajustada para dia útil.
+
+        Se não informado (None), cai num fallback que infere a partir do
+        dia do mês de data_pagamento — usado apenas como rede de segurança
+        para chamadas antigas que ainda não foram atualizadas para passar
+        esse parâmetro; não deve ser o caminho normal.
+        """
         try:
             # Validar campos obrigatórios
             if not data_medicao or not data_pagamento or not referencia or not valor:
                 messagebox.showerror("Erro", "Preencha todos os campos obrigatórios!", parent=self.root)
                 return
-                
+
             # Validar valor
             try:
                 valor_float = float(valor.replace(',', '.'))
@@ -4096,13 +4448,13 @@ class GestaoMedicoes:
             except ValueError:
                 messagebox.showerror("Erro", "Valor inválido!", parent=self.root)
                 return
-                
+
             # Verificar saldo disponível
             saldo = self.verificar_saldo_contrato()
             if valor_float > saldo:
                 messagebox.showerror("Erro", f"Valor excede o saldo disponível de R$ {saldo:.2f}!", parent=self.root)
                 return
-                
+
             # Converter datas
             try:
                 data_med = datetime.strptime(data_medicao, '%d/%m/%Y')
@@ -4110,31 +4462,41 @@ class GestaoMedicoes:
             except ValueError:
                 messagebox.showerror("Erro", "Data inválida! Use o formato dd/mm/aaaa", parent=self.root)
                 return
-                
+
+            # ✅ NOVO: calcular Data_Rel (período do relatório), fixo em 5 ou 20,
+            # independente de qualquer ajuste de dia útil aplicado à Data_Pagamento
+            if dia_referencia in (5, 20):
+                data_rel_calc = data_pag.replace(day=dia_referencia)
+            else:
+                logger.warning(
+                    "⚠️ salvar_medicao chamado sem dia_referencia explícito "
+                    f"(contrato {id_contrato}) — usando inferência por fallback, "
+                    "menos confiável em datas de pagamento dinâmicas"
+                )
+                if 6 <= data_pag.day <= 20:
+                    data_rel_calc = data_pag.replace(day=20)
+                elif data_pag.day > 20:
+                    data_rel_calc = (data_pag + relativedelta(months=1)).replace(day=5)
+                else:
+                    data_rel_calc = data_pag.replace(day=5)
+
             # Abrir arquivo do cliente
             wb = load_workbook(self.arquivo_cliente)
             ws_medicoes = wb["Medicoes"]
-            
+
             # Gerar ID da medição (próximo número sequencial para o contrato)
-            # CORREÇÃO: o ID NUNCA é reutilizado, mesmo que a medição esteja
-            # EXCLUÍDA. Reaproveitar IDs de medições excluídas fazia com que
-            # duas linhas diferentes da planilha compartilhassem a mesma
-            # chave (ID_Contrato, ID_Medicao), quebrando a premissa de
-            # unicidade usada em excluir_medicao, lancar_medicao,
-            # vincular_medicao e atualizar_medicao — causando duplicidade de
-            # medições e valores lançados/pagos incorretos.
             next_id = 1
             for row in ws_medicoes.iter_rows(min_row=2, values_only=True):
                 if row[0] == id_contrato and row[1] and isinstance(row[1], int) and row[1] >= next_id:
                     next_id = row[1] + 1
-            
+
             # Obter dados do fornecedor
             contrato = self.obter_dados_contrato(id_contrato)
             if not contrato:
                 messagebox.showerror("Erro", "Não foi possível obter dados do contrato!", parent=self.root)
                 wb.close()
                 return
-                
+
             # Adicionar nova medição
             proxima_linha = ws_medicoes.max_row + 1
             ws_medicoes.cell(row=proxima_linha, column=1, value=id_contrato)  # ID_Contrato
@@ -4142,67 +4504,54 @@ class GestaoMedicoes:
 
             # Salvar CNPJ como texto para preservar zeros à esquerda
             cnpj_limpo = ''.join(filter(str.isdigit, str(contrato['cnpj'])))
-
-            # Determinar se é CPF ou CNPJ e garantir formatação adequada
             if len(cnpj_limpo) <= 11:
-                # É um CPF
                 cnpj_formatado = cnpj_limpo.zfill(11)
                 cnpj_formatado = f"{cnpj_formatado[:3]}.{cnpj_formatado[3:6]}.{cnpj_formatado[6:9]}-{cnpj_formatado[9:]}"
             else:
-                # É um CNPJ
                 cnpj_formatado = cnpj_limpo.zfill(14)
                 cnpj_formatado = f"{cnpj_formatado[:2]}.{cnpj_formatado[2:5]}.{cnpj_formatado[5:8]}/{cnpj_formatado[8:12]}-{cnpj_formatado[12:]}"
 
-            # Garantir que o CNPJ seja armazenado como texto na planilha
-            cnpj_cell = ws_medicoes.cell(row=proxima_linha, column=3, value=cnpj_formatado)
+            ws_medicoes.cell(row=proxima_linha, column=3, value=cnpj_formatado)
+            ws_medicoes.cell(row=proxima_linha, column=4, value=contrato['nome'])
+            ws_medicoes.cell(row=proxima_linha, column=5, value=data_med)         # Data_Medicao
+            ws_medicoes.cell(row=proxima_linha, column=6, value=data_pag)         # Data_Pagamento
+            ws_medicoes.cell(row=proxima_linha, column=7, value=referencia.upper())
 
-            ws_medicoes.cell(row=proxima_linha, column=4, value=contrato['nome'])  # Nome_Fornecedor
-            ws_medicoes.cell(row=proxima_linha, column=5, value=data_med)     # Data_Medicao
-            ws_medicoes.cell(row=proxima_linha, column=6, value=data_pag)     # Data_Pagamento
-            ws_medicoes.cell(row=proxima_linha, column=7, value=referencia.upper())  # Referencia
-            
-            # Formatação para valor
-            valor_cell = ws_medicoes.cell(row=proxima_linha, column=8, value=valor_float)  # Valor
+            valor_cell = ws_medicoes.cell(row=proxima_linha, column=8, value=valor_float)
             valor_cell.number_format = '#.##0,00'
-            
-            ws_medicoes.cell(row=proxima_linha, column=9, value="PENDENTE")   # Status
-            ws_medicoes.cell(row=proxima_linha, column=10, value=None)        # Data_Lancamento
-            ws_medicoes.cell(row=proxima_linha, column=11, value=observacoes.upper())  # Observacao
-            
+
+            ws_medicoes.cell(row=proxima_linha, column=9, value="PENDENTE")
+            ws_medicoes.cell(row=proxima_linha, column=10, value=None)
+            ws_medicoes.cell(row=proxima_linha, column=11, value=observacoes.upper())
+
+            # ✅ NOVO: Data_Rel — coluna 12
+            data_rel_cell = ws_medicoes.cell(row=proxima_linha, column=12, value=data_rel_calc)
+            data_rel_cell.number_format = 'DD/MM/YYYY'
+
             # Atualizar saldo do contrato na aba Contratos_Medicao
             ws_contratos = wb["Contratos_Medicao"]
             for idx, row in enumerate(ws_contratos.iter_rows(min_row=2, max_col=1, values_only=True), 2):
                 if row[0] == id_contrato:
-                    # Obter valores atuais
                     valor_global = ws_contratos.cell(row=idx, column=7).value or 0
                     valor_pago = ws_contratos.cell(row=idx, column=8).value or 0
-                    
-                    # Atualizar valor pago
                     novo_valor_pago = valor_pago + valor_float
                     valor_pago_cell = ws_contratos.cell(row=idx, column=8, value=novo_valor_pago)
                     valor_pago_cell.number_format = '#.##0,00'
-                    
-                    # Atualizar saldo
                     novo_saldo = valor_global - novo_valor_pago
                     saldo_cell = ws_contratos.cell(row=idx, column=9, value=novo_saldo)
                     saldo_cell.number_format = '#.##0,00'
-                    
-                    # Se saldo zerou, atualizar status para CONCLUÍDO
                     if novo_saldo <= 0:
                         ws_contratos.cell(row=idx, column=10, value="CONCLUÍDO")
-                    
                     break
-            
+
             # Salvar arquivo
             wb.save(self.arquivo_cliente)
             wb.close()
-            
+
             messagebox.showinfo("Sucesso", "Medição cadastrada com sucesso!", parent=self.root)
             janela.destroy()
-            
-            # Atualizar lista de medições
             self.carregar_medicoes()
-            
+
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao salvar medição: {str(e)}", parent=self.root)
             try:
@@ -4312,7 +4661,7 @@ class GestaoMedicoes:
             ttk.Label(frame_medicao, text="Novo Valor (R$):*").grid(row=4, column=0, padx=5, pady=5, sticky='e')
             valor_novo = ttk.Entry(frame_medicao, width=15)
             valor_novo.grid(row=4, column=1, padx=5, pady=5, sticky='w')
-            valor_novo.insert(0, str(dados_medicao['valor']))
+            valor_novo.insert(0, valor_formatado)
             
             # Observações
             ttk.Label(frame_medicao, text="Observações:").grid(row=5, column=0, padx=5, pady=5, sticky='ne')
