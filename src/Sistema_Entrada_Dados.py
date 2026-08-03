@@ -5334,6 +5334,8 @@ class SistemaEntradaDados:
             import logging
             
             logger = logging.getLogger(__name__)
+            logging.getLogger('PIL').setLevel(logging.WARNING)
+            logging.getLogger('matplotlib').setLevel(logging.WARNING)
             
             wb = load_workbook(ARQUIVO_FORNECEDORES)
             ws = wb['Fornecedores']
@@ -6665,7 +6667,7 @@ class SistemaEntradaDados:
                 
                 # TESTE: Validar CPF formatado com a função do sistema
                 try:
-                    if not validar_documento(cpf_formatado):
+                    if not validar_documento(cpf_formatado, 'PF'):
                         logger.debug(f"AVISO: Sistema não reconheceu CPF como válido: {cpf_formatado}")
                         # Mesmo assim, continuar - pode ser problema na função validar_documento
                 except Exception as e:
@@ -6906,16 +6908,16 @@ class SistemaEntradaDados:
             self.campos_form['nome'].insert(0, razao_social)
  
     def validar_cnpj_cpf_numeros(self, numeros):
-        """Valida CNPJ ou CPF usando apenas números"""
-        if not numeros or not numeros.isdigit():
-            return False
-        
+        """Valida CNPJ/CPF usando apenas os números"""
         if len(numeros) == 11:
-            return self.validar_cpf_algoritmo(numeros)
+            # Validar CPF
+            return validar_documento(
+                f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:9]}-{numeros[9:]}", 'PF')
         elif len(numeros) == 14:
-            return self.validar_cnpj_algoritmo(numeros)
-        else:
-            return False
+            # Validar CNPJ
+            return validar_documento(
+                f"{numeros[:2]}.{numeros[2:5]}.{numeros[5:8]}/{numeros[8:12]}-{numeros[12:]}", 'PJ')
+        return False
 
     def validar_cpf_algoritmo(self, cpf):
         """Valida CPF usando algoritmo oficial"""
@@ -7864,10 +7866,7 @@ class SistemaEntradaDados:
         entry_perdedores = ttk.Entry(campos, width=40)
         entry_perdedores.grid(row=1, column=1, sticky='w', padx=5)
 
-        var_liberar_cpf = tk.BooleanVar(value=True)
-        ttk.Checkbutton(campos, text="Liberar CPF criado do(s) perdedor(es) para reuso",
-                        variable=var_liberar_cpf).grid(row=2, column=0, columnspan=2, sticky='w', pady=4)
-
+       
         # ---- Ações ----
         frame_botoes = ttk.Frame(main)
         frame_botoes.pack(fill='x')
@@ -7887,23 +7886,23 @@ class SistemaEntradaDados:
             resultado = fundir_fornecedores(
                 base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
                 doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
-                liberar_cpfs_criados=var_liberar_cpf.get(), dry_run=True,
+                dry_run=True,
             )
             custom_messagebox(
                 "error" if resultado.erro else "info",
                 "Erro" if resultado.erro else "Pré-visualização (nada foi gravado)",
                 resultado.erro or resultado.resumo()
             )
-
+    
         def confirmar_e_aplicar():
             doc_vencedor, docs_perdedores = _ler_docs()
             if not doc_vencedor:
                 return
-
+    
             preview = fundir_fornecedores(
                 base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
                 doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
-                liberar_cpfs_criados=var_liberar_cpf.get(), dry_run=True,
+                dry_run=True,
             )
             if preview.erro:
                 custom_messagebox("error", "Erro", preview.erro)
@@ -7911,7 +7910,7 @@ class SistemaEntradaDados:
             if not preview.alteracoes:
                 custom_messagebox("info", "Nada a fazer", "Nenhuma alteração seria feita.")
                 return
-
+    
             arquivos_afetados = sorted(set(a.arquivo for a in preview.alteracoes))
             resposta = custom_messagebox(
                 "question", "⚠️ Confirmar Fusão de Cadastros",
@@ -7925,19 +7924,19 @@ class SistemaEntradaDados:
             )
             if not resposta:
                 return
-
+    
             resultado = fundir_fornecedores(
                 base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
                 doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
-                liberar_cpfs_criados=var_liberar_cpf.get(), dry_run=False,
+                dry_run=False,
             )
-
+    
             pasta_logs = os.path.join(os.path.dirname(ARQUIVO_FORNECEDORES), 'logs_regularizacao')
             os.makedirs(pasta_logs, exist_ok=True)
             resultado.salvar_log(os.path.join(
                 pasta_logs, f"fusao_{doc_vencedor}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
             ))
-
+    
             custom_messagebox(
                 "warning" if resultado.arquivos_com_falha else "info",
                 "Concluído com pendências" if resultado.arquivos_com_falha else "Fusão concluída",
@@ -19467,6 +19466,7 @@ class GerenciadorAgenda:
                         'dados_medicao': {
                             'id_contrato': row['ID_CONTRATO'],
                             'id_medicao': row['ID_MEDICAO'],
+                            'linha_planilha': int(idx) + 2,
                             'cnpj': cnpj_fornecedor,  # Guardar CNPJ para buscar dados bancários
                             'data_medicao': pd.to_datetime(row['DATA_MEDICAO']).date() if pd.notna(row['DATA_MEDICAO']) else dt_pagamento,
                             'data_pagamento': dt_pagamento
@@ -19555,6 +19555,7 @@ class GerenciadorAgenda:
                 medicoes_agrupadas[chave]['medicoes_individuais'].append({
                     'id_contrato': medicao['dados_medicao']['id_contrato'],
                     'id_medicao': medicao['dados_medicao']['id_medicao'],
+                    'linha_planilha': medicao['dados_medicao']['linha_planilha'],
                     'referencia': medicao['referencia'],
                     'valor': medicao['valor'],
                     'data_medicao': medicao['dados_medicao']['data_medicao'],
@@ -19592,6 +19593,7 @@ class GerenciadorAgenda:
                         'dados_medicao': {
                             'id_contrato': med['id_contrato'],
                             'id_medicao': med['id_medicao'],
+                            'linha_planilha': med['linha_planilha'],
                             'cnpj': grupo['cnpj_fornecedor'],
                             'data_medicao': med['data_medicao'],
                             'data_pagamento': med['data_pagamento']
@@ -19693,11 +19695,19 @@ class GerenciadorAgenda:
                             continue
                         
                         dia_venc_config = compromisso.get('dia_vencimento', 5)
-                        try:
-                            data_vencimento_sugerida = data_rel.replace(day=dia_venc_config)
-                        except ValueError:
-                            ultimo_dia = calendar.monthrange(data_rel.year, data_rel.month)[1]
-                            data_vencimento_sugerida = data_rel.replace(day=min(dia_venc_config, ultimo_dia))
+                        usar_dia_util = compromisso.get('considerar_dia_util', False)
+
+                        if usar_dia_util:
+                            # 'dia_venc_config' passa a significar "qual dia útil", não dia de calendário
+                            data_vencimento_sugerida = self.calcular_enesimo_dia_util(
+                                data_rel.year, data_rel.month, n=dia_venc_config
+                            )
+                        else:
+                            try:
+                                data_vencimento_sugerida = data_rel.replace(day=dia_venc_config)
+                            except ValueError:
+                                ultimo_dia = calendar.monthrange(data_rel.year, data_rel.month)[1]
+                                data_vencimento_sugerida = data_rel.replace(day=min(dia_venc_config, ultimo_dia))
                         
                         referencia_auto = self.formatar_referencia_auto(
                             compromisso['nome'], 
@@ -20187,6 +20197,33 @@ class GerenciadorAgenda:
             else:
                 data_rel = hoje.replace(day=5)
         return data_rel
+
+    def calcular_enesimo_dia_util(self, ano, mes, n=5, uf=None, cidade=None):
+        """
+        Retorna a data do N-ésimo dia útil do mês, pela regra:
+        segunda a sábado, excluindo domingo e feriados. UF/cidade usam o
+        padrão da sede da construtora (Belo Horizonte/MG) se não informados.
+        """
+        from src.feriados import obter_feriados_ano, eh_dia_util, UF_PADRAO, CIDADE_PADRAO
+        from datetime import date
+
+        uf = uf or UF_PADRAO
+        cidade = cidade or CIDADE_PADRAO
+
+        feriados = obter_feriados_ano(ano, uf=uf, cidade=cidade)
+        if mes == 12:
+            feriados |= obter_feriados_ano(ano + 1, uf=uf, cidade=cidade)
+
+        dia = date(ano, mes, 1)
+        contador = 0
+        while dia.month == mes:
+            if eh_dia_util(dia, feriados):
+                contador += 1
+                if contador == n:
+                    return dia
+            dia += timedelta(days=1)
+
+        return dia - timedelta(days=1)
 
     def novo_lancamento(self):
         """Abre interface para novo lançamento diretamente da agenda"""
@@ -21235,526 +21272,37 @@ class GerenciadorAgenda:
             custom_messagebox("error", "Erro", f"Erro ao resetar agenda: {str(e)}")
 
     def abrir_gerenciador_compromissos(self):
-        """Abre o gerenciador de compromissos recorrentes integrado à agenda"""
+        """
+        Abre a aba 'Agenda - Compromissos' da tela oficial de Configurações
+        do Sistema, em vez de uma janela própria da Agenda.
+
+        ✅ REDESENHO: a versão anterior construía uma tela duplicada, que foi
+        divergindo da tela real de Configurações do Sistema (faltavam campos
+        como Mês de Referência, indicação "(Dez) *1x" etc.). Agora a Agenda
+        abre exatamente a mesma tela usada em Configurações — qualquer campo
+        novo (como o de dia útil) passa a existir aqui automaticamente,
+        sem precisar manter duas interfaces sincronizadas à mão.
+        """
         try:
-            from src.config.utils import custom_messagebox
-            # Criar janela de gerenciamento
-            janela_compromissos = tk.Toplevel(self.janela)
-            janela_compromissos.title("Gerenciar Compromissos Recorrentes")
-            janela_compromissos.geometry("900x700")
-            janela_compromissos.transient(self.janela)
-            janela_compromissos.grab_set()
-            
-            # Frame principal
-            main_frame = ttk.Frame(janela_compromissos, padding="10")
-            main_frame.pack(fill='both', expand=True)
-            
-            # Título
-            ttk.Label(main_frame, text="Gerenciador de Compromissos Recorrentes", 
-                    font=('TkDefaultFont', 14, 'bold')).pack(pady=(0, 15))
-            
-            # Frame dividido em duas colunas
-            frame_conteudo = ttk.Frame(main_frame)
-            frame_conteudo.pack(fill='both', expand=True)
-            
-            # === COLUNA ESQUERDA: LISTA DE COMPROMISSOS ===
-            frame_esquerda = ttk.LabelFrame(frame_conteudo, text="Compromissos Cadastrados")
-            frame_esquerda.pack(side='left', fill='both', expand=True, padx=(0, 10))
-            
-            # Treeview para compromissos
-            colunas = ('Nome', 'Dia', 'Recorrência', 'Valor', 'Status')
-            tree_compromissos = ttk.Treeview(frame_esquerda, columns=colunas, show='headings', height=20)
-            
-            # Configurar cabeçalhos
-            for col in colunas:
-                tree_compromissos.heading(col, text=col)
-            
-            # Configurar larguras
-            tree_compromissos.column('Nome', width=180)
-            tree_compromissos.column('Dia', width=60, anchor='center')
-            tree_compromissos.column('Recorrência', width=100, anchor='center')
-            tree_compromissos.column('Valor', width=100, anchor='e')
-            tree_compromissos.column('Status', width=80, anchor='center')
-            
-            # Scrollbar
-            scrollbar = ttk.Scrollbar(frame_esquerda, orient='vertical', command=tree_compromissos.yview)
-            tree_compromissos.configure(yscrollcommand=scrollbar.set)
-            
-            tree_compromissos.pack(side='left', fill='both', expand=True, padx=5, pady=5)
-            scrollbar.pack(side='right', fill='y', pady=5)
-            
-            # === COLUNA DIREITA: FORMULÁRIOS ===
-            frame_direita = ttk.Frame(frame_conteudo)
-            frame_direita.pack(side='right', fill='y', padx=(10, 0))
-            
-            # Frame para novo compromisso
-            frame_novo = ttk.LabelFrame(frame_direita, text="Novo Compromisso")
-            frame_novo.pack(fill='x', pady=(0, 10))
-            
-            # Campos do formulário
-            campos_novo = {}
-            
-            # Nome
-            ttk.Label(frame_novo, text="Nome:").grid(row=0, column=0, padx=5, pady=5, sticky='w')
-            campos_novo['nome'] = ttk.Entry(frame_novo, width=25)
-            campos_novo['nome'].grid(row=0, column=1, padx=5, pady=5)
-            
-            # Dia vencimento
-            ttk.Label(frame_novo, text="Dia Vencimento:").grid(row=1, column=0, padx=5, pady=5, sticky='w')
-            campos_novo['dia'] = ttk.Spinbox(frame_novo, from_=1, to=31, width=10)
-            campos_novo['dia'].set('5')
-            campos_novo['dia'].grid(row=1, column=1, padx=5, pady=5, sticky='w')
-            
-            # Recorrência
-            ttk.Label(frame_novo, text="Recorrência:").grid(row=2, column=0, padx=5, pady=5, sticky='w')
-            campos_novo['recorrencia'] = ttk.Combobox(frame_novo, 
-                                                    values=['mensal', 'trimestral', 'semestral', 'anual'],
-                                                    state='readonly', width=22)
-            campos_novo['recorrencia'].set('mensal')
-            campos_novo['recorrencia'].grid(row=2, column=1, padx=5, pady=5)
-            
-            # Mês de Referência (para recorrências não-mensais)
-            ttk.Label(frame_novo, text="Mês de Referência:").grid(row=7, column=0, padx=5, pady=5, sticky='w')
-            campos_novo['mes_referencia'] = ttk.Combobox(frame_novo, 
-                values=['1-Jan', '2-Fev', '3-Mar', '4-Abr', '5-Mai', '6-Jun',
-                        '7-Jul', '8-Ago', '9-Set', '10-Out', '11-Nov', '12-Dez'],
-                state='disabled', width=10)
-            campos_novo['mes_referencia'].grid(row=7, column=1, padx=5, pady=5, sticky='w')
-            
-            ttk.Label(frame_novo, text="Mês de Referência é obrigatório se habilitado.", 
-                    font=('TkDefaultFont', 8), foreground='gray').grid(
-                        row=8, column=0, columnspan=2, sticky='w', padx=5)
-            
-            # Meses de Ocorrências (para múltiplas parcelas)
-            ttk.Label(frame_novo, text="Meses de Ocorrência:").grid(row=9, column=0, padx=5, pady=5, sticky='w')
-            campos_novo['meses_ocorrencias'] = ttk.Entry(frame_novo, width=15, state='disabled')
-            campos_novo['meses_ocorrencias'].grid(row=9, column=1, padx=5, pady=5, sticky='w')
-            
-            
-            # === FUNÇÃO PARA MOSTRAR/OCULTAR CAMPOS BASEADO NA RECORRÊNCIA ===
-            
-            def on_recorrencia_change(event=None):
-                """Mostra campos adicionais apenas para recorrências não-mensais"""
-                recorrencia = campos_novo['recorrencia'].get()
-                
-                if recorrencia in ['anual', 'trimestral', 'semestral']:
-                    # Habilitar campos
-                    campos_novo['mes_referencia'].config(state='readonly')
-                    campos_novo['meses_ocorrencias'].config(state='normal')
-                else:
-                    # Desabilitar e limpar campos
-                    campos_novo['mes_referencia'].config(state='disabled')
-                    campos_novo['mes_referencia'].set('')
-                    campos_novo['meses_ocorrencias'].config(state='disabled')
-                    campos_novo['meses_ocorrencias'].delete(0, tk.END)
-            
-            # Vincular evento de mudança de recorrência
-            campos_novo['recorrencia'].bind('<<ComboboxSelected>>', on_recorrencia_change)
+            from src.configuracoes_sistema import GerenciadorConfiguracoes
 
-            # Categoria
-            ttk.Label(frame_novo, text="Categoria:").grid(row=3, column=0, padx=5, pady=5, sticky='w')
-            categorias = ['ADM', 'DIV', 'LOC', 'MAT', 'MO', 'SERV', 'TP']
-            campos_novo['categoria'] = ttk.Combobox(frame_novo, values=categorias, state='readonly', width=22)
-            campos_novo['categoria'].set('MO')
-            campos_novo['categoria'].grid(row=3, column=1, padx=5, pady=5)
-            
-            # Tipo despesa
-            ttk.Label(frame_novo, text="Tipo Despesa:").grid(row=4, column=0, padx=5, pady=5, sticky='w')
-            campos_novo['tipo_despesa'] = ttk.Combobox(frame_novo, values=['2', '3', '5', '6', '7'], 
-                                                    state='readonly', width=10)
-            campos_novo['tipo_despesa'].set('3')
-            campos_novo['tipo_despesa'].grid(row=4, column=1, padx=5, pady=5, sticky='w')
-            
-            # Valor estimado
-            ttk.Label(frame_novo, text="Valor Estimado:").grid(row=5, column=0, padx=5, pady=5, sticky='w')
-            campos_novo['valor'] = ttk.Entry(frame_novo, width=15)
-            campos_novo['valor'].insert(0, "0,00")
-            campos_novo['valor'].grid(row=5, column=1, padx=5, pady=5, sticky='w')
-            
-            # Observação
-            ttk.Label(frame_novo, text="Observação:").grid(row=6, column=0, padx=5, pady=5, sticky='w')
-            campos_novo['observacao'] = ttk.Entry(frame_novo, width=25)
-            campos_novo['observacao'].grid(row=6, column=1, padx=5, pady=5)
+            janela_config = GerenciadorConfiguracoes(parent=self.janela)
 
-            # Tipo de Referência
-            ttk.Label(frame_novo, text="📅 Tipo Ref.:").grid(row=7, column=0, padx=5, pady=5, sticky='w')
-            campos_novo['tipo_referencia_mes'] = ttk.Combobox(frame_novo, 
-                    values=['anterior', 'atual'],
-                    state='readonly', width=15)
-            campos_novo['tipo_referencia_mes'].set('anterior')
-            campos_novo['tipo_referencia_mes'].grid(row=7, column=1, padx=5, pady=5, sticky='w')
+            # Seleciona direto a aba "Agenda - Compromissos", sem obrigar o
+            # usuário a navegar por Café, Bancos, Categorias etc.
+            for tab_id in janela_config.notebook.tabs():
+                if janela_config.notebook.tab(tab_id, 'text') == 'Agenda - Compromissos':
+                    janela_config.notebook.select(tab_id)
+                    break
 
-            # Explicação
-            ttk.Label(frame_novo, 
-                    text="'anterior' = mês passado | 'atual' = mês do relatório",
-                    font=('TkDefaultFont', 8), 
-                    foreground='gray').grid(row=8, column=0, columnspan=2, sticky='w', padx=5)
-            
-            # Frame para editar compromisso
-            frame_editar = ttk.LabelFrame(frame_direita, text="Editar Compromisso Selecionado")
-            frame_editar.pack(fill='x', pady=(0, 10))
-            
-            # Campos de edição (similares aos de criação)
-            campos_editar = {}
-            
-            ttk.Label(frame_editar, text="Nome:").grid(row=0, column=0, padx=5, pady=3, sticky='w')
-            campos_editar['nome'] = ttk.Entry(frame_editar, width=25)
-            campos_editar['nome'].grid(row=0, column=1, padx=5, pady=3)
-            
-            ttk.Label(frame_editar, text="Dia:").grid(row=1, column=0, padx=5, pady=3, sticky='w')
-            campos_editar['dia'] = ttk.Spinbox(frame_editar, from_=1, to=31, width=10)
-            campos_editar['dia'].grid(row=1, column=1, padx=5, pady=3, sticky='w')
-            
-            ttk.Label(frame_editar, text="Valor:").grid(row=2, column=0, padx=5, pady=3, sticky='w')
-            campos_editar['valor'] = ttk.Entry(frame_editar, width=15)
-            campos_editar['valor'].grid(row=2, column=1, padx=5, pady=3, sticky='w')
-            
-            # === FUNÇÕES LOCAIS ===
-            
-            def carregar_compromissos():
-                """Carrega compromissos no treeview"""
-                # Limpar tree
-                for item in tree_compromissos.get_children():
-                    tree_compromissos.delete(item)
-                
-                # Carregar configurações
-                try:
-                    from src.configuracoes_sistema import GerenciadorConfiguracoes
-                    compromissos = GerenciadorConfiguracoes.get_compromissos_recorrentes_todos()
-                    
-                    for comp in compromissos:
-                        status = "ATIVO" if comp.get('ativo', True) else "INATIVO"
-                        tag = 'ativo' if comp.get('ativo', True) else 'inativo'
-                        
-                        # ✅ CORREÇÃO: Usar formatação brasileira
-                        valor = comp.get('valor_estimado', 0.0)
-                        valor_formatado = f"R$ {valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                        
-                        tree_compromissos.insert('', 'end',
-                            values=(
-                                comp['nome'],
-                                comp['dia_vencimento'],
-                                comp['recorrencia'],
-                                valor_formatado,  # ✅ AQUI
-                                status
-                            ),
-                            tags=(tag,)
-                        )
-                    
-                    # Configurar cores
-                    tree_compromissos.tag_configure('ativo', background='#e8f5e8')
-                    tree_compromissos.tag_configure('inativo', background='#ffe4e1')
-                    
-                except Exception as e:
-                    logger.debug(f"Erro ao carregar compromissos: {e}")
-            
-            def on_select_compromisso(event):
-                """Evento de seleção de compromisso"""
-                selecionado = tree_compromissos.selection()
-                if not selecionado:
-                    return
-                
-                valores = tree_compromissos.item(selecionado[0])['values']
-                nome_compromisso = valores[0]
-                
-                # ✅ CORREÇÃO: Buscar compromisso completo na configuração
-                try:
-                    from src.configuracoes_sistema import GerenciadorConfiguracoes
-                    compromissos = GerenciadorConfiguracoes.get_compromissos_recorrentes_todos()
-                    
-                    # Encontrar o compromisso pelo nome
-                    compromisso = None
-                    for comp in compromissos:
-                        if comp['nome'] == nome_compromisso:
-                            compromisso = comp
-                            break
-                    
-                    if not compromisso:
-                        return
-                    
-                    # Preencher campos de edição com dados completos
-                    campos_editar['nome'].delete(0, tk.END)
-                    campos_editar['nome'].insert(0, compromisso['nome'])
-                    
-                    campos_editar['dia'].delete(0, tk.END)
-                    campos_editar['dia'].insert(0, str(compromisso['dia_vencimento']))
-                    
-                    campos_editar['valor'].delete(0, tk.END)
-                    valor_formatado = f"{compromisso.get('valor_estimado', 0):.2f}".replace('.', ',')
-                    campos_editar['valor'].insert(0, valor_formatado)
-                    
-                    # ✅ NOVO: Se tiver campo tipo_referencia_mes, preencher também
-                    if 'tipo_referencia_mes' in campos_editar:
-                        tipo_ref = compromisso.get('tipo_referencia_mes', 'anterior')
-                        campos_editar['tipo_referencia_mes'].set(tipo_ref)
-                    
-                except Exception as e:
-                    logger.debug(f"Erro ao carregar compromisso: {e}")
-                    # Fallback para método antigo se houver erro
-                    campos_editar['nome'].delete(0, tk.END)
-                    campos_editar['nome'].insert(0, valores[0])
-                    
-                    campos_editar['dia'].delete(0, tk.END)
-                    campos_editar['dia'].insert(0, valores[1])
-                    
-                    valor_str = valores[3].replace('R$ ', '').replace('.', '').replace(',', '.')
-                    campos_editar['valor'].delete(0, tk.END)
-                    campos_editar['valor'].insert(0, f"{float(valor_str):.2f}".replace('.', ','))
-            
-            def adicionar_compromisso():
-                """Adiciona novo compromisso"""
-                try:
-                    # Validações
-                    nome = campos_novo['nome'].get().strip().upper()
-                    if not nome:
-                        custom_messagebox("error", "Erro", "Nome é obrigatório!")
-                        return
-                    
-                    # Coletar dados
-                    dia = int(campos_novo['dia'].get())
-                    recorrencia = campos_novo['recorrencia'].get()
-                    categoria = campos_novo['categoria'].get()
-                    tipo_despesa = int(campos_novo['tipo_despesa'].get())
-                    
-                    valor_str = campos_novo['valor'].get().replace(',', '.')
-                    valor = float(valor_str) if valor_str else 0.0
-                    
-                    observacao = campos_novo['observacao'].get().strip()
+            # Bloqueia aqui até a janela de configurações ser fechada (pelo X
+            # ou por "Voltar ao Menu Principal") e só então recarrega a
+            # Agenda, refletindo qualquer alteração feita nos compromissos.
+            self.janela.wait_window(janela_config.root)
+            self.carregar_dados_agenda()
 
-                    tipo_referencia_mes_valor = campos_novo['tipo_referencia_mes'].get()
-                    
-                    # === PROCESSAR NOVOS CAMPOS ===
-                    
-                    # Mês de referência
-                    mes_ref = None
-                    if recorrencia in ['anual', 'trimestral', 'semestral']:
-                        mes_ref_str = campos_novo['mes_referencia'].get()
-                        if mes_ref_str:
-                            # Extrair número do mês (ex: "11-Nov" -> 11)
-                            mes_ref = int(mes_ref_str.split('-')[0])
-                    
-                    # Meses de ocorrências
-                    meses_ocorr = None
-                    meses_ocorr_str = campos_novo['meses_ocorrencias'].get().strip()
-                    if meses_ocorr_str:
-                        try:
-                            # Converter string "11,12" em lista [11, 12]
-                            meses_ocorr = [int(m.strip()) for m in meses_ocorr_str.split(',')]
-                        except:
-                            pass
-                    
-                    # Criar compromisso com novos campos
-                    novo_compromisso = {
-                        'nome': nome,
-                        'dia_vencimento': dia,
-                        'recorrencia': recorrencia,
-                        'valor_estimado': valor,
-                        'categoria': categoria,
-                        'tipo_despesa': tipo_despesa,
-                        'ativo': True,
-                        'observacao': observacao,
-                        'mes_referencia': mes_ref,  # NOVO
-                        'tipo_referencia_mes': tipo_referencia_mes_valor,
-                        'meses_ocorrencias': meses_ocorr  # NOVO
-                    }
-                    
-                    # Salvar na configuração
-                    from src.configuracoes_sistema import GerenciadorConfiguracoes
-                    config = GerenciadorConfiguracoes.carregar_configuracoes()
-                    
-                    if 'compromissos_recorrentes' not in config:
-                        config['compromissos_recorrentes'] = {'lista': [], 'historico_alteracoes': []}
-                    
-                    # Verificar duplicatas
-                    if any(c['nome'] == nome for c in config['compromissos_recorrentes']['lista']):
-                        custom_messagebox("error", "Erro", "Já existe um compromisso com este nome!")
-                        return
-                                      
-                    config['compromissos_recorrentes']['lista'].append(novo_compromisso)
-                    
-                    # Salvar configuração
-                    from pathlib import Path
-                    import json
-                    config_path = GerenciadorConfiguracoes.CONFIG_PATH
-                    with open(config_path, 'w', encoding='utf-8') as f:
-                        json.dump(config, f, indent=4, ensure_ascii=False)
-                    
-                    # Atualizar cache
-                    GerenciadorConfiguracoes._atualizar_cache(config)
-                    
-                    # Limpar campos
-                    for campo in campos_novo.values():
-                        if hasattr(campo, 'delete'):
-                            campo.delete(0, tk.END)
-                        elif hasattr(campo, 'set'):
-                            campo.set('')
-                    
-                    # Recarregar lista
-                    carregar_compromissos()
-                    
-                    custom_messagebox("info", "Sucesso", "Compromisso adicionado com sucesso!")
-                    
-                except Exception as e:
-                    custom_messagebox("error", "Erro", f"Erro ao adicionar compromisso: {str(e)}")
-            
-            def salvar_alteracoes():
-                """Salva alterações no compromisso selecionado"""
-                selecionado = tree_compromissos.selection()
-                if not selecionado:
-                    custom_messagebox("warning", "Aviso", "Selecione um compromisso para editar!")
-                    return
-                
-                try:
-                    nome_original = tree_compromissos.item(selecionado[0])['values'][0]
-                    
-                    # Carregar configuração
-                    from src.configuracoes_sistema import GerenciadorConfiguracoes
-                    config = GerenciadorConfiguracoes.carregar_configuracoes()
-                    
-                    # Encontrar e atualizar compromisso
-                    for comp in config['compromissos_recorrentes']['lista']:
-                        if comp['nome'] == nome_original:
-                            comp['nome'] = campos_editar['nome'].get().strip().upper()
-                            comp['dia_vencimento'] = int(campos_editar['dia'].get())
-                            
-                            valor_str = campos_editar['valor'].get().replace(',', '.')
-                            comp['valor_estimado'] = float(valor_str) if valor_str else 0.0
-
-                            if 'tipo_referencia_mes' in campos_editar:
-                                comp['tipo_referencia_mes'] = campos_editar['tipo_referencia_mes'].get()
-                            break
-                    
-                    # Salvar configuração
-                    import json
-                    config_path = GerenciadorConfiguracoes.CONFIG_PATH
-                    with open(config_path, 'w', encoding='utf-8') as f:
-                        json.dump(config, f, indent=4, ensure_ascii=False)
-                    
-                    # Atualizar cache
-                    GerenciadorConfiguracoes._atualizar_cache(config)
-                    
-                    # Recarregar
-                    carregar_compromissos()
-                    
-                    custom_messagebox("info", "Sucesso", "Compromisso atualizado com sucesso!")
-                    
-                except Exception as e:
-                    custom_messagebox("error", "Erro", f"Erro ao salvar: {str(e)}")
-            
-            def toggle_status():
-                """Ativa/desativa compromisso selecionado"""
-                selecionado = tree_compromissos.selection()
-                if not selecionado:
-                    custom_messagebox("warning", "Aviso", "Selecione um compromisso!")
-                    return
-                
-                try:
-                    nome = tree_compromissos.item(selecionado[0])['values'][0]
-                    
-                    # Carregar e alterar configuração
-                    from src.configuracoes_sistema import GerenciadorConfiguracoes
-                    config = GerenciadorConfiguracoes.carregar_configuracoes()
-                    
-                    for comp in config['compromissos_recorrentes']['lista']:
-                        if comp['nome'] == nome:
-                            comp['ativo'] = not comp.get('ativo', True)
-                            status = "ativado" if comp['ativo'] else "desativado"
-                            break
-                    
-                    # Salvar
-                    import json
-                    config_path = GerenciadorConfiguracoes.CONFIG_PATH
-                    with open(config_path, 'w', encoding='utf-8') as f:
-                        json.dump(config, f, indent=4, ensure_ascii=False)
-                    
-                    GerenciadorConfiguracoes._atualizar_cache(config)
-                    carregar_compromissos()
-                    
-                    custom_messagebox("info", "Sucesso", f"Compromisso {status}!")
-                    
-                except Exception as e:
-                    custom_messagebox("error", "Erro", f"Erro ao alterar status: {str(e)}")
-            
-            def remover_compromisso():
-                """Remove compromisso selecionado"""
-                selecionado = tree_compromissos.selection()
-                if not selecionado:
-                    custom_messagebox("warning", "Aviso", "Selecione um compromisso para remover!")
-                    return
-                
-                nome = tree_compromissos.item(selecionado[0])['values'][0]
-                
-                if not custom_messagebox("yesno", "Confirmar", f"Deseja remover o compromisso '{nome}'?"):
-                    return
-                
-                try:
-                    # Remover da configuração
-                    from src.configuracoes_sistema import GerenciadorConfiguracoes
-                    config = GerenciadorConfiguracoes.carregar_configuracoes()
-                    
-                    config['compromissos_recorrentes']['lista'] = [
-                        c for c in config['compromissos_recorrentes']['lista'] 
-                        if c['nome'] != nome
-                    ]
-                    
-                    # Salvar
-                    import json
-                    config_path = GerenciadorConfiguracoes.CONFIG_PATH
-                    with open(config_path, 'w', encoding='utf-8') as f:
-                        json.dump(config, f, indent=4, ensure_ascii=False)
-                    
-                    GerenciadorConfiguracoes._atualizar_cache(config)
-                    carregar_compromissos()
-                    
-                    # Limpar campos de edição
-                    for campo in campos_editar.values():
-                        campo.delete(0, tk.END)
-                    
-                    custom_messagebox("info", "Sucesso", "Compromisso removido com sucesso!")
-                    
-                except Exception as e:
-                    custom_messagebox("error", "Erro", f"Erro ao remover: {str(e)}")
-            
-            def fechar_e_recarregar():
-                """Fecha o gerenciador e recarrega a agenda"""
-                janela_compromissos.destroy()
-                # Recarregar dados da agenda para refletir alterações
-                self.carregar_dados_agenda()
-            
-            # === BOTÕES ===
-            
-            # Botões para novo compromisso
-            ttk.Button(frame_novo, text="Adicionar Compromisso",
-                    command=adicionar_compromisso).grid(row=10, column=0, columnspan=2, pady=10)
-            
-            # Botões para edição
-            frame_botoes_edicao = ttk.Frame(frame_editar)
-            frame_botoes_edicao.grid(row=3, column=0, columnspan=2, pady=10)
-            
-            ttk.Button(frame_botoes_edicao, text="Salvar",
-                    command=salvar_alteracoes).pack(side='left', padx=2)
-            ttk.Button(frame_botoes_edicao, text="Ativar/Desativar",
-                    command=toggle_status).pack(side='left', padx=2)
-            ttk.Button(frame_botoes_edicao, text="Remover",
-                    command=remover_compromisso).pack(side='left', padx=2)
-            
-            # Botões inferiores
-            frame_botoes_inferior = ttk.Frame(main_frame)
-            frame_botoes_inferior.pack(fill='x', pady=(15, 0))
-            
-            ttk.Button(frame_botoes_inferior, text="Fechar e Recarregar Agenda",
-                    command=fechar_e_recarregar).pack(side='right', padx=5)
-            
-            # === EVENTOS ===
-            tree_compromissos.bind('<<TreeviewSelect>>', on_select_compromisso)
-            
-            # Carregar dados iniciais
-            carregar_compromissos()
-            
-            logger.debug("DEBUG: Gerenciador de compromissos aberto com sucesso")
-            
         except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao abrir gerenciador: {str(e)}")
+            custom_messagebox("error", "Erro", f"Erro ao abrir gerenciador de compromissos: {str(e)}")
             logger.debug(f"DEBUG: Erro ao abrir gerenciador de compromissos: {str(e)}")
 
     def importar_excel(self):
@@ -22434,80 +21982,80 @@ class GerenciadorAgenda:
     
     def atualizar_status_medicoes_lancadas(self, item_agenda):
         """
-        ✅ VERSÃO CORRIGIDA - Atualiza status das medições para LANÇADO
-        Funciona para medições individuais e agrupadas
+        VERSÃO CORRIGIDA — atualiza diretamente pela linha física da planilha
+        (linha_planilha), em vez de varrer a aba inteira procurando por
+        (Contrato, ID_Medicao). Isso elimina o risco de marcar como LANÇADO uma
+        linha antiga já EXCLUÍDA que, por coincidência, compartilhe a mesma
+        chave com a medição nova (cenário possível desde que o ID_Medicao passou
+        a poder ser reaproveitado, por decisão de negócio, para não deixar
+        buracos no relatório).
         """
         try:
             logger.debug("=" * 80)
             logger.debug("🔄 INICIANDO ATUALIZAÇÃO DE STATUS DAS MEDIÇÕES")
             logger.debug("=" * 80)
-            
-            # Verificar se é uma medição
+    
             if not item_agenda.get('origem') in ['MEDICAO', 'MEDICAO_AGRUPADA']:
                 logger.debug("DEBUG: Item não é uma medição, pulando atualização")
                 return True
-            
+    
             arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
             if not arquivo_cliente.exists():
                 logger.error("❌ Arquivo do cliente não existe")
                 return False
-            
+    
             from openpyxl import load_workbook
             from datetime import datetime
-            
-            # ✅ Abrir workbook UMA VEZ
+    
             wb = load_workbook(arquivo_cliente)
-            
+    
             if "Medicoes" not in wb.sheetnames:
                 logger.error("❌ Aba Medicoes não encontrada")
                 wb.close()
                 return False
-            
+    
             ws_medicoes = wb["Medicoes"]
             data_lancamento = datetime.now()
-            
-            # Lista de medições a atualizar
+    
+            # Lista de medições a atualizar, agora carregando também a linha
+            # física de origem (linha_planilha), quando disponível.
             medicoes_atualizar = []
-            
+    
             if item_agenda['origem'] == 'MEDICAO':
-                # Medição individual
                 medicoes_atualizar.append({
                     'id_contrato': item_agenda['dados_medicao']['id_contrato'],
-                    'id_medicao': item_agenda['dados_medicao']['id_medicao']
+                    'id_medicao': item_agenda['dados_medicao']['id_medicao'],
+                    'linha_planilha': item_agenda['dados_medicao'].get('linha_planilha')
                 })
                 logger.debug(f"DEBUG: Medição INDIVIDUAL")
                 logger.debug(f"       Contrato {item_agenda['dados_medicao']['id_contrato']}, "
                             f"Medição {item_agenda['dados_medicao']['id_medicao']}")
-            
+    
             elif item_agenda['origem'] == 'MEDICAO_AGRUPADA':
-                # Medições agrupadas
                 for med in item_agenda.get('medicoes_individuais', []):
                     medicoes_atualizar.append({
                         'id_contrato': med['id_contrato'],
-                        'id_medicao': med['id_medicao']
+                        'id_medicao': med['id_medicao'],
+                        'linha_planilha': med.get('linha_planilha')
                     })
                 logger.debug(f"DEBUG: Medições AGRUPADAS - {len(medicoes_atualizar)} medições")
-            
+    
             if not medicoes_atualizar:
                 logger.warning("⚠️ Nenhuma medição para atualizar")
                 wb.close()
                 return False
-            
-            # ✅ Identificar colunas dinamicamente
+    
+            # Identificar colunas dinamicamente (mantido como no original)
             cabecalhos = {}
             for idx, cell in enumerate(ws_medicoes[1], start=1):
                 if cell.value:
                     nome_normalizado = str(cell.value).strip().upper()
                     cabecalhos[nome_normalizado] = idx
-            
-            logger.debug(f"DEBUG: Cabeçalhos encontrados: {list(cabecalhos.keys())}")
-            
-            # ✅ Mapear colunas essenciais
+    
             try:
                 col_id_contrato = cabecalhos.get('ID_CONTRATO', 1)
                 col_id_medicao = cabecalhos.get('ID_MEDICAO', cabecalhos.get('ID_MEDIÇÃO', 2))
-                
-                # Status pode ser STATUS ou STATUS_MEDICAO
+    
                 col_status = None
                 if 'STATUS_MEDICAO' in cabecalhos:
                     col_status = cabecalhos['STATUS_MEDICAO']
@@ -22515,55 +22063,78 @@ class GerenciadorAgenda:
                     col_status = cabecalhos['STATUS']
                 else:
                     raise KeyError("Coluna de STATUS não encontrada")
-                
-                col_data_lanc = cabecalhos.get('DATA_LANCAMENTO', 10)  # Assumir coluna J se não encontrar
-                
-                logger.debug(f"DEBUG: Coluna ID_CONTRATO: {col_id_contrato} (Coluna {chr(64+col_id_contrato)})")
-                logger.debug(f"DEBUG: Coluna ID_MEDICAO: {col_id_medicao} (Coluna {chr(64+col_id_medicao)})")
-                logger.debug(f"DEBUG: Coluna STATUS: {col_status} (Coluna {chr(64+col_status)})")
-                logger.debug(f"DEBUG: Coluna DATA_LANCAMENTO: {col_data_lanc} (Coluna {chr(64+col_data_lanc)})")
-                
+    
+                col_data_lanc = cabecalhos.get('DATA_LANCAMENTO', 10)
             except KeyError as e:
                 logger.error(f"❌ Coluna essencial não encontrada: {e}")
                 wb.close()
                 return False
-            
-            # ✅ Atualizar cada medição
+    
+            # ===== ATUALIZAÇÃO PELA LINHA FÍSICA (CORREÇÃO PRINCIPAL) =====
             medicoes_atualizadas = 0
-            
-            for idx in range(2, ws_medicoes.max_row + 1):
-                try:
-                    # Obter valores das células (índice 0-based)
-                    id_contrato_valor = ws_medicoes.cell(row=idx, column=col_id_contrato).value
-                    id_medicao_valor = ws_medicoes.cell(row=idx, column=col_id_medicao).value
-                    
-                    # Verificar se corresponde a alguma medição a atualizar
-                    for medicao in medicoes_atualizar:
-                        if (id_contrato_valor == medicao['id_contrato'] and 
-                            id_medicao_valor == medicao['id_medicao']):
-                            
-                            # ✅ Atualizar Status
-                            ws_medicoes.cell(row=idx, column=col_status).value = 'LANÇADO'
-                            
-                            # ✅ Atualizar Data_Lancamento
-                            cell_data = ws_medicoes.cell(row=idx, column=col_data_lanc)
-                            cell_data.value = data_lancamento
-                            cell_data.number_format = 'DD/MM/YYYY HH:MM:SS'
-                            
-                            medicoes_atualizadas += 1
-                            
-                            logger.debug(f"   ✅ Linha {idx} atualizada:")
-                            logger.debug(f"      Contrato {medicao['id_contrato']}, "
-                                    f"Medição {medicao['id_medicao']}")
-                            logger.debug(f"      STATUS → LANÇADO")
-                            logger.debug(f"      DATA_LANCAMENTO → {data_lancamento.strftime('%d/%m/%Y %H:%M:%S')}")
+            avisos_linha_ausente = []
+    
+            for medicao in medicoes_atualizar:
+                linha = medicao.get('linha_planilha')
+    
+                if not linha:
+                    # Fallback defensivo apenas para itens antigos sem
+                    # linha_planilha registrada: busca por chave, mas agora
+                    # RESPEITANDO o Status e parando no primeiro não-excluído
+                    # — como as demais telas do sistema já fazem.
+                    avisos_linha_ausente.append(medicao)
+                    for idx in range(2, ws_medicoes.max_row + 1):
+                        status_val = str(ws_medicoes.cell(row=idx, column=col_status).value or '').strip().upper()
+                        if status_val in ('EXCLUÍDO', 'EXCLUIDO'):
+                            continue
+                        if (ws_medicoes.cell(row=idx, column=col_id_contrato).value == medicao['id_contrato'] and
+                                ws_medicoes.cell(row=idx, column=col_id_medicao).value == medicao['id_medicao']):
+                            linha = idx
                             break
-                            
-                except Exception as e:
-                    logger.debug(f"   ⚠️ Erro ao processar linha {idx}: {str(e)}")
+                    if not linha:
+                        logger.warning(f"⚠️ Medição Contrato {medicao['id_contrato']} / "
+                                    f"#{medicao['id_medicao']} não encontrada (sem linha física "
+                                    f"e nenhuma linha ativa correspondente)")
+                        continue
+    
+                # Confirma que a linha ainda corresponde à medição esperada e
+                # que não foi excluída nesse meio-tempo (ex.: outra sessão do
+                # sistema mexeu nela entre o carregamento da Agenda e este clique).
+                contrato_na_linha = ws_medicoes.cell(row=linha, column=col_id_contrato).value
+                id_medicao_na_linha = ws_medicoes.cell(row=linha, column=col_id_medicao).value
+                status_na_linha = str(ws_medicoes.cell(row=linha, column=col_status).value or '').strip().upper()
+    
+                if (contrato_na_linha != medicao['id_contrato'] or
+                        id_medicao_na_linha != medicao['id_medicao']):
+                    logger.warning(f"⚠️ Linha {linha} não corresponde mais a Contrato "
+                                f"{medicao['id_contrato']} / Medição {medicao['id_medicao']} "
+                                f"(planilha pode ter mudado) — pulando por segurança")
                     continue
-            
-            # ✅ Salvar arquivo
+    
+                if status_na_linha in ('EXCLUÍDO', 'EXCLUIDO'):
+                    logger.warning(f"⚠️ Linha {linha} (Contrato {medicao['id_contrato']} / "
+                                f"Medição {medicao['id_medicao']}) já está EXCLUÍDA — pulando "
+                                f"para não reverter uma exclusão válida")
+                    continue
+    
+                ws_medicoes.cell(row=linha, column=col_status).value = 'LANÇADO'
+                cell_data = ws_medicoes.cell(row=linha, column=col_data_lanc)
+                cell_data.value = data_lancamento
+                cell_data.number_format = 'DD/MM/YYYY HH:MM:SS'
+    
+                medicoes_atualizadas += 1
+    
+                logger.debug(f"   ✅ Linha {linha} atualizada:")
+                logger.debug(f"      Contrato {medicao['id_contrato']}, "
+                            f"Medição {medicao['id_medicao']}")
+                logger.debug(f"      STATUS → LANÇADO")
+                logger.debug(f"      DATA_LANCAMENTO → {data_lancamento.strftime('%d/%m/%Y %H:%M:%S')}")
+    
+            if avisos_linha_ausente:
+                logger.warning(f"⚠️ {len(avisos_linha_ausente)} medição(ões) sem linha física "
+                            f"registrada usaram busca por chave (fallback) — considere "
+                            f"recarregar a Agenda antes de confirmar")
+    
             try:
                 wb.save(arquivo_cliente)
                 logger.info("✅ Arquivo salvo com sucesso")
@@ -22573,19 +22144,18 @@ class GerenciadorAgenda:
                 return False
             finally:
                 wb.close()
-            
-            # ✅ Verificar se todas foram atualizadas
+    
             sucesso = (medicoes_atualizadas == len(medicoes_atualizar))
-            
+    
             logger.debug("=" * 80)
             logger.debug(f"RESUMO DA ATUALIZAÇÃO:")
             logger.debug(f"  • Medições a atualizar: {len(medicoes_atualizar)}")
             logger.debug(f"  • Medições atualizadas: {medicoes_atualizadas}")
             logger.debug(f"  • Status: {'✅ SUCESSO' if sucesso else '⚠️ PARCIAL'}")
             logger.debug("=" * 80)
-            
+    
             return sucesso
-            
+    
         except Exception as e:
             logger.error(f"❌ ERRO CRÍTICO ao atualizar medições: {str(e)}")
             import traceback
