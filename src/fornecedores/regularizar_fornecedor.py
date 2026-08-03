@@ -80,6 +80,13 @@ from datetime import datetime
 from dataclasses import dataclass, field
 from openpyxl import load_workbook
 
+# Validação estrutural (dígito verificador) de CPF/CNPJ — reaproveita a
+# implementação oficial já existente no sistema, em vez de duplicar o
+# algoritmo aqui. Não confirma que o documento existe de fato (isso só a
+# Receita Federal saberia); só garante que os dígitos são matematicamente
+# possíveis, pegando erros de digitação como "trocar só o último dígito".
+from src.config.utils import validar_documento
+
 # Aba de controle de CPFs criados (GerenciadorCPFsCriados) dentro do próprio
 # Base_Fornecedores.xlsx
 CPF_CRIADO_SHEET = "CPF"
@@ -332,6 +339,24 @@ def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
 
     if doc_novo_d:
         doc_novo_d = doc_novo_d.zfill(11 if tipo_pessoa == "PF" else 14)
+
+    # --- Guarda contra documento estruturalmente inválido ------------------
+    # Roda ANTES da checagem de fusão (mais barata: falha sem precisar
+    # varrer a base inteira de novo) e vale tanto para dry_run quanto para
+    # a aplicação real — a pré-visualização já deve acusar o problema, sem
+    # deixar o usuário chegar até "Confirmar e Aplicar" achando que estava
+    # tudo certo.
+    if doc_novo_d and not validar_documento(doc_novo_d, tipo_pessoa):
+        tipo_doc = "CPF" if tipo_pessoa == "PF" else "CNPJ"
+        resultado.erro = (
+            f"O documento novo ({_formatar_doc(doc_novo_d, tipo_pessoa)}) não é um "
+            f"{tipo_doc} estruturalmente válido — o dígito verificador não confere. "
+            f"Confira a digitação antes de prosseguir. (Isso NÃO confirma que o "
+            f"documento existe de fato na Receita Federal, só que os dígitos são "
+            f"matematicamente possíveis.)"
+        )
+        wb.close()
+        return resultado
 
     # --- Guarda contra fusão acidental de dois fornecedores distintos -----
     if doc_novo_d and _doc_ja_pertence_a_outro_fornecedor(base_path, doc_novo_d, doc_antigo_d):
