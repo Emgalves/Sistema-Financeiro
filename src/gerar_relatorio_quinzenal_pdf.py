@@ -15,7 +15,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import (
     SimpleDocTemplate, Table, TableStyle, Paragraph,
-    Spacer, PageBreak
+    Spacer, PageBreak, KeepTogether
 )
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
 
@@ -528,7 +528,7 @@ class RelatorioQuinzenalPDF:
             style.append(('BACKGROUND', (0, i), (-1, i),
                            CINZA_CLARO if i % 2 == 0 else BRANCO))
         tbl.setStyle(TableStyle(style))
-        return [_titulo_secao('DADOS DE CONTRATOS'), tbl]
+        return [KeepTogether([_titulo_secao('DADOS DE CONTRATOS'), tbl])]
 
     def _bloco_totais(self, forn):
         cw = [BODY_W / 4] * 4
@@ -609,7 +609,7 @@ class RelatorioQuinzenalPDF:
             'Coluna Ref. = N\u00ba sequencial do contrato do empreiteiro (Nº/Emp).',
             st_leg
         )
-        return [_titulo_secao(titulo), tbl, Spacer(1, 2*mm), legenda]
+        return [KeepTogether([_titulo_secao(titulo), tbl]), Spacer(1, 2*mm), legenda]
 
     # ------------------------------------------------------------------
     # Cabeçalhos e rodapé de página
@@ -768,12 +768,18 @@ class RelatorioQuinzenalPDF:
             """Monta a lista completa de elementos para todos os fornecedores."""
             els = []
             for idx, forn in enumerate(forn_list):
-                els += self._bloco_contratada(forn)
+                # Bloco superior (contratada + contratos + totais) é mantido
+                # inteiro na mesma página — só pula de página se não couber.
+                bloco_superior = []
+                bloco_superior += self._bloco_contratada(forn)
+                bloco_superior.append(Spacer(1, 4*mm))
+                bloco_superior += self._bloco_contratos(forn)
+                bloco_superior.append(Spacer(1, 4*mm))
+                bloco_superior.append(self._bloco_totais(forn))
+                els.append(KeepTogether(bloco_superior))
                 els.append(Spacer(1, 4*mm))
-                els += self._bloco_contratos(forn)
-                els.append(Spacer(1, 4*mm))
-                els.append(self._bloco_totais(forn))
-                els.append(PageBreak())
+                # Extrato flui logo em seguida, sem PageBreak forçado —
+                # só quebra página se realmente não houver espaço.
                 els += self._bloco_extrato(forn)
                 if idx < len(forn_list) - 1:
                     els.append(PageBreak())
@@ -836,13 +842,14 @@ class RelatorioQuinzenalPDF:
             forn_nome = forn['dados_base'].get('nome') or forn['nome']
             forn_cnpj = forn['dados_base'].get('cnpj') or forn['cnpj']
 
-            els = []
-            els += self._bloco_contratada(forn)
-            els.append(Spacer(1, 4*mm))
-            els += self._bloco_contratos(forn)
-            els.append(Spacer(1, 4*mm))
-            els.append(self._bloco_totais(forn))
-            els.append(PageBreak())
+            bloco_superior = []
+            bloco_superior += self._bloco_contratada(forn)
+            bloco_superior.append(Spacer(1, 4*mm))
+            bloco_superior += self._bloco_contratos(forn)
+            bloco_superior.append(Spacer(1, 4*mm))
+            bloco_superior.append(self._bloco_totais(forn))
+
+            els = [KeepTogether(bloco_superior), Spacer(1, 4*mm)]
             els += self._bloco_extrato(forn)
 
             buf = io.BytesIO()
