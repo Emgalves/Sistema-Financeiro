@@ -2,6 +2,7 @@ import os
 import sys
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
+import tkinter.font as tkfont
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from tkcalendar import DateEntry
@@ -164,6 +165,10 @@ class GestaoMedicoes:
         # Contexto de fornecedor (selecionado na aba Fornecedor)
         self.cnpj_fornecedor_selecionado = None
         self.nome_fornecedor_selecionado = None
+        self._cache_fornecedores = None
+        self._cache_fornecedores_mtime = None
+        self._after_id_busca_forn_aba = None
+        self._after_id_busca_forn_contrato = None
         
         # Configurar interface
         self.setup_gui()
@@ -861,7 +866,7 @@ class GestaoMedicoes:
         frame_contratos.pack(fill='both', expand=True, pady=5)
 
         colunas = ('ID', 'Nº/Emp', 'Fornecedor', 'Descrição', 'Data Início', 'Data Final', 'Valor Global', 'Valor Pago', 'Saldo', 'Pend.')
-        self.tree_contratos = ttk.Treeview(frame_contratos, columns=colunas, show='headings', height=10)
+        self.tree_contratos = ttk.Treeview(frame_contratos, columns=colunas, show='headings', height=10, style="Contratos.Treeview")
         self._sort_contratos = {'col': None, 'rev': False}
 
         # Cabeçalhos clicáveis para ordenação
@@ -874,15 +879,15 @@ class GestaoMedicoes:
 
         # Ajustar larguras das colunas (ID oculto — largura 0)
         self.tree_contratos.column('ID', width=0, minwidth=0, stretch=False)
-        self.tree_contratos.column('Nº/Emp', width=55, anchor='center')
+        self.tree_contratos.column('Nº/Emp', width=50, anchor='center')
         self.tree_contratos.column('Fornecedor', width=150)
-        self.tree_contratos.column('Descrição', width=200)
-        self.tree_contratos.column('Data Início', width=100, anchor='center')
-        self.tree_contratos.column('Data Final', width=100, anchor='center')
-        self.tree_contratos.column('Valor Global', width=110, anchor='e')
-        self.tree_contratos.column('Valor Pago', width=110, anchor='e')
-        self.tree_contratos.column('Saldo', width=110, anchor='e')
-        self.tree_contratos.column('Pend.', width=45, anchor='center')
+        self.tree_contratos.column('Descrição', width=260)
+        self.tree_contratos.column('Data Início', width=70, anchor='center')
+        self.tree_contratos.column('Data Final', width=70, anchor='center')
+        self.tree_contratos.column('Valor Global', width=100, anchor='e')
+        self.tree_contratos.column('Valor Pago', width=100, anchor='e')
+        self.tree_contratos.column('Saldo', width=100, anchor='e')
+        self.tree_contratos.column('Pend.', width=40, anchor='center')
         
         # Scrollbars
         scrolly = ttk.Scrollbar(frame_contratos, orient='vertical', command=self.tree_contratos.yview)
@@ -917,6 +922,36 @@ class GestaoMedicoes:
         
         # Binding para duplo clique
         self.tree_contratos.bind('<Double-1>', lambda e: self.selecionar_contrato())
+
+    def _ajustar_altura_linha_contratos(self, contratos, max_linhas_permitido=6):
+        """
+        NOVO: calcula a altura de linha do Treeview de contratos com base no
+        maior número de quebras de linha (\n) presentes na Descrição de
+        qualquer contrato do conjunto atualmente filtrado, e aplica isso via
+        ttk.Style.
+    
+        max_linhas_permitido evita que UM contrato com descrição enorme force
+        todas as linhas da tabela (inclusive as curtas) a ficarem
+        exageradamente altas. Acima desse limite, a descrição continua sendo
+        cortada visualmente na tabela — mas ela nunca é truncada nos dados,
+        só na exibição.
+        """
+        fonte = tkfont.nametofont("TkDefaultFont")
+        altura_uma_linha = fonte.metrics("linespace")
+    
+        max_linhas = 1
+        for c in contratos:
+            descricao = c.get('descricao') or c[3] if isinstance(c, (list, tuple)) else (c.get('descricao') or "")
+            n_linhas = str(descricao).count('\n') + 1
+            max_linhas = max(max_linhas, n_linhas)
+    
+        max_linhas = min(max_linhas, max_linhas_permitido)
+    
+        # Um pouco de folga vertical (padding) por linha, pra não ficar apertado
+        nova_altura = int(altura_uma_linha * max_linhas) + 8
+    
+        estilo = ttk.Style()
+        estilo.configure("Contratos.Treeview", rowheight=nova_altura)
 
     def setup_aba_medicoes(self):
         """Configura a aba de medições"""
@@ -1534,95 +1569,28 @@ class GestaoMedicoes:
                 command=self.atualizar_lista_fornecedores_contrato).pack(side='left', padx=5)
     
     def buscar_fornecedor_contrato(self, event=None):
-        
-        try:
+        def _executar():
             termo = self.ent_busca_fornecedor.get().strip()
-            
             if not termo:
-                # Se vazio, mostrar todos
                 self.atualizar_lista_fornecedores_contrato()
                 return
-            
-            logger.info(f"Buscando fornecedores com termo: {termo}")
-            
-            from openpyxl import load_workbook
-            
-            wb = load_workbook(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
-            
-            # Normalizar termo de busca
-            termo_upper = termo.upper()
-            termo_numerico = ''.join(filter(str.isdigit, termo))
-            
-            fornecedores_encontrados = []
-            
-            # Iterar pelas linhas
-            for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-                try:
-                    if not row[0]:  # Pular sem CNPJ/CPF
-                        continue
-                    
-                    # Dados da linha
-                    cnpj_cpf_raw = row[0]
-                    razao_social = row[2] if len(row) > 2 else ''
-                    nome_fantasia = row[3] if len(row) > 3 else ''
-                    
-                    # Converter CNPJ/CPF para comparação
-                    row_cnpj = ''.join(filter(str.isdigit, str(cnpj_cpf_raw)))
-                    
-                    # Verificar se termo está em:
-                    # 1. CNPJ/CPF (dígitos)
-                    # 2. Nome Fantasia
-                    # 3. Razão Social
-                    match = False
-                    
-                    if termo_numerico and termo_numerico in row_cnpj:
-                        match = True
-                    elif nome_fantasia and termo_upper in str(nome_fantasia).upper():
-                        match = True
-                    elif razao_social and termo_upper in str(razao_social).upper():
-                        match = True
-                    
-                    if match:
-                        # Formatar CNPJ/CPF
-                        cnpj_formatado = self.formatar_documento(cnpj_cpf_raw)
-                        
-                        # Escolher nome a exibir
-                        if nome_fantasia and not pd.isna(nome_fantasia):
-                            nome = str(nome_fantasia).strip()
-                        elif razao_social and not pd.isna(razao_social):
-                            nome = str(razao_social).strip()
-                        else:
-                            nome = f'Fornecedor_Linha_{row_idx}'
-                        
-                        # Adicionar à lista: "NOME - CNPJ/CPF"
-                        item_lista = f"{nome} - {cnpj_formatado}"
-                        fornecedores_encontrados.append(item_lista)
-                    
-                except Exception as e:
-                    logger.error(f"Erro ao processar linha {row_idx}: {e}")
-                    continue
-            
-            wb.close()
-            
-            # Habilitar e limpar listbox (removendo placeholder se houver)
-            self.lst_fornecedor_contrato.config(state='normal')
-            self.lst_fornecedor_contrato.delete(0, tk.END)
-            
-            # Atualizar listbox com resultados
-            if fornecedores_encontrados:
-                for fornecedor in sorted(fornecedores_encontrados):
-                    self.lst_fornecedor_contrato.insert(tk.END, fornecedor)
-                logger.info(f"✅ {len(fornecedores_encontrados)} fornecedores encontrados")
-            else:
-                logger.warning(f"⚠️ Nenhum fornecedor encontrado com '{termo}'")
-                messagebox.showinfo("Busca", f"Nenhum fornecedor encontrado com '{termo}'", parent=self.root)
-            
-        except Exception as e:
-            logger.error(f"❌ Erro ao buscar fornecedores: {e}")
-            import traceback
-            traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao buscar:\n{str(e)}", parent=self.root)
+            try:
+                logger.info(f"Buscando fornecedores com termo: {termo}")
+                encontrados = self._buscar_no_cache_fornecedores(termo)
+                itens = sorted(f"{r['nome_exibicao']} - {r['cnpj_fmt']}" for r in encontrados)
+    
+                self.lst_fornecedor_contrato.config(state='normal')
+                self.lst_fornecedor_contrato.delete(0, tk.END)
+                for item in itens:
+                    self.lst_fornecedor_contrato.insert(tk.END, item)
+    
+                logger.info(f"✅ {len(itens)} fornecedores encontrados")
+                # ALTERADO: sem messagebox bloqueando a digitação
+            except Exception as e:
+                logger.error(f"❌ Erro ao buscar fornecedores: {e}")
+                messagebox.showerror("Erro", f"Erro ao buscar:\n{str(e)}", parent=self.root)
+    
+        self._agendar_busca_debounced('_after_id_busca_forn_contrato', 250, _executar)
 
     def normalizar_cnpj_cpf(self, cnpj_cpf_input):
         """
@@ -1938,69 +1906,152 @@ class GestaoMedicoes:
     # --- Métodos da aba Fornecedor ---
 
     def buscar_fornecedor_aba(self, event=None):
-        """Busca fornecedores na nova aba de seleção"""
-        try:
+        """Busca fornecedores na aba de seleção (agora via cache, com debounce)"""
+        def _executar():
             termo = self.ent_busca_forn_aba.get().strip()
             if not termo:
                 self.listar_todos_fornecedores_aba()
                 return
+            try:
+                encontrados = self._buscar_no_cache_fornecedores(termo)
+                itens = sorted(f"{r['nome_exibicao']} - {r['cnpj_fmt']}" for r in encontrados)
+                self._preencher_listbox_forn_aba(itens)
+                # ALTERADO: não bloqueia mais com messagebox durante a digitação —
+                # lista vazia já é feedback suficiente enquanto a pessoa digita.
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao buscar fornecedores:\n{str(e)}", parent=self.root)
+    
+        # ALTERADO: debounce de 250ms — só busca quando a digitação pausa
+        self._agendar_busca_debounced('_after_id_busca_forn_aba', 250, _executar)
 
-            from openpyxl import load_workbook as _lw
-            wb = _lw(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
-
-            termo_upper = termo.upper()
-            termo_num = ''.join(filter(str.isdigit, termo))
-            encontrados = []
-
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:
-                    continue
-                cnpj_raw = row[0]
-                razao = row[2] if len(row) > 2 else ''
-                fantasia = row[3] if len(row) > 3 else ''
-                cnpj_num = ''.join(filter(str.isdigit, str(cnpj_raw)))
-
-                match = (
-                    (termo_num and termo_num in cnpj_num) or
-                    (fantasia and termo_upper in str(fantasia).upper()) or
-                    (razao and termo_upper in str(razao).upper())
-                )
-                if match:
-                    nome = str(fantasia).strip() if fantasia and str(fantasia).strip() else str(razao).strip()
-                    cnpj_fmt = self.formatar_documento(cnpj_raw)
-                    encontrados.append(f"{nome} - {cnpj_fmt}")
-
-            wb.close()
-            self._preencher_listbox_forn_aba(sorted(encontrados))
-
-            if not encontrados:
-                messagebox.showinfo("Busca", f"Nenhum fornecedor encontrado com '{termo}'", parent=self.root)
-
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao buscar fornecedores:\n{str(e)}", parent=self.root)
+    def _carregar_cache_fornecedores(self, forcar=False):
+        """
+        NOVO: carrega a aba 'Fornecedores' UMA vez e mantém em memória.
+        Só recarrega do disco se:
+        - ainda não havia sido carregado, ou
+        - forcar=True (usado depois de criar/editar um fornecedor), ou
+        - o arquivo mudou de verdade desde a última leitura (mtime diferente
+            — cobre o caso de alguém editar o .xlsx diretamente no Excel).
+    
+        Retorna a lista de registros em cache (lista de dicts).
+        """
+        try:
+            mtime_atual = os.path.getmtime(ARQUIVO_FORNECEDORES)
+        except OSError:
+            mtime_atual = None
+    
+        cache_valido = (
+            not forcar
+            and self._cache_fornecedores is not None
+            and mtime_atual is not None
+            and mtime_atual == self._cache_fornecedores_mtime
+        )
+        if cache_valido:
+            return self._cache_fornecedores
+    
+        wb = load_workbook(ARQUIVO_FORNECEDORES, read_only=True, data_only=True)
+        ws = wb['Fornecedores']
+    
+        registros = []
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            if not row[0]:  # sem CNPJ/CPF
+                continue
+    
+            razao = row[2] if len(row) > 2 else None
+            fantasia = row[3] if len(row) > 3 else None
+    
+            if fantasia and not pd.isna(fantasia) and str(fantasia).strip():
+                nome_exibicao = str(fantasia).strip()
+            elif razao and not pd.isna(razao) and str(razao).strip():
+                nome_exibicao = str(razao).strip()
+            else:
+                nome_exibicao = 'Fornecedor sem nome cadastrado'
+    
+            registros.append({
+                'row': row,  # linha completa — mantém disponível qualquer coluna
+                            # que algum método precise (ex.: row[11] categoria,
+                            # row[15] endereço), sem precisar reabrir o arquivo.
+                'cnpj_num': ''.join(filter(str.isdigit, str(row[0]))),
+                'cnpj_fmt': self.formatar_documento(row[0]),
+                'razao_upper': str(razao).upper() if razao else '',
+                'fantasia_upper': str(fantasia).upper() if fantasia else '',
+                'nome_exibicao': nome_exibicao,
+            })
+    
+        wb.close()
+    
+        self._cache_fornecedores = registros
+        self._cache_fornecedores_mtime = mtime_atual
+        return registros
+    
+    
+    def _buscar_no_cache_fornecedores(self, termo):
+        """
+        NOVO: filtra o cache de fornecedores por termo (CNPJ/CPF, nome
+        fantasia ou razão social), com a MESMA lógica de match que já existia
+        nas três buscas originais.
+        """
+        registros = self._carregar_cache_fornecedores()
+        if not termo:
+            return registros
+    
+        termo_upper = termo.upper()
+        termo_num = ''.join(filter(str.isdigit, termo))
+    
+        encontrados = []
+        for reg in registros:
+            match = (
+                (termo_num and termo_num in reg['cnpj_num']) or
+                (termo_upper in reg['fantasia_upper']) or
+                (termo_upper in reg['razao_upper'])
+            )
+            if match:
+                encontrados.append(reg)
+        return encontrados
+    
+    
+    def _agendar_busca_debounced(self, attr_after_id, delay_ms, funcao_busca):
+        """
+        NOVO: adia a execução de funcao_busca em delay_ms, cancelando qualquer
+        chamada agendada anteriormente para o mesmo campo. Isso faz a busca
+        rodar só quando a pessoa PARA de digitar (padrão "debounce"), em vez
+        de a cada tecla — mesmo já usando o cache, buscar a cada tecla é
+        trabalho desnecessário enquanto a pessoa ainda está digitando.
+        """
+        id_pendente = getattr(self, attr_after_id, None)
+        if id_pendente is not None:
+            try:
+                self.root.after_cancel(id_pendente)
+            except Exception:
+                pass
+        novo_id = self.root.after(delay_ms, funcao_busca)
+        setattr(self, attr_after_id, novo_id)
 
     def listar_todos_fornecedores_aba(self):
-        """Lista todos os fornecedores na aba de seleção"""
+        """Lista todos os fornecedores na aba de seleção (via cache)"""
         try:
-            from openpyxl import load_workbook as _lw
-            wb = _lw(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
-
-            fornecedores = []
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:
-                    continue
-                razao = row[2] if len(row) > 2 else ''
-                fantasia = row[3] if len(row) > 3 else ''
-                nome = str(fantasia).strip() if fantasia and str(fantasia).strip() else str(razao).strip()
-                cnpj_fmt = self.formatar_documento(row[0])
-                fornecedores.append(f"{nome} - {cnpj_fmt}")
-
-            wb.close()
-            self._preencher_listbox_forn_aba(sorted(fornecedores))
-
+            registros = self._carregar_cache_fornecedores()
+            itens = sorted(f"{r['nome_exibicao']} - {r['cnpj_fmt']}" for r in registros)
+            self._preencher_listbox_forn_aba(itens)
         except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao carregar fornecedores:\n{str(e)}", parent=self.root)
+    
+    
+    def atualizar_lista_fornecedores_contrato(self):
+        """Lista todos os fornecedores na aba Contrato (via cache)"""
+        try:
+            logger.info("Carregando lista de fornecedores...")
+            registros = self._carregar_cache_fornecedores()
+            itens = sorted(f"{r['nome_exibicao']} - {r['cnpj_fmt']}" for r in registros)
+    
+            self.lst_fornecedor_contrato.config(state='normal')
+            self.lst_fornecedor_contrato.delete(0, tk.END)
+            for item in itens:
+                self.lst_fornecedor_contrato.insert(tk.END, item)
+    
+            logger.info(f"✅ {len(itens)} fornecedores carregados")
+        except Exception as e:
+            logger.error(f"❌ Erro ao carregar fornecedores: {e}")
             messagebox.showerror("Erro", f"Erro ao carregar fornecedores:\n{str(e)}", parent=self.root)
 
     def _preencher_listbox_forn_aba(self, itens):
@@ -2010,15 +2061,15 @@ class GestaoMedicoes:
             self.lst_fornecedor_aba.insert(tk.END, item)
 
     def selecionar_fornecedor_aba(self, event=None):
-        """Carrega dados do fornecedor selecionado na aba de seleção"""
+        """Carrega dados do fornecedor selecionado na aba de seleção (via cache)"""
         selecionado = self.lst_fornecedor_aba.curselection()
         if not selecionado:
             return
-
+    
         item = self.lst_fornecedor_aba.get(selecionado[0]).strip()
         if not item:
             return
-
+    
         try:
             if " - " in item:
                 partes = item.rsplit(" - ", 1)
@@ -2027,55 +2078,47 @@ class GestaoMedicoes:
             else:
                 nome_busca = item
                 cnpj_busca = None
-
-            from openpyxl import load_workbook as _lw
-            wb = _lw(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
-
-            fornecedor = None
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:
-                    continue
-                cnpj_fmt = self.formatar_documento(row[0])
-                if cnpj_busca and cnpj_fmt == cnpj_busca:
-                    fornecedor = row
+    
+            # ALTERADO: busca no cache em vez de reabrir o arquivo
+            registros = self._carregar_cache_fornecedores()
+            fornecedor_reg = None
+            for reg in registros:
+                if cnpj_busca and reg['cnpj_fmt'] == cnpj_busca:
+                    fornecedor_reg = reg
                     break
-
-            wb.close()
-
-            if not fornecedor:
-                messagebox.showwarning("Aviso", f"Fornecedor não encontrado.", parent=self.root)
+    
+            if not fornecedor_reg:
+                messagebox.showwarning("Aviso", "Fornecedor não encontrado.", parent=self.root)
                 return
-
-            cnpj_cpf = self.formatar_documento(fornecedor[0])
+    
+            fornecedor = fornecedor_reg['row']
+            cnpj_cpf = fornecedor_reg['cnpj_fmt']
             endereco = str(fornecedor[15]).strip() if len(fornecedor) > 15 and fornecedor[15] else '[ENDEREÇO NÃO CADASTRADO]'
-
+    
             def _set(entry, valor):
                 entry.config(state='normal')
                 entry.delete(0, tk.END)
                 entry.insert(0, valor)
                 entry.config(state='readonly')
-
+    
             _set(self.ent_forn_cnpj, cnpj_cpf)
             _set(self.ent_forn_endereco, endereco)
-
-            # Dados bancários
+    
             try:
                 dados_banc = buscar_dados_bancarios_fornecedor(cnpj_cpf, "PIX") or 'Dados bancários não cadastrados'
             except Exception:
                 dados_banc = 'Erro ao buscar dados bancários'
-
+    
             self.txt_forn_dados_bancarios.config(state='normal')
             self.txt_forn_dados_bancarios.delete('1.0', tk.END)
             self.txt_forn_dados_bancarios.insert('1.0', dados_banc)
             self.txt_forn_dados_bancarios.config(state='disabled')
-
-            # Salvar contexto do fornecedor imediatamente (sem precisar clicar "Continuar →")
+    
             self.nome_fornecedor_selecionado = nome_busca
             self.cnpj_fornecedor_selecionado = cnpj_cpf
-
+    
             logger.info(f"Fornecedor selecionado na aba: {nome_busca} ({cnpj_cpf})")
-
+    
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar dados do fornecedor:\n{str(e)}", parent=self.root)
 
@@ -2218,85 +2261,107 @@ class GestaoMedicoes:
             return False
     
     # Funções da aba Contratos
+
+    def _aplicar_altura_linha_contratos(
+        self, max_linhas, max_linhas_permitido=6,
+        altura_alvo_px=420, registros_min=4, registros_max=15
+    ):
+        """
+        NOVO: aplica ao tree_contratos uma altura de linha suficiente para
+        acomodar até max_linhas_permitido linhas de texto, com base no maior
+        número de quebras de linha (\n) encontrado nas Descrições atualmente
+        exibidas (calculado pelo chamador, ver carregar_contratos).
+    
+        max_linhas_permitido evita que UMA descrição enorme force todas as
+        linhas da tabela — inclusive as curtas — a ficarem exageradamente
+        altas. Acima do limite, a descrição continua sendo cortada na
+        exibição, mas o dado gravado na planilha não é alterado.
+    
+        ALTERADO: além da altura de CADA linha, também recalcula QUANTOS
+        registros ficam visíveis de uma vez (o parâmetro height do Treeview),
+        respeitando um teto de altura total (altura_alvo_px). Sem isso, com
+        linhas altas e o height fixo em 10, a tabela pedia mais espaço vertical
+        do que a janela tinha, empurrando os botões do rodapé para fora da
+        área visível. Com o teto, contratos de descrição curta continuam
+        mostrando várias linhas de uma vez; contratos de descrição longa
+        mostram menos linhas simultâneas, e o resto fica acessível pela
+        scrollbar vertical (que já existe na tabela).
+        """
+        fonte = tkfont.nametofont("TkDefaultFont")
+        altura_uma_linha = fonte.metrics("linespace")
+        linhas_por_registro = min(max(max_linhas, 1), max_linhas_permitido)
+        nova_altura_linha = int(altura_uma_linha * linhas_por_registro) + 8
+    
+        estilo = ttk.Style()
+        estilo.configure("Contratos.Treeview", rowheight=nova_altura_linha)
+    
+        # ALTERADO: limita quantos registros a tabela pede pra mostrar de uma
+        # vez, de forma que altura_total ≈ registros_visiveis * nova_altura_linha
+        # nunca ultrapasse altura_alvo_px.
+        registros_visiveis = max(
+            registros_min,
+            min(registros_max, altura_alvo_px // nova_altura_linha)
+        )
+        self.tree_contratos.configure(height=registros_visiveis)
+    
     def carregar_contratos(self):
         """Carrega os contratos do cliente atual"""
         try:
             if not self.arquivo_cliente:
                 messagebox.showwarning("Aviso", "Selecione um cliente primeiro!", parent=self.root)
                 return
-            
-            # CORREÇÃO: Atualizar o label do cliente na aba de contratos
+    
             if self.cliente_atual:
-                # Verificar se cliente está ativo
                 info_cliente = obter_info_cliente(self.cliente_atual)
                 texto_cliente = f"Cliente: {self.cliente_atual}"
                 if info_cliente and not info_cliente['ativo']:
                     texto_cliente += " (INATIVO)"
-                
+    
                 if hasattr(self, 'lbl_cliente_contratos'):
                     self.lbl_cliente_contratos.config(text=texto_cliente)
-                
-            # Limpar treeview
+    
             for item in self.tree_contratos.get_children():
                 self.tree_contratos.delete(item)
-                
-            # Verificar existência da aba de medições
+    
             self.verificar_aba_medicoes()
-                
-            # Abrir arquivo do cliente
+    
             wb = load_workbook(self.arquivo_cliente)
-            
-            # Verificar se a aba de contratos existe
+    
             if "Contratos_Medicao" not in wb.sheetnames:
-                # Criar aba de contratos
                 ws = wb.create_sheet("Contratos_Medicao")
-                
-                # Definir cabeçalhos
                 headers = [
-                    "ID_Contrato", "CNPJ_Fornecedor", "Nome_Fornecedor", "Descricao", 
+                    "ID_Contrato", "CNPJ_Fornecedor", "Nome_Fornecedor", "Descricao",
                     "Data_Inicio", "Data_Final", "Valor_Global", "Valor_Pago", "Saldo", "Status", "Observacao"
                 ]
-                
                 for col, header in enumerate(headers, 1):
                     cell = ws.cell(row=1, column=col, value=header)
                     cell.font = openpyxl.styles.Font(bold=True)
                     cell.alignment = openpyxl.styles.Alignment(horizontal='center')
-                
-                # Ajustar largura das colunas
                 for col in range(1, len(headers) + 1):
                     ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 15
-                
                 wb.save(self.arquivo_cliente)
                 return
-                
-            # Carregar dados da aba Contratos_Medicao
+    
             ws = wb["Contratos_Medicao"]
-
-            # Filtros ativos
+    
             cnpj_filtro = getattr(self, 'cnpj_fornecedor_selecionado', None)
             cnpj_filtro_num = ''.join(filter(str.isdigit, cnpj_filtro)) if cnpj_filtro else ''
             filtro_status = getattr(self, 'var_filtro_status', None)
             status_sel = filtro_status.get() if filtro_status else 'Todos'
             busca_var = getattr(self, 'var_busca_contratos', None)
             busca_txt = busca_var.get().strip().lower() if busca_var else ''
-
-            # Tags de cor por status
+    
             self.tree_contratos.tag_configure('concluido',    background='#E8E8E8', foreground='#666666')
             self.tree_contratos.tag_configure('ativo',        background='#FFFFFF')
             self.tree_contratos.tag_configure('alterado',     background='#FFF176')
-            self.tree_contratos.tag_configure('pend',         background='#FFF3E0')  # laranja claro
+            self.tree_contratos.tag_configure('pend',         background='#FFF3E0')
             self.tree_contratos.tag_configure('pend_conc',    background='#F5E6CC', foreground='#666666')
-
+    
             # ── RECÁLCULO SILENCIOSO ─────────────────────────────────────────────
-            # Recalcula Valor_Pago e Saldo em Contratos_Medicao a partir das
-            # medições reais (aba Medicoes), ignorando EXCLUÍDAS.
-            # Corrige divergências causadas por exclusões manuais ou falhas
-            # anteriores, sem exibir mensagem ao usuário.
             if 'Medicoes' in wb.sheetnames:
                 ws_med_rc = wb['Medicoes']
                 ws_cont_rc = wb['Contratos_Medicao']
-
-                # Somar valores pagos por contrato (apenas medições não excluídas)
+    
                 totais_rc = {}
                 for r in ws_med_rc.iter_rows(min_row=2, values_only=True):
                     if r[0] and r[7]:
@@ -2304,8 +2369,7 @@ class GestaoMedicoes:
                         if st in ('EXCLUÍDO', 'EXCLUIDO'):
                             continue
                         totais_rc[r[0]] = totais_rc.get(r[0], 0.0) + float(r[7])
-
-                # Comparar com o gravado e corrigir se necessário
+    
                 houve_correcao = False
                 for idx, r in enumerate(ws_cont_rc.iter_rows(min_row=2, values_only=False), 2):
                     id_cont = r[0].value
@@ -2315,28 +2379,24 @@ class GestaoMedicoes:
                     valor_pago_gravado = float(r[7].value or 0)
                     total_real = totais_rc.get(id_cont, 0.0)
                     saldo_real = valor_global - total_real
-
-                    # Arredondar para evitar falsos positivos com float
+    
                     if abs(total_real - valor_pago_gravado) >= 0.01:
                         r[7].value = total_real
                         r[7].number_format = '#,##0.00'
                         r[8].value = saldo_real
                         r[8].number_format = '#,##0.00'
-                        # Atualizar status se saldo zerou ou voltou a ter saldo
                         status_atual = str(r[9].value or '').strip().upper()
                         if saldo_real <= 0 and status_atual == 'ATIVO':
                             r[9].value = 'CONCLUÍDO'
                         elif saldo_real > 0 and status_atual == 'CONCLUÍDO':
                             r[9].value = 'ATIVO'
                         houve_correcao = True
-
+    
                 if houve_correcao:
                     wb.save(self.arquivo_cliente)
-                    # Reler a aba para garantir que a treeview use os dados corrigidos
                     ws = wb['Contratos_Medicao']
             # ── FIM DO RECÁLCULO SILENCIOSO ───────────────────────────────────────
-
-            # Contar medições PENDENTE por contrato (antes de popular treeview)
+    
             pendentes_por_contrato = {}
             if 'Medicoes' in wb.sheetnames:
                 ws_med = wb['Medicoes']
@@ -2345,8 +2405,7 @@ class GestaoMedicoes:
                     st_med = str(r_med[8] or '').strip().upper()
                     if id_cont and st_med == 'PENDENTE':
                         pendentes_por_contrato[id_cont] = pendentes_por_contrato.get(id_cont, 0) + 1
-
-            # 1ª passagem: índice sequencial por empreiteiro
+    
             seq_por_cnpj = {}
             id_para_seq = {}
             for row in ws.iter_rows(min_row=2, values_only=True):
@@ -2355,68 +2414,73 @@ class GestaoMedicoes:
                 cnpj_num = ''.join(filter(str.isdigit, str(row[1] or '')))
                 seq_por_cnpj[cnpj_num] = seq_por_cnpj.get(cnpj_num, 0) + 1
                 id_para_seq[row[0]] = seq_por_cnpj[cnpj_num]
-
-            # 2ª passagem: popular treeview
+    
             total_visiveis = 0
+            max_linhas_desc = 1  # ALTERADO: acumula o maior nº de linhas entre as descrições exibidas
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not row[0]:
                     continue
-
-                # Filtro por fornecedor (CNPJ)
+    
                 if cnpj_filtro_num:
                     cnpj_linha = ''.join(filter(str.isdigit, str(row[1] or '')))
                     if cnpj_linha != cnpj_filtro_num:
                         continue
-
-                # Filtro por status
+    
                 status_linha = str(row[9] or 'ATIVO').strip().upper() if len(row) > 9 else 'ATIVO'
                 if status_sel == 'Ativo' and status_linha not in ('ATIVO', ''):
                     continue
                 if status_sel == 'Concluído' and status_linha != 'CONCLUÍDO':
                     continue
-
-                # Filtro por texto (fornecedor ou descrição)
+    
                 if busca_txt:
                     forn = str(row[2] or '').lower()
                     desc = str(row[3] or '').lower()
                     if busca_txt not in forn and busca_txt not in desc:
                         continue
-
+    
                 num_seq = id_para_seq.get(row[0], '?')
-
+    
                 data_inicio = row[4].strftime('%d/%m/%Y') if isinstance(row[4], datetime) else str(row[4] or '')
                 data_final = ''
                 if row[5]:
                     data_final = row[5].strftime('%d/%m/%Y') if isinstance(row[5], datetime) else str(row[5])
-
+    
                 valor_global = f"R$ {row[6]:,.2f}" if isinstance(row[6], (int, float)) else str(row[6] or '0,00')
                 valor_pago   = f"R$ {row[7]:,.2f}" if isinstance(row[7], (int, float)) else str(row[7] or '0,00')
                 saldo        = f"R$ {row[8]:,.2f}" if isinstance(row[8], (int, float)) else str(row[8] or '0,00')
-
+    
                 pend_count = pendentes_por_contrato.get(row[0], 0)
                 pend_str = str(pend_count) if pend_count > 0 else ''
-
+    
                 if pend_count > 0:
                     tag = 'pend_conc' if status_linha == 'CONCLUÍDO' else 'pend'
                 else:
                     tag = 'concluido' if status_linha == 'CONCLUÍDO' else 'ativo'
-
+    
+                # ALTERADO: rastreia quantas linhas essa descrição ocupa
+                n_linhas = str(row[3] or '').count('\n') + 1
+                max_linhas_desc = max(max_linhas_desc, n_linhas)
+    
                 self.tree_contratos.insert('', 'end', tags=(tag,), values=(
                     row[0], num_seq, row[2], row[3],
                     data_inicio, data_final,
                     valor_global, valor_pago, saldo, pend_str
                 ))
                 total_visiveis += 1
-
-            # Atualizar contador e indicador de filtro de fornecedor
+    
+            # ALTERADO: aplica a altura de linha calculada, antes de exibir o total
+            self._aplicar_altura_linha_contratos(max_linhas_desc)
+    
             if hasattr(self, 'lbl_cont_contratos'):
                 self.lbl_cont_contratos.config(text=f"{total_visiveis} contrato(s)")
             self._atualizar_lbl_filtro_fornecedor()
-
+    
             wb.close()
-
+    
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar contratos: {str(e)}", parent=self.root)
+ 
+ 
     
     def novo_contrato(self):
         """Abre janela para cadastro de novo contrato"""
@@ -2576,47 +2640,19 @@ class GestaoMedicoes:
         nome_entry.config(state='readonly')
     
     def buscar_fornecedor(self, tree, termo):
-        """Busca fornecedores na base com tratamento melhorado para CNPJ/CPF"""
+        """Busca fornecedores na base (agora via cache) e popula a treeview"""
         try:
-            # Limpar treeview
             for item in tree.get_children():
                 tree.delete(item)
-                    
             if not termo:
                 return
-                    
-            # Carregar planilha de fornecedores
-            wb = load_workbook(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
-            
-            # Buscar fornecedores que contenham o termo
-            termo = termo.upper()
-            # Verificar se o termo pode ser um CNPJ/CPF (apenas dígitos)
-            termo_numerico = ''.join(filter(str.isdigit, termo))
-            
-            encontrados = []
-            
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular linhas sem CNPJ/CPF
-                    continue
-                    
-                # Converter CNPJ/CPF da linha para comparação
-                row_cnpj = ''.join(filter(str.isdigit, str(row[0])))
-                
-                # Verificar se termo está no CNPJ/CPF, nome ou razão social
-                if (termo_numerico and termo_numerico in row_cnpj) or \
-                (termo in str(row[3]).upper()) or \
-                (termo in str(row[2]).upper()):
-                    # Formatar o CNPJ/CPF corretamente
-                    cnpj_formatado = self.formatar_documento(row[0])
-                    encontrados.append((cnpj_formatado, row[3], row[11]))
-                        
-            # Adicionar à treeview
-            for fornecedor in encontrados:
-                tree.insert('', 'end', values=fornecedor)
-                    
-            wb.close()
-            
+    
+            encontrados = self._buscar_no_cache_fornecedores(termo)
+            for reg in encontrados:
+                row = reg['row']
+                categoria = row[11] if len(row) > 11 else ''
+                tree.insert('', 'end', values=(reg['cnpj_fmt'], row[3], categoria))
+    
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao buscar fornecedores: {str(e)}", parent=self.root)
     
@@ -2655,6 +2691,7 @@ class GestaoMedicoes:
             sistema.janela_fornecedor.protocol(
                 "WM_DELETE_WINDOW",
                 lambda: [sistema.janela_fornecedor.destroy(),
+                        self._carregar_cache_fornecedores(forcar=True),
                         self.listar_todos_fornecedores_aba()]
             )
 
@@ -2758,6 +2795,7 @@ class GestaoMedicoes:
 
     def _recarregar_e_selecionar_fornecedor(self, cnpj_busca):
         """Após edição, recarrega a lista e re-seleciona o fornecedor pelo CNPJ."""
+        self._carregar_cache_fornecedores(forcar=True)
         self.listar_todos_fornecedores_aba()
         cnpj_num = ''.join(filter(str.isdigit, cnpj_busca))
         for i in range(self.lst_fornecedor_aba.size()):
@@ -3380,85 +3418,85 @@ class GestaoMedicoes:
             logger.error(f"Erro ao carregar dados do cliente para contrato: {e}")
             messagebox.showerror("Erro", f"Erro ao carregar dados do cliente: {str(e)}", parent=self.root)
 
-    def atualizar_lista_fornecedores_contrato(self):
+    # def atualizar_lista_fornecedores_contrato(self):
         
-        try:
-            logger.info("Carregando lista de fornecedores...")
+    #     try:
+    #         logger.info("Carregando lista de fornecedores...")
             
-            # Usar openpyxl igual ao método buscar_fornecedor
-            from openpyxl import load_workbook
+    #         # Usar openpyxl igual ao método buscar_fornecedor
+    #         from openpyxl import load_workbook
             
-            wb = load_workbook(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
+    #         wb = load_workbook(ARQUIVO_FORNECEDORES)
+    #         ws = wb['Fornecedores']
             
-            fornecedores = []
-            fornecedores_com_problema = []
+    #         fornecedores = []
+    #         fornecedores_com_problema = []
             
-            # Iterar pelas linhas (começando da linha 2, pulando cabeçalho)
-            for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-                try:
-                    # row[0] = CNPJ/CPF
-                    # row[2] = Razão Social  
-                    # row[3] = Nome Fantasia
+    #         # Iterar pelas linhas (começando da linha 2, pulando cabeçalho)
+    #         for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+    #             try:
+    #                 # row[0] = CNPJ/CPF
+    #                 # row[2] = Razão Social  
+    #                 # row[3] = Nome Fantasia
                     
-                    if not row[0]:  # Pular linhas sem CNPJ/CPF
-                        continue
+    #                 if not row[0]:  # Pular linhas sem CNPJ/CPF
+    #                     continue
                     
-                    # === OBTER CNPJ/CPF ===
-                    cnpj_cpf_raw = row[0]
+    #                 # === OBTER CNPJ/CPF ===
+    #                 cnpj_cpf_raw = row[0]
                     
-                    # Converter e limpar
-                    if pd.isna(cnpj_cpf_raw) or cnpj_cpf_raw == '':
-                        cnpj_cpf_formatado = 'Sem CPF/CNPJ'
-                        fornecedores_com_problema.append(f"Linha {row_idx}")
-                    else:
-                        # Usar o mesmo método de formatação
-                        cnpj_cpf_formatado = self.formatar_documento(cnpj_cpf_raw)
+    #                 # Converter e limpar
+    #                 if pd.isna(cnpj_cpf_raw) or cnpj_cpf_raw == '':
+    #                     cnpj_cpf_formatado = 'Sem CPF/CNPJ'
+    #                     fornecedores_com_problema.append(f"Linha {row_idx}")
+    #                 else:
+    #                     # Usar o mesmo método de formatação
+    #                     cnpj_cpf_formatado = self.formatar_documento(cnpj_cpf_raw)
                     
-                    # === OBTER NOME (priorizar Nome Fantasia, depois Razão Social) ===
-                    nome_fantasia = row[3] if len(row) > 3 else None
-                    razao_social = row[2] if len(row) > 2 else None
+    #                 # === OBTER NOME (priorizar Nome Fantasia, depois Razão Social) ===
+    #                 nome_fantasia = row[3] if len(row) > 3 else None
+    #                 razao_social = row[2] if len(row) > 2 else None
                     
-                    # Escolher qual nome usar
-                    if nome_fantasia and not pd.isna(nome_fantasia) and str(nome_fantasia).strip():
-                        nome = str(nome_fantasia).strip()
-                    elif razao_social and not pd.isna(razao_social) and str(razao_social).strip():
-                        nome = str(razao_social).strip()
-                    else:
-                        nome = f'Fornecedor_Linha_{row_idx}'
-                        fornecedores_com_problema.append(nome)
+    #                 # Escolher qual nome usar
+    #                 if nome_fantasia and not pd.isna(nome_fantasia) and str(nome_fantasia).strip():
+    #                     nome = str(nome_fantasia).strip()
+    #                 elif razao_social and not pd.isna(razao_social) and str(razao_social).strip():
+    #                     nome = str(razao_social).strip()
+    #                 else:
+    #                     nome = f'Fornecedor_Linha_{row_idx}'
+    #                     fornecedores_com_problema.append(nome)
                     
-                    # Adicionar à lista: "NOME - CNPJ/CPF"
-                    item_lista = f"{nome} - {cnpj_cpf_formatado}"
-                    fornecedores.append(item_lista)
+    #                 # Adicionar à lista: "NOME - CNPJ/CPF"
+    #                 item_lista = f"{nome} - {cnpj_cpf_formatado}"
+    #                 fornecedores.append(item_lista)
                     
-                except Exception as e:
-                    logger.error(f"Erro ao processar fornecedor linha {row_idx}: {e}")
-                    continue
+    #             except Exception as e:
+    #                 logger.error(f"Erro ao processar fornecedor linha {row_idx}: {e}")
+    #                 continue
             
-            wb.close()
+    #         wb.close()
             
-            # Habilitar e limpar listbox (removendo placeholder se houver)
-            self.lst_fornecedor_contrato.config(state='normal')
-            self.lst_fornecedor_contrato.delete(0, tk.END)
+    #         # Habilitar e limpar listbox (removendo placeholder se houver)
+    #         self.lst_fornecedor_contrato.config(state='normal')
+    #         self.lst_fornecedor_contrato.delete(0, tk.END)
             
-            # Atualizar listbox (ordenado)
-            for fornecedor in sorted(fornecedores):
-                self.lst_fornecedor_contrato.insert(tk.END, fornecedor)
+    #         # Atualizar listbox (ordenado)
+    #         for fornecedor in sorted(fornecedores):
+    #             self.lst_fornecedor_contrato.insert(tk.END, fornecedor)
             
-            # Logs informativos
-            logger.info(f"✅ {len(fornecedores)} fornecedores carregados")
+    #         # Logs informativos
+    #         logger.info(f"✅ {len(fornecedores)} fornecedores carregados")
             
-            if fornecedores_com_problema:
-                logger.warning(
-                    f"⚠️ {len(fornecedores_com_problema)} fornecedores com dados incompletos"
-                )
+    #         if fornecedores_com_problema:
+    #             logger.warning(
+    #                 f"⚠️ {len(fornecedores_com_problema)} fornecedores com dados incompletos"
+    #             )
             
-        except Exception as e:
-            logger.error(f"❌ Erro ao carregar fornecedores: {e}")
-            import traceback
-            traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao carregar fornecedores:\n{str(e)}", parent=self.root)
+    #     except Exception as e:
+    #         logger.error(f"❌ Erro ao carregar fornecedores: {e}")
+    #         import traceback
+    #         traceback.print_exc()
+    #         messagebox.showerror("Erro", f"Erro ao carregar fornecedores:\n{str(e)}", parent=self.root)
 
 
     def carregar_dados_fornecedor_contrato(self, event=None):
@@ -4322,10 +4360,7 @@ class GestaoMedicoes:
         # ✅ Usa a função existente para sugerir a data E para definir o período
         # do relatório (dia_referencia). O valor é capturado AQUI, uma única vez,
         # e viaja como variável até o Salvar — não é recalculado a partir do que
-        # estiver na Data_Pagamento na hora de salvar. Isso é proposital: mesmo
-        # que o usuário edite a data manualmente, ou que uma regra de dia útil
-        # desloque a data sugerida, o período do relatório permanece o que foi
-        # decidido aqui, sem depender de inferir o dia do mês depois.
+        # estiver na Data_Pagamento na hora de salvar.
         try:
             from src.config_relatorio_quinzenal import calcular_data_rel_automatica
             data_rel_automatica = calcular_data_rel_automatica()
@@ -4335,7 +4370,24 @@ class GestaoMedicoes:
             dia_referencia_capturado = 20 if 6 <= data_rel_automatica.day <= 20 else 5
             logger.warning("⚠️ Falha ao importar calcular_data_rel_automatica — usando fallback local")
 
-        data_pagamento.set_date(data_rel_automatica)
+        # ✅ NOVO: ajusta a DATA DE PAGAMENTO sugerida para dia útil — só quando o
+        # período for dia 5 (regra confirmada: relatórios do dia 20 não mudam).
+        # dia_referencia_capturado NÃO é alterado aqui — continua vindo do
+        # calendário puro, preservando a separação entre "período do relatório"
+        # (Data_Rel) e "data efetiva de pagamento" (Data_Pagamento).
+        if dia_referencia_capturado == 5:
+            try:
+                from src.feriados import calcular_enesimo_dia_util
+                data_pagamento_sugerida = calcular_enesimo_dia_util(
+                    data_rel_automatica.year, data_rel_automatica.month, n=5
+                )
+            except Exception as e:
+                logger.warning(f"⚠️ Falha ao calcular dia útil, usando data de calendário: {e}")
+                data_pagamento_sugerida = data_rel_automatica
+        else:
+            data_pagamento_sugerida = data_rel_automatica
+
+        data_pagamento.set_date(data_pagamento_sugerida)
         
         # Referência
         ttk.Label(frame_medicao, text="Referência:*").grid(row=2, column=0, padx=5, pady=5, sticky='e')
@@ -5684,22 +5736,63 @@ class GestaoMedicoes:
             import traceback
             traceback.print_exc()
 
+    
+    def _construir_indice_vinculacoes(self, wb):
+        """
+        NOVO (patch 2): lê a aba Vinculacoes uma única vez, a partir de um
+        workbook já aberto, e devolve um dicionário indexado por
+        linha_lancamento -> lista de vinculações (mesmo formato que
+        obter_vinculacoes_lancamento já retornava por linha).
+    
+        Isso substitui N chamadas a obter_vinculacoes_lancamento (uma por
+        lançamento candidato, cada uma reabrindo o arquivo do zero) por uma
+        única leitura no início da busca.
+        """
+        indice = {}
+        if 'Vinculacoes' not in wb.sheetnames:
+            return indice
+    
+        ws_vinc = wb['Vinculacoes']
+        for row in ws_vinc.iter_rows(min_row=2, values_only=True):
+            linha_lancamento = row[2]  # Coluna C: Linha_Lancamento
+            if linha_lancamento is None:
+                continue
+            indice.setdefault(linha_lancamento, []).append({
+                'id_contrato': row[0],
+                'id_medicao': row[1],
+                'linha_lancamento': row[2],
+                'data_vinculacao': row[3],
+                'valor_medicao': row[4],
+                'observacao': row[5] if len(row) > 5 else ""
+            })
+        return indice
+    
+    
     def buscar_lancamentos_existentes(self, tree, dados_medicao, filtro_nome, usar_filtro_data=True):
         """
-        VERSÃO CORRIGIDA - Com conversão correta de valores brasileiros.
+        VERSÃO CORRIGIDA v2:
+        - Lançamentos com saldo insuficiente aparecem na lista (❌ FALTAM R$ X)
+        em vez de serem descartados silenciosamente.
+        - Vinculações lidas uma única vez por busca (indice_vinculacoes), em vez
+        de reabrir o arquivo a cada linha candidata.
         """
         try:
             # Limpar treeview
             for item in tree.get_children():
                 tree.delete(item)
-            
-            # Carregar planilha
+    
+            # Carregar planilha — ALTERADO: essa é a ÚNICA abertura do arquivo
+            # para toda a busca, incluindo a leitura das vinculações.
             wb = load_workbook(self.arquivo_cliente)
             ws = wb['Dados']
-            
+    
+            # ALTERADO (patch 2): índice de vinculações construído uma vez só,
+            # a partir do mesmo wb já aberto acima.
+            indice_vinculacoes = self._construir_indice_vinculacoes(wb)
+    
             # Normalizar CNPJ/CPF da medição
             cnpj_medicao_norm = self.normalizar_cnpj_cpf(dados_medicao['cnpj'])
-            
+    
             # Valor da medição - CONVERSÃO CORRETA
             try:
                 valor_medicao = self.converter_valor_brasileiro_para_float(dados_medicao['valor'])
@@ -5707,7 +5800,7 @@ class GestaoMedicoes:
                 messagebox.showerror("Erro", f"Erro ao converter valor da medição: {str(e)}", parent=self.root)
                 wb.close()
                 return
-            
+    
             # Data da medição (para comparação)
             try:
                 if isinstance(dados_medicao['data_medicao'], str):
@@ -5716,13 +5809,13 @@ class GestaoMedicoes:
                     data_medicao = dados_medicao['data_medicao']
             except:
                 data_medicao = None
-            
+    
             # Buscar lançamentos
             encontrados = 0
+            encontrados_insuficientes = 0
             lancamentos_possiveis = []
-            
+    
             for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-                # Extrair dados da linha
                 data_rel = row[0]
                 cnpj_cpf = str(row[2]) if row[2] else ""
                 nome = str(row[3]) if row[3] else ""
@@ -5730,16 +5823,15 @@ class GestaoMedicoes:
                 valor_lancamento = row[8] if row[8] else 0
                 dt_vencto = row[9]
                 observacao = str(row[12]) if row[12] else ""
-                status = str(row[13]).strip().upper() if row[13] else ""  # ← NOVA LINHA
-            
-                # === FILTRO DE STATUS - PULAR SE EXCLUÍDO ===
+                status = str(row[13]).strip().upper() if row[13] else ""
+    
                 if status == "EXCLUIDO":
                     continue
-                
+    
                 # === CRITÉRIO 1: CNPJ/CPF (obrigatório) ===
                 cnpj_linha_norm = self.normalizar_cnpj_cpf(cnpj_cpf)
                 match_cnpj = (cnpj_linha_norm['limpo'] == cnpj_medicao_norm['limpo']) if cnpj_medicao_norm['limpo'] else False
-                
+    
                 # === CRITÉRIO 2: Nome (opcional, fallback) ===
                 match_nome = False
                 if filtro_nome and not match_cnpj:
@@ -5751,95 +5843,92 @@ class GestaoMedicoes:
                         any(palavra_filtro in palavra_nome for palavra_nome in palavras_nome)
                         for palavra_filtro in palavras_filtro
                     )
-                
-                # Se não deu match em CNPJ nem em nome, pular
+    
                 if not (match_cnpj or match_nome):
                     continue
-                
+    
                 # === CRITÉRIO 3: Data (se habilitado) ===
-                match_data = True  # Padrão: aceita qualquer data
+                match_data = True
                 if usar_filtro_data and data_medicao and data_rel:
                     try:
                         if isinstance(data_rel, datetime):
                             data_lancamento = data_rel
                         else:
                             data_lancamento = datetime.strptime(str(data_rel), '%d/%m/%Y')
-                        
-                        # Aceita se for:
-                        # 1. Mesma data exata, OU
-                        # 2. Mesmo mês e ano
+    
                         match_data = (
                             data_lancamento.date() == data_medicao.date() or
-                            (data_lancamento.month == data_medicao.month and 
+                            (data_lancamento.month == data_medicao.month and
                             data_lancamento.year == data_medicao.year)
                         )
                     except:
-                        match_data = True  # Se não conseguir comparar, aceita
-                
+                        match_data = True
                 if not match_data:
                     continue
-                
-                # === CRITÉRIO 4: Valor e Saldo - COM CONVERSÃO CORRETA ===
+    
+                # === CRITÉRIO 4: Valor e Saldo ===
                 try:
                     valor_lancamento_float = self.converter_valor_brasileiro_para_float(valor_lancamento)
                 except:
                     continue
-                
-                # Calcular saldo disponível do lançamento
-                vinculacoes_existentes = self.obter_vinculacoes_lancamento(idx)
+    
+                # ALTERADO (patch 2): consulta em memória, sem reabrir o arquivo.
+                vinculacoes_existentes = indice_vinculacoes.get(idx, [])
                 valor_ja_vinculado = sum(
-                    self.converter_valor_brasileiro_para_float(v['valor_medicao']) 
+                    self.converter_valor_brasileiro_para_float(v['valor_medicao'])
                     for v in vinculacoes_existentes
                 )
                 saldo_disponivel = valor_lancamento_float - valor_ja_vinculado
-                
-                # Debug
+    
                 print(f"DEBUG Linha {idx}:")
                 print(f"  Valor lançamento: {valor_lancamento} → {valor_lancamento_float}")
                 print(f"  Já vinculado: {valor_ja_vinculado}")
                 print(f"  Saldo disponível: {saldo_disponivel}")
                 print(f"  Valor medição: {valor_medicao}")
-                
-                # Aceita se:
-                # 1. Valor exato: saldo_disponivel == valor_medicao (com margem de R$ 0.01)
-                # 2. Saldo suficiente: saldo_disponivel >= valor_medicao
+    
                 valor_exato = abs(saldo_disponivel - valor_medicao) <= 0.01
                 saldo_suficiente = saldo_disponivel >= valor_medicao
-                
+    
+                # ALTERADO (patch 1): não pula mais quando o saldo é insuficiente.
                 if not (valor_exato or saldo_suficiente):
-                    print(f"  REJEITADO: Saldo insuficiente")
-                    continue
-                
-                print(f"  ACEITO!")
-                
-                # === Preparar dados para exibição ===
-                
-                # Formatar datas
+                    print(f"  INSUFICIENTE (será exibido mesmo assim)")
+                else:
+                    print(f"  ACEITO!")
+    
                 data_formatada = data_rel.strftime('%d/%m/%Y') if isinstance(data_rel, datetime) else str(data_rel)
                 vencto_formatado = dt_vencto.strftime('%d/%m/%Y') if isinstance(dt_vencto, datetime) else str(dt_vencto)
-                
-                # Formatar valores - USAR FORMATO BRASILEIRO
+    
                 valor_formatado = f"R$ {valor_lancamento_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
                 saldo_formatado = f"R$ {saldo_disponivel:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                
-                # Indicadores visuais
+    
                 tipo_match = "CNPJ" if match_cnpj else "NOME"
                 info_vinculacoes = ""
                 if vinculacoes_existentes:
                     qtd = len(vinculacoes_existentes)
                     info_vinculacoes = f" [{qtd}V]"
-                
-                # Indicador de adequação
+    
+                # ALTERADO (patch 1): indicador cobre também saldo insuficiente.
                 if valor_exato:
                     indicador_valor = "🎯 EXATO"
-                elif saldo_disponivel >= valor_medicao * 2:
+                elif saldo_suficiente and saldo_disponivel >= valor_medicao * 2:
                     indicador_valor = "✅ SALDO OK"
-                else:
+                elif saldo_suficiente:
                     indicador_valor = "⚠️ SALDO JUSTO"
-                
+                else:
+                    falta = valor_medicao - saldo_disponivel
+                    falta_formatada = f"R$ {falta:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                    indicador_valor = f"❌ FALTAM {falta_formatada}"
+                    encontrados_insuficientes += 1
+    
                 nome_display = f"{nome} ({tipo_match}){info_vinculacoes}"
-                
-                # Adicionar à lista com score para ordenação
+    
+                score_base = (
+                    (100 if valor_exato else 0) +
+                    (50 if match_cnpj else 0) +
+                    (20 if match_data else 0)
+                )
+                score = score_base if saldo_suficiente else (score_base - 1000)
+    
                 lancamentos_possiveis.append({
                     'idx': idx,
                     'data': data_formatada,
@@ -5850,19 +5939,14 @@ class GestaoMedicoes:
                     'vencimento': vencto_formatado,
                     'referencia': referencia,
                     'observacao': observacao,
-                    'score': (
-                        100 if valor_exato else 0 +  # Valor exato = prioridade máxima
-                        50 if match_cnpj else 0 +     # Match CNPJ > nome
-                        20 if match_data else 0        # Match data é bônus
-                    ),
+                    'score': score,
                     'indicador': indicador_valor,
-                    'saldo_real': saldo_disponivel
+                    'saldo_real': saldo_disponivel,
+                    'saldo_suficiente': saldo_suficiente,
                 })
-            
-            # Ordenar por score (melhores matches primeiro)
+    
             lancamentos_possiveis.sort(key=lambda x: x['score'], reverse=True)
-            
-            # Adicionar ao treeview
+    
             for lanc in lancamentos_possiveis:
                 tree.insert('', 'end', values=(
                     lanc['idx'],
@@ -5877,13 +5961,15 @@ class GestaoMedicoes:
                     lanc['observacao']
                 ))
                 encontrados += 1
-            
+    
+            # ALTERADO (patch 2): única wb.close() de toda a função — tudo que
+            # precisava do arquivo (Dados + Vinculacoes) já foi lido acima.
             wb.close()
-            
-            # Mensagem de resultado
+    
+            encontrados_vinculaveis = encontrados - encontrados_insuficientes
+    
             if encontrados == 0:
                 if usar_filtro_data:
-                    # Retry automático sem filtro de data
                     messagebox.showinfo(
                         "Busca",
                         "Nenhum lançamento encontrado no mesmo mês/ano da medição.\n\n"
@@ -5898,9 +5984,8 @@ class GestaoMedicoes:
                     "Busca",
                     "Nenhum lançamento encontrado com os critérios especificados.\n\n"
                     "Possíveis causas:\n"
-                    "• Não há lançamento com saldo suficiente\n"
-                    "• CNPJ/CPF não corresponde\n"
-                    "• Lançamento já está totalmente vinculado\n\n"
+                    "• CNPJ/CPF não corresponde a nenhum lançamento\n"
+                    "• Nome não corresponde a nenhum lançamento\n\n"
                     "Dicas:\n"
                     "• Verifique se o lançamento existe na aba Dados\n"
                     "• Confirme CNPJ/CPF do fornecedor\n"
@@ -5908,25 +5993,38 @@ class GestaoMedicoes:
                     parent=self.root
                 )
             else:
-                # Mensagem de sucesso com informações
                 msg_data = ""
                 if usar_filtro_data and data_medicao:
                     msg_data = f"• Data: {data_medicao.strftime('%m/%Y')} (mesmo mês/ano)\n"
-                
+    
+                msg_insuficientes = ""
+                if encontrados_insuficientes > 0:
+                    msg_insuficientes = (
+                        f"\n⚠️ Destes, {encontrados_insuficientes} têm SALDO INSUFICIENTE "
+                        f"para esta medição e aparecem marcados com ❌ — não podem ser "
+                        f"vinculados sozinhos, mas ficam visíveis para você decidir "
+                        f"(ex.: dividir a medição, ou vincular a mais de um)."
+                    )
+    
                 messagebox.showinfo(
                     "Busca",
-                    f"Encontrados {encontrados} lançamento(s) compatível(is).\n\n"
+                    f"Encontrados {encontrados} lançamento(s) compatível(is) "
+                    f"({encontrados_vinculaveis} com saldo suficiente"
+                    + (f", {encontrados_insuficientes} com saldo insuficiente)" if encontrados_insuficientes else ")")
+                    + f".\n\n"
                     f"Critérios aplicados:\n"
                     f"• CNPJ/CPF: {cnpj_medicao_norm['formatado']}\n"
                     f"• Nome: {filtro_nome or 'Qualquer'}\n"
                     f"{msg_data}"
                     f"• Valor medição: R$ {valor_medicao:,.2f}\n"
-                    f"• Lógica: Saldo disponível >= Valor medição\n\n"
+                    f"• Lógica: Saldo disponível >= Valor medição\n"
+                    f"{msg_insuficientes}\n\n"
                     f"🎯 = Valor exato\n"
                     f"✅ = Saldo OK (>= 2x medição)\n"
-                    f"⚠️ = Saldo justo (>= medição)"
+                    f"⚠️ = Saldo justo (>= medição)\n"
+                    f"❌ = Saldo insuficiente (mostra quanto falta)"
                 )
-            
+    
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao buscar lançamentos: {str(e)}", parent=self.root)
             import traceback
@@ -6122,9 +6220,16 @@ class GestaoMedicoes:
             
             msg_final += "\n📊 Use o relatório de vinculações para ver detalhes."
             
-            messagebox.showinfo("Sucesso", msg_final, parent=self.root)
-            
-            # Fechar janela e atualizar lista
+            self.carregar_medicoes()  # atualiza a lista principal em segundo plano
+
+            resposta_ver = messagebox.askyesno(
+                "Sucesso",
+                msg_final + "\n\nDeseja ver o relatório de vinculações deste lançamento agora?",
+                parent=self.root
+            )
+            if resposta_ver:
+                self.mostrar_vinculacoes_lancamento(tree)  # linha 256 já está selecionada na tree
+
             janela.destroy()
             self.carregar_medicoes()
             
