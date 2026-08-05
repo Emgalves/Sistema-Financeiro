@@ -553,7 +553,7 @@ class ImportadorMedicoes:
                 status_contrato = "CONCLUÍDO" if saldo_contrato == 0 else "ATIVO"
 
                 # Buscar CNPJ do fornecedor
-                cnpj = self.buscar_cnpj_fornecedor(str(fornecedor).strip())
+                cnpj, _tipo_pessoa_fornecedor = self.buscar_cnpj_fornecedor(str(fornecedor).strip())
                 if not cnpj:
                     erros.append(
                         f"Linha {linha}: Fornecedor '{fornecedor}' não encontrado no cadastro."
@@ -619,20 +619,34 @@ class ImportadorMedicoes:
         return medicoes_adic, erros
 
     def buscar_cnpj_fornecedor(self, nome_fornecedor):
+        """
+        Busca o CNPJ/CPF (e o tipo de pessoa, PJ/PF) de um fornecedor pelo nome.
+    
+        ALTERADO: agora retorna uma tupla (cnpj, tipo_pessoa) em vez de só o
+        cnpj. Antes, o tipo_pessoa devolvido por buscar_fornecedor_por_nome_agenda
+        era descartado aqui, e nunca chegava até salvar_medicoes_cliente — que
+        por isso nunca conseguia aplicar a formatação de CNPJ/CPF conforme o
+        tipo de pessoa.
+    
+        Returns:
+            tuple: (cnpj_ou_None, tipo_pessoa_ou_string_vazia)
+        """
         if nome_fornecedor in self.cache_fornecedores:
             return self.cache_fornecedores[nome_fornecedor]
-
+    
         try:
             fornecedor = None
-
+    
             if hasattr(self.sistema, 'buscar_fornecedor_por_nome_agenda'):
                 fornecedor = self.sistema.buscar_fornecedor_por_nome_agenda(nome_fornecedor)
-
+    
             if fornecedor and 'cnpj_cpf' in fornecedor:
                 cnpj = fornecedor['cnpj_cpf']
-                self.cache_fornecedores[nome_fornecedor] = cnpj
-                return cnpj
-
+                tipo_pessoa = fornecedor.get('tipo_pessoa', '')  # ALTERADO: não descarta mais
+                resultado = (cnpj, tipo_pessoa)
+                self.cache_fornecedores[nome_fornecedor] = resultado
+                return resultado
+    
             # ── FALLBACK: leitura direta do arquivo de fornecedores ──────────
             try:
                 from src.config.config import ARQUIVO_FORNECEDORES
@@ -640,34 +654,37 @@ class ImportadorMedicoes:
                 wb = _ox.load_workbook(ARQUIVO_FORNECEDORES, read_only=True, data_only=True)
                 ws = wb.active
                 nome_busca = nome_fornecedor.strip().upper()
-                melhor_cnpj, melhor_score = None, 0
+                melhor_cnpj, melhor_tipo, melhor_score = None, '', 0
                 for row in ws.iter_rows(min_row=2, values_only=True):
                     cnpj  = str(row[0]).strip() if row[0] else ""
+                    tipo_linha = str(row[1]).strip().upper() if row[1] else ""  # ALTERADO: extrai o tipo também
                     razao = str(row[2]).strip().upper() if row[2] else ""
                     nome_ = str(row[3]).strip().upper() if row[3] else ""
                     for candidato in [razao, nome_]:
                         if nome_busca == candidato:
                             wb.close()
-                            self.cache_fornecedores[nome_fornecedor] = cnpj
-                            return cnpj
+                            resultado = (cnpj, tipo_linha)
+                            self.cache_fornecedores[nome_fornecedor] = resultado
+                            return resultado
                         if nome_busca in candidato or candidato in nome_busca:
                             score = len(set(nome_busca.split()) & set(candidato.split()))
                             if score > melhor_score:
-                                melhor_score, melhor_cnpj = score, cnpj
+                                melhor_score, melhor_cnpj, melhor_tipo = score, cnpj, tipo_linha
                 wb.close()
                 if melhor_cnpj:
-                    self.cache_fornecedores[nome_fornecedor] = melhor_cnpj
-                    return melhor_cnpj
+                    resultado = (melhor_cnpj, melhor_tipo)
+                    self.cache_fornecedores[nome_fornecedor] = resultado
+                    return resultado
             except Exception as fe:
                 logger.warning(f"Fallback de busca direta falhou: {fe}")
             # ─────────────────────────────────────────────────────────────────
-
-            self.cache_fornecedores[nome_fornecedor] = None
-            return None
-
+    
+            self.cache_fornecedores[nome_fornecedor] = (None, '')  # ALTERADO
+            return (None, '')  # ALTERADO
+    
         except Exception as e:
             logger.error(f"Erro ao buscar CNPJ do fornecedor '{nome_fornecedor}': {str(e)}")
-            return None
+            return (None, '')
     
     def processar_relatorio(self, arquivo):
         """
@@ -736,7 +753,7 @@ class ImportadorMedicoes:
                         continue
                     
                     # Buscar CNPJ do fornecedor
-                    cnpj = self.buscar_cnpj_fornecedor(str(fornecedor).strip())
+                    cnpj, tipo_pessoa_fornecedor = self.buscar_cnpj_fornecedor(str(fornecedor).strip())
                     
                     # Ler aditivo (B9): novo Valor Global informado pelo usuário
                     aditivo_raw = sheet['B9'].value
@@ -762,6 +779,7 @@ class ImportadorMedicoes:
                     # Adicionar CNPJ às medições
                     for medicao in medicoes:
                         medicao['cnpj_fornecedor'] = cnpj if cnpj else 'NÃO ENCONTRADO'
+                        medicao['tipo_pessoa_fornecedor'] = tipo_pessoa_fornecedor if cnpj else ''
                     
                     medicoes_total.extend(medicoes)
                     erros_total.extend([f"{aba_nome}: {erro}" for erro in erros])
@@ -814,7 +832,8 @@ class ImportadorMedicoes:
                 'Data_Pagamento': data_pagamento,  # ✅ DATETIME!
                 'Referencia': medicao['referencia'],
                 'Valor': medicao['valor'],
-                'Status': medicao['status']
+                'Status': medicao['status'],
+                'tipo_pessoa': medicao.get('tipo_pessoa_fornecedor', '')
             })
         
         return medicoes_preparadas
