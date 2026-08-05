@@ -56,3 +56,26 @@ def eh_dia_util(dia: date, feriados: set) -> bool:
     """
     DOMINGO = 6  # weekday(): 0=segunda ... 6=domingo
     return dia.weekday() != DOMINGO and dia not in feriados
+
+def calcular_enesimo_dia_util(ano: int, mes: int, n: int = 5, uf: str = UF_PADRAO, cidade: str = CIDADE_PADRAO):
+    """
+    Retorna a data do N-ésimo dia útil do mês, pela regra:
+    segunda a sábado, excluindo domingo e feriados. UF/cidade usam o
+    padrão da sede da construtora (Belo Horizonte/MG) se não informados.
+    """
+    from datetime import date, timedelta
+
+    feriados = obter_feriados_ano(ano, uf=uf, cidade=cidade)
+    if mes == 12:
+        feriados |= obter_feriados_ano(ano + 1, uf=uf, cidade=cidade)
+
+    dia = date(ano, mes, 1)
+    contador = 0
+    while dia.month == mes:
+        if eh_dia_util(dia, feriados):
+            contador += 1
+            if contador == n:
+                return dia
+        dia += timedelta(days=1)
+
+    return dia - timedelta(days=1)
