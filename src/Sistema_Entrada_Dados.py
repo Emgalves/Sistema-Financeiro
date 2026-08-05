@@ -6170,125 +6170,31 @@ class SistemaEntradaDados:
 
     def buscar_fornecedor_completo(self, cnpj_cpf):
         """
-        Busca fornecedor completo - VERSÃO ROBUSTA
-        Busca tanto por valor texto quanto por números
+        Busca fornecedor completo (todos os campos) por CNPJ/CPF.
+        Aceita tanto o valor formatado (com pontuação) quanto só números.
         """
         try:
-            from src.config.config import ARQUIVO_FORNECEDORES
-            from openpyxl import load_workbook
-            import os
-            
-            logger.debug(f"=== buscar_fornecedor_completo ===")
-            logger.debug(f"CNPJ/CPF recebido: {cnpj_cpf}")
-            
-            if not os.path.exists(ARQUIVO_FORNECEDORES):
-                logger.error(f"Arquivo não encontrado")
-                return None
-            
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-            
-            # Preparar valores de busca
-            cnpj_cpf_busca_str = str(cnpj_cpf).strip()
-            cnpj_cpf_busca_numeros = ''.join(filter(str.isdigit, cnpj_cpf_busca_str))
-            
-            logger.debug(f"Buscando por:")
-            logger.debug(f"  String: '{cnpj_cpf_busca_str}'")
-            logger.debug(f"  Números: '{cnpj_cpf_busca_numeros}' (len={len(cnpj_cpf_busca_numeros)})")
-            
-            total_linhas = 0
-            fornecedor_encontrado = None
-            
-            for linha, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-                if not row or not row[0]:
-                    continue
-                
-                total_linhas += 1
-                
-                row_cnpj_valor = row[0]
-                row_tipo_pessoa = str(row[1]).strip().upper()
-                
-                # ============================================
-                # ESTRATÉGIA 1: Comparar como STRING (exato)
-                # ============================================
-                row_cnpj_str = str(row_cnpj_valor).strip()
-                
-                # ============================================
-                # ESTRATÉGIA 2: Comparar NÚMEROS (sem formatação)
-                # ============================================
-                row_cnpj_numeros = ''.join(filter(str.isdigit, str(row_cnpj_valor)))
-                
-                # Log para debug (apenas primeiras linhas ou match)
-                if total_linhas <= 3 or row_cnpj_numeros == cnpj_cpf_busca_numeros:
-                    logger.debug(f"Linha {linha}:")
-                    logger.debug(f"  Valor planilha: '{row_cnpj_valor}' (type={type(row_cnpj_valor).__name__})")
-                    logger.debug(f"  String: '{row_cnpj_str}'")
-                    logger.debug(f"  Números: '{row_cnpj_numeros}'")
-                
-                # ============================================
-                # COMPARAÇÃO MÚLTIPLA (funciona em todos os casos)
-                # ============================================
-                match = False
-                
-                # Teste 1: Comparação de números
-                if row_cnpj_numeros == cnpj_cpf_busca_numeros:
-                    match = True
-                    logger.debug(f"  ✓ MATCH por NÚMEROS!")
-                
-                # Teste 2: Comparação de string (caso a planilha tenha exatamente o valor)
-                elif row_cnpj_str == cnpj_cpf_busca_str:
-                    match = True
-                    logger.debug(f"  ✓ MATCH por STRING!")
-                
-                if match:
-                    logger.info(f"✓ FORNECEDOR ENCONTRADO NA LINHA {linha}!")
-                    logger.debug(f"  Tipo: {row_tipo_pessoa}")
-                    logger.debug(f"  CNPJ/CPF planilha: {row_cnpj_valor}")
-                    
-                    row_completa = list(row) + [None] * (18 - len(row))
-                    
-                    fornecedor_encontrado = {
-                        'cnpj_cpf': str(row_completa[0]).strip() if row_completa[0] else '',
-                        'tipo_pessoa': str(row_completa[1]).strip() if row_completa[1] else '',
-                        'razao_social': str(row_completa[2]).strip() if row_completa[2] else '',
-                        'nome': str(row_completa[3]).strip() if row_completa[3] else '',
-                        'telefone': str(row_completa[4]).strip() if row_completa[4] else '',
-                        'email': str(row_completa[5]).strip() if row_completa[5] else '',
-                        'banco': str(row_completa[6]).strip() if row_completa[6] else '',
-                        'op': str(row_completa[7]).strip() if row_completa[7] else '',
-                        'agencia': str(row_completa[8]).strip() if row_completa[8] else '',
-                        'conta': str(row_completa[9]).strip() if row_completa[9] else '',
-                        'chave_pix': str(row_completa[10]).strip() if row_completa[10] else '',
-                        'categoria': str(row_completa[11]).strip() if row_completa[11] else '',
-                        'especificacao': str(row_completa[12]).strip() if row_completa[12] else '',
-                        'vinculo': str(row_completa[13]).strip() if row_completa[13] else '',
-                        'dados_bancarios': str(row_completa[14]).strip() if row_completa[14] else '',
-                        'endereco': str(row_completa[15]).strip() if row_completa[15] else '',
-                        'status': str(row_completa[16]).strip() if row_completa[16] else '',
-                        'responsavel': str(row_completa[17]).strip() if row_completa[17] else ''
-                    }
-                    
-                    break
-            
-            wb.close()
-            
-            if not fornecedor_encontrado:
-                logger.warning(f"✗ NÃO ENCONTRADO após {total_linhas} linhas")
-                logger.warning(f"  Buscou por números: {cnpj_cpf_busca_numeros}")
-                logger.warning(f"  Buscou por string: {cnpj_cpf_busca_str}")
-            
-            return fornecedor_encontrado
-            
+            cnpj_cpf_busca_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf).strip()))
+    
+            fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
+    
+            for fornecedor in fornecedores:
+                if fornecedor['cnpj_cpf_numeros'] == cnpj_cpf_busca_numeros:
+                    # Devolve uma cópia sem o campo auxiliar interno do cache,
+                    # mantendo exatamente o mesmo formato que o código antigo
+                    # devolvia (mesmas chaves, para não quebrar quem já consome
+                    # este retorno).
+                    resultado = fornecedor.copy()
+                    resultado.pop('cnpj_cpf_numeros', None)
+                    return resultado
+    
+            logger.warning(f"✗ Fornecedor não encontrado: '{cnpj_cpf}' (números: '{cnpj_cpf_busca_numeros}')")
+            return None
+    
         except Exception as e:
-            logger.error(f"Erro: {str(e)}")
+            logger.error(f"Erro em buscar_fornecedor_completo: {str(e)}")
             import traceback
             logger.error(traceback.format_exc())
-            
-            try:
-                wb.close()
-            except:
-                pass
-            
             return None
 
     def buscar_fornecedor_por_cnpj(self, cnpj_cpf):
@@ -6331,64 +6237,50 @@ class SistemaEntradaDados:
             return False
 
     def buscar_fornecedor_por_nome_agenda(self, nome_fornecedor):
-        """Busca fornecedor pelo nome para uso na agenda"""
+        """Busca fornecedor pelo nome para uso na agenda (via cache)"""
         try:
             if not nome_fornecedor or not nome_fornecedor.strip():
                 return None
-            
-            # Abrir planilha de fornecedores
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-            
+    
             nome_busca = nome_fornecedor.strip().upper()
+    
+            fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
+    
             fornecedor_encontrado = None
             melhor_match = 0
-            
-            # Buscar na planilha
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular linhas vazias
-                    continue
-                    
-                cnpj_cpf = str(row[0]).strip()           # Coluna A
-                nome = str(row[3] or '').strip().upper() # Coluna D = Nome
-                
-                # Verificar correspondência
+    
+            for f in fornecedores:
+                nome = f['nome']  # já vem em upper do cache
+    
                 if nome_busca in nome:
-                    # Calcular qualidade do match
                     match_quality = len(nome_busca) / len(nome) if nome else 0
-                    
-                    # Se for match exato ou melhor que o anterior
+    
                     if nome_busca == nome or match_quality > melhor_match:
                         melhor_match = match_quality
                         fornecedor_encontrado = {
-                            'cnpj_cpf': cnpj_cpf,
+                            'cnpj_cpf': f['cnpj_cpf'],
                             'nome': nome,
-                            'categoria': str(row[11] or '').strip(),      # Coluna L = CATEGORIA
-                            'telefone': str(row[4] or '').strip(),        # Coluna E = TELEFONE
-                            'email': str(row[5] or '').strip(),           # Coluna F = EMAIL
-                            'banco': str(row[6] or '').strip(),           # Coluna G = BANCO
-                            'op': str(row[7] or '').strip(),              # Coluna H = OP
-                            'agencia': str(row[8] or '').strip(),         # Coluna I = AGENC
-                            'conta': str(row[9] or '').strip(),           # Coluna J = CONTA
-                            'chave_pix': str(row[10] or '').strip(),      # Coluna K = Chave_PIX ← CORRIGIDO!
-                            'dados_bancarios': str(row[14] or '').strip() # Coluna O = DADOS BANCÁRIOS
+                            'categoria': f['categoria'],
+                            'telefone': f['telefone'],
+                            'email': f['email'],
+                            'banco': f['banco'],
+                            'op': f['op'],
+                            'agencia': f['agencia'],
+                            'conta': f['conta'],
+                            'chave_pix': f['chave_pix'],
+                            'dados_bancarios': f['dados_bancarios'],
                         }
-                        
-                        # Se for match exato, parar a busca
+    
                         if nome_busca == nome:
                             break
-            
-            wb.close()
-            
+    
             if fornecedor_encontrado:
                 logger.debug(f"DEBUG: Fornecedor encontrado: {fornecedor_encontrado['nome']} - {fornecedor_encontrado['cnpj_cpf']}")
-                logger.debug(f"DEBUG: Chave PIX: {fornecedor_encontrado['chave_pix']}")
-                logger.debug(f"DEBUG: Dados bancários: {fornecedor_encontrado['dados_bancarios']}")
             else:
                 logger.debug(f"DEBUG: Nenhum fornecedor encontrado para: {nome_fornecedor}")
-            
+    
             return fornecedor_encontrado
-            
+    
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao buscar fornecedor por nome: {str(e)}")
             import traceback
@@ -6396,50 +6288,36 @@ class SistemaEntradaDados:
             return None
     
     def buscar_fornecedor_por_cnpj_agenda(self, cnpj_cpf):
-        """Busca fornecedor pelo CNPJ/CPF para uso na agenda"""
+        """Busca fornecedor pelo CNPJ/CPF para uso na agenda (via cache)"""
         try:
             if not cnpj_cpf or not cnpj_cpf.strip():
                 return None
-            
-            # Limpar formatação do CNPJ/CPF
+    
             cnpj_limpo = ''.join(filter(str.isdigit, cnpj_cpf))
-            
-            # Abrir planilha de fornecedores
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-            
-            # Buscar na planilha
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular linhas vazias
-                    continue
-                    
-                cnpj_planilha = ''.join(filter(str.isdigit, str(row[0])))
-                
-                if cnpj_limpo == cnpj_planilha:
+    
+            fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
+    
+            for f in fornecedores:
+                if f['cnpj_cpf_numeros'] == cnpj_limpo:
                     fornecedor = {
-                        'cnpj_cpf': str(row[0]).strip(),              # Coluna A
-                        'nome': str(row[3] or '').strip().upper(),    # Coluna D = NOME
-                        'categoria': str(row[11] or '').strip(),      # Coluna L = CATEGORIA
-                        'telefone': str(row[4] or '').strip(),        # Coluna E = TELEFONE
-                        'email': str(row[5] or '').strip(),           # Coluna F = EMAIL
-                        'banco': str(row[6] or '').strip(),           # Coluna G = BANCO
-                        'op': str(row[7] or '').strip(),              # Coluna H = OP
-                        'agencia': str(row[8] or '').strip(),         # Coluna I = AGENC
-                        'conta': str(row[9] or '').strip(),           # Coluna J = CONTA
-                        'chave_pix': str(row[10] or '').strip(),      # Coluna K = Chave_PIX ← CORRIGIDO!
-                        'dados_bancarios': str(row[14] or '').strip() # Coluna O = DADOS BANCÁRIOS
+                        'cnpj_cpf': f['cnpj_cpf'],
+                        'nome': f['nome'],
+                        'categoria': f['categoria'],
+                        'telefone': f['telefone'],
+                        'email': f['email'],
+                        'banco': f['banco'],
+                        'op': f['op'],
+                        'agencia': f['agencia'],
+                        'conta': f['conta'],
+                        'chave_pix': f['chave_pix'],
+                        'dados_bancarios': f['dados_bancarios'],
                     }
-                    
-                    wb.close()
                     logger.debug(f"DEBUG: Fornecedor encontrado por CNPJ: {fornecedor['nome']}")
-                    logger.debug(f"DEBUG: Chave PIX: {fornecedor['chave_pix']}")
-                    logger.debug(f"DEBUG: Dados bancários: {fornecedor['dados_bancarios']}")
                     return fornecedor
-            
-            wb.close()
+    
             logger.debug(f"DEBUG: Nenhum fornecedor encontrado para CNPJ: {cnpj_cpf}")
             return None
-            
+    
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao buscar fornecedor por CNPJ: {str(e)}")
             import traceback
@@ -6486,16 +6364,15 @@ class SistemaEntradaDados:
     
     def buscar_dados_bancarios(self, cnpj_cpf):
         try:
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-        
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0] == cnpj_cpf:
+            cnpj_busca_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))  # ALTERADO: normaliza antes de comparar
+    
+            fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
+    
+            for f in fornecedores:
+                if f['cnpj_cpf_numeros'] == cnpj_busca_numeros:
                     logger.debug(f"CNPJ/CPF encontrado: {cnpj_cpf}")
-                    logger.debug(f"Dados da linha: {row}")
-                    if row[14]:  # coluna O com dados bancários consolidados
-                        return row[14]
-                    return ""
+                    return f['dados_bancarios'] or ""
+    
             return ""
         except Exception as e:
             logger.debug(f"Erro ao buscar dados bancários: {e}")
@@ -19361,7 +19238,7 @@ class GerenciadorAgenda:
 
     
     def carregar_medicoes_pendentes(self):
-        """✅ VERSÃO CORRIGIDA - Nome do fornecedor (não CNPJ)"""
+        """✅ VERSÃO CORRIGIDA - Nome do fornecedor (não CNPJ) + leitura de Data_Rel"""
         try:
             logger.debug("=" * 80)
             logger.debug("DEBUG: INICIANDO CARREGAMENTO DE MEDIÇÕES PENDENTES")
@@ -19381,6 +19258,15 @@ class GerenciadorAgenda:
             df_medicoes.columns = df_medicoes.columns.str.strip().str.upper()
             
             logger.debug(f"DEBUG: Colunas encontradas: {list(df_medicoes.columns)}")
+            
+            # ✅ NOVO: detectar se a coluna Data_Rel existe (planilhas migradas têm;
+            # planilhas muito antigas, sem a migração de verificar_aba_medicoes
+            # rodada ainda, podem não ter)
+            col_data_rel_explicita = 'DATA_REL' if 'DATA_REL' in df_medicoes.columns else None
+            if col_data_rel_explicita:
+                logger.debug("DEBUG: Coluna DATA_REL encontrada — será usada como fonte primária do período")
+            else:
+                logger.warning("⚠️ Coluna DATA_REL não encontrada — usando inferência por dia do mês (fallback)")
             
             # Encontrar coluna de status
             col_status = None
@@ -19407,14 +19293,12 @@ class GerenciadorAgenda:
             
             for idx, row in medicoes_pendentes.iterrows():
                 try:
-                    # ✅ CORREÇÃO CRÍTICA: Garantir que pega NOME, não CNPJ
+                    # Nome do fornecedor
                     nome_fornecedor = None
-                    
-                    # Tentar várias variações do nome da coluna
                     for col_nome_variacao in ['NOME_FORNECEDOR', 'FORNECEDOR', 'NOME', 'RAZAO_SOCIAL']:
                         if col_nome_variacao in df_medicoes.columns:
                             nome_fornecedor = str(row[col_nome_variacao]).strip()
-                            if nome_fornecedor and not nome_fornecedor.isdigit():  # Não é só números
+                            if nome_fornecedor and not nome_fornecedor.isdigit():
                                 logger.debug(f"   ✅ Nome encontrado na coluna '{col_nome_variacao}': {nome_fornecedor}")
                                 break
                     
@@ -19431,15 +19315,22 @@ class GerenciadorAgenda:
                     # Data de pagamento
                     dt_pagamento = pd.to_datetime(row['DATA_PAGAMENTO']).date()
                     
-                    # Calcular DATA_REL
-                    if 6 <= dt_pagamento.day <= 20:
-                        data_rel = dt_pagamento.replace(day=20)
+                    # ✅ CORRIGIDO: usa Data_Rel gravada diretamente, quando disponível.
+                    # Só cai na inferência por dia do mês (fallback) para linhas
+                    # antigas, gravadas antes da coluna existir.
+                    valor_rel_explicito = row.get(col_data_rel_explicita) if col_data_rel_explicita else None
+                    
+                    if pd.notna(valor_rel_explicito):
+                        data_rel = pd.to_datetime(valor_rel_explicito).date()
                     else:
-                        if dt_pagamento.day > 20:
-                            from dateutil.relativedelta import relativedelta
-                            data_rel = (dt_pagamento + relativedelta(months=1)).replace(day=5)
+                        if 6 <= dt_pagamento.day <= 20:
+                            data_rel = dt_pagamento.replace(day=20)
                         else:
-                            data_rel = dt_pagamento.replace(day=5)
+                            if dt_pagamento.day > 20:
+                                from dateutil.relativedelta import relativedelta
+                                data_rel = (dt_pagamento + relativedelta(months=1)).replace(day=5)
+                            else:
+                                data_rel = dt_pagamento.replace(day=5)
                     
                     # Referência
                     referencia = row.get('REFERENCIA', '')
@@ -19448,15 +19339,14 @@ class GerenciadorAgenda:
                     else:
                         referencia = str(referencia).strip()
                     
-                    # CNPJ (para buscar dados bancários depois)
+                    # CNPJ
                     cnpj_fornecedor = str(row['CNPJ_FORNECEDOR']).strip()
                     
-                    # Criar item da agenda
                     item_agenda = {
                         'vencimento': dt_pagamento,
                         'data_rel': data_rel,
                         'status': 'PENDENTE',
-                        'fornecedor': nome_fornecedor,  # ✅ NOME, não CNPJ
+                        'fornecedor': nome_fornecedor,
                         'referencia': referencia,
                         'valor': valor_float,
                         'tipo': 'TD2',
@@ -19467,7 +19357,7 @@ class GerenciadorAgenda:
                             'id_contrato': row['ID_CONTRATO'],
                             'id_medicao': row['ID_MEDICAO'],
                             'linha_planilha': int(idx) + 2,
-                            'cnpj': cnpj_fornecedor,  # Guardar CNPJ para buscar dados bancários
+                            'cnpj': cnpj_fornecedor,
                             'data_medicao': pd.to_datetime(row['DATA_MEDICAO']).date() if pd.notna(row['DATA_MEDICAO']) else dt_pagamento,
                             'data_pagamento': dt_pagamento
                         }
@@ -19479,6 +19369,7 @@ class GerenciadorAgenda:
                     logger.debug(f"      Contrato {row['ID_CONTRATO']}, Medição {row['ID_MEDICAO']}")
                     logger.debug(f"      Fornecedor: {nome_fornecedor}")
                     logger.debug(f"      CNPJ: {cnpj_fornecedor}")
+                    logger.debug(f"      Data_Rel usada: {data_rel} ({'explícita' if col_data_rel_explicita and pd.notna(valor_rel_explicito) else 'inferida'})")
                     logger.debug(f"      Valor: R$ {valor_float:,.2f}")
                     
                 except Exception as e:
@@ -19487,7 +19378,6 @@ class GerenciadorAgenda:
                     traceback.print_exc()
                     continue
             
-            # Adicionar todos de uma vez
             self.dados_agenda.extend(novos_itens)
             
             logger.debug("=" * 80)
@@ -19698,8 +19588,8 @@ class GerenciadorAgenda:
                         usar_dia_util = compromisso.get('considerar_dia_util', False)
 
                         if usar_dia_util:
-                            # 'dia_venc_config' passa a significar "qual dia útil", não dia de calendário
-                            data_vencimento_sugerida = self.calcular_enesimo_dia_util(
+                            from src.feriados import calcular_enesimo_dia_util  # ✅ agora é função solta, não self.
+                            data_vencimento_sugerida = calcular_enesimo_dia_util(
                                 data_rel.year, data_rel.month, n=dia_venc_config
                             )
                         else:
@@ -20197,33 +20087,6 @@ class GerenciadorAgenda:
             else:
                 data_rel = hoje.replace(day=5)
         return data_rel
-
-    def calcular_enesimo_dia_util(self, ano, mes, n=5, uf=None, cidade=None):
-        """
-        Retorna a data do N-ésimo dia útil do mês, pela regra:
-        segunda a sábado, excluindo domingo e feriados. UF/cidade usam o
-        padrão da sede da construtora (Belo Horizonte/MG) se não informados.
-        """
-        from src.feriados import obter_feriados_ano, eh_dia_util, UF_PADRAO, CIDADE_PADRAO
-        from datetime import date
-
-        uf = uf or UF_PADRAO
-        cidade = cidade or CIDADE_PADRAO
-
-        feriados = obter_feriados_ano(ano, uf=uf, cidade=cidade)
-        if mes == 12:
-            feriados |= obter_feriados_ano(ano + 1, uf=uf, cidade=cidade)
-
-        dia = date(ano, mes, 1)
-        contador = 0
-        while dia.month == mes:
-            if eh_dia_util(dia, feriados):
-                contador += 1
-                if contador == n:
-                    return dia
-            dia += timedelta(days=1)
-
-        return dia - timedelta(days=1)
 
     def novo_lancamento(self):
         """Abre interface para novo lançamento diretamente da agenda"""
