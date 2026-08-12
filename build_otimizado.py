@@ -58,6 +58,7 @@ def verificar_dependencias():
         'PIL': 'Pillow',
         'reportlab': 'reportlab',
         'num2words': 'num2words',
+        'holidays': 'holidays',
     }
 
     faltando = []
@@ -81,11 +82,14 @@ def verificar_dependencias():
 def verificar_pyinstaller():
     print_step("Verificando PyInstaller...")
     try:
-        result = subprocess.run(["pyinstaller", "--version"], capture_output=True, text=True)
-        print_success(f"PyInstaller {result.stdout.strip()} encontrado")
+        result = subprocess.run(
+            [sys.executable, "-m", "PyInstaller", "--version"],
+            capture_output=True, text=True,
+        )
+        print_success(f"PyInstaller {result.stdout.strip()} encontrado (venv: {sys.executable})")
         return True
     except FileNotFoundError:
-        print_error("PyInstaller não encontrado!")
+        print_error("PyInstaller não encontrado nesta venv!")
         print("\nInstale com: pip install pyinstaller")
         return False
 
@@ -97,6 +101,12 @@ def verificar_arquivos():
         "src/gestao_medicoes.py",
         "src/modules/gerador_contrato.py",
         "hook_docx_runtime.py",
+        "src/feriados.py",
+        "src/comprovantes_beneficios/interface.py",
+        "src/comprovantes_beneficios/gerador_recibo.py",
+        "src/comprovantes_beneficios/dados_candidatos.py",
+        "src/comprovantes_beneficios/controle_registros.py",
+        "src/comprovantes_beneficios/normalizacao.py",
     ]
 
     todos_ok = True
@@ -318,9 +328,10 @@ def copiar_arquivos_pos_build(exe_path):
 def executar_build():
     print_header("INICIANDO BUILD")
 
-    cmd = ["pyinstaller", "--clean", "--noconfirm", SPEC_FILE]
+    cmd = [sys.executable, "-m", "PyInstaller", "--clean", "--noconfirm", SPEC_FILE]
 
     print_step("Executando PyInstaller...")
+    print(f"   Interpretador: {sys.executable}")
     print(f"   Comando: {' '.join(cmd)}")
 
     try:
