@@ -15221,3 +15221,7 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-08-05 16:16:44,082 - INFO - ✅ Sistema de Entrada de Dados aberto
 2026-08-05 16:16:45,976 - INFO - Cliente selecionado com sucesso: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
 2026-08-05 16:18:11,808 - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2026-08-13 10:27:25,512 - INFO - Configurações importadas com sucesso via src.config
+2026-08-13 10:27:25,690 - INFO - Configurações importadas com sucesso
+2026-08-13 10:27:25,691 - INFO - Configurações do sistema importadas com sucesso
+2026-08-13 10:27:27,630 - INFO - Sistema iniciado em modo: TESTE
