@@ -1,5 +1,0 @@
-2025-05-30 17:32:02,541 - sistema - logger_config - INFO - Iniciando: Carregar configurações
-2025-05-30 17:32:02,570 - sistema - logger_config - INFO - Concluído: Carregar configurações
-2025-05-30 18:29:22,248 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
-2025-05-30 19:02:36,486 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
-2025-05-30 19:13:58,333 - sistema - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py

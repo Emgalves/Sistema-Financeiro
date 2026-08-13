@@ -1,7 +1,0 @@
-2025-10-21 10:25:45,257 - sistema - logger_config - INFO - Sistema de logging inicializado
-2025-10-21 10:25:48,855 - sistema - logger_config - INFO - Iniciando: Carregar configurações
-2025-10-21 10:25:48,914 - sistema - logger_config - INFO - Concluído: Carregar configurações
-2025-10-21 10:25:48,915 - sistema - logger_config - INFO - Iniciando: Carregar configurações
-2025-10-21 10:25:48,915 - sistema - logger_config - INFO - Concluído: Carregar configurações
-2025-10-21 10:25:48,927 - sistema - Sistema_Entrada_Dados - INFO - Proteções contra perda de dados configuradas
-2025-10-21 10:26:04,582 - sistema - Sistema_Entrada_Dados - INFO - Cliente selecionado com sucesso: CLEVER LUIZ SALVADOR
