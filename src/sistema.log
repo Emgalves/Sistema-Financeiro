@@ -14921,3 +14921,307 @@ TypeError: formatar_documento() missing 1 required positional argument: 'tipo_pe
 2026-08-01 17:04:19,935 - INFO - Abrindo sistema de entrada de dados
 2026-08-01 17:04:22,613 - INFO - Proteções contra perda de dados configuradas
 2026-08-01 17:04:23,425 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-02 07:41:07,212 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 07:41:07,252 - INFO - Configurações importadas com sucesso
+2026-08-02 07:41:07,255 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 07:41:09,774 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 07:41:15,358 - INFO - Abrindo gestão de medições
+2026-08-02 07:45:00,364 - INFO - Abrindo sistema de entrada de dados
+2026-08-02 07:45:04,762 - INFO - Proteções contra perda de dados configuradas
+2026-08-02 07:45:05,682 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-02 07:45:05,737 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-08-02 07:45:42,015 - INFO - Voltando ao menu principal
+2026-08-02 07:45:42,148 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-02 07:45:42,200 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-02 07:45:42,436 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-02 07:45:43,557 - INFO - Abrindo gestão de medições
+2026-08-02 08:02:05,118 - INFO - Sistema encerrado pelo usuário
+2026-08-02 08:02:21,504 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 08:02:21,534 - INFO - Configurações importadas com sucesso
+2026-08-02 08:02:21,535 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 08:02:22,896 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 08:02:29,686 - INFO - Abrindo gestão de medições
+2026-08-02 08:12:06,884 - INFO - Sistema encerrado pelo usuário
+2026-08-02 08:12:19,324 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 08:12:19,346 - INFO - Configurações importadas com sucesso
+2026-08-02 08:12:19,347 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 08:12:20,435 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 08:12:23,130 - INFO - Abrindo gestão de medições
+2026-08-02 08:14:26,351 - INFO - Sistema encerrado pelo usuário
+2026-08-02 08:28:24,055 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 08:28:24,080 - INFO - Configurações importadas com sucesso
+2026-08-02 08:28:24,081 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 08:28:25,268 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 08:28:28,875 - INFO - Abrindo gestão de medições
+2026-08-02 08:41:35,502 - INFO - Abrindo sistema de entrada de dados
+2026-08-02 08:41:36,422 - INFO - Proteções contra perda de dados configuradas
+2026-08-02 08:41:36,796 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-02 08:41:36,903 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-08-02 08:47:16,235 - INFO - Voltando ao menu principal
+2026-08-02 08:47:16,337 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-02 08:47:16,343 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-02 08:47:16,527 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-02 08:47:18,035 - INFO - Abrindo gestão de medições
+2026-08-02 09:10:29,886 - INFO - Sistema encerrado pelo usuário
+2026-08-02 09:10:46,691 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 09:10:46,731 - INFO - Configurações importadas com sucesso
+2026-08-02 09:10:46,731 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 09:10:48,922 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 09:10:50,602 - INFO - Abrindo sistema de relatórios
+2026-08-02 09:11:48,329 - INFO - Abrindo gestão de medições
+2026-08-02 09:12:56,125 - INFO - Proteções contra perda de dados configuradas
+2026-08-02 09:12:57,349 - INFO - ✓ FORNECEDOR ENCONTRADO NA LINHA 1049!
+2026-08-02 09:12:57,596 - INFO - Cliente selecionado com sucesso: JOSE PAULO DE SOUZA PEIXE
+2026-08-02 09:21:42,516 - INFO - Sistema encerrado pelo usuário
+2026-08-02 09:33:21,055 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 09:33:21,077 - INFO - Configurações importadas com sucesso
+2026-08-02 09:33:21,078 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 09:33:22,363 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 09:33:28,184 - INFO - Abrindo gestão de medições
+2026-08-02 10:44:49,229 - INFO - Sistema encerrado pelo usuário
+2026-08-02 11:16:10,100 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 11:16:10,121 - INFO - Configurações importadas com sucesso
+2026-08-02 11:16:10,122 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 11:16:11,577 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 11:17:02,207 - INFO - Abrindo sistema de entrada de dados
+2026-08-02 11:17:04,131 - INFO - Proteções contra perda de dados configuradas
+2026-08-02 11:17:04,431 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-02 11:17:06,665 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-02 11:17:22,318 - INFO - Voltando ao menu principal
+2026-08-02 11:17:22,431 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-02 11:17:22,524 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-02 11:17:22,858 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-02 11:17:23,766 - INFO - Abrindo gestão de medições
+2026-08-02 11:17:41,077 - INFO - Sistema encerrado pelo usuário
+2026-08-02 16:28:01,225 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 16:28:01,601 - INFO - Configurações importadas com sucesso
+2026-08-02 16:28:01,613 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 16:28:04,823 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 16:28:08,705 - INFO - Abrindo gestão de medições
+2026-08-02 16:28:52,297 - INFO - Sistema encerrado pelo usuário
+2026-08-02 17:07:04,550 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 17:07:04,596 - INFO - Configurações importadas com sucesso
+2026-08-02 17:07:04,662 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 17:07:08,715 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 17:07:11,370 - INFO - Abrindo gestão de medições
+2026-08-02 17:18:35,975 - INFO - Sistema encerrado pelo usuário
+2026-08-02 17:19:14,895 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 17:19:14,929 - INFO - Configurações importadas com sucesso
+2026-08-02 17:19:14,930 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 17:19:16,349 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 17:23:13,346 - INFO - Sistema encerrado pelo usuário
+2026-08-02 18:14:41,970 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 18:14:42,059 - INFO - Configurações importadas com sucesso
+2026-08-02 18:14:42,060 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 18:14:44,197 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 18:14:45,997 - INFO - Abrindo gestão de medições
+2026-08-02 18:44:14,199 - INFO - Sistema encerrado pelo usuário
+2026-08-02 18:47:27,863 - INFO - Configurações importadas com sucesso via src.config
+2026-08-02 18:47:27,888 - INFO - Configurações importadas com sucesso
+2026-08-02 18:47:27,888 - INFO - Configurações do sistema importadas com sucesso
+2026-08-02 18:47:29,125 - INFO - Sistema iniciado em modo: TESTE
+2026-08-02 18:47:30,687 - INFO - Abrindo gestão de medições
+2026-08-02 18:50:54,823 - INFO - Sistema encerrado pelo usuário
+2026-08-03 08:40:52,430 - INFO - Configurações importadas com sucesso via src.config
+2026-08-03 08:40:52,753 - INFO - Configurações importadas com sucesso
+2026-08-03 08:40:52,754 - INFO - Configurações do sistema importadas com sucesso
+2026-08-03 08:40:55,138 - INFO - Sistema iniciado em modo: TESTE
+2026-08-03 08:40:59,036 - INFO - Abrindo sistema de relatórios
+2026-08-03 08:42:13,594 - INFO - Sistema encerrado pelo usuário
+2026-08-03 14:41:47,768 - INFO - Configurações importadas com sucesso via src.config
+2026-08-03 14:41:47,840 - INFO - Configurações importadas com sucesso
+2026-08-03 14:41:47,843 - INFO - Configurações do sistema importadas com sucesso
+2026-08-03 14:41:49,826 - INFO - Sistema iniciado em modo: TESTE
+2026-08-03 14:41:54,929 - INFO - Abrindo gestão de medições
+2026-08-03 14:51:25,069 - INFO - Sistema encerrado pelo usuário
+2026-08-03 16:55:35,133 - INFO - Configurações importadas com sucesso via src.config
+2026-08-03 16:55:35,177 - INFO - Configurações importadas com sucesso
+2026-08-03 16:55:35,187 - INFO - Configurações do sistema importadas com sucesso
+2026-08-03 16:55:36,670 - INFO - Sistema iniciado em modo: TESTE
+2026-08-03 16:55:38,867 - INFO - Abrindo gestão de medições
+2026-08-03 16:56:22,082 - INFO - Sistema encerrado pelo usuário
+2026-08-03 17:32:42,525 - INFO - Configurações importadas com sucesso via src.config
+2026-08-03 17:32:42,563 - INFO - Configurações importadas com sucesso
+2026-08-03 17:32:42,566 - INFO - Configurações do sistema importadas com sucesso
+2026-08-03 17:32:45,320 - INFO - Sistema iniciado em modo: TESTE
+2026-08-03 17:32:57,060 - INFO - Abrindo sistema de entrada de dados
+2026-08-03 17:32:58,770 - INFO - Proteções contra perda de dados configuradas
+2026-08-03 17:32:59,184 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-03 17:33:01,406 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-03 17:33:55,733 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-08-03 17:36:36,754 - INFO - Voltando ao menu principal
+2026-08-03 17:36:36,855 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-03 17:36:36,855 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-03 17:36:37,073 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-03 17:36:38,314 - INFO - Abrindo configurações do sistema
+2026-08-03 17:39:34,201 - INFO - Abrindo sistema de entrada de dados
+2026-08-03 17:39:34,875 - INFO - Proteções contra perda de dados configuradas
+2026-08-03 17:39:34,966 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-03 17:39:34,968 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-08-03 17:43:05,711 - INFO - Voltando ao menu principal
+2026-08-03 17:43:05,818 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-03 17:43:05,823 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-03 17:43:06,062 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-03 17:43:08,071 - INFO - Abrindo configurações do sistema
+2026-08-03 17:51:06,019 - INFO - Sistema encerrado pelo usuário
+2026-08-03 18:03:11,281 - INFO - Configurações importadas com sucesso via src.config
+2026-08-03 18:03:11,374 - INFO - Configurações importadas com sucesso
+2026-08-03 18:03:11,374 - INFO - Configurações do sistema importadas com sucesso
+2026-08-03 18:03:12,550 - INFO - Sistema iniciado em modo: TESTE
+2026-08-03 18:03:30,207 - INFO - Abrindo configurações do sistema
+2026-08-03 18:05:28,542 - INFO - Abrindo sistema de entrada de dados
+2026-08-03 18:05:29,708 - INFO - Proteções contra perda de dados configuradas
+2026-08-03 18:05:30,191 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-03 18:05:31,987 - INFO - Cliente selecionado com sucesso: ANA AUGUSTA PIRES COUTINHO
+2026-08-03 18:31:12,423 - INFO - Configurações importadas com sucesso via src.config
+2026-08-03 18:31:12,523 - INFO - Configurações importadas com sucesso
+2026-08-03 18:31:12,523 - INFO - Configurações do sistema importadas com sucesso
+2026-08-03 18:31:15,567 - INFO - Sistema iniciado em modo: TESTE
+2026-08-03 18:31:17,724 - INFO - Abrindo gestão de medições
+2026-08-03 18:32:31,291 - INFO - Abrindo sistema de entrada de dados
+2026-08-03 18:32:32,251 - INFO - Proteções contra perda de dados configuradas
+2026-08-03 18:32:32,535 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-03 18:32:32,560 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-03 18:33:01,515 - INFO - Voltando ao menu principal
+2026-08-03 18:33:01,628 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-03 18:33:01,633 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-03 18:33:01,856 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-03 18:33:04,691 - INFO - Abrindo gestão de medições
+2026-08-03 18:33:56,076 - INFO - Sistema encerrado pelo usuário
+2026-08-04 14:25:49,720 - INFO - Configurações importadas com sucesso via src.config
+2026-08-04 14:25:49,874 - INFO - Configurações importadas com sucesso
+2026-08-04 14:25:49,876 - INFO - Configurações do sistema importadas com sucesso
+2026-08-04 14:25:53,567 - INFO - Sistema iniciado em modo: TESTE
+2026-08-04 14:42:57,926 - INFO - Abrindo sistema de relatórios
+2026-08-04 15:03:23,836 - INFO - Sistema encerrado pelo usuário
+2026-08-05 07:54:36,018 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 07:54:36,043 - INFO - Configurações importadas com sucesso
+2026-08-05 07:54:36,044 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 07:54:38,850 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 07:56:02,411 - INFO - Abrindo gestão de medições
+2026-08-05 08:43:01,214 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 08:43:01,235 - INFO - Configurações importadas com sucesso
+2026-08-05 08:43:01,236 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 08:43:03,760 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 08:43:49,423 - INFO - Abrindo gestão de medições
+2026-08-05 09:26:25,381 - INFO - Sistema encerrado pelo usuário
+2026-08-05 09:31:45,358 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 09:31:45,388 - INFO - Configurações importadas com sucesso
+2026-08-05 09:31:45,397 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 09:31:46,876 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 09:31:51,036 - INFO - Abrindo gestão de medições
+2026-08-05 09:49:19,943 - INFO - Sistema encerrado pelo usuário
+2026-08-05 09:49:58,518 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 09:49:58,543 - INFO - Configurações importadas com sucesso
+2026-08-05 09:49:58,544 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 09:49:59,768 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 09:50:01,468 - INFO - Abrindo gestão de medições
+2026-08-05 09:50:14,964 - INFO - Abrindo sistema de entrada de dados
+2026-08-05 09:50:16,389 - INFO - Proteções contra perda de dados configuradas
+2026-08-05 09:50:16,822 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-05 09:50:16,842 - INFO - Cliente selecionado com sucesso: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-08-05 09:50:56,524 - INFO - Voltando ao menu principal
+2026-08-05 09:50:56,637 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-05 09:50:56,721 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-05 09:50:56,929 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-05 09:50:57,772 - INFO - Abrindo gestão de medições
+2026-08-05 10:13:36,427 - INFO - Sistema encerrado pelo usuário
+2026-08-05 10:15:37,357 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 10:15:37,381 - INFO - Configurações importadas com sucesso
+2026-08-05 10:15:37,381 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 10:15:38,480 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 10:15:46,114 - INFO - Abrindo gestão de medições
+2026-08-05 10:15:46,490 - ERROR - Erro ao abrir gestão de medições: 'GestaoMedicoes' object has no attribute 'voltar_menu'
+2026-08-05 10:16:34,690 - INFO - Sistema encerrado pelo usuário
+2026-08-05 10:23:54,506 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 10:23:54,530 - INFO - Configurações importadas com sucesso
+2026-08-05 10:23:54,530 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 10:23:55,378 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 10:23:58,527 - INFO - Abrindo gestão de medições
+2026-08-05 10:26:03,940 - INFO - Sistema encerrado pelo usuário
+2026-08-05 10:27:03,769 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 10:27:03,804 - INFO - Configurações importadas com sucesso
+2026-08-05 10:27:03,805 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 10:27:06,260 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 10:27:27,925 - INFO - Abrindo gestão de medições
+2026-08-05 10:35:48,731 - INFO - Sistema encerrado pelo usuário
+2026-08-05 10:36:55,820 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 10:36:55,858 - INFO - Configurações importadas com sucesso
+2026-08-05 10:36:55,864 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 10:36:58,406 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 10:37:00,481 - INFO - Abrindo gestão de medições
+2026-08-05 10:40:30,415 - INFO - Sistema encerrado pelo usuário
+2026-08-05 12:05:54,320 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 12:05:54,357 - INFO - Configurações importadas com sucesso
+2026-08-05 12:05:54,377 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 12:05:56,864 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 12:05:58,741 - INFO - Abrindo gestão de medições
+2026-08-05 12:09:10,936 - INFO - Sistema encerrado pelo usuário
+2026-08-05 12:09:26,796 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 12:09:26,819 - INFO - Configurações importadas com sucesso
+2026-08-05 12:09:26,820 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 12:09:28,381 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 12:09:29,892 - INFO - Abrindo gestão de medições
+2026-08-05 12:16:12,440 - INFO - Sistema encerrado pelo usuário
+2026-08-05 12:52:46,521 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 12:52:46,633 - INFO - Configurações importadas com sucesso
+2026-08-05 12:52:46,633 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 12:52:48,483 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 12:52:50,914 - INFO - Abrindo gestão de medições
+2026-08-05 12:53:43,986 - INFO - Abrindo sistema de entrada de dados
+2026-08-05 12:53:45,583 - INFO - Proteções contra perda de dados configuradas
+2026-08-05 12:53:46,134 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-05 12:53:46,162 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-05 12:54:42,916 - INFO - ✅ Lançamento ID 249 inserido na linha 243
+2026-08-05 12:54:43,288 - INFO - ✅ Arquivo salvo
+2026-08-05 12:54:44,042 - INFO - ✅ Arquivo salvo com sucesso
+2026-08-05 12:54:46,535 - INFO - ✅ Lançamento ID 250 inserido na linha 244
+2026-08-05 12:54:46,904 - INFO - ✅ Arquivo salvo
+2026-08-05 12:54:47,531 - INFO - ✅ Arquivo salvo com sucesso
+2026-08-05 12:56:36,921 - INFO - Voltando ao menu principal
+2026-08-05 12:56:37,027 - INFO - ✅ Janela do Sistema de Entrada destruída
+2026-08-05 12:56:37,029 - INFO - 📐 Restaurando geometria: 900x1000+0+0
+2026-08-05 12:56:37,259 - INFO - ✅ Menu principal restaurado com sucesso
+2026-08-05 12:57:16,807 - INFO - Sistema encerrado pelo usuário
+2026-08-05 14:01:28,602 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 14:01:28,635 - INFO - Configurações importadas com sucesso
+2026-08-05 14:01:28,636 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 14:01:30,214 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 14:01:32,366 - INFO - Abrindo gestão de medições
+2026-08-05 14:04:15,989 - INFO - Abrindo sistema de entrada de dados
+2026-08-05 14:04:16,884 - INFO - Proteções contra perda de dados configuradas
+2026-08-05 14:04:17,120 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-05 14:04:17,143 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-05 14:14:40,279 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 14:14:40,313 - INFO - Configurações importadas com sucesso
+2026-08-05 14:14:40,317 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 14:14:42,266 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 14:14:44,281 - INFO - Abrindo sistema de entrada de dados
+2026-08-05 14:14:47,354 - INFO - Proteções contra perda de dados configuradas
+2026-08-05 14:14:47,676 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-05 14:14:49,939 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-05 14:17:01,721 - INFO - ✅ Lançamento ID 251 inserido na linha 245
+2026-08-05 14:17:18,383 - INFO - ✅ Lançamento ID 251 inserido na linha 245
+2026-08-05 14:17:19,133 - INFO - ✅ Arquivo salvo
+2026-08-05 14:17:19,868 - INFO - ✅ Arquivo salvo com sucesso
+2026-08-05 16:14:41,877 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 16:14:41,913 - INFO - Configurações importadas com sucesso
+2026-08-05 16:14:41,913 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 16:14:43,878 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 16:14:47,360 - INFO - Abrindo sistema de entrada de dados
+2026-08-05 16:14:49,836 - INFO - Proteções contra perda de dados configuradas
+2026-08-05 16:14:50,165 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-05 16:14:52,348 - INFO - Cliente selecionado com sucesso: BRUNO SANTANA RINALDI
+2026-08-05 16:16:36,852 - INFO - Configurações importadas com sucesso via src.config
+2026-08-05 16:16:36,890 - INFO - Configurações importadas com sucesso
+2026-08-05 16:16:36,890 - INFO - Configurações do sistema importadas com sucesso
+2026-08-05 16:16:38,866 - INFO - Sistema iniciado em modo: TESTE
+2026-08-05 16:16:41,215 - INFO - Abrindo sistema de entrada de dados
+2026-08-05 16:16:43,761 - INFO - Proteções contra perda de dados configuradas
+2026-08-05 16:16:44,082 - INFO - ✅ Sistema de Entrada de Dados aberto
+2026-08-05 16:16:45,976 - INFO - Cliente selecionado com sucesso: FERNANDA LUCENA PEREIRA DA FONSECA BOTELHO
+2026-08-05 16:18:11,808 - INFO - Cliente selecionado com sucesso: RONALDO ROLIM DE OLIVEIRA
+2026-08-13 10:27:25,512 - INFO - Configurações importadas com sucesso via src.config
+2026-08-13 10:27:25,690 - INFO - Configurações importadas com sucesso
+2026-08-13 10:27:25,691 - INFO - Configurações do sistema importadas com sucesso
+2026-08-13 10:27:27,630 - INFO - Sistema iniciado em modo: TESTE

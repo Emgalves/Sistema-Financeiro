@@ -987,6 +987,15 @@ class GerenciadorConfiguracoes:
         self.campos_novo['dia_vencimento'].set('5')
         self.campos_novo['dia_vencimento'].grid(row=row, column=1, padx=5, pady=5, sticky='w')
         row += 1
+
+        # ✅ NOVO: Vencimento por dia útil
+        self.campos_novo['considerar_dia_util'] = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            frame_novo,
+            text="📅 'Dia Vencimento' acima é o Nº do dia útil (não dia de calendário)",
+            variable=self.campos_novo['considerar_dia_util']
+        ).grid(row=row, column=0, columnspan=3, sticky='w', padx=5, pady=(0, 5))
+        row += 1
         
         # Recorrência
         ttk.Label(frame_novo, text="Recorrência:").grid(row=row, column=0, padx=5, pady=5, sticky='w')
@@ -1209,6 +1218,15 @@ class GerenciadorConfiguracoes:
         self.campos_editar['dia_vencimento'] = ttk.Spinbox(frame_editar, from_=1, to=31, width=10)
         self.campos_editar['dia_vencimento'].grid(row=row_edit, column=1, padx=5, pady=3, sticky='w')
         row_edit += 1
+
+        # ✅ NOVO: Vencimento por dia útil
+        self.campos_editar['considerar_dia_util'] = tk.BooleanVar(value=False)
+        ttk.Checkbutton(
+            frame_editar,
+            text="📅 Dia útil (não calendário)",
+            variable=self.campos_editar['considerar_dia_util']
+        ).grid(row=row_edit, column=0, columnspan=2, sticky='w', padx=5, pady=3)
+        row_edit += 1
         
         ttk.Label(frame_editar, text="Recorrência:").grid(row=row_edit, column=0, padx=5, pady=3, sticky='w')
         self.campos_editar['recorrencia'] = ttk.Combobox(frame_editar,
@@ -1388,10 +1406,12 @@ class GerenciadorConfiguracoes:
                 'tipo_despesa': tipo_despesa,
                 'ativo': True,
                 'observacao': observacao,
-                'mes_referencia': mes_referencia,  # NOVO
-                'meses_ocorrencias': meses_ocorrencias  # NOVO
+                'mes_referencia': mes_referencia,
+                'meses_ocorrencias': meses_ocorrencias,
+                'considerar_dia_util': self.campos_novo['considerar_dia_util'].get(),
+                'tipo_referencia_mes': self.campos_novo['tipo_referencia_mes'].get()  # ✅ CORRIGIDO — faltava
             }
-            
+                        
             # ========================================================================
             # SALVAR NO JSON
             # ========================================================================
@@ -1424,6 +1444,7 @@ class GerenciadorConfiguracoes:
             
             self.campos_novo['nome'].delete(0, tk.END)
             self.campos_novo['dia_vencimento'].set('5')
+            self.campos_novo['considerar_dia_util'].set(False)  # ✅ NOVO
             self.campos_novo['recorrencia'].set('mensal')
             self.campos_novo['mes_referencia'].set('')
             self.campos_novo['meses_ocorrencias'].delete(0, tk.END)
@@ -1432,6 +1453,7 @@ class GerenciadorConfiguracoes:
             self.campos_novo['valor_estimado'].delete(0, tk.END)
             self.campos_novo['valor_estimado'].insert(0, "0,00")
             self.campos_novo['observacao'].delete(0, tk.END)
+            self.campos_novo['tipo_referencia_mes'].set('anterior')  # ✅ NOVO — resetar após salvar
             
             # Recarregar lista
             self.carregar_compromissos_tree()
@@ -1486,7 +1508,8 @@ class GerenciadorConfiguracoes:
             
             self.campos_editar['dia_vencimento'].delete(0, tk.END)
             self.campos_editar['dia_vencimento'].insert(0, str(compromisso['dia_vencimento']))
-            
+            self.campos_editar['considerar_dia_util'].set(compromisso.get('considerar_dia_util', False))  # ✅ NOVO
+
             self.campos_editar['recorrencia'].set(compromisso['recorrencia'])
             
             # Tipo de despesa
@@ -1544,6 +1567,7 @@ class GerenciadorConfiguracoes:
             # Obter novos valores
             novo_nome = self.campos_editar['nome'].get().strip().upper()
             novo_dia = int(self.campos_editar['dia_vencimento'].get())
+            novo_considerar_dia_util = self.campos_editar['considerar_dia_util'].get()  # ✅ NOVO
             nova_recorrencia = self.campos_editar['recorrencia'].get()
             novo_tipo_despesa = int(self.campos_editar['tipo_despesa'].get())
             
@@ -1586,9 +1610,10 @@ class GerenciadorConfiguracoes:
                     comp['recorrencia'] = nova_recorrencia
                     comp['tipo_despesa'] = novo_tipo_despesa
                     comp['valor_estimado'] = novo_valor
-                    comp['mes_referencia'] = novo_mes_ref  # NOVO
-                    comp['meses_ocorrencias'] = novos_meses_ocorr  # NOVO
+                    comp['mes_referencia'] = novo_mes_ref
+                    comp['meses_ocorrencias'] = novos_meses_ocorr
                     comp['tipo_referencia_mes'] = novo_tipo_ref
+                    comp['considerar_dia_util'] = novo_considerar_dia_util  # ✅ NOVO
                     break
             
             # Salvar

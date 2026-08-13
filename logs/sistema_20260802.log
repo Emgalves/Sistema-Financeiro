@@ -1,0 +1,214 @@
+2026-08-02 07:41:02,017 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 07:41:02,018 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 07:41:02,019 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 07:41:02,019 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 07:41:02,020 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 07:41:15,365 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 07:41:15,388 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 07:43:14,821 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 07:43:14,834 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 07:45:04,283 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 07:45:04,294 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 07:45:04,584 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 07:45:04,602 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 07:45:04,649 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 07:45:04,682 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 07:45:14,042 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 07:45:14,043 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 07:45:43,575 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 08:02:01,413 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 08:02:01,508 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 08:02:19,288 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 08:02:19,289 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 08:02:19,289 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 08:02:19,290 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 08:02:19,290 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 08:02:30,009 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 08:02:30,029 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 08:12:02,917 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 08:12:03,067 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 08:12:17,231 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 08:12:17,232 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 08:12:17,232 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 08:12:17,233 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 08:12:17,233 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 08:12:23,451 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 08:12:23,470 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 08:14:22,768 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 08:14:22,773 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 08:28:21,600 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 08:28:21,601 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 08:28:21,601 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 08:28:21,601 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 08:28:21,602 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 08:28:28,882 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 08:28:28,904 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 08:41:33,975 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 08:41:34,011 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 08:41:36,207 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 08:41:36,210 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 08:41:36,407 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 08:41:36,407 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 08:41:36,410 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 08:41:36,410 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 08:41:45,143 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 08:41:45,144 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 08:47:18,047 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 09:10:27,347 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 09:10:27,424 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 09:10:44,087 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 09:10:44,088 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 09:10:44,088 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 09:10:44,088 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 09:10:44,089 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 09:10:50,756 - sistema_relatorios - relatorios_interface - INFO - Carregando clientes de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\Clientes.xlsx
+2026-08-02 09:10:50,914 - sistema_relatorios - relatorios_interface - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX', 'TIPO_CLIENTE', 'CLIENTE_VINCULADO', 'CAIXA_CONTROLADO']
+2026-08-02 09:10:50,950 - sistema_relatorios - relatorios_interface - INFO - Coluna de status: Data Final
+2026-08-02 09:10:51,042 - sistema_relatorios - relatorios_interface - INFO - Coluna de nome: Nome
+2026-08-02 09:10:51,090 - sistema_relatorios - relatorios_interface - INFO - Total de clientes ativos encontrados: 22
+2026-08-02 09:10:51,143 - sistema_relatorios - relatorios_interface - INFO - Lista de clientes atualizada com 23 clientes
+2026-08-02 09:10:56,372 - sistema_relatorios - relatorios_interface - INFO - ✅ Opções do Relatório Quinzenal configuradas
+2026-08-02 09:11:46,577 - sistema_relatorios - relatorios_interface - INFO - Solicitado retorno ao menu principal
+2026-08-02 09:11:46,578 - sistema_relatorios - relatorios_interface - INFO - Retornando ao menu principal existente
+2026-08-02 09:11:46,669 - sistema_relatorios - relatorios_interface - INFO - Retorno ao menu principal concluído
+2026-08-02 09:11:48,790 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 09:11:48,815 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 09:12:37,106 - sistema_relatorios - gestao_medicoes - INFO - Fornecedor selecionado na aba: VALDECI VIEGAS DE AMORIM (043.517.986-10)
+2026-08-02 09:12:55,689 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 09:12:55,692 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 09:12:56,112 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 09:12:56,113 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 09:12:56,115 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 09:12:56,115 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 09:12:57,576 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 09:12:57,577 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 09:12:57,577 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 09:12:57,578 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 09:12:57,578 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 09:12:57,578 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 09:12:57,584 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 09:12:57,584 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 09:21:29,909 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 09:21:29,925 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 09:33:18,809 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 09:33:18,810 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 09:33:18,811 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 09:33:18,811 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 09:33:18,811 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 09:33:28,192 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 09:33:28,252 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 09:33:51,170 - sistema_relatorios - gestao_medicoes - INFO - Fornecedor selecionado na aba: VALDECI VIEGAS DE AMORIM (043.517.986-10)
+2026-08-02 10:44:16,851 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 10:44:46,456 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 10:44:46,533 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 10:53:23,258 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 11:15:59,396 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 11:15:59,397 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 11:15:59,397 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 11:15:59,397 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 11:15:59,398 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 11:17:03,924 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 11:17:03,945 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 11:17:04,122 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 11:17:04,122 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 11:17:04,124 - sistema_relatorios - logger_config - INFO - Iniciando: Carregar configurações
+2026-08-02 11:17:04,125 - sistema_relatorios - logger_config - INFO - Concluído: Carregar configurações
+2026-08-02 11:17:23,774 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 11:17:23,795 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 11:17:37,197 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 11:17:37,203 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 12:53:38,682 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 14:40:46,852 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 15:55:31,272 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 16:27:43,399 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 16:27:43,401 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 16:27:43,401 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 16:27:43,402 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 16:27:43,402 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 16:28:09,150 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 16:28:09,226 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 16:28:49,179 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 16:28:49,187 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 17:06:57,792 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 17:06:57,797 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 17:06:57,798 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 17:06:57,801 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 17:06:57,802 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 17:07:11,383 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 17:07:11,512 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 17:08:45,431 - sistema_relatorios - gestao_medicoes - INFO - Prazo calculado: 22 dias úteis (excluindo data início)
+2026-08-02 17:08:45,433 - sistema_relatorios - gestao_medicoes - INFO - Formulário de contrato limpo
+2026-08-02 17:08:45,436 - sistema_relatorios - gestao_medicoes - INFO - Prazo calculado: 65 dias úteis (excluindo data início)
+2026-08-02 17:08:45,443 - sistema_relatorios - gestao_medicoes - INFO - Contrato 18 carregado para reemissão
+2026-08-02 17:08:45,967 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-08-02 17:08:45,975 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-08-02 17:08:45,980 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-08-02 17:08:45,981 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-08-02 17:08:45,983 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-08-02 17:08:46,029 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX', 'TIPO_CLIENTE', 'CLIENTE_VINCULADO', 'CAIXA_CONTROLADO']
+2026-08-02 17:08:46,036 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-08-02 17:08:46,037 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-08-02 17:08:46,039 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-08-02 17:08:46,041 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-08-02 17:08:46,044 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-08-02 17:08:46,048 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-08-02 17:08:46,053 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-08-02 17:18:32,919 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 17:18:32,961 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 17:19:12,015 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 17:19:12,016 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 17:19:12,016 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 17:19:12,016 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 17:19:12,017 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 18:14:27,889 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 18:14:27,890 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 18:14:27,891 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 18:14:27,891 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 18:14:27,892 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 18:14:46,403 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 18:14:46,431 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 18:15:27,383 - sistema_relatorios - gestao_medicoes - INFO - Fornecedor selecionado na aba: VALDECI VIEGAS DE AMORIM (043.517.986-10)
+2026-08-02 18:15:33,120 - sistema_relatorios - gestao_medicoes - INFO - Prazo calculado: 22 dias úteis (excluindo data início)
+2026-08-02 18:15:33,121 - sistema_relatorios - gestao_medicoes - INFO - Formulário de contrato limpo
+2026-08-02 18:15:33,475 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-08-02 18:15:33,479 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-08-02 18:15:33,481 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-08-02 18:15:33,481 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-08-02 18:15:33,482 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-08-02 18:15:33,582 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX', 'TIPO_CLIENTE', 'CLIENTE_VINCULADO', 'CAIXA_CONTROLADO']
+2026-08-02 18:15:33,584 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-08-02 18:15:33,585 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-08-02 18:15:33,585 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-08-02 18:15:33,586 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-08-02 18:15:33,586 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-08-02 18:15:33,587 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-08-02 18:15:33,587 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-08-02 18:44:11,391 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 18:44:11,438 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 18:47:25,129 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 18:47:25,130 - sistema_relatorios - logger_config - INFO - Usuário alterado para: sistema_relatorios
+2026-08-02 18:47:25,131 - sistema_relatorios - relatorios_interface - INFO - Sistema de relatórios inicializando usando logger configurado
+2026-08-02 18:47:25,131 - sistema_relatorios - relatorios_interface - INFO - Configurações de janela importadas com sucesso
+2026-08-02 18:47:25,131 - sistema_relatorios - relatorios_interface - INFO - === Sistema de Relatórios Inicializando ===
+2026-08-02 18:47:31,044 - sistema_relatorios - gestao_medicoes - INFO - Logger importado com sucesso em gestao_medicoes.py
+2026-08-02 18:47:31,064 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela Gestão de Medições inicializada com tripla proteção de visibilidade
+2026-08-02 18:47:51,214 - sistema_relatorios - gestao_medicoes - INFO - Fornecedor selecionado na aba: VALDECI VIEGAS DE AMORIM (043.517.986-10)
+2026-08-02 18:47:57,115 - sistema_relatorios - gestao_medicoes - INFO - Prazo calculado: 22 dias úteis (excluindo data início)
+2026-08-02 18:47:57,116 - sistema_relatorios - gestao_medicoes - INFO - Formulário de contrato limpo
+2026-08-02 18:47:57,460 - sistema_relatorios - gerador_contrato - INFO - Carregando serviços de: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Planilhas_Base\servicos_construcao.json
+2026-08-02 18:47:57,462 - sistema_relatorios - gerador_contrato - INFO - Serviços carregados: 10 categorias
+2026-08-02 18:47:57,464 - sistema_relatorios - gerador_contrato - INFO - Pasta de contratos verificada: C:\Users\Obras\sistema_gestao_testes\testes\Financeiro\Clientes\Contratos
+2026-08-02 18:47:57,464 - sistema_relatorios - gerador_contrato - INFO - GeradorContrato inicializado com sucesso (usando python-docx)
+2026-08-02 18:47:57,465 - sistema_relatorios - gerador_contrato - INFO - Obtendo dados do cliente: BRUNO SANTANA RINALDI
+2026-08-02 18:47:57,510 - sistema_relatorios - gerador_contrato - INFO - Colunas disponíveis: ['Nome', 'Endereço', 'Data Inicial', 'Observações', 'Data Final', 'Tipo Taxa', 'CPF', 'CNO', 'Estado Civil', 'Cidade', 'Grupo', 'Logradouro', 'Numero', 'Complemento', 'Localidade', 'CEP', 'Estado', 'Metragem_Alvara', 'Banco', 'Agencia', 'Conta', 'Tipo_Conta', 'PIX', 'TIPO_CLIENTE', 'CLIENTE_VINCULADO', 'CAIXA_CONTROLADO']
+2026-08-02 18:47:57,523 - sistema_relatorios - gerador_contrato - INFO - CPF bruto obtido: 123.456.789-00 (tipo: <class 'str'>)
+2026-08-02 18:47:57,531 - sistema_relatorios - gerador_contrato - INFO - CPF como string: 123.456.789-00
+2026-08-02 18:47:57,533 - sistema_relatorios - gerador_contrato - INFO - CPF apenas números: 12345678900
+2026-08-02 18:47:57,534 - sistema_relatorios - gerador_contrato - INFO - ✅ CPF formatado: 123.456.789-00
+2026-08-02 18:47:57,548 - sistema_relatorios - gerador_contrato - INFO - CNO já formatado: 90.018.91862/63
+2026-08-02 18:47:57,564 - sistema_relatorios - gerador_contrato - INFO - ✅ Dados do cliente processados - CPF final: 123.456.789-00
+2026-08-02 18:47:57,580 - sistema_relatorios - gerador_contrato - INFO - Dados do cliente obtidos com sucesso: BRUNO SANTANA RINALDI
+2026-08-02 18:50:51,529 - sistema_relatorios - gestao_medicoes - INFO - ✅ Janela de Gestão de Medições fechada
+2026-08-02 18:50:51,561 - sistema_relatorios - gestao_medicoes - INFO - ✅ Menu principal restaurado
+2026-08-02 19:01:22,219 - sistema - logger_config - INFO - Sistema de logging inicializado
+2026-08-02 19:13:56,060 - sistema - logger_config - INFO - Sistema de logging inicializado

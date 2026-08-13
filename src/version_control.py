@@ -10,20 +10,15 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 8,
-    "patch": 1,
-    "release_date": "22/07/2026",
+    "patch": 2,
+    "release_date": "02/08/2026",
     "changes": [
-        "Cadastro de cliente — está gerando cadastro na base de fornecedores, sempre que marcado",
-        "Gerenciador: Corrigida a falha de Edição em Massa",
-        "Visualizador: liberada a edição de dados bancários",
-        "Saldo Caixa de Obra: adaptado para aceitar valores negativos",
-        "Contrato de Empreiteiros trazendo Razão Social e Nome, quando diferentes, e com multa inicial R$0,00",
-        "Funcionalidade desenvolvida para permitir manter cliente quando mudar de Entrada de Dados para Gestão de Medições e vice-e-versa",
-        "Agenda: Confirmação em massa rápidasempre que houver valor no registro",
-        "Agenda: Edição de dados bancários, quando necessário, apenas para o registro confirmado",
-        "Correção na importação de Diárias para aceitar 1/2 diária",
-        "Relatório de Medições, no módulo Gestão de Medições, com data sugerida",
-        "Relatório de Medições corrigido no módulo de Relatórios"
+        "Saldo Caixa de Obra: adaptado para pagar todas as despesas, se necessário",
+        "Relatório de Medições sem mudança de página enre dados do contrato e seu extrato",
+        "Gestão de Medições: correção do método de edição de medições",
+        "Correção da ferramenta CPF Criado, eliminando a possibilidade de reutilização após regularizção ou fusão",
+        "Função nova: Regularização de dados fiscais, razaão social e nome, em base de fornecedores em todos os arquivos onde existam dados a serem corrigidos",
+        "Função nova: Mesclar fornecedores duplicados, mantendo apenas um registro e atualizando todos os arquivos relacionados"
     ]
 }
 

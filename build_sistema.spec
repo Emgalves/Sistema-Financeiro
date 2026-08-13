@@ -6,7 +6,7 @@ from PyInstaller.utils.hooks import collect_submodules
 
 block_cipher = None
 
-NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_PRODUCAO"
+NOME_EXECUTAVEL = "Sistema_Gestao_Financeira_TESTE"
 ARQUIVO_PRINCIPAL = "src/sistema_principal.py"
 ICONE = "logo3.ico"
 
@@ -66,15 +66,17 @@ except Exception as e:
 # ====================================================================
 
 outras_datas, outras_binaries, outras_hiddenimports = [], [], []
-for modulo in ['openpyxl', 'pandas', 'PIL', 'reportlab', 'num2words']:
+for modulo in ['openpyxl', 'pandas', 'PIL', 'reportlab', 'num2words', 'holidays']:
     try:
         d, b, h = collect_all(modulo)
         outras_datas += d
         outras_binaries += b
         outras_hiddenimports += h
         print(f"[OK] {modulo} coletado")
-    except:
-        pass
+    except Exception as e:
+        # NUNCA engolir esse erro silenciosamente — foi exatamente isso
+        # que escondeu a ausência do num2words num build anterior.
+        print(f"[AVISO] Falha ao coletar {modulo}: {e}")
 
 # ====================================================================
 # HIDDEN IMPORTS

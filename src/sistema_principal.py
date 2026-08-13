@@ -327,9 +327,9 @@ class SistemaGestaoFinanceira:
                         "Gestão completa de taxas administrativas",
                         self.abrir_gestao_taxas, 0, 1)
         
-        self.create_card(grid, "Despesas Rateadas", 
-                "Gerenciamento de despesas compartilhadas entre clientes", 
-                self.abrir_despesas_rateadas, 1, 0)
+        self.create_card(grid, "Comprovantes de Benefícios", 
+                        "Emissão individual de comprovantes de cesta básica, cesta de natal, transporte e café", 
+                        self.abrir_comprovantes_beneficios, 1, 0)
         
         self.create_card(grid, "Geração de Relatórios",
                         "Visualização de relatórios",
@@ -514,22 +514,31 @@ class SistemaGestaoFinanceira:
             simple_logger.error(f"Erro ao abrir gestão de taxas: {str(e)}")
             messagebox.showerror("Erro", f"Erro ao abrir gestão de taxas: {str(e)}")
 
-    def abrir_despesas_rateadas(self):
-        """Abre o sistema de despesas rateadas"""
+    def abrir_comprovantes_beneficios(self):
+        # Abre o módulo de emissão de comprovantes de benefícios
         try:
-            simple_logger.info("Abrindo sistema de despesas rateadas")
-            
+            simple_logger.info("Abrindo comprovantes de benefícios")
+ 
             try:
-                from src.despesas_rateadas import InterfaceDespesasRateadas
+                from src.comprovantes_beneficios.interface import InterfaceComprovantesBeneficios
             except ImportError:
-                from despesas_rateadas import InterfaceDespesasRateadas
-            
-            janela_despesas = tk.Toplevel(self.root)
-            app = InterfaceDespesasRateadas(janela_despesas)
-            
+                from comprovantes_beneficios.interface import InterfaceComprovantesBeneficios
+ 
+            from src.config.config import PASTA_CLIENTES, ARQUIVO_CLIENTES, ARQUIVO_FORNECEDORES
+ 
+            janela_comprovantes = tk.Toplevel(self.root)
+            app = InterfaceComprovantesBeneficios(
+                parent=janela_comprovantes,
+                pasta_clientes=PASTA_CLIENTES,
+                arquivo_clientes=ARQUIVO_CLIENTES,
+                arquivo_fornecedores=ARQUIVO_FORNECEDORES,
+                pasta_saida_base=PASTA_CLIENTES,  # PDFs em PASTA_CLIENTES/{cliente}/Comprovantes/...
+                usuario=os.environ.get('USERNAME'),
+            )
+ 
         except Exception as e:
-            simple_logger.error(f"Erro ao abrir despesas rateadas: {str(e)}")
-            messagebox.showerror("Erro", f"Erro ao abrir despesas rateadas: {str(e)}")
+            simple_logger.error(f"Erro ao abrir comprovantes de benefícios: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir comprovantes de benefícios: {str(e)}")
 
     def abrir_relatorios(self):
         """Abre interface de relatórios"""
