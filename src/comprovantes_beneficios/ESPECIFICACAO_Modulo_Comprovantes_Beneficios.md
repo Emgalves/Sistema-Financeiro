@@ -24,7 +24,7 @@ Benefícios:
 
 ## 2. Regras de elegibilidade (candidatos)
 
-**Não retroatividade:** a emissão é uma rotina para daqui em diante — competências anteriores ao mês corrente já foram resolvidas fora do sistema e não devem aparecer como opção. O seletor de competência só oferece o mês corrente e meses futuros já lançados na planilha (ex.: vencimentos antecipados). Isso não afeta o **controle** (seção 6), que continua consultável para qualquer competência já emitida por este módulo.
+**Não retroatividade — REVERTIDA (v6):** a restrição original (só mês corrente/futuro) foi removida a pedido do usuário — a usuária final pode precisar emitir recibo de competência passada (extraviado, esquecido, ou qualquer outro motivo). O seletor de competência agora lista **todas** as competências presentes na planilha do cliente, da mais recente para a mais antiga (a mais recente fica selecionada por padrão). Quando a competência escolhida é anterior ao mês corrente, a interface mostra um aviso informativo (não bloqueante) — só para deixar claro que é uma emissão retroativa. O controle de duplicidade (seção 6) continua sendo a proteção real contra emissão repetida, independente da competência.
 
 Fonte: aba `Dados` da planilha do cliente (ex.: `CLEVER_LUIZ_SALVADOR.xlsx`), coluna `REFERÊNCIA`.
 
@@ -32,6 +32,19 @@ Fonte: aba `Dados` da planilha do cliente (ex.: `CLEVER_LUIZ_SALVADOR.xlsx`), co
 - **Café**: linhas com `REFERÊNCIA == 'CAFÉ'` na competência selecionada.
 - **Cesta Básica / Cesta de Natal**: união de CPFs únicos que aparecem em `TRANSPORTE`, `CAFÉ` ou `DIÁRIA` na competência selecionada (sem valor — é apenas confirmação de entrega física).
 - Linhas com `REFERÊNCIA == 'VT E CAFÉ'` (valor combinado de Transporte+Café em uma única linha) **são ignoradas** na seleção — ficam de fora até o lançamento ser corrigido na planilha de origem, separando as duas linhas. *(decisão confirmada)*
+
+### 2.2 Colaborador não apto ao benefício (Cesta Básica/Natal)
+
+A elegibilidade automática (seção 2) é inferida da presença de lançamentos de Transporte/Café/Diária — mas isso não capta critérios de assiduidade que a usuária avalia manualmente (ex.: diarista não cumpriu tempo mínimo de serviço, ou colaborador faltou mais de 3 dias no período anterior). Para esses casos, a interface tem o botão **"Marcar não apto"**: seleciona o(s) colaborador(es) na tabela, pede um motivo (obrigatório), e grava um registro com status `INAPTO` no controle (seção 6) — sem gerar PDF. Colaborador marcado como `INAPTO` aparece destacado na tabela ("Não apto") e fica bloqueado para emissão normal, do mesmo jeito que um já `EMITIDO` — só é possível emitir por cima com "Permitir substituir marcações já registradas" marcado.
+
+### 2.3 Modo combinado — Transporte + Café na mesma página (opcional)
+
+**Confirmado com o contratante** (pergunta original já respondida por ele): o texto de cada recibo continua individualizado e completo — o que muda é só a folha física ser compartilhada entre os dois, para economizar impressão. Não é substituição do fluxo separado; é uma quinta opção no combo "Benefício": **"Transporte + Café (mesma página)"**.
+
+- Só aparecem candidatos que têm **os dois** lançamentos (Transporte E Café) na competência selecionada — quem só tem um dos dois continua sendo emitido pelo fluxo individual normal.
+- Um PDF por pessoa: Transporte na metade de cima da folha A4, Café na metade de baixo — cada bloco com título, texto legal e assinatura próprios (duas Frames fixas do `reportlab`, não um cálculo de espaçamento — o corte fica sempre exatamente na metade, independente do tamanho do texto).
+- Grava **duas linhas** no controle (uma `TRANSPORTE`, uma `CAFE`), ambas apontando para o mesmo arquivo PDF — assim o bloqueio de duplicidade de cada benefício continua funcionando normalmente mesmo fora do modo combinado (se a pessoa já tiver Café emitido separadamente, por exemplo, o modo combinado pula ela inteira, para não gerar um PDF com conteúdo que não bate com o controle).
+- "Marcar não apto" não se aplica a este modo (é conceito específico de Cesta Básica/Natal) — a interface bloqueia com aviso se tentado.
 
 ### 2.1 Tratamento de inconsistências nos dados de origem
 
@@ -48,7 +61,8 @@ Dados do pagador (nome, endereço e cidade) são lidos de **`Clientes.xlsx`** (c
 
 ## 3. Formato de saída
 
-- Comprovante final: **PDF individual**, um arquivo por colaborador por benefício.
+- Comprovante final: **PDF individual**, um arquivo por colaborador por benefício — **exceto** no modo combinado opcional Transporte+Café (seção 2.3), onde os dois recibos (ainda individuais em conteúdo) dividem uma página.
+- Papel: **A4** (corrigido na v6 — a implementação original usava US Letter por engano).
 - Fluxo de geração: **direto em Python com `reportlab`** (biblioteca pura, sem dependências externas — ver seção 12 sobre a mudança de abordagem).
 - Nome de arquivo: `RECIBO_{BENEFICIO}_{CPF}_{COMPETENCIA}.pdf`
   Ex.: `RECIBO_TRANSPORTE_00354432605_2026-08.pdf`
@@ -68,14 +82,16 @@ Dados do pagador (nome, endereço e cidade) são lidos de **`Clientes.xlsx`** (c
 - **Cesta de Natal**: *"...a **CESTA DE NATAL**, como gratificação pela prestação de serviços durante o ano de {ano}."*
 - **Transporte**: *"...o valor de R$ {valor} ({valor por extenso, minúsculo, sem negrito}), referente ao **VALE TRANSPORTE** para uso em {mês} de {ano}, juntamente com minha remuneração mensal."*
 - **Café**: mesma estrutura, com **VALE CAFÉ** e *"a ser consumido em {mês} de {ano}"*.
-- **Linha de local/data**: sem negrito, sem ponto final. Cestas: dia em branco (espaço reservado — preenchimento manual na assinatura física). Transporte/Café: dia do **vencimento real do lançamento** (`DT_VENCTO` da aba `Dados`, já usado no resto do módulo); só na ausência dele, cai no cálculo do 5º dia útil via `feriados.py` (ver seção 4.1).
+- **Linha de local/data**: sem negrito, sem ponto final. Cestas: dia em branco (espaço reservado — preenchimento manual na assinatura física). Transporte/Café: dia do **5º dia útil calculado** (ver seção 4.1) — revertido na v6, ver abaixo.
 - **Assinatura**: linha + nome + CPF, alinhados à **esquerda**, sem negrito, sem o rótulo "Nome:" (só o nome puro, como no `RECIBOS.docx`).
 
 Layout implementado direto com `reportlab` (Paragraphs em sequência, sem Table/borda).
 
 ### 4.1 Dia de vencimento em Transporte/Café — `feriados.py`
 
-O usuário forneceu `src/feriados.py`, módulo central de cálculo de dia útil (feriados nacional/estadual/municipal, sede em Belo Horizonte/MG) já usado — ou a ser usado — em outros pontos do sistema. `gerador_recibo.py` importa `calcular_enesimo_dia_util` de lá como fallback, mas a fonte primária é sempre a data de vencimento já lançada na planilha (mais confiável, pois reflete o que já foi decidido operacionalmente — um teste com dados reais mostrou 1 dia de diferença entre o cálculo puro do 5º dia útil e o vencimento realmente lançado em agosto/2026, provavelmente pela regra de sábado contar como dia útil).
+O usuário forneceu `src/feriados.py`, módulo central de cálculo de dia útil (feriados nacional/estadual/municipal, sede em Belo Horizonte/MG) já usado — ou a ser usado — em outros pontos do sistema.
+
+**Prioridade invertida na v6**: originalmente a fonte primária era `DT_VENCTO` da aba `Dados`, com o cálculo como reserva. A usuária apontou que o arquivo de origem é importado sem aplicar a regra corretamente (ex.: agosto/2026 — dia 1º é sábado, o que desloca o 5º dia útil para dia 6, mas `DT_VENCTO` mostra dia 5 se o financeiro não corrigir manualmente na planilha) — e o recibo precisa refletir a data real em que o salário é pago, não o que eventualmente ficou errado na importação. Agora **o cálculo do 5º dia útil é sempre a fonte usada**; `DT_VENCTO` só entra como reserva se o cálculo falhar por algum motivo excepcional.
 
 Depende do pacote `holidays` (`pip install holidays`) — acrescentado aos pré-requisitos (seção 10).
 
@@ -200,7 +216,7 @@ Bem mais simples que a versão anterior desta especificação (seção 12):
 | 2 | `dados_candidatos.py` | ✅ concluído e testado — v4: dados do pagador vêm de `Clientes.xlsx` (Nome/Endereço/Cidade), não mais da aba `RESUMO` |
 | 3 | `gerador_recibo.py` | ✅ concluído e testado — `reportlab` (v2), texto/layout do `RECIBOS.docx` (v3); v5: sincronizado com ajustes finos feitos em produção (texto "referente ao **mês de** {mês}" em Cesta Básica, mais espaço entre título e corpo) |
 | 4 | `controle_registros.py` | ✅ concluído e testado — reescrito com aba na planilha do cliente (v2, sem SQLite) |
-| 5 | `interface.py` | ✅ concluído e testado — v4: novo parâmetro `arquivo_clientes` (necessário para o pagador vir de `Clientes.xlsx`), clientes ativos via `obter_clientes_ativos()`, botão Fechar, cabeçalho em 2 linhas |
+| 5 | `interface.py` | ✅ concluído e testado — v4: novo parâmetro `arquivo_clientes`, clientes ativos via `obter_clientes_ativos()`, botão Fechar, cabeçalho em 2 linhas; v6: retroatividade liberada, marcar não apto, modo combinado Transporte+Café; v7: corrigido bug de foco de janela (diálogos sem `parent=` faziam a janela ir para trás do menu principal) |
 | 6 | Integração em `sistema_principal.py` | ⏳ patch fornecido (`PATCH_sistema_principal_v2.py`), pendente de aplicação manual no arquivo real |
 | 7 | Renomeação do card do menu principal | ⏳ pendente — trecho da montagem dos cards ainda não recebido (arquivo enviado até agora não incluía essa parte) |
 
@@ -216,3 +232,12 @@ Registrado para não se perder o raciocínio, já que envolveu retrabalho:
 4. **Consequência 1 — geração de PDF**: exigir Node.js + LibreOffice em cada máquina de colaborador é inviável operacionalmente. Trocado por `reportlab` (Python puro, empacota no `.exe`).
 5. **Consequência 2 — controle de emissões**: `S:\Gestão\` é unidade de rede mapeada em várias máquinas, não disco local de um servidor único — o mesmo risco de corrupção do Google Drive se aplica a SQLite ali. Descartado.
 6. **Solução adotada**: o próprio usuário sugeriu usar uma aba na planilha do cliente, já que o arquivo já concentra tudo daquele cliente (Dados, contratos, medições etc.) — testado e confirmado seguro antes de adotar (seção 6.1).
+
+---
+
+## 13. Revisão v6 — ajustes pedidos após validação com a usuária final
+
+1. **Retroatividade liberada** (seção 2) — usuária pode precisar emitir recibo extraviado/atrasado de qualquer competência.
+2. **Marcação "Não apto"** (seção 2.2) — nova funcionalidade para Cesta Básica/Natal, cobrindo critérios de assiduidade que a planilha de Dados não capta sozinha.
+3. **Transporte + Café na mesma página** — ✅ implementado e testado (seção 2.3). Confirmado com o contratante que não fere a regra de individualização (é opcional, texto continua completo e individualizado por benefício, só a folha é compartilhada).
+4. **5º dia útil como fonte primária** (seção 4.1) — revertida a prioridade em relação à v3, pela mesma razão už explicada: o vencimento importado nem sempre reflete a regra corretamente.

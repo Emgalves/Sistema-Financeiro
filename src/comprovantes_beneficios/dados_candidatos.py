@@ -29,6 +29,7 @@ BENEFICIO_TRANSPORTE = 'TRANSPORTE'
 BENEFICIO_CAFE = 'CAFE'
 BENEFICIO_CESTA_BASICA = 'CESTA_BASICA'
 BENEFICIO_CESTA_NATAL = 'CESTA_NATAL'
+BENEFICIO_TRANSPORTE_CAFE = 'TRANSPORTE_CAFE'  # impressão combinada — não é um benefício novo, é um MODO de emissão
 
 # Valores aceitos na coluna REFERÊNCIA da planilha do cliente para cada
 # benefício com valor. Comparação sempre por igualdade exata após
@@ -186,10 +187,6 @@ def _ler_linhas_dados(caminho_planilha_cliente: str):
     wb.close()
 
 
-def _competencia_permitida(competencia: str, competencia_atual: str) -> bool:
-    """Regra de não-retroatividade: só competência >= mês corrente."""
-    return competencia >= competencia_atual
-
 
 # ============================================================================
 # MONTAGEM DA LISTA DE CANDIDATOS
@@ -233,10 +230,18 @@ def _resolver_candidato(
     )
 
 
-def obter_competencias_disponiveis(caminho_planilha_cliente: str, competencia_atual: str) -> list[str]:
+def obter_competencias_disponiveis(caminho_planilha_cliente: str) -> list[str]:
     """
-    Lista competências ('AAAA-MM') presentes na planilha do cliente que
-    respeitam a regra de não-retroatividade (>= competencia_atual).
+    Lista TODAS as competências ('AAAA-MM') presentes na planilha do
+    cliente, ordenadas da mais recente para a mais antiga (a mais
+    recente fica selecionada por padrão na interface).
+
+    Revisão: emissão retroativa passou a ser permitida (recibo
+    extraviado ou não emitido a tempo por outro motivo) — a restrição
+    anterior (só mês corrente/futuro) foi removida a pedido do usuário.
+    O controle de duplicidade (controle_registros.py) continua sendo o
+    que evita emissão repetida, independente da competência ser passada,
+    presente ou futura.
     """
     competencias = set()
     for linha in _ler_linhas_dados(caminho_planilha_cliente):
@@ -247,9 +252,8 @@ def obter_competencias_disponiveis(caminho_planilha_cliente: str, competencia_at
             competencia, _ = _competencia_do_vencimento(dt_vencto)
         except (ValueError, AttributeError):
             continue
-        if _competencia_permitida(competencia, competencia_atual):
-            competencias.add(competencia)
-    return sorted(competencias)
+        competencias.add(competencia)
+    return sorted(competencias, reverse=True)
 
 
 def obter_candidatos(
@@ -257,27 +261,15 @@ def obter_candidatos(
     caminho_base_fornecedores: str,
     beneficio: str,
     competencia: str,
-    competencia_atual: str,
 ) -> tuple[list[Candidato], list[AvisoElegibilidade]]:
     """
     Retorna (candidatos, avisos) para o benefício e competência pedidos.
 
     - beneficio: uma de BENEFICIO_TRANSPORTE / BENEFICIO_CAFE /
       BENEFICIO_CESTA_BASICA / BENEFICIO_CESTA_NATAL.
-    - Aplica a regra de não-retroatividade: se `competencia` for anterior a
-      `competencia_atual`, retorna listas vazias (a interface não deveria
-      nem oferecer essa opção, mas a função não confia na UI).
+    - Não restringe mais competência passada (emissão retroativa
+      permitida — ver obter_competencias_disponiveis).
     """
-    if not _competencia_permitida(competencia, competencia_atual):
-        return [], [AvisoElegibilidade(
-            cpf='',
-            mensagem=(
-                f"Competência {competencia} é anterior ao mês corrente "
-                f"({competencia_atual}) — emissão retroativa não é permitida "
-                f"neste módulo."
-            ),
-        )]
-
     nomes_canonicos = carregar_nomes_canonicos(caminho_base_fornecedores)
 
     candidatos: dict[str, Candidato] = {}
@@ -346,3 +338,47 @@ def obter_candidatos(
             ))
 
     return sorted(candidatos.values(), key=lambda c: c.nome), avisos
+
+
+# ============================================================================
+# MODO COMBINADO — Transporte + Café na mesma página (opção, não substitui
+# a emissão separada). Só faz sentido para quem tem os DOIS lançamentos na
+# mesma competência.
+# ============================================================================
+
+def obter_candidatos_transporte_cafe(
+    caminho_planilha_cliente: str,
+    caminho_base_fornecedores: str,
+    competencia: str,
+) -> tuple[list[tuple[Candidato, Candidato]], list[AvisoElegibilidade]]:
+    """
+    Retorna pares (candidato_transporte, candidato_cafe) — só para CPFs
+    que têm os DOIS lançamentos na competência pedida. Quem só tem um
+    dos dois não aparece aqui (continua sendo emitido normalmente pelo
+    fluxo separado de Transporte ou Café).
+    """
+    cands_transporte, avisos_t = obter_candidatos(
+        caminho_planilha_cliente, caminho_base_fornecedores, BENEFICIO_TRANSPORTE, competencia,
+    )
+    cands_cafe, avisos_c = obter_candidatos(
+        caminho_planilha_cliente, caminho_base_fornecedores, BENEFICIO_CAFE, competencia,
+    )
+
+    mapa_cafe = {c.cpf: c for c in cands_cafe}
+    pares = [
+        (ct, mapa_cafe[ct.cpf])
+        for ct in cands_transporte
+        if ct.cpf in mapa_cafe
+    ]
+    pares.sort(key=lambda par: par[0].nome)
+
+    # Dedup de avisos (mesmo CPF pode gerar o mesmo aviso nas duas buscas)
+    avisos_vistos = set()
+    avisos = []
+    for a in avisos_t + avisos_c:
+        chave = (a.cpf, a.mensagem)
+        if chave not in avisos_vistos:
+            avisos_vistos.add(chave)
+            avisos.append(a)
+
+    return pares, avisos

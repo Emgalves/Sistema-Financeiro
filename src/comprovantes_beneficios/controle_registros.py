@@ -124,6 +124,15 @@ def ja_emitido(caminho_planilha_cliente: str, beneficio: str, competencia: str, 
 
 def listar_emitidos(caminho_planilha_cliente: str, competencia: str, beneficio: str) -> list[RegistroRecibo]:
     """Último status por CPF, para essa competência/benefício — usado pela interface."""
+    return list(listar_status(caminho_planilha_cliente, competencia, beneficio).values())
+
+
+def listar_status(caminho_planilha_cliente: str, competencia: str, beneficio: str) -> dict[str, RegistroRecibo]:
+    """
+    Último registro por CPF (qualquer status: EMITIDO, CANCELADO,
+    INAPTO), para essa competência/benefício. Usado pela interface para
+    mostrar 'Já emitido' / 'Não apto' / 'Disponível' na tabela.
+    """
     registros = [
         r for r in _ler_todos_registros(caminho_planilha_cliente)
         if r.competencia == competencia and r.beneficio == beneficio
@@ -131,7 +140,7 @@ def listar_emitidos(caminho_planilha_cliente: str, competencia: str, beneficio: 
     por_cpf: dict[str, RegistroRecibo] = {}
     for r in registros:  # ordem cronológica -> o último grava por cima no dict
         por_cpf[r.cpf] = r
-    return list(por_cpf.values())
+    return por_cpf
 
 
 def buscar_por_cpf(caminho_planilha_cliente: str, cpf: str) -> list[RegistroRecibo]:
@@ -146,13 +155,21 @@ def registrar_lote(
     caminho_planilha_cliente: str,
     novos_registros: list[NovoRegistro],
     permitir_reemissao: bool = False,
+    status: str = 'EMITIDO',
 ) -> tuple[list[NovoRegistro], list[NovoRegistro]]:
     """
     Grava vários registros de uma vez (uma única abertura/gravação do
     arquivo). Retorna (gravados, pulados):
       - gravados: registros efetivamente escritos.
-      - pulados: registros que já tinham status EMITIDO e
-        permitir_reemissao=False (não escritos).
+      - pulados: registros que já tinham status EMITIDO ou INAPTO e
+        permitir_reemissao=False (não escritos) — só se aplica quando
+        status='EMITIDO' (marcar como INAPTO nunca é bloqueado: é uma
+        correção/observação, sempre permitida).
+
+    status: 'EMITIDO' (uso normal) ou 'INAPTO' (marca o colaborador como
+    não apto a receber o benefício nessa competência — usado em Cesta
+    Básica/Natal quando o diarista não cumpriu tempo mínimo ou o
+    contratado faltou mais que o permitido no período anterior).
 
     Não levanta erro para duplicidade — quem decide se um "pulado" é
     problema é a interface (mostra no resumo). Isso evita que uma
@@ -178,17 +195,18 @@ def registrar_lote(
     agora = datetime.now().isoformat(timespec='seconds')
 
     for novo in novos_registros:
-        status_atual = _status_efetivo(
-            registros_existentes, novo.beneficio, novo.competencia, novo.cpf,
-        )
-        if status_atual == 'EMITIDO' and not permitir_reemissao:
-            pulados.append(novo)
-            continue
+        if status == 'EMITIDO':
+            status_atual = _status_efetivo(
+                registros_existentes, novo.beneficio, novo.competencia, novo.cpf,
+            )
+            if status_atual in ('EMITIDO', 'INAPTO') and not permitir_reemissao:
+                pulados.append(novo)
+                continue
 
         linha = [
             agora, novo.beneficio, novo.competencia, novo.cpf, novo.nome,
             novo.valor, novo.dias, novo.data_vencimento, novo.usuario,
-            novo.maquina, novo.caminho_pdf, 'EMITIDO', novo.observacao,
+            novo.maquina, novo.caminho_pdf, status, novo.observacao,
         ]
         ws.append(linha)
         # Atualiza a lista em memória para que, dentro do MESMO lote, um
