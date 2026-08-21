@@ -57,8 +57,8 @@ def _titulo(tipo: str) -> str:
     return {
         BENEFICIO_CESTA_BASICA: 'RECIBO DE ENTREGA DE CESTA BASICA',
         BENEFICIO_CESTA_NATAL: 'RECIBO DE ENTREGA DE CESTA DE NATAL',
-        BENEFICIO_TRANSPORTE: 'RECIBO DE VALE TRANSPORTE',
-        BENEFICIO_CAFE: 'RECIBO DE VALE CAFÉ',
+        BENEFICIO_TRANSPORTE: 'RECIBO DE TRANSPORTE',
+        BENEFICIO_CAFE: 'RECIBO DE CAFÉ',
     }[tipo]
 
 
@@ -94,8 +94,8 @@ def _corpo_html(tipo: str, pagador: DadosPagador, candidato: Candidato) -> str:
             )
         else:
             return (
-                f"{abertura} o valor de R$ {valor_fmt} ({valor_ext}), referente ao "
-                f"<b>VALE CAFÉ</b> a ser consumido em {mes_extenso} de {ano_comp}, "
+                f"{abertura} o valor de R$ {valor_fmt} ({valor_ext}), referente ao fornecimento de "
+                f"<b>CAFÉ</b> a ser consumido em {mes_extenso} de {ano_comp}, "
                 f"juntamente com minha remuneração mensal."
             )
 
