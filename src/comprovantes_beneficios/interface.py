@@ -39,11 +39,11 @@ from .normalizacao import formatar_cpf, formatar_valor_monetario
 
 
 BENEFICIOS_LABELS = {
-    BENEFICIO_CESTA_BASICA: 'Cesta Básica',
-    BENEFICIO_CESTA_NATAL: 'Cesta de Natal',
+    BENEFICIO_TRANSPORTE_CAFE: 'Transporte + Café (mesma página)',
     BENEFICIO_TRANSPORTE: 'Transporte',
     BENEFICIO_CAFE: 'Café',
-    BENEFICIO_TRANSPORTE_CAFE: 'Transporte + Café (mesma página)',
+    BENEFICIO_CESTA_BASICA: 'Cesta Básica',
+    BENEFICIO_CESTA_NATAL: 'Cesta de Natal'
 }
 _LABEL_TO_BENEFICIO = {v: k for k, v in BENEFICIOS_LABELS.items()}
 
