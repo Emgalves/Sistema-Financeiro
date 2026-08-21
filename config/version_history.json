@@ -359,5 +359,16 @@
             "Função nova: Mesclar fornecedores duplicados, mantendo apenas um registro e atualizando todos os arquivos relacionados"
         ],
         "timestamp": "2026-08-02T14:43:38.118288"
+    },
+    {
+        "version": "1.8.3",
+        "release_date": "20/08/2026",
+        "changes": [
+            "Saldo Caixa de Obra: adaptado para pagar todas as despesas, se necessário",
+            "Gerador de comprovante de pagamento de Transporte e Café",
+            "Correção do Editor do Visualizar Lançamentos, que estava alterando a data do relatório",
+            "Medições: a ferramenta Vincular traz todos os registros que atendam aos requisitos, mesmo valores menores do que a da medição que se quer vincular"
+        ],
+        "timestamp": "2026-08-20T08:26:31.433957"
     }
 ]
