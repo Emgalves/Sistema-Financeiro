@@ -717,6 +717,20 @@ class RelatorioConfig:
             spaceBefore=2,
             spaceAfter=0
         )
+
+        # Mesmo estilo, mas em tom neutro (azul) - usado quando o valor
+        # não é um problema/déficit, e sim um PEDIDO de aporte ainda não
+        # atendido (ver criar_bloco_saldo_caixa / _criar_bloco_saldo).
+        self.style_info_saldo = ParagraphStyle(
+            'InfoSaldoStyle',
+            parent=self.styles['Normal'],
+            fontName='Helvetica-Bold',
+            fontSize=7,
+            leading=8,
+            textColor=colors.HexColor('#1a5490'),
+            spaceBefore=2,
+            spaceAfter=0
+        )
         
         self.style_normal = ParagraphStyle(
             'NormalStyle',
@@ -1277,6 +1291,19 @@ class RelatorioHandler:
         despesa_acumulada = float(despesa_ate_data['VALOR'].sum())
         despesa_periodo = float(df.loc[df['DATA_REL'] == data_ref, 'VALOR'].sum())
         despesa_anterior = despesa_acumulada - despesa_periodo
+
+        # Decomposição do período por tipo 6 (Caixa de Obra) vs demais
+        # tipos incluídos (1,2,3,4) - só relevante quando o filtro é uma
+        # lista contendo o 6 junto com outros (escopo ampliado do Caixa).
+        # Usada só para EXIBIÇÃO (ver criar_bloco_saldo_caixa) - não afeta
+        # nenhuma soma/saldo, é a mesma despesa_periodo apenas quebrada
+        # em duas parcelas.
+        despesa_periodo_caixa = None
+        despesa_periodo_outros = None
+        if isinstance(tp_desp_filtro, (list, tuple, set)) and 6 in tp_desp_filtro:
+            df_periodo = df[df['DATA_REL'] == data_ref]
+            despesa_periodo_caixa = float(df_periodo.loc[df_periodo['TP_DESP'] == 6, 'VALOR'].sum())
+            despesa_periodo_outros = despesa_periodo - despesa_periodo_caixa
     
         saldo_anterior = repasse_anterior - despesa_anterior
         saldo_atual = repasse_acumulado - despesa_acumulada
@@ -1286,26 +1313,50 @@ class RelatorioHandler:
             'repasse_acumulado': repasse_acumulado,
             'despesa_periodo': despesa_periodo,
             'despesa_acumulada': despesa_acumulada,
+            'despesa_periodo_caixa': despesa_periodo_caixa,
+            'despesa_periodo_outros': despesa_periodo_outros,
             'saldo_anterior': saldo_anterior,
             'saldo_atual': saldo_atual,
             'alerta_saldo_baixo': saldo_atual < despesa_periodo,
         }
     
     
-    def _criar_bloco_saldo(self, saldo, titulo, label_credito, label_debito, aviso_credito_zero=None):
+    def _criar_bloco_saldo(self, saldo, titulo, label_credito, linhas_debito, aviso_credito_zero=None):
         """
         Monta a tabela ReportLab para um bloco de controle de saldo (MO ou
-        Caixa). titulo/label_credito/label_debito sao os unicos textos
-        que mudam entre os dois usos.
+        Caixa). titulo/label_credito sao textos fixos por uso;
+        linhas_debito e uma lista de (label, valor) - normalmente 1 linha,
+        mas pode ser 2 quando o Caixa tem escopo ampliado (separa tipo 6
+        dos demais tipos, so para clareza visual - ver criar_bloco_saldo_caixa).
+
+        REENQUADRAMENTO "APORTE NECESSÁRIO": quando NENHUM repasse/aporte
+        foi recebido ainda NESTE período (repasse_periodo == 0) e o saldo
+        resultante seria negativo, a última linha não é tratada como um
+        "SALDO ATUAL" negativo (que soa como problema/dívida já
+        consumada) - o relatório é justamente o que dispara o pedido de
+        aporte, que ainda vai acontecer DEPOIS que o cliente receber o
+        relatório. Nesse caso a linha vira "APORTE NECESSÁRIO PARA COBRIR
+        O PERÍODO", com o valor positivo e em tom neutro (azul), não
+        vermelho. Quando já existe repasse recebido no período (ainda que
+        insuficiente), ou quando o saldo é positivo, o comportamento
+        continua exatamente como antes ("(=) SALDO ATUAL").
         """
+        aporte_necessario = (saldo['repasse_periodo'] == 0 and saldo['saldo_atual'] < 0)
+
         linhas = [
             ['SALDO ANTERIOR', self.formatar_numero(saldo['saldo_anterior'])],
             [label_credito, self.formatar_numero(saldo['repasse_periodo'])],
-            [label_debito, self.formatar_numero(saldo['despesa_periodo'])],
-            ['(=) SALDO ATUAL', self.formatar_numero(saldo['saldo_atual'])],
         ]
+        for label, valor in linhas_debito:
+            linhas.append([label, self.formatar_numero(valor)])
+
+        if aporte_necessario:
+            linhas.append(['APORTE NECESSÁRIO PARA COBRIR O PERÍODO',
+                            self.formatar_numero(abs(saldo['saldo_atual']))])
+        else:
+            linhas.append(['(=) SALDO ATUAL', self.formatar_numero(saldo['saldo_atual'])])
     
-        tabela = Table(linhas, colWidths=[190, 70])
+        tabela = Table(linhas, colWidths=[210, 70])
         estilo = TableStyle([
             ('ALIGN', (0, 0), (0, -1), 'LEFT'),
             ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
@@ -1317,7 +1368,9 @@ class RelatorioHandler:
             ('TOPPADDING', (0, -1), (-1, -1), 3),
         ])
     
-        if saldo['saldo_atual'] < 0:
+        if aporte_necessario:
+            estilo.add('TEXTCOLOR', (0, -1), (-1, -1), colors.HexColor('#1a5490'))
+        elif saldo['saldo_atual'] < 0:
             estilo.add('TEXTCOLOR', (0, -1), (-1, -1), colors.red)
         elif saldo['alerta_saldo_baixo']:
             estilo.add('TEXTCOLOR', (0, -1), (-1, -1), colors.orange)
@@ -1329,15 +1382,22 @@ class RelatorioHandler:
             tabela,
         ]
     
-        aviso = None
-        if saldo['saldo_atual'] < 0:
+        # Nenhum parágrafo extra abaixo da tabela: a última linha já é
+        # autoexplicativa por si (rótulo + cor) tanto no caso "APORTE
+        # NECESSÁRIO..." (azul) quanto no "(=) SALDO ATUAL" negativo
+        # (vermelho) - um texto repetindo o mesmo valor embaixo só
+        # duplicava informação (confirmado pelo usuário nos dois casos).
+        if aporte_necessario:
+            aviso = (
+                f"Solicitar aporte de R$ {self.formatar_numero(abs(saldo['saldo_atual']))} "
+                f"para cobrir as despesas previstas do período."
+            )
+        elif saldo['saldo_atual'] < 0:
             aviso = (
                 f"Saldo negativo de R$ {self.formatar_numero(abs(saldo['saldo_atual']))}."
             )
-            elementos.append(Paragraph(
-                aviso,
-                self.config.style_aviso_saldo if hasattr(self.config, 'style_aviso_saldo') else self.config.style_heading
-            ))
+        else:
+            aviso = None
     
         return elementos, aviso
     
@@ -1399,7 +1459,7 @@ class RelatorioHandler:
             saldo,
             titulo="CONTROLE DE SALDO - REPASSE MÃO DE OBRA",
             label_credito="(+) REPASSE RECEBIDO NO PERÍODO",
-            label_debito="(-) DESPESAS LANÇADAS NO PERÍODO",
+            linhas_debito=[("(-) DESPESAS LANÇADAS NO PERÍODO", saldo['despesa_periodo'])],
         )
     
     def registrar_repasse_mo(self, arquivo_excel, valor, data_repasse, referencia=''):
@@ -1496,15 +1556,28 @@ class RelatorioHandler:
         )
     
     def criar_bloco_saldo_caixa(self, saldo, escopo_ampliado=False):
-        label_debito = (
-            "(-) DESPESAS CUSTEADAS PELO CAIXA NO PERÍODO" if escopo_ampliado
-            else "(-) PAGAMENTOS CAIXA DE OBRA NO PERÍODO"
-        )
+        if escopo_ampliado and saldo.get('despesa_periodo_caixa') is not None:
+            # Decompõe a dedução em duas linhas: o que é Caixa de Obra
+            # "de verdade" (tipo 6) e o que são despesas 1,2,3,4 também
+            # cobertas pelo mesmo aporte - mesmo total de sempre, só
+            # explicado (o cliente já vê o valor de 1,2,3,4 em separado
+            # no resumo, como DESPESAS A PAGAR).
+            linhas_debito = [
+                ("(-) DESPESAS CAIXA DE OBRA (TIPO 6) NO PERÍODO", saldo['despesa_periodo_caixa']),
+                ("(-) DESPESAS TIPOS 1, 2, 3 E 4 TAMBÉM COBERTAS", saldo['despesa_periodo_outros']),
+            ]
+        else:
+            label_debito = (
+                "(-) DESPESAS CUSTEADAS PELO CAIXA NO PERÍODO" if escopo_ampliado
+                else "(-) PAGAMENTOS CAIXA DE OBRA NO PERÍODO"
+            )
+            linhas_debito = [(label_debito, saldo['despesa_periodo'])]
+
         return self._criar_bloco_saldo(
             saldo,
             titulo="CONTROLE DE SALDO - CAIXA DE OBRA",
             label_credito="(+) APORTE RECEBIDO NO PERÍODO",
-            label_debito=label_debito,
+            linhas_debito=linhas_debito,
         )
     
     def registrar_repasse_caixa(self, arquivo_excel, valor, data_repasse, referencia=''):
@@ -3149,6 +3222,133 @@ class RelatorioHandler:
                 
         logger.info("Detalhes adicionados com sucesso")
 
+    def _montar_elementos_folha_rosto(self, dados_pdf, dados, arquivo_excel):
+        """
+        Monta os elementos ReportLab da folha de rosto: cabecalho +
+        RESUMO DAS DESPESAS + bloco(s) de Controle de Saldo (MO/Caixa,
+        se aplicavel) + notas da primeira pagina. Extraido de
+        gerar_relatorio_pdf para ser reaproveitado tambem por
+        gerar_folha_rosto_pdf (reemissao de folha de rosto avulsa, sem
+        os detalhes) - garante que as duas geracoes fiquem SEMPRE
+        identicas nessa parte, sem duplicar logica.
+        """
+        elementos = []
+        
+        # Adicionar cabeçalho
+        self.adicionar_cabecalho(elementos, dados_pdf)
+        
+        # Adicionar resumo
+        elementos.append(Paragraph("RESUMO DAS DESPESAS", self.config.style_heading))
+        
+        logger.debug("Antes de criar_resumo_despesas:")
+        logger.debug(f"Acumulado: {dados_pdf.get('acumulado')}")
+        
+        tabela_subtotais, tabela_totais = self.criar_resumo_despesas(dados_pdf)
+        
+        # Log para debug
+        logger.debug("Tabela totais gerada:")
+        for linha in tabela_totais:
+            logger.debug(f"Linha: {linha}")
+        
+        # Criar tabelas com estilos específicos
+        estilo_subtotais = TableStyle([
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ])
+
+        estilo_totais = TableStyle([
+            ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+            ('BOX', (0, 0), (-1, 0), 1, colors.grey),
+            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('TEXTCOLOR', (0, -1), (-1, -1), colors.black),
+        ])
+
+        tabela_esquerda = Table(tabela_subtotais, colWidths=[300, 70])
+        tabela_esquerda.setStyle(estilo_subtotais)
+
+        tabela_direita = Table(tabela_totais, colWidths=[180, 70])
+        tabela_direita.setStyle(estilo_totais)
+
+        # Criar tabela que combina as duas anteriores
+        tabela_resumo = Table(
+            [[tabela_esquerda, Spacer(1, 12), tabela_direita]],
+            colWidths=[400, 60, 280]
+        )
+        
+        saldo_mo = None
+        saldo_caixa = None
+        bloco_mo, aviso_mo = None, None
+        bloco_caixa, aviso_caixa = None, None
+        
+        if self.eh_cliente_gestao_mo(arquivo_excel):
+            saldo_mo = self.calcular_saldo_mao_de_obra(
+                self.carregar_repasses_mo(arquivo_excel),
+                dados_pdf.get('df_original'),
+                dados_pdf.get('data_relatorio'),
+                dados_pdf.get('incluir_excluidos', False),
+                arquivo_excel=arquivo_excel
+            )
+            bloco_mo, aviso_mo = self.criar_bloco_saldo_mao_de_obra(saldo_mo)
+        
+        if self.eh_cliente_com_caixa(arquivo_excel):
+            saldo_caixa = self.calcular_saldo_caixa(
+                self.carregar_repasses_caixa(arquivo_excel),
+                dados_pdf.get('df_original'),
+                dados_pdf.get('data_relatorio'),
+                dados_pdf.get('incluir_excluidos', False),
+                arquivo_excel=arquivo_excel
+            )
+            escopo_ampliado = len(self._obter_tipos_despesa_caixa(arquivo_excel)) > 1
+            bloco_caixa, aviso_caixa = self.criar_bloco_saldo_caixa(saldo_caixa, escopo_ampliado=escopo_ampliado)
+        
+        # Monta a lista de blocos que se aplicam (0, 1 ou 2), empilhados
+        # verticalmente se os dois se aplicarem (caso raro)
+        blocos_saldo = []
+        if bloco_mo:
+            blocos_saldo.extend(bloco_mo)
+        if bloco_caixa:
+            if blocos_saldo:
+                blocos_saldo.append(Spacer(1, 10))
+            blocos_saldo.extend(bloco_caixa)
+
+        if blocos_saldo:
+            # Alinhado com a coluna direita do resumo (TOTAL DA OBRA):
+            # mesma largura de coluna vazia (400+60=460) + coluna do
+            # bloco (280), reaproveitando exatamente os colWidths de
+            # tabela_resumo logo acima. IMPORTANTE: não zerar o
+            # padding aqui - tabela_resumo usa o padding padrão do
+            # ReportLab (6pt), então esta tabela precisa do mesmo
+            # padding padrão para o início bater certinho. Zerar
+            # (como estava antes) desalinha a coluna esquerda.
+            tabela_saldo_alinhada = Table(
+                [['', blocos_saldo]],
+                colWidths=[460, 280]
+            )
+            tabela_saldo_alinhada.setStyle(TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ]))
+            # KeepTogether: resumo + bloco de saldo sempre na MESMA
+            # página, nunca separados. O bloco de saldo já foi
+            # deixado compacto (ver _criar_bloco_saldo) para caber
+            # nessa página junto com o resumo.
+            elementos.append(KeepTogether([
+                tabela_resumo,
+                Spacer(1, 10),
+                tabela_saldo_alinhada,
+            ]))
+        else:
+            elementos.append(tabela_resumo)
+
+        # ⭐ ADICIONAR NOTAS NA PRIMEIRA PÁGINA (após o resumo) ⭐
+        self.adicionar_notas(elementos, dados, incluir_quebra_pagina=False)
+
+        return elementos
+
     def gerar_relatorio_pdf(self, dados, caminho_output, arquivo_excel):
         """Gera o relatório PDF final"""
         try:
@@ -3168,120 +3368,7 @@ class RelatorioHandler:
                 bottomMargin=30
             )
                 
-            elementos = []
-            
-            # Adicionar cabeçalho
-            self.adicionar_cabecalho(elementos, dados_pdf)
-            
-            # Adicionar resumo
-            elementos.append(Paragraph("RESUMO DAS DESPESAS", self.config.style_heading))
-            
-            logger.debug("Antes de criar_resumo_despesas:")
-            logger.debug(f"Acumulado: {dados_pdf.get('acumulado')}")
-            
-            tabela_subtotais, tabela_totais = self.criar_resumo_despesas(dados_pdf)
-            
-            # Log para debug
-            logger.debug("Tabela totais gerada:")
-            for linha in tabela_totais:
-                logger.debug(f"Linha: {linha}")
-            
-            # Criar tabelas com estilos específicos
-            estilo_subtotais = TableStyle([
-                ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-                ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
-                ('FONTSIZE', (0, 0), (-1, -1), 9),
-            ])
-
-            estilo_totais = TableStyle([
-                ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-                ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
-                ('FONTSIZE', (0, 0), (-1, -1), 9),
-                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-                ('BOX', (0, 0), (-1, 0), 1, colors.grey),
-                ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-                ('TEXTCOLOR', (0, -1), (-1, -1), colors.black),
-            ])
-
-            tabela_esquerda = Table(tabela_subtotais, colWidths=[300, 70])
-            tabela_esquerda.setStyle(estilo_subtotais)
-
-            tabela_direita = Table(tabela_totais, colWidths=[180, 70])
-            tabela_direita.setStyle(estilo_totais)
-
-            # Criar tabela que combina as duas anteriores
-            tabela_resumo = Table(
-                [[tabela_esquerda, Spacer(1, 12), tabela_direita]],
-                colWidths=[400, 60, 280]
-            )
-        
-            saldo_mo = None
-            saldo_caixa = None
-            bloco_mo, aviso_mo = None, None
-            bloco_caixa, aviso_caixa = None, None
-        
-            if self.eh_cliente_gestao_mo(arquivo_excel):
-                saldo_mo = self.calcular_saldo_mao_de_obra(
-                    self.carregar_repasses_mo(arquivo_excel),
-                    dados_pdf.get('df_original'),
-                    dados_pdf.get('data_relatorio'),
-                    dados_pdf.get('incluir_excluidos', False),
-                    arquivo_excel=arquivo_excel
-                )
-                bloco_mo, aviso_mo = self.criar_bloco_saldo_mao_de_obra(saldo_mo)
-        
-            if self.eh_cliente_com_caixa(arquivo_excel):
-                saldo_caixa = self.calcular_saldo_caixa(
-                    self.carregar_repasses_caixa(arquivo_excel),
-                    dados_pdf.get('df_original'),
-                    dados_pdf.get('data_relatorio'),
-                    dados_pdf.get('incluir_excluidos', False),
-                    arquivo_excel=arquivo_excel
-                )
-                escopo_ampliado = len(self._obter_tipos_despesa_caixa(arquivo_excel)) > 1
-                bloco_caixa, aviso_caixa = self.criar_bloco_saldo_caixa(saldo_caixa, escopo_ampliado=escopo_ampliado)
-        
-            # Monta a lista de blocos que se aplicam (0, 1 ou 2), empilhados
-            # verticalmente se os dois se aplicarem (caso raro)
-            blocos_saldo = []
-            if bloco_mo:
-                blocos_saldo.extend(bloco_mo)
-            if bloco_caixa:
-                if blocos_saldo:
-                    blocos_saldo.append(Spacer(1, 10))
-                blocos_saldo.extend(bloco_caixa)
-
-            if blocos_saldo:
-                # Alinhado com a coluna direita do resumo (TOTAL DA OBRA):
-                # mesma largura de coluna vazia (400+60=460) + coluna do
-                # bloco (280), reaproveitando exatamente os colWidths de
-                # tabela_resumo logo acima. IMPORTANTE: não zerar o
-                # padding aqui - tabela_resumo usa o padding padrão do
-                # ReportLab (6pt), então esta tabela precisa do mesmo
-                # padding padrão para o início bater certinho. Zerar
-                # (como estava antes) desalinha a coluna esquerda.
-                tabela_saldo_alinhada = Table(
-                    [['', blocos_saldo]],
-                    colWidths=[460, 280]
-                )
-                tabela_saldo_alinhada.setStyle(TableStyle([
-                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                ]))
-                # KeepTogether: resumo + bloco de saldo sempre na MESMA
-                # página, nunca separados. O bloco de saldo já foi
-                # deixado compacto (ver _criar_bloco_saldo) para caber
-                # nessa página junto com o resumo.
-                elementos.append(KeepTogether([
-                    tabela_resumo,
-                    Spacer(1, 10),
-                    tabela_saldo_alinhada,
-                ]))
-            else:
-                elementos.append(tabela_resumo)
-
-            # ⭐ ADICIONAR NOTAS NA PRIMEIRA PÁGINA (após o resumo) ⭐
-            self.adicionar_notas(elementos, dados, incluir_quebra_pagina=False)
+            elementos = self._montar_elementos_folha_rosto(dados_pdf, dados, arquivo_excel)
             
             # Adicionar quebra de página
             elementos.append(PageBreak())
@@ -3347,6 +3434,50 @@ class RelatorioHandler:
             logger.error(f"Erro na geração do relatório: {str(e)}", exc_info=True)
             raise
  
+    def gerar_folha_rosto_pdf(self, dados, caminho_output, arquivo_excel):
+        """
+        Gera SÓ a folha de rosto (cabeçalho + RESUMO DAS DESPESAS + bloco
+        de Controle de Saldo, se aplicável + notas da 1ª página) - sem os
+        detalhes, sem lançamentos futuros. Sempre 1 página.
+
+        Uso: reemissão em massa de folhas de rosto já emitidas (ex.: após
+        corrigir um dado do cadastro do cliente, como o endereço, que
+        aparece no cabeçalho de todo relatório já gerado). Reaproveita
+        _montar_elementos_folha_rosto - o MESMO código usado dentro de
+        gerar_relatorio_pdf - então o conteúdo da folha de rosto fica
+        sempre idêntico entre os dois, nunca diverge.
+
+        'dados' é o mesmo dicionário completo (dados_completos) que
+        gerar_relatorio_pdf espera - normalmente vindo de
+        RelatoriosDespesasService.processar_para_preview(config) para a
+        data do relatório sendo reemitido.
+        """
+        try:
+            dados_pdf = dados.copy()
+
+            doc = SimpleDocTemplate(
+                caminho_output,
+                pagesize=landscape(A4),
+                rightMargin=30,
+                leftMargin=30,
+                topMargin=40,
+                bottomMargin=30
+            )
+
+            elementos = self._montar_elementos_folha_rosto(dados_pdf, dados, arquivo_excel)
+
+            # Sempre 1 página - não precisa da passagem dupla de
+            # contagem de páginas que gerar_relatorio_pdf usa.
+            self.numero_paginas = 1
+            doc.build(elementos, onFirstPage=self.adicionar_numeracao_pagina,
+                     onLaterPages=self.adicionar_numeracao_pagina)
+
+            logger.info(f"Folha de rosto gerada: {caminho_output}")
+
+        except Exception as e:
+            logger.error(f"Erro na geração da folha de rosto: {str(e)}", exc_info=True)
+            raise
+
     def validar_integridade_dados(self, df, local="DataFrame"):
         """
         Valida a integridade dos dados essenciais
