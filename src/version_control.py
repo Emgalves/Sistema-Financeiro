@@ -10,15 +10,13 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 8,
-    "patch": 2,
-    "release_date": "02/08/2026",
+    "patch": 3,
+    "release_date": "20/08/2026",
     "changes": [
-        "Saldo Caixa de Obra: adaptado para pagar todas as despesas, se necessário",
-        "Relatório de Medições sem mudança de página enre dados do contrato e seu extrato",
-        "Gestão de Medições: correção do método de edição de medições",
-        "Correção da ferramenta CPF Criado, eliminando a possibilidade de reutilização após regularizção ou fusão",
-        "Função nova: Regularização de dados fiscais, razaão social e nome, em base de fornecedores em todos os arquivos onde existam dados a serem corrigidos",
-        "Função nova: Mesclar fornecedores duplicados, mantendo apenas um registro e atualizando todos os arquivos relacionados"
+        "Saldo Caixa de Obra: adaptado para pagar todas as despesas, se necessário, mostrando valor negativo apenas se real",
+        "Gerador de comprovante de pagamento de Transporte e Café",
+        "Correção do Editor do Visualizar Lançamentos, que estava alterando a data do relatório",
+        "Medições: a ferramenta Vincular traz todos os registros que atendam aos requisitos, mesmo valores menores do que a da medição que se quer vincular"
     ]
 }
 
