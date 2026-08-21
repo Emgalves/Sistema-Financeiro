@@ -328,7 +328,7 @@ class SistemaGestaoFinanceira:
                         self.abrir_gestao_taxas, 0, 1)
         
         self.create_card(grid, "Comprovantes de Benefícios", 
-                        "Emissão individual de comprovantes de cesta básica, cesta de natal, transporte e café", 
+                        "Emissão de comprovantes de transporte e café", #"Emissão individual de comprovantes de cesta básica, cesta de natal, transporte e café"
                         self.abrir_comprovantes_beneficios, 1, 0)
         
         self.create_card(grid, "Geração de Relatórios",
