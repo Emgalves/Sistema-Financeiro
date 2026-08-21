@@ -325,15 +325,6 @@ def calcular_proxima_data_quinzena(data):
         else:
             return data.replace(month=data.month + 1, day=5)
 
-# === DOCUMENT VALIDATION ===
-# def validar_cnpj_cpf(documento):
-#     """Valida CNPJ ou CPF"""
-#     if len(documento) <= 11:
-#         cpf = CPF()
-#         return cpf.validate(documento)
-#     else:
-#         cnpj = CNPJ()
-#         return cnpj.validate(documento)
 
 def formatar_cnpj_cpf(documento):
     """Formata CNPJ/CPF com zeros à esquerda"""
@@ -1256,7 +1247,7 @@ def calcular_numero_relatorio(self, data_relatorio):
             return numero
 
         except Exception as e:
-            logger.debug(f"Erro ao calcular número do relatório: {str(e)}")
+            print(f"Erro ao calcular número do relatório: {str(e)}")
             return ""
 
 # === CONSTANTS ===
