@@ -1437,20 +1437,20 @@ class SistemaRelatorios:
         frame_opcoes.pack(fill='x', padx=10, pady=10)
         
         # Checkbox para incluir lançamentos futuros
-        self.incluir_futuros = tk.BooleanVar(master=self.root, value=False)
-        ttk.Checkbutton(
-            frame_opcoes,
-            text="Incluir lançamentos futuros",
-            variable=self.incluir_futuros
-        ).pack(anchor='w', padx=15, pady=5)
+        # self.incluir_futuros = tk.BooleanVar(master=self.root, value=False)
+        # ttk.Checkbutton(
+        #     frame_opcoes,
+        #     text="Incluir lançamentos futuros",
+        #     variable=self.incluir_futuros
+        # ).pack(anchor='w', padx=15, pady=5)
         
         # Checkbox para incluir lançamentos excluídos
-        self.incluir_excluidos = tk.BooleanVar(master=self.root, value=False)
-        ttk.Checkbutton(
-            frame_opcoes,
-            text="Incluir lançamentos excluídos no relatório",
-            variable=self.incluir_excluidos
-        ).pack(anchor='w', padx=15, pady=5)
+        # self.incluir_excluidos = tk.BooleanVar(master=self.root, value=False)
+        # ttk.Checkbutton(
+        #     frame_opcoes,
+        #     text="Incluir lançamentos excluídos no relatório",
+        #     variable=self.incluir_excluidos
+        # ).pack(anchor='w', padx=15, pady=5)
 
         # Checkbox para incluir notas no relatório
         self.incluir_notas = tk.BooleanVar(master=self.root, value=False)
@@ -1485,7 +1485,7 @@ class SistemaRelatorios:
             variable=self.tipo_geracao,
             value="individual",
             command=self.alternar_tipo_geracao
-        ).pack(anchor='w', padx=15, pady=5)
+        ).pack(side='left', padx=15, pady=5)
         
         ttk.Radiobutton(
             frame_tipo,
@@ -1493,7 +1493,7 @@ class SistemaRelatorios:
             variable=self.tipo_geracao,
             value="lote",
             command=self.alternar_tipo_geracao
-        ).pack(anchor='w', padx=15, pady=5)
+        ).pack(side='left', padx=15, pady=5)
         
         # === FRAMES PARA TIPOS ESPECÍFICOS ===
         
