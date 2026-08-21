@@ -770,8 +770,7 @@ class VisualizadorLancamentos:
         
         valores = self.tree.item(item_selecionado)['values']
         dados = {
-            'data': valores[0],
-            'nr_relatorio': valores[1],
+            'data': valores[1],
             'tp_desp': valores[2],
             'cnpj_cpf': valores[3],
             'nome': valores[4],
@@ -7916,7 +7915,8 @@ class SistemaEntradaDados:
             if not validar_data(data):
                 custom_messagebox("error", "Erro", "Data inválida! Use o formato dd/mm/aaaa")
                 self.data_rel_entry.delete(0, tk.END)
-                self.data_rel_entry.insert(0, datetime.now().strftime('%d/%m/%Y'))
+                self.data_rel_entry.insert(0, self.calcular_data_rel().strftime('%d/%m/%Y'))
+                logger.warning(f"validar_entrada_data: string rejeitada = '{data}' | hoje = {datetime.now()}")
                 return False
             return True
         
@@ -9181,8 +9181,33 @@ class SistemaEntradaDados:
     def validar_campos(self):
         """Valida os campos antes de adicionar/enviar dados"""
         # Validar data
-        if not self.data_rel_entry.get():
+        data_rel_str = self.data_rel_entry.get()
+        if not data_rel_str:
             custom_messagebox("error", "Erro", "Data de referência é obrigatória!")
+            return False
+
+        # ✅ NOVO: garantir dia 5 ou 20 usando a validação já existente em utils.py
+        try:
+            from src.config.utils import validar_data_quinzena
+            data_rel_obj = datetime.strptime(data_rel_str, '%d/%m/%Y')
+            data_ajustada, msg = validar_data_quinzena(data_rel_obj)
+
+            if msg:  # a data não era dia 5 nem 20
+                resposta = custom_messagebox(
+                    "yesno", "Data de Referência Divergente",
+                    f"A Data do Relatório está em {data_rel_str}, mas o esperado "
+                    f"é dia 5 ou 20.\n\n{msg}\n\nDeseja aplicar a correção?"
+                )
+                if not resposta:
+                    return False  # usuário cancelou — bloqueia o Adicionar/Enviar
+
+                self.data_rel_entry.set_date(data_ajustada)
+                logger.warning(
+                    f"validar_campos: DATA_REL corrigida automaticamente de "
+                    f"{data_rel_str} para {data_ajustada.strftime('%d/%m/%Y')}"
+                )
+        except ValueError:
+            custom_messagebox("error", "Erro", "Data de referência inválida! Use dd/mm/aaaa")
             return False
 
         # Validar fornecedor
