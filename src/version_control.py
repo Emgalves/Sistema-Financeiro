@@ -11,12 +11,11 @@ VERSION_INFO = {
     "major": 1,
     "minor": 8,
     "patch": 3,
-    "release_date": "20/08/2026",
+    "release_date": "04/09/2026",
     "changes": [
-        "Saldo Caixa de Obra: adaptado para pagar todas as despesas, se necessário, mostrando valor negativo apenas se real",
-        "Gerador de comprovante de pagamento de Transporte e Café",
-        "Correção do Editor do Visualizar Lançamentos, que estava alterando a data do relatório",
-        "Medições: a ferramenta Vincular traz todos os registros que atendam aos requisitos, mesmo valores menores do que a da medição que se quer vincular"
+        "Ajustes no Gerador de comprovante de pagamento de Transporte e Café",
+        "Correção no Gerador de comprovante de entrega de Cesta Básica, considerando o mês anterior como referência",
+        "Alteração na saída em PDF do Relatório por Categorias, com blocos subtotalizados e gráficos de barras"
     ]
 }
 

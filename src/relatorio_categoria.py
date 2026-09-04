@@ -39,6 +39,20 @@ except ImportError as e:
     ARQUIVO_CLIENTES = BASE_PATH / "dados" / "clientes.xlsx"
     PASTA_CLIENTES = BASE_PATH / "dados" / "clientes"
 
+# Caminho do logo (deve estar na mesma pasta do script ou configurado)
+LOGO_PATH = Path(__file__).parent / "logo3.png"
+if not LOGO_PATH.exists():
+    # Tentar na pasta de saída
+    LOGO_PATH = BASE_PATH / "outputs" / "logo3.png"
+
+# Dados da empresa exibidos no cabeçalho dos relatórios (mesmos dados usados
+# no Relatório Quinzenal de Medições, para manter uniformidade entre os relatórios)
+EMPRESA_INFO = {
+    'endereco': 'Rua Zodiaco, 87 Sala 07 – Santa Lúcia - Belo Horizonte - MG',
+    'fones': '(31) 3654-6616 / (31) 99974-1241 / (31) 98711-1139',
+    'email': 'rvr.engenharia@gmail.com',
+}
+
 # Importar o utils.py
 from src.config.utils import atualizar_combobox_clientes, cliente_esta_ativo, obter_info_cliente
 
@@ -77,6 +91,51 @@ def formatar_valor_sem_simbolo(valor):
         return f"{valor_float:,.2f}".replace(',', '_').replace('.', ',').replace('_', '.')
     except (ValueError, TypeError):
         return "0,00"
+
+def cor_texto_contraste(cor_rgb):
+    """
+    Recebe uma cor (tupla RGB ou RGBA, valores 0-1) e retorna 'black' ou 'white',
+    a que tiver melhor contraste sobre essa cor de fundo (fórmula de luminância
+    relativa). Usado para rótulos de valor sobre barras de cores claras (ex.: os
+    tons pastel das paletas Set3/Paired), onde texto branco fixo fica ilegível.
+    """
+    try:
+        r, g, b = cor_rgb[0], cor_rgb[1], cor_rgb[2]
+        luminancia = 0.299 * r + 0.587 * g + 0.114 * b
+        return 'black' if luminancia > 0.6 else 'white'
+    except Exception:
+        return 'black'
+
+def obter_imagem_logo_reportlab(largura_max_pt, altura_max_pt):
+    """
+    Retorna um objeto Image do ReportLab com o logo redimensionado
+    mantendo a proporção original, ou None se o arquivo não existir
+    ou não puder ser lido.
+    """
+    try:
+        if not LOGO_PATH.exists():
+            print(f"Aviso: logo não encontrado em {LOGO_PATH}")
+            return None
+
+        from reportlab.platypus import Image as RLImage
+
+        largura_final = largura_max_pt
+        altura_final = altura_max_pt
+        try:
+            from PIL import Image as PILImage
+            with PILImage.open(LOGO_PATH) as img:
+                largura_orig, altura_orig = img.size
+            proporcao = min(largura_max_pt / largura_orig, altura_max_pt / altura_orig)
+            largura_final = largura_orig * proporcao
+            altura_final = altura_orig * proporcao
+        except ImportError:
+            # Sem Pillow disponível: usa tamanho máximo fixo (pode distorcer)
+            pass
+
+        return RLImage(str(LOGO_PATH), width=largura_final, height=altura_final)
+    except Exception as e:
+        print(f"Aviso: não foi possível carregar o logo: {e}")
+        return None
 
 class RelatorioCategoria:
     """Classe para geração de relatórios por categoria de despesa agrupado por mês de vencimento"""
@@ -1186,7 +1245,7 @@ class RelatorioCategoria:
                 horizontalalignment='center', verticalalignment='center',
                 transform=ax.transAxes, fontsize=12, color='red')
 
-    def criar_grafico_barras(self, fig, ax):
+    def criar_grafico_barras(self, fig, ax, mostrar_titulo=True):
         """Cria um gráfico de barras com as categorias da data selecionada"""
         try:
             # Usar os dados para gráfico de barras
@@ -1220,14 +1279,17 @@ class RelatorioCategoria:
             bars = ax.barh(labels_curtos, df['VALOR'], color=colors, edgecolor='white', linewidth=1.5)
             
             # Adicionar valores nas barras com formatação
-            for bar in bars:
+            for bar, cor_barra in zip(bars, colors):
                 width = bar.get_width()
                 # Posicionar o texto dentro da barra se ela for grande, fora se for pequena
                 max_value = df['VALOR'].max()
                 if width > max_value * 0.1:  # Se a barra tem mais de 10% do máximo
                     label_x_pos = width / 2
                     ha = 'center'
-                    color = 'white'
+                    # Cor do texto com contraste adequado à cor real da barra
+                    # (paletas pastel como Set3 têm tons claros onde texto branco
+                    # fixo fica ilegível — ex.: amarelo claro)
+                    color = cor_texto_contraste(cor_barra)
                     weight = 'bold'
                 else:  # Barra pequena, colocar valor fora
                     label_x_pos = width + width * 0.02
@@ -1257,7 +1319,10 @@ class RelatorioCategoria:
             
             # Pegar as cores na ordem correta (maior para menor)
             df_sorted = df.sort_values('VALOR', ascending=False)
-            cores_ordenadas = [colors[i] for i in range(len(df_sorted))]
+            # Cores na mesma ordem da legenda (maior para menor). A lista `colors`
+            # está alinhada com `df` (ordem ascendente, mesma das barras), então a
+            # ordem descendente usada na legenda é exatamente o inverso dela.
+            cores_ordenadas = list(colors)[::-1]
             
             # Criar patches para a legenda
             from matplotlib.patches import Patch
@@ -1280,12 +1345,13 @@ class RelatorioCategoria:
             data_final = self.data_selecionada.to_timestamp('M')
             data_final_str = data_final.strftime('%d/%m/%Y')
             
-            ax.set_title(
-                f'Valores por Categoria de Despesa - {data_final_str}', 
-                fontsize=13,
-                pad=20,
-                fontweight='bold'
-            )
+            if mostrar_titulo:
+                ax.set_title(
+                    f'Valores por Categoria de Despesa - {data_final_str}', 
+                    fontsize=13,
+                    pad=20,
+                    fontweight='bold'
+                )
             ax.set_xlabel('Valor', fontsize=11, fontweight='bold')
             ax.set_ylabel('Categoria', fontsize=11, fontweight='bold')
             
@@ -1402,7 +1468,7 @@ class RelatorioCategoria:
                 horizontalalignment='center', verticalalignment='center',
                 transform=ax.transAxes, fontsize=12, color='red')
 
-    def criar_grafico_barras_totais(self, fig, ax):
+    def criar_grafico_barras_totais(self, fig, ax, mostrar_titulo=True):
         """Cria um gráfico de barras com os totais por categoria"""
         try:
             # Calcular totais por categoria
@@ -1437,7 +1503,7 @@ class RelatorioCategoria:
             bars = ax.barh(labels_curtos, valores, color=colors, edgecolor='white', linewidth=1.5)
             
             # Adicionar valores nas barras
-            for bar in bars:
+            for bar, cor_barra in zip(bars, colors):
                 width = bar.get_width()
                 max_value = max(valores)
                 
@@ -1445,7 +1511,8 @@ class RelatorioCategoria:
                 if width > max_value * 0.1:
                     label_x_pos = width / 2
                     ha = 'center'
-                    color = 'white'
+                    # Cor do texto com contraste adequado à cor real da barra
+                    color = cor_texto_contraste(cor_barra)
                     weight = 'bold'
                 else:
                     label_x_pos = width + width * 0.02
@@ -1453,18 +1520,18 @@ class RelatorioCategoria:
                     color = 'black'
                     weight = 'normal'
                 
-                valor_formatado = formatar_moeda_br(width)
+                valor_formatado = formatar_valor_sem_simbolo(width)
                 ax.text(label_x_pos, bar.get_y() + bar.get_height()/2, 
                     valor_formatado,
                     va='center', ha=ha, fontsize=9, color=color, fontweight=weight)
             
-            # Formatação do eixo x
+            # Formatação do eixo x (sem símbolo de moeda, alinhado com o restante do relatório)
             def format_real(x, pos):
                 if x >= 1000000:
-                    return f'R$ {x/1000000:.1f}M'
+                    return f'{x/1000000:.1f}M'
                 elif x >= 1000:
-                    return f'R$ {x/1000:.0f}k'
-                return f'R$ {x:.0f}'
+                    return f'{x/1000:.0f}k'
+                return f'{x:.0f}'
             
             ax.xaxis.set_major_formatter(mticker.FuncFormatter(format_real))
             
@@ -1498,12 +1565,13 @@ class RelatorioCategoria:
             
             # Adicionar títulos
             total_geral = sum(valores)
-            ax.set_title(
-                f'Totais por Categoria - {formatar_moeda_br(total_geral)}', 
-                fontsize=13,
-                pad=20,
-                fontweight='bold'
-            )
+            if mostrar_titulo:
+                ax.set_title(
+                    f'Totais por Categoria - {formatar_moeda_br(total_geral)}', 
+                    fontsize=13,
+                    pad=20,
+                    fontweight='bold'
+                )
             ax.set_xlabel('Valor', fontsize=11, fontweight='bold')
             ax.set_ylabel('Categoria', fontsize=11, fontweight='bold')
             
@@ -1619,7 +1687,20 @@ class RelatorioCategoria:
             
             # Criar aba de resumo
             ws_resumo = wb.create_sheet("Resumo")
-            
+
+            # Logomarca (se disponível) - inserida à direita do cabeçalho, sem sobrepor o texto
+            try:
+                if LOGO_PATH.exists():
+                    from openpyxl.drawing.image import Image as XLImage
+                    xl_logo = XLImage(str(LOGO_PATH))
+                    largura_alvo_px = 110
+                    proporcao = largura_alvo_px / xl_logo.width
+                    xl_logo.width = largura_alvo_px
+                    xl_logo.height = xl_logo.height * proporcao
+                    ws_resumo.add_image(xl_logo, "K1")
+            except Exception as e:
+                print(f"Aviso: não foi possível inserir o logo no Excel: {e}")
+
             # Adicionar cabeçalho
             ws_resumo['A1'] = "Relatório por Categoria de Despesa"
             ws_resumo['A1'].font = Font(size=14, bold=True)
@@ -1684,82 +1765,122 @@ class RelatorioCategoria:
             # Criar aba de detalhes se tivermos um mês/ano selecionado
             if hasattr(self, 'mes_ano_selecionado') and self.mes_ano_selecionado:
                 ws_detalhes = wb.create_sheet("Detalhes")
-                
+
                 mes_ano_str_detalhe = self.mes_ano_selecionado.strftime('%m/%Y')
                 ws_detalhes['A1'] = f"Detalhes do Mês: {mes_ano_str_detalhe}"
                 ws_detalhes['A1'].font = Font(size=14, bold=True)
-                ws_detalhes.merge_cells('A1:G1')
+                ws_detalhes.merge_cells('A1:F1')
                 ws_detalhes['A1'].alignment = Alignment(horizontal='center')
-                
+
                 # Filtrar dados para o mês selecionado
                 self.df_despesas['mes_ano_vencto_temp'] = self.df_despesas['DT_VENCTO'].dt.to_period('M')
                 df_filtrado = self.df_despesas[self.df_despesas['mes_ano_vencto_temp'] == self.mes_ano_selecionado].copy()
-                
-                # CABEÇALHOS CORRETOS (não repetir do resumo)
-                headers = ["Dt. Vencimento", "Cat", "Nome", "Referência", "Data Relatório", "Valor", "Observação"]
-                for col, header in enumerate(headers, start=1):
-                    cell = ws_detalhes.cell(row=3, column=col, value=header)
-                    cell.font = Font(bold=True)
-                    cell.alignment = Alignment(horizontal='center')
-                    cell.fill = PatternFill(fgColor="DDDDDD", fill_type="solid")
-                
-                # Adicionar dados
-                for i, (_, row) in enumerate(df_filtrado.iterrows(), start=4):
-                    # Data de vencimento (coluna A)
-                    if pd.notna(row['DT_VENCTO']):
-                        ws_detalhes.cell(row=i, column=1, value=row['DT_VENCTO'])
-                        ws_detalhes.cell(row=i, column=1).number_format = "dd/mm/yyyy"
-                    
-                    # Categoria - APENAS CÓDIGO (coluna B)
-                    categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
-                    ws_detalhes.cell(row=i, column=2, value=categoria)
-                    
-                    # Nome (coluna C)
-                    if 'NOME' in row and pd.notna(row['NOME']):
-                        ws_detalhes.cell(row=i, column=3, value=row['NOME'])
-                    
-                    # Referência (coluna D)
-                    if 'REFERÊNCIA' in row and pd.notna(row['REFERÊNCIA']):
-                        ws_detalhes.cell(row=i, column=4, value=row['REFERÊNCIA'])
-                    
-                    # Data relatório (coluna E)
-                    if pd.notna(row['DATA_REL']):
-                        ws_detalhes.cell(row=i, column=5, value=row['DATA_REL'])
-                        ws_detalhes.cell(row=i, column=5).number_format = "dd/mm/yyyy"
-                    
-                    # Valor SEM R$ (coluna F)
-                    ws_detalhes.cell(row=i, column=6, value=row['VALOR'])
-                    ws_detalhes.cell(row=i, column=6).number_format = "#.##0,00"
-                    
-                    # Observação (coluna G)
-                    if 'OBSERVAÇÃO' in row and pd.notna(row['OBSERVAÇÃO']):
-                        ws_detalhes.cell(row=i, column=7, value=row['OBSERVAÇÃO'])
-                
+                df_filtrado['CATEGORIA'] = df_filtrado['CATEGORIA'].fillna('DIV')
+
+                # CABEÇALHOS (coluna "Cat" removida: cada categoria agora forma seu próprio bloco)
+                headers = ["Dt. Vencimento", "Nome", "Referência", "Data Relatório", "Valor", "Observação"]
+                num_cols = len(headers)
+
+                fill_grupo = PatternFill(fgColor="34495E", fill_type="solid")
+                fonte_grupo = Font(bold=True, color="FFFFFF", size=11)
+                fill_cabecalho = PatternFill(fgColor="DDDDDD", fill_type="solid")
+                fill_subtotal = PatternFill(fgColor="EAECEE", fill_type="solid")
+                fill_total_geral = PatternFill(fgColor="2C3E50", fill_type="solid")
+                fonte_total_geral = Font(bold=True, color="FFFFFF")
+
+                # Ordem das categorias conforme a legenda
+                ordem_categorias = list(self.categorias_despesas.keys())
+
+                linha_atual = 3
+                total_geral_mes = 0.0
+
+                for categoria_cod in ordem_categorias:
+                    df_cat = df_filtrado[df_filtrado['CATEGORIA'] == categoria_cod].sort_values('DT_VENCTO')
+                    if df_cat.empty:
+                        continue
+
+                    categoria_nome = self.categorias_despesas.get(categoria_cod, 'NÃO CLASSIFICADO')
+
+                    # Cabeçalho do grupo (linha mesclada, destacada)
+                    ws_detalhes.cell(row=linha_atual, column=1, value=f"{categoria_cod} - {categoria_nome}")
+                    ws_detalhes.merge_cells(start_row=linha_atual, start_column=1, end_row=linha_atual, end_column=num_cols)
+                    cell_grupo = ws_detalhes.cell(row=linha_atual, column=1)
+                    cell_grupo.font = fonte_grupo
+                    cell_grupo.fill = fill_grupo
+                    cell_grupo.alignment = Alignment(horizontal='left', vertical='center')
+                    linha_atual += 1
+
+                    # Cabeçalho das colunas
+                    for col, header in enumerate(headers, start=1):
+                        cell = ws_detalhes.cell(row=linha_atual, column=col, value=header)
+                        cell.font = Font(bold=True)
+                        cell.alignment = Alignment(horizontal='center')
+                        cell.fill = fill_cabecalho
+                    linha_atual += 1
+                    linha_dados_inicio = linha_atual
+
+                    # Linhas de dados da categoria
+                    for _, row in df_cat.iterrows():
+                        if pd.notna(row['DT_VENCTO']):
+                            ws_detalhes.cell(row=linha_atual, column=1, value=row['DT_VENCTO'])
+                            ws_detalhes.cell(row=linha_atual, column=1).number_format = "dd/mm/yyyy"
+
+                        if 'NOME' in row and pd.notna(row['NOME']):
+                            ws_detalhes.cell(row=linha_atual, column=2, value=row['NOME'])
+
+                        if 'REFERÊNCIA' in row and pd.notna(row['REFERÊNCIA']):
+                            ws_detalhes.cell(row=linha_atual, column=3, value=row['REFERÊNCIA'])
+
+                        if pd.notna(row['DATA_REL']):
+                            ws_detalhes.cell(row=linha_atual, column=4, value=row['DATA_REL'])
+                            ws_detalhes.cell(row=linha_atual, column=4).number_format = "dd/mm/yyyy"
+
+                        ws_detalhes.cell(row=linha_atual, column=5, value=row['VALOR'])
+                        ws_detalhes.cell(row=linha_atual, column=5).number_format = "#.##0,00"
+
+                        if 'OBSERVAÇÃO' in row and pd.notna(row['OBSERVAÇÃO']):
+                            ws_detalhes.cell(row=linha_atual, column=6, value=row['OBSERVAÇÃO'])
+
+                        linha_atual += 1
+
+                    linha_dados_fim = linha_atual - 1
+
+                    # Subtotal da categoria
+                    ws_detalhes.cell(row=linha_atual, column=4, value=f"Subtotal {categoria_cod}")
+                    ws_detalhes.cell(row=linha_atual, column=4).font = Font(bold=True)
+                    formula_subtotal = f"=SUM(E{linha_dados_inicio}:E{linha_dados_fim})"
+                    ws_detalhes.cell(row=linha_atual, column=5, value=formula_subtotal)
+                    ws_detalhes.cell(row=linha_atual, column=5).font = Font(bold=True)
+                    ws_detalhes.cell(row=linha_atual, column=5).number_format = "#.##0,00"
+                    for col in range(1, num_cols + 1):
+                        ws_detalhes.cell(row=linha_atual, column=col).fill = fill_subtotal
+
+                    total_geral_mes += df_cat['VALOR'].sum()
+                    linha_atual += 2  # linha em branco entre categorias
+
+                # Total geral do mês (soma de todas as categorias)
+                ws_detalhes.cell(row=linha_atual, column=4, value="TOTAL GERAL DO MÊS")
+                ws_detalhes.cell(row=linha_atual, column=4).font = fonte_total_geral
+                ws_detalhes.cell(row=linha_atual, column=5, value=total_geral_mes)
+                ws_detalhes.cell(row=linha_atual, column=5).font = fonte_total_geral
+                ws_detalhes.cell(row=linha_atual, column=5).number_format = "#.##0,00"
+                for col in range(1, num_cols + 1):
+                    ws_detalhes.cell(row=linha_atual, column=col).fill = fill_total_geral
+                linha_atual += 3
+
                 # Ajustar largura das colunas
-                ws_detalhes.column_dimensions['A'].width = 12
-                ws_detalhes.column_dimensions['B'].width = 8
-                ws_detalhes.column_dimensions['C'].width = 25
-                ws_detalhes.column_dimensions['D'].width = 35
-                ws_detalhes.column_dimensions['E'].width = 12
-                ws_detalhes.column_dimensions['F'].width = 12
-                ws_detalhes.column_dimensions['G'].width = 40
-                
-                # Adicionar total
-                total_row = 4 + len(df_filtrado)
-                
-                ws_detalhes.cell(row=total_row, column=5, value="TOTAL")
-                ws_detalhes.cell(row=total_row, column=5).font = Font(bold=True)
-                
-                total_formula = f"=SUM(F4:F{total_row-1})"
-                ws_detalhes.cell(row=total_row, column=6, value=total_formula)
-                ws_detalhes.cell(row=total_row, column=6).font = Font(bold=True)
-                ws_detalhes.cell(row=total_row, column=6).number_format = "#.##0,00"
-                
+                ws_detalhes.column_dimensions['A'].width = 14
+                ws_detalhes.column_dimensions['B'].width = 28
+                ws_detalhes.column_dimensions['C'].width = 38
+                ws_detalhes.column_dimensions['D'].width = 16
+                ws_detalhes.column_dimensions['E'].width = 14
+                ws_detalhes.column_dimensions['F'].width = 40
+
                 # LEGENDA DAS CATEGORIAS
-                legenda_row = total_row + 3
+                legenda_row = linha_atual
                 ws_detalhes.cell(row=legenda_row, column=1, value="Legenda de Categorias:")
                 ws_detalhes.cell(row=legenda_row, column=1).font = Font(bold=True)
-                
+
                 for i, (codigo, descricao) in enumerate(self.categorias_despesas.items(), start=1):
                     ws_detalhes.cell(row=legenda_row + i, column=1, value=f"{codigo}:")
                     ws_detalhes.cell(row=legenda_row + i, column=2, value=descricao)
@@ -1798,9 +1919,10 @@ class RelatorioCategoria:
             try:
                 from reportlab.lib.pagesizes import letter, A4
                 from reportlab.lib import colors
-                from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+                from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, HRFlowable, KeepTogether, PageBreak
                 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
                 from reportlab.lib.units import inch
+                from reportlab.lib.enums import TA_RIGHT
                 import matplotlib.pyplot as plt
                 import io
             except ImportError:
@@ -1818,6 +1940,44 @@ class RelatorioCategoria:
             heading2_style = styles['Heading2']
             normal_style = styles['Normal']
             
+            # Cabeçalho: logo à esquerda, dados da empresa à direita
+            # (mesmo padrão visual do Relatório Quinzenal de Medições)
+            logo_img = obter_imagem_logo_reportlab(1.6*inch, 0.85*inch)
+
+            empresa_style = ParagraphStyle(
+                'EmpresaInfo',
+                parent=normal_style,
+                fontSize=7.5,
+                leading=10,
+                alignment=TA_RIGHT,
+                textColor=colors.HexColor('#444444')
+            )
+            empresa_text = (
+                f"{EMPRESA_INFO['endereco']}<br/>"
+                f"{EMPRESA_INFO['fones']}<br/>"
+                f"{EMPRESA_INFO['email']}"
+            )
+            empresa_paragraph = Paragraph(empresa_text, empresa_style)
+
+            celula_logo = logo_img if logo_img is not None else ""
+            header_table = Table(
+                [[celula_logo, empresa_paragraph]],
+                colWidths=[2.2*inch, 4.3*inch]
+            )
+            header_table.setStyle(TableStyle([
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+                ('LEFTPADDING', (0, 0), (0, 0), 0),
+                ('RIGHTPADDING', (1, 0), (1, 0), 0),
+                ('TOPPADDING', (0, 0), (-1, -1), 0),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+            ]))
+            story.append(header_table)
+            story.append(Spacer(1, 0.1*inch))
+            story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor('#34495E')))
+            story.append(Spacer(1, 0.15*inch))
+
             # Título
             story.append(Paragraph(f"Relatório por Categoria de Despesa", title_style))
             story.append(Spacer(1, 0.2*inch))
@@ -1913,65 +2073,121 @@ class RelatorioCategoria:
                 df_filtrado = self.df_despesas[self.df_despesas['mes_ano_vencto_temp'] == self.mes_ano_selecionado].copy()
                 
                 if not df_filtrado.empty:
-                    # CABEÇALHOS CORRETOS
-                    headers = ["Dt Venc", "Cat", "Nome", "Referência", "Valor"]
-                    
-                    table_data = [headers]
-                    
                     # Criar estilo com fonte pequena e consistente
                     style_pequeno = ParagraphStyle('Pequeno', parent=normal_style, fontSize=7, leading=8)
-                    
-                    for _, row in df_filtrado.iterrows():
-                        # Data vencimento
-                        dt_vencto = row['DT_VENCTO'].strftime('%d/%m/%y') if pd.notna(row['DT_VENCTO']) else ''
-                        
-                        # Categoria - APENAS CÓDIGO
-                        categoria = row['CATEGORIA'] if pd.notna(row['CATEGORIA']) else 'DIV'
-                        
-                        # Nome e Referência
-                        nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
-                        referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
-                        
-                        # QUEBRAR TEXTO LONGO com estilo consistente
-                        if len(nome) > 25:
-                            nome = Paragraph(nome, style_pequeno)
-                        if len(referencia) > 30:
-                            referencia = Paragraph(referencia, style_pequeno)
-                        
-                        # Valor SEM R$
-                        valor = f"{row['VALOR']:,.2f}".replace(',', '.').replace('.', ',', 1)
-                        
-                        table_data.append([dt_vencto, categoria, nome, referencia, valor])
-                    
-                    # Total
-                    total_data = df_filtrado['VALOR'].sum()
-                    total_formatado = f"{total_data:,.2f}".replace(',', '.').replace('.', ',', 1)
-                    table_data.append(["", "", "", "TOTAL", total_formatado])
-                    
-                    # Criar tabela COM QUEBRA DE TEXTO
-                    col_widths = [0.8*inch, 0.5*inch, 1.8*inch, 2.2*inch, 0.9*inch]
-                    detalhes_table = Table(table_data, colWidths=col_widths)
-                    
-                    table_style = TableStyle([
-                        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-                        ('ALIGN', (0, 0), (1, -1), 'CENTER'),
-                        ('ALIGN', (2, 0), (3, -1), 'LEFT'),
-                        ('ALIGN', (4, 0), (4, -1), 'RIGHT'),
-                        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('FONTSIZE', (0, 0), (-1, -1), 7),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+
+                    # Garantir categoria preenchida
+                    df_filtrado['CATEGORIA'] = df_filtrado['CATEGORIA'].fillna('DIV')
+
+                    # Ordenar as categorias conforme a ordem definida em self.categorias_despesas
+                    ordem_categorias = list(self.categorias_despesas.keys())
+
+                    # Largura das colunas do bloco de detalhes (sem a coluna "Cat", pois cada
+                    # categoria agora vira um bloco/tabela própria com cabeçalho de grupo)
+                    col_widths = [0.9*inch, 2.1*inch, 2.6*inch, 0.9*inch]
+
+                    total_geral_mes = 0.0
+
+                    for categoria_cod in ordem_categorias:
+                        df_cat = df_filtrado[df_filtrado['CATEGORIA'] == categoria_cod]
+                        if df_cat.empty:
+                            continue
+
+                        # Ordenar lançamentos da categoria por data de vencimento
+                        df_cat = df_cat.sort_values('DT_VENCTO')
+
+                        categoria_nome = self.categorias_despesas.get(categoria_cod, 'NÃO CLASSIFICADO')
+
+                        # Linha 0: cabeçalho do grupo (mesclada) | Linha 1: cabeçalho das colunas
+                        headers = ["Dt Venc", "Nome", "Referência", "Valor"]
+                        table_data = [
+                            [f"{categoria_cod} - {categoria_nome}", "", "", ""],
+                            headers,
+                        ]
+
+                        for _, row in df_cat.iterrows():
+                            # Data vencimento
+                            dt_vencto = row['DT_VENCTO'].strftime('%d/%m/%y') if pd.notna(row['DT_VENCTO']) else ''
+
+                            # Nome e Referência
+                            nome = row.get('NOME', '') if pd.notna(row.get('NOME', '')) else ''
+                            referencia = row.get('REFERÊNCIA', '') if pd.notna(row.get('REFERÊNCIA', '')) else ''
+
+                            # QUEBRAR TEXTO LONGO com estilo consistente
+                            if len(nome) > 30:
+                                nome = Paragraph(nome, style_pequeno)
+                            if len(referencia) > 35:
+                                referencia = Paragraph(referencia, style_pequeno)
+
+                            # Valor SEM R$
+                            valor = f"{row['VALOR']:,.2f}".replace(',', '.').replace('.', ',', 1)
+
+                            table_data.append([dt_vencto, nome, referencia, valor])
+
+                        # Subtotal da categoria
+                        subtotal_cat = df_cat['VALOR'].sum()
+                        total_geral_mes += subtotal_cat
+                        subtotal_formatado = f"{subtotal_cat:,.2f}".replace(',', '.').replace('.', ',', 1)
+                        table_data.append(["", "", f"Subtotal {categoria_cod}", subtotal_formatado])
+
+                        detalhes_table = Table(table_data, colWidths=col_widths, repeatRows=2)
+
+                        table_style = TableStyle([
+                            # Cabeçalho de grupo (linha 0) - mesclado e destacado
+                            ('SPAN', (0, 0), (-1, 0)),
+                            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#34495E')),
+                            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                            ('FONTSIZE', (0, 0), (-1, 0), 9),
+                            ('ALIGN', (0, 0), (-1, 0), 'LEFT'),
+                            ('LEFTPADDING', (0, 0), (0, 0), 6),
+                            ('TOPPADDING', (0, 0), (-1, 0), 5),
+                            ('BOTTOMPADDING', (0, 0), (-1, 0), 5),
+
+                            # Cabeçalho das colunas (linha 1)
+                            ('BACKGROUND', (0, 1), (-1, 1), colors.lightgrey),
+                            ('TEXTCOLOR', (0, 1), (-1, 1), colors.black),
+                            ('FONTNAME', (0, 1), (-1, 1), 'Helvetica-Bold'),
+
+                            # Corpo da tabela
+                            ('ALIGN', (0, 1), (0, -1), 'CENTER'),
+                            ('ALIGN', (1, 1), (2, -1), 'LEFT'),
+                            ('ALIGN', (3, 1), (3, -1), 'RIGHT'),
+                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                            ('FONTSIZE', (0, 1), (-1, -1), 7),
+                            ('BOTTOMPADDING', (0, 1), (-1, 1), 6),
+                            ('GRID', (0, 1), (-1, -1), 0.5, colors.grey),
+                            ('WORDWRAP', (0, 0), (-1, -1), True),
+
+                            # Linha de subtotal (última linha)
+                            ('SPAN', (0, -1), (1, -1)),
+                            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#EAECEE')),
+                            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+                        ])
+
+                        detalhes_table.setStyle(table_style)
+                        story.append(detalhes_table)
+                        story.append(Spacer(1, 0.15*inch))
+
+                    # Total geral do mês (soma de todas as categorias)
+                    total_geral_formatado = f"{total_geral_mes:,.2f}".replace(',', '.').replace('.', ',', 1)
+                    total_geral_table = Table(
+                        [["TOTAL GERAL DO MÊS", total_geral_formatado]],
+                        colWidths=[col_widths[0] + col_widths[1] + col_widths[2], col_widths[3]]
+                    )
+                    total_geral_table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#2C3E50')),
+                        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
+                        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+                        ('FONTSIZE', (0, 0), (-1, -1), 9),
+                        ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+                        ('LEFTPADDING', (0, 0), (0, 0), 6),
+                        ('TOPPADDING', (0, 0), (-1, -1), 6),
+                        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
                         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-                        ('WORDWRAP', (0, 0), (-1, -1), True),
-                    ])
-                    
-                    # Destacar total
-                    table_style.add('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey)
-                    table_style.add('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold')
-                    
-                    detalhes_table.setStyle(table_style)
-                    story.append(detalhes_table)
+                    ]))
+                    story.append(total_geral_table)
                     story.append(Spacer(1, 0.2*inch))
                     
                     # LEGENDA DAS CATEGORIAS
@@ -1990,46 +2206,66 @@ class RelatorioCategoria:
                     story.append(Paragraph(legenda_text, legenda_style))
                     story.append(Spacer(1, 0.2*inch))
                     
-                    # Adicionar gráfico
-                    story.append(Paragraph("Gráfico de Distribuição por Categoria de Despesa", heading2_style))
-                    story.append(Spacer(1, 0.1*inch))
-                    
-                    # Gerar gráfico para incluir no PDF
-                    plt.figure(figsize=(7, 5))
-                    
-                    # Preparar dados para o gráfico
-                    df_grafico = df_filtrado.groupby('CATEGORIA')['VALOR'].sum().reset_index()
-                    
-                    # Adicionar nome da categoria
-                    df_grafico['categoria_nome'] = df_grafico['CATEGORIA'].apply(
-                        lambda x: f"{x} - {self.categorias_despesas.get(x, 'Não classificado')}"
+                    # Adicionar gráficos: um do mês selecionado e outro do total acumulado
+                    # do período, ambos em barras horizontais (mais legível que pizza
+                    # quando há muitas categorias com valores pequenos).
+
+                    # Garantir que os dados de gráfico de barras estejam atualizados
+                    # para o mês selecionado (independente de o usuário ter passado
+                    # pela tela de seleção antes de exportar)
+                    self.preparar_grafico_data_selecionada(df_filtrado)
+                    if not hasattr(self, 'data_selecionada') or not self.data_selecionada:
+                        self.data_selecionada = self.mes_ano_selecionado
+
+                    # Iniciar os gráficos em página nova, com tamanho reduzido o
+                    # suficiente para os dois caberem juntos numa única página
+                    story.append(PageBreak())
+
+                    # --- Gráfico 1: barras do mês selecionado ---
+                    # (mostrar_titulo=False porque o valor total do mês já está no
+                    # título da seção, logo abaixo — evita repetir a mesma informação)
+                    fig_mes, ax_mes = plt.subplots(figsize=(7, 4))
+                    self.criar_grafico_barras(fig_mes, ax_mes, mostrar_titulo=False)
+
+                    img_buffer_mes = io.BytesIO()
+                    fig_mes.savefig(img_buffer_mes, format='png', dpi=100, bbox_inches='tight')
+                    img_buffer_mes.seek(0)
+                    plt.close(fig_mes)
+
+                    titulo_grafico_mes = (
+                        f"Gráfico - Categorias do Mês {mes_ano_str_detalhe} "
+                        f"— Total: {formatar_moeda_br(total_geral_mes)}"
                     )
-                    
-                    # Criar gráfico de pizza
-                    if not df_grafico.empty:
-                        plt.pie(
-                            df_grafico['VALOR'], 
-                            labels=df_grafico['categoria_nome'], 
-                            autopct='%1.1f%%',
-                            startangle=90,
-                            colors=plt.cm.tab10.colors,
-                            wedgeprops={'edgecolor': 'w', 'linewidth': 1}
-                        )
-                        
-                        plt.title(f'Distribuição por Categoria de Despesa - {mes_ano_str_detalhe}', fontsize=12, pad=20)
-                        plt.tight_layout()
-                        
-                        # Salvar o gráfico em um buffer
-                        img_buffer = io.BytesIO()
-                        plt.savefig(img_buffer, format='png', dpi=100)
-                        img_buffer.seek(0)
-                        plt.close()
-                        
-                        # Adicionar o gráfico ao PDF
-                        img = Image(img_buffer, width=6*inch, height=4*inch)
-                        story.append(img)
-                    else:
-                        story.append(Paragraph("Não há dados suficientes para gerar o gráfico.", normal_style))
+
+                    # --- Gráfico 2: barras do total acumulado no período (todos os meses) ---
+                    mes_inicio_periodo = self.df_por_data['mes_ano_vencto'].min().strftime('%m/%Y')
+                    mes_fim_periodo = self.df_por_data['mes_ano_vencto'].max().strftime('%m/%Y')
+                    total_periodo = self.df_por_data['total'].sum()
+
+                    fig_total, ax_total = plt.subplots(figsize=(7, 4))
+                    self.criar_grafico_barras_totais(fig_total, ax_total, mostrar_titulo=False)
+
+                    img_buffer_total = io.BytesIO()
+                    fig_total.savefig(img_buffer_total, format='png', dpi=100, bbox_inches='tight')
+                    img_buffer_total.seek(0)
+                    plt.close(fig_total)
+
+                    titulo_grafico_total = (
+                        f"Gráfico - Total Acumulado ({mes_inicio_periodo} a {mes_fim_periodo}) "
+                        f"— Total: {formatar_moeda_br(total_periodo)}"
+                    )
+
+                    # Ambos os gráficos num único bloco, para o ReportLab tentar
+                    # manter os dois juntos na mesma página
+                    story.append(KeepTogether([
+                        Paragraph(titulo_grafico_mes, heading2_style),
+                        Spacer(1, 0.1*inch),
+                        Image(img_buffer_mes, width=6.3*inch, height=3.6*inch, kind='proportional'),
+                        Spacer(1, 0.25*inch),
+                        Paragraph(titulo_grafico_total, heading2_style),
+                        Spacer(1, 0.1*inch),
+                        Image(img_buffer_total, width=6.3*inch, height=3.6*inch, kind='proportional'),
+                    ]))
                 else:
                     story.append(Paragraph("Não há lançamentos para esta data.", normal_style))
             

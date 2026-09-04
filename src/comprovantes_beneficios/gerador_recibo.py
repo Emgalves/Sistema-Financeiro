@@ -33,11 +33,6 @@ from .dados_candidatos import (
     BENEFICIO_TRANSPORTE, BENEFICIO_CAFE, BENEFICIO_CESTA_BASICA, BENEFICIO_CESTA_NATAL,
 )
 
-try:
-    from src.feriados import calcular_enesimo_dia_util
-except ImportError:
-    from feriados import calcular_enesimo_dia_util
-
 _MESES_PT = {
     1: 'Janeiro', 2: 'Fevereiro', 3: 'Março', 4: 'Abril',
     5: 'Maio', 6: 'Junho', 7: 'Julho', 8: 'Agosto',
@@ -51,6 +46,15 @@ class ErroGeracaoRecibo(RuntimeError):
 
 def _mes_extenso(mes: int) -> str:
     return _MESES_PT[mes]
+
+
+def _mes_ano_anterior(competencia: str) -> tuple[str, int]:
+    """Mês (por extenso) e ano imediatamente anteriores à competência
+    (ex.: competência 2026-01 -> ('Dezembro', 2025))."""
+    ano, mes = (int(p) for p in competencia.split('-'))
+    if mes == 1:
+        return _mes_extenso(12), ano - 1
+    return _mes_extenso(mes - 1), ano
 
 
 def _titulo(tipo: str) -> str:
@@ -71,7 +75,8 @@ def _corpo_html(tipo: str, pagador: DadosPagador, candidato: Candidato) -> str:
     )
 
     if tipo == BENEFICIO_CESTA_BASICA:
-        return f"{abertura} a <b>CESTA BASICA</b> referente ao mês de {mes_extenso} de {ano_comp}."
+        mes_ref, ano_ref = _mes_ano_anterior(candidato.competencia)
+        return f"{abertura} a <b>CESTA BASICA</b> referente ao mês de {mes_ref} de {ano_ref}."
 
     if tipo == BENEFICIO_CESTA_NATAL:
         return (
@@ -104,29 +109,20 @@ def _corpo_html(tipo: str, pagador: DadosPagador, candidato: Candidato) -> str:
 
 def _dia_assinatura(tipo: str, candidato: Candidato) -> str:
     """
-    Cestas: espaço em branco para preenchimento manual do dia na
-    assinatura.
+    Dia em branco para preenchimento manual na assinatura física, para
+    os 4 tipos de benefício (Cestas, Transporte e Café) — pedido
+    explícito do usuário: as assinaturas de Transporte/Café também são
+    recolhidas a posteriori, então não faz sentido imprimir um dia já
+    calculado.
 
-    Transporte/Café: **5º dia útil calculado** é a fonte principal — o
-    recibo precisa refletir a data real em que o beneficiário recebe o
-    salário (5º dia útil), e o campo DT_VENCTO importado da planilha nem
-    sempre reflete essa regra corretamente (ex.: agosto/2026 — 1º é
-    sábado, o que desloca o 5º dia útil para dia 6, mas a planilha
-    importada mostra dia 5 se o financeiro não corrigir manualmente).
-    `data_vencimento` do lançamento só é usado como reserva, se o
-    cálculo do dia útil falhar por algum motivo inesperado.
+    ATENÇÃO: isto contraria o que está documentado na especificação,
+    seção 4.1 — lá o 5º dia útil calculado (via `feriados.py`) é a
+    fonte primária do dia impresso no recibo de Transporte/Café,
+    decisão tomada e revisada explicitamente na v6. Ver aviso enviado
+    junto com esta alteração sobre a necessidade de atualizar a
+    especificação.
     """
-    if tipo in (BENEFICIO_CESTA_BASICA, BENEFICIO_CESTA_NATAL):
-        return '&nbsp;' * 12  # espaço visível para preenchimento manual do dia
-
-    ano_comp, mes_comp = candidato.competencia.split('-')
-    try:
-        dia_calculado = calcular_enesimo_dia_util(int(ano_comp), int(mes_comp))
-        return str(dia_calculado.day)
-    except Exception:
-        if candidato.data_vencimento:
-            return str(candidato.data_vencimento.day)
-        raise
+    return '&nbsp;' * 12  # espaço visível para preenchimento manual do dia
 
 
 # ============================================================================
