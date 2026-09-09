@@ -275,6 +275,8 @@ class SistemaRelatorios:
             
             if relatorio["id"] == "lancamentos_pendentes":
                 self.processar_lancamentos_pendentes()
+            elif relatorio["id"] == "lancamentos_futuros":
+                self.gerar_relatorio_futuros()
             elif relatorio["id"] == "fornecedores":
                 self.processar_fornecedores()
             
@@ -340,6 +342,80 @@ class SistemaRelatorios:
         except Exception as e:
             logger.error(f"💥 ERRO no processamento: {str(e)}", exc_info=True)
             messagebox.showerror("Erro", f"Erro no processamento: {str(e)}")
+
+    def gerar_relatorio_futuros(self):
+        """
+        Gera um PDF SEPARADO, exclusivo com os Lançamentos Futuros do
+        cliente/arquivo selecionado na tela própria "Relatório de
+        Lançamentos Futuros" (setup_opcoes_lancamentos_futuros).
+
+        Reaproveita validar_configuracoes_despesas() e
+        coletar_configuracoes_completas() - são genéricos o bastante
+        (usam hasattr para cada campo) para funcionar também com os
+        atributos preenchidos por essa tela mais enxuta, sem precisar
+        duplicar essa validação/coleta.
+        """
+        try:
+            logger.info("🎯 GERANDO RELATÓRIO SEPARADO DE LANÇAMENTOS FUTUROS")
+
+            # 1. Validar configurações (mesma validação do relatório principal)
+            if not self.validar_configuracoes_despesas():
+                logger.warning("❌ Validação de configurações falhou")
+                return
+
+            # 2. Coletar configurações (arquivo, data, incluir_excluidos, etc.)
+            configuracoes = self.coletar_configuracoes_completas()
+
+            if not configuracoes.get('arquivo'):
+                logger.error("❌ ERRO: Arquivo não encontrado nas configurações!")
+                messagebox.showerror(
+                    "Erro",
+                    "Arquivo não encontrado. Verifique se um cliente foi selecionado."
+                )
+                return
+
+            logger.info(f"✅ Arquivo confirmado: {os.path.basename(configuracoes['arquivo'])}")
+
+            # 3. Progresso
+            progress_window = self.criar_progress_window()
+            self.atualizar_progresso_seguro(progress_window, "Processando lançamentos futuros...", 30)
+
+            try:
+                # 4. DELEGAÇÃO PARA O SERVIÇO
+                caminho_final, nome_arquivo, dados_completos = self.despesas_service.processar_e_gerar_pdf_lancamentos_futuros(
+                    configuracoes,
+                    configuracoes['arquivo']
+                )
+                self.atualizar_progresso_seguro(progress_window, "Concluído!", 100)
+            finally:
+                if progress_window:
+                    progress_window.destroy()
+
+            # 5. Informar resultado ao usuário
+            df_futuro = dados_completos.get('df_futuro')
+            qtd_futuros = 0 if df_futuro is None else len(df_futuro)
+
+            if qtd_futuros == 0:
+                messagebox.showinfo(
+                    "Nenhum lançamento futuro",
+                    f"O PDF foi gerado ({nome_arquivo}), mas não há lançamentos futuros "
+                    f"para {dados_completos.get('nome_cliente', 'este cliente')} na data selecionada."
+                )
+            else:
+                resposta = messagebox.askyesno(
+                    "Relatório de Lançamentos Futuros Gerado!",
+                    f"✅ PDF gerado com sucesso!\n\n"
+                    f"Cliente: {dados_completos.get('nome_cliente', 'N/A')}\n"
+                    f"Arquivo: {nome_arquivo}\n"
+                    f"Lançamentos futuros encontrados: {qtd_futuros}\n\n"
+                    f"Deseja abrir o arquivo agora?"
+                )
+                if resposta:
+                    self.abrir_arquivo(caminho_final)
+
+        except Exception as e:
+            logger.error(f"💥 ERRO ao gerar relatório de lançamentos futuros: {str(e)}", exc_info=True)
+            messagebox.showerror("Erro", f"Erro ao gerar relatório de lançamentos futuros: {str(e)}")
 
     def _executar_com_preview_limpo(self, configuracoes):
         """Execução com preview DIRETO - pula interface e abre PDF temporário"""
@@ -615,6 +691,14 @@ class SistemaRelatorios:
                 "disponivel": True
             },
             {
+                "id": "lancamentos_futuros",
+                "nome": "Relatório de Lançamentos Futuros",
+                "descricao": "PDF exclusivo com os lançamentos futuros (próximos 30/60/+60 dias) de um cliente",
+                "modulo": "relatorio_despesas_aprimorado",
+                "classe": "RelatorioHandler",
+                "disponivel": True
+            },
+            {
                 "id": "contratos",
                 "nome": "Relatório de Contratos e Medições",
                 "descricao": "Relatório de contratos por medição e status",
@@ -856,6 +940,8 @@ class SistemaRelatorios:
         # Configurar opções específicas dentro do scrollable_frame
         if relatorio["id"] == "despesas":
             self.setup_opcoes_despesas(scrollable_frame)
+        elif relatorio["id"] == "lancamentos_futuros":
+            self.setup_opcoes_lancamentos_futuros(scrollable_frame)
         elif relatorio["id"] == "contratos":
             self.setup_opcoes_contratos(scrollable_frame)
         elif relatorio["id"] == "categoria":
@@ -1226,8 +1312,17 @@ class SistemaRelatorios:
             
             # Verificar se está no período correto
             data_automatica = self.calcular_data_rel_automatica()
-            
-            if data_selecionada.date() == data_automatica.date():
+
+            # Normalizar ambos os lados para 'date' puro antes de comparar.
+            # self.data_entry.get_date() (tkcalendar) devolve um
+            # datetime.date, que NÃO tem o método .date() - chamar
+            # data_selecionada.date() direto quebrava com
+            # "'datetime.date' object has no attribute 'date'" sempre que
+            # a data vinha do calendário em vez de uma string.
+            data_selecionada_norm = data_selecionada.date() if isinstance(data_selecionada, datetime) else data_selecionada
+            data_automatica_norm = data_automatica.date() if isinstance(data_automatica, datetime) else data_automatica
+
+            if data_selecionada_norm == data_automatica_norm:
                 return True, f"✅ Data correta para o período atual"
             else:
                 return True, f"⚠️ Data válida, mas não é a sugerida para hoje.\nSugerida: {data_automatica.strftime('%d/%m/%Y')}"
@@ -1435,22 +1530,15 @@ class SistemaRelatorios:
         # === OPÇÕES DE PROCESSAMENTO ===
         frame_opcoes = ttk.LabelFrame(parent_frame, text="Opções de Processamento")
         frame_opcoes.pack(fill='x', padx=10, pady=10)
-        
-        # Checkbox para incluir lançamentos futuros
-        # self.incluir_futuros = tk.BooleanVar(master=self.root, value=False)
-        # ttk.Checkbutton(
-        #     frame_opcoes,
-        #     text="Incluir lançamentos futuros",
-        #     variable=self.incluir_futuros
-        # ).pack(anchor='w', padx=15, pady=5)
-        
-        # Checkbox para incluir lançamentos excluídos
-        # self.incluir_excluidos = tk.BooleanVar(master=self.root, value=False)
-        # ttk.Checkbutton(
-        #     frame_opcoes,
-        #     text="Incluir lançamentos excluídos no relatório",
-        #     variable=self.incluir_excluidos
-        # ).pack(anchor='w', padx=15, pady=5)
+
+        # Lançamentos futuros: não é mais uma opção deste relatório -
+        # virou o "Relatório de Lançamentos Futuros", separado, na lista
+        # principal de Tipos de Relatórios (sempre disponível sob
+        # demanda, sem depender de o usuário lembrar de marcar/desmarcar
+        # nada aqui).
+        #
+        # Lançamentos excluídos: reativar um dia exigiria também
+        # decidir o texto do resumo (ver gerar_resumo_configuracoes).
 
         # Checkbox para incluir notas no relatório
         self.incluir_notas = tk.BooleanVar(master=self.root, value=False)
@@ -1543,24 +1631,17 @@ class SistemaRelatorios:
             value="direto"
         ).pack(side='left', padx=20, pady=5)
         
-        # === FORMATO DE SAÍDA ===
-        frame_formato = ttk.LabelFrame(parent_frame, text="Formato de Saída")
-        frame_formato.pack(fill='x', padx=10, pady=10)
-        
+        # Formato de saída: fixo em PDF. A ideia original era oferecer
+        # também Excel (para o cliente usar os dados em controle
+        # interno), mas não foi adiante - e o radiobutton ficou na tela
+        # sem nunca ter sido implementado (a geração sempre produzia PDF,
+        # mesmo com "Excel" selecionado). Removido da tela; a variável
+        # continua existindo, só que fixa, porque telas de
+        # resumo/confirmação (mostrar_resumo_configuracoes,
+        # gerar_resumo_configuracoes, resetar configurações) já checam
+        # por ela via hasattr - se um dia isso for retomado de verdade,
+        # é só trazer o Radiobutton de volta aqui.
         self.formato_saida = tk.StringVar(master=self.root, value="pdf")
-        ttk.Radiobutton(
-            frame_formato,
-            text="PDF",
-            variable=self.formato_saida,
-            value="pdf"
-        ).pack(side='left', padx=20, pady=5)
-        
-        ttk.Radiobutton(
-            frame_formato,
-            text="Excel",
-            variable=self.formato_saida,
-            value="excel"
-        ).pack(side='left', padx=20, pady=5)
         
         # Inicializar mostrando apenas a opção individual
         self.frame_lote.pack_forget()
@@ -1568,6 +1649,278 @@ class SistemaRelatorios:
         # Configurar variáveis de controle
         self.arquivo_cliente_selecionado = None
         self.cliente_atual = None
+
+    def setup_opcoes_lancamentos_futuros(self, parent_frame):
+        """
+        Tela de opções do Relatório de Lançamentos Futuros - versão
+        enxuta, com só o que esse relatório precisa: data de referência
+        + cliente. Não tem os campos específicos de Despesas (Repasse
+        MO/Caixa, notas, tipo de geração em lote etc.) - são coisas que
+        não fazem sentido aqui e só confundiriam a escolha.
+
+        Usa os MESMOS nomes de atributo que setup_opcoes_despesas para
+        data (self.usar_data_automatica, self.data_entry) e cliente
+        (self.cliente_combobox, self.status_cliente_label,
+        self.arquivo_cliente_selecionado), porque os métodos auxiliares
+        de data (obter_data_relatorio_final, alternar_modo_data,
+        calcular_data_rel_automatica) e de config
+        (coletar_configuracoes_completas, validar_configuracoes_despesas)
+        são genéricos e já esperam esses nomes - reaproveitá-los evita
+        duplicar essa lógica.
+
+        IMPORTANTE: a seleção de cliente aqui usa handlers PRÓPRIOS
+        (on_cliente_selecionado_futuros / selecionar_arquivo_manual_futuros
+        / limpar_selecao_cliente_futuros), em vez dos handlers da tela de
+        Despesas - aqueles também atualizam os painéis de saldo de Mão de
+        Obra/Caixa (self.frame_repasse_mo/self.frame_repasse_caixa), que
+        não existem nesta tela. Se o usuário já tiver passado pela tela
+        de Despesas antes nesta mesma sessão, esses atributos ficam
+        "presos" na instância (apontando para widgets já destruídos) -
+        usar os handlers da despesas aqui tentaria mexer neles e
+        provocaria erro. Os handlers próprios evitam essa armadilha.
+        """
+        # Aviso de contexto: deixa claro que isso é um PDF à parte
+        ttk.Label(
+            parent_frame,
+            text=(
+                "Gera um PDF próprio (separado do Relatório de Despesas) com os "
+                "lançamentos futuros - próximos 30 dias, 31 a 60 dias e após 60 dias - "
+                "do cliente selecionado."
+            ),
+            font=('Arial', 9),
+            foreground='blue',
+            wraplength=550,
+            justify='left'
+        ).pack(anchor='w', padx=10, pady=(0, 10))
+
+        # === DATA DE REFERÊNCIA (mesmo padrão da tela de Despesas) ===
+        frame_data = ttk.LabelFrame(parent_frame, text="Data de Referência")
+        frame_data.pack(fill='x', padx=10, pady=10)
+
+        data_automatica = self.calcular_data_rel_automatica()
+
+        info_frame = ttk.Frame(frame_data)
+        info_frame.pack(fill='x', padx=10, pady=5)
+
+        explicacao = self.explicar_regra_data()
+        ttk.Label(info_frame, text=explicacao, font=('Arial', 9), foreground='blue').pack(anchor='w')
+
+        selecao_frame = ttk.Frame(frame_data)
+        selecao_frame.pack(fill='x', padx=10, pady=5)
+
+        self.usar_data_automatica = tk.BooleanVar(master=self.root, value=True)
+
+        ttk.Checkbutton(
+            selecao_frame,
+            text="Usar data calculada automaticamente",
+            variable=self.usar_data_automatica,
+            command=self.alternar_modo_data
+        ).pack(anchor='w', pady=2)
+
+        self.frame_data_manual = ttk.Frame(frame_data)
+
+        ttk.Label(self.frame_data_manual, text="Data manual:").pack(side='left', padx=5)
+
+        try:
+            from tkcalendar import DateEntry
+            self.data_entry = DateEntry(
+                self.frame_data_manual,
+                width=12,
+                background='darkblue',
+                foreground='white',
+                borderwidth=2,
+                date_pattern='dd/mm/yyyy',
+                locale='pt_BR'
+            )
+            self.data_entry.pack(side='left', padx=5)
+
+            ttk.Button(
+                self.frame_data_manual,
+                text="Validar Data",
+                command=self.validar_data_manual
+            ).pack(side='left', padx=5)
+
+        except ImportError:
+            ttk.Label(
+                self.frame_data_manual,
+                text="Módulo tkcalendar não encontrado"
+            ).pack(side='left')
+
+        self.data_automatica_calculada = data_automatica
+        if hasattr(self, 'data_entry'):
+            self.data_entry.set_date(data_automatica)
+
+        # === SELEÇÃO DE CLIENTE ===
+        frame_cliente = ttk.LabelFrame(parent_frame, text="Seleção de Cliente")
+        frame_cliente.pack(fill='x', padx=10, pady=10)
+
+        cliente_inner_frame = ttk.Frame(frame_cliente)
+        cliente_inner_frame.pack(fill='x', padx=10, pady=10)
+
+        ttk.Label(cliente_inner_frame, text="Cliente:", font=('Arial', 10, 'bold')).pack(anchor='w', pady=(0, 5))
+
+        self.cliente_combobox = ttk.Combobox(
+            cliente_inner_frame,
+            width=50,
+            state='readonly',
+            font=('Arial', 10)
+        )
+        self.cliente_combobox.pack(fill='x', pady=(0, 10))
+
+        self.preencher_combobox_clientes(self.cliente_combobox)
+
+        self.cliente_combobox.bind('<<ComboboxSelected>>', self.on_cliente_selecionado_futuros)
+
+        self.status_cliente_label = ttk.Label(
+            cliente_inner_frame,
+            text="Selecione um cliente para continuar",
+            font=('Arial', 9),
+            foreground='gray'
+        )
+        self.status_cliente_label.pack(anchor='w', pady=(0, 10))
+
+        botoes_cliente_frame = ttk.Frame(cliente_inner_frame)
+        botoes_cliente_frame.pack(fill='x')
+
+        ttk.Button(
+            botoes_cliente_frame,
+            text="🔄 Atualizar Lista",
+            command=self.atualizar_lista_clientes_despesas,
+            width=15
+        ).pack(side='left', padx=(0, 10))
+
+        ttk.Button(
+            botoes_cliente_frame,
+            text="📁 Selecionar Arquivo Manual",
+            command=self.selecionar_arquivo_manual_futuros,
+            width=25
+        ).pack(side='left')
+
+        # tipo_geracao "individual" fixo (sem radiobuttons - este
+        # relatório só existe no escopo de 1 cliente por vez). Precisa
+        # existir com esse nome porque validar_configuracoes_despesas()
+        # usa esse atributo para checar se um arquivo foi selecionado.
+        self.tipo_geracao = tk.StringVar(master=self.root, value="individual")
+
+        # Variáveis de controle
+        self.arquivo_cliente_selecionado = None
+        self.cliente_atual = None
+
+    def on_cliente_selecionado_futuros(self, event=None):
+        """
+        Trata a seleção de cliente na tela de Lançamentos Futuros.
+
+        É uma cópia enxuta de on_cliente_selecionado (mesma busca de
+        arquivo, mesmo texto de status) que PROPOSITALMENTE não chama
+        atualizar_painel_saldo_mo()/atualizar_painel_saldo_caixa() - esta
+        tela não tem esses painéis (não existe self.frame_repasse_mo
+        aqui), então não faz sentido chamá-los.
+        """
+        try:
+            cliente_selecionado = self.cliente_combobox.get()
+            logger.info(f"[Lançamentos Futuros] Cliente selecionado: {cliente_selecionado}")
+
+            if not cliente_selecionado or cliente_selecionado == 'Todos os Clientes':
+                self.limpar_selecao_cliente_futuros()
+                return
+
+            caminho_arquivo = self.buscar_arquivo_cliente(cliente_selecionado)
+
+            if caminho_arquivo and os.path.exists(caminho_arquivo):
+                self.arquivo_cliente_selecionado = caminho_arquivo
+                self.cliente_atual = cliente_selecionado
+
+                self.status_cliente_label.config(
+                    text=f"✅ Arquivo: {os.path.basename(caminho_arquivo)}",
+                    foreground='green'
+                )
+                logger.info(f"[Lançamentos Futuros] Arquivo encontrado: {caminho_arquivo}")
+
+            else:
+                self.status_cliente_label.config(
+                    text=f"❌ Arquivo não encontrado para {cliente_selecionado}",
+                    foreground='red'
+                )
+
+                resposta = messagebox.askyesno(
+                    "Arquivo não encontrado",
+                    f"Não foi encontrado arquivo para o cliente '{cliente_selecionado}'.\n\n"
+                    f"Deseja selecionar manualmente o arquivo deste cliente?"
+                )
+
+                if resposta:
+                    self.selecionar_arquivo_manual_futuros()
+                else:
+                    self.limpar_selecao_cliente_futuros()
+
+        except Exception as e:
+            logger.error(f"[Lançamentos Futuros] Erro ao selecionar cliente: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao selecionar cliente: {str(e)}")
+
+    def selecionar_arquivo_manual_futuros(self):
+        """
+        Seleção manual de arquivo para a tela de Lançamentos Futuros -
+        cópia enxuta de selecionar_arquivo_manual_despesas, sem as
+        chamadas aos painéis de saldo MO/Caixa (que não existem aqui).
+        """
+        try:
+            arquivo = filedialog.askopenfilename(
+                title="Selecione o arquivo Excel do cliente",
+                filetypes=[("Arquivos Excel", "*.xlsx *.xls")],
+                initialdir=self.obter_pasta_clientes()
+            )
+
+            if not arquivo:
+                return
+
+            if not os.path.exists(arquivo):
+                messagebox.showerror("Erro", "Arquivo não encontrado.")
+                return
+
+            try:
+                from openpyxl import load_workbook
+                wb = load_workbook(arquivo, data_only=True)
+
+                try:
+                    ws_resumo = wb['RESUMO']
+                    nome_cliente_arquivo = ws_resumo['A3'].value
+                    if nome_cliente_arquivo:
+                        self.cliente_atual = nome_cliente_arquivo
+                        self.cliente_combobox.set(nome_cliente_arquivo)
+                except Exception:
+                    self.cliente_atual = os.path.splitext(os.path.basename(arquivo))[0]
+
+                wb.close()
+
+                self.arquivo_cliente_selecionado = arquivo
+
+                self.status_cliente_label.config(
+                    text=f"✅ Arquivo selecionado manualmente: {os.path.basename(arquivo)}",
+                    foreground='blue'
+                )
+
+                logger.info(f"[Lançamentos Futuros] Arquivo selecionado manualmente: {arquivo}")
+
+            except Exception as e:
+                messagebox.showerror(
+                    "Erro",
+                    f"Arquivo inválido ou corrompido.\nErro: {str(e)}"
+                )
+
+        except Exception as e:
+            logger.error(f"[Lançamentos Futuros] Erro na seleção manual: {str(e)}")
+            messagebox.showerror("Erro", f"Erro na seleção manual: {str(e)}")
+
+    def limpar_selecao_cliente_futuros(self):
+        """Limpa a seleção de cliente na tela de Lançamentos Futuros (sem tocar em painéis de saldo MO/Caixa, que não existem aqui)."""
+        self.arquivo_cliente_selecionado = None
+        self.cliente_atual = None
+        self.cliente_combobox.set('Todos os Clientes')
+
+        self.status_cliente_label.config(
+            text="Selecione um cliente para continuar",
+            foreground='gray'
+        )
 
     def on_cliente_selecionado(self, event=None):
         """Trata a seleção de um cliente na combobox"""
@@ -1775,7 +2128,7 @@ class SistemaRelatorios:
         um indicador rápido na tela. O saldo que efetivamente entra no
         PDF é recalculado com a data do relatório no momento de gerar.
         """
-        if not hasattr(self, 'frame_repasse_mo'):
+        if not hasattr(self, 'frame_repasse_mo') or not self.frame_repasse_mo.winfo_exists():
             return
  
         arquivo = getattr(self, 'arquivo_cliente_selecionado', None)
@@ -1948,7 +2301,7 @@ class SistemaRelatorios:
         dependendo se o arquivo do cliente selecionado tem a aba
         REPASSES_CAIXA (cliente real com caixa controlado).
         """
-        if not hasattr(self, 'frame_repasse_caixa'):
+        if not hasattr(self, 'frame_repasse_caixa') or not self.frame_repasse_caixa.winfo_exists():
             return
 
         arquivo = getattr(self, 'arquivo_cliente_selecionado', None)
@@ -3681,8 +4034,12 @@ class SistemaRelatorios:
             
             # Opções
             opcoes = []
-            if config['incluir_futuros']:
-                opcoes.append("Lançamentos futuros")
+            # NOTA: "incluir_futuros" não aparece mais aqui - o checkbox
+            # correspondente já não existe na tela (Lançamentos Futuros
+            # virou relatório separado, sob demanda) e o relatório
+            # principal nunca mais inclui essa seção, então listar isso
+            # no resumo só confundia o usuário (aparecia sempre, sem
+            # nenhuma forma de desmarcar).
             if config['incluir_excluidos']:
                 opcoes.append("Lançamentos excluídos")
             

@@ -868,7 +868,23 @@ class RelatorioHandler:
         if not os.path.exists(self.logo_path):
             self.logo_path = None
             print("Aviso: Logomarca não encontrada na pasta do script.")
-    
+
+        # NOTA: este bloco estava (por engano) dentro de
+        # adicionar_numeracao_pagina, sendo recriado a cada página
+        # renderizada. Não é usado hoje (a classificação de período dos
+        # lançamentos futuros é feita por classificar_periodo, dentro de
+        # processar_lancamentos_futuros), mas foi movido para o __init__
+        # - onde pertence - em vez de removido, para não mudar
+        # comportamento de código que outra parte do sistema possa vir a
+        # depender.
+        self.data_ref = None
+        self.tipos_despesas_futuras = {
+            "Próximos 30 dias": lambda x: x <= self.data_ref + pd.Timedelta(days=30),
+            "31 a 60 dias": lambda x: (x > self.data_ref + pd.Timedelta(days=30)) &
+                                     (x <= self.data_ref + pd.Timedelta(days=60)),
+            "Após 60 dias": lambda x: x > self.data_ref + pd.Timedelta(days=60)
+        }
+
     def adicionar_numeracao_pagina(self, canvas, doc):
         """Adiciona numeração de páginas no formato 1/n no canto inferior direito"""
         canvas.saveState()
@@ -883,14 +899,6 @@ class RelatorioHandler:
         canvas.setFont('Helvetica', 9)
         canvas.drawRightString(x, y, texto)
         canvas.restoreState()
-        
-        self.tipos_despesas_futuras = {
-            "Próximos 30 dias": lambda x: x <= self.data_ref + pd.Timedelta(days=30),
-            "31 a 60 dias": lambda x: (x > self.data_ref + pd.Timedelta(days=30)) & 
-                                     (x <= self.data_ref + pd.Timedelta(days=60)),
-            "Após 60 dias": lambda x: x > self.data_ref + pd.Timedelta(days=60)
-        }
-        self.data_ref = None
 
     def gerar_relatorio_direto(self, arquivo_path, data_relatorio, incluir_futuros=True, output_callback=None):
         """
@@ -1772,10 +1780,22 @@ class RelatorioHandler:
         
         return df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2
         
-    def adicionar_lancamentos_futuros(self, elementos, dados):
-        """Adiciona a seção de lançamentos futuros ao relatório"""
+    def adicionar_lancamentos_futuros(self, elementos, dados, incluir_quebra_pagina=True):
+        """Adiciona a seção de lançamentos futuros ao relatório
+
+        Args:
+            elementos: lista de flowables do ReportLab em construção
+            dados: dicionário completo (precisa ter 'df_futuro')
+            incluir_quebra_pagina: se True (padrão), insere um PageBreak
+                antes da seção - use True quando isso vier depois de
+                outro conteúdo (ex.: dentro de um relatório maior); use
+                False quando esta seção for o próprio início do PDF (ex.:
+                relatório de lançamentos futuros standalone, logo após o
+                cabeçalho), para não gerar uma página em branco no topo.
+        """
         if dados.get('df_futuro') is not None and not dados['df_futuro'].empty:
-            elementos.append(PageBreak())
+            if incluir_quebra_pagina:
+                elementos.append(PageBreak())
             elementos.append(Paragraph("LANÇAMENTOS FUTUROS", self.config.style_heading))
             
             total_geral_futuro = 0
@@ -3376,10 +3396,11 @@ class RelatorioHandler:
             # Adicionar detalhes
             self.adicionar_detalhes(elementos, dados)
 
-            if dados.get('incluir_futuros', True) and dados.get('df_futuro') is not None:
-                self.adicionar_lancamentos_futuros(elementos, dados)
+            # NOTA: Lançamentos Futuros NÃO entra mais aqui. Virou um
+            # relatório PDF separado e sob demanda - ver
+            # gerar_relatorio_lancamentos_futuros_pdf() logo abaixo, e o
+            # botão "Gerar Relatório de Lançamentos Futuros" na interface.
 
-           
             # ⭐ SALVAR NOTAS NO EXCEL SE HOUVER ⭐
             if dados.get('incluir_notas', False) and dados.get('texto_notas', '').strip():
                 self.salvar_notas_no_excel(arquivo_excel, dados)
@@ -3433,7 +3454,106 @@ class RelatorioHandler:
         except Exception as e:
             logger.error(f"Erro na geração do relatório: {str(e)}", exc_info=True)
             raise
- 
+
+    def gerar_relatorio_lancamentos_futuros_pdf(self, dados, caminho_output, arquivo_excel):
+        """
+        Gera um PDF EXCLUSIVO com os Lançamentos Futuros do cliente -
+        relatório separado do relatório principal de despesas, gerado
+        sob demanda (botão próprio na interface).
+
+        'dados' é o mesmo dicionário completo (dados_completos) que
+        gerar_relatorio_pdf espera - precisa ter pelo menos 'df_futuro',
+        'nome_cliente', 'endereco_cliente', 'numero_relatorio' e
+        'data_relatorio'. Normalmente vem de
+        RelatoriosDespesasService.processar_para_preview(config), com
+        config['incluir_futuros'] = True.
+
+        Reaproveita adicionar_cabecalho e adicionar_lancamentos_futuros
+        - o MESMO código que antes ficava embutido em gerar_relatorio_pdf
+        - então a formatação da seção de futuros continua idêntica à de
+        antes, só que agora em um PDF próprio.
+        """
+        try:
+            logger.info("Gerando PDF de Lançamentos Futuros (relatório separado)")
+
+            doc = SimpleDocTemplate(
+                caminho_output,
+                pagesize=landscape(A4),
+                rightMargin=30,
+                leftMargin=30,
+                topMargin=40,
+                bottomMargin=30
+            )
+
+            elementos = []
+
+            # Cabeçalho: mesmo usado no relatório principal (logo,
+            # dados da empresa, nome/endereço do cliente, nº do
+            # relatório e data) - garante que os dois PDFs fiquem
+            # visualmente consistentes.
+            self.adicionar_cabecalho(elementos, dados)
+
+            elementos.append(Paragraph("RELATÓRIO DE LANÇAMENTOS FUTUROS", self.config.style_heading))
+            elementos.append(Spacer(1, 12))
+
+            df_futuro = dados.get('df_futuro')
+            if df_futuro is None or df_futuro.empty:
+                elementos.append(Paragraph(
+                    "Nenhum lançamento futuro encontrado para a data de referência informada.",
+                    self.config.style_normal
+                ))
+            else:
+                # incluir_quebra_pagina=False: aqui a seção é o próprio
+                # início do conteúdo do PDF (logo após o cabeçalho), não
+                # queremos uma página em branco antes dela.
+                self.adicionar_lancamentos_futuros(elementos, dados, incluir_quebra_pagina=False)
+
+            # Numeração de páginas: mesmo esquema de duas passagens usado
+            # em gerar_relatorio_pdf (1ª passagem só para contar o total
+            # de páginas, 2ª gera o PDF final com "página/total").
+            import copy
+            elementos_copia = copy.deepcopy(elementos)
+
+            class ContadorPaginas:
+                def __init__(self):
+                    self.numero_paginas = 0
+
+                def contar(self, canvas, doc):
+                    self.numero_paginas = max(self.numero_paginas, canvas.getPageNumber())
+
+            contador = ContadorPaginas()
+
+            temp_output = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+            temp_path = temp_output.name
+            temp_output.close()
+
+            doc_temp = SimpleDocTemplate(
+                temp_path,
+                pagesize=landscape(A4),
+                rightMargin=30,
+                leftMargin=30,
+                topMargin=40,
+                bottomMargin=30
+            )
+            doc_temp.build(elementos_copia, onFirstPage=contador.contar, onLaterPages=contador.contar)
+
+            self.numero_paginas = contador.numero_paginas
+            logger.info(f"Total de páginas (lançamentos futuros): {self.numero_paginas}")
+
+            try:
+                os.unlink(temp_path)
+            except Exception as e:
+                logger.warning(f"Não foi possível remover arquivo temporário: {str(e)}")
+
+            doc.build(elementos, onFirstPage=self.adicionar_numeracao_pagina,
+                     onLaterPages=self.adicionar_numeracao_pagina)
+
+            logger.info(f"✅ PDF de Lançamentos Futuros gerado: {caminho_output}")
+
+        except Exception as e:
+            logger.error(f"Erro ao gerar relatório de Lançamentos Futuros: {str(e)}", exc_info=True)
+            raise
+
     def gerar_folha_rosto_pdf(self, dados, caminho_output, arquivo_excel):
         """
         Gera SÓ a folha de rosto (cabeçalho + RESUMO DAS DESPESAS + bloco

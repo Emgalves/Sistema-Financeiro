@@ -215,6 +215,67 @@ class RelatoriosDespesasService:
             logger.error(f"💥 ERRO ao gerar PDF temporário: {str(e)}", exc_info=True)
             raise
     
+    def processar_e_gerar_pdf_lancamentos_futuros(self, config, arquivo_original):
+        """
+        Gera um PDF EXCLUSIVO com os Lançamentos Futuros do cliente/
+        arquivo selecionado - relatório separado do relatório principal
+        de despesas, disparado sob demanda (botão próprio na interface).
+
+        'config' é o mesmo dicionário coletado pela interface para o
+        relatório principal (precisa ter pelo menos 'arquivo', 'data' e
+        'incluir_excluidos'). Internamente reaproveita
+        processar_para_preview() - o mesmo método usado pelo relatório
+        principal - para montar cabeçalho, número do relatório e dados
+        do cliente, garantindo que os dois PDFs fiquem sempre
+        consistentes entre si (mesmo número de relatório, mesma data,
+        mesmo cliente).
+
+        Sempre calcula os lançamentos futuros aqui, independentemente do
+        valor de config['incluir_futuros'] recebido - esse relatório é
+        justamente sobre lançamentos futuros, então não faz sentido ele
+        vir vazio por causa de uma flag pensada para o relatório
+        principal.
+
+        Retorna (caminho_final, nome_arquivo, dados_completos) - o
+        dados_completos é devolvido para a interface poder informar ao
+        usuário, por exemplo, quantos lançamentos futuros foram
+        encontrados (len(dados_completos['df_futuro'])).
+        """
+        try:
+            print("🔧 PROCESSANDO RELATÓRIO SEPARADO DE LANÇAMENTOS FUTUROS")
+
+            config_futuros = dict(config)
+            config_futuros['incluir_futuros'] = True
+
+            dados_completos = self.processar_para_preview(config_futuros)
+
+            data_formatada = dados_completos['data_relatorio'].strftime('%d-%m-%Y')
+            nome_cliente = dados_completos['nome_cliente']
+            nome_arquivo = f"REL FUTUROS - {nome_cliente} - {data_formatada}.pdf"
+
+            if dados_completos.get('incluir_excluidos'):
+                nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
+
+            pasta_cliente = os.path.dirname(arquivo_original)
+            caminho_final = os.path.join(pasta_cliente, nome_arquivo)
+
+            self.handler.gerar_relatorio_lancamentos_futuros_pdf(
+                dados_completos,
+                caminho_final,
+                arquivo_original
+            )
+
+            qtd_futuros = 0 if dados_completos.get('df_futuro') is None else len(dados_completos['df_futuro'])
+            print(f"✅ PDF de Lançamentos Futuros gerado: {nome_arquivo} ({qtd_futuros} lançamentos)")
+
+            return caminho_final, nome_arquivo, dados_completos
+
+        except Exception as e:
+            print(f"💥 ERRO ao gerar relatório de lançamentos futuros: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            raise
+
     def gerar_pdf_definitivo(self, dados_completos, arquivo_original):
         """Gera PDF definitivo na pasta correta"""
         # Determinar nome e caminho final
