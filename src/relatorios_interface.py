@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
+from tkinter import ttk, messagebox, filedialog, scrolledtext
 import os
 import sys
 import importlib
@@ -14,6 +14,14 @@ from pathlib import Path
 from relatorio_despesas_service import RelatoriosDespesasService
 from config_relatorio_quinzenal import configurar_relatorio_quinzenal
 from src.config.config import PASTA_CLIENTES
+
+# Reaproveita a MESMA lógica do script de linha de comando
+# (reemitir_relatorios.py) usado fora do sistema - descoberta de datas
+# de relatório já emitidas e recuperação de notas do histórico. Import
+# no topo porque é leve (só pandas/openpyxl/pathlib, sem
+# tkinter/xlwings) e assim a tela e o script de linha de comando nunca
+# divergem: qualquer ajuste nessas duas funções vale para os dois.
+from reemitir_relatorios import descobrir_datas_relatorio, buscar_nota_historico
 
 # from correcoes_emergenciais import aplicar_todas_correcoes 
 # aplicar_todas_correcoes()
@@ -291,6 +299,9 @@ class SistemaRelatorios:
 
             elif relatorio["id"] == "por_fornecedor_det":
                 self.processar_por_fornecedor_det()
+
+            elif relatorio["id"] == "reemissao_relatorios":
+                self.processar_reemissao_relatorios()
 
             else:
                 self.processar_outros_relatorios(relatorio)
@@ -788,6 +799,20 @@ class SistemaRelatorios:
                 "modulo": "relatorio_por_fornecedor_detalhado",
                 "classe": "RelatorioPorFornecedorDetalhado",
                 "disponivel": True
+            },
+            {
+                "id": "reemissao_relatorios",
+                "nome": "Reemissão de Relatórios Antigos",
+                "descricao": (
+                    "Reemite, por intervalo de datas, a folha de rosto ou o relatório "
+                    "completo de relatórios já emitidos de um cliente, usando os dados "
+                    "atuais da planilha (útil após corrigir cadastro ou lançamentos). "
+                    "Nunca sobrescreve os PDFs originais - salva numa pasta separada "
+                    "para conferência."
+                ),
+                "modulo": "reemitir_relatorios",
+                "classe": None,
+                "disponivel": True
             }
         ]
         
@@ -962,6 +987,8 @@ class SistemaRelatorios:
             self.setup_opcoes_consistencia_dados(scrollable_frame)
         elif relatorio["id"] == "por_fornecedor_det":
             self.setup_opcoes_por_fornecedor_det(scrollable_frame)
+        elif relatorio["id"] == "reemissao_relatorios":
+            self.setup_opcoes_reemissao_relatorios(scrollable_frame)
         else:
             ttk.Label(
                 scrollable_frame,
@@ -987,6 +1014,14 @@ class SistemaRelatorios:
                 style='Accentuated.TButton'
             ).pack(side='right', padx=5)
  
+        elif relatorio["id"] == "reemissao_relatorios":
+            ttk.Button(
+                btn_frame,
+                text="🔁 Executar Reemissão",
+                command=lambda: self.gerar_relatorio(relatorio),
+                style='Accentuated.TButton'
+            ).pack(side='right', padx=5)
+
         else:
             ttk.Button(
                 btn_frame,
@@ -1921,6 +1956,496 @@ class SistemaRelatorios:
             text="Selecione um cliente para continuar",
             foreground='gray'
         )
+
+    # ========================================================
+    # REEMISSÃO DE RELATÓRIOS ANTIGOS
+    # ------------------------------------------------------------
+    # Tela que expõe, dentro do sistema, o mesmo script que antes só
+    # rodava fora dele (reemitir_relatorios.py, linha de comando). A
+    # descoberta das datas e a recuperação de notas do histórico vêm
+    # de lá (import no topo do arquivo) - a tela só monta a
+    # configuração e chama o handler já usado pelo relatório principal
+    # (self.despesas_service), exatamente como o script faz.
+    #
+    # Segue o mesmo padrão de "seleção de cliente própria" da tela de
+    # Lançamentos Futuros (mesmos nomes de atributo - cliente_combobox,
+    # status_cliente_label, arquivo_cliente_selecionado - com handlers
+    # próprios, para não colidir com os painéis de saldo MO/Caixa da
+    # tela de Despesas, que não existem aqui).
+    # ========================================================
+
+    def setup_opcoes_reemissao_relatorios(self, parent_frame):
+        """Tela de opções da Reemissão de Relatórios Antigos."""
+        ttk.Label(
+            parent_frame,
+            text=(
+                "Reemite, por intervalo de datas, relatórios já emitidos de um "
+                "cliente, usando os dados atuais da planilha - útil depois de "
+                "corrigir cadastro (endereço/nome) ou um lançamento antigo. "
+                "NUNCA sobrescreve os PDFs originais: salva numa pasta separada "
+                "para você conferir antes de substituir."
+            ),
+            font=('Arial', 9),
+            foreground='blue',
+            wraplength=550,
+            justify='left'
+        ).pack(anchor='w', padx=10, pady=(0, 10))
+
+        # === MODO ===
+        frame_modo = ttk.LabelFrame(parent_frame, text="O que reemitir")
+        frame_modo.pack(fill='x', padx=10, pady=10)
+
+        self.modo_reemissao = tk.StringVar(master=self.root, value='rosto')
+
+        ttk.Radiobutton(
+            frame_modo,
+            text="Folha de rosto (1 página - cabeçalho e resumo. Rápido e seguro: não toca nas páginas de detalhe)",
+            variable=self.modo_reemissao,
+            value='rosto'
+        ).pack(anchor='w', padx=10, pady=(8, 2))
+
+        ttk.Radiobutton(
+            frame_modo,
+            text="Relatório completo (regenera tudo, inclusive páginas de detalhe, a partir da planilha atual)",
+            variable=self.modo_reemissao,
+            value='completo'
+        ).pack(anchor='w', padx=10, pady=(2, 4))
+
+        ttk.Label(
+            frame_modo,
+            text=(
+                "⚠️ No modo completo, se você corrigiu um lançamento de uma data, o "
+                "acumulado de TODOS os relatórios emitidos depois dela também mudou. "
+                "Para manter os PDFs coerentes entre si, inclua no intervalo desde a "
+                "data corrigida até a mais recente - não só a data pontual."
+            ),
+            font=('Arial', 8),
+            foreground='#8a6d00',
+            wraplength=520,
+            justify='left'
+        ).pack(anchor='w', padx=10, pady=(0, 8))
+
+        # === SELEÇÃO DE CLIENTE (mesmo padrão da tela de Lançamentos Futuros) ===
+        frame_cliente = ttk.LabelFrame(parent_frame, text="Seleção de Cliente")
+        frame_cliente.pack(fill='x', padx=10, pady=10)
+
+        cliente_inner_frame = ttk.Frame(frame_cliente)
+        cliente_inner_frame.pack(fill='x', padx=10, pady=10)
+
+        ttk.Label(cliente_inner_frame, text="Cliente:", font=('Arial', 10, 'bold')).pack(anchor='w', pady=(0, 5))
+
+        self.cliente_combobox = ttk.Combobox(
+            cliente_inner_frame,
+            width=50,
+            state='readonly',
+            font=('Arial', 10)
+        )
+        self.cliente_combobox.pack(fill='x', pady=(0, 10))
+
+        self.preencher_combobox_clientes(self.cliente_combobox)
+
+        self.cliente_combobox.bind('<<ComboboxSelected>>', self.on_cliente_selecionado_reemissao)
+
+        self.status_cliente_label = ttk.Label(
+            cliente_inner_frame,
+            text="Selecione um cliente para continuar",
+            font=('Arial', 9),
+            foreground='gray'
+        )
+        self.status_cliente_label.pack(anchor='w', pady=(0, 10))
+
+        botoes_cliente_frame = ttk.Frame(cliente_inner_frame)
+        botoes_cliente_frame.pack(fill='x')
+
+        ttk.Button(
+            botoes_cliente_frame,
+            text="🔄 Atualizar Lista",
+            command=self.atualizar_lista_clientes_despesas,
+            width=15
+        ).pack(side='left', padx=(0, 10))
+
+        ttk.Button(
+            botoes_cliente_frame,
+            text="📁 Selecionar Arquivo Manual",
+            command=self.selecionar_arquivo_manual_reemissao,
+            width=25
+        ).pack(side='left')
+
+        self.arquivo_cliente_selecionado = None
+        self.cliente_atual = None
+
+        # === INTERVALO DE DATAS (opcional - vazio reemite tudo) ===
+        frame_intervalo = ttk.LabelFrame(parent_frame, text="Intervalo de datas (opcional)")
+        frame_intervalo.pack(fill='x', padx=10, pady=10)
+
+        ttk.Label(
+            frame_intervalo,
+            text="Deixe desmarcado para reemitir TODO o histórico do cliente.",
+            font=('Arial', 8),
+            foreground='gray'
+        ).pack(anchor='w', padx=10, pady=(8, 5))
+
+        self.usar_desde_reemissao = tk.BooleanVar(master=self.root, value=False)
+        self.usar_ate_reemissao = tk.BooleanVar(master=self.root, value=False)
+
+        linha_desde = ttk.Frame(frame_intervalo)
+        linha_desde.pack(fill='x', padx=10, pady=3)
+        ttk.Checkbutton(
+            linha_desde, text="Desde:", variable=self.usar_desde_reemissao,
+            command=self.alternar_intervalo_reemissao
+        ).pack(side='left')
+        self.desde_entry_reemissao = self._criar_date_entry_reemissao(linha_desde)
+
+        linha_ate = ttk.Frame(frame_intervalo)
+        linha_ate.pack(fill='x', padx=10, pady=(3, 10))
+        ttk.Checkbutton(
+            linha_ate, text="Até:  ", variable=self.usar_ate_reemissao,
+            command=self.alternar_intervalo_reemissao
+        ).pack(side='left')
+        self.ate_entry_reemissao = self._criar_date_entry_reemissao(linha_ate)
+
+        self.alternar_intervalo_reemissao()
+
+        # === OUTRAS OPÇÕES ===
+        frame_opcoes = ttk.LabelFrame(parent_frame, text="Outras opções")
+        frame_opcoes.pack(fill='x', padx=10, pady=10)
+
+        self.incluir_excluidos_reemissao = tk.BooleanVar(master=self.root, value=False)
+        ttk.Checkbutton(
+            frame_opcoes,
+            text="Incluir lançamentos marcados como EXCLUÍDO",
+            variable=self.incluir_excluidos_reemissao
+        ).pack(anchor='w', padx=10, pady=(8, 4))
+
+        self.sem_notas_reemissao = tk.BooleanVar(master=self.root, value=False)
+        ttk.Checkbutton(
+            frame_opcoes,
+            text="Não incluir notas (só vale para o modo completo - por padrão, o "
+                 "sistema tenta recuperar sozinho a nota salva na época)",
+            variable=self.sem_notas_reemissao
+        ).pack(anchor='w', padx=10, pady=(4, 10))
+
+        # === PASTA DE SAÍDA ===
+        frame_saida = ttk.LabelFrame(parent_frame, text="Pasta de saída")
+        frame_saida.pack(fill='x', padx=10, pady=10)
+
+        ttk.Label(
+            frame_saida,
+            text="Em branco = pasta padrão (REEMISSAO_FOLHA_ROSTO ou "
+                 "REEMISSAO_RELATORIO_COMPLETO, dentro da pasta do cliente).",
+            font=('Arial', 8),
+            foreground='gray',
+            wraplength=520,
+            justify='left'
+        ).pack(anchor='w', padx=10, pady=(8, 5))
+
+        linha_saida = ttk.Frame(frame_saida)
+        linha_saida.pack(fill='x', padx=10, pady=(0, 10))
+
+        self.pasta_saida_reemissao_var = tk.StringVar(master=self.root, value='')
+        ttk.Entry(
+            linha_saida, textvariable=self.pasta_saida_reemissao_var, width=45
+        ).pack(side='left', fill='x', expand=True, padx=(0, 10))
+
+        ttk.Button(
+            linha_saida, text="Escolher pasta...",
+            command=self.selecionar_pasta_saida_reemissao
+        ).pack(side='left')
+
+    def _criar_date_entry_reemissao(self, parent):
+        """Cria um DateEntry (com fallback se tkcalendar não estiver instalado), devolve o widget."""
+        try:
+            from tkcalendar import DateEntry
+            entry = DateEntry(
+                parent, width=12, background='darkblue', foreground='white',
+                borderwidth=2, date_pattern='dd/mm/yyyy', locale='pt_BR', state='disabled'
+            )
+        except ImportError:
+            entry = ttk.Entry(parent, width=14, state='disabled')
+        entry.pack(side='left', padx=5)
+        return entry
+
+    def alternar_intervalo_reemissao(self):
+        """Habilita/desabilita os campos de data conforme os checkboxes 'Desde'/'Até'."""
+        estado_desde = 'normal' if self.usar_desde_reemissao.get() else 'disabled'
+        estado_ate = 'normal' if self.usar_ate_reemissao.get() else 'disabled'
+        try:
+            self.desde_entry_reemissao.config(state=estado_desde)
+        except Exception:
+            pass
+        try:
+            self.ate_entry_reemissao.config(state=estado_ate)
+        except Exception:
+            pass
+
+    def selecionar_pasta_saida_reemissao(self):
+        pasta = filedialog.askdirectory(title="Selecione a pasta de saída")
+        if pasta:
+            self.pasta_saida_reemissao_var.set(pasta)
+
+    def on_cliente_selecionado_reemissao(self, event=None):
+        """Cópia enxuta de on_cliente_selecionado_futuros, para a tela de Reemissão."""
+        try:
+            cliente_selecionado = self.cliente_combobox.get()
+            logger.info(f"[Reemissão] Cliente selecionado: {cliente_selecionado}")
+
+            if not cliente_selecionado or cliente_selecionado == 'Todos os Clientes':
+                self.limpar_selecao_cliente_reemissao()
+                return
+
+            caminho_arquivo = self.buscar_arquivo_cliente(cliente_selecionado)
+
+            if caminho_arquivo and os.path.exists(caminho_arquivo):
+                self.arquivo_cliente_selecionado = caminho_arquivo
+                self.cliente_atual = cliente_selecionado
+
+                self.status_cliente_label.config(
+                    text=f"✅ Arquivo: {os.path.basename(caminho_arquivo)}",
+                    foreground='green'
+                )
+                logger.info(f"[Reemissão] Arquivo encontrado: {caminho_arquivo}")
+
+            else:
+                self.status_cliente_label.config(
+                    text=f"❌ Arquivo não encontrado para {cliente_selecionado}",
+                    foreground='red'
+                )
+
+                resposta = messagebox.askyesno(
+                    "Arquivo não encontrado",
+                    f"Não foi encontrado arquivo para o cliente '{cliente_selecionado}'.\n\n"
+                    f"Deseja selecionar manualmente o arquivo deste cliente?"
+                )
+
+                if resposta:
+                    self.selecionar_arquivo_manual_reemissao()
+                else:
+                    self.limpar_selecao_cliente_reemissao()
+
+        except Exception as e:
+            logger.error(f"[Reemissão] Erro ao selecionar cliente: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao selecionar cliente: {str(e)}")
+
+    def selecionar_arquivo_manual_reemissao(self):
+        """Cópia enxuta de selecionar_arquivo_manual_futuros, para a tela de Reemissão."""
+        try:
+            arquivo = filedialog.askopenfilename(
+                title="Selecione o arquivo Excel do cliente",
+                filetypes=[("Arquivos Excel", "*.xlsx *.xls")],
+                initialdir=self.obter_pasta_clientes()
+            )
+
+            if not arquivo:
+                return
+
+            if not os.path.exists(arquivo):
+                messagebox.showerror("Erro", "Arquivo não encontrado.")
+                return
+
+            try:
+                from openpyxl import load_workbook
+                wb = load_workbook(arquivo, data_only=True)
+
+                try:
+                    ws_resumo = wb['RESUMO']
+                    nome_cliente_arquivo = ws_resumo['A3'].value
+                    if nome_cliente_arquivo:
+                        self.cliente_atual = nome_cliente_arquivo
+                        self.cliente_combobox.set(nome_cliente_arquivo)
+                except Exception:
+                    self.cliente_atual = os.path.splitext(os.path.basename(arquivo))[0]
+
+                wb.close()
+
+                self.arquivo_cliente_selecionado = arquivo
+
+                self.status_cliente_label.config(
+                    text=f"✅ Arquivo selecionado manualmente: {os.path.basename(arquivo)}",
+                    foreground='blue'
+                )
+
+                logger.info(f"[Reemissão] Arquivo selecionado manualmente: {arquivo}")
+
+            except Exception as e:
+                messagebox.showerror(
+                    "Erro",
+                    f"Arquivo inválido ou corrompido.\nErro: {str(e)}"
+                )
+
+        except Exception as e:
+            logger.error(f"[Reemissão] Erro na seleção manual: {str(e)}")
+            messagebox.showerror("Erro", f"Erro na seleção manual: {str(e)}")
+
+    def limpar_selecao_cliente_reemissao(self):
+        """Limpa a seleção de cliente na tela de Reemissão."""
+        self.arquivo_cliente_selecionado = None
+        self.cliente_atual = None
+        self.cliente_combobox.set('Todos os Clientes')
+
+        self.status_cliente_label.config(
+            text="Selecione um cliente para continuar",
+            foreground='gray'
+        )
+
+    def processar_reemissao_relatorios(self):
+        """
+        Executa a reemissão em lote, chamando exatamente o mesmo
+        pipeline que a tela de Despesas usa
+        (self.despesas_service.processar_para_preview) e as mesmas
+        funções auxiliares do script de linha de comando
+        reemitir_relatorios.py (descobrir_datas_relatorio,
+        buscar_nota_historico) - importadas no topo deste arquivo.
+        """
+        try:
+            if not self.arquivo_cliente_selecionado or not os.path.exists(self.arquivo_cliente_selecionado):
+                messagebox.showerror("Erro", "Selecione um cliente com arquivo válido antes.")
+                return
+
+            arquivo_excel = self.arquivo_cliente_selecionado
+            nome_cliente = self.cliente_atual or os.path.splitext(os.path.basename(arquivo_excel))[0]
+            modo = self.modo_reemissao.get()
+            incluir_excluidos = self.incluir_excluidos_reemissao.get()
+            sem_notas = self.sem_notas_reemissao.get()
+
+            desde = None
+            if self.usar_desde_reemissao.get():
+                try:
+                    desde = self.desde_entry_reemissao.get_date()
+                except Exception:
+                    messagebox.showerror("Erro", "Data 'Desde' inválida.")
+                    return
+
+            ate = None
+            if self.usar_ate_reemissao.get():
+                try:
+                    ate = self.ate_entry_reemissao.get_date()
+                except Exception:
+                    messagebox.showerror("Erro", "Data 'Até' inválida.")
+                    return
+
+            try:
+                datas = descobrir_datas_relatorio(arquivo_excel, desde, ate)
+            except Exception as e:
+                messagebox.showerror("Erro", f"Erro ao ler as datas de relatório do arquivo:\n{str(e)}")
+                return
+
+            if not datas:
+                messagebox.showinfo("Nada a reemitir", "Nenhuma data de relatório encontrada no intervalo informado.")
+                return
+
+            pasta_saida_manual = self.pasta_saida_reemissao_var.get().strip()
+            if pasta_saida_manual:
+                pasta_saida = Path(pasta_saida_manual)
+            else:
+                subpasta = "REEMISSAO_RELATORIO_COMPLETO" if modo == 'completo' else "REEMISSAO_FOLHA_ROSTO"
+                pasta_saida = Path(self.obter_pasta_clientes()) / subpasta / nome_cliente
+
+            modo_label = "RELATÓRIO COMPLETO" if modo == 'completo' else "FOLHA DE ROSTO"
+            confirmado = messagebox.askyesno(
+                "Confirmar Reemissão",
+                f"Cliente: {nome_cliente}\n"
+                f"Modo: {modo_label}\n"
+                f"Datas a reemitir: {len(datas)} "
+                f"(de {datas[0].strftime('%d/%m/%Y')} a {datas[-1].strftime('%d/%m/%Y')})\n"
+                f"Pasta de saída: {pasta_saida}\n\n"
+                f"Os PDFs originais NÃO serão sobrescritos - os novos vão para a "
+                f"pasta acima, para você conferir antes de substituir.\n\n"
+                f"Confirma a reemissão?"
+            )
+            if not confirmado:
+                return
+
+            pasta_saida.mkdir(parents=True, exist_ok=True)
+
+            log_window = tk.Toplevel(self.root)
+            log_window.title("Reemitindo relatórios...")
+            log_window.geometry("640x420")
+            log_window.transient(self.root)
+            log_window.grab_set()
+
+            ttk.Label(
+                log_window,
+                text=f"Reemitindo {len(datas)} relatório(s) - {modo_label}",
+                font=('Arial', 11, 'bold')
+            ).pack(padx=10, pady=(10, 5), anchor='w')
+
+            texto_log = scrolledtext.ScrolledText(log_window, width=90, height=20, font=('Consolas', 9))
+            texto_log.pack(fill='both', expand=True, padx=10, pady=(0, 10))
+            texto_log.config(state='disabled')
+
+            def logar(msg):
+                texto_log.config(state='normal')
+                texto_log.insert('end', msg + "\n")
+                texto_log.see('end')
+                texto_log.config(state='disabled')
+                log_window.update_idletasks()
+
+            sucesso, falha = 0, 0
+
+            for data in datas:
+                sufixo = " (com excluídos)" if incluir_excluidos else ""
+                if modo == 'completo':
+                    nome_arquivo = f"REL - {nome_cliente} - {data.strftime('%d-%m-%Y')}{sufixo}.pdf"
+                else:
+                    nome_arquivo = f"REL ROSTO - {nome_cliente} - {data.strftime('%d-%m-%Y')}{sufixo}.pdf"
+                caminho_pdf = pasta_saida / nome_arquivo
+
+                try:
+                    texto_notas = ''
+                    incluir_notas = False
+                    if modo == 'completo' and not sem_notas:
+                        texto_notas = buscar_nota_historico(arquivo_excel, data)
+                        incluir_notas = bool(texto_notas)
+
+                    config = {
+                        'arquivo': str(arquivo_excel),
+                        'data': data.date(),
+                        'incluir_excluidos': incluir_excluidos,
+                        'incluir_futuros': False,  # irrelevante: removido do PDF principal
+                        'incluir_notas': incluir_notas,
+                        'texto_notas': texto_notas,
+                    }
+                    dados_completos = self.despesas_service.processar_para_preview(config)
+
+                    if modo == 'completo':
+                        self.despesas_service.handler.gerar_relatorio_pdf(
+                            dados_completos, str(caminho_pdf), str(arquivo_excel)
+                        )
+                    else:
+                        self.despesas_service.handler.gerar_folha_rosto_pdf(
+                            dados_completos, str(caminho_pdf), str(arquivo_excel)
+                        )
+
+                    aviso_nota = " [nota recuperada]" if incluir_notas else ""
+                    logar(f"✅ {data.strftime('%d/%m/%Y')} -> {nome_arquivo}{aviso_nota}")
+                    sucesso += 1
+
+                except Exception as e:
+                    logar(f"❌ {data.strftime('%d/%m/%Y')} -> ERRO: {str(e)}")
+                    logger.error(f"[Reemissão] Erro na data {data}: {str(e)}", exc_info=True)
+                    falha += 1
+
+            logar("-" * 60)
+            logar(f"Concluído: {sucesso} PDF(s) gerado(s), {falha} erro(s).")
+            logar(f"Pasta: {pasta_saida}")
+
+            ttk.Button(
+                log_window, text="Fechar", command=log_window.destroy
+            ).pack(pady=(0, 10))
+
+            resposta = messagebox.askyesno(
+                "Reemissão concluída",
+                f"{sucesso} PDF(s) gerado(s), {falha} erro(s).\n\n"
+                f"Nada foi sobrescrito nos arquivos originais - confira o conteúdo "
+                f"e substitua manualmente os PDFs antigos quando estiver de acordo.\n\n"
+                f"Deseja abrir a pasta de saída agora?"
+            )
+            if resposta:
+                self.abrir_arquivo(str(pasta_saida))
+
+        except Exception as e:
+            logger.error(f"💥 ERRO na reemissão de relatórios: {str(e)}", exc_info=True)
+            messagebox.showerror("Erro", f"Erro na reemissão de relatórios: {str(e)}")
 
     def on_cliente_selecionado(self, event=None):
         """Trata a seleção de um cliente na combobox"""
