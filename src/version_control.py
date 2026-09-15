@@ -10,12 +10,12 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 8,
-    "patch": 3,
-    "release_date": "04/09/2026",
+    "patch": 4,
+    "release_date": "15/09/2026",
     "changes": [
-        "Ajustes no Gerador de comprovante de pagamento de Transporte e Café",
-        "Correção no Gerador de comprovante de entrega de Cesta Básica, considerando o mês anterior como referência",
-        "Alteração na saída em PDF do Relatório por Categorias, com blocos subtotalizados e gráficos de barras"
+        "Inclusão de validação de dados de colaboradores ao importar Transporte, Folha RH e Diárias, corrigindo ou incluindo na Base_fornecedores.xlsx",
+        "Permite reemitir folha de rosto ou relatório inteiro, em sua totalidade ou por período do Relatório Quinzenal de Despesas",
+        "Retirada de Lançamentos Futuros e remoção da saída em Excel do Relatório Quinzenal"
     ]
 }
 
