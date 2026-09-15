@@ -268,8 +268,10 @@ from src.taxas_administracao.gestao_contratos import GestaoContratos
 from src.taxas_administracao.gestor_taxas_administracao import GestorTaxasAdministracao 
 from src.parcelamento.gestor_parcelas import GestorParcelas
 from src.fornecedores.regularizar_fornecedor import (
-    regularizar_fornecedor, fundir_fornecedores, detectar_possiveis_duplicatas
+    regularizar_fornecedor, fundir_fornecedores, detectar_possiveis_duplicatas, 
 )
+from src.fornecedores.conciliar_importacao import classificar_colaboradores
+from src.fornecedores.triagem_importacao_rh import TriagemImportacaoRH
 
 # from src.leitura_guias import (
 #     extrair_dados_guia,
@@ -12114,6 +12116,7 @@ class ImportadorRH:
             
             registros_processados = 0
             erros = []
+            registros_lote = []
             
             # Processar linha por linha, mantendo o cliente atual
             cliente_atual = None
@@ -12255,6 +12258,24 @@ class ImportadorRH:
                 self.sistema.dados_para_incluir.append(registro)
                 registros_processados += 1
             
+            from src.fornecedores.conciliar_importacao import classificar_colaboradores
+            from src.fornecedores.triagem_importacao_rh import TriagemImportacaoRH
+
+            candidatos = [{'cpf': r['cnpj_cpf'], 'nome': r['nome'], 'dados_bancarios': r['dados_bancarios']}
+                        for r in registros_lote]
+            ok, pendencias = classificar_colaboradores(candidatos, self.sistema, origem="Folha RH")
+            if pendencias:
+                resultado = TriagemImportacaoRH(self.sistema.root, self.sistema, pendencias).executar()
+                if resultado['cancelado']:
+                    custom_messagebox("info", "Importação Cancelada", "Nenhum dado foi salvo.")
+                    return
+                fora = set(resultado['cpfs_excluidos'])
+                registros_lote = [r for r in registros_lote
+                                if ''.join(filter(str.isdigit, r['cnpj_cpf'])) not in fora]
+                registros_processados = len(registros_lote)
+
+            self.sistema.dados_para_incluir.extend(registros_lote)
+
             # Relatório final
             if registros_processados > 0:
                 # Solicitar etapa da obra antes de finalizar
@@ -12439,6 +12460,7 @@ class ImportadorRH:
         """
         registros_processados = 0
         erros = []
+        registros_lote = []
         
         logger.debug(f"Iniciando processamento de {len(df)} linhas para transporte...")
         
@@ -12524,7 +12546,7 @@ class ImportadorRH:
                 }
                 
                 # Adicionar registro de transporte
-                self.sistema.dados_para_incluir.append(registro_transporte)
+                registros_lote.append(registro_transporte)
                 registros_processados += 1
                 
                 logger.debug(f"✅ Registro de TRANSPORTE criado para {nome_limpo}")
@@ -12551,7 +12573,7 @@ class ImportadorRH:
                         'observacao': f"IMPORTADO CAFÉ (AUTO) - {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
                     })
                     
-                    self.sistema.dados_para_incluir.append(dados_cafe)
+                    registros_lote.append(dados_cafe)
                     logger.debug(f"✅ Registro de CAFÉ criado para {nome_limpo} - {dias_int} dias × R$ {vr_unit_cafe:.2f} = R$ {valor_cafe_total:.2f}")
                     
                 except Exception as e:
@@ -12569,13 +12591,42 @@ class ImportadorRH:
         # Mostrar erros se houver
         if erros:
             logger.debug(f"\n⚠️ Encontrados {len(erros)} erros:")
-            for erro in erros[:10]:  # Mostrar apenas os primeiros 10
+            for erro in erros[:10]:
                 logger.debug(f"  - {erro}")
             if len(erros) > 10:
                 logger.debug(f"  - ... e mais {len(erros) - 10} erros")
-        
-        logger.debug(f"✅ Processamento concluído: {registros_processados} registros de transporte criados")
-        return registros_processados
+
+        # ===== TRIAGEM DE FORNECEDORES (NOVO) =====
+        from src.fornecedores.conciliar_importacao import classificar_colaboradores
+        from src.fornecedores.triagem_importacao_rh import TriagemImportacaoRH
+
+        # Um candidato por CPF único basta — não precisa duplicar TRANSPORTE e CAFÉ,
+        # classificar_colaboradores já consolida repetições internamente, mas aqui
+        # já filtramos para não montar a lista maior à toa.
+        candidatos = [
+            {'cpf': r['cnpj_cpf'], 'nome': r['nome'], 'dados_bancarios': r.get('dados_bancarios', '')}
+            for r in registros_lote if r.get('referencia') == 'TRANSPORTE'
+        ]
+        ok, pendencias = classificar_colaboradores(candidatos, self.sistema, origem="Transporte")
+
+        if pendencias:
+            resultado = TriagemImportacaoRH(self.sistema.root, self.sistema, pendencias).executar()
+            if resultado['cancelado']:
+                custom_messagebox("info", "Importação Cancelada",
+                    "A importação de transporte foi cancelada. Nenhum dado foi salvo.")
+                return 0
+
+            fora = set(resultado['cpfs_excluidos'])
+            registros_lote = [
+                r for r in registros_lote
+                if ''.join(filter(str.isdigit, r['cnpj_cpf'])) not in fora
+            ]
+        # ===== FIM DA TRIAGEM =====
+
+        self.sistema.dados_para_incluir.extend(registros_lote)
+
+        logger.debug(f"✅ Processamento concluído: {len(registros_lote)} registros de transporte/café criados")
+        return len(registros_lote)
 
     def extrair_valor_coluna_transporte(self, row, letra_coluna, indice):
         """
@@ -12905,6 +12956,18 @@ class ImportadorRH:
             for erro in todos_erros[:10]:
                 logger.debug(f"  ⚠️ {erro}")
 
+            candidatos = [{'cpf': r['cnpj_cpf'], 'nome': r['nome'], 'dados_bancarios': r['dados_bancarios']}
+                        for r in todos_registros]
+            ok, pendencias = classificar_colaboradores(candidatos, self.sistema, origem="Diárias")
+            if pendencias:
+                resultado = TriagemImportacaoRH(self.sistema.root, self.sistema, pendencias).executar()
+                if resultado['cancelado']:
+                    custom_messagebox("info", "Importação Cancelada", "Nenhum dado foi salvo.")
+                    return
+                fora = set(resultado['cpfs_excluidos'])
+                todos_registros = [r for r in todos_registros
+                                    if ''.join(filter(str.isdigit, r['cnpj_cpf'])) not in fora]
+            
             if not todos_registros:
                 custom_messagebox("warning", "Nenhum Registro",
                     "Nenhum registro de diárias foi encontrado no arquivo.\n\n"
