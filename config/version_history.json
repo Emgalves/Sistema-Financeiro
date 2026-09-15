@@ -370,5 +370,15 @@
             "Medições: a ferramenta Vincular traz todos os registros que atendam aos requisitos, mesmo valores menores do que a da medição que se quer vincular"
         ],
         "timestamp": "2026-08-20T08:26:31.433957"
+    },
+    {
+        "version": "1.8.4",
+        "release_date": "15/09/2026",
+        "changes": [
+            "Inclusão de validação de dados de colaboradores ao importar Transporte, Folha RH e Diárias, corrigindo ou incluindo na Base_fornecedores.xlsx",
+            "Permite reemitir folha de rosto ou relatório inteiro, em sua totalidade ou por período do Relatório Quinzenal de Despesas",
+            "Retirada de Lançamentos Futuros e remoção da saída em Excel do Relatório Quinzenal"
+        ],
+        "timestamp": "2026-09-15T18:06:49.280942"
     }
 ]
