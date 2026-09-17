@@ -60,6 +60,7 @@ import re
 import calendar
 from datetime import datetime, timedelta
 from decimal import Decimal
+from difflib import SequenceMatcher
 
 # Imports relacionados ao Tkinter (MUITO IMPORTANTE)
 import tkinter as tk
@@ -9417,42 +9418,67 @@ class SistemaEntradaDados:
                     continue
                 
                 # =============================================================
-                # CRITÉRIO 1: DUPLICATA EXATA POR NF (MAIS RESTRITIVO)
+                # CRITÉRIO 1: DUPLICATA POR NF
+                # Âncora: NF (normalizada) + nome + vencimento.
+                # Valor e Referência avaliados por proximidade.
                 # =============================================================
-                if (nf_nova and nf_planilha and 
-                    nf_nova == nf_planilha and 
-                    nome_planilha == nome_novo and 
-                    diferenca_valor < 0.01 and 
-                    dt_vencto_planilha == dt_vencto_nova and
-                    referencia_planilha == referencia_nova):  # ← ADICIONAR REFERÊNCIA
-                    
-                    logger.warning(f"🚨 DUPLICATA EXATA (NF)!")
-                    logger.warning(f"   Linha: {row_num}")
-                    return True
-                
-                # =============================================================
-                # CRITÉRIO 2: MESMO FORNECEDOR + VALOR + DATA + REFERÊNCIA EXATA
-                # (Sem similaridade - apenas igualdade)
-                # =============================================================
-                if (nome_planilha == nome_novo and 
-                    referencia_planilha == referencia_nova and  # ← IGUALDADE EXATA
-                    diferenca_valor < 0.01 and 
+                if (nf_nova and nf_planilha and
+                    nf_nova == nf_planilha and
+                    nome_planilha == nome_novo and
                     dt_vencto_planilha == dt_vencto_nova):
-                    
-                    # SE AMBAS AS NFs EXISTEM E SÃO DIFERENTES, NÃO É DUPLICATA
+
+                    valor_identico = diferenca_valor < 0.01
+                    referencia_identica = (referencia_planilha == referencia_nova)
+                    similaridade_ref = self._calcular_similaridade_simples(referencia_nova, referencia_planilha)
+
+                    if valor_identico and referencia_identica:
+                        logger.warning(f"🚨 DUPLICATA EXATA (NF)! Linha: {row_num}")
+                        return True
+                    if valor_identico and similaridade_ref >= 0.85:
+                        logger.warning(f"🚨 DUPLICATA POR NF (referência similar, {similaridade_ref:.2f})! Linha: {row_num}")
+                        return True
+                    if not valor_identico:
+                        logger.warning(f"🚨 POSSÍVEL DUPLICATA (NF/nome/vencimento OK, VALOR diverge)! Linha: {row_num} "
+                                        f"| R$ {valor_planilha:.2f} vs R$ {valor_novo:.2f}")
+                        return True
+
+                # =============================================================
+                # CRITÉRIO 2: MESMO FORNECEDOR + VENCIMENTO
+                # Cobre lançamentos sem NF confiável (vazio ou placeholder
+                # normalizado) — MO, medições, encargos, fretes, PIX sem NF.
+                # =============================================================
+                if (nome_planilha == nome_novo and
+                    dt_vencto_planilha == dt_vencto_nova):
+
+                    valor_identico = diferenca_valor < 0.01
+                    referencia_identica = (referencia_planilha == referencia_nova)
+                    similaridade_ref = self._calcular_similaridade_simples(referencia_nova, referencia_planilha)
+                    referencia_proxima = referencia_identica or similaridade_ref >= 0.85
+
                     if nf_nova and nf_planilha and nf_nova != nf_planilha:
-                        logger.debug(f"   ✅ NFs diferentes ('{nf_nova}' vs '{nf_planilha}') - NÃO é duplicata")
-                        continue
-                    
-                    logger.warning(f"🚨 DUPLICATA DETECTADA (Referência Exata)!")
-                    logger.warning(f"   Linha: {row_num}")
+                        logger.debug(f"   ✅ NFs reais e diferentes - NÃO é duplicata (Critério 2)")
+                    elif valor_identico and referencia_proxima:
+                        logger.warning(f"🚨 DUPLICATA (Critério 2 - fornecedor/vencimento)! Linha: {row_num}")
+                        return True
+                    elif not valor_identico and referencia_proxima:
+                        logger.warning(f"🚨 POSSÍVEL DUPLICATA (Critério 2 - referência bate, valor diverge)! Linha: {row_num}")
+                        return True
+
+                # =============================================================
+                # CRITÉRIO 3: MESMO DOCUMENTO, VENCIMENTO DIVERGENTE
+                # NF + nome + referência + valor idênticos, vencimento diferente
+                # — cobre erro de digitação na data (caso real já encontrado).
+                # =============================================================
+                if (nf_nova and nf_planilha and
+                    nf_nova == nf_planilha and
+                    nome_planilha == nome_novo and
+                    referencia_planilha == referencia_nova and
+                    diferenca_valor < 0.01 and
+                    dt_vencto_planilha != dt_vencto_nova):
+
+                    logger.warning(f"🚨 POSSÍVEL DUPLICATA (Critério 3 - NF/nome/referência/valor OK, VENCIMENTO diverge)! "
+                                    f"Linha: {row_num} | {dt_vencto_planilha} vs {dt_vencto_nova}")
                     return True
-                
-                # =============================================================
-                # CRITÉRIO 3 (REMOVIDO): Não usar similaridade de referência
-                # =============================================================
-                # ANTES: usava _calcular_similaridade_simples() - MUITO RESTRITIVO
-                # AGORA: removido para evitar falsos positivos
             
             logger.info(f"✅ Nenhuma duplicata para: {nome_novo} - {referencia_nova}")
             return False
@@ -9462,29 +9488,23 @@ class SistemaEntradaDados:
             logger.error(traceback.format_exc())
             return False
 
+    def _normalizar_nf(self, nf_str):
+        """Trata como 'sem NF' qualquer valor sem nenhum dígito
+        (cobre A ENVIAR, A EMITIR, PENDENTE DE CORREÇÃO e futuros
+        placeholders textuais). NF numérica e NF de prefeitura
+        (N/YYYY, YYYY/N) são preservadas como NF real."""
+        nf = str(nf_str or '').strip().upper()
+        return nf if re.search(r'\d', nf) else ""
+
     def _calcular_similaridade_simples(self, texto1, texto2):
-        """
-        Calcula similaridade simples entre dois textos
-        """
+        """Similaridade por sequência de caracteres (Ratcliff/Obershelp)."""
         if not texto1 or not texto2:
             return 0.0
-        
-        # Converter para minúsculas e remover espaços extras
         t1 = ' '.join(texto1.lower().split())
         t2 = ' '.join(texto2.lower().split())
-        
-        # Se um texto está contido no outro, alta similaridade
-        if t1 in t2 or t2 in t1:
-            return 0.9
-        
-        # Calcular similaridade por caracteres comuns
-        comum = sum(1 for c in t1 if c in t2)
-        total = max(len(t1), len(t2))
-        
-        if total == 0:
-            return 0.0
-        
-        return comum / total
+        return SequenceMatcher(None, t1, t2).ratio()
+
+
     # Correção para o método enviar_dados() - SistemaEntradaDados.py
 
     def enviar_dados(self):
@@ -19355,6 +19375,16 @@ class GerenciadorAgenda:
                 logger.debug("DEBUG: Coluna DATA_REL encontrada — será usada como fonte primária do período")
             else:
                 logger.warning("⚠️ Coluna DATA_REL não encontrada — usando inferência por dia do mês (fallback)")
+
+            # ✅ NOVO: detectar se a coluna Agrupar_Agenda existe (planilhas
+            # migradas em gestao_medicoes.verificar_aba_medicoes têm; planilhas
+            # antigas, sem essa migração, não têm — nesse caso a medição é
+            # tratada como agrupável, preservando o comportamento anterior)
+            col_agrupar_explicita = 'AGRUPAR_AGENDA' if 'AGRUPAR_AGENDA' in df_medicoes.columns else None
+            if col_agrupar_explicita:
+                logger.debug("DEBUG: Coluna AGRUPAR_AGENDA encontrada — será respeitada no agrupamento por fornecedor")
+            else:
+                logger.debug("DEBUG: Coluna AGRUPAR_AGENDA não encontrada — todas as medições tratadas como agrupáveis")
             
             # Encontrar coluna de status
             col_status = None
@@ -19429,7 +19459,17 @@ class GerenciadorAgenda:
                     
                     # CNPJ
                     cnpj_fornecedor = str(row['CNPJ_FORNECEDOR']).strip()
-                    
+
+                    # ✅ NOVO: flag de agrupamento (coluna Agrupar_Agenda).
+                    # Ausência da coluna ou célula vazia = agrupar (True),
+                    # mesmo padrão "opt-out" usado para não afetar dados antigos.
+                    # Só "NAO" (case-insensitive) desativa o agrupamento.
+                    valor_agrupar = row.get(col_agrupar_explicita) if col_agrupar_explicita else None
+                    agrupar_flag = (
+                        str(valor_agrupar).strip().upper() != 'NAO'
+                        if pd.notna(valor_agrupar) else True
+                    )
+
                     item_agenda = {
                         'vencimento': dt_pagamento,
                         'data_rel': data_rel,
@@ -19441,6 +19481,7 @@ class GerenciadorAgenda:
                         'observacao': f"Medição pendente - Contrato {row['ID_CONTRATO']}",
                         'id_origem': f"MEDICAO_{row['ID_CONTRATO']}_{row['ID_MEDICAO']}",
                         'origem': 'MEDICAO',
+                        'agrupar': agrupar_flag,  # ✅ NOVO
                         'dados_medicao': {
                             'id_contrato': row['ID_CONTRATO'],
                             'id_medicao': row['ID_MEDICAO'],
@@ -19458,6 +19499,7 @@ class GerenciadorAgenda:
                     logger.debug(f"      Fornecedor: {nome_fornecedor}")
                     logger.debug(f"      CNPJ: {cnpj_fornecedor}")
                     logger.debug(f"      Data_Rel usada: {data_rel} ({'explícita' if col_data_rel_explicita and pd.notna(valor_rel_explicito) else 'inferida'})")
+                    logger.debug(f"      Agrupar_Agenda: {'SIM' if agrupar_flag else 'NAO'}")
                     logger.debug(f"      Valor: R$ {valor_float:,.2f}")
                     
                 except Exception as e:
@@ -19496,11 +19538,20 @@ class GerenciadorAgenda:
             if not medicoes:
                 logger.debug("DEBUG: Nenhuma medição para agrupar")
                 return
-            
+
+            # ✅ NOVO: medições com agrupar=False nunca entram no agrupamento —
+            # seguem direto como itens individuais, respeitando a flag
+            # Agrupar_Agenda definida na aba Medições (Gestão de Empreiteiros)
+            medicoes_agrupaveis = [m for m in medicoes if m.get('agrupar', True)]
+            medicoes_isoladas = [m for m in medicoes if not m.get('agrupar', True)]
+
+            logger.debug(f"DEBUG: Medições agrupáveis: {len(medicoes_agrupaveis)}")
+            logger.debug(f"DEBUG: Medições marcadas para não agrupar: {len(medicoes_isoladas)}")
+
             # Agrupar medições por fornecedor e data_rel
             medicoes_agrupadas = {}
             
-            for medicao in medicoes:
+            for medicao in medicoes_agrupaveis:
                 # Criar chave única: fornecedor + data_rel
                 chave = f"{medicao['fornecedor']}_{medicao['data_rel'].strftime('%Y%m%d')}"
                 
@@ -19611,13 +19662,19 @@ class GerenciadorAgenda:
                     itens_finais.append(grupo)
                     logger.debug(f"    → Criado GRUPO de {qtd_medicoes} medições")
                     logger.debug(f"       Contratos: {', '.join(map(str, ids_contratos))}")
-            
+
+            # ✅ NOVO: medições marcadas como agrupar=False entram como itens
+            # individuais, no mesmo formato que carregar_medicoes_pendentes já
+            # produz — nenhuma outra parte do código precisa saber da diferença
+            itens_finais.extend(medicoes_isoladas)
+
             # ✅ Recompor dados_agenda
             self.dados_agenda = outros + itens_finais
             
             logger.debug("=" * 80)
             logger.debug(f"RESUMO DO AGRUPAMENTO:")
             logger.debug(f"  • Medições originais: {len(medicoes)}")
+            logger.debug(f"  • Medições isoladas (Agrupar_Agenda=NAO): {len(medicoes_isoladas)}")
             logger.debug(f"  • Grupos criados: {len([g for g in itens_finais if g['origem'] == 'MEDICAO_AGRUPADA'])}")
             logger.debug(f"  • Medições individuais mantidas: {len([g for g in itens_finais if g['origem'] == 'MEDICAO'])}")
             logger.debug(f"  • Total de itens finais: {len(itens_finais)}")
