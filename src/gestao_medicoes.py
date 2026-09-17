@@ -984,7 +984,10 @@ class GestaoMedicoes:
         frame_medicoes.pack(fill='both', expand=True, pady=5)
         
         # Treeview para medições
-        colunas = ('ID', 'Data Medição', 'Data Pagamento', 'Referência', 'Valor', 'Status')
+        # ✅ NOVO: coluna 'Agrupar' — mostra de relance se a medição participa
+        # do agrupamento por fornecedor/relatório na Agenda (☑) ou está
+        # marcada para aparecer sempre isolada (☐)
+        colunas = ('ID', 'Data Medição', 'Data Pagamento', 'Referência', 'Valor', 'Status', 'Agrupar')
         self.tree_medicoes = ttk.Treeview(frame_medicoes, columns=colunas, show='headings', height=10)
         
         # Configurar colunas
@@ -994,6 +997,7 @@ class GestaoMedicoes:
         self.tree_medicoes.heading('Referência', text='Referência')
         self.tree_medicoes.heading('Valor', text='Valor')
         self.tree_medicoes.heading('Status', text='Status')
+        self.tree_medicoes.heading('Agrupar', text='Agrupar')
         
         # Ajustar larguras das colunas
         self.tree_medicoes.column('ID', width=50, anchor='center')
@@ -1002,6 +1006,7 @@ class GestaoMedicoes:
         self.tree_medicoes.column('Referência', width=300)
         self.tree_medicoes.column('Valor', width=100, anchor='e')
         self.tree_medicoes.column('Status', width=100, anchor='center')
+        self.tree_medicoes.column('Agrupar', width=70, anchor='center')
         
         # Scrollbars
         scrolly = ttk.Scrollbar(frame_medicoes, orient='vertical', command=self.tree_medicoes.yview)
@@ -1012,6 +1017,11 @@ class GestaoMedicoes:
         self.tree_medicoes.pack(side='left', fill='both', expand=True)
         scrolly.pack(side='right', fill='y')
         scrollx.pack(side='bottom', fill='x')
+
+        # ✅ NOVO: clique na coluna 'Agrupar' alterna Agrupar_Agenda direto na
+        # planilha, sem abrir a janela de Editar Medição (mesmo padrão do
+        # checkbox 'Marcar' da Agenda — GerenciadorAgenda.on_tree_click).
+        self.tree_medicoes.bind('<Button-1>', self.on_tree_medicoes_click)
         
         # Frame para botões
         frame_botoes = ttk.Frame(frame_principal)
@@ -2218,12 +2228,15 @@ class GestaoMedicoes:
                 "ID_Contrato", "ID_Medicao", "CNPJ_Fornecedor", "Nome_Fornecedor",
                 "Data_Medicao", "Data_Pagamento", "Referencia", "Valor",
                 "Status", "Data_Lancamento", "Observacao",
-                "Data_Rel"  # ✅ NOVA COLUNA — período do relatório (5 ou 20), fixo,
-                            # independente de ajuste de dia útil na Data_Pagamento
+                "Data_Rel",       # período do relatório (5 ou 20), fixo,
+                                  # independente de ajuste de dia útil na Data_Pagamento
+                "Agrupar_Agenda"  # ✅ NOVA COLUNA — "SIM" (padrão) ou "NAO". Controla se
+                                  # esta medição pode ser agrupada com outras do mesmo
+                                  # fornecedor/relatório na Agenda (GerenciadorAgenda).
             ]
 
             if "Medicoes" not in wb.sheetnames:
-                # Cliente novo: cria a aba já com as 12 colunas
+                # Cliente novo: cria a aba já com as 13 colunas
                 ws = wb.create_sheet("Medicoes")
 
                 for col, header in enumerate(headers, 1):
@@ -2252,6 +2265,20 @@ class GestaoMedicoes:
                 ws.column_dimensions['L'].width = 15
                 wb.save(self.arquivo_cliente)
                 logger.info(f"✅ Coluna Data_Rel adicionada à aba Medicoes de '{self.cliente_atual}'")
+
+            # ✅ MIGRAÇÃO: mesma lógica para a coluna 13 (Agrupar_Agenda). Linhas
+            # antigas ficam sem valor na coluna — tratadas como "SIM" (agrupar)
+            # em todo o código que lê esse campo, então não é preciso preencher
+            # retroativamente as linhas de dados já existentes.
+            cabecalho_col13 = ws.cell(row=1, column=13).value
+
+            if not cabecalho_col13:
+                cell = ws.cell(row=1, column=13, value="Agrupar_Agenda")
+                cell.font = openpyxl.styles.Font(bold=True)
+                cell.alignment = openpyxl.styles.Alignment(horizontal='center')
+                ws.column_dimensions['M'].width = 15
+                wb.save(self.arquivo_cliente)
+                logger.info(f"✅ Coluna Agrupar_Agenda adicionada à aba Medicoes de '{self.cliente_atual}'")
 
             wb.close()
             return True
@@ -4289,7 +4316,13 @@ class GestaoMedicoes:
                         data_medicao = str(row[4] or "")
                         data_pagamento = str(row[5] or "")
                         valor = str(row[7] or "R$ 0,00")
-                    
+
+                    # ✅ NOVO: coluna 13 (Agrupar_Agenda) — ausência/None em
+                    # linhas antigas é exibida como agrupar (☑), mesmo padrão
+                    # usado em toda leitura desse campo neste arquivo
+                    valor_agrupar_col = row[12] if len(row) > 12 else None
+                    agrupar_display = '☐' if str(valor_agrupar_col).strip().upper() == 'NAO' else '☑'
+
                     # Adicionar à treeview (iid = linha física da planilha)
                     self.tree_medicoes.insert('', 'end', iid=str(idx), values=(
                         row[1],             # ID Medição
@@ -4297,14 +4330,154 @@ class GestaoMedicoes:
                         data_pagamento,     # Data Pagamento
                         row[6],             # Referência
                         valor,              # Valor
-                        row[8]              # Status
+                        row[8],             # Status
+                        agrupar_display     # Agrupar
                     ))
                 
             wb.close()
             
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao carregar medições: {str(e)}", parent=self.root)
-    
+
+    def on_tree_medicoes_click(self, event):
+        """
+        ✅ NOVO: detecta clique na coluna 'Agrupar' da lista de medições e
+        alterna Agrupar_Agenda diretamente, sem abrir a janela de Editar
+        Medição. Mesmo padrão usado pelo checkbox 'Marcar' da Agenda
+        (GerenciadorAgenda.on_tree_click / toggle_checkbox).
+
+        Só permite a alternância em medições PENDENTES — mesma restrição já
+        aplicada em editar_medicao, porque medições já LANÇADAS/VINCULADAS/
+        EXCLUÍDAS não devem mais influenciar o agrupamento futuro na Agenda.
+        """
+        try:
+            region = self.tree_medicoes.identify('region', event.x, event.y)
+            if region != 'cell':
+                return
+
+            coluna_id = self.tree_medicoes.identify_column(event.x)  # ex: '#7'
+            colunas_tree = self.tree_medicoes['columns']
+            try:
+                indice_coluna = int(coluna_id.replace('#', '')) - 1
+            except ValueError:
+                return
+
+            if not (0 <= indice_coluna < len(colunas_tree)):
+                return
+            if colunas_tree[indice_coluna] != 'Agrupar':
+                return  # clique foi em outra coluna — não faz nada
+
+            item_id = self.tree_medicoes.identify_row(event.y)
+            if not item_id:
+                return
+
+            valores = self.tree_medicoes.item(item_id, 'values')
+            id_medicao = valores[0]
+            status = valores[5]
+
+            if status != 'PENDENTE':
+                messagebox.showinfo(
+                    "Agrupar",
+                    "Só é possível alternar o agrupamento de medições PENDENTES.\n"
+                    "Esta medição já está: " + str(status),
+                    parent=self.root
+                )
+                return
+
+            # iid da treeview = linha física da planilha (ver carregar_medicoes)
+            try:
+                linha_planilha = int(item_id)
+            except ValueError:
+                return
+
+            self.alternar_agrupar_medicao(linha_planilha, id_medicao)
+
+        except Exception as e:
+            logger.debug(f"DEBUG: Erro ao alternar Agrupar na lista de medições: {str(e)}")
+
+    @staticmethod
+    def _valores_equivalentes(a, b):
+        """
+        ✅ NOVO: compara dois valores tolerando diferenças de tipo (int vs
+        str vs float) entre o que vem do Treeview do Tkinter — que devolve
+        'values' sempre como texto (ex.: 2 vira '2') — e o que vem direto de
+        uma célula do openpyxl (ex.: 2, como inteiro). Sem essa tolerância,
+        `2 != '2'` é True em Python e a checagem de segurança dispara um
+        falso positivo de "linha desatualizada".
+        """
+        if a == b:
+            return True
+        try:
+            return float(a) == float(b)
+        except (TypeError, ValueError):
+            return str(a).strip() == str(b).strip()
+
+    def alternar_agrupar_medicao(self, linha_planilha, id_medicao):
+        """
+        ✅ NOVO: inverte o valor de Agrupar_Agenda (coluna 13) direto na linha
+        física informada, sem passar pela janela de Editar Medição.
+
+        Antes de gravar, reconfirma pela linha física que (a) a linha ainda
+        corresponde ao Contrato/Medição esperados e (b) o status ainda é
+        PENDENTE — mesmo cuidado defensivo usado em
+        atualizar_status_medicoes_lancadas, para não gravar por engano numa
+        linha que mudou de identidade ou status entre o carregamento da lista
+        e o clique (ex.: outra tela/usuário mexeu no arquivo nesse meio-tempo).
+        """
+        wb = None
+        try:
+            wb = load_workbook(self.arquivo_cliente)
+            ws = wb["Medicoes"]
+
+            contrato_na_linha = ws.cell(row=linha_planilha, column=1).value
+            id_medicao_na_linha = ws.cell(row=linha_planilha, column=2).value
+
+            if (not self._valores_equivalentes(contrato_na_linha, self.contrato_atual) or
+                    not self._valores_equivalentes(id_medicao_na_linha, id_medicao)):
+                wb.close()
+                messagebox.showwarning(
+                    "Aviso",
+                    "A lista de medições está desatualizada. Recarregando...",
+                    parent=self.root
+                )
+                self.carregar_medicoes()
+                return
+
+            status_linha = str(ws.cell(row=linha_planilha, column=9).value or '').strip().upper()
+            if status_linha != 'PENDENTE':
+                wb.close()
+                messagebox.showinfo(
+                    "Agrupar",
+                    "Esta medição não está mais PENDENTE. Recarregando a lista...",
+                    parent=self.root
+                )
+                self.carregar_medicoes()
+                return
+
+            valor_atual = str(ws.cell(row=linha_planilha, column=13).value or '').strip().upper()
+            agrupar_atual = valor_atual != 'NAO'
+            novo_valor = "NAO" if agrupar_atual else "SIM"
+
+            ws.cell(row=linha_planilha, column=13, value=novo_valor)
+            wb.save(self.arquivo_cliente)
+            wb.close()
+
+            logger.info(
+                f"✅ Agrupar_Agenda alternado para '{novo_valor}' — "
+                f"Contrato {self.contrato_atual}, Medição {id_medicao} "
+                f"(linha {linha_planilha})"
+            )
+
+            self.carregar_medicoes()
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao alternar agrupamento: {str(e)}", parent=self.root)
+            if wb is not None:
+                try:
+                    wb.close()
+                except Exception:
+                    pass
+
     def nova_medicao(self):
         """Abre janela para cadastro de nova medição"""
         if not self.contrato_atual:
@@ -4406,7 +4579,19 @@ class GestaoMedicoes:
         ttk.Label(frame_medicao, text="Observações:").grid(row=4, column=0, padx=5, pady=5, sticky='ne')
         observacoes = tk.Text(frame_medicao, width=40, height=4)
         observacoes.grid(row=4, column=1, columnspan=2, padx=5, pady=5, sticky='w')
-        
+
+        # ✅ NOVO: Agrupamento na Agenda. Por padrão marcado (comportamento
+        # atual, inalterado). Desmarcar faz esta medição SEMPRE aparecer como
+        # linha individual na Agenda, mesmo que exista outra medição PENDENTE
+        # do mesmo fornecedor no mesmo relatório — útil quando o usuário sabe,
+        # já no cadastro, que vai querer pagar essa medição separadamente.
+        var_agrupar = tk.BooleanVar(value=True)
+        ttk.Checkbutton(
+            frame_medicao,
+            text="Agrupar com outras medições pendentes deste fornecedor no mesmo relatório (recomendado)",
+            variable=var_agrupar
+        ).grid(row=5, column=0, columnspan=3, padx=5, pady=5, sticky='w')
+
         # Frame para botões
         frame_botoes = ttk.Frame(frame)
         frame_botoes.pack(fill='x', pady=10)
@@ -4421,7 +4606,8 @@ class GestaoMedicoes:
              referencia.get(),
              valor.get(),
              observacoes.get("1.0", "end-1c"),
-             dia_referencia_capturado  # ✅ vem de calcular_data_rel_automatica(), sem campo manual
+             dia_referencia_capturado,  # ✅ vem de calcular_data_rel_automatica(), sem campo manual
+             var_agrupar.get()  # ✅ NOVO
          )).pack(side='left', padx=5)
         
         ttk.Button(frame_botoes, 
@@ -4472,7 +4658,8 @@ class GestaoMedicoes:
             logger.error(f"Erro ao obter dados do contrato: {str(e)}")
             return None
     
-    def salvar_medicao(self, janela, id_contrato, data_medicao, data_pagamento, referencia, valor, observacoes, dia_referencia=None):
+    def salvar_medicao(self, janela, id_contrato, data_medicao, data_pagamento, referencia, valor,
+                        observacoes, dia_referencia=None, agrupar_agenda=True):
         """
         Salva uma nova medição.
 
@@ -4484,6 +4671,12 @@ class GestaoMedicoes:
         dia do mês de data_pagamento — usado apenas como rede de segurança
         para chamadas antigas que ainda não foram atualizadas para passar
         esse parâmetro; não deve ser o caminho normal.
+
+        agrupar_agenda: se True (padrão), esta medição pode ser agrupada com
+        outras PENDENTES do mesmo fornecedor/relatório na Agenda
+        (GerenciadorAgenda.agrupar_medicoes_por_fornecedor). Se False, a
+        Agenda sempre a exibirá como linha individual, mesmo havendo outra
+        medição do mesmo fornecedor no mesmo relatório.
         """
         try:
             # Validar campos obrigatórios
@@ -4580,6 +4773,9 @@ class GestaoMedicoes:
             data_rel_cell = ws_medicoes.cell(row=proxima_linha, column=12, value=data_rel_calc)
             data_rel_cell.number_format = 'DD/MM/YYYY'
 
+            # ✅ NOVO: Agrupar_Agenda — coluna 13
+            ws_medicoes.cell(row=proxima_linha, column=13, value="SIM" if agrupar_agenda else "NAO")
+
             # Atualizar saldo do contrato na aba Contratos_Medicao
             ws_contratos = wb["Contratos_Medicao"]
             for idx, row in enumerate(ws_contratos.iter_rows(min_row=2, max_col=1, values_only=True), 2):
@@ -4632,6 +4828,11 @@ class GestaoMedicoes:
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
                     if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
                         continue
+                    # ✅ NOVO: coluna 13 (Agrupar_Agenda) pode não existir em
+                    # linhas antigas — ausência/None é tratada como "SIM"
+                    valor_agrupar_col = row[12] if len(row) > 12 else None
+                    agrupar_agenda_atual = str(valor_agrupar_col).strip().upper() != 'NAO' if valor_agrupar_col else True
+
                     dados_medicao = {
                         'id_contrato': row[0],
                         'id_medicao': row[1],
@@ -4643,7 +4844,8 @@ class GestaoMedicoes:
                         'valor': row[7],
                         'status': row[8],
                         'data_lancamento': row[9],
-                        'observacao': row[10]
+                        'observacao': row[10],
+                        'agrupar_agenda': agrupar_agenda_atual  # ✅ NOVO
                     }
                     break
                     
@@ -4720,7 +4922,16 @@ class GestaoMedicoes:
             observacoes = tk.Text(frame_medicao, width=40, height=4)
             observacoes.grid(row=5, column=1, padx=5, pady=5, sticky='w')
             observacoes.insert("1.0", dados_medicao['observacao'] if dados_medicao['observacao'] else "")
-            
+
+            # ✅ NOVO: Agrupamento na Agenda (ver mesma explicação em nova_medicao).
+            # Pré-carregado com o valor atual gravado na planilha.
+            var_agrupar = tk.BooleanVar(value=dados_medicao.get('agrupar_agenda', True))
+            ttk.Checkbutton(
+                frame_medicao,
+                text="Agrupar com outras medições pendentes deste fornecedor no mesmo relatório (recomendado)",
+                variable=var_agrupar
+            ).grid(row=6, column=0, columnspan=3, padx=5, pady=5, sticky='w')
+
             # Frame para botões
             frame_botoes = ttk.Frame(frame)
             frame_botoes.pack(fill='x', pady=10)
@@ -4736,7 +4947,8 @@ class GestaoMedicoes:
                          referencia.get(),
                          valor_original.get(),
                          valor_novo.get(),
-                         observacoes.get("1.0", "end-1c")
+                         observacoes.get("1.0", "end-1c"),
+                         var_agrupar.get()  # ✅ NOVO
                      )).pack(side='left', padx=5)
             
             ttk.Button(frame_botoes, 
@@ -4747,8 +4959,15 @@ class GestaoMedicoes:
             messagebox.showerror("Erro", f"Erro ao editar medição: {str(e)}", parent=self.root)
     
     def atualizar_medicao(self, janela, id_contrato, id_medicao, data_medicao, data_pagamento, 
-                    referencia, valor_original, valor_novo, observacoes):
-        """Atualiza os dados de uma medição"""
+                    referencia, valor_original, valor_novo, observacoes, agrupar_agenda=True):
+        """Atualiza os dados de uma medição.
+
+        agrupar_agenda: ver docstring de salvar_medicao. Aqui, além de
+        controlar o comportamento futuro na Agenda, também é o mecanismo
+        para "desagrupar" uma medição que já está PENDENTE e hoje aparece
+        junto de outra(s) do mesmo fornecedor/relatório: basta desmarcar o
+        checkbox aqui e, na Agenda, clicar em "Atualizar".
+        """
         try:
             # Validar campos obrigatórios
             if not data_medicao or not data_pagamento or not referencia or not valor_novo:
@@ -4907,6 +5126,9 @@ class GestaoMedicoes:
             
             # Atualizar observações
             ws_medicoes.cell(row=medicao_row, column=11, value=observacoes.upper())  # Observacao
+
+            # ✅ NOVO: Atualizar Agrupar_Agenda — coluna 13
+            ws_medicoes.cell(row=medicao_row, column=13, value="SIM" if agrupar_agenda else "NAO")
             
             # Salvar arquivo
             wb.save(self.arquivo_cliente)
