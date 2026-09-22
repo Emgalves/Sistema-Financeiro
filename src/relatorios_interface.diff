@@ -1,0 +1,195 @@
+--- /mnt/user-data/uploads/relatorios_interface.py	2026-09-21 12:30:56.225385000 +0000
++++ src/relatorios_interface.py	2026-09-21 21:01:44.143488883 +0000
+@@ -300,6 +300,9 @@
+             elif relatorio["id"] == "por_fornecedor_det":
+                 self.processar_por_fornecedor_det()
+ 
++            elif relatorio["id"] == "por_etapa":
++                self.processar_por_etapa()
++
+             elif relatorio["id"] == "reemissao_relatorios":
+                 self.processar_reemissao_relatorios()
+ 
+@@ -801,6 +804,18 @@
+                 "disponivel": True
+             },
+             {
++                "id": "por_etapa",
++                "nome": "Relatório por Etapa da Obra",
++                "descricao": (
++                    "Custo acumulado da obra por etapa (mão de obra, material, locação, serviços e "
++                    "diversos), com custos gerais em bloco separado. Inclui a ferramenta para informar "
++                    "a etapa dos lançamentos que ainda não a possuem."
++                ),
++                "modulo": "relatorio_por_etapa",
++                "classe": None,
++                "disponivel": True
++            },
++            {
+                 "id": "reemissao_relatorios",
+                 "nome": "Reemissão de Relatórios Antigos",
+                 "descricao": (
+@@ -987,6 +1002,8 @@
+             self.setup_opcoes_consistencia_dados(scrollable_frame)
+         elif relatorio["id"] == "por_fornecedor_det":
+             self.setup_opcoes_por_fornecedor_det(scrollable_frame)
++        elif relatorio["id"] == "por_etapa":
++            self.setup_opcoes_por_etapa(scrollable_frame)
+         elif relatorio["id"] == "reemissao_relatorios":
+             self.setup_opcoes_reemissao_relatorios(scrollable_frame)
+         else:
+@@ -4189,6 +4206,154 @@
+             messagebox.showerror("Erro", f"Erro: {str(e)}")
+             self.root.deiconify()
+ 
++    # ------------------------------------------------------------------
++    # RELATÓRIO POR ETAPA DA OBRA
++    # (regras: src/etapas_obra_core.py | PDF: src/relatorio_por_etapa.py |
++    #  ferramenta: src/regularizacao_etapas.py)
++    # ------------------------------------------------------------------
++    def setup_opcoes_por_etapa(self, parent_frame):
++        """Painel do Relatório por Etapa da Obra: cliente, data de posição e situação das etapas."""
++        frame_cliente = ttk.Frame(parent_frame)
++        frame_cliente.pack(fill='x', padx=10, pady=(10, 4))
++        ttk.Label(frame_cliente, text="Cliente:").pack(side='left', padx=5)
++        self.cliente_etapas = ttk.Combobox(frame_cliente, width=40, state='readonly')
++        self.cliente_etapas.pack(side='left', padx=5)
++        self.preencher_combobox_clientes(self.cliente_etapas)
++        # Este relatório exige um cliente específico (sem "Todos os Clientes")
++        self.cliente_etapas['values'] = [c for c in self.cliente_etapas['values'] if c != 'Todos os Clientes']
++        self.cliente_etapas.set('')
++        self.cliente_etapas.bind('<<ComboboxSelected>>', lambda e: self._atualizar_situacao_etapas(redefinir_posicao=True))
++
++        frame_data = ttk.Frame(parent_frame)
++        frame_data.pack(fill='x', padx=10, pady=4)
++        ttk.Label(frame_data, text="Posição em:").pack(side='left', padx=5)
++        self.var_posicao_etapas = tk.StringVar()
++        ttk.Entry(frame_data, textvariable=self.var_posicao_etapas, width=12).pack(side='left', padx=5)
++        ttk.Label(frame_data, text="dd/mm/aaaa (padrão: última data)", foreground='#555').pack(side='left', padx=5)
++
++        self.frame_situacao_etapas = ttk.LabelFrame(parent_frame, text="Situação das etapas neste cliente")
++        self.frame_situacao_etapas.pack(fill='x', padx=10, pady=10)
++        self.lbl_situacao_etapas = ttk.Label(self.frame_situacao_etapas, text="Selecione um cliente.",
++                                             justify='left', wraplength=440)
++        self.lbl_situacao_etapas.pack(anchor='w', padx=10, pady=8)
++
++        frame_btn = ttk.Frame(parent_frame)
++        frame_btn.pack(fill='x', padx=10, pady=(0, 8))
++        ttk.Button(frame_btn, text="Regularizar etapas...", command=self.processar_regularizacao_etapas).pack(side='left', padx=5)
++        ttk.Button(frame_btn, text="Ordem e marco...", command=self.abrir_ordem_marco_etapas).pack(side='left', padx=5)
++
++        ttk.Label(
++            parent_frame,
++            text=(
++                "Regularizar etapas informa a etapa dos lançamentos que ainda não a possuem (nada é gravado sem a sua confirmação).\n"
++                "Ordem e marco ajusta a ordem das etapas no relatório e a quinzena a partir da qual a falta de etapa é pendência.\n"
++                "O botão Gerar Relatório cria o PDF na pasta do cliente e não altera a planilha."
++            ),
++            foreground='#555', wraplength=440, justify='left'
++        ).pack(anchor='w', padx=10, pady=(0, 10))
++
++    def _atualizar_situacao_etapas(self, redefinir_posicao=False):
++        """Atualiza o quadro de situação (pendências, anteriores ao marco) do cliente selecionado."""
++        try:
++            nome = self.cliente_etapas.get() if getattr(self, 'cliente_etapas', None) else ''
++            if not nome:
++                self.lbl_situacao_etapas.config(text="Selecione um cliente.")
++                return
++            arquivo = self.buscar_arquivo_cliente(nome)
++            if not arquivo:
++                self.lbl_situacao_etapas.config(text="Arquivo do cliente não encontrado.")
++                return
++            self.root.config(cursor="watch")
++            self.root.update_idletasks()
++            from src.etapas_obra_core import resumo_situacao, fmt_moeda, fmt_data, fmt_pct
++            r = resumo_situacao(arquivo)
++            pct = (r['v_sem'] / r['total']) if r['total'] else 0
++            linhas = [
++                f"Sem etapa informada: {r['n_sem']} lançamentos · R$ {fmt_moeda(r['v_sem'])} ({fmt_pct(pct)} da obra)",
++                f"     mão de obra: {r['n_sem_mo']} · material, locação, serviço e diversos: {r['n_sem_outros']}",
++                f"Anteriores ao marco ({fmt_data(r['marco'])}): {r['n_ant']} lançamentos · R$ {fmt_moeda(r['v_ant'])} (fora da fila)",
++                f"Etapas em uso: {r['n_etapas']}  ·  Ordem: {r['ordem']}",
++            ]
++            if not r['gerais_cadastrada']:
++                linhas.append("ATENÇÃO: 'CUSTOS GERAIS DA OBRA' não está cadastrada na lista de etapas (Configurações).")
++            self.lbl_situacao_etapas.config(text="\n".join(linhas))
++            if redefinir_posicao or not self.var_posicao_etapas.get().strip():
++                self.var_posicao_etapas.set(fmt_data(r['ultima_data']) if r['ultima_data'] is not None else "")
++        except Exception as e:
++            logger.error(f"Erro ao atualizar situação das etapas: {str(e)}", exc_info=True)
++            self.lbl_situacao_etapas.config(text=f"Não foi possível ler a situação: {e}")
++        finally:
++            try:
++                self.root.config(cursor="")
++            except Exception:
++                pass
++
++    def processar_por_etapa(self):
++        """Gera o PDF do Relatório por Etapa da Obra na pasta do cliente."""
++        try:
++            nome = self.cliente_etapas.get() if getattr(self, 'cliente_etapas', None) else ''
++            if not nome:
++                messagebox.showwarning("Aviso", "Selecione um cliente.")
++                return
++            arquivo = self.buscar_arquivo_cliente(nome)
++            if not arquivo:
++                messagebox.showerror("Erro", f"Arquivo do cliente não encontrado: {nome}")
++                return
++            from src.etapas_obra_core import parse_data, fmt_moeda
++            posicao = self.var_posicao_etapas.get().strip() or None
++            if posicao and parse_data(posicao) is None:
++                messagebox.showwarning("Aviso", "Data de posição inválida. Use dd/mm/aaaa.")
++                return
++            self.root.config(cursor="watch")
++            self.root.update_idletasks()
++            try:
++                from src.relatorio_por_etapa import gerar_relatorio_por_etapa
++                caminho, nome_pdf, dados = gerar_relatorio_por_etapa(arquivo, posicao)
++            finally:
++                self.root.config(cursor="")
++            msg = f"Relatório gerado:\n{nome_pdf}\n\nPasta: {os.path.dirname(caminho)}"
++            if dados.sem_etapa.n:
++                msg += (f"\n\nAtenção: {dados.sem_etapa.n} lançamentos (R$ {fmt_moeda(dados.sem_etapa.total)}) "
++                        f"ainda estão sem etapa informada.")
++            for aviso in dados.avisos:
++                msg += f"\n\n{aviso}"
++            if messagebox.askyesno("Relatório gerado", msg + "\n\nDeseja abrir o PDF agora?"):
++                self.abrir_arquivo(caminho)
++            self._atualizar_situacao_etapas()
++        except PermissionError:
++            messagebox.showerror("Erro", "Não foi possível gravar o PDF. Se ele estiver aberto, feche-o e tente novamente.")
++        except Exception as e:
++            logger.error(f"Erro ao gerar relatório por etapa: {str(e)}", exc_info=True)
++            messagebox.showerror("Erro", f"Erro ao gerar o relatório por etapa:\n{str(e)}")
++
++    def processar_regularizacao_etapas(self):
++        """Abre a ferramenta de regularização de etapas (janela dedicada)."""
++        try:
++            nome = self.cliente_etapas.get() if getattr(self, 'cliente_etapas', None) else ''
++            self.root.withdraw()
++            from src.regularizacao_etapas import RegularizacaoEtapas
++            app = RegularizacaoEtapas(parent=self.root, cliente_inicial=nome or None)
++            # ao fechar a ferramenta, atualiza o quadro de situação do painel
++            app.root.bind('<Destroy>', lambda e, a=app: self.root.after(300, self._atualizar_situacao_etapas)
++                          if e.widget is a.root else None)
++        except Exception as e:
++            logger.error(f"Erro ao abrir regularização de etapas: {str(e)}", exc_info=True)
++            messagebox.showerror("Erro", f"Erro ao abrir a ferramenta:\n{str(e)}")
++            self.root.deiconify()
++
++    def abrir_ordem_marco_etapas(self):
++        """Abre o diálogo de ordem das etapas e marco de data do cliente selecionado."""
++        try:
++            nome = self.cliente_etapas.get() if getattr(self, 'cliente_etapas', None) else ''
++            if not nome:
++                messagebox.showwarning("Aviso", "Selecione um cliente.")
++                return
++            from src.regularizacao_etapas import abrir_ordem_e_marco
++            abrir_ordem_e_marco(self.root, nome, on_saved=self._atualizar_situacao_etapas)
++        except Exception as e:
++            logger.error(f"Erro ao abrir ordem e marco: {str(e)}", exc_info=True)
++            messagebox.showerror("Erro", f"Erro ao abrir ordem e marco:\n{str(e)}")
++
+     def setup_opcoes_por_fornecedor_det(self, parent_frame):
+         """Painel de opções para o relatório detalhado por fornecedor."""
+         ttk.Label(
