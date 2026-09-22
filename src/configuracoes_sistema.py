@@ -281,7 +281,47 @@ class GerenciadorConfiguracoes:
     def __init__(self, parent=None):
         self.root = tk.Toplevel(parent) if parent else tk.Tk()
         self.root.title("Configurações do Sistema")
-        self.root.geometry("990x980")
+
+        # ═══════════════════════════════════════════════════════════════
+        # CORREÇÃO: calcular geometria com base no tamanho real da tela
+        # (para a janela nunca ultrapassar a área visível) e posicionar
+        # a janela SOBRE a janela principal do sistema (parent), quando
+        # existir — em vez de centralizar na tela toda, o que a deslocava
+        # para longe de onde o usuário está trabalhando.
+        # ═══════════════════════════════════════════════════════════════
+        largura_desejada = 980
+        altura_desejada = 1000
+        margem_tela = 80  # reserva para barra de tarefas / decoração da janela
+
+        largura_tela = self.root.winfo_screenwidth()
+        altura_tela = self.root.winfo_screenheight()
+
+        largura_janela = min(largura_desejada, largura_tela - 40)
+        altura_janela = min(altura_desejada, altura_tela - margem_tela)
+
+        if parent:
+            # Garante que o parent já tem posição/tamanho atualizados
+            parent.update_idletasks()
+            parent_x = parent.winfo_x()
+            parent_y = parent.winfo_y()
+            parent_largura = parent.winfo_width()
+            parent_altura = parent.winfo_height()
+
+            # Centraliza a nova janela sobre a janela principal do sistema
+            pos_x = parent_x + (parent_largura - largura_janela) // 2
+            pos_y = parent_y + (parent_altura - altura_janela) // 2
+        else:
+            # Sem parent (execução standalone): centraliza na tela
+            pos_x = (largura_tela - largura_janela) // 2
+            pos_y = (altura_tela - altura_janela) // 2
+
+        # Garante que a janela não nasça fora dos limites visíveis da tela
+        pos_x = max(0, min(pos_x, largura_tela - largura_janela))
+        pos_y = max(0, min(pos_y, altura_tela - altura_janela - 40))
+
+        self.root.geometry(f"{largura_janela}x{altura_janela}+{pos_x}+{pos_y}")
+        self.root.minsize(700, 500)
+        self.root.resizable(True, True)
         
         # ═══════════════════════════════════════════════════════════════
         # CORREÇÃO MINIMALISTA: Manter janela visível sem roubar foco
@@ -510,10 +550,31 @@ class GerenciadorConfiguracoes:
 
     def setup_gui(self):
         """Configura a interface gráfica"""
+        # ═══════════════════════════════════════════════════════════════
+        # CORREÇÃO: a barra de botões é empacotada PRIMEIRO, com
+        # side='bottom', para que seu espaço seja sempre reservado.
+        # O notebook (que tem expand=True) ocupa o restante da janela,
+        # nunca o contrário. Antes, o notebook era empacotado antes e
+        # consumia todo o espaço, empurrando os botões para fora da
+        # área visível quando a janela era maior que a tela.
+        # ═══════════════════════════════════════════════════════════════
+        frame_botoes = ttk.Frame(self.root)
+        frame_botoes.pack(side='bottom', fill='x', padx=10, pady=8)
+
+        ttk.Button(frame_botoes, text="Salvar Todas Alterações",
+                  command=self.salvar_todas_alteracoes).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Voltar ao Menu Principal",
+                  command=self.voltar_menu_local).pack(side='right', padx=5)
+        # ttk.Button(frame_botoes, text="Fechar",
+        #           command=self.root.quit).pack(side='right', padx=5)
+
+        # Separador visual entre o conteúdo das abas e os botões
+        ttk.Separator(self.root, orient='horizontal').pack(side='bottom', fill='x', padx=10)
+
         # Notebook para diferentes seções
         self.notebook = ttk.Notebook(self.root)
-        self.notebook.pack(fill='both', expand=True, padx=10, pady=5)
-        
+        self.notebook.pack(side='top', fill='both', expand=True, padx=10, pady=5)
+
         # Abas
         self.setup_aba_cafe()
         self.setup_aba_bancos()
@@ -524,17 +585,6 @@ class GerenciadorConfiguracoes:
         self.setup_aba_indices_correcao()
         self.setup_aba_materiais()
         self.criar_aba_servicos_construcao()
-        
-        # Botões globais
-        frame_botoes = ttk.Frame(self.root)
-        frame_botoes.pack(fill='x', padx=10, pady=5)
-        
-        ttk.Button(frame_botoes, text="Salvar Todas Alterações",
-                  command=self.salvar_todas_alteracoes).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Voltar ao Menu Principal", 
-                  command=self.voltar_menu_local).pack(side='right', padx=5)
-        # ttk.Button(frame_botoes, text="Fechar",
-        #           command=self.root.quit).pack(side='right', padx=5)
 
     def setup_aba_cafe(self):
         """Configura a aba de valores do café"""
