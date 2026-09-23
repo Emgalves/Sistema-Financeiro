@@ -10,12 +10,14 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 8,
-    "patch": 4,
-    "release_date": "15/09/2026",
+    "patch": 5,
+    "release_date": "25/09/2026",
     "changes": [
-        "Inclusão de validação de dados de colaboradores ao importar Transporte, Folha RH e Diárias, corrigindo ou incluindo na Base_fornecedores.xlsx",
-        "Permite reemitir folha de rosto ou relatório inteiro, em sua totalidade ou por período do Relatório Quinzenal de Despesas",
-        "Retirada de Lançamentos Futuros e remoção da saída em Excel do Relatório Quinzenal"
+        "Melhoria nos critérios de duplicidade",
+        "Inclusão de checkbox para desmarcar agrupamento de medição na Agenda",
+        "Relatório por Etapa da Obra com possibilidade de inclusão da mesma no próprio relatório",
+        "Melhoria no comportamento de janelas de mensagens",
+        "Seleção de lançamentos aptos para vincular medições mais assertiva"
     ]
 }
 
