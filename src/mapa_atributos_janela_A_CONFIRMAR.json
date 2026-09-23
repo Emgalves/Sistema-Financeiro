@@ -1,0 +1,7 @@
+{
+  "_LEIA_ISTO": "Materiais faz parte do projeto nfe (fora de uso agora) e foi removido deste mapa. Resta so pagamentos_eventos.py: confirme que self.parent esta de fato acessivel (nao None) em todos os metodos da classe GestaoEventos antes de aplicar em massa neste arquivo -- ele tem 64 chamadas pendentes, o maior bloco restante.",
+
+  "pagamentos_eventos.py": {
+    "GestaoEventos": "self.parent"
+  }
+}

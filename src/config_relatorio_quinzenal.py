@@ -287,7 +287,7 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
         cliente_combobox['values'] = nova_lista
         if nova_lista:
             cliente_combobox.current(0)
-        messagebox.showinfo("Info", f"Lista atualizada com {len(nova_lista)} clientes")
+        messagebox.showinfo("Info", f"Lista atualizada com {len(nova_lista)} clientes", parent=parent_frame.winfo_toplevel())
     
     ttk.Button(
         cliente_frame,
@@ -408,9 +408,9 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
                 nova_data = datetime.strptime(data_str, '%d/%m/%Y')
             
             data_label.config(text=nova_data.strftime('%d/%m/%Y'))
-            messagebox.showinfo("Sucesso", f"Data alterada para {nova_data.strftime('%d/%m/%Y')}")
+            messagebox.showinfo("Sucesso", f"Data alterada para {nova_data.strftime('%d/%m/%Y')}", parent=parent_frame.winfo_toplevel())
         except Exception as e:
-            messagebox.showerror("Erro", f"Data inválida: {str(e)}")
+            messagebox.showerror("Erro", f"Data inválida: {str(e)}", parent=parent_frame.winfo_toplevel())
     
     ttk.Button(
         frame_data_manual,
@@ -462,7 +462,7 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
                 "Aviso", 
                 "Por favor, selecione um cliente específico.\n\n"
                 "A opção 'Todos os Clientes' não está disponível para este relatório."
-            )
+            , parent=parent_frame.winfo_toplevel())
             return
         
         # Validar arquivo Clientes.xlsx
@@ -474,7 +474,7 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
                     "Aviso", 
                     "Arquivo Clientes.xlsx não encontrado.\n\n"
                     "Verifique a configuração do sistema."
-                )
+                , parent=parent_frame.winfo_toplevel())
                 return
         
         # Obter caminho do arquivo do cliente
@@ -486,7 +486,7 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
                 "Arquivo não encontrado",
                 f"O arquivo para o cliente '{cliente}' não foi encontrado automaticamente.\n\n"
                 f"Deseja selecionar o arquivo manualmente?"
-            )
+            , parent=parent_frame.winfo_toplevel())
             
             if resposta:
                 pasta_inicial = str(PASTA_CLIENTES) if usa_config_sistema and PASTA_CLIENTES and PASTA_CLIENTES.exists() else None
@@ -513,7 +513,7 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
                         data_str = data_entry.get()
                         data_ref = datetime.strptime(data_str, '%d/%m/%Y')
                     except ValueError:
-                        messagebox.showerror("Erro", "Data inválida! Use o formato DD/MM/AAAA")
+                        messagebox.showerror("Erro", "Data inválida! Use o formato DD/MM/AAAA", parent=parent_frame.winfo_toplevel())
                         return
             else:
                 # Usar data automática
@@ -586,7 +586,7 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
                     f"Cliente: {cliente}\n"
                     f"Arquivo: {Path(resultado).name}\n\n"
                     f"Deseja abrir o PDF?"
-                )
+                , parent=parent_frame.winfo_toplevel())
                 
                 if resposta:
                     sistema_relatorios.abrir_arquivo(resultado)
@@ -599,10 +599,10 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
                     f"Cliente: {cliente}\n"
                     f"Data de referência: {data_ref.strftime('%d/%m/%Y')}\n\n"
                     f"Verifique a data de referência."
-                )
+                , parent=parent_frame.winfo_toplevel())
         
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao gerar relatório:\n{str(e)}")
+            messagebox.showerror("Erro", f"Erro ao gerar relatório:\n{str(e)}", parent=parent_frame.winfo_toplevel())
             import traceback
             traceback.print_exc()
     

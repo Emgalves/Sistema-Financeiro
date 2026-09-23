@@ -2989,7 +2989,7 @@ class GestaoMedicoes:
             wb.close()
             
             if not dados_contrato:
-                messagebox.showerror("Erro", "Contrato não encontrado!, parent=self.root")
+                messagebox.showerror("Erro", "Contrato não encontrado!", parent=self.root)
                 return
                 
             # Criar janela de edição
@@ -3831,7 +3831,7 @@ class GestaoMedicoes:
             
             if nome not in existentes:
                 if messagebox.askyesno("Novo Serviço", 
-                                    f"O serviço '{nome}' não existe.\n\nDeseja adicioná-lo?"):
+                                    f"O serviço '{nome}' não existe.\n\nDeseja adicioná-lo?", parent=janela):
                     if GerenciadorConfiguracoes.adicionar_servico_rapido(nome):
                         messagebox.showinfo("Sucesso", f"Serviço '{nome}' adicionado!", parent=self.root)
                         atualizar_combo()
@@ -4263,7 +4263,7 @@ class GestaoMedicoes:
             
         except Exception as e:
             logger.error(f"Erro ao abrir pasta de contratos: {e}")
-            messagebox.showerror("Erro", f"Erro ao abrir pasta: {str(e)}, parent=self.root")
+            messagebox.showerror("Erro", f"Erro ao abrir pasta: {str(e)}", parent=self.root)
 
     # Funções da aba Medições
     def carregar_medicoes(self):
@@ -5573,7 +5573,7 @@ class GestaoMedicoes:
             
             # Perguntar se deseja enviar os dados imediatamente
             if messagebox.askyesno("Enviar Dados", 
-                                 "Deseja enviar os dados para a planilha do cliente agora?"):
+                                 "Deseja enviar os dados para a planilha do cliente agora?", parent=self.root):
                 self.enviar_dados()
             
         except Exception as e:
@@ -5844,6 +5844,7 @@ class GestaoMedicoes:
                 frame_filtros, 
                 text="🔍 Buscar",
                 command=lambda: self.buscar_lancamentos_existentes(
+                    janela,
                     tree_lancamentos, 
                     dados_medicao, 
                     var_filtro_nome.get(),
@@ -6245,7 +6246,7 @@ class GestaoMedicoes:
                     f"✅ = Saldo OK (>= 2x medição)\n"
                     f"⚠️ = Saldo justo (>= medição)\n"
                     f"❌ = Saldo insuficiente (mostra quanto falta)"
-                )
+                , parent=self.root)
     
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao buscar lançamentos: {str(e)}", parent=self.root)
@@ -6310,7 +6311,8 @@ class GestaoMedicoes:
                     f"Saldo disponível: R$ {saldo_disponivel:,.2f}\n"
                     f"Faltam: R$ {(valor_medicao - saldo_disponivel):,.2f}\n\n"
                     f"Este lançamento não tem saldo suficiente para esta medição.\n"
-                    f"Procure outro lançamento ou divida a medição."
+                    f"Procure outro lançamento ou divida a medição.",
+                    parent=janela   # <-- adicionar
                 )
                 return
             
@@ -6358,7 +6360,8 @@ class GestaoMedicoes:
                 f"Status: {indicador}"
                 f"{mensagem_vinculacoes}"
                 f"{aviso_saldo}\n\n"
-                f"Esta ação marcará a medição como 'VINCULADO'."
+                f"Esta ação marcará a medição como 'VINCULADO'.",
+                parent=janela
             )
             
             if not resposta:
@@ -6450,6 +6453,10 @@ class GestaoMedicoes:
                 parent=self.root
             )
             if resposta_ver:
+                try:
+                    janela.grab_release()
+                except Exception:
+                    pass
                 self.mostrar_vinculacoes_lancamento(tree)  # linha 256 já está selecionada na tree
 
             janela.destroy()
@@ -6515,7 +6522,7 @@ class GestaoMedicoes:
                     mensagem += f"   Obs: {v['observacao']}\n"
             
             # Criar janela de detalhes
-            janela_detalhes = tk.Toplevel()
+            janela_detalhes = tk.Toplevel(self.root)
             janela_detalhes.title(f"Vinculações - Lançamento Linha {linha_lancamento}")
             self.centralizar_janela(janela_detalhes, 700, 500)
             
@@ -6636,7 +6643,7 @@ class GestaoMedicoes:
                     "1. Feche a planilha\n"
                     "2. Clique em OK\n"
                     "3. Tente enviar novamente"
-                )
+                , parent=self.root)
                 return
             
             sheet = workbook["Dados"]
@@ -6695,7 +6702,7 @@ class GestaoMedicoes:
                     "1. Feche a planilha\n"
                     "2. Clique em OK\n"
                     "3. Tente enviar novamente"
-                )
+                , parent=self.root)
             except Exception as e:
                 messagebox.showerror("Erro", f"Erro ao salvar arquivo: {str(e)}", parent=self.root)
                 

@@ -1,0 +1,8 @@
+{
+  "controle_pagamentos_taxas.py": {
+    "ControlePagamentos": "self.janela"
+  },
+  "gestao_taxas.py": {
+    "GestaoTaxasAdministracao": "self.menu"
+  }
+}

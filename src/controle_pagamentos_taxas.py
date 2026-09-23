@@ -197,13 +197,13 @@ class ControlePagamentos:
                 self.parent.focus_force()
             except Exception as e:
                 print(f"Erro ao mostrar janela principal: {str(e)}")
-                messagebox.showerror("Erro", f"Erro ao voltar ao menu principal: {str(e)}")
+                messagebox.showerror("Erro", f"Erro ao voltar ao menu principal: {str(e)}", parent=self.janela)
 
     def fechar_janela(self, is_main_window):
         """Fecha a janela e encerra a aplicação apenas se for a janela principal"""
         if is_main_window and self.parent:
             # Se for executado como janela principal, encerra o aplicativo
-            if messagebox.askyesno("Confirmar", "Deseja realmente sair do sistema?"):
+            if messagebox.askyesno("Confirmar", "Deseja realmente sair do sistema?", parent=self.janela):
                 self.janela.destroy()
                 self.parent.quit()  # Encerra o mainloop
                 self.parent.destroy()  # Destrói a janela principal
@@ -223,9 +223,9 @@ class ControlePagamentos:
                 gestao = GestaoTaxasAdministracao(self.parent)
                 gestao.abrir_finalizacao_quinzena()
         except ImportError:
-            messagebox.showerror("Erro", "Módulo de Finalização de Quinzena não encontrado")
+            messagebox.showerror("Erro", "Módulo de Finalização de Quinzena não encontrado", parent=self.janela)
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir módulo: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir módulo: {str(e)}", parent=self.janela)
         
     def abrir_gestao_eventos(self):
         """Abre o módulo de gestão de eventos (simplificado)"""
@@ -240,7 +240,7 @@ class ControlePagamentos:
                     from controle_pagamentos import ControlePagamentos
                 except ImportError as e:
                     print(f"Erro ao importar ControlePagamentos: {str(e)}")
-                    messagebox.showerror("Erro", f"Módulo de Controle de Pagamentos não encontrado: {str(e)}")
+                    messagebox.showerror("Erro", f"Módulo de Controle de Pagamentos não encontrado: {str(e)}", parent=self.janela)
                     return
             
             # Salvar a referência para esta instância como "controlador_principal"
@@ -281,7 +281,7 @@ class ControlePagamentos:
             
         except Exception as e:
             print(f"Erro ao abrir controle de pagamentos: {str(e)}")
-            messagebox.showerror("Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir controle de pagamentos: {str(e)}", parent=self.janela)
             # Garantir que a janela anterior seja restaurada em caso de erro
             if hasattr(self, 'janela') and self.janela:
                 self.janela.deiconify()
@@ -311,15 +311,15 @@ class ControlePagamentos:
                     gestao_contratos.criar_interface_contratos(janela_gestao, on_close)
                     
                 except ImportError as ie:
-                    messagebox.showerror("Erro", f"Módulo de Gestão de Contratos não encontrado: {str(ie)}")
+                    messagebox.showerror("Erro", f"Módulo de Gestão de Contratos não encontrado: {str(ie)}", parent=janela_gestao)
                 except Exception as e:
-                    messagebox.showerror("Erro", f"Erro ao abrir gestão de contratos: {str(e)}")
+                    messagebox.showerror("Erro", f"Erro ao abrir gestão de contratos: {str(e)}", parent=janela_gestao)
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir gestão de contratos: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir gestão de contratos: {str(e)}", parent=janela_gestao)
         
     def abrir_relatorios(self):
         """Abre o módulo de relatórios"""
-        messagebox.showinfo("Informação", "Módulo de Relatórios em desenvolvimento")
+        messagebox.showinfo("Informação", "Módulo de Relatórios em desenvolvimento", parent=self.janela)
         
     
 

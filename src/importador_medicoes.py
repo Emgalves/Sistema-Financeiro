@@ -44,7 +44,7 @@ except ImportError as e:
     BASE_PATH = Path("C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Planilhas_Base")
     PASTA_CLIENTES = Path("C:/Users/Obras/sistema_gestao_testes/testes/Financeiro/Clientes")
     
-    def custom_messagebox(tipo, titulo, mensagem):
+    def custom_messagebox(tipo, titulo, mensagem, parent=None):
         """Fallback para custom_messagebox"""
         import tkinter as tk
         from tkinter import messagebox
@@ -53,15 +53,15 @@ except ImportError as e:
         root.withdraw()
         
         if tipo == "yesno":
-            result = messagebox.askyesno(titulo, mensagem)
+            result = messagebox.askyesno(titulo, mensagem, parent=parent)
         elif tipo == "error":
-            messagebox.showerror(titulo, mensagem)
+            messagebox.showerror(titulo, mensagem, parent=parent)
             result = False
         elif tipo == "warning":
-            messagebox.showwarning(titulo, mensagem)
+            messagebox.showwarning(titulo, mensagem, parent=parent)
             result = False
         else:  # info
-            messagebox.showinfo(titulo, mensagem)
+            messagebox.showinfo(titulo, mensagem, parent=parent)
             result = False
         
         root.destroy()
@@ -105,7 +105,7 @@ class ImportadorMedicoes:
         
         # Cache para fornecedores
         self.cache_fornecedores = {}
-        
+
         # Log das configurações de caminho com verificação de tipos
         logger.info("=" * 60)
         logger.info("ImportadorMedicoes inicializado (VERSÃO CORRIGIDA)")
@@ -114,7 +114,20 @@ class ImportadorMedicoes:
         logger.info(f"Pasta de medições: {self.pasta_medicoes}")
         logger.info(f"Pasta importados: {self.pasta_importados}")
         logger.info("=" * 60)
-    
+
+    def _get_parent_window(self):
+        """
+        Retorna a janela (Tk/Toplevel) do sistema principal, para associar
+        corretamente as caixas de diálogo desta classe a ela (evita que
+        fiquem atrás do menu principal).
+
+        Usa getattr com valor padrão None: se self.sistema não tiver um
+        atributo 'root' (por exemplo, se for um objeto de outro tipo em
+        algum contexto), retorna None -- o mesmo comportamento que existia
+        antes desta correção, sem risco de AttributeError.
+        """
+        return getattr(self.sistema, 'root', None)
+
     def selecionar_arquivo_relatorio(self):
         """
         Permite ao usuário selecionar um arquivo de relatório de contratos.
@@ -142,7 +155,7 @@ class ImportadorMedicoes:
                 "Formato Antigo", 
                 "O arquivo está no formato Excel 97-2003 (.xls).\n\n"
                 "Por favor, abra o arquivo no Excel e salve como 'Pasta de Trabalho do Excel' (.xlsx)."
-            )
+            , parent=self._get_parent_window())
             return None
         
         logger.info(f"Arquivo selecionado: {arquivo}")
@@ -900,7 +913,7 @@ class ImportadorMedicoes:
                     f"Deseja selecionar o arquivo manualmente?"
                 )
                 
-                if custom_messagebox("yesno", "Arquivo Não Encontrado", mensagem_erro):
+                if custom_messagebox("yesno", "Arquivo Não Encontrado", mensagem_erro, parent=self._get_parent_window()):
                     # Permitir seleção manual
                     arquivo_selecionado = filedialog.askopenfilename(
                         title=f"Selecione o arquivo do cliente {cliente}",
@@ -972,7 +985,7 @@ class ImportadorMedicoes:
                 logger.warning(f"Importação cancelada - {len(medicoes_duplicadas)} medições duplicadas detectadas")
                 
                 # Mostrar alerta ao usuário
-                custom_messagebox("warning", "Duplicação Detectada", mensagem_erro)
+                custom_messagebox("warning", "Duplicação Detectada", mensagem_erro, parent=self._get_parent_window())
                 
                 return False, f"Importação cancelada - {len(medicoes_duplicadas)} medições já existem"
             # ===== FIM DA PROTEÇÃO =====
@@ -1304,7 +1317,7 @@ class ImportadorMedicoes:
                 "Erro", 
                 "Nenhum cliente selecionado.\n\n"
                 "Por favor, selecione um cliente antes de importar medições."
-            )
+            , parent=self._get_parent_window())
             return
         
         cliente_atual = self.sistema.cliente_atual.upper()
@@ -1320,7 +1333,7 @@ class ImportadorMedicoes:
             custom_messagebox("error", 
                 "Estrutura Inválida", 
                 f"O arquivo selecionado não possui a estrutura esperada:\n\n{mensagem}"
-            )
+            , parent=self._get_parent_window())
             return
         
         # Confirmar com usuário
@@ -1330,7 +1343,7 @@ class ImportadorMedicoes:
             f"• {mensagem}\n"
             f"• Cliente: {cliente_atual}\n\n"
             f"Deseja processar as medições?"
-        ):
+        , parent=self._get_parent_window()):
             return
         
         # Passo 3: Processar relatório
@@ -1356,7 +1369,7 @@ class ImportadorMedicoes:
                 else:
                     mensagem_resultado += "ℹ️ Nenhuma medição nova (status PENDENTE) foi encontrada."
 
-                custom_messagebox("info", "Resultado", mensagem_resultado)
+                custom_messagebox("info", "Resultado", mensagem_resultado, parent=self._get_parent_window())
                 return
 
             # Nenhuma medição regular, mas há serviços adicionais para processar
@@ -1366,7 +1379,7 @@ class ImportadorMedicoes:
                 f"⚠️ Foram encontrados serviços adicionais na aba 'Servicos_Adicionais'.\n\n"
                 f"• Cliente: {cliente_atual}\n\n"
                 f"Deseja importar os serviços adicionais?"
-            ):
+            , parent=self._get_parent_window()):
                 return
 
             arquivo_cliente = self._obter_arquivo_cliente(cliente_atual)
@@ -1378,17 +1391,17 @@ class ImportadorMedicoes:
                         "warning",
                         "Avisos — Serviços Adicionais",
                         f"Alguns serviços adicionais não puderam ser importados:\n\n{erros_resumo}"
-                    )
+                    , parent=self._get_parent_window())
 
             if custom_messagebox("yesno",
                 "Mover Arquivo?",
                 "Deseja mover o arquivo importado para a pasta 'Importados'?\n\n"
                 "Isso organiza os arquivos e evita reimportação acidental.\n\n"
                 "Recomendado: SIM"
-            ):
+            , parent=self._get_parent_window()):
                 self.mover_para_importados(arquivo)
 
-            custom_messagebox("info", "Concluído", "Serviços adicionais importados com sucesso!")
+            custom_messagebox("info", "Concluído", "Serviços adicionais importados com sucesso!", parent=self._get_parent_window())
             return
         
         # Passo 4: Mostrar resumo e pedir confirmação
@@ -1407,8 +1420,8 @@ class ImportadorMedicoes:
         
         mensagem_confirmacao += "\nDeseja importar estas medições?"
         
-        if not custom_messagebox("yesno", "Confirmar Importação", mensagem_confirmacao):
-            custom_messagebox("info", "Cancelado", "Importação cancelada pelo usuário.")
+        if not custom_messagebox("yesno", "Confirmar Importação", mensagem_confirmacao, parent=self._get_parent_window()):
+            custom_messagebox("info", "Cancelado", "Importação cancelada pelo usuário.", parent=self._get_parent_window())
             return
         
         # Passo 5: Preparar dados
@@ -1446,7 +1459,7 @@ class ImportadorMedicoes:
                     "warning",
                     "Avisos — Serviços Adicionais",
                     f"Alguns serviços adicionais não puderam ser importados:\n\n{erros_resumo}"
-                )
+                , parent=self._get_parent_window())
             elif medicoes_adic is not None:
                 # Opcional: acumular no resumo final
                 pass
@@ -1460,7 +1473,7 @@ class ImportadorMedicoes:
             f"Deseja mover o arquivo importado para a pasta 'Importados'?\n\n"
             f"Isso organiza os arquivos e evita reimportação acidental.\n\n"
             f"Recomendado: SIM"
-        ):
+        , parent=self._get_parent_window()):
             sucesso_mover, novo_caminho = self.mover_para_importados(arquivo)
             if sucesso_mover:
                 arquivo_movido = True
@@ -1483,7 +1496,7 @@ class ImportadorMedicoes:
         if arquivo_movido:
             mensagem_final += f"\n📁 Arquivo movido para:\n{Path(novo_caminho).name}\n"
         
-        custom_messagebox("info", "Sucesso", mensagem_final)
+        custom_messagebox("info", "Sucesso", mensagem_final, parent=self._get_parent_window())
     def _aplicar_aditivos(self, arquivo_cliente, aditivos):
         """Atualiza Valor Global de contratos que receberam aditivo na planilha (B9)."""
         try:

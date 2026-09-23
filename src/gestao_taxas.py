@@ -104,7 +104,7 @@ class GestaoTaxasAdministracao:
             print("Stack trace:")
             import traceback
             traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao preparar sistema: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao preparar sistema: {str(e)}", parent=self.menu)
             return False
     
     def atualizar_status(self):
@@ -164,7 +164,7 @@ class GestaoTaxasAdministracao:
             self.controle_pagamentos.run()
         except Exception as e:
             print(f"Erro ao abrir controle de pagamentos: {str(e)}")
-            messagebox.showerror("Erro", f"Erro ao abrir controle de pagamentos: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir controle de pagamentos: {str(e)}", parent=self.menu)
             self.parent.deiconify()
     
     def abrir_finalizacao_quinzena(self):
@@ -184,7 +184,7 @@ class GestaoTaxasAdministracao:
             self.finalizacao_quinzena.run()
         except Exception as e:
             print(f"Erro ao abrir finalização de quinzena: {str(e)}")
-            messagebox.showerror("Erro", f"Erro ao abrir finalização de quinzena: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao abrir finalização de quinzena: {str(e)}", parent=self.menu)
             self.parent.deiconify()
     
     def abrir_menu_taxas(self):

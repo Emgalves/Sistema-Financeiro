@@ -765,7 +765,7 @@ def buscar_fornecedor(tree_fornecedores, termo_busca='', categoria_filtro=None):
     try:
         # Verificar se arquivo existe
         if not ARQUIVO_FORNECEDORES.exists():
-            messagebox.showerror("Erro", f"Arquivo não encontrado: {ARQUIVO_FORNECEDORES}")
+            messagebox.showerror("Erro", f"Arquivo não encontrado: {ARQUIVO_FORNECEDORES}", parent=tree_fornecedores.winfo_toplevel())
             return
         
         wb = load_workbook(ARQUIVO_FORNECEDORES)
@@ -828,18 +828,18 @@ def buscar_fornecedor(tree_fornecedores, termo_busca='', categoria_filtro=None):
                 mensagem += f" na categoria '{categoria_filtro}'"
             if termo:
                 mensagem += f" com o termo '{termo_busca}'"
-            messagebox.showinfo("Aviso", mensagem)
+            messagebox.showinfo("Aviso", mensagem, parent=tree_fornecedores.winfo_toplevel())
         
     except Exception as e:
         import traceback
         # logger.debug(traceback.format_exc())
-        messagebox.showerror("Erro", f"Erro ao buscar fornecedores: {str(e)}")
+        messagebox.showerror("Erro", f"Erro ao buscar fornecedores: {str(e)}", parent=tree_fornecedores.winfo_toplevel())
 
 def selecionar_fornecedor(tree_fornecedores, campos_fornecedor, campos_despesa=None, notebook=None, buscar_fornecedor_completo=None):
     """Preenche campos com o fornecedor selecionado"""
     selecionado = tree_fornecedores.selection()
     if not selecionado:
-        messagebox.showwarning("Aviso", "Selecione um fornecedor")
+        messagebox.showwarning("Aviso", "Selecione um fornecedor", parent=tree_fornecedores.winfo_toplevel())
         return None
 
     fornecedor = tree_fornecedores.item(selecionado)['values']
@@ -1048,7 +1048,7 @@ def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_f
             wb.close()
         return 'ERRO AO BUSCAR DADOS BANCÁRIOS'
 
-def custom_messagebox(tipo, titulo, mensagem):
+def custom_messagebox(tipo, titulo, mensagem, parent=None):
     """
     Função de messagebox personalizada que padroniza as caixas de diálogo do sistema
     
@@ -1056,6 +1056,11 @@ def custom_messagebox(tipo, titulo, mensagem):
         tipo (str): Tipo da mensagem - "info", "error", "warning", "yesno", "question"
         titulo (str): Título da janela
         mensagem (str): Texto da mensagem
+        parent: Janela (Tk/Toplevel) à qual esta caixa de diálogo deve ficar
+            associada, para que apareça na frente da janela correta em vez
+            de poder ficar atrás do menu principal. Opcional -- se omitido,
+            comporta-se exatamente como antes (nenhuma mudança de
+            comportamento para quem já chama esta função sem esse argumento).
         
     Returns:
         bool: Para tipos "yesno" e "question", retorna True/False
@@ -1065,80 +1070,84 @@ def custom_messagebox(tipo, titulo, mensagem):
     
     try:
         if tipo.lower() == "info":
-            msg.showinfo(titulo, mensagem)
+            msg.showinfo(titulo, mensagem, parent=parent)
             return None
             
         elif tipo.lower() == "error":
-            msg.showerror(titulo, mensagem)
+            msg.showerror(titulo, mensagem, parent=parent)
             return None
             
         elif tipo.lower() == "warning":
-            msg.showwarning(titulo, mensagem)
+            msg.showwarning(titulo, mensagem, parent=parent)
             return None
             
         elif tipo.lower() == "yesno":
-            return msg.askyesno(titulo, mensagem)
+            return msg.askyesno(titulo, mensagem, parent=parent)
             
         elif tipo.lower() == "question":
-            return msg.askyesno(titulo, mensagem)
+            return msg.askyesno(titulo, mensagem, parent=parent)
             
         else:
             # Tipo desconhecido, usar info como padrão
-            msg.showinfo(titulo, mensagem)
+            msg.showinfo(titulo, mensagem, parent=parent)
             return None
             
     except Exception as e:
         print(f"Erro no custom_messagebox: {str(e)}")
         # Fallback para messagebox padrão
-        msg.showinfo("Erro", f"Erro ao exibir mensagem: {mensagem}")
+        msg.showinfo("Erro", f"Erro ao exibir mensagem: {mensagem}", parent=parent)
         return None
 
 
-def mostrar_alerta(mensagem, titulo="Alerta"):
+def mostrar_alerta(mensagem, titulo="Alerta", parent=None):
     """
     Função helper para mostrar alertas de forma simplificada
     
     Args:
         mensagem (str): Mensagem a ser exibida
         titulo (str): Título da janela (padrão: "Alerta")
+        parent: Janela à qual associar esta caixa de diálogo (opcional).
     """
-    return custom_messagebox("warning", titulo, mensagem)
+    return custom_messagebox("warning", titulo, mensagem, parent=parent)
 
 
-def mostrar_erro(mensagem, titulo="Erro"):
+def mostrar_erro(mensagem, titulo="Erro", parent=None):
     """
     Função helper para mostrar erros de forma simplificada
     
     Args:
         mensagem (str): Mensagem de erro
         titulo (str): Título da janela (padrão: "Erro")
+        parent: Janela à qual associar esta caixa de diálogo (opcional).
     """
-    return custom_messagebox("error", titulo, mensagem)
+    return custom_messagebox("error", titulo, mensagem, parent=parent)
 
 
-def mostrar_info(mensagem, titulo="Informação"):
+def mostrar_info(mensagem, titulo="Informação", parent=None):
     """
     Função helper para mostrar informações de forma simplificada
     
     Args:
         mensagem (str): Mensagem informativa
         titulo (str): Título da janela (padrão: "Informação")
+        parent: Janela à qual associar esta caixa de diálogo (opcional).
     """
-    return custom_messagebox("info", titulo, mensagem)
+    return custom_messagebox("info", titulo, mensagem, parent=parent)
 
 
-def confirmar_acao(mensagem, titulo="Confirmar"):
+def confirmar_acao(mensagem, titulo="Confirmar", parent=None):
     """
     Função helper para confirmações de forma simplificada
     
     Args:
         mensagem (str): Mensagem de confirmação
         titulo (str): Título da janela (padrão: "Confirmar")
+        parent: Janela à qual associar esta caixa de diálogo (opcional).
         
     Returns:
         bool: True se usuário confirmar, False caso contrário
     """
-    return custom_messagebox("yesno", titulo, mensagem)
+    return custom_messagebox("yesno", titulo, mensagem, parent=parent)
 
 
 def validar_entrada_obrigatoria(valor, nome_campo):
