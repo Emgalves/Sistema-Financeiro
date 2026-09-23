@@ -1,3 +1,5 @@
-cd \Users\Obras\Documents\GitHub\Sistema-Financeiro
+cd \Users\Obras\Documents\GitHub\Sistema-Financeiro\src
 
 python encontrar_chamadas_validacao_documento.py "C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src"
+
+python auditar_messagebox.py "C:\Users\Obras\Documents\GitHub\Sistema-Financeiro\src"
