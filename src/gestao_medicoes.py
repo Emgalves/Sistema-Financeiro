@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
@@ -5844,7 +5845,6 @@ class GestaoMedicoes:
                 frame_filtros, 
                 text="🔍 Buscar",
                 command=lambda: self.buscar_lancamentos_existentes(
-                    janela,
                     tree_lancamentos, 
                     dados_medicao, 
                     var_filtro_nome.get(),
@@ -5991,6 +5991,109 @@ class GestaoMedicoes:
         return indice
     
     
+    # Padrão gravado por lancar_medicao() na coluna OBSERVAÇÃO da aba Dados:
+    #   f"MEDIÇÃO {id_medicao} - ..."
+    # Aceita variações de acento/caixa e sufixos acrescentados em edições
+    # posteriores (ex.: " - EDITADO EM: ...").
+    _RE_MARCA_LANCAMENTO = re.compile(r'^\s*MEDI[CÇ][AÃ]O\s+(\d+)\s*-', re.IGNORECASE)
+
+    @staticmethod
+    def _normalizar_texto_ref(texto):
+        """Maiúsculas, sem acentos e com espaços colapsados (para comparar referências)."""
+        import unicodedata
+        t = unicodedata.normalize('NFKD', str(texto or '')).encode('ascii', 'ignore').decode()
+        return ' '.join(t.upper().split())
+
+    def _mapear_linhas_pagamento_medicoes(self, wb):
+        """
+        NOVO (patch 3b): identifica quais linhas da aba Dados SÃO o pagamento
+        de uma medição com status LANÇADO. Retorna {linha_dados: (id_contrato, id_medicao)}.
+
+        Existem dois caminhos que lançam uma medição na aba Dados, e nenhum
+        deles grava na aba Vinculacoes:
+          1) 'Lançar no Cliente' -> OBSERVAÇÃO = "MEDIÇÃO N - ..."
+          2) Confirmação pela Agenda -> OBSERVAÇÃO = "CONFIRMADO - <referência>"
+             (sem o número da medição)
+
+        Regras, em ordem:
+          A) Marca "MEDIÇÃO N -" + mesmo CNPJ/CPF + medição N LANÇADA.
+             (Marca só é gravada por lançamento; entre medições de mesmo nº
+             em contratos diferentes, prefere a de mesmo valor.)
+          B) Mesmo CNPJ/CPF + mesmo valor (±0,01) + mesma referência
+             (comparada sem acento/caixa/espaços extras).
+        Cada medição LANÇADA "consome" no máximo UMA linha na regra B,
+        para nunca esconder dois lançamentos iguais com uma única medição.
+        """
+        lancadas = []
+        if 'Medicoes' in wb.sheetnames:
+            for row in wb['Medicoes'].iter_rows(min_row=2, values_only=True):
+                if not row or row[1] is None:
+                    continue
+                if str(row[8] or '').strip().upper() not in ('LANÇADO', 'LANCADO'):
+                    continue
+                try:
+                    id_med = int(row[1])
+                except (TypeError, ValueError):
+                    continue
+                try:
+                    valor_med = self.converter_valor_brasileiro_para_float(row[7])
+                except Exception:
+                    valor_med = None
+                lancadas.append({
+                    'contrato': row[0],
+                    'id': id_med,
+                    'cnpj': self.normalizar_cnpj_cpf(row[2])['limpo'],
+                    'valor': valor_med,
+                    'ref': self._normalizar_texto_ref(row[6]),
+                    'usada': False,
+                })
+
+        resultado = {}
+        if not lancadas or 'Dados' not in wb.sheetnames:
+            return resultado
+
+        linhas = []
+        for idx, row in enumerate(wb['Dados'].iter_rows(min_row=2, values_only=True), start=2):
+            if not row or str(row[13] or '').strip().upper() in ('EXCLUIDO', 'EXCLUÍDO'):
+                continue
+            try:
+                valor = self.converter_valor_brasileiro_para_float(row[8]) if row[8] is not None else None
+            except Exception:
+                valor = None
+            linhas.append((idx, self.normalizar_cnpj_cpf(row[2])['limpo'], valor,
+                           self._normalizar_texto_ref(row[4]), str(row[12] or '')))
+
+        def _mesmo_valor(a, b):
+            return a is not None and b is not None and abs(a - b) <= 0.01
+
+        # Regra A: marca "MEDIÇÃO N -"
+        for idx, cnpj, valor, ref, obs in linhas:
+            marca = self._RE_MARCA_LANCAMENTO.match(obs)
+            if not (marca and cnpj):
+                continue
+            n = int(marca.group(1))
+            candidatas = [m for m in lancadas if m['cnpj'] == cnpj and m['id'] == n]
+            if not candidatas:
+                continue
+            livres = [m for m in candidatas if not m['usada']]
+            escolhida = (next((m for m in livres if _mesmo_valor(m['valor'], valor)), None)
+                         or (livres[0] if livres else candidatas[0]))
+            escolhida['usada'] = True
+            resultado[idx] = (escolhida['contrato'], escolhida['id'])
+
+        # Regra B: CNPJ + valor + referência (ex.: "CONFIRMADO - <ref>" da Agenda)
+        for idx, cnpj, valor, ref, obs in linhas:
+            if idx in resultado or not cnpj or valor is None:
+                continue
+            escolhida = next((m for m in lancadas
+                              if not m['usada'] and m['cnpj'] == cnpj
+                              and _mesmo_valor(m['valor'], valor) and m['ref'] == ref), None)
+            if escolhida:
+                escolhida['usada'] = True
+                resultado[idx] = (escolhida['contrato'], escolhida['id'])
+
+        return resultado
+
     def buscar_lancamentos_existentes(self, tree, dados_medicao, filtro_nome, usar_filtro_data=True):
         """
         VERSÃO CORRIGIDA v2:
@@ -6012,6 +6115,10 @@ class GestaoMedicoes:
             # ALTERADO (patch 2): índice de vinculações construído uma vez só,
             # a partir do mesmo wb já aberto acima.
             indice_vinculacoes = self._construir_indice_vinculacoes(wb)
+            # NOVO (patch 3): medições já pagas via 'Lançar no Cliente'.
+            linhas_pagamento_medicao = self._mapear_linhas_pagamento_medicoes(wb)
+            ocultados_lancados = 0   # linhas que SÃO o pagamento de medição LANÇADA
+            ocultados_zerados = 0    # linhas com saldo já consumido por vinculações
     
             # Normalizar CNPJ/CPF da medição
             cnpj_medicao_norm = self.normalizar_cnpj_cpf(dados_medicao['cnpj'])
@@ -6069,6 +6176,14 @@ class GestaoMedicoes:
     
                 if not (match_cnpj or match_nome):
                     continue
+
+                # === NOVO (patch 3b): linha que é o pagamento de medição LANÇADA ===
+                # (criada por 'Lançar no Cliente' ou confirmada pela Agenda).
+                if idx in linhas_pagamento_medicao:
+                    ctr, med = linhas_pagamento_medicao[idx]
+                    print(f"DEBUG Linha {idx}: OCULTADA (pagamento da medição LANÇADA {ctr}-{med})")
+                    ocultados_lancados += 1
+                    continue
     
                 # === CRITÉRIO 3: Data (se habilitado) ===
                 match_data = True
@@ -6102,6 +6217,14 @@ class GestaoMedicoes:
                     for v in vinculacoes_existentes
                 )
                 saldo_disponivel = valor_lancamento_float - valor_ja_vinculado
+
+                # NOVO (patch 3): saldo <= 0 significa lançamento totalmente
+                # consumido por vinculações anteriores (medições VINCULADAS).
+                # Não serve nem para vinculação parcial, então não é listado.
+                if saldo_disponivel <= 0.01:
+                    print(f"DEBUG Linha {idx}: OCULTADA (saldo {saldo_disponivel:.2f} já consumido)")
+                    ocultados_zerados += 1
+                    continue
     
                 print(f"DEBUG Linha {idx}:")
                 print(f"  Valor lançamento: {valor_lancamento} → {valor_lancamento_float}")
@@ -6190,6 +6313,14 @@ class GestaoMedicoes:
             wb.close()
     
             encontrados_vinculaveis = encontrados - encontrados_insuficientes
+
+            msg_ocultados = ""
+            if ocultados_lancados or ocultados_zerados:
+                msg_ocultados = "\n\nOcultados por já estarem pagos:\n"
+                if ocultados_lancados:
+                    msg_ocultados += f"• {ocultados_lancados} pagamento(s) de medição LANÇADA\n"
+                if ocultados_zerados:
+                    msg_ocultados += f"• {ocultados_zerados} com saldo totalmente vinculado (R$ 0,00)\n"
     
             if encontrados == 0:
                 if usar_filtro_data:
@@ -6212,7 +6343,8 @@ class GestaoMedicoes:
                     "Dicas:\n"
                     "• Verifique se o lançamento existe na aba Dados\n"
                     "• Confirme CNPJ/CPF do fornecedor\n"
-                    "• Tente buscar só por CNPJ (botão 'Só CNPJ')",
+                    "• Tente buscar só por CNPJ (botão 'Só CNPJ')"
+                    + msg_ocultados,
                     parent=self.root
                 )
             else:
@@ -6246,6 +6378,7 @@ class GestaoMedicoes:
                     f"✅ = Saldo OK (>= 2x medição)\n"
                     f"⚠️ = Saldo justo (>= medição)\n"
                     f"❌ = Saldo insuficiente (mostra quanto falta)"
+                    + msg_ocultados
                 , parent=self.root)
     
         except Exception as e:
@@ -6254,6 +6387,23 @@ class GestaoMedicoes:
             traceback.print_exc()
 
     def confirmar_vinculacao(self, janela, id_medicao, tree, dados_medicao):
+        """
+        NOVO (patch 4): trava contra execução simultânea.
+        Um segundo clique em 'Vincular Selecionado' enquanto a primeira
+        vinculação ainda exibe diálogos (confirmação/sucesso) era processado
+        pelo Tkinter e gravava a MESMA medição duas vezes (caso real:
+        Eduardo, contrato 1, medição 14, linha 1359, 08/06/2026 17:13).
+        """
+        if getattr(self, '_vinculacao_em_andamento', False):
+            print("DEBUG: confirmar_vinculacao ignorada (já existe uma em andamento)")
+            return
+        self._vinculacao_em_andamento = True
+        try:
+            self._confirmar_vinculacao_impl(janela, id_medicao, tree, dados_medicao)
+        finally:
+            self._vinculacao_em_andamento = False
+
+    def _confirmar_vinculacao_impl(self, janela, id_medicao, tree, dados_medicao):
         """
         VERSÃO CORRIGIDA - Com conversão correta de valores brasileiros.
         """
@@ -6394,6 +6544,60 @@ class GestaoMedicoes:
                 )
                 return
             
+            # === NOVO (patch 4): revalidação no ARQUIVO imediatamente antes de gravar ===
+            # Os valores usados até aqui vieram da tela (Treeview), que pode estar
+            # desatualizada. Estas três conferências leem a planilha agora.
+            motivo_bloqueio = None
+
+            # (a) a medição ainda está livre?
+            if linhas_ativas_encontradas:
+                status_arquivo = str(
+                    ws_medicoes.cell(row=linhas_ativas_encontradas[0], column=9).value or ''
+                ).strip().upper()
+                if status_arquivo in ('VINCULADO', 'LANÇADO', 'LANCADO'):
+                    motivo_bloqueio = (f"A medição #{id_medicao} já está {status_arquivo} "
+                                       f"na planilha.")
+            else:
+                motivo_bloqueio = f"A medição #{id_medicao} não foi encontrada na planilha."
+
+            # (b) já existe registro desta medição na aba Vinculacoes?
+            if not motivo_bloqueio and 'Vinculacoes' in wb.sheetnames:
+                for vrow in wb['Vinculacoes'].iter_rows(min_row=2, values_only=True):
+                    if vrow and vrow[0] == self.contrato_atual and vrow[1] == id_medicao:
+                        motivo_bloqueio = (f"A medição #{id_medicao} já possui vinculação "
+                                           f"registrada (linha de lançamento {vrow[2]}).")
+                        break
+
+            # (c) o lançamento ainda tem saldo suficiente? (recalculado do arquivo)
+            if not motivo_bloqueio:
+                try:
+                    valor_linha = self.converter_valor_brasileiro_para_float(
+                        wb['Dados'].cell(row=int(linha_lancamento), column=9).value or 0)
+                    ja_vinculado = 0.0
+                    if 'Vinculacoes' in wb.sheetnames:
+                        for vrow in wb['Vinculacoes'].iter_rows(min_row=2, values_only=True):
+                            if vrow and vrow[2] is not None and int(vrow[2]) == int(linha_lancamento):
+                                ja_vinculado += self.converter_valor_brasileiro_para_float(vrow[4] or 0)
+                    saldo_arquivo = valor_linha - ja_vinculado
+                    if saldo_arquivo + 0.01 < valor_medicao:
+                        motivo_bloqueio = (f"O saldo real do lançamento (linha {linha_lancamento}) "
+                                           f"é R$ {saldo_arquivo:,.2f}, menor que a medição "
+                                           f"(R$ {valor_medicao:,.2f}).")
+                    else:
+                        novo_saldo = saldo_arquivo - valor_medicao
+                except Exception as e_saldo:
+                    motivo_bloqueio = f"Não foi possível recalcular o saldo do lançamento: {e_saldo}"
+
+            if motivo_bloqueio:
+                wb.close()
+                messagebox.showerror(
+                    "Vinculação Bloqueada",
+                    f"❌ VINCULAÇÃO NÃO REALIZADA\n\n{motivo_bloqueio}\n\n"
+                    f"Nada foi gravado. Feche esta janela e atualize a lista de medições.",
+                    parent=janela
+                )
+                return
+
             for idx, row in enumerate(ws_medicoes.iter_rows(min_row=2, values_only=True), 2):
                 if row[0] == self.contrato_atual and row[1] == id_medicao:
                     if str(row[8] or '').strip().upper() in ('EXCLUÍDO', 'EXCLUIDO'):
