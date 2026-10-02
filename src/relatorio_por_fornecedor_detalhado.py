@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from datetime import datetime, timedelta
 import pandas as pd
+from src.config.utils import CONVERSORES_DADOS  # NF lida como texto (ver normalizar_nf)
 from pathlib import Path
 from collections import defaultdict
 from openpyxl import Workbook
@@ -469,7 +470,7 @@ class RelatorioPorFornecedorDetalhado:
                 try:
                     lbl_prog.config(text=f"Processando: {os.path.splitext(arq)[0]}")
                     self.root.update()
-                    df = pd.read_excel(os.path.join(pasta, arq), sheet_name='Dados')
+                    df = pd.read_excel(os.path.join(pasta, arq), sheet_name='Dados', converters=CONVERSORES_DADOS)
                     if 'NOME' not in df.columns:
                         continue
                     if 'STATUS' in df.columns:
@@ -661,7 +662,7 @@ class RelatorioPorFornecedorDetalhado:
                 except Exception:
                     pass
             try:
-                df = pd.read_excel(os.path.join(pasta, arq), sheet_name='Dados')
+                df = pd.read_excel(os.path.join(pasta, arq), sheet_name='Dados', converters=CONVERSORES_DADOS)
             except Exception as e:
                 print(f"Erro ao ler {arq}: {e}")
                 continue

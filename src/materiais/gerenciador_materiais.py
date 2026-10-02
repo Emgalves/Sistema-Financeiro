@@ -392,56 +392,6 @@ class GerenciadorMateriais:
             print(f"❌ Erro ao migrar dados para {cliente}: {e}")
             return False
     
-    def integrar_com_medicoes(self, cliente, id_medicao, dados_instalacao):
-        """Integra dados de instalação vindos das medições"""
-        try:
-            # Buscar materiais relacionados à medição (por referência na descrição ou observações)
-            df = self.carregar_materiais_cliente(cliente)
-            
-            if len(df) == 0:
-                return False
-            
-            # Atualizar materiais que referenciam esta medição
-            materiais_atualizados = 0
-            
-            for idx, material in df.iterrows():
-                # Verificar se o material está relacionado à medição
-                # (implementar lógica específica conforme necessidade)
-                if self._material_relacionado_medicao(material, id_medicao, dados_instalacao):
-                    
-                    dados_atualizacao = {
-                        'Data_Instalacao': dados_instalacao.get('data_instalacao', ''),
-                        'Instalador': dados_instalacao.get('instalador', ''),
-                        'Status_Instalacao': 'INSTALADO',
-                        'ID_Medicao_Origem': id_medicao
-                    }
-                    
-                    if self.atualizar_material(cliente, material['ID'], dados_atualizacao):
-                        materiais_atualizados += 1
-            
-            print(f"✅ {materiais_atualizados} materiais atualizados com dados da medição {id_medicao}")
-            return materiais_atualizados > 0
-            
-        except Exception as e:
-            print(f"❌ Erro ao integrar com medições: {e}")
-            return False
-    
-    def _material_relacionado_medicao(self, material, id_medicao, dados_instalacao):
-        """Verifica se um material está relacionado a uma medição específica"""
-        # Implementar lógica específica baseada em:
-        # - Descrição do material vs referência da medição
-        # - Categoria/ambiente do material
-        # - Período de instalação
-        # etc.
-        
-        # Exemplo básico:
-        if material.get('Status_Instalacao') in ['PENDENTE', 'EM INSTALACAO']:
-            # Verificar se ambiente coincide com algum critério
-            return True
-        
-        return False
-
-
 class IntegradorMateriais:
     """Integra o gerenciador refatorado com o sistema principal"""
     

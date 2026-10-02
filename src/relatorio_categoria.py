@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from datetime import datetime
 import pandas as pd
+from src.config.utils import CONVERSORES_DADOS  # NF lida como texto (ver normalizar_nf)
 import numpy as np
 from pathlib import Path
 from openpyxl import load_workbook, Workbook
@@ -564,7 +565,7 @@ class RelatorioCategoria:
             # Carregar dados do Excel - da aba 'Dados'
             try:
                 # Usar pandas para ler a aba Dados
-                self.df_despesas = pd.read_excel(self.arquivo_cliente, sheet_name='Dados')
+                self.df_despesas = pd.read_excel(self.arquivo_cliente, sheet_name='Dados', converters=CONVERSORES_DADOS)
                 print(f"Colunas do DataFrame: {self.df_despesas.columns.tolist()}")
                 
                 # Verificar se as colunas necessárias existem
@@ -938,84 +939,6 @@ class RelatorioCategoria:
             import traceback
             traceback.print_exc()
  
-    def determinar_agrupamento_temporal(self):
-        """Determina o melhor agrupamento temporal baseado no período dos dados"""
-        if not hasattr(self, 'df_por_data') or self.df_por_data.empty:
-            return 'dia'
-        
-        # Calcular diferença baseado nos períodos de mês/ano
-        data_inicio = self.df_por_data['mes_ano_vencto'].min().to_timestamp()
-        data_fim = self.df_por_data['mes_ano_vencto'].max().to_timestamp()
-        dias_total = (data_fim - data_inicio).days
-        
-        # Definir agrupamento baseado no período
-        if dias_total <= 31:  # Até 1 mês
-            return 'dia'
-        elif dias_total <= 93:  # Até 3 meses
-            return 'semana'
-        elif dias_total <= 365:  # Até 1 ano
-            return 'mes'
-        elif dias_total <= 1095:  # Até 3 anos
-            return 'trimestre'
-        else:  # Mais de 3 anos
-            return 'ano'
-
-    def preparar_dados_timeline(self):
-        """Prepara dados para gráfico de linha do tempo baseado em mês de vencimento"""
-        try:
-            if not hasattr(self, 'df_despesas') or self.df_despesas.empty:
-                return None
-            
-            agrupamento = self.determinar_agrupamento_temporal()
-            df_timeline = self.df_despesas.copy()
-            
-            # **MODIFICAR: Criar coluna de agrupamento temporal baseado em DT_VENCTO**
-            if agrupamento == 'dia':
-                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.date
-                formato_periodo = lambda x: x.strftime('%d/%m/%Y')
-            elif agrupamento == 'semana':
-                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('W')
-                formato_periodo = lambda x: f"Sem {x.week}/{x.year}"
-            elif agrupamento == 'mes':
-                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('M')
-                formato_periodo = lambda x: f"{x.month:02d}/{x.year}"
-            elif agrupamento == 'trimestre':
-                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('Q')
-                formato_periodo = lambda x: f"Q{x.quarter}/{x.year}"
-            else:  # ano
-                df_timeline['periodo'] = df_timeline['DT_VENCTO'].dt.to_period('Y')
-                formato_periodo = lambda x: str(x.year)
-            
-            # Agrupar por período e categoria
-            df_agrupado = df_timeline.groupby(['periodo', 'CATEGORIA'])['VALOR'].sum().reset_index()
-            
-            # Criar pivot para ter categorias como colunas
-            df_pivot = df_agrupado.pivot(index='periodo', columns='CATEGORIA', values='VALOR').fillna(0)
-            
-            # Garantir que todas as categorias existam
-            for categoria in self.categorias_despesas.keys():
-                if categoria not in df_pivot.columns:
-                    df_pivot[categoria] = 0
-            
-            # Resetar índice e formatar período
-            df_pivot = df_pivot.reset_index()
-            df_pivot['periodo_str'] = df_pivot['periodo'].apply(formato_periodo)
-            
-            # Calcular total por período
-            df_pivot['total'] = df_pivot[[cat for cat in self.categorias_despesas.keys() if cat in df_pivot.columns]].sum(axis=1)
-            
-            return {
-                'dados': df_pivot,
-                'agrupamento': agrupamento,
-                'categorias': list(self.categorias_despesas.keys())
-            }
-            
-        except Exception as e:
-            print(f"Erro ao preparar dados de timeline: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            return None  
-
     def atualizar_grafico(self, event=None):
         """Atualiza o gráfico com base na seleção"""
         try:
@@ -1917,7 +1840,7 @@ class RelatorioCategoria:
         try:
             # Verificar se temos a biblioteca reportlab disponível
             try:
-                from reportlab.lib.pagesizes import letter, A4
+                from reportlab.lib.pagesizes import A4
                 from reportlab.lib import colors
                 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, HRFlowable, KeepTogether, PageBreak
                 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle

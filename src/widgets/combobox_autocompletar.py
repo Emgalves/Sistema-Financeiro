@@ -411,7 +411,3 @@ class ComboboxAutocompletar(ttk.Combobox):
                 parent=self.winfo_toplevel()
             )
 
-    def atualizar_valores(self, novos_valores):
-        """Atualiza a lista de valores do combobox"""
-        self.valores_originais = novos_valores
-        self['values'] = self.valores_originais

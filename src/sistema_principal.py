@@ -132,7 +132,6 @@ try:
         ARQUIVO_CLIENTES,
         ARQUIVO_MODELO,
         PASTA_CLIENTES,
-        CLIENTES
     )
 except ImportError:
     try:
@@ -140,14 +139,12 @@ except ImportError:
             ARQUIVO_CLIENTES,
             ARQUIVO_MODELO,
             PASTA_CLIENTES,
-            CLIENTES
         )
     except ImportError:
         # Valores padrão de fallback
         ARQUIVO_CLIENTES = "clientes.xlsx"
         ARQUIVO_MODELO = "modelo_cliente.xlsx"
         PASTA_CLIENTES = "dados_clientes"
-        CLIENTES = []
 
 try:
     from src.version_control import version_control
@@ -200,7 +197,6 @@ class SistemaGestaoFinanceira:
             
             modulos_problematicos = [
                 'relatorio_despesas_aprimorado',
-                'despesas_rateadas',
                 'gestao_medicoes', 
                 'configuracoes_sistema'
             ]
@@ -259,10 +255,6 @@ class SistemaGestaoFinanceira:
         self.root.update_idletasks()
         self.root._geometria_original = self.root.geometry()
         print(f"💾 Geometria inicial do menu salva: {self.root._geometria_original}")
-
-    def login(self, username):
-        self.usuario_atual = username
-        system_logger.set_user(username)
 
     def setup_style(self):
         """Configura o estilo visual do aplicativo"""

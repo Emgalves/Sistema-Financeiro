@@ -67,6 +67,7 @@ import argparse
 from pathlib import Path
 
 import pandas as pd
+from src.config.utils import CONVERSORES_DADOS  # NF lida como texto (ver normalizar_nf)
 from openpyxl import load_workbook
 
 
@@ -89,7 +90,7 @@ def descobrir_datas_relatorio(arquivo_excel, desde=None, ate=None):
     Lê a aba Dados e devolve a lista ordenada de datas distintas de
     DATA_REL - cada uma corresponde a um relatório já emitido.
     """
-    df = pd.read_excel(arquivo_excel, sheet_name='Dados')
+    df = pd.read_excel(arquivo_excel, sheet_name='Dados', converters=CONVERSORES_DADOS)
     datas = pd.to_datetime(df['DATA_REL'], errors='coerce').dropna().unique()
     datas = sorted(pd.Timestamp(d) for d in datas)
 

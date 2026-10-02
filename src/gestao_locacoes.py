@@ -1826,22 +1826,6 @@ class GerenciadorLocacoes:
 # INTEGRAÇÃO
 # ====================================================================================
 
-def integrar_gestao_locacoes(sistema_principal):
-    """
-    Integra ao sistema principal
-    
-    Usage:
-        from gestao_locacoes_completo import integrar_gestao_locacoes
-        
-        # Adicionar botão
-        ttk.Button(frame, text="🔧 Gestão de Locações", 
-                  command=lambda: integrar_gestao_locacoes(sistema)).pack()
-    """
-    gerenciador = GerenciadorLocacoes(sistema_principal)
-    gerenciador.abrir_gestao_locacoes()
-    return gerenciador
-
-
 if __name__ == "__main__":
     print("=" * 80)
     print("Módulo de Gestão de Locações - VERSÃO COMPLETA")

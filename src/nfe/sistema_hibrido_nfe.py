@@ -760,44 +760,6 @@ class ProcessadorNFeHibrido:
             logger.debug(f"Fallback ao configurar certificado: {e}")
             return self.sistema.configurar_certificado_rapido()
     
-    def selecionar_certificado(self):
-        """Seleciona arquivo de certificado"""
-        arquivo = filedialog.askopenfilename(
-            title="Selecionar Certificado Digital",
-            filetypes=[("Certificado", "*.pfx *.p12"), ("Todos os arquivos", "*.*")]
-        )
-        if arquivo:
-            self.entry_cert_path.delete(0, tk.END)
-            self.entry_cert_path.insert(0, arquivo)
-    
-    def salvar_configuracao_certificado(self, janela):
-        """Salva configuração do certificado"""
-        self.certificado_path = self.entry_cert_path.get()
-        self.certificado_senha = self.entry_cert_senha.get()
-        
-        if self.certificado_path and Path(self.certificado_path).exists():
-            messagebox.showinfo("Sucesso", "Certificado configurado com sucesso!")
-            janela.destroy()
-        else:
-            messagebox.showerror("Erro", "Arquivo de certificado não encontrado!")
-    
-    def testar_certificado(self):
-        """Testa certificado configurado"""
-        try:
-            cert_path = self.entry_cert_path.get()
-            cert_senha = self.entry_cert_senha.get()
-            
-            if not cert_path or not Path(cert_path).exists():
-                messagebox.showerror("Erro", "Selecione um arquivo de certificado válido!")
-                return
-            
-            # Aqui você pode implementar teste real do certificado
-            # Por enquanto, apenas verifica se o arquivo existe
-            messagebox.showinfo("Teste", "Certificado parece válido!\n(Teste completo será implementado)")
-            
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao testar certificado:\n{str(e)}")
-    
     # MÉTODOS DE IMPORTAÇÃO EM LOTE
     
     def carregar_chaves_arquivo(self):
@@ -1182,47 +1144,6 @@ class GerenciadorCertificado:
         self.certificado_senha = None
         self.certificado_info = {}
     
-    def carregar_certificado(self, caminho, senha):
-        """Carrega e valida certificado"""
-        try:
-            from cryptography.hazmat.primitives import serialization
-            from cryptography.hazmat.primitives.serialization import pkcs12
-            
-            # Ler arquivo de certificado
-            with open(caminho, 'rb') as f:
-                cert_data = f.read()
-            
-            # Carregar PKCS12
-            private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(
-                cert_data, senha.encode('utf-8')
-            )
-            
-            # Extrair informações do certificado
-            self.certificado_info = {
-                'subject': certificate.subject.rfc4514_string(),
-                'issuer': certificate.issuer.rfc4514_string(),
-                'serial_number': str(certificate.serial_number),
-                'not_valid_before': certificate.not_valid_before,
-                'not_valid_after': certificate.not_valid_after,
-                'is_valid': certificate.not_valid_before <= datetime.now() <= certificate.not_valid_after
-            }
-            
-            self.certificado_path = caminho
-            self.certificado_senha = senha
-            
-            return True
-            
-        except Exception as e:
-            print(f"❌ Erro ao carregar certificado: {e}")
-            return False
-    
-    def validar_certificado(self):
-        """Valida se o certificado está válido"""
-        if not self.certificado_info:
-            return False
-        
-        return self.certificado_info.get('is_valid', False)
-    
     def obter_info_certificado(self):
         """Retorna informações do certificado"""
         return self.certificado_info
@@ -1257,71 +1178,7 @@ class LogImportacaoNFe:
         except Exception as e:
             print(f"❌ Erro ao salvar logs: {e}")
     
-    def adicionar_log(self, chave_acesso, tipo_importacao, resultado, detalhes=None):
-        """Adiciona novo log de importação"""
-        log_entry = {
-            'timestamp': datetime.now().isoformat(),
-            'chave_acesso': chave_acesso,
-            'tipo_importacao': tipo_importacao,  # 'xml', 'consulta', 'lote'
-            'resultado': resultado,  # 'sucesso', 'erro'
-            'detalhes': detalhes or {}
-        }
-        
-        self.logs.append(log_entry)
-        self.salvar_logs()
-    
-    def obter_historico_chave(self, chave_acesso):
-        """Obtém histórico de uma chave específica"""
-        return [log for log in self.logs if log['chave_acesso'] == chave_acesso]
-    
-    def limpar_logs_antigos(self, dias=30):
-        """Remove logs mais antigos que X dias"""
-        try:
-            limite = datetime.now() - timedelta(days=dias)
-            self.logs = [
-                log for log in self.logs 
-                if datetime.fromisoformat(log['timestamp']) > limite
-            ]
-            self.salvar_logs()
-            print(f"✅ Logs antigos removidos (>{dias} dias)")
-        except Exception as e:
-            print(f"❌ Erro ao limpar logs: {e}")
-
-
 # FUNÇÕES UTILITÁRIAS PARA INTEGRAÇÃO
-def extrair_chave_de_texto(texto):
-    """Extrai chave de acesso de um texto qualquer"""
-    # Remove tudo que não é número
-    numeros = re.sub(r'[^0-9]', '', texto)
-    
-    # Procura sequência de 44 dígitos
-    match = re.search(r'\d{44}', numeros)
-    return match.group(0) if match else None
-
-def validar_estrutura_xml_nfe(caminho_arquivo):
-    """Valida se arquivo XML é uma NFe válida"""
-    try:
-        tree = ET.parse(caminho_arquivo)
-        root = tree.getroot()
-        
-        # Verificar namespace NFe
-        if 'portalfiscal.inf.br/nfe' not in str(root.tag):
-            return False, "Não é um XML de NFe"
-        
-        # Verificar elementos essenciais
-        ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-        inf_nfe = root.find('.//nfe:infNFe', ns)
-        
-        if inf_nfe is None:
-            return False, "Estrutura NFe inválida"
-        
-        return True, "XML NFe válido"
-        
-    except ET.ParseError:
-        return False, "XML malformado"
-    except Exception as e:
-        return False, f"Erro: {str(e)}"
-
 def formatar_cnpj_cpf(documento):
     """Formata CNPJ ou CPF"""
     if not documento:

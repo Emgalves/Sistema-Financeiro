@@ -642,8 +642,3 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
 
 
 # Para compatibilidade com o sistema de relatórios
-class ConfiguracaoRelatorioQuinzenal:
-    """Classe wrapper para manter compatibilidade"""
-    
-    def __init__(self, parent_frame, sistema_relatorios):
-        configurar_relatorio_quinzenal(parent_frame, sistema_relatorios)

@@ -12,9 +12,7 @@ from pathlib import Path
 from src.correcao_monetaria import GerenciadorCorrecaoMonetaria
 from src.config.utils import (
     PASTA_CLIENTES,
-    formatar_moeda,
     validar_data,
-    formatar_valor_excel,
     buscar_dados_bancarios_fornecedor
 )
 

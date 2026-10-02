@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from datetime import datetime
 import pandas as pd
+from src.config.utils import CONVERSORES_DADOS  # NF lida como texto (ver normalizar_nf)
 import numpy as np
 from pathlib import Path
 from openpyxl import load_workbook, Workbook
@@ -500,7 +501,7 @@ class RelatorioTipoDespesa:
             # Carregar dados do Excel - da aba 'Dados'
             try:
                 # Usar pandas para ler a aba Dados
-                self.df_despesas = pd.read_excel(self.arquivo_cliente, sheet_name='Dados')
+                self.df_despesas = pd.read_excel(self.arquivo_cliente, sheet_name='Dados', converters=CONVERSORES_DADOS)
                 print(f"Colunas do DataFrame: {self.df_despesas.columns.tolist()}")
                 
                 # Verificar se as colunas necessárias existem
@@ -1573,7 +1574,7 @@ class RelatorioTipoDespesa:
         try:
             # Verificar se temos a biblioteca reportlab disponível
             try:
-                from reportlab.lib.pagesizes import letter, A4
+                from reportlab.lib.pagesizes import A4
                 from reportlab.lib import colors
                 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
                 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle

@@ -2,9 +2,9 @@
 Parcelamento genérico de despesas (fatura, compra no cartão, valor fixo
 com entrada, datas específicas, ou parcelas totalmente personalizadas).
 
-Usada tanto na Entrada de Dados (parcelamento de fornecedor comum) quanto
-dentro de GestaoTaxasFixas (parcelamento de taxa de administração fixa) —
-por isso vive em seu próprio módulo genérico, fora de taxas_administracao/.
+Usada na Entrada de Dados (parcelamento de fornecedor comum). Vive em seu
+próprio módulo genérico porque também era usada por GestaoTaxasFixas
+(lançamento automático de taxas fixas), removida na limpeza de 02/10/2026.
 
 Extraído de Sistema_Entrada_Dados.py em [DATA_DA_EXTRACAO].
 Nenhuma alteração de lógica foi feita nesta extração — apenas mudança de
@@ -286,24 +286,6 @@ class GestorParcelas:
                 if isinstance(widget, ttk.Label) and widget.cget("text").startswith("Número de Parcelas"):
                     widget.config(text="Número de Parcelas:")
             self.lbl_info_parcelas.config(text="")
-
-    def atualizar_campos_modalidade(self, event=None):
-        """Atualiza campos baseado na modalidade selecionada"""
-        modalidade = self.modalidade_entrada.get()
-
-        if not hasattr(self, 'frame_valor_entrada') or not hasattr(self, 'lbl_entrada'):
-            return
-
-        self.frame_valor_entrada.grid()
-
-        if modalidade == "Percentual do valor total na primeira parcela":
-            self.lbl_entrada.config(text="Percentual (%): ")
-            self.valor_entrada.delete(0, tk.END)
-        elif modalidade == "Primeira parcela igual às demais (arredonda no final)":
-            self.frame_valor_entrada.grid_remove()
-        elif modalidade == "Valor específico na primeira parcela":
-            self.lbl_entrada.config(text="Valor (R$): ")
-            self.valor_entrada.delete(0, tk.END)
 
     def atualizar_campos_parcelamento(self, event):
         # Limpar frame dinâmico

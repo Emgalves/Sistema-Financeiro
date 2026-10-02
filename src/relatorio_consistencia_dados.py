@@ -672,16 +672,6 @@ class RelatorioConsistenciaDados:
                     pass
         return False
 
-    def _parcela_tem_entrada_em_dados(self, parc, dados):
-        cnpj = parc['cnpj']
-        num = parc['num_parcela']
-        for reg in dados:
-            if reg['cnpj'] != cnpj:
-                continue
-            if num in _extrair_parcelas_da_referencia(reg['referencia']):
-                return True
-        return False
-
     # ------------------------------------------------------------------
     # Preenchimento de treeviews
     # ------------------------------------------------------------------

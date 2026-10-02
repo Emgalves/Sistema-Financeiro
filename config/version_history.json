@@ -256,7 +256,8 @@
         "release_date": "03/03/2026",
         "changes": [
             "Inclusão do campo Responsável no formulário e na base de Fornecedores",
-            "Correção da busca por CNPJ/CPF do Visualizador de Lançamentos por FornecedorAtualização do Relatorio Quinzenal de Mediçoes - PDF para trazer o campo Responsável do Fornecedor"
+            "Correção da busca por CNPJ/CPF do Visualizador de Lançamentos por Fornecedor",
+            "Atualização do Relatorio Quinzenal de Mediçoes - PDF para trazer o campo Responsável do Fornecedor"
         ],
         "timestamp": "2026-03-03T10:36:41.567905"
     },
@@ -321,7 +322,7 @@
     },
     {
         "version": "1.8.0",
-        "release_date": "08/072026",
+        "release_date": "08/07/2026",
         "changes": [
             "Cadastro de cliente — checkboxes para marcar fictício/vinculado e caixa controlado, com as abas de controle nascendo junto (ou confirmação explícita, se for num cliente já existente)",
             "Repasse Mão de Obra (clientes fictícios) — cálculo, painel na tela, botão de registro, bloco no PDF",
@@ -380,5 +381,33 @@
             "Retirada de Lançamentos Futuros e remoção da saída em Excel do Relatório Quinzenal"
         ],
         "timestamp": "2026-09-15T18:06:49.280942"
+    },
+    {
+        "version": "1.8.5",
+        "release_date": "25/09/2026",
+        "changes": [
+            "Melhoria nos critérios de detectar duplicidade, admitindo pequenas variações de grafia para comparação de similaridade",
+            "Inclusão de checkbox para desmarcar agrupamento de medição na Agenda, principalmente, em casos de adiantamento",
+            "Relatório por Etapa da Obra com ferramenta interna que possibilita a correção de lançamentos antigos, com a inclusão da etapa pertinente",
+            "Melhoria no comportamento de janelas de mensagens que, em algumas telas, ficavam ocultas",
+            "Melhoria na seleção de lançamentos aptos para vincular medições, excluíndo os registros com STATUS = LANÇADO"
+        ],
+        "timestamp": "2026-09-24T09:49:33.214876"
+    },
+    {
+        "version": "1.9.0",
+        "release_date": "02/10/2026",
+        "changes": [
+            "Cadastro de clientes pessoa jurídica: campo CPF/CNPJ com validação e máscara automática (inclusive CNPJ alfanumérico) e novo campo Domicílio (residência PF / sede PJ)",
+            "Ao incluir o CPF/CNPJ de um cliente em Editar Cliente, o sistema oferece o cadastro do cliente como fornecedor",
+            "Contratos de empreitada e de administração: qualificação do contratante pessoa jurídica com o endereço da sede (obtido da base de fornecedores) e correções de texto (máscara no CPF/CNPJ da contratada, concordância, menção a representantes legais apenas para pessoa jurídica e omissão do CNO quando não informado)",
+            "Relatório de Despesas, Lançamentos Futuros e Reemissão já abrem com o último cliente selecionado na Entrada de Dados ou na Gestão de Empreiteiros",
+            "Correção da NF exibida e regravada com .0 no gerenciador de lançamentos e nos relatórios",
+            "Correção do botão Novo Lançamento da Agenda, que não gravava o lançamento",
+            "Correção da janela de índices da Correção Monetária, que ficava oculta após cada inclusão",
+            "Editar Fornecedor: o Tipo de Chave PIX passa a corresponder à chave cadastrada",
+            "Limpeza geral do código: remoção de cerca de 41 mil linhas sem uso, incluindo os módulos descontinuados de despesas rateadas e de lançamento automático de taxas fixas"
+        ],
+        "timestamp": "2026-10-02T13:00:40.488840"
     }
 ]

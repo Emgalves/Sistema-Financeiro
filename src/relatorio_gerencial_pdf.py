@@ -29,8 +29,6 @@ from reportlab.platypus import (
     Spacer, PageBreak, Frame, PageTemplate
 )
 from reportlab.pdfgen import canvas as pdf_canvas
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 
 # Adicionar diretório raiz ao path
 def add_project_root():

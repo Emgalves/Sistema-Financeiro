@@ -118,15 +118,6 @@ class SystemLogger:
             self._setup_logging()
         return logging.LoggerAdapter(self.logger, self.user_context)
 
-    def get_log_info(self):
-        """Retorna informações sobre o estado do logging"""
-        return {
-            'log_dir': self.log_dir,
-            'log_file': self.log_file,
-            'handlers_count': len(self.logger.handlers) if self.logger else 0,
-            'current_user': self.user_context.get('user', 'não definido')
-        }
-
 # Criar instância global
 system_logger = SystemLogger()
 
@@ -148,16 +139,3 @@ def log_action(action_description):
     return decorator
 
 # Funções auxiliares para debugging
-def get_logging_status():
-    """Retorna o status atual do sistema de logging"""
-    return system_logger.get_log_info()
-
-def test_logging():
-    """Testa se o sistema de logging está funcionando"""
-    try:
-        logger = system_logger.get_logger()
-        logger.info("Teste de logging executado com sucesso")
-        return True
-    except Exception as e:
-        print(f"Erro no teste de logging: {str(e)}")
-        return False

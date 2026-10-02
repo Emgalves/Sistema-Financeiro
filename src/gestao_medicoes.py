@@ -9,7 +9,6 @@ from dateutil.relativedelta import relativedelta
 from tkcalendar import DateEntry
 import pandas as pd
 from pathlib import Path
-import xlwings as xw
 from openpyxl import load_workbook
 import openpyxl
 import babel
@@ -924,36 +923,6 @@ class GestaoMedicoes:
         # Binding para duplo clique
         self.tree_contratos.bind('<Double-1>', lambda e: self.selecionar_contrato())
 
-    def _ajustar_altura_linha_contratos(self, contratos, max_linhas_permitido=6):
-        """
-        NOVO: calcula a altura de linha do Treeview de contratos com base no
-        maior número de quebras de linha (\n) presentes na Descrição de
-        qualquer contrato do conjunto atualmente filtrado, e aplica isso via
-        ttk.Style.
-    
-        max_linhas_permitido evita que UM contrato com descrição enorme force
-        todas as linhas da tabela (inclusive as curtas) a ficarem
-        exageradamente altas. Acima desse limite, a descrição continua sendo
-        cortada visualmente na tabela — mas ela nunca é truncada nos dados,
-        só na exibição.
-        """
-        fonte = tkfont.nametofont("TkDefaultFont")
-        altura_uma_linha = fonte.metrics("linespace")
-    
-        max_linhas = 1
-        for c in contratos:
-            descricao = c.get('descricao') or c[3] if isinstance(c, (list, tuple)) else (c.get('descricao') or "")
-            n_linhas = str(descricao).count('\n') + 1
-            max_linhas = max(max_linhas, n_linhas)
-    
-        max_linhas = min(max_linhas, max_linhas_permitido)
-    
-        # Um pouco de folga vertical (padding) por linha, pra não ficar apertado
-        nova_altura = int(altura_uma_linha * max_linhas) + 8
-    
-        estilo = ttk.Style()
-        estilo.configure("Contratos.Treeview", rowheight=nova_altura)
-
     def setup_aba_medicoes(self):
         """Configura a aba de medições"""
         # Frame principal
@@ -1558,51 +1527,6 @@ class GestaoMedicoes:
             logger.warning(f"Erro ao formatar documento: {e}")
             return str(documento)
     
-    def adicionar_busca_fornecedores(self, frame_fornecedor):
-                
-        # Frame de busca
-        busca_frame = ttk.Frame(frame_fornecedor)
-        busca_frame.pack(fill='x', pady=5)
-        
-        ttk.Label(busca_frame, text="Buscar:").pack(side='left', padx=5)
-        
-        # Campo de busca
-        self.ent_busca_fornecedor = ttk.Entry(busca_frame, width=40)
-        self.ent_busca_fornecedor.pack(side='left', padx=5, fill='x', expand=True)
-        
-        # Bind para busca ao digitar
-        self.ent_busca_fornecedor.bind('<KeyRelease>', self.buscar_fornecedor_contrato)
-        
-        ttk.Button(busca_frame, text="🔍 Buscar", 
-                command=lambda: self.buscar_fornecedor_contrato()).pack(side='left', padx=5)
-        
-        ttk.Button(busca_frame, text="↻ Mostrar Todos",
-                command=self.atualizar_lista_fornecedores_contrato).pack(side='left', padx=5)
-    
-    def buscar_fornecedor_contrato(self, event=None):
-        def _executar():
-            termo = self.ent_busca_fornecedor.get().strip()
-            if not termo:
-                self.atualizar_lista_fornecedores_contrato()
-                return
-            try:
-                logger.info(f"Buscando fornecedores com termo: {termo}")
-                encontrados = self._buscar_no_cache_fornecedores(termo)
-                itens = sorted(f"{r['nome_exibicao']} - {r['cnpj_fmt']}" for r in encontrados)
-    
-                self.lst_fornecedor_contrato.config(state='normal')
-                self.lst_fornecedor_contrato.delete(0, tk.END)
-                for item in itens:
-                    self.lst_fornecedor_contrato.insert(tk.END, item)
-    
-                logger.info(f"✅ {len(itens)} fornecedores encontrados")
-                # ALTERADO: sem messagebox bloqueando a digitação
-            except Exception as e:
-                logger.error(f"❌ Erro ao buscar fornecedores: {e}")
-                messagebox.showerror("Erro", f"Erro ao buscar:\n{str(e)}", parent=self.root)
-    
-        self._agendar_busca_debounced('_after_id_busca_forn_contrato', 250, _executar)
-
     def normalizar_cnpj_cpf(self, cnpj_cpf_input):
         """
         Normaliza CNPJ/CPF para busca consistente.
@@ -1870,10 +1794,6 @@ class GestaoMedicoes:
         self.cnpj_fornecedor_selecionado = None
         self.nome_fornecedor_selecionado = None
         self.notebook.select(self.aba_fornecedor)
-
-    def continuar_para_contratos(self):
-        """Mantido por compatibilidade — use continuar_para_fornecedor no fluxo principal"""
-        self.continuar_para_fornecedor()
 
     def continuar_para_contratos_filtrado(self):
         """Avança para a aba de Contratos filtrando pelo fornecedor selecionado"""
@@ -3396,56 +3316,6 @@ class GestaoMedicoes:
         except Exception:
             pass
 
-    def carregar_dados_cliente_contrato(self):
-        """Carrega dados do cliente selecionado na aba de contrato"""
-        if not self.cliente_atual:
-            self.lbl_cliente_contrato.config(text="Cliente: Nenhum selecionado")
-            return
-        
-        try:
-            dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
-            
-            if dados_cliente:
-                self.lbl_cliente_contrato.config(text=f"Cliente: {dados_cliente['nome']}")
-                
-                # Preencher campos
-                self.ent_cno.config(state='normal')
-                self.ent_cno.delete(0, tk.END)
-                self.ent_cno.insert(0, dados_cliente.get('cno', ''))
-                self.ent_cno.config(state='readonly')
-                
-                self.ent_cpf_cliente.config(state='normal')
-                self.ent_cpf_cliente.delete(0, tk.END)
-                self.ent_cpf_cliente.insert(0, dados_cliente.get('cnpj_cpf', ''))
-                self.ent_cpf_cliente.config(state='readonly')
-                
-                self.ent_estado_civil.config(state='normal')
-                self.ent_estado_civil.delete(0, tk.END)
-                self.ent_estado_civil.insert(0, dados_cliente.get('estado_civil', ''))
-                self.ent_estado_civil.config(state='readonly')
-                
-                self.ent_cidade.config(state='normal')
-                self.ent_cidade.delete(0, tk.END)
-                cidade_formatada = self.formatar_nome_cidade(dados_cliente.get('cidade', ''))
-                self.ent_cidade.insert(0, cidade_formatada)
-                self.ent_cidade.config(state='readonly')
-                
-                self.ent_endereco_cliente.config(state='normal')
-                self.ent_endereco_cliente.delete(0, tk.END)
-                self.ent_endereco_cliente.insert(0, dados_cliente.get('endereco', ''))
-                self.ent_endereco_cliente.config(state='readonly')
-                
-                # Pré-preencher endereço da obra com endereço do cliente
-                self.ent_endereco_obra.delete(0, tk.END)
-                self.ent_endereco_obra.insert(0, dados_cliente.get('endereco', ''))
-                
-                logger.info(f"Dados do cliente carregados na aba de contrato: {self.cliente_atual}")
-            else:
-                messagebox.showwarning("Aviso", "Não foi possível carregar os dados do cliente.", parent=self.root)
-        except Exception as e:
-            logger.error(f"Erro ao carregar dados do cliente para contrato: {e}")
-            messagebox.showerror("Erro", f"Erro ao carregar dados do cliente: {str(e)}", parent=self.root)
-
     # def atualizar_lista_fornecedores_contrato(self):
         
     #     try:
@@ -3527,140 +3397,6 @@ class GestaoMedicoes:
     #         messagebox.showerror("Erro", f"Erro ao carregar fornecedores:\n{str(e)}", parent=self.root)
 
 
-    def carregar_dados_fornecedor_contrato(self, event=None):
-        
-        # Obter item selecionado do Listbox
-        selection = self.lst_fornecedor_contrato.curselection()
-        if not selection:
-            return
-        
-        # Pegar o item selecionado no formato "NOME - CNPJ"
-        item_selecionado = self.lst_fornecedor_contrato.get(selection[0]).strip()
-        
-        if not item_selecionado or item_selecionado.startswith("👆"):
-            return
-        
-        try:
-            # Extrair CNPJ do formato "NOME - CNPJ"
-            if " - " in item_selecionado:
-                partes = item_selecionado.rsplit(" - ", 1)  # Split da direita para evitar problemas com " - " no nome
-                fornecedor_nome = partes[0].strip()
-                cnpj_busca = partes[1].strip()
-            else:
-                # Fallback: se não tiver o formato esperado, usar o item todo como nome
-                fornecedor_nome = item_selecionado
-                cnpj_busca = None
-            
-            logger.info(f"Carregando dados do fornecedor: {fornecedor_nome} (CNPJ: {cnpj_busca})")
-            
-            from openpyxl import load_workbook
-            
-            wb = load_workbook(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
-            
-            # Buscar fornecedor pelo CNPJ (mais preciso) ou pelo NOME
-            fornecedor_encontrado = None
-            
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row[0]:  # Pular sem CNPJ/CPF
-                    continue
-                
-                # Obter CNPJ formatado da linha
-                cnpj_cpf_raw = row[0]
-                cnpj_linha = self.formatar_documento(cnpj_cpf_raw)
-                
-                # Buscar por CNPJ (mais confiável) ou por nome
-                if cnpj_busca and cnpj_linha == cnpj_busca:
-                    # Encontrou pelo CNPJ - método preferencial
-                    fornecedor_encontrado = row
-                    break
-                
-                # Fallback: buscar por nome se CNPJ não disponível
-                if not cnpj_busca:
-                    razao_social = row[2] if len(row) > 2 else ''
-                    nome_fantasia = row[3] if len(row) > 3 else ''
-                    
-                    # Verificar se é o fornecedor procurado
-                    if (nome_fantasia and str(nome_fantasia).strip() == fornecedor_nome) or \
-                       (razao_social and str(razao_social).strip() == fornecedor_nome):
-                        fornecedor_encontrado = row
-                        break
-            
-            wb.close()
-            
-            if not fornecedor_encontrado:
-                messagebox.showwarning(
-                    "Aviso",
-                    f"Fornecedor '{fornecedor_nome}' não encontrado na planilha.", 
-                    parent=self.root
-                )
-                return
-            
-            # Extrair dados do fornecedor
-            cnpj_cpf_raw = fornecedor_encontrado[0]
-            endereco_raw = fornecedor_encontrado[15] if len(fornecedor_encontrado) > 15 else ''  
-            dados_banc_raw = fornecedor_encontrado[14] if len(fornecedor_encontrado) > 14 else ''
-            
-            # Formatar CNPJ/CPF
-            cnpj_cpf_formatado = self.formatar_documento(cnpj_cpf_raw)
-            
-            # === PREENCHER CNPJ/CPF ===
-            self.ent_cnpj_fornecedor.config(state='normal')
-            self.ent_cnpj_fornecedor.delete(0, tk.END)
-            self.ent_cnpj_fornecedor.insert(0, cnpj_cpf_formatado)
-            self.ent_cnpj_fornecedor.config(state='readonly')
-            
-            # === PREENCHER ENDEREÇO ===
-            if pd.isna(endereco_raw) or not str(endereco_raw).strip():
-                endereco = '[ENDEREÇO NÃO CADASTRADO]'
-                logger.warning(f"Fornecedor '{fornecedor_nome}' sem endereço cadastrado")
-            else:
-                endereco = str(endereco_raw).strip()
-            
-            self.ent_endereco_fornecedor.config(state='normal')
-            self.ent_endereco_fornecedor.delete(0, tk.END)
-            self.ent_endereco_fornecedor.insert(0, endereco)
-            self.ent_endereco_fornecedor.config(state='readonly')
-            
-            # === BUSCAR DADOS BANCÁRIOS ===
-            try:
-                dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj_cpf_formatado, "PIX")
-                
-                if not dados_bancarios or dados_bancarios.strip() == '':
-                    dados_bancarios = (
-                        f"⚠️ Dados bancários não encontrados para:\n"
-                        f"{fornecedor_nome}\n"
-                        f"CPF/CNPJ: {cnpj_cpf_formatado}\n\n"
-                        f"Por favor, cadastre os dados bancários."
-                    )
-                    logger.warning(f"Dados bancários não encontrados para {fornecedor_nome}")
-                
-            except Exception as e:
-                logger.error(f"Erro ao buscar dados bancários: {e}")
-                dados_bancarios = f"❌ Erro ao buscar dados bancários: {str(e)}"
-            
-            self.txt_dados_bancarios.config(state='normal')
-            self.txt_dados_bancarios.delete('1.0', tk.END)
-            self.txt_dados_bancarios.insert('1.0', dados_bancarios)
-            self.txt_dados_bancarios.config(state='disabled')
-            
-            logger.info(f"✅ Dados do fornecedor '{fornecedor_nome}' carregados")
-            
-        except Exception as e:
-            logger.error(f"❌ Erro ao carregar dados do fornecedor: {e}")
-            import traceback
-            traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao carregar dados do fornecedor:\n{str(e)}", parent=self.root)
-
-    def ao_mudar_data_contrato(self, event=None):
-        """Quando Data do Contrato mudar, apenas registra"""
-        try:
-            data_contrato = self.ent_data_contrato.get_date()
-            logger.info(f"Data do Contrato alterada: {data_contrato}")
-            # NÃO sincronizar com Data Início - são independentes
-        except Exception as e:
-            logger.error(f"Erro ao alterar data contrato: {e}")
-    
     def ao_mudar_data_inicio(self, event=None):
         """Quando Data Início mudar, apenas recalcula prazo"""
         try:
@@ -4089,6 +3825,22 @@ class GestaoMedicoes:
         try:
             # Obter dados do cliente
             dados_cliente = self.gerador_contrato.obter_dados_cliente(self.cliente_atual)
+
+            if not dados_cliente:
+                messagebox.showerror(
+                    "Erro",
+                    f"Não foi possível ler os dados do cliente '{self.cliente_atual}' "
+                    f"em Clientes.xlsx. Verifique os logs.",
+                    parent=self.root
+                )
+                return
+
+            # Cliente PJ sem cadastro (ou sem endereço) na base de fornecedores:
+            # o contrato não é gerado (regra em src/modules/contratante_pj.py)
+            if dados_cliente.get('erro_contratante'):
+                messagebox.showerror("Contrato não gerado",
+                                     dados_cliente['erro_contratante'], parent=self.root)
+                return
             
             # Obter dados do fornecedor a partir do contexto (aba Fornecedor)
             nome_fornecedor = getattr(self, 'nome_fornecedor_selecionado', None)
@@ -4145,6 +3897,10 @@ class GestaoMedicoes:
                 'cliente_cpf': dados_cliente['cnpj_cpf'],
                 'cliente_estado_civil': dados_cliente['estado_civil'],
                 'cliente_endereco': dados_cliente['endereco'],
+                'cliente_tipo_pessoa': dados_cliente.get('tipo_pessoa', 'PF'),
+                'cliente_domicilio': dados_cliente.get('domicilio', ''),
+                'cliente_sede': dados_cliente.get('sede', ''),
+                'cliente_erro_contratante': dados_cliente.get('erro_contratante', ''),
                 'fornecedor_nome': dados_fornecedor['nome'],
                 'fornecedor_razao_social': dados_fornecedor.get('razao_social') or dados_fornecedor['nome'],
                 'fornecedor_cnpj_cpf': dados_fornecedor['cnpj_cpf'],
@@ -5748,46 +5504,6 @@ class GestaoMedicoes:
             print(f"Erro ao obter vinculações: {e}")
             return []
 
-    def buscar_lancamentos_por_cnpj(self, cnpj_cpf_normalizado):
-        """
-        Busca lançamentos na aba Dados usando CNPJ/CPF normalizado.
-        Mais robusto que busca por nome.
-        
-        Args:
-            cnpj_cpf_normalizado: Dict com 'limpo' e 'formatado'
-            
-        Returns:
-            Lista de tuplas (índice_linha, dados_linha)
-        """
-        try:
-            wb = load_workbook(self.arquivo_cliente)
-            ws = wb['Dados']
-            
-            lancamentos_encontrados = []
-            cnpj_limpo = cnpj_cpf_normalizado['limpo']
-            
-            for idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
-                # Coluna 3 (índice 2) contém CNPJ/CPF
-                cnpj_celula = str(row[2]) if row[2] else ""
-                
-                # Normalizar CNPJ da célula
-                cnpj_celula_norm = self.normalizar_cnpj_cpf(cnpj_celula)
-                
-                # Comparar apenas os números
-                if cnpj_celula_norm['limpo'] == cnpj_limpo:
-                    lancamentos_encontrados.append((idx, row))
-            
-            wb.close()
-            return lancamentos_encontrados
-            
-        except Exception as e:
-            logger.error(f"Erro ao buscar lançamentos por CNPJ: {str(e)}")
-            try:
-                wb.close()
-            except:
-                pass
-            return []
-    
     def abrir_janela_selecao_lancamento(self, id_medicao, dados_medicao):
         """
         VERSÃO CORRIGIDA - Interface melhorada com filtro de data e nova coluna de saldo.
@@ -7004,69 +6720,6 @@ class GestaoMedicoes:
                 self.root.destroy()
             except:
                 pass
-
-class ComboboxServicosSimples(ttk.Combobox):
-    """Combobox com autocompletar para serviços"""
-    
-    def __init__(self, parent, **kwargs):
-        kwargs['state'] = 'normal'  # Permite digitação
-        super().__init__(parent, **kwargs)
-        
-        self.atualizar_valores()
-        self.bind('<KeyRelease>', self.autocompletar)
-        self.bind('<FocusOut>', self.validar_novo)
-    
-    def atualizar_valores(self):
-        """Atualiza lista de serviços"""
-        try:
-            from src.configuracoes_sistema import GerenciadorConfiguracoes
-            servicos = GerenciadorConfiguracoes.listar_todos_servicos()
-            self['values'] = servicos
-        except Exception as e:
-            print(f"Erro ao carregar serviços: {e}")
-            self['values'] = []
-    
-    def autocompletar(self, event):
-        """Autocompletar enquanto digita"""
-        valor = self.get()
-        if not valor:
-            self.atualizar_valores()
-            return
-        
-        # Filtrar
-        try:
-            from src.configuracoes_sistema import GerenciadorConfiguracoes
-            todos = GerenciadorConfiguracoes.listar_todos_servicos()
-            filtrados = [s for s in todos if valor.lower() in s.lower()]
-            self['values'] = filtrados
-        except:
-            pass
-    
-    def validar_novo(self, event=None):
-        """Valida e oferece adicionar novo serviço"""
-        valor = self.get().strip()
-        if not valor:
-            return
-        
-        try:
-            from src.configuracoes_sistema import GerenciadorConfiguracoes
-            existentes = GerenciadorConfiguracoes.listar_todos_servicos()
-            
-            if valor not in existentes:
-                resposta = messagebox.askyesno(
-                    "Novo Serviço",
-                    f"O serviço '{valor}' não existe.\n\nDeseja adicioná-lo?", 
-                    parent=self.root
-                )
-                
-                if resposta:
-                    if GerenciadorConfiguracoes.adicionar_servico_rapido(valor):
-                        messagebox.showinfo("Sucesso", f"Serviço '{valor}' adicionado!", parent=self.root)
-                        self.atualizar_valores()
-                    else:
-                        messagebox.showerror("Erro", "Não foi possível adicionar!", parent=self.root)
-        except Exception as e:
-            print(f"Erro na validação: {e}")
 
 def main():
     """Função principal para executar o módulo de forma independente"""

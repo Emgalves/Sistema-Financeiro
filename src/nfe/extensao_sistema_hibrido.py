@@ -287,29 +287,6 @@ def inicializar_sistema_nfe_estendido(sistema_principal):
             return None
 
 
-def testar_extensao_manualmente(sistema_principal):
-    """
-    Função para testar a extensão sem alterar o __init__
-    Execute esta função no console após inicializar o sistema
-    """
-    try:
-        print("🧪 Testando extensão NFe manualmente...")
-        
-        resultado = estender_sistema_hibrido_nfe(sistema_principal)
-        
-        if resultado:
-            print("✅ Extensão aplicada com sucesso!")
-            print("📄 Agora importe um XML para ver o botão 'Processar NFe Completa'")
-            return True
-        else:
-            print("❌ Falha ao aplicar extensão")
-            return False
-            
-    except Exception as e:
-        print(f"❌ Erro no teste manual: {e}")
-        return False
-
-
 def diagnosticar_sistema_nfe(sistema_principal):
     """
     Diagnostica o estado atual do sistema NFe

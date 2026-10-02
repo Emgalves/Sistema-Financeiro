@@ -294,22 +294,3 @@ class RelatoriosDespesasService:
         
         return caminho_final, nome_arquivo
     
-    def verificar_metodos_handler(self):
-        """Método para debug - verificar que métodos existem no handler"""
-        try:
-            print("🔍 MÉTODOS DISPONÍVEIS NO HANDLER:")
-            metodos = [method for method in dir(self.handler) if not method.startswith('_')]
-            
-            # Filtrar métodos relacionados a lançamentos futuros
-            metodos_futuros = [m for m in metodos if 'futuro' in m.lower()]
-            print(f"Métodos relacionados a futuros: {metodos_futuros}")
-            
-            # Filtrar métodos relacionados a processamento
-            metodos_proc = [m for m in metodos if 'processo' in m.lower() or 'processar' in m.lower()]
-            print(f"Métodos de processamento: {metodos_proc}")
-            
-            return metodos
-            
-        except Exception as e:
-            print(f"Erro ao verificar métodos: {str(e)}")
-            return []

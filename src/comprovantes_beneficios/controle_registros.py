@@ -72,10 +72,6 @@ class NovoRegistro:
     observacao: Optional[str] = None
 
 
-class ErroControleDuplicidade(RuntimeError):
-    pass
-
-
 # ============================================================================
 # Leitura
 # ============================================================================
@@ -122,11 +118,6 @@ def ja_emitido(caminho_planilha_cliente: str, beneficio: str, competencia: str, 
     return _status_efetivo(registros, beneficio, competencia, cpf) == 'EMITIDO'
 
 
-def listar_emitidos(caminho_planilha_cliente: str, competencia: str, beneficio: str) -> list[RegistroRecibo]:
-    """Último status por CPF, para essa competência/benefício — usado pela interface."""
-    return list(listar_status(caminho_planilha_cliente, competencia, beneficio).values())
-
-
 def listar_status(caminho_planilha_cliente: str, competencia: str, beneficio: str) -> dict[str, RegistroRecibo]:
     """
     Último registro por CPF (qualquer status: EMITIDO, CANCELADO,
@@ -141,10 +132,6 @@ def listar_status(caminho_planilha_cliente: str, competencia: str, beneficio: st
     for r in registros:  # ordem cronológica -> o último grava por cima no dict
         por_cpf[r.cpf] = r
     return por_cpf
-
-
-def buscar_por_cpf(caminho_planilha_cliente: str, cpf: str) -> list[RegistroRecibo]:
-    return [r for r in _ler_todos_registros(caminho_planilha_cliente) if r.cpf == cpf]
 
 
 # ============================================================================
@@ -223,32 +210,3 @@ def registrar_lote(
     return gravados, pulados
 
 
-def cancelar_emissao(
-    caminho_planilha_cliente: str, beneficio: str, competencia: str,
-    cpf: str, motivo: str, usuario: Optional[str] = None,
-) -> bool:
-    """
-    Acrescenta uma linha de cancelamento (nunca edita a original).
-    Retorna False se não havia emissão ativa pra cancelar.
-    """
-    registros = _ler_todos_registros(caminho_planilha_cliente)
-    ultimo = None
-    for r in registros:
-        if r.beneficio == beneficio and r.competencia == competencia and r.cpf == cpf:
-            ultimo = r
-    if ultimo is None or ultimo.status != 'EMITIDO':
-        return False
-
-    wb = openpyxl.load_workbook(caminho_planilha_cliente)
-    ws = wb[NOME_ABA] if NOME_ABA in wb.sheetnames else wb.create_sheet(NOME_ABA)
-    if ws.max_row == 0 or ws.cell(1, 1).value != _CABECALHO[0]:
-        ws.append(_CABECALHO)
-
-    ws.append([
-        datetime.now().isoformat(timespec='seconds'), beneficio, competencia,
-        cpf, ultimo.nome, ultimo.valor, ultimo.dias, ultimo.data_vencimento,
-        usuario, None, ultimo.caminho_pdf, 'CANCELADO', motivo,
-    ])
-    wb.save(caminho_planilha_cliente)
-    wb.close()
-    return True

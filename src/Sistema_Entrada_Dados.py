@@ -71,7 +71,6 @@ from tkinter import filedialog, messagebox
 
 # Imports para manipulação de dados e Excel
 import pandas as pd
-import xlwings as xw
 from openpyxl import load_workbook
 import openpyxl
 import babel
@@ -81,8 +80,6 @@ import unicodedata
 import requests
 import json
 import xml.etree.ElementTree as ET
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
 
 # Detectar modo PyInstaller e ajustar paths
 if getattr(sys, 'frozen', False):
@@ -231,20 +228,177 @@ try:
             formatar_documento,
             validar_documento,
             buscar_dados_bancarios_fornecedor,
-            formatar_moeda,
             custom_messagebox,
-            formatar_cpf_campo,      # Formatadores
             formatar_cno_campo,
             formatar_cep_campo,
             limpar_formatacao,
             # validar_cpf_completo,
-            validar_cno
         )
     from src.configuracoes_sistema import GerenciadorConfiguracoes
     logger.info("Configurações importadas com sucesso")
 except Exception as e:
     logger.error(f"Erro ao importar configurações: {str(e)}")
     raise
+
+# =====================================================================
+# CLIENTES: SUPORTE A CPF (PF) E CNPJ (PJ) NO MESMO CAMPO
+# Usado SOMENTE nas telas "Novo Cliente" e "Editar Cliente".
+# O cadastro de fornecedores continua usando as funções de src.config.utils.
+#
+# A coluna G da planilha de clientes (cabeçalho "CPF") guarda CPF
+# (000.000.000-00) ou CNPJ (00.000.000/0000-00), SEMPRE como texto com
+# máscara, para que zeros à esquerda nunca se percam.
+# Identificação do tipo: contém letra -> CNPJ alfanumérico;
+# 11 caracteres -> CPF; 14 caracteres -> CNPJ.
+# CNPJ alfanumérico: IN RFB 2.229/2024 (12 posições alfanuméricas + 2 DVs numéricos).
+# =====================================================================
+def _tipo_chave_pix(chave, documento='', telefone=''):
+    """Deduz o "Tipo de Chave" a partir da chave PIX gravada. O tipo não é
+    gravado na planilha; antes, a tela de edição abria sempre "Telefone"."""
+    chave = str(chave or '').strip()
+    if not chave:
+        return 'Telefone'                       # mesmo padrão de um cadastro novo
+    if '@' in chave:
+        return 'Email'
+    if not chave.replace('.', '').replace('-', '').replace('/', '').replace('(', '') \
+            .replace(')', '').replace(' ', '').replace('+', '').isdigit():
+        return 'Selecione'                      # chave aleatória ou outro formato
+    dig = ''.join(c for c in chave if c.isdigit())
+    if dig == ''.join(c for c in str(documento or '') if c.isdigit()):
+        return 'CNPJ/CPF'
+    tel = ''.join(c for c in str(telefone or '') if c.isdigit())
+    if tel and (dig == tel or dig.endswith(tel)):
+        return 'Telefone'
+    if (len(dig) == 11 and _cpf_digitos_validos(dig)) or (len(dig) == 14 and _cnpj_digitos_validos(dig)):
+        return 'CNPJ/CPF'                       # CPF/CNPJ de outra pessoa
+    return 'Telefone'
+
+
+def _numero_br(texto):
+    """Converte número digitado no padrão brasileiro: "1.500,25" -> 1500.25,
+    "375" -> 375.0, "1,5" -> 1.5. Com vírgula, os pontos são milhar."""
+    texto = str(texto or '').strip()
+    if ',' in texto:
+        texto = texto.replace('.', '').replace(',', '.')
+    return float(texto)
+
+
+def _doc_limpo(texto):
+    """Mantém apenas letras e dígitos, em maiúsculas (None vira '')."""
+    return ''.join(ch for ch in str(texto or '').upper() if ch.isalnum())
+
+
+def _cpf_digitos_validos(cpf):
+    """Confere os dígitos verificadores de um CPF (11 dígitos, sem máscara)."""
+    if len(cpf) != 11 or not cpf.isdigit() or cpf == cpf[0] * 11:
+        return False
+    for n in (9, 10):
+        soma = sum(int(cpf[i]) * (n + 1 - i) for i in range(n))
+        if (soma * 10) % 11 % 10 != int(cpf[n]):
+            return False
+    return True
+
+
+def _cnpj_digitos_validos(cnpj):
+    """Confere os dígitos verificadores de um CNPJ numérico ou alfanumérico
+    (14 posições, sem máscara). Cada caractere vale ord(c) - 48, o que dá o
+    mesmo resultado do cálculo tradicional quando o CNPJ é só numérico."""
+    if len(cnpj) != 14 or cnpj == cnpj[0] * 14:
+        return False
+    base, dvs = cnpj[:12], cnpj[12:]
+    if not dvs.isdigit() or not all(c.isdigit() or ('A' <= c <= 'Z') for c in base):
+        return False
+    valores = [ord(c) - 48 for c in base]
+    pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+    pesos2 = [6] + pesos1
+    for pesos in (pesos1, pesos2):
+        resto = sum(v * p for v, p in zip(valores, pesos)) % 11
+        valores.append(0 if resto < 2 else 11 - resto)
+    return valores[12] == int(dvs[0]) and valores[13] == int(dvs[1])
+
+
+def _eh_cnpj(limpo):
+    """CNPJ se tiver letra (alfanumérico) ou mais de 11 caracteres."""
+    return any(c.isalpha() for c in limpo) or len(limpo) > 11
+
+
+def _mascara_cpf_cnpj(limpo):
+    """Aplica a máscara progressivamente (CPF ou CNPJ, conforme _eh_cnpj)."""
+    limpo = limpo[:14]
+    if _eh_cnpj(limpo):
+        separadores = {2: '.', 5: '.', 8: '/', 12: '-'}
+    else:
+        separadores = {3: '.', 6: '.', 9: '-'}
+    saida = ''
+    for i, c in enumerate(limpo):
+        if i in separadores:
+            saida += separadores[i]
+        saida += c
+    return saida
+
+
+def formatar_cpf_cnpj_campo(event):
+    """Máscara automática para o Entry de cliente (substitui formatar_cpf_campo).
+    Ligar em <KeyRelease> e <FocusOut>."""
+    widget = event.widget
+    # Ao apagar ou navegar, não reformata (senão o separador "volta" e o
+    # usuário fica preso); a máscara é refeita quando o campo perde o foco.
+    if event.type == tk.EventType.KeyRelease and event.keysym in (
+            'BackSpace', 'Delete', 'Left', 'Right', 'Home', 'End', 'Tab',
+            'Shift_L', 'Shift_R', 'Control_L', 'Control_R'):
+        return
+    novo = _mascara_cpf_cnpj(_doc_limpo(widget.get()))
+    if widget.get() != novo:
+        widget.delete(0, tk.END)
+        widget.insert(0, novo)
+        widget.icursor(tk.END)
+
+
+def validar_documento_cliente(texto):
+    """Valida o CPF/CNPJ digitado no cadastro/edição de cliente.
+
+    Retorna (pode_salvar, documento_formatado).
+    - Campo vazio: permitido (retorna '').
+    - Tamanho diferente de 11 (CPF) ou 14 (CNPJ): bloqueia.
+    - Dígitos verificadores errados: pergunta se deseja salvar mesmo assim.
+    """
+    limpo = _doc_limpo(texto)
+    if not limpo:
+        return True, ''
+    if _eh_cnpj(limpo):
+        tipo = 'CNPJ'
+        if len(limpo) != 14:
+            messagebox.showerror(
+                "Erro",
+                f"CNPJ com {len(limpo)} caracteres.\n\n"
+                "O CNPJ deve ter 14 caracteres, incluindo os zeros à esquerda "
+                "(ex.: 00.065.389/0001-53)."
+            )
+            return False, ''
+        valido = _cnpj_digitos_validos(limpo)
+    elif len(limpo) == 11:
+        tipo, valido = 'CPF', _cpf_digitos_validos(limpo)
+    else:
+        messagebox.showerror(
+            "Erro",
+            f"CPF/CNPJ com {len(limpo)} dígitos.\n\n"
+            "Informe 11 dígitos para CPF (pessoa física) ou "
+            "14 para CNPJ (pessoa jurídica), incluindo os zeros à esquerda."
+        )
+        return False, ''
+    formatado = _mascara_cpf_cnpj(limpo)
+    if not valido:
+        continuar = messagebox.askyesno(
+            f"{tipo} inválido",
+            f"O {tipo} {formatado} não passou na conferência dos dígitos "
+            f"verificadores.\n\nProvavelmente há um erro de digitação. "
+            f"A busca de documentos fiscais por {tipo} não vai encontrá-lo.\n\n"
+            "Deseja salvar mesmo assim?"
+        )
+        if not continuar:
+            return False, ''
+    return True, formatado
+
 
 # Importar configurações do sistema
 try:
@@ -264,7 +418,6 @@ from src.config.window_config import configurar_janela
 from src.fornecedores.gerenciador_cpfs_criados import GerenciadorCPFsCriados
 from src.widgets.combobox_autocompletar import ComboboxAutocompletar
 from src.fornecedores.cache_fornecedores import CacheFornecedores 
-from src.taxas_administracao.gestao_taxas_fixas import GestaoTaxasFixas
 from src.taxas_administracao.gestao_contratos import GestaoContratos
 from src.taxas_administracao.gestor_taxas_administracao import GestorTaxasAdministracao 
 from src.parcelamento.gestor_parcelas import GestorParcelas
@@ -1354,33 +1507,6 @@ class VisualizadorLancamentos:
         except Exception as e:
             logger.debug(f"Erro ao atualizar contador: {str(e)}")
 
-    def limpar_visualizacao(self):
-        """Limpa completamente a visualização"""
-        try:
-            for item in self.tree.get_children():
-                self.tree.delete(item)
-            
-            self.dados_para_incluir.clear()
-            
-            if hasattr(self, 'dados_originais'):
-                self.dados_originais.clear()
-            
-            self.atualizar_contador()
-            
-        except Exception as e:
-            logger.debug(f"Erro ao limpar visualização: {str(e)}")
-
-    def fechar_se_vazio(self):
-        """Fecha o visualizador se não houver mais dados"""
-        try:
-            if len(self.dados_para_incluir) == 0:
-                self.fechar_janela()
-                return True
-            return False
-        except Exception as e:
-            logger.debug(f"Erro ao verificar fechamento: {str(e)}")
-            return False
-        
 class EditorLancamento:
     def __init__(self, parent, dados, indice, callback_atualizacao):
         self.janela = tk.Toplevel(parent)
@@ -2175,7 +2301,6 @@ class SistemaEntradaDados:
             'observacao': tk.Entry(temp_frame)
         }
 
-        self.gestao_taxas = GestaoTaxasFixas(self)
         self.importador_medicoes = ImportadorMedicoes(self)  
 
         self.atualizar_combos_configuracoes()
@@ -2658,25 +2783,6 @@ class SistemaEntradaDados:
             # logger = system_logger.get_logger()
             logger.debug(f"Erro ao atualizar contador: {str(e)}")
 
-    def criar_arquivo_clientes(self):
-        """Cria arquivo base de clientes se não existir"""
-        try:
-            workbook = openpyxl.Workbook()
-            sheet = workbook.active
-            sheet.title = 'Clientes'
-            
-            # Adicionar cabeçalhos - somente campos básicos agora
-            headers = ['Nome', 'Endereco', 'Data_Inicial', 'Observacoes']
-            for col, header in enumerate(headers, 1):
-                sheet.cell(row=1, column=col, value=header)
-            
-            caminho_base = ARQUIVO_CLIENTES
-            workbook.save(caminho_base)
-            custom_messagebox("info", "Informação", "Arquivo de clientes criado com sucesso!")
-            
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao criar arquivo de clientes: {str(e)}")
- 
     def _listar_clientes_reais_para_vinculo(self):
         """
         Le os nomes cadastrados em Clientes.xlsx para popular o combobox
@@ -2938,18 +3044,35 @@ class SistemaEntradaDados:
         )
  
         # CPF / Estado Civil na mesma linha
-        frame_pessoal = ttk.Frame(frame)
-        frame_pessoal.grid(row=24, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+        # Bloco do proprietário: linha 1 = CPF/CNPJ + Estado Civil;
+        # linha 2 = Domicílio (residência PF / sede PJ), usado nos contratos
+        frame_bloco_pessoal = ttk.Frame(frame)
+        frame_bloco_pessoal.grid(row=24, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+        frame_pessoal = ttk.Frame(frame_bloco_pessoal)
+        frame_pessoal.pack(side='top', anchor='w')
  
-        ttk.Label(frame_pessoal, text="CPF:").pack(side='left')
-        cpf_entry = ttk.Entry(frame_pessoal, width=18)
-        cpf_entry.bind('<KeyRelease>', formatar_cpf_campo)
+        ttk.Label(frame_pessoal, text="CPF/CNPJ:").pack(side='left')
+        cpf_entry = ttk.Entry(frame_pessoal, width=20)
+        cpf_entry.bind('<KeyRelease>', formatar_cpf_cnpj_campo)
+        cpf_entry.bind('<FocusOut>', formatar_cpf_cnpj_campo)
         cpf_entry.pack(side='left', padx=(5, 20))
  
         ttk.Label(frame_pessoal, text="Estado Civil:").pack(side='left')
         estado_civil_var = tk.StringVar(value=" ")
         for ec in ["Casado(a)", "Solteiro(a)", "Divorciado(a)", "Viúvo(a)"]:
             ttk.Radiobutton(frame_pessoal, text=ec, variable=estado_civil_var, value=ec).pack(side='left', padx=5)
+
+        frame_domicilio = ttk.Frame(frame_bloco_pessoal)
+        frame_domicilio.pack(side='top', anchor='w', pady=(8, 0))
+        ttk.Label(frame_domicilio, text="Domicílio (residência PF / sede PJ):").pack(side='left')
+        domicilio_entry = ttk.Entry(frame_domicilio, width=62)
+        domicilio_entry.pack(side='left', padx=(5, 0))
+        ttk.Label(
+            frame_bloco_pessoal,
+            text="Endereço que qualifica o contratante nos contratos. Em branco = usa o endereço da obra.",
+            font=('Arial', 9, 'italic'),
+            foreground='gray'
+        ).pack(side='top', anchor='w')
  
         # ===== SEÇÃO: DADOS BANCÁRIOS =====
         ttk.Separator(frame, orient='horizontal').grid(
@@ -3008,7 +3131,7 @@ class SistemaEntradaDados:
             nome_entry, logradouro_entry, numero_entry, complemento_entry,
             cep_entry, localidade_entry, cidade_entry, estado_combo,
             data_entry, metragem_entry, cno_entry,
-            cpf_entry, banco_entry, agencia_entry, conta_entry,
+            cpf_entry, domicilio_entry, banco_entry, agencia_entry, conta_entry,
             pix_entry, obs_entry
         ]
  
@@ -3074,6 +3197,26 @@ class SistemaEntradaDados:
                 messagebox.showerror("Erro", "Cidade é obrigatória!")
                 cidade_entry.focus_set()
                 return
+
+            # CPF (PF) ou CNPJ (PJ): valida e grava sempre com máscara padrão
+            doc_ok, doc_formatado = validar_documento_cliente(cpf_entry.get())
+            if not doc_ok:
+                cpf_entry.focus_set()
+                return
+            cpf_entry.delete(0, tk.END)
+            cpf_entry.insert(0, doc_formatado)
+
+            # Domicílio: obrigatório na prática para PJ (sede difere da obra)
+            domicilio = domicilio_entry.get().strip().upper()
+            if doc_formatado and _eh_cnpj(_doc_limpo(doc_formatado)) and not domicilio:
+                if not messagebox.askyesno(
+                    "Domicílio não informado",
+                    "Cliente pessoa jurídica (CNPJ) sem domicílio (sede).\n\n"
+                    "Nos contratos, o contratante será qualificado com o endereço "
+                    "da obra.\n\nDeseja salvar mesmo assim?"
+                ):
+                    domicilio_entry.focus_set()
+                    return
  
             eh_ficticio = eh_ficticio_var.get()
             cliente_vinculado = cliente_vinculado_var.get().strip() if eh_ficticio else ''
@@ -3158,6 +3301,10 @@ class SistemaEntradaDados:
                 ws.cell(row=proxima_linha, column=24, value='GESTAO_MO' if eh_ficticio else '')
                 ws.cell(row=proxima_linha, column=25, value=cliente_vinculado if eh_ficticio else '')
                 ws.cell(row=proxima_linha, column=26, value='SIM' if tem_caixa else '')
+
+                if ws.cell(row=1, column=27).value != 'DOMICILIO':
+                    ws.cell(row=1, column=27, value='DOMICILIO')
+                ws.cell(row=proxima_linha, column=27, value=domicilio)
  
                 wb.save(ARQUIVO_CLIENTES)
  
@@ -3180,7 +3327,7 @@ class SistemaEntradaDados:
                         self.replicar_cliente_como_fornecedor(
                             nome=nome,
                             cpf=cpf_cliente,
-                            endereco=endereco,
+                            endereco=domicilio or endereco,
                             pix=pix_cliente,
                             banco=banco_cliente,
                             agencia=agencia_cliente,
@@ -3370,6 +3517,8 @@ class SistemaEntradaDados:
                         'tipo_cliente': row[23] if len(row) > 23 and row[23] else '',
                         'cliente_vinculado': row[24] if len(row) > 24 and row[24] else '',
                         'caixa_controlado': row[25] if len(row) > 25 and row[25] else '',
+                        # Coluna AA (nova - domicílio: residência PF / sede PJ)
+                        'domicilio': row[26] if len(row) > 26 and row[26] else '',
                     }
                     break
  
@@ -3384,6 +3533,9 @@ class SistemaEntradaDados:
             # (e então pedir confirmação antes de criar a aba)
             eh_ficticio_inicial = (dados_cliente.get('tipo_cliente') == 'GESTAO_MO')
             tem_caixa_inicial = (dados_cliente.get('caixa_controlado') == 'SIM')
+            # CPF/CNPJ que o cliente tinha ao abrir a edição - usado para detectar
+            # a INCLUSÃO do documento agora (e então oferecer a réplica como fornecedor)
+            doc_inicial = _doc_limpo(dados_cliente.get('cpf'))
  
             # Criar janela de edição
             janela_edicao = tk.Toplevel(self.root)
@@ -3669,19 +3821,37 @@ class SistemaEntradaDados:
             )
  
             # CPF / Estado Civil na mesma linha
-            frame_pessoal = ttk.Frame(frame)
-            frame_pessoal.grid(row=25, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+            # Bloco do proprietário: linha 1 = CPF/CNPJ + Estado Civil;
+            # linha 2 = Domicílio (residência PF / sede PJ), usado nos contratos
+            frame_bloco_pessoal = ttk.Frame(frame)
+            frame_bloco_pessoal.grid(row=25, column=0, columnspan=2, padx=5, pady=5, sticky='w')
+            frame_pessoal = ttk.Frame(frame_bloco_pessoal)
+            frame_pessoal.pack(side='top', anchor='w')
  
-            ttk.Label(frame_pessoal, text="CPF:").pack(side='left')
-            cpf_entry = ttk.Entry(frame_pessoal, width=18)
+            ttk.Label(frame_pessoal, text="CPF/CNPJ:").pack(side='left')
+            cpf_entry = ttk.Entry(frame_pessoal, width=20)
             inserir_valor_entry(cpf_entry, dados_cliente.get('cpf', ''))
-            cpf_entry.bind('<KeyRelease>', formatar_cpf_campo)
+            cpf_entry.bind('<KeyRelease>', formatar_cpf_cnpj_campo)
+            cpf_entry.bind('<FocusOut>', formatar_cpf_cnpj_campo)
             cpf_entry.pack(side='left', padx=(5, 20))
  
             ttk.Label(frame_pessoal, text="Estado Civil:").pack(side='left')
             estado_civil_var = tk.StringVar(value=dados_cliente.get('estado_civil', ''))
             for ec in ["Casado(a)", "Solteiro(a)", "Divorciado(a)", "Viúvo(a)"]:
                 ttk.Radiobutton(frame_pessoal, text=ec, variable=estado_civil_var, value=ec).pack(side='left', padx=5)
+
+            frame_domicilio = ttk.Frame(frame_bloco_pessoal)
+            frame_domicilio.pack(side='top', anchor='w', pady=(8, 0))
+            ttk.Label(frame_domicilio, text="Domicílio (residência PF / sede PJ):").pack(side='left')
+            domicilio_entry = ttk.Entry(frame_domicilio, width=62)
+            inserir_valor_entry(domicilio_entry, dados_cliente.get('domicilio', ''))
+            domicilio_entry.pack(side='left', padx=(5, 0))
+            ttk.Label(
+                frame_bloco_pessoal,
+                text="Endereço que qualifica o contratante nos contratos. Em branco = usa o endereço da obra.",
+                font=('Arial', 9, 'italic'),
+                foreground='gray'
+            ).pack(side='top', anchor='w')
  
             # ===== SEÇÃO: DADOS BANCÁRIOS =====
             ttk.Separator(frame, orient='horizontal').grid(
@@ -3745,7 +3915,7 @@ class SistemaEntradaDados:
                 nome_entry, logradouro_entry, numero_entry, complemento_entry,
                 cep_entry, localidade_entry, cidade_entry, estado_combo,
                 data_inicial_entry, metragem_entry, cno_entry,
-                cpf_entry, banco_entry, agencia_entry, conta_entry,
+                cpf_entry, domicilio_entry, banco_entry, agencia_entry, conta_entry,
                 pix_entry, obs_entry
             ]
  
@@ -3793,6 +3963,26 @@ class SistemaEntradaDados:
                         messagebox.showerror("Erro", "Cidade é obrigatória!")
                         cidade_entry.focus_set()
                         return
+
+                    # CPF (PF) ou CNPJ (PJ): valida e grava sempre com máscara padrão
+                    doc_ok, doc_formatado = validar_documento_cliente(cpf_entry.get())
+                    if not doc_ok:
+                        cpf_entry.focus_set()
+                        return
+                    cpf_entry.delete(0, tk.END)
+                    cpf_entry.insert(0, doc_formatado)
+
+                    # Domicílio: obrigatório na prática para PJ (sede difere da obra)
+                    domicilio = domicilio_entry.get().strip().upper()
+                    if doc_formatado and _eh_cnpj(_doc_limpo(doc_formatado)) and not domicilio:
+                        if not messagebox.askyesno(
+                            "Domicílio não informado",
+                            "Cliente pessoa jurídica (CNPJ) sem domicílio (sede).\n\n"
+                            "Nos contratos, o contratante será qualificado com o endereço "
+                            "da obra.\n\nDeseja salvar mesmo assim?"
+                        ):
+                            domicilio_entry.focus_set()
+                            return
  
                     eh_ficticio = eh_ficticio_var.get()
                     cliente_vinculado = cliente_vinculado_var.get().strip() if eh_ficticio else ''
@@ -3900,6 +4090,10 @@ class SistemaEntradaDados:
                     ws.cell(row=proxima_linha, column=24, value='GESTAO_MO' if eh_ficticio else '')
                     ws.cell(row=proxima_linha, column=25, value=cliente_vinculado if eh_ficticio else '')
                     ws.cell(row=proxima_linha, column=26, value='SIM' if tem_caixa else '')
+
+                    if ws.cell(row=1, column=27).value != 'DOMICILIO':
+                        ws.cell(row=1, column=27, value='DOMICILIO')
+                    ws.cell(row=proxima_linha, column=27, value=domicilio)
  
                     wb.save(ARQUIVO_CLIENTES)
  
@@ -3946,9 +4140,32 @@ class SistemaEntradaDados:
                                 f"de controle automaticamente:\n{e}"
                             )
  
+                    # Captura os valores ANTES de destruir a janela -
+                    # os widgets deixam de existir após janela_edicao.destroy()
+                    doc_final = cpf_entry.get().strip()
+                    pix_cliente = pix_entry.get().strip()
+                    banco_cliente = banco_entry.get().strip()
+                    agencia_cliente = agencia_entry.get().strip()
+                    conta_cliente = conta_entry.get().strip()
+
                     messagebox.showinfo("Sucesso", "Cliente atualizado com sucesso!")
                     self.atualizar_lista_clientes()
                     janela_edicao.destroy()
+
+                    # CPF/CNPJ INCLUÍDO nesta edição (antes estava vazio): abre a
+                    # réplica como fornecedor, mesmo fluxo do cadastro de cliente.
+                    # Não grava sozinha (o usuário confirma no formulário) e, se já
+                    # existir fornecedor com esse documento, apenas avisa.
+                    if not doc_inicial and doc_final and not eh_ficticio:
+                        self.replicar_cliente_como_fornecedor(
+                            nome=nome,
+                            cpf=doc_final,
+                            endereco=domicilio or endereco,
+                            pix=pix_cliente,
+                            banco=banco_cliente,
+                            agencia=agencia_cliente,
+                            conta=conta_cliente,
+                        )
  
                 except Exception as e:
                     messagebox.showerror("Erro", f"Erro ao salvar: {str(e)}")
@@ -4073,8 +4290,14 @@ class SistemaEntradaDados:
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not row or not row[0]:
                     continue
-                cpf_linha = ''.join(filter(str.isdigit, str(row[0])))
-                if cpf_linha == cpf_numeros:
+                # Célula numérica no Excel perde zeros à esquerda (ex.: CNPJ
+                # 00.065.389/0001-53 vira 65389000153); por isso converte
+                # int/float sem ".0" e compara as duas partes completadas a 14.
+                valor_celula = row[0]
+                if isinstance(valor_celula, float):
+                    valor_celula = int(valor_celula)
+                cpf_linha = _doc_limpo(valor_celula)
+                if cpf_linha.zfill(14) == _doc_limpo(cpf_numeros).zfill(14):
                     wb.close()
                     return {
                         'cnpj_cpf': cpf_linha,
@@ -4095,14 +4318,14 @@ class SistemaEntradaDados:
         Não grava nada sozinha: quem valida e grava é o fluxo normal de
         salvar_fornecedor(), acionado pelo próprio usuário ao clicar em Salvar.
         """
-        cpf_numeros = ''.join(filter(str.isdigit, cpf or ''))
+        cpf_numeros = _doc_limpo(cpf)  # dígitos (e letras, se CNPJ alfanumérico)
 
         if cpf_numeros:
             existente = self.verificar_cpf_fornecedor_existente(cpf_numeros)
             if existente:
                 messagebox.showinfo(
                     "Fornecedor já existe",
-                    f"O cliente '{nome}' já possui um fornecedor cadastrado com este CPF:\n\n"
+                    f"O cliente '{nome}' já possui um fornecedor cadastrado com este CPF/CNPJ:\n\n"
                     f"{existente['nome']} ({existente['cnpj_cpf']})\n\n"
                     "Nenhum novo fornecedor será criado."
                 )
@@ -4115,7 +4338,7 @@ class SistemaEntradaDados:
             self.campos_form['cnpj_cpf'].delete(0, tk.END)
             self.campos_form['cnpj_cpf'].insert(0, cpf_numeros)
 
-            self.campos_form['tipo_pessoa'].set('PF')
+            self.campos_form['tipo_pessoa'].set('PJ' if len(cpf_numeros) == 14 else 'PF')
 
             self.campos_form['razao_social'].delete(0, tk.END)
             self.campos_form['razao_social'].insert(0, nome)
@@ -4146,7 +4369,7 @@ class SistemaEntradaDados:
             if not cpf_numeros:
                 messagebox.showinfo(
                     "Complete o CPF/CNPJ",
-                    f"O cliente '{nome}' não tem CPF cadastrado. "
+                    f"O cliente '{nome}' não tem CPF/CNPJ cadastrado. "
                     "Informe o CPF (ou CNPJ, se for pessoa jurídica) antes de salvar o fornecedor."
                 )
             else:
@@ -4739,6 +4962,13 @@ class SistemaEntradaDados:
         # ).pack(side='left', padx=5)
         
         ttk.Button(
+            frame_botoes_import,
+            text="📧 E-mail",
+            command=self.importar_documentos_email,
+            style='Medium.TButton'
+        ).pack(side='left', padx=5)
+
+        ttk.Button(
             frame_botoes_import, 
             text="📊 Medições",  # ← NOVO BOTÃO
             command=self.importar_medicoes,
@@ -5056,9 +5286,13 @@ class SistemaEntradaDados:
         self.setup_formulario_fornecedor(modo_edicao=True)
 
         try:
-            # Determinar tipo de pessoa baseado no tamanho do CNPJ/CPF
+            # Tipo de pessoa: a coluna B da planilha (PF/PJ) é a fonte da verdade.
+            # O tamanho do documento só é usado se a coluna B estiver vazia, e
+            # contando apenas letras/dígitos (a máscara não entra na conta).
             cnpj_cpf = str(fornecedor['cnpj_cpf']).strip()
-            tipo_pessoa = 'PJ' if len(cnpj_cpf) > 11 else 'PF'
+            tipo_pessoa = str(fornecedor.get('tipo_pessoa') or '').strip().upper()
+            if tipo_pessoa not in ('PF', 'PJ'):
+                tipo_pessoa = 'PJ' if len(''.join(filter(str.isalnum, cnpj_cpf))) > 11 else 'PF'
 
             # Preencher e configurar campos não editáveis
             # CNPJ/CPF
@@ -5082,6 +5316,9 @@ class SistemaEntradaDados:
             self.campos_form['agencia'].insert(0, fornecedor['agencia'] or '')
             self.campos_form['conta'].insert(0, fornecedor['conta'] or '')
             self.campos_form['chave_pix'].insert(0, fornecedor['chave_pix'] or '')
+            self.tipo_pix.set(_tipo_chave_pix(fornecedor['chave_pix'],
+                                              fornecedor.get('cnpj_cpf'),
+                                              fornecedor.get('telefone')))
             
             # Categoria (pode ser combobox)
             if isinstance(self.campos_form['categoria'], ttk.Combobox):
@@ -5398,58 +5635,6 @@ class SistemaEntradaDados:
                             f"Erro ao inativar fornecedor:\n{str(e)}")
             return False
 
-
-    def reativar_fornecedor(self, cnpj_cpf, nome):
-        """
-        Reativa um fornecedor que estava INATIVO
-        
-        Args:
-            cnpj_cpf: CNPJ/CPF do fornecedor (apenas números)
-            nome: Nome do fornecedor (para log)
-        
-        Returns:
-            bool: True se reativado com sucesso, False caso contrário
-        """
-        try:
-            from src.config.config import ARQUIVO_FORNECEDORES
-            from openpyxl import load_workbook
-            import logging
-            
-            logger = logging.getLogger(__name__)
-            
-            wb = load_workbook(ARQUIVO_FORNECEDORES)
-            ws = wb['Fornecedores']
-            
-            # Buscar fornecedor e marcar como ATIVO
-            cnpj_cpf_busca = ''.join(filter(str.isdigit, str(cnpj_cpf)))
-            fornecedor_encontrado = False
-            
-            for row in range(2, ws.max_row + 1):
-                cnpj_cpf_row = ws.cell(row, 1).value
-                if not cnpj_cpf_row:
-                    continue
-                
-                cnpj_cpf_row_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf_row)))
-                
-                if cnpj_cpf_row_numeros == cnpj_cpf_busca:
-                    # Marcar como ATIVO
-                    ws.cell(row, 17, 'ATIVO')
-                    fornecedor_encontrado = True
-                    logger.info(f"Fornecedor reativado: {nome} ({cnpj_cpf})")
-                    break
-            
-            if not fornecedor_encontrado:
-                wb.close()
-                return False
-            
-            # Salvar planilha
-            wb.save(ARQUIVO_FORNECEDORES)
-            wb.close()
-            return True
-            
-        except Exception as e:
-            logger.error(f"Erro ao reativar fornecedor: {str(e)}")
-            return False
 
     def excluir_fornecedor_permanente(self, cnpj_cpf, nome):
         """
@@ -6326,44 +6511,6 @@ class SistemaEntradaDados:
             logger.debug(traceback.format_exc())
             return None
 
-    def buscar_fornecedor_por_cnpj_agenda_manual(self, cnpj_cpf):
-        """Método auxiliar para buscar e preencher dados do fornecedor"""
-        try:
-            # Usar o método que você já tem para buscar fornecedor
-            fornecedor = self.buscar_fornecedor_por_cnpj_agenda(cnpj_cpf)
-            
-            if fornecedor:
-                # Preencher campos do fornecedor se encontrado
-                if fornecedor.get('nome'):
-                    self.campos_fornecedor['nome'].delete(0, tk.END)
-                    self.campos_fornecedor['nome'].insert(0, fornecedor['nome'])
-                
-                if fornecedor.get('categoria'):
-                    # Verificar se campo categoria existe
-                    if hasattr(self, 'campos_fornecedor') and 'categoria' in self.campos_fornecedor:
-                        self.campos_fornecedor['categoria'].delete(0, tk.END)
-                        self.campos_fornecedor['categoria'].insert(0, fornecedor['categoria'])
-                
-                # Preencher dados bancários se existir o campo
-                dados_bancarios = self.obter_dados_bancarios_fornecedor(cnpj_cpf)
-                if hasattr(self, 'campos_fornecedor') and 'dados_bancarios' in self.campos_fornecedor:
-                    campo_dados_bancarios = self.campos_fornecedor['dados_bancarios']
-                    campo_dados_bancarios.config(state='normal')  # Habilitar temporariamente
-                    campo_dados_bancarios.delete(0, tk.END)
-                    campo_dados_bancarios.insert(0, dados_bancarios)
-                    campo_dados_bancarios.config(state='readonly')  # Voltar ao readonly
-                
-                logger.debug(f"DEBUG: Dados do fornecedor preenchidos: {fornecedor['nome']}")
-                return True
-            else:
-                logger.debug(f"DEBUG: Fornecedor não encontrado para CNPJ/CPF: {cnpj_cpf}")
-                return False
-                
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao buscar fornecedor para agenda: {str(e)}")
-            return False
-    
-    
     def buscar_dados_bancarios(self, cnpj_cpf):
         try:
             cnpj_busca_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))  # ALTERADO: normaliza antes de comparar
@@ -6510,16 +6657,6 @@ class SistemaEntradaDados:
             
             custom_messagebox("info", "Dados Limpos", 
                             "✅ Todos os dados bancários foram removidos!")
-
-    def validar_cnpj_cpf_numeros(self, numeros):
-        """Valida CNPJ/CPF usando apenas os números"""
-        if len(numeros) == 11:
-            # Validar CPF
-            return validar_documento(f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:9]}-{numeros[9:]}")
-        elif len(numeros) == 14:
-            # Validar CNPJ
-            return validar_documento(f"{numeros[:2]}.{numeros[2:5]}.{numeros[5:8]}/{numeros[8:12]}-{numeros[12:]}")
-        return False
 
     def usar_cpf_criado_auto(self):
         """Busca e usa automaticamente o próximo CPF criado disponível - VERSÃO MELHORADA"""
@@ -6798,54 +6935,6 @@ class SistemaEntradaDados:
                 f"{numeros[:2]}.{numeros[2:5]}.{numeros[5:8]}/{numeros[8:12]}-{numeros[12:]}", 'PJ')
         return False
 
-    def validar_cpf_algoritmo(self, cpf):
-        """Valida CPF usando algoritmo oficial"""
-        if cpf == cpf[0] * 11:
-            return False
-        
-        # Calcular primeiro dígito verificador
-        soma = 0
-        for i in range(9):
-            soma += int(cpf[i]) * (10 - i)
-        
-        resto = soma % 11
-        digito1 = 0 if resto < 2 else 11 - resto
-        
-        if int(cpf[9]) != digito1:
-            return False
-        
-        # Calcular segundo dígito verificador
-        soma = 0
-        for i in range(10):
-            soma += int(cpf[i]) * (11 - i)
-        
-        resto = soma % 11
-        digito2 = 0 if resto < 2 else 11 - resto
-        
-        return int(cpf[10]) == digito2
-
-    def validar_cnpj_algoritmo(self, cnpj):
-        """Valida CNPJ usando algoritmo oficial"""
-        if cnpj == cnpj[0] * 14:
-            return False
-        
-        # Calcular primeiro dígito verificador
-        peso = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-        soma = sum(int(cnpj[i]) * peso[i] for i in range(12))
-        resto = soma % 11
-        digito1 = 0 if resto < 2 else 11 - resto
-        
-        if int(cnpj[12]) != digito1:
-            return False
-        
-        # Calcular segundo dígito verificador
-        peso = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-        soma = sum(int(cnpj[i]) * peso[i] for i in range(13))
-        resto = soma % 11
-        digito2 = 0 if resto < 2 else 11 - resto
-        
-        return int(cnpj[13]) == digito2
-
     def salvar_fornecedor(self):
         """Salva ou atualiza fornecedor — lê o formulário, valida e grava na planilha"""
         
@@ -6994,49 +7083,6 @@ class SistemaEntradaDados:
         custom_messagebox("info", "Sucesso", msg)
         self.janela_fornecedor.destroy()
         self.buscar_fornecedor()
-
-    def atualizar_linha_fornecedor(self, row, dados):
-        """Atualiza uma linha existente com novos dados"""
-        row[0].value = dados['cnpj_cpf']
-        row[1].value = dados['tipo_pessoa']  # Nova coluna para tipo de pessoa
-        row[2].value = dados['razao_social']
-        row[3].value = dados['nome']
-        row[4].value = dados['telefone']
-        row[5].value = dados['email']
-        row[6].value = dados['banco']
-        row[7].value = dados['op']
-        row[8].value = dados['agencia']
-        row[9].value = dados['conta']
-        row[10].value = dados['chave_pix']
-        row[11].value = dados['categoria']
-        row[12].value = dados['especificacao']
-        row[13].value = dados['vinculo']
-        row[14].value = dados['dados_bancarios']
-        row[15].value = dados['endereco']
-        row[16].value = dados['status']
-        row[17].value = dados['responsavel']
-
-    def adicionar_linha_fornecedor(self, ws, linha, dados):
-        """Adiciona uma nova linha com os dados do fornecedor"""
-        ws.cell(row=linha, column=1, value=dados['cnpj_cpf'])
-        ws.cell(row=linha, column=2, value=dados['tipo_pessoa'])
-        ws.cell(row=linha, column=3, value=dados['razao_social'])
-        ws.cell(row=linha, column=4, value=dados['nome'])
-        ws.cell(row=linha, column=5, value=dados['telefone'])
-        ws.cell(row=linha, column=6, value=dados['email'])
-        ws.cell(row=linha, column=7, value=dados['banco'])
-        ws.cell(row=linha, column=8, value=dados['op'])
-        ws.cell(row=linha, column=9, value=dados['agencia'])
-        ws.cell(row=linha, column=10, value=dados['conta'])
-        ws.cell(row=linha, column=11, value=dados['chave_pix'])
-        ws.cell(row=linha, column=12, value=dados['categoria'])
-        ws.cell(row=linha, column=13, value=dados['especificacao'])
-        ws.cell(row=linha, column=14, value=dados['vinculo'])
-        ws.cell(row=linha, column=15, value=dados['dados_bancarios'])
-        ws.cell(row=linha, column=16, value=dados['endereco'])
-        ws.cell(row=linha, column=17, value=dados['status'])
-        ws.cell(row=linha, column=18, value=dados['responsavel'])
-      
 
     def preencher_dados_fornecedor(self, dados):
         """Preenche os campos do fornecedor na aba de entrada"""
@@ -8203,27 +8249,6 @@ class SistemaEntradaDados:
             except Exception as e:
                 logger.debug(f"DEBUG: Erro ao verificar comando: {e}")
 
-    def atualizar_comboboxes_dinamicamente(self):
-        """
-        Método para atualizar os comboboxes quando as configurações são alteradas
-        Chame este método sempre que as configurações forem modificadas
-        """
-        try:
-            from src.configuracoes_sistema import GerenciadorConfiguracoes
-            
-            # Atualizar etapas da obra
-            if hasattr(self, 'campos_despesa') and 'etapa_obra' in self.campos_despesa:
-                etapas_atualizadas = GerenciadorConfiguracoes.get_etapas_obra()
-                self.campos_despesa['etapa_obra'].atualizar_valores(etapas_atualizadas)
-            
-            # Atualizar insumos
-            if hasattr(self, 'campos_despesa') and 'insumo' in self.campos_despesa:
-                insumos_atualizados = GerenciadorConfiguracoes.get_insumos()
-                self.campos_despesa['insumo'].atualizar_valores(insumos_atualizados)
-                
-        except Exception as e:
-            logger.debug(f"Erro ao atualizar comboboxes: {e}")
-
     def calcular_data_rel(self):
         """
         Calcula a data de referência seguindo a regra dos dias 5 e 20
@@ -8367,107 +8392,6 @@ class SistemaEntradaDados:
             self.gerenciador_lancamentos = GerenciadorLancamentos(self)
         self.gerenciador_lancamentos.abrir_gerenciador()
 
-    def processar_parcelas(self):
-        """Processa as parcelas geradas mantendo os dados do fornecedor"""
-        logger.debug("Iniciando processamento de parcelas...")
-        
-        # Verificar se há parcelas para processar
-        if not hasattr(self, 'gestor_parcelas') or not self.gestor_parcelas.parcelas:
-            logger.debug("Nenhuma parcela para processar")
-            return False
-            
-        # Validar se há fornecedor selecionado
-        if not self.campos_fornecedor['cnpj_cpf'].get():
-            custom_messagebox("error", "Erro", "Selecione um fornecedor antes de processar as parcelas!")
-            return False
-            
-        # Guardar dados do fornecedor atual
-        dados_fornecedor = {
-            'cnpj_cpf': self.campos_fornecedor['cnpj_cpf'].get(),
-            'nome': self.campos_fornecedor['nome'].get(),
-            'categoria': self.campos_fornecedor['categoria'].get(),
-            'dados_bancarios': self.campos_fornecedor['dados_bancarios'].get()
-        }
-        
-        logger.debug(f"Dados do fornecedor capturados: {dados_fornecedor}")
-        total_parcelas = len(self.gestor_parcelas.parcelas)
-        logger.debug(f"Total de parcelas a processar: {total_parcelas}")
-        
-        try:
-            processadas = 0
-            for i, parcela in enumerate(self.gestor_parcelas.parcelas, 1):
-                logger.debug(f"\nProcessando parcela {i} de {total_parcelas}")
-                
-                # Restaurar dados do fornecedor antes de cada parcela
-                for campo, valor in dados_fornecedor.items():
-                    entry = self.campos_fornecedor[campo]
-                    entry.config(state='normal')
-                    entry.delete(0, tk.END)
-                    entry.insert(0, valor)
-                    if campo != 'categoria':
-                        entry.config(state='readonly')
-                
-                logger.debug(f"Dados do fornecedor restaurados para parcela {i}")
-
-                
-                # Preencher dados da parcela
-                self.data_rel_entry.set_date(datetime.strptime(parcela['data_rel'], '%d/%m/%Y'))
-                self.campos_despesa['tp_desp'].delete(0, tk.END)
-                self.campos_despesa['tp_desp'].insert(0, self.gestor_parcelas.tipo_despesa_valor)
-                self.campos_despesa['nf'].delete(0, tk.END)
-                self.campos_despesa['nf'].insert(0, parcela['nf'])
-                
-                if isinstance(self.campos_despesa['referencia'], ttk.Combobox):
-                    self.campos_despesa['referencia'].set(parcela['referencia'])
-                else:
-                    self.campos_despesa['referencia'].delete(0, tk.END)
-                    self.campos_despesa['referencia'].insert(0, parcela['referencia'])
-                
-                self.campos_despesa['vr_unit'].delete(0, tk.END)
-                self.campos_despesa['vr_unit'].insert(0, f"{parcela['valor']:.2f}")
-                
-                self.campos_despesa['valor'].config(state='normal')
-                self.campos_despesa['valor'].delete(0, tk.END)
-                self.campos_despesa['valor'].insert(0, f"{parcela['valor']:.2f}")
-                self.campos_despesa['valor'].config(state='readonly')
-                
-                self.campos_despesa['dt_vencto'].set_date(
-                    datetime.strptime(parcela['dt_vencto'], '%d/%m/%Y')
-                )
-
-                self.campos_despesa['etapa_obra'].delete(0, tk.END)
-                self.campos_despesa['etapa_obra'].insert(0, parcela.get('etapa_obra', ''))
-
-                self.campos_despesa['insumo'].delete(0, tk.END)
-                self.campos_despesa['insumo'].insert(0, parcela.get('insumo', ''))
-                
-                # Adicionar à lista de dados e verificar sucesso
-                if self.adicionar_dados(eh_parcelamento=True):
-                    processadas += 1
-                    logger.debug(f"Parcela {i} processada com sucesso")
-                else:
-                    logger.debug(f"Falha ao processar parcela {i}")
-            
-            # Relatório final
-            if processadas == total_parcelas:
-                custom_messagebox("info", "Sucesso", 
-                                  f"Todas as {total_parcelas} parcelas foram processadas com sucesso!")
-            else:
-                custom_messagebox("warning",  "Aviso", 
-                                     f"Apenas {processadas} de {total_parcelas} parcelas foram processadas.")
-            
-            return processadas == total_parcelas
-            
-        except Exception as e:
-            erro_msg = f"Erro ao processar parcelas: {str(e)}"
-            logger.debug(erro_msg)
-            custom_messagebox("error", "Erro", erro_msg)
-            return False
-            
-        finally:
-            self.limpar_campos_despesa()
-            logger.debug("Processamento de parcelas finalizado")
-
     def abrir_parcelamento(self):
         """Abre a janela de parcelamento e processa os dados após o fechamento"""
         logger.debug("\nIniciando processo de parcelamento...")
@@ -8587,28 +8511,6 @@ class SistemaEntradaDados:
         else:
             logger.debug("Nenhuma parcela para processar")
 
-    def abrir_calendario(self):
-        try:
-            top = Toplevel(self.root)
-            top.title("Selecionar Data")
-            top.geometry("300x250")
-            top.grab_set()  # Torna a janela modal
-        
-            cal = Calendar(top, selectmode='day', 
-                          date_pattern='dd/mm/yyyy',
-                          locale='pt_BR')
-            cal.pack(padx=10, pady=10)
-        
-            def selecionar_data():
-                data = cal.get_date()
-                self.data_rel_entry.delete(0, tk.END)
-                self.data_rel_entry.insert(0, data)
-                top.destroy()
-        
-            ttk.Button(top, text="OK", command=selecionar_data).pack(pady=5)
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao abrir calendário: {str(e)}")
-
     def atualizar_campo_referencia(self, event=None):
         """Atualiza o campo de referência baseado no tipo de despesa"""
         tp_desp = self.campos_despesa['tp_desp'].get().strip()
@@ -8724,66 +8626,6 @@ class SistemaEntradaDados:
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao abrir agenda: {str(e)}")
             logger.debug(f"DEBUG: Erro ao abrir agenda: {str(e)}")
-
-    def validar_campos_agenda(self):
-        """Validação específica para dados vindos da agenda - SIMPLIFICADA"""
-        try:
-            logger.debug("DEBUG: Validação simplificada para agenda")
-            
-            # Verificar apenas campos essenciais sem mostrar erros
-            # (os erros serão tratados pelo fluxo normal se necessário)
-            
-            # CNPJ/CPF
-            cnpj_cpf = self.campos_fornecedor['cnpj_cpf'].get().strip()
-            if not cnpj_cpf:
-                logger.debug("DEBUG: CNPJ/CPF vazio")
-                return False
-            
-            # Nome
-            nome = self.campos_fornecedor['nome'].get().strip()
-            if not nome:
-                logger.debug("DEBUG: Nome vazio")
-                return False
-            
-            # Valor unitário
-            vr_unit_str = self.campos_despesa['vr_unit'].get().strip()
-            if not vr_unit_str:
-                logger.debug("DEBUG: Valor unitário vazio")
-                return False
-            
-            try:
-                vr_unit = float(vr_unit_str.replace(',', '.'))
-                if vr_unit <= 0:
-                    logger.debug("DEBUG: Valor unitário inválido")
-                    return False
-            except ValueError:
-                logger.debug("DEBUG: Valor unitário não numérico")
-                return False
-            
-            logger.debug("DEBUG: Validação simplificada passou")
-            return True
-            
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro na validação simplificada: {str(e)}")
-            return False
-
-    def validar_dados_basicos_agenda(self, dados):
-        """Valida dados vindos da agenda"""
-        campos_obrigatorios = ['nome', 'valor', 'data_rel', 'dt_vencto']
-        
-        for campo in campos_obrigatorios:
-            if not dados.get(campo):
-                custom_messagebox("error", "Erro", f"Campo '{campo}' é obrigatório!")
-                return False
-        
-        # Validar valor numérico
-        try:
-            float(dados['valor'])
-        except ValueError:
-            custom_messagebox("error", "Erro", "Valor deve ser numérico!")
-            return False
-        
-        return True
 
     def salvar_confirmacao_direta(self, dados_lancamento):
         """✅ VERSÃO OTIMIZADA - Única abertura de arquivo"""
@@ -9294,6 +9136,14 @@ class SistemaEntradaDados:
         except Exception as e:
             custom_messagebox("error", "Erro", f"Erro ao abrir importador de diárias: {str(e)}")
 
+    def importar_documentos_email(self):
+        """Importa NF-e/NFS-e/boletos lidos do Gmail (triagem em Documentos_Recebidos.xlsx)"""
+        try:
+            from src.email_fiscal.importar_para_sistema import abrir_importacao_email
+        except ImportError:
+            from email_fiscal.importar_para_sistema import abrir_importacao_email
+        abrir_importacao_email(self)
+        
     def importar_medicoes(self):
         """
         Importa medições de contratos a partir de relatório Excel.
@@ -9487,14 +9337,6 @@ class SistemaEntradaDados:
             logger.error(f"❌ ERRO na verificação: {str(e)}")
             logger.error(traceback.format_exc())
             return False
-
-    def _normalizar_nf(self, nf_str):
-        """Trata como 'sem NF' qualquer valor sem nenhum dígito
-        (cobre A ENVIAR, A EMITIR, PENDENTE DE CORREÇÃO e futuros
-        placeholders textuais). NF numérica e NF de prefeitura
-        (N/YYYY, YYYY/N) são preservadas como NF real."""
-        nf = str(nf_str or '').strip().upper()
-        return nf if re.search(r'\d', nf) else ""
 
     def _calcular_similaridade_simples(self, texto1, texto2):
         """Similaridade por sequência de caracteres (Ratcliff/Obershelp)."""
@@ -10005,41 +9847,6 @@ class SistemaEntradaDados:
         except Exception as e:
             logger.error(f"Erro ao limpar dados salvos: {str(e)}")
 
-    def limpar_dados_ao_trocar_cliente(self):
-        """
-        PROTEÇÃO: Limpa dados pendentes ao trocar de cliente
-        Deve ser chamado no método de seleção de cliente
-        """
-        try:
-            if hasattr(self, 'dados_para_incluir') and self.dados_para_incluir:
-                qtd_pendentes = len(self.dados_para_incluir)
-                
-                resposta = custom_messagebox(
-                    "yesno",
-                    "Dados Pendentes",
-                    f"ATENÇÃO: Existem {qtd_pendentes} lançamentos pendentes de envio!\n\n"
-                    f"Ao trocar de cliente, estes dados serão perdidos.\n\n"
-                    f"Deseja realmente trocar de cliente agora?\n\n"
-                    f"• SIM = Trocar e descartar lançamentos pendentes\n"
-                    f"• NÃO = Cancelar troca e enviar os lançamentos primeiro"
-                )
-                
-                if not resposta:
-                    return False  # Cancelar troca de cliente
-                
-                # Confirmar descarte
-                self.limpar_visualizacao_completa()
-                
-                # logger = system_logger.get_logger()
-                logger.warning(f"Dados pendentes descartados ao trocar de cliente: {qtd_pendentes} registros")
-            
-            return True  # Permitir troca de cliente
-            
-        except Exception as e:
-            # logger = system_logger.get_logger()
-            logger.error(f"Erro ao limpar dados na troca de cliente: {str(e)}")
-            return True  # Em caso de erro, permitir troca
-    
     def verificar_e_adicionar_cabecalho_etapa_obra(self, sheet):
         """
         Verifica se o cabeçalho da coluna Etapa da Obra existe e adiciona se necessário
@@ -10367,7 +10174,7 @@ class SistemaEntradaDados:
             if not os.path.exists(arquivo_cliente):
                 return "Arquivo do cliente não encontrado"
             
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', converters=CONVERSORES_DADOS)
             df = df.fillna("")
             
             # Se não especificou data, usar todas as datas com taxas
@@ -10868,191 +10675,6 @@ class SistemaEntradaDados:
             logger.debug(f"❌ Erro ao limpar backup: {str(e)}")
 
     # MÉTODO ADICIONAL: Visualizar backups disponíveis (para debug/administração)
-    def listar_backups_disponiveis(self):
-        """Lista todos os backups disponíveis (método de administração)"""
-        try:
-            logger.debug("\n📋 LISTAGEM DE BACKUPS DISPONÍVEIS")
-            logger.debug("=" * 50)
-            
-            total_backups = 0
-            
-            # Listar Google Drive
-            try:
-                pasta_backup = PASTA_CLIENTES / "Backups_Sistema"
-                if pasta_backup.exists():
-                    logger.debug(f"\n💾 Google Drive ({pasta_backup}):")
-                    for arquivo_backup in pasta_backup.glob("backup_*.json"):
-                        try:
-                            data_mod = datetime.fromtimestamp(arquivo_backup.stat().st_mtime)
-                            tamanho = arquivo_backup.stat().st_size
-                            logger.debug(f"  📄 {arquivo_backup.name}")
-                            logger.debug(f"      📅 {data_mod.strftime('%d/%m/%Y %H:%M:%S')}")
-                            logger.debug(f"      📏 {tamanho:,} bytes")
-                            total_backups += 1
-                        except Exception as e:
-                            logger.debug(f"  ❌ Erro ao ler {arquivo_backup}: {str(e)}")
-                else:
-                    logger.debug("\n💾 Google Drive: Pasta não encontrada")
-            except Exception as e:
-                logger.debug(f"\n💾 Google Drive: Erro ao acessar - {str(e)}")
-            
-            # Listar Desktop
-            try:
-                temp_file = os.path.join(os.path.expanduser("~"), "Desktop", "backup_lancamentos.json")
-                if os.path.exists(temp_file):
-                    logger.debug(f"\n🖥️ Desktop Local:")
-                    data_mod = datetime.fromtimestamp(os.path.getmtime(temp_file))
-                    tamanho = os.path.getsize(temp_file)
-                    logger.debug(f"  📄 backup_lancamentos.json")
-                    logger.debug(f"      📅 {data_mod.strftime('%d/%m/%Y %H:%M:%S')}")
-                    logger.debug(f"      📏 {tamanho:,} bytes")
-                    total_backups += 1
-                else:
-                    logger.debug("\n🖥️ Desktop Local: Nenhum backup encontrado")
-            except Exception as e:
-                logger.debug(f"\n🖥️ Desktop Local: Erro ao acessar - {str(e)}")
-            
-            logger.debug(f"\n📊 TOTAL DE BACKUPS: {total_backups}")
-            logger.debug("=" * 50)
-            
-            return total_backups
-            
-        except Exception as e:
-            logger.debug(f"❌ Erro ao listar backups: {str(e)}")
-            return 0
-
-    def limpar_backups_orfaos(self):
-        """Limpa backups órfãos de todos os clientes - MÉTODO DE MANUTENÇÃO"""
-        try:
-            logger.debug("\n🧹 LIMPEZA DE BACKUPS ÓRFÃOS")
-            logger.debug("=" * 50)
-            
-            backups_removidos = 0
-            
-            # LIMPAR Desktop: backups genéricos antigos
-            try:
-                desktop_local = os.path.expanduser("~") + "/Desktop"
-                arquivo_generico = os.path.join(desktop_local, "backup_lancamentos.json")
-                
-                if os.path.exists(arquivo_generico):
-                    # Verificar se é antigo (mais de 1 dia)
-                    data_modificacao = datetime.fromtimestamp(os.path.getmtime(arquivo_generico))
-                    if (datetime.now() - data_modificacao).days >= 1:
-                        os.remove(arquivo_generico)
-                        backups_removidos += 1
-                        logger.debug("🗑️ Backup genérico antigo removido do Desktop")
-                        
-            except Exception as e:
-                logger.debug(f"⚠️ Erro ao limpar Desktop: {str(e)}")
-            
-            # LIMPAR Pasta temporária: backups genéricos antigos
-            try:
-                import tempfile
-                temp_dir = tempfile.gettempdir()
-                arquivo_generico = os.path.join(temp_dir, "backup_lancamentos.json")
-                
-                if os.path.exists(arquivo_generico):
-                    # Verificar se é antigo (mais de 1 dia)
-                    data_modificacao = datetime.fromtimestamp(os.path.getmtime(arquivo_generico))
-                    if (datetime.now() - data_modificacao).days >= 1:
-                        os.remove(arquivo_generico)
-                        backups_removidos += 1
-                        logger.debug("🗑️ Backup genérico antigo removido da pasta temp")
-                        
-            except Exception as e:
-                logger.debug(f"⚠️ Erro ao limpar pasta temp: {str(e)}")
-            
-            # LIMPAR Google Drive: backups muito antigos (mais de 7 dias)
-            try:
-                pasta_backup = PASTA_CLIENTES / "Backups_Sistema"
-                if pasta_backup.exists():
-                    agora = datetime.now()
-                    limite_tempo = agora - relativedelta(days=7)
-                    
-                    for arquivo_backup in pasta_backup.glob("backup_*.json"):
-                        try:
-                            data_modificacao = datetime.fromtimestamp(arquivo_backup.stat().st_mtime)
-                            if data_modificacao < limite_tempo:
-                                arquivo_backup.unlink()
-                                backups_removidos += 1
-                                logger.debug(f"🗑️ Backup antigo removido: {arquivo_backup.name}")
-                        except Exception as e:
-                            logger.debug(f"⚠️ Erro ao processar {arquivo_backup}: {str(e)}")
-                            
-            except Exception as e:
-                logger.debug(f"⚠️ Erro ao limpar Google Drive: {str(e)}")
-            
-            logger.debug(f"\n✅ Limpeza concluída: {backups_removidos} backups órfãos removidos")
-            logger.debug("=" * 50)
-            
-            return backups_removidos
-            
-        except Exception as e:
-            logger.debug(f"❌ Erro na limpeza de backups órfãos: {str(e)}")
-            return 0
-
-
-    def verificar_integridade_backups(self):
-        """Verifica integridade de todos os backups disponíveis"""
-        try:
-            logger.debug("\n🔍 VERIFICAÇÃO DE INTEGRIDADE DOS BACKUPS")
-            logger.debug("=" * 60)
-            
-            backups_validos = 0
-            backups_corrompidos = 0
-            
-            # Verificar Google Drive
-            try:
-                pasta_backup = PASTA_CLIENTES / "Backups_Sistema"
-                if pasta_backup.exists():
-                    logger.debug(f"\n💾 Verificando Google Drive ({pasta_backup}):")
-                    
-                    for arquivo_backup in pasta_backup.glob("backup_*.json"):
-                        try:
-                            with open(arquivo_backup, 'r', encoding='utf-8') as f:
-                                backup_data = json.load(f)
-                            
-                            # Verificar campos obrigatórios
-                            campos_obrigatorios = ['cliente', 'data_sessao', 'lancamentos']
-                            campos_ausentes = [campo for campo in campos_obrigatorios 
-                                            if campo not in backup_data]
-                            
-                            if campos_ausentes:
-                                logger.debug(f"  ❌ {arquivo_backup.name} - Campos ausentes: {campos_ausentes}")
-                                backups_corrompidos += 1
-                            else:
-                                cliente = backup_data['cliente']
-                                total_lancamentos = len(backup_data['lancamentos'])
-                                data_backup = datetime.fromisoformat(backup_data['data_sessao'])
-                                
-                                logger.debug(f"  ✅ {arquivo_backup.name}")
-                                logger.debug(f"      Cliente: {cliente}")
-                                logger.debug(f"      Lançamentos: {total_lancamentos}")
-                                logger.debug(f"      Data: {data_backup.strftime('%d/%m/%Y %H:%M:%S')}")
-                                backups_validos += 1
-                                
-                        except json.JSONDecodeError:
-                            logger.debug(f"  ❌ {arquivo_backup.name} - JSON corrompido")
-                            backups_corrompidos += 1
-                        except Exception as e:
-                            logger.debug(f"  ❌ {arquivo_backup.name} - Erro: {str(e)}")
-                            backups_corrompidos += 1
-                else:
-                    logger.debug("\n💾 Google Drive: Pasta não encontrada")
-            except Exception as e:
-                logger.debug(f"\n💾 Google Drive: Erro ao acessar - {str(e)}")
-            
-            logger.debug(f"\n📊 RESUMO DA VERIFICAÇÃO:")
-            logger.debug(f"✅ Backups válidos: {backups_validos}")
-            logger.debug(f"❌ Backups corrompidos: {backups_corrompidos}")
-            logger.debug("=" * 60)
-            
-            return {'validos': backups_validos, 'corrompidos': backups_corrompidos}
-            
-        except Exception as e:
-            logger.debug(f"❌ Erro na verificação de integridade: {str(e)}")
-            return {'validos': 0, 'corrompidos': 0}
-    
     def abrir_correcao_monetaria(self):
         """Abre o gerenciador de correção monetária"""
         try:
@@ -11094,310 +10716,6 @@ class SistemaEntradaDados:
                     
         except Exception as e:
             logger.debug(f"Aviso durante finalização: {str(e)}")
-
-class EditorCliente:
-    def __init__(self, parent): 
-        self.parent = parent
-        self.root = tk.Toplevel(parent)
-        self.root.title("Editor de Clientes")
-        self.root.geometry("800x600")
-        
-        self.setup_gui()
-        self.carregar_clientes()
-
-    def setup_gui(self):
-        # Frame principal
-        main_frame = ttk.Frame(self.root, padding="10")
-        main_frame.pack(fill='both', expand=True)
-
-        # Lista de clientes
-        frame_clientes = ttk.LabelFrame(main_frame, text="Clientes")
-        frame_clientes.pack(fill='both', expand=True, pady=5)
-
-        self.tree_clientes = ttk.Treeview(frame_clientes, 
-                                        columns=('Nome', 'Endereço', 'Taxa ADM'),
-                                        show='headings')
-        self.tree_clientes.heading('Nome', text='Nome')
-        self.tree_clientes.heading('Endereço', text='Endereço')
-        self.tree_clientes.heading('Taxa ADM', text='Taxa ADM (%)')
-        self.tree_clientes.pack(fill='both', expand=True, padx=5, pady=5)
-
-        # Frame para edição
-        frame_edicao = ttk.LabelFrame(main_frame, text="Edição")
-        frame_edicao.pack(fill='x', pady=5)
-
-        ttk.Label(frame_edicao, text="Taxa de Administração (%):").pack(side='left', padx=5)
-        self.taxa_entry = ttk.Entry(frame_edicao, width=10)
-        self.taxa_entry.pack(side='left', padx=5)
-
-        # Botões
-        frame_botoes = ttk.Frame(main_frame)
-        frame_botoes.pack(fill='x', pady=5)
-
-        ttk.Button(frame_botoes, 
-                  text="Atualizar Taxa", 
-                  command=self.atualizar_taxa).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, 
-                  text="Remover Taxa", 
-                  command=self.remover_taxa).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, 
-                  text="Fechar", 
-                  command=self.root.destroy).pack(side='right', padx=5)
-
-    def carregar_clientes(self):
-        """Carrega a lista de clientes do arquivo Excel"""
-        try:
-            wb = load_workbook(ARQUIVO_CLIENTES)
-            ws = wb['Clientes']
-            
-            # Limpar lista atual
-            for item in self.tree_clientes.get_children():
-                self.tree_clientes.delete(item)
-            
-            # Adicionar clientes
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if row[0]:  # Nome não vazio
-                    self.tree_clientes.insert('', 'end', values=(
-                        row[0],  # Nome
-                        row[1],  # Endereço
-                        row[6] if row[6] else "0.00"  # Taxa ADM
-                    ))
-            
-            wb.close()
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao carregar clientes: {str(e)}")
-
-    def atualizar_taxa(self):
-        """Atualiza a taxa de administração do cliente selecionado"""
-        selecionado = self.tree_clientes.selection()
-        if not selecionado:
-            custom_messagebox("warning", "Aviso", "Selecione um cliente")
-            return
-
-        try:
-            taxa = float(self.taxa_entry.get().replace(',', '.'))
-            if not (0 <= taxa <= 100):
-                custom_messagebox("error", "Erro", "Taxa deve estar entre 0 e 100")
-                return
-                
-            cliente = self.tree_clientes.item(selecionado)['values'][0]
-            
-            # Atualizar no arquivo
-            wb = load_workbook(ARQUIVO_CLIENTES)
-            ws = wb['Clientes']
-            
-            for row in ws.iter_rows(min_row=2):
-                if row[0].value == cliente:
-                    row[6].value = taxa  # Coluna da taxa de administração
-                    
-            wb.save(ARQUIVO_CLIENTES)
-            
-            # Atualizar na treeview
-            self.tree_clientes.set(selecionado, 'Taxa ADM', f"{taxa:.2f}")
-            custom_messagebox("info", "Sucesso", "Taxa atualizada com sucesso!")
-            
-        except ValueError:
-            custom_messagebox("error", "Erro", "Taxa inválida")
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao atualizar taxa: {str(e)}")
-
-    def remover_taxa(self):
-        """Remove a taxa de administração do cliente selecionado"""
-        selecionado = self.tree_clientes.selection()
-        if not selecionado:
-            custom_messagebox("warning",  "Aviso", "Selecione um cliente")
-            return
-
-        if custom_messagebox("yesno", "Confirmar", "Deseja remover a taxa de administração?"):
-            try:
-                cliente = self.tree_clientes.item(selecionado)['values'][0]
-                
-                # Atualizar no arquivo
-                wb = load_workbook(ARQUIVO_CLIENTES)
-                ws = wb['Clientes']
-                
-                for row in ws.iter_rows(min_row=2):
-                    if row[0].value == cliente:
-                        row[6].value = None  # Remover taxa
-                        
-                wb.save(ARQUIVO_CLIENTES)
-                
-                # Atualizar na treeview
-                self.tree_clientes.set(selecionado, 'Taxa ADM', "0.00")
-                custom_messagebox("info", "Sucesso", "Taxa removida com sucesso!")
-                
-            except Exception as e:
-                custom_messagebox("error", "Erro", f"Erro ao remover taxa: {str(e)}")
-
-
-class GestaoAdministradores:
-    def __init__(self, parent):
-        self.parent = parent
-        self.busca_entry = None
-        self.tree_fornecedores = None
-        self.administradores = []  # Lista para armazenar os administradores
-        
-    def abrir_janela_admin(self):
-        """Abre janela para gestão de administradores"""
-        self.janela_admin = tk.Toplevel(self.parent)
-        self.janela_admin.title("Gestão de Administradores")
-        self.janela_admin.geometry("800x600")
-        
-        # Frame para busca de fornecedor
-        frame_busca = ttk.LabelFrame(self.janela_admin, text="Buscar Fornecedor")
-        frame_busca.pack(fill='x', padx=5, pady=5)
-        
-        ttk.Label(frame_busca, text="Nome:").pack(side='left', padx=5)
-        self.busca_entry = ttk.Entry(frame_busca, width=40)  # Definir como atributo da classe
-        self.busca_entry.pack(side='left', padx=5)
-
-        # Criar a tree de fornecedores antes de usar
-        self.tree_fornecedores = ttk.Treeview(frame_busca, 
-            columns=('CNPJ/CPF', 'Nome', 'Categoria'),
-            show='headings')
-        
-        # Definir a função de busca
-        def buscar():
-            termo = self.busca_entry.get()
-            # Implementar lógica de busca aqui
-            
-        # Definir a função de seleção    
-        def selecionar(event):
-            # Implementar lógica de seleção aqui
-            pass
-
-        self.busca_entry.bind('<Return>', lambda e: buscar())
-        self.tree_fornecedores.bind('<<TreeviewSelect>>', selecionar)
-        ttk.Button(frame_busca, text="Buscar", command=buscar).pack(side='left', padx=5)
-
-        
-        # Frame para lista de fornecedores
-        frame_fornecedores = ttk.LabelFrame(self.janela_admin, text="Fornecedores")
-        frame_fornecedores.pack(fill='both', expand=True, padx=5, pady=5)
-        
-        self.tree_fornecedores = ttk.Treeview(frame_fornecedores, 
-                                             columns=('CNPJ/CPF', 'Nome', 'Categoria'),
-                                             show='headings',
-                                             height=5)
-        self.tree_fornecedores.heading('CNPJ/CPF', text='CNPJ/CPF')
-        self.tree_fornecedores.heading('Nome', text='Nome')
-        self.tree_fornecedores.heading('Categoria', text='Categoria')
-        self.tree_fornecedores.pack(fill='both', expand=True, padx=5, pady=5)
-        
-        # Frame para percentual
-        frame_percentual = ttk.Frame(self.janela_admin)
-        frame_percentual.pack(fill='x', padx=5, pady=5)
-        
-        ttk.Label(frame_percentual, text="Percentual (%):").pack(side='left', padx=5)
-        self.percentual_entry = ttk.Entry(frame_percentual, width=10)
-        self.percentual_entry.pack(side='left', padx=5)
-        
-        ttk.Button(frame_percentual, 
-                  text="Adicionar Administrador", 
-                  command=self.adicionar_administrador).pack(side='left', padx=5)
-        
-        # Frame para lista de administradores
-        frame_lista = ttk.LabelFrame(self.janela_admin, text="Administradores Cadastrados")
-        frame_lista.pack(fill='both', expand=True, padx=5, pady=5)
-        
-        self.tree_admin = ttk.Treeview(frame_lista, 
-                                     columns=('CNPJ/CPF', 'Nome', 'Percentual'),
-                                     show='headings')
-        self.tree_admin.heading('CNPJ/CPF', text='CNPJ/CPF')
-        self.tree_admin.heading('Nome', text='Nome')
-        self.tree_admin.heading('Percentual', text='Percentual (%)')
-        self.tree_admin.pack(fill='both', expand=True, padx=5, pady=5)
-        
-        # Frame para botões de ação
-        frame_botoes = ttk.Frame(self.janela_admin)
-        frame_botoes.pack(fill='x', padx=5, pady=5)
-        
-        ttk.Button(frame_botoes, 
-                  text="Remover Administrador", 
-                  command=self.remover_administrador).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, 
-                  text="Concluir", 
-                  command=self.finalizar_gestao).pack(side='right', padx=5)
-
-    def buscar_fornecedor(self):
-        termo = self.busca_entry.get()
-        buscar_fornecedor(self.tree_fornecedores, termo)
-            
-    def adicionar_administrador(self):
-        """Adiciona um fornecedor selecionado como administrador"""
-        selecionado = self.tree_fornecedores.selection()
-        if not selecionado:
-            custom_messagebox("warning",  "Aviso", "Selecione um fornecedor")
-            return
-            
-        fornecedor = self.tree_fornecedores.item(selecionado)['values']
-        percentual = self.percentual_entry.get().strip()
-        
-        # Validar percentual
-        if not percentual:
-            custom_messagebox("error", "Erro", "Informe o percentual!")
-            return
-            
-        try:
-            percentual_float = float(percentual.replace(',', '.'))
-            if percentual_float <= 0 or percentual_float > 100:
-                custom_messagebox("error", "Erro", "Percentual deve estar entre 0 e 100!")
-                return
-        except ValueError:
-            custom_messagebox("error", "Erro", "Percentual inválido!")
-            return
-            
-        # Formatar CNPJ/CPF como string
-        cnpj_cpf = str(fornecedor[0]).strip()  # Converter para string e remover espaços
-        
-        # Verificar se o fornecedor já está na lista
-        for admin in self.administradores:
-            if admin[0] == cnpj_cpf:  # Compara CNPJ/CPF
-                custom_messagebox("error", "Erro", "Este fornecedor já está cadastrado como administrador!")
-                return
-                
-        # Verificar se o total de percentuais não excede 100%
-        total_atual = sum(float(item[2].replace(',', '.')) 
-                         for item in self.administradores)
-        if total_atual + percentual_float > 100:
-            custom_messagebox("error", "Erro", "Soma dos percentuais excede 100%!")
-            return
-            
-        # Adicionar à lista e à treeview usando o CNPJ/CPF como string
-        self.administradores.append((cnpj_cpf, fornecedor[1], percentual))
-        self.tree_admin.insert('', 'end', values=(cnpj_cpf, fornecedor[1], percentual))
-        
-        # Limpar campo de percentual
-        self.percentual_entry.delete(0, tk.END)
-        
-    def remover_administrador(self):
-        """Remove o administrador selecionado"""
-        selecionado = self.tree_admin.selection()
-        if not selecionado:
-            custom_messagebox("warning",  "Aviso", "Selecione um administrador para remover")
-            return
-        
-        self.tree_admin.delete(selecionado)
-        valores = self.tree_admin.item(selecionado)['values']
-        self.administradores = [(cnpj, nome, perc) for cnpj, nome, perc 
-                              in self.administradores 
-                              if cnpj != valores[0]]
-        
-    def finalizar_gestao(self):
-        """Finaliza a gestão de administradores"""
-        total = sum(float(perc.replace(',', '.')) 
-                   for _, _, perc in self.administradores)
-        if total > 100:
-            custom_messagebox("error", "Erro", "Soma dos percentuais excede 100%!")
-            return
-        
-        self.janela_admin.destroy()
-        
-    def get_administradores(self):
-        """Retorna a lista de administradores configurados"""
-        return self.administradores.copy()        
-
-
 
 class ImportadorRH:
     def __init__(self, sistema_principal):
@@ -12695,38 +12013,6 @@ class ImportadorRH:
         
         return data_rel.strftime('%d/%m/%Y')
 
-    def obter_valor_cafe_configurado(self):
-        """Busca o valor do café nas configurações do sistema"""
-        try:
-            # Método 1: Tentar buscar nas configurações
-            from src.configuracoes_sistema import GerenciadorConfiguracoes
-            config = GerenciadorConfiguracoes.carregar_configuracoes()
-            
-            if config and 'cafe' in config and 'valor_atual' in config['cafe']:
-                valor_cafe = float(config['cafe']['valor_atual'])
-                logger.debug(f"📋 Valor do café encontrado nas configurações: R$ {valor_cafe:.2f}")
-                return valor_cafe
-                
-        except Exception as e:
-            logger.debug(f"⚠️ Erro ao buscar configuração de café: {str(e)}")
-        
-        # Método 2: Tentar buscar no sistema principal
-        try:
-            if hasattr(self.sistema, 'gestao_taxas') and hasattr(self.sistema.gestao_taxas, 'configuracoes'):
-                config = self.sistema.gestao_taxas.configuracoes
-                if config and 'cafe' in config:
-                    valor_cafe = float(config['cafe'].get('valor_atual', 4.0))
-                    logger.debug(f"📋 Valor do café encontrado no sistema: R$ {valor_cafe:.2f}")
-                    return valor_cafe
-        except Exception as e:
-            logger.debug(f"⚠️ Erro ao buscar no sistema: {str(e)}")
-        
-        # Valor padrão
-        valor_padrao = 4.0
-        logger.debug(f"📋 Usando valor padrão do café: R$ {valor_padrao:.2f}")
-        return valor_padrao
-
-
     def buscar_dados_bancarios_funcionario(self, cpf):
         """
         Busca dados bancários do funcionário na base de fornecedores
@@ -13612,52 +12898,6 @@ class GerenciadorLancamentos:
             logger.debug(f"Erro ao obter dados selecionados: {str(e)}")
             return []
 
-    def calcular_somatorio_selecionados(self):
-        """
-        Calcula o somatório dos valores dos itens selecionados
-        
-        Returns:
-            float: Valor total dos itens selecionados
-        """
-        try:
-            items_selecionados = self.tree_lancamentos.selection()
-            
-            if not items_selecionados:
-                return 0.0
-            
-            total = 0.0
-            
-            for item in items_selecionados:
-                try:
-                    valores = self.tree_lancamentos.item(item)['values']
-                    
-                    if len(valores) < 7:
-                        continue
-                    
-                    # O valor está na 7ª coluna (índice 6)
-                    valor_str = str(valores[6])
-                    
-                    # Converter valor brasileiro para float
-                    # Remove pontos de milhar e substitui vírgula por ponto
-                    valor_limpo = valor_str.replace('.', '').replace(',', '.')
-                    
-                    try:
-                        valor_numerico = float(valor_limpo)
-                        total += valor_numerico
-                    except ValueError:
-                        logger.debug(f"Erro ao converter valor: {valor_str}")
-                        continue
-                        
-                except Exception as e:
-                    logger.debug(f"Erro ao processar item no somatório: {str(e)}")
-                    continue
-            
-            return total
-            
-        except Exception as e:
-            logger.debug(f"Erro ao calcular somatório: {str(e)}")
-            return 0.0
-    
     def excluir_lote(self):
         """Executa exclusão em lote dos itens selecionados"""
         try:
@@ -14151,28 +13391,6 @@ class GerenciadorLancamentos:
             'destacar_duplicatas': False
         }
 
-    def carregar_preferencias_ordenacao(self):
-        """
-        Carrega as preferências de ordenação salvas
-        
-        Returns:
-            dict: Preferências carregadas ou padrão se não existir arquivo
-        """
-        try:
-            if ARQUIVO_PREFERENCIAS_ORDENACAO.exists():
-                import json
-                with open(ARQUIVO_PREFERENCIAS_ORDENACAO, 'r', encoding='utf-8') as f:
-                    preferencias = json.load(f)
-                    logger.debug(f"DEBUG: Preferências de ordenação carregadas: {preferencias}")
-                    return preferencias
-            else:
-                logger.debug("DEBUG: Arquivo de preferências não existe, usando padrão")
-                return self.obter_ordenacao_padrao()
-                
-        except Exception as e:
-            logger.error(f"Erro ao carregar preferências de ordenação: {str(e)}")
-            return self.obter_ordenacao_padrao()
-
     def salvar_preferencias_ordenacao(self):
         """
         Salva as preferências de ordenação atuais
@@ -14283,7 +13501,7 @@ class GerenciadorLancamentos:
             arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
             
             # Carregar dados
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', converters=CONVERSORES_DADOS)
             df = df.fillna("")
             
             # Preencher status em branco
@@ -14470,85 +13688,6 @@ class GerenciadorLancamentos:
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao salvar correções de ID: {str(e)}")
 
-
-    def verificar_integridade_ids(self, arquivo_cliente):
-        """
-        Método auxiliar para verificar a integridade dos IDs na planilha
-        """
-        try:
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-            
-            if 'ID_LANCAMENTO' not in df.columns:
-                return False, "Coluna ID_LANCAMENTO não existe"
-            
-            # Converter para numérico
-            ids = pd.to_numeric(df['ID_LANCAMENTO'], errors='coerce')
-            
-            # Verificar NaN
-            ids_nan = ids.isna().sum()
-            if ids_nan > 0:
-                return False, f"{ids_nan} IDs inválidos encontrados"
-            
-            # Verificar duplicados
-            ids_validos = ids.dropna()
-            duplicados = ids_validos.duplicated().sum()
-            if duplicados > 0:
-                return False, f"{duplicados} IDs duplicados encontrados"
-            
-            # Verificar sequência
-            ids_ordenados = sorted(ids_validos.unique())
-            esperado = list(range(1, len(ids_validos) + 1))
-            
-            if len(ids_ordenados) != len(esperado):
-                return False, f"Quantidade de IDs únicos ({len(ids_ordenados)}) não confere com total de linhas ({len(esperado)})"
-            
-            return True, "IDs íntegros"
-            
-        except Exception as e:
-            return False, f"Erro na verificação: {str(e)}"
-
-
-    def debug_ids_duplicados(self, arquivo_cliente):
-        """
-        Método para debug específico de IDs duplicados
-        """
-        try:
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-            
-            if 'ID_LANCAMENTO' not in df.columns:
-                logger.debug("DEBUG: Coluna ID_LANCAMENTO não existe")
-                return
-            
-            logger.debug("=== DEBUG IDs DUPLICADOS ===")
-            
-            # Converter para numérico
-            df['ID_LANCAMENTO'] = pd.to_numeric(df['ID_LANCAMENTO'], errors='coerce')
-            
-            # Encontrar duplicados
-            duplicados = df[df.duplicated(subset=['ID_LANCAMENTO'], keep=False) & df['ID_LANCAMENTO'].notna()]
-            
-            if duplicados.empty:
-                logger.debug("Nenhum ID duplicado encontrado")
-                return
-            
-            logger.debug(f"Encontrados {len(duplicados)} lançamentos com IDs duplicados:")
-            
-            for id_dup in duplicados['ID_LANCAMENTO'].unique():
-                logger.debug(f"\nID {id_dup}:")
-                linhas_dup = duplicados[duplicados['ID_LANCAMENTO'] == id_dup]
-                
-                for idx, row in linhas_dup.iterrows():
-                    linha_excel = idx + 2
-                    nome = row.get('NOME', 'N/A')
-                    referencia = row.get('REFERÊNCIA', 'N/A')
-                    valor = row.get('VALOR', 'N/A')
-                    observacao = row.get('OBSERVAÇÃO', '')
-                    
-                    tipo_lanc = "TAXA ADM" if 'TAXA ADM' in str(observacao) else "NORMAL"
-                    logger.debug(f"  Linha {linha_excel}: {nome} - {referencia} | R$ {valor} | {tipo_lanc}")
-            
-        except Exception as e:
-            logger.debug(f"Erro no debug: {str(e)}")
 
     def corrigir_planilha_status(self, arquivo_cliente, df):
         """Corrige o status na planilha para dados antigos"""
@@ -15044,52 +14183,6 @@ class GerenciadorLancamentos:
             logger.error(f"Erro ao carregar preferências de ordenação: {str(e)}")
             logger.debug("DEBUG: Usando ordenação padrão devido ao erro")
             return self.obter_ordenacao_padrao()
-
-    def aplicar_filtros_melhorados(self):
-        """Versão melhorada do filtro que preserva seleção quando possível"""
-        try:
-            # Salvar seleção atual
-            selecao_anterior = []
-            for item in self.tree_lancamentos.selection():
-                valores = self.tree_lancamentos.item(item, 'values')
-                if len(valores) >= 9:
-                    selecao_anterior.append(valores[8])  # ID do lançamento
-            
-            # Aplicar filtros (método original)
-            self.aplicar_filtros()
-            
-            # Tentar restaurar seleção
-            if selecao_anterior:
-                self.restaurar_selecao_por_ids(selecao_anterior)
-            
-            # Atualizar interface
-            self.atualizar_interface_selecao()
-            
-        except Exception as e:
-            logger.debug(f"Erro ao aplicar filtros melhorados: {str(e)}")
-            # Fallback para método original
-            self.aplicar_filtros()
-
-    def restaurar_selecao_por_ids(self, ids_para_selecionar):
-        """Restaura seleção baseada nos IDs dos lançamentos"""
-        try:
-            items_para_selecionar = []
-            
-            # Buscar itens que correspondem aos IDs
-            for item in self.tree_lancamentos.get_children():
-                valores = self.tree_lancamentos.item(item, 'values')
-                if len(valores) >= 9:
-                    id_item = valores[8]
-                    if id_item in ids_para_selecionar:
-                        items_para_selecionar.append(item)
-            
-            # Selecionar itens encontrados
-            if items_para_selecionar:
-                self.tree_lancamentos.selection_set(items_para_selecionar)
-                logger.debug(f"DEBUG: Restaurada seleção de {len(items_para_selecionar)} itens")
-            
-        except Exception as e:
-            logger.debug(f"Erro ao restaurar seleção: {str(e)}")
 
     def editar_lancamento(self):
         """Abre editor para o lançamento selecionado - VERSÃO ATUALIZADA"""
@@ -16637,7 +15730,7 @@ class EditorEmMassaGerenciador:
             arquivo_cliente = PASTA_CLIENTES / f"{self.gerenciador.sistema.cliente_atual}.xlsx"
             
             # Carregar apenas os dados necessários
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', converters=CONVERSORES_DADOS)
             
             # Buscar o lançamento
             mask = df['ID_LANCAMENTO'] == id_lancamento
@@ -17918,7 +17011,7 @@ class VisualizadorLancamentosFornecedor:
             arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
             
             # Carregar dados preservando tipos
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', dtype={'CNPJ_CPF': str})
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', dtype={'CNPJ_CPF': str}, converters=CONVERSORES_DADOS)
             df = df.fillna("")
 
             self.df_completo = df.copy()  # Guardar ANTES do filtro por fornecedor
@@ -18133,46 +17226,6 @@ class VisualizadorLancamentosFornecedor:
             logger.debug(f"Erro ao calcular número do relatório: {str(e)}")
             return ""
         
-    def debug_busca_fornecedor(self, cnpj_cpf_fornecedor, nome_fornecedor):
-        """Método auxiliar para debug da busca por fornecedor"""
-        try:
-            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', dtype={'CNPJ_CPF': str})
-            
-            logger.debug("=== DEBUG BUSCA POR FORNECEDOR ===")
-            logger.debug(f"Fornecedor buscado: {nome_fornecedor}")
-            logger.debug(f"CNPJ/CPF buscado: {cnpj_cpf_fornecedor}")
-            
-            # Mostrar todos os fornecedores únicos na base
-            fornecedores_unicos = df[['NOME', 'CNPJ_CPF']].drop_duplicates()
-            logger.debug(f"\nFornecedores na base do cliente {self.sistema.cliente_atual}:")
-            logger.debug(f"Total: {len(fornecedores_unicos)}")
-            
-            for _, row in fornecedores_unicos.head(10).iterrows():  # Mostrar apenas os primeiros 10
-                nome_base = str(row['NOME']).strip()
-                cnpj_base = str(row['CNPJ_CPF']).strip()
-                logger.debug(f"  - {nome_base} | {cnpj_base}")
-            
-            if len(fornecedores_unicos) > 10:
-                logger.debug(f"  ... e mais {len(fornecedores_unicos) - 10} fornecedores")
-            
-            # Buscar fornecedores com nomes similares
-            nome_busca = str(nome_fornecedor).upper()
-            nomes_similares = fornecedores_unicos[
-                fornecedores_unicos['NOME'].astype(str).str.upper().str.contains('ANTONIO', na=False)
-            ]
-            
-            if not nomes_similares.empty:
-                logger.debug(f"\nFornecedores com 'ANTONIO' no nome:")
-                for _, row in nomes_similares.iterrows():
-                    logger.debug(f"  - {row['NOME']} | {row['CNPJ_CPF']}")
-            
-            return df, fornecedores_unicos
-            
-        except Exception as e:
-            logger.debug(f"Erro no debug: {str(e)}")
-            return None, None
-
     def inicializar_datas_padrao(self):
         """Inicializa as datas padrão dos filtros baseado no sistema (dias 5 e 20)"""
         try:
@@ -18721,10 +17774,6 @@ class GerenciadorAgenda:
             self._cache_fornecedores = {}
             self._cache_valido_ate = None
     
-    def _atualizar_validade_cache(self):
-        """Atualiza validade do cache"""
-        self._cache_valido_ate = datetime.now() + timedelta(seconds=self._cache_duracao)
-
     def calcular_mes_referencia_compromisso(self, data_rel, tipo_referencia_mes='anterior'):
         """
         Calcula o mês/ano da referência baseado na data do relatório.
@@ -19250,7 +18299,7 @@ class GerenciadorAgenda:
                 logger.debug("DEBUG: Arquivo do cliente não existe")
                 return
 
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', converters=CONVERSORES_DADOS)
             df = df.fillna("")
 
             hoje = datetime.now().date()
@@ -19779,14 +18828,6 @@ class GerenciadorAgenda:
         except Exception as e:
             logger.debug(f"Erro: {e}")
 
-    def normalizar_nome_fornecedor(self, nome):
-        """Normaliza nome do fornecedor para comparação"""
-        import re
-        # Remove espaços extras, pontuação e converte para maiúsculas
-        nome_limpo = re.sub(r'[^\w\s]', '', nome.upper())
-        nome_limpo = ' '.join(nome_limpo.split())
-        return nome_limpo
-    
     def calcular_datas_relatorio_recorrencia(self, compromisso, data_inicio, data_fim):
         """
         ✅ VERSÃO COM DEBUG para ver o que está sendo gerado
@@ -20511,8 +19552,8 @@ class GerenciadorAgenda:
             
             def calcular_valor_total_automatico(event=None):
                 try:
-                    vr_unit_val = float(vr_unit.get().replace(',', '.')) if vr_unit.get() else 0
-                    dias_val = float(dias.get().replace(',', '.')) if dias.get() else 1
+                    vr_unit_val = _numero_br(vr_unit.get()) if vr_unit.get() else 0
+                    dias_val = _numero_br(dias.get()) if dias.get() else 1
                     total = vr_unit_val * dias_val
                     
                     valor_total.config(state='normal')
@@ -20573,9 +19614,9 @@ class GerenciadorAgenda:
                         'categoria': categoria.get().strip().upper() or 'FORNECEDOR',
                         'referencia': referencia.get().strip().upper(),
                         'nf': nf.get().strip().upper(),
-                        'valor': float(valor_total.get().replace(',', '.')),
-                        'vr_unit': float(vr_unit.get().replace(',', '.')),
-                        'dias': float(dias.get().replace(',', '.')) if dias.get() else 1,
+                        'valor': _numero_br(valor_total.get()),
+                        'vr_unit': _numero_br(vr_unit.get()),
+                        'dias': _numero_br(dias.get()) if dias.get() else 1,
                         'dt_vencto': dt_vencto.get_date(),
                         'observacao': observacao.get().strip().upper(),
                         'etapa_obra': '',  # Valores padrão para campos não presentes
@@ -20584,15 +19625,18 @@ class GerenciadorAgenda:
                         'forma_pagamento': 'PIX'  # Padrão
                     }
                     
-                    # Inserir lançamento
-                    sucesso = self.sistema.inserir_lancamento_completo(dados_lancamento)
-                    
-                    if sucesso:
+                    # Inserir lançamento - mesmo método usado pela confirmação
+                    # em lote (salvar_confirmacao_direta). O método antigo
+                    # chamado aqui (inserir_lancamento_completo) nunca existiu.
+                    resultado = self.sistema.salvar_confirmacao_direta(dados_lancamento)
+
+                    if resultado and resultado.get('sucesso'):
                         custom_messagebox("info", "Sucesso", "Lançamento criado com sucesso!")
                         janela_novo.destroy()
                         self.carregar_dados_agenda()  # Recarregar agenda
-                    else:
-                        custom_messagebox("error", "Erro", "Erro ao criar lançamento!")
+                    # Se não gravou, salvar_confirmacao_direta já mostrou o motivo
+                    # (ou o usuário desistiu ao ver a duplicata): a janela fica
+                    # aberta para correção, sem uma segunda mensagem de erro.
                         
                 except Exception as e:
                     custom_messagebox("error", "Erro", f"Erro ao salvar lançamento: {str(e)}")
@@ -21259,25 +20303,6 @@ class GerenciadorAgenda:
         nome_limpo = re.sub(r'[^\w\s]', '', nome.upper())
         nome_limpo = ' '.join(nome_limpo.split())
         return nome_limpo
-
-    def resetar_agenda(self):
-        """Reseta e recarrega todos os dados da agenda"""
-        try:
-            if custom_messagebox("yesno", "Resetar Agenda", 
-                "Isso vai recarregar todos os dados da agenda do zero.\n"
-                "Útil se os dados estiverem inconsistentes.\n\n"
-                "Continuar?"):
-                
-                # Limpar cache
-                self.dados_agenda = []
-                
-                # Recarregar tudo
-                self.carregar_dados_agenda()
-                
-                custom_messagebox("info", "Sucesso", "Agenda resetada e recarregada!")
-                
-        except Exception as e:
-            custom_messagebox("error", "Erro", f"Erro ao resetar agenda: {str(e)}")
 
     def abrir_gerenciador_compromissos(self):
         """
@@ -22233,266 +21258,6 @@ class GerenciadorAgenda:
         except Exception as e:
             logger.debug(f"Erro ao configurar atalhos da agenda: {str(e)}")
 
-    def formatar_valor_brasileiro(valor):
-        """Função auxiliar para formatar valores no padrão brasileiro"""
-        try:
-            valor_float = float(valor)
-            return f"R$ {valor_float:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-        except:
-            return "R$ 0,00"
-    
-class NotificadorAgenda:
-    """Sistema de notificações para a agenda"""
-    
-    def __init__(self, sistema_principal):
-        self.sistema = sistema_principal
-        self.notificacoes_ativas = []
-    
-    def verificar_vencimentos_hoje(self):
-        """Verifica vencimentos do dia atual"""
-        try:
-            if not self.sistema.cliente_atual:
-                return []
-            
-            hoje = datetime.now().date()
-            vencimentos_hoje = []
-            
-            # Carregar dados do cliente
-            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
-            if arquivo_cliente.exists():
-                df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-                df = df.fillna("")
-                
-                for idx, row in df.iterrows():
-                    if row.get('STATUS', 'ATIVO') == 'EXCLUIDO':
-                        continue
-                    
-                    try:
-                        dt_vencto = pd.to_datetime(row['DT_VENCTO']).date()
-                        if dt_vencto == hoje:
-                            vencimentos_hoje.append({
-                                'fornecedor': row.get('NOME', ''),
-                                'referencia': row.get('REFERÊNCIA', ''),
-                                'valor': float(row.get('VALOR', 0)),
-                                'observacao': row.get('OBSERVAÇÃO', '')
-                            })
-                    except:
-                        continue
-            
-            return vencimentos_hoje
-            
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao verificar vencimentos: {str(e)}")
-            return []
-    
-    def verificar_vencimentos_proximos(self, dias_antecedencia=3):
-        """Verifica vencimentos nos próximos dias"""
-        try:
-            if not self.sistema.cliente_atual:
-                return []
-            
-            hoje = datetime.now().date()
-            data_limite = hoje + timedelta(days=dias_antecedencia)
-            vencimentos_proximos = []
-            
-            # Carregar dados do cliente
-            arquivo_cliente = PASTA_CLIENTES / f"{self.sistema.cliente_atual}.xlsx"
-            if arquivo_cliente.exists():
-                df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-                df = df.fillna("")
-                
-                for idx, row in df.iterrows():
-                    if row.get('STATUS', 'ATIVO') == 'EXCLUIDO':
-                        continue
-                    
-                    try:
-                        dt_vencto = pd.to_datetime(row['DT_VENCTO']).date()
-                        if hoje < dt_vencto <= data_limite:
-                            dias_restantes = (dt_vencto - hoje).days
-                            vencimentos_proximos.append({
-                                'fornecedor': row.get('NOME', ''),
-                                'referencia': row.get('REFERÊNCIA', ''),
-                                'valor': float(row.get('VALOR', 0)),
-                                'vencimento': dt_vencto,
-                                'dias_restantes': dias_restantes
-                            })
-                    except:
-                        continue
-            
-            return sorted(vencimentos_proximos, key=lambda x: x['vencimento'])
-            
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao verificar vencimentos próximos: {str(e)}")
-            return []
-    
-    def mostrar_notificacao_vencimentos(self):
-        """Mostra notificação com vencimentos do dia e próximos"""
-        vencimentos_hoje = self.verificar_vencimentos_hoje()
-        vencimentos_proximos = self.verificar_vencimentos_proximos()
-        
-        if not vencimentos_hoje and not vencimentos_proximos:
-            return
-        
-        # Janela de notificação
-        janela_notif = tk.Toplevel(self.sistema.root)
-        janela_notif.title("Notificações de Vencimento")
-        janela_notif.geometry("500x400")
-        janela_notif.attributes('-topmost', True)
-        
-        # Frame principal
-        main_frame = ttk.Frame(janela_notif, padding="15")
-        main_frame.pack(fill='both', expand=True)
-        
-        # Título
-        ttk.Label(main_frame, text=f"📅 Agenda - {self.sistema.cliente_atual}", 
-                 font=('TkDefaultFont', 12, 'bold')).pack(pady=(0, 10))
-        
-        # Vencimentos de hoje
-        if vencimentos_hoje:
-            frame_hoje = ttk.LabelFrame(main_frame, text="🚨 Vencimentos de HOJE")
-            frame_hoje.pack(fill='x', pady=(0, 10))
-            
-            valor_total_hoje = sum(v['valor'] for v in vencimentos_hoje)
-            
-            ttk.Label(frame_hoje, text=f"Total: R$ {valor_total_hoje:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
-                     font=('TkDefaultFont', 10, 'bold'), foreground='red').pack(anchor='w', padx=10, pady=5)
-            
-            for venc in vencimentos_hoje[:5]:  # Mostrar no máximo 5
-                texto = f"• {venc['fornecedor']} - R$ {venc['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                ttk.Label(frame_hoje, text=texto).pack(anchor='w', padx=20, pady=1)
-            
-            if len(vencimentos_hoje) > 5:
-                ttk.Label(frame_hoje, text=f"... e mais {len(vencimentos_hoje) - 5} vencimentos",
-                         font=('TkDefaultFont', 9, 'italic')).pack(anchor='w', padx=20, pady=1)
-        
-        # Vencimentos próximos
-        if vencimentos_proximos:
-            frame_proximos = ttk.LabelFrame(main_frame, text="⏰ Próximos Vencimentos")
-            frame_proximos.pack(fill='x', pady=(0, 10))
-            
-            for venc in vencimentos_proximos[:5]:  # Mostrar no máximo 5
-                dias_texto = "amanhã" if venc['dias_restantes'] == 1 else f"em {venc['dias_restantes']} dias"
-                texto = f"• {venc['fornecedor']} - {dias_texto} (R$ {venc['valor']:,.2f})".replace(',', 'X').replace('.', ',').replace('X', '.')
-                ttk.Label(frame_proximos, text=texto).pack(anchor='w', padx=20, pady=1)
-        
-        # Botões
-        frame_botoes = ttk.Frame(main_frame)
-        frame_botoes.pack(fill='x', pady=(10, 0))
-        
-        ttk.Button(frame_botoes, text="Abrir Agenda", 
-                  command=lambda: [janela_notif.destroy(), self.sistema.abrir_agenda()]).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Lembrar depois", 
-                  command=janela_notif.destroy).pack(side='left', padx=5)
-        ttk.Button(frame_botoes, text="Não mostrar hoje", 
-                  command=self.desativar_notificacoes_hoje).pack(side='right', padx=5)
-        
-        # Posicionar no canto inferior direito
-        janela_notif.update_idletasks()
-        largura = janela_notif.winfo_width()
-        altura = janela_notif.winfo_height()
-        pos_x = janela_notif.winfo_screenwidth() - largura - 50
-        pos_y = janela_notif.winfo_screenheight() - altura - 100
-        janela_notif.geometry(f"+{pos_x}+{pos_y}")
-    
-    def desativar_notificacoes_hoje(self):
-        """Desativa notificações para o dia atual"""
-        # Implementar lógica para não mostrar mais notificações hoje
-        pass
-
-class RelatorioAgenda:
-    """Gerador de relatórios da agenda"""
-    
-    @staticmethod
-    def gerar_relatorio_mensal(cliente, mes, ano):
-        """Gera relatório mensal da agenda"""
-        try:
-            # Carregar dados
-            arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            if not arquivo_cliente.exists():
-                return None
-            
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
-            df = df.fillna("")
-            
-            # Filtrar por mês/ano
-            inicio_mes = datetime(ano, mes, 1).date()
-            if mes == 12:
-                fim_mes = datetime(ano + 1, 1, 1).date() - timedelta(days=1)
-            else:
-                fim_mes = datetime(ano, mes + 1, 1).date() - timedelta(days=1)
-            
-            dados_mes = []
-            
-            for idx, row in df.iterrows():
-                try:
-                    dt_vencto = pd.to_datetime(row['DT_VENCTO']).date()
-                    if inicio_mes <= dt_vencto <= fim_mes:
-                        dados_mes.append({
-                            'Data_Vencimento': dt_vencto.strftime('%d/%m/%Y'),
-                            'Fornecedor': row.get('NOME', ''),
-                            'Referencia': row.get('REFERÊNCIA', ''),
-                            'Valor': float(row.get('VALOR', 0)),
-                            'Status': row.get('STATUS', 'ATIVO'),
-                            'Observacao': row.get('OBSERVAÇÃO', '')
-                        })
-                except:
-                    continue
-            
-            # Gerar relatório Excel
-            if dados_mes:
-                df_relatorio = pd.DataFrame(dados_mes)
-                df_relatorio = df_relatorio.sort_values('Data_Vencimento')
-                
-                nome_arquivo = f"Agenda_{cliente}_{mes:02d}_{ano}.xlsx"
-                caminho_arquivo = PASTA_CLIENTES / nome_arquivo
-                
-                with pd.ExcelWriter(caminho_arquivo, engine='openpyxl') as writer:
-                    df_relatorio.to_excel(writer, sheet_name='Agenda_Mensal', index=False)
-                    
-                    # Adicionar resumo
-                    total_mes = df_relatorio['Valor'].sum()
-                    ativos = df_relatorio[df_relatorio['Status'] == 'ATIVO']
-                    
-                    resumo = pd.DataFrame([
-                        {'Metrica': 'Total de Lançamentos', 'Valor': len(df_relatorio)},
-                        {'Metrica': 'Lançamentos Ativos', 'Valor': len(ativos)},
-                        {'Metrica': 'Valor Total (R$)', 'Valor': f"{total_mes:,.2f}"},
-                        {'Metrica': 'Valor Ativos (R$)', 'Valor': f"{ativos['Valor'].sum():,.2f}"}
-                    ])
-                    
-                    resumo.to_excel(writer, sheet_name='Resumo', index=False)
-                
-                return caminho_arquivo
-            
-            return None
-            
-        except Exception as e:
-            logger.debug(f"DEBUG: Erro ao gerar relatório mensal: {str(e)}")
-            return None
-
-
-class ConfiguracaoTaxas:
-    """
-    Classe para configurações do sistema de taxas
-    """
-    # Modo de tratamento de diferenças históricas
-    MODO_HISTORICO = "COMPENSATORIO"  # ou "RECALCULO_FORCADO"
-    
-    # Permitir recálculo de períodos fechados (não recomendado)
-    PERMITIR_ALTERACAO_HISTORICO = False
-    
-    # Dias para considerar uma quinzena como "fechada"
-    DIAS_PARA_FECHAR_QUINZENA = 5  # Após 5 dias, considera fechada
-    
-    @staticmethod
-    def quinzena_esta_fechada(data_quinzena):
-        """
-        Verifica se uma quinzena deve ser considerada fechada
-        """
-        hoje = datetime.now().date()
-        dias_passados = (hoje - data_quinzena).days
-        return dias_passados > ConfiguracaoTaxas.DIAS_PARA_FECHAR_QUINZENA
-     
 if __name__ == "__main__":
     logger.info("Iniciando aplicação...")
     app = SistemaEntradaDados()

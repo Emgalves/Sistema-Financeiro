@@ -37,6 +37,9 @@ from src.config.logger_config import system_logger, log_action
 logger = system_logger.get_logger()
 
 # Importar utils
+from src.modules.contratante_pj import (
+    eh_pj, buscar_sede_pj, ContratantePJSemCadastro,
+)
 from src.config.utils import (
     formatar_cnpj_cpf,
     buscar_dados_bancarios_fornecedor
@@ -293,8 +296,23 @@ class GeradorContrato:
                 'estado_civil': self._get_safe_value(cliente, 'Estado Civil', 'não informado'),
                 'endereco': self._get_safe_value(cliente, 'Endereço', 'não informado'),
                 'cidade': self._get_safe_value(cliente, 'Cidade', 'Belo Horizonte'),
-                'estado': self._get_safe_value(cliente, 'Estado', 'MG')
+                'estado': self._get_safe_value(cliente, 'Estado', 'MG'),
+                # Qualificação do contratante (ver src/modules/contratante_pj.py)
+                'tipo_pessoa': 'PJ' if eh_pj(cpf_formatado) else 'PF',
+                'domicilio': self._get_safe_value(cliente, 'DOMICILIO', ''),
+                'sede': '',
+                'erro_contratante': '',
             }
+
+            # Cliente PJ: a sede vem da base de fornecedores. Sem ela, o erro
+            # fica registrado aqui e a tela de contrato avisa o usuário.
+            if dados['tipo_pessoa'] == 'PJ':
+                try:
+                    dados['sede'] = buscar_sede_pj(dados['nome'], dados['cnpj_cpf'],
+                                                   ARQUIVO_FORNECEDORES)
+                except ContratantePJSemCadastro as e:
+                    dados['erro_contratante'] = str(e)
+                    logger.warning(f"Contratante PJ sem sede: {e}")
             
             logger.info(f"✅ Dados do cliente processados - CPF final: {dados['cnpj_cpf']}")
             
@@ -699,7 +717,11 @@ class GeradorContrato:
                     'estado_civil': dados_contrato.get('cliente_estado_civil', 'não informado'),
                     'endereco': dados_contrato.get('cliente_endereco', 'não informado'),
                     'cidade': dados_contrato.get('cidade', 'Belo Horizonte'),
-                    'estado': dados_contrato.get('estado', 'MG')
+                    'estado': dados_contrato.get('estado', 'MG'),
+                    'tipo_pessoa': dados_contrato.get('cliente_tipo_pessoa', 'PF'),
+                    'domicilio': dados_contrato.get('cliente_domicilio', ''),
+                    'sede': dados_contrato.get('cliente_sede', ''),
+                    'erro_contratante': dados_contrato.get('cliente_erro_contratante', ''),
                 }
                 
                 nome_fornecedor_dict = dados_contrato.get('fornecedor_nome', 'não informado')
@@ -843,11 +865,37 @@ class GeradorContrato:
             p2 = doc.add_paragraph()
             run_cliente = p2.add_run(dados_cliente['nome'])
             run_cliente.bold = True
-            p2.add_run(f", pessoa física devidamente inscrita sob o CNO n.º {dados_cliente['cno']} e CPF nº {dados_cliente['cnpj_cpf']}, {dados_cliente['estado_civil']}, residente na {dados_cliente['endereco']}, doravante denominada CONTRATANTE e, de outro ")
+            # Qualificação do CONTRATANTE: PJ (sede da base de fornecedores) ou PF
+            cno_cli = dados_cliente.get('cno', '')
+            if dados_cliente.get('tipo_pessoa') == 'PJ':
+                if not dados_cliente.get('sede'):
+                    raise ValueError(dados_cliente.get('erro_contratante')
+                                     or "Cliente PJ sem endereço da sede.")
+                texto_cli = (", pessoa jurídica de direito privado, devidamente inscrita "
+                             f"no CNPJ sob o n.º {dados_cliente['cnpj_cpf']}")
+                if cno_cli:
+                    texto_cli += f" e no CNO sob o n.º {cno_cli}"
+                texto_cli += f", com sede na {dados_cliente['sede']}"
+            else:
+                residencia = dados_cliente.get('domicilio') or dados_cliente['endereco']
+                texto_cli = ", pessoa física devidamente inscrita sob o "
+                texto_cli += (f"CNO n.º {cno_cli} e CPF nº {dados_cliente['cnpj_cpf']}"
+                              if cno_cli else f"CPF nº {dados_cliente['cnpj_cpf']}")
+                if dados_cliente.get('estado_civil'):
+                    texto_cli += f", {dados_cliente['estado_civil']}"
+                texto_cli += f", residente na {residencia}"
+            p2.add_run(texto_cli + ", doravante denominada CONTRATANTE e, de outro ")
             
             # CONTRATADA - detectar pessoa física (CPF, 11 dígitos) ou jurídica (CNPJ, 14 dígitos)
             cnpj_cpf_forn = dados_fornecedor['cnpj_cpf']
             apenas_numeros_forn = ''.join(filter(str.isdigit, cnpj_cpf_forn))
+            # Documento sempre com máscara no contrato (antes saía "04571144601")
+            if len(apenas_numeros_forn) == 14:
+                n = apenas_numeros_forn
+                cnpj_cpf_forn = f"{n[:2]}.{n[2:5]}.{n[5:8]}/{n[8:12]}-{n[12:]}"
+            elif len(apenas_numeros_forn) == 11:
+                n = apenas_numeros_forn
+                cnpj_cpf_forn = f"{n[:3]}.{n[3:6]}.{n[6:9]}-{n[9:]}"
             if len(apenas_numeros_forn) == 14:
                 qualificacao_forn = (
                     f"pessoa jurídica de direito privado, devidamente inscrita no CNPJ sob o n.º "
@@ -857,7 +905,7 @@ class GeradorContrato:
             else:
                 qualificacao_forn = (
                     f"pessoa física devidamente inscrita sob o CPF n.º "
-                    f"{cnpj_cpf_forn} com residência na"
+                    f"{cnpj_cpf_forn}, com residência na"
                 )
                 logger.info(f"Fornecedor identificado como PESSOA FÍSICA: {cnpj_cpf_forn}")
 
@@ -871,6 +919,16 @@ class GeradorContrato:
                 and nome_fantasia_forn.strip().upper() != razao_social_forn.strip().upper()
             )
 
+            # "Representantes legais" só faz sentido para pessoa jurídica
+            pj_cli = dados_cliente.get('tipo_pessoa') == 'PJ'
+            pj_forn = len(apenas_numeros_forn) == 14
+            if pj_cli and pj_forn:
+                representacao = "ambas representadas por seus representantes legais, "
+            elif pj_cli or pj_forn:
+                representacao = "a pessoa jurídica representada por seu representante legal, "
+            else:
+                representacao = ""
+
             run_fornecedor = p2.add_run(razao_social_forn)
             run_fornecedor.bold = True
 
@@ -878,16 +936,16 @@ class GeradorContrato:
                 logger.info(f"ℹ️ Nome fantasia incluído na qualificação: {nome_fantasia_forn}")
                 p2.add_run(
                     f", {qualificacao_forn} {dados_fornecedor['endereco']}, também denominada "
-                    f"\u201c{nome_fantasia_forn}\u201d, doravante denominado "
-                    f"simplesmente de CONTRATADA, ambas representadas por seus representantes legais "
-                    f"que ao final firmam o presente contrato, tem entre si, justo e contratado o "
+                    f"\u201c{nome_fantasia_forn}\u201d, doravante denominada "
+                    f"simplesmente CONTRATADA, {representacao}"
+                    f"que ao final firmam o presente contrato, têm entre si, justo e contratado o "
                     f"presente, que se regerá pelas seguintes Cláusulas e Condições:"
                 )
             else:
                 p2.add_run(
-                    f", {qualificacao_forn} {dados_fornecedor['endereco']}, doravante denominado "
-                    f"simplesmente de CONTRATADA, ambas representadas por seus representantes legais "
-                    f"que ao final firmam o presente contrato, tem entre si, justo e contratado o "
+                    f", {qualificacao_forn} {dados_fornecedor['endereco']}, doravante denominada "
+                    f"simplesmente CONTRATADA, {representacao}"
+                    f"que ao final firmam o presente contrato, têm entre si, justo e contratado o "
                     f"presente, que se regerá pelas seguintes Cláusulas e Condições:"
                 )
             

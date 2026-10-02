@@ -118,32 +118,6 @@ def validar_cnpj(cnpj):
         return False
 
 
-def validar_documento(documento):
-    """
-    Valida CPF ou CNPJ automaticamente baseado no tamanho
-    
-    Args:
-        documento: string com CPF (11 dígitos) ou CNPJ (14 dígitos)
-    
-    Returns:
-        bool: True se documento válido, False caso contrário
-    """
-    try:
-        # Remover caracteres não numéricos
-        doc_numeros = ''.join(filter(str.isdigit, str(documento)))
-        
-        if len(doc_numeros) == 11:
-            return validar_cpf(doc_numeros)
-        elif len(doc_numeros) == 14:
-            return validar_cnpj(doc_numeros)
-        else:
-            return False
-            
-    except Exception as e:
-        print(f"Erro ao validar documento: {str(e)}")
-        return False
-
-
 # === CLIENTES ===
 def obter_clientes_ativos(mostrar_inativos=False):
     """
@@ -315,17 +289,6 @@ def validar_data_quinzena(data):
         return data_ajustada, msg
     return data, None
 
-def calcular_proxima_data_quinzena(data):
-    """Calcula a próxima data quinzenal"""
-    if data.day == 5:
-        return data.replace(day=20)
-    else:
-        if data.month == 12:
-            return data.replace(year=data.year + 1, month=1, day=5)
-        else:
-            return data.replace(month=data.month + 1, day=5)
-
-
 def formatar_cnpj_cpf(documento):
     """Formata CNPJ/CPF com zeros à esquerda"""
     if len(documento) <= 11:
@@ -439,55 +402,6 @@ def validar_documento(documento, tipo_pessoa):
 
 # === FORMATADORES AUTOMÁTICOS PARA CAMPOS DE ENTRADA ===
 
-def formatar_cpf_campo(event):
-    """
-    Formata CPF automaticamente durante a digitação em campos Entry: 999.999.999-99
-    
-    Args:
-        event: Evento do Tkinter (KeyRelease)
-    
-    Uso:
-        cpf_entry.bind('<KeyRelease>', formatar_cpf_campo)
-    """
-    widget = event.widget
-    
-    # Obter valor atual
-    valor = widget.get()
-    
-    # Remover tudo que não é número
-    apenas_numeros = re.sub(r'\D', '', valor)
-    
-    # Limitar a 11 dígitos
-    apenas_numeros = apenas_numeros[:11]
-    
-    # Aplicar formatação
-    if len(apenas_numeros) <= 3:
-        formatado = apenas_numeros
-    elif len(apenas_numeros) <= 6:
-        formatado = f"{apenas_numeros[:3]}.{apenas_numeros[3:]}"
-    elif len(apenas_numeros) <= 9:
-        formatado = f"{apenas_numeros[:3]}.{apenas_numeros[3:6]}.{apenas_numeros[6:]}"
-    else:
-        formatado = f"{apenas_numeros[:3]}.{apenas_numeros[3:6]}.{apenas_numeros[6:9]}-{apenas_numeros[9:]}"
-    
-    # Atualizar campo se mudou
-    if formatado != valor:
-        # Salvar posição do cursor
-        pos_cursor = widget.index(tk.INSERT)
-        
-        # Calcular nova posição (ajustar por caracteres inseridos)
-        diff = len(formatado) - len(valor)
-        nova_pos = pos_cursor + diff
-        
-        # Atualizar valor
-        widget.delete(0, tk.END)
-        widget.insert(0, formatado)
-        
-        # Restaurar cursor (limitar à posição válida)
-        nova_pos = max(0, min(nova_pos, len(formatado)))
-        widget.icursor(nova_pos)
-
-
 def formatar_cno_campo(event):
     """
     Formata CNO automaticamente durante a digitação: 99.999.99999/99
@@ -585,52 +499,6 @@ def formatar_cep_campo(event):
         widget.icursor(nova_pos)
 
 
-def formatar_telefone_campo(event):
-    """
-    Formata telefone automaticamente: (99) 99999-9999 ou (99) 9999-9999
-    
-    Args:
-        event: Evento do Tkinter (KeyRelease)
-    
-    Uso:
-        telefone_entry.bind('<KeyRelease>', formatar_telefone_campo)
-    """
-    widget = event.widget
-    
-    # Obter valor atual
-    valor = widget.get()
-    
-    # Remover tudo que não é número
-    apenas_numeros = re.sub(r'\D', '', valor)
-    
-    # Limitar a 11 dígitos
-    apenas_numeros = apenas_numeros[:11]
-    
-    # Aplicar formatação
-    if len(apenas_numeros) <= 2:
-        formatado = apenas_numeros
-    elif len(apenas_numeros) <= 6:
-        formatado = f"({apenas_numeros[:2]}) {apenas_numeros[2:]}"
-    elif len(apenas_numeros) <= 10:
-        # Telefone fixo: (XX) XXXX-XXXX
-        formatado = f"({apenas_numeros[:2]}) {apenas_numeros[2:6]}-{apenas_numeros[6:]}"
-    else:
-        # Celular: (XX) XXXXX-XXXX
-        formatado = f"({apenas_numeros[:2]}) {apenas_numeros[2:7]}-{apenas_numeros[7:]}"
-    
-    # Atualizar campo se mudou
-    if formatado != valor:
-        pos_cursor = widget.index(tk.INSERT)
-        diff = len(formatado) - len(valor)
-        nova_pos = pos_cursor + diff
-        
-        widget.delete(0, tk.END)
-        widget.insert(0, formatado)
-        
-        nova_pos = max(0, min(nova_pos, len(formatado)))
-        widget.icursor(nova_pos)
-
-
 def limpar_formatacao(texto):
     """
     Remove toda formatação de um texto, deixando apenas números
@@ -652,102 +520,8 @@ def limpar_formatacao(texto):
     return re.sub(r'\D', '', str(texto))
 
 
-def validar_cpf_completo(cpf):
-    """
-    Valida CPF usando algoritmo oficial
-    
-    Args:
-        cpf (str): CPF formatado ou não
-    
-    Returns:
-        bool: True se válido, False se inválido
-    
-    Exemplo:
-        >>> validar_cpf_completo("123.456.789-10")
-        False
-        >>> validar_cpf_completo("11144477735")
-        True
-    """
-    # Limpar formatação
-    cpf_limpo = limpar_formatacao(cpf)
-    
-    # Validar tamanho
-    if len(cpf_limpo) != 11:
-        return False
-    
-    # Verificar se todos os dígitos são iguais
-    if cpf_limpo == cpf_limpo[0] * 11:
-        return False
-    
-    # Calcular primeiro dígito verificador
-    soma = sum(int(cpf_limpo[i]) * (10 - i) for i in range(9))
-    digito1 = 11 - (soma % 11)
-    digito1 = 0 if digito1 > 9 else digito1
-    
-    # Verificar primeiro dígito
-    if int(cpf_limpo[9]) != digito1:
-        return False
-    
-    # Calcular segundo dígito verificador
-    soma = sum(int(cpf_limpo[i]) * (11 - i) for i in range(10))
-    digito2 = 11 - (soma % 11)
-    digito2 = 0 if digito2 > 9 else digito2
-    
-    # Verificar segundo dígito
-    return int(cpf_limpo[10]) == digito2
-
-
-def validar_cno(cno):
-    """
-    Valida CNO (validação básica de formato)
-    
-    Args:
-        cno (str): CNO formatado ou não
-    
-    Returns:
-        bool: True se tem 12 dígitos, False caso contrário
-    
-    Nota: CNO não possui dígito verificador padrão,
-    apenas validamos se tem 12 dígitos numéricos
-    """
-    cno_limpo = limpar_formatacao(cno)
-    return len(cno_limpo) == 12
-
-
-def validar_cep(cep):
-    """
-    Valida CEP (validação básica de formato)
-    
-    Args:
-        cep (str): CEP formatado ou não
-    
-    Returns:
-        bool: True se tem 8 dígitos, False caso contrário
-    """
-    cep_limpo = limpar_formatacao(cep)
-    return len(cep_limpo) == 8
-
 # === FILE OPERATIONS ===
-def verificar_arquivo_excel(caminho):
-    """Verifica se arquivo Excel existe e pode ser aberto"""
-    try:
-        if not os.path.exists(caminho):
-            return False
-        wb = load_workbook(caminho)
-        wb.close()
-        return True
-    except Exception:
-        return False
-
 # === VALUE FORMATTING ===
-def formatar_moeda(valor):
-    """Formata valor para moeda brasileira"""
-    try:
-        return f"R$ {float(valor):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-    except (ValueError, TypeError):
-        return "R$ 0,00"
-
-
 # === FIND SUPPLIER ===
 def buscar_fornecedor(tree_fornecedores, termo_busca='', categoria_filtro=None):
     """
@@ -901,35 +675,6 @@ def selecionar_fornecedor(tree_fornecedores, campos_fornecedor, campos_despesa=N
 
 # === VALUE EXCEL FORMATTING ===
 
-def formatar_valor_excel(valor):
-    """
-    Formata um valor numérico para o Excel, garantindo que seja um float
-    com exatamente duas casas decimais
-    
-    Args:
-        valor: número ou string representando um valor monetário
-        
-    Returns:
-        float: valor formatado como float com 2 casas decimais
-    """
-    try:
-        # Se for string, converter para float
-        if isinstance(valor, str):
-            # Remover todos os separadores de milhar e trocar vírgula por ponto
-            valor_limpo = valor.replace('.', '').replace(',', '.')
-            valor_float = float(valor_limpo)
-        else:
-            valor_float = float(valor)
-            
-        # Arredondar para duas casas decimais - sem converter para centavos
-        valor_formatado = round(valor_float, 2)
-        
-        return valor_formatado
-        
-    except (ValueError, TypeError) as e:
-        print(f"Erro ao formatar valor '{valor}': {str(e)}")
-        return 0.0
-
 def aplicar_formatacao_celula(cell):
     """
     Aplica a formatação correta para células de valor no Excel
@@ -959,15 +704,6 @@ def formatar_moeda_br(valor):
             return texto.replace(',', 'X').replace('.', ',').replace('X', '.')
         except:
             return f"R$ 0,00"
-
-def formatar_valor_br(self, valor):
-    """Formata um valor numérico para o padrão brasileiro (com vírgula)"""
-    try:
-        if isinstance(valor, str):
-            valor = float(valor.replace(',', '.'))
-        return f"{valor:.2f}".replace('.', ',')
-    except (ValueError, TypeError):
-        return valor
 
 # === DADOS BANCARIOS ===
 
@@ -1099,42 +835,6 @@ def custom_messagebox(tipo, titulo, mensagem, parent=None):
         return None
 
 
-def mostrar_alerta(mensagem, titulo="Alerta", parent=None):
-    """
-    Função helper para mostrar alertas de forma simplificada
-    
-    Args:
-        mensagem (str): Mensagem a ser exibida
-        titulo (str): Título da janela (padrão: "Alerta")
-        parent: Janela à qual associar esta caixa de diálogo (opcional).
-    """
-    return custom_messagebox("warning", titulo, mensagem, parent=parent)
-
-
-def mostrar_erro(mensagem, titulo="Erro", parent=None):
-    """
-    Função helper para mostrar erros de forma simplificada
-    
-    Args:
-        mensagem (str): Mensagem de erro
-        titulo (str): Título da janela (padrão: "Erro")
-        parent: Janela à qual associar esta caixa de diálogo (opcional).
-    """
-    return custom_messagebox("error", titulo, mensagem, parent=parent)
-
-
-def mostrar_info(mensagem, titulo="Informação", parent=None):
-    """
-    Função helper para mostrar informações de forma simplificada
-    
-    Args:
-        mensagem (str): Mensagem informativa
-        titulo (str): Título da janela (padrão: "Informação")
-        parent: Janela à qual associar esta caixa de diálogo (opcional).
-    """
-    return custom_messagebox("info", titulo, mensagem, parent=parent)
-
-
 def confirmar_acao(mensagem, titulo="Confirmar", parent=None):
     """
     Função helper para confirmações de forma simplificada
@@ -1149,53 +849,6 @@ def confirmar_acao(mensagem, titulo="Confirmar", parent=None):
     """
     return custom_messagebox("yesno", titulo, mensagem, parent=parent)
 
-
-def validar_entrada_obrigatoria(valor, nome_campo):
-    """
-    Valida se um campo obrigatório foi preenchido
-    
-    Args:
-        valor (str): Valor do campo
-        nome_campo (str): Nome do campo para a mensagem de erro
-        
-    Returns:
-        bool: True se válido, False se inválido (e mostra erro)
-    """
-    if not valor or not str(valor).strip():
-        mostrar_erro(f"O campo '{nome_campo}' é obrigatório!")
-        return False
-    return True
-
-
-def validar_valor_numerico(valor, nome_campo, permitir_zero=True):
-    """
-    Valida se um valor é numérico válido
-    
-    Args:
-        valor (str): Valor a ser validado
-        nome_campo (str): Nome do campo para mensagem de erro
-        permitir_zero (bool): Se permite valor zero
-        
-    Returns:
-        tuple: (bool, float) - (é_válido, valor_convertido)
-    """
-    try:
-        if isinstance(valor, str):
-            valor_limpo = valor.replace(',', '.')
-        else:
-            valor_limpo = str(valor)
-            
-        valor_float = float(valor_limpo)
-        
-        if not permitir_zero and valor_float <= 0:
-            mostrar_erro(f"O campo '{nome_campo}' deve ser maior que zero!")
-            return False, 0.0
-            
-        return True, valor_float
-        
-    except (ValueError, TypeError):
-        mostrar_erro(f"O campo '{nome_campo}' deve conter um valor numérico válido!")
-        return False, 0.0
 
 def calcular_numero_relatorio(self, data_relatorio):
         """
@@ -1270,3 +923,29 @@ TIPOS_DESPESA = {
     6: "Pagamentos Caixa",
     7: "Administração"
 }
+
+
+# =====================================================================
+# NF SEMPRE COMO TEXTO NA LEITURA DA ABA "Dados" (pandas)
+# O pd.read_excel converte em número qualquer NF que "pareça" número,
+# mesmo gravada como texto ("552233" vira 552233.0). A tela de edição
+# do gerenciador então gravava "552233.0" de volta na planilha.
+# Uso: pd.read_excel(arquivo, sheet_name='Dados', converters=CONVERSORES_DADOS)
+# =====================================================================
+def normalizar_nf(valor):
+    """Devolve a NF como texto, sem o ".0" que a conversão numérica cria.
+    Preserva zeros à esquerda e NFs alfanuméricas ("000123", "A-77")."""
+    if valor is None:
+        return ''
+    if isinstance(valor, float):
+        if valor != valor:          # NaN (célula vazia)
+            return ''
+        if valor.is_integer():
+            valor = int(valor)
+    texto = str(valor).strip()
+    if texto.endswith('.0') and texto[:-2].isdigit():
+        texto = texto[:-2]
+    return texto
+
+
+CONVERSORES_DADOS = {'NF': normalizar_nf}

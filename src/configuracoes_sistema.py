@@ -938,14 +938,6 @@ class GerenciadorConfiguracoes:
             return [c for c in config['compromissos_recorrentes']['lista'] if c.get('ativo', True)]
         return []
 
-    @staticmethod
-    def get_compromissos_recorrentes_todos():
-        """Retorna todos os compromissos recorrentes (ativos e inativos)"""
-        config = GerenciadorConfiguracoes.carregar_configuracoes()
-        if config and 'compromissos_recorrentes' in config:
-            return config['compromissos_recorrentes']['lista']
-        return []
-
     # ==============================================================================
     # MODIFICAÇÃO 1: Atualizar setup_aba_compromissos_recorrentes
     # ==============================================================================
@@ -2511,107 +2503,6 @@ class GerenciadorConfiguracoes:
         self.listbox_unidades.delete(0, tk.END)
         for unidade in sorted(self.materiais_config['unidades']):
             self.listbox_unidades.insert(tk.END, unidade)
-
-    def criar_aba_servicos_construcao(self):
-        """Cria a aba de gerenciamento de serviços de construção"""
-        from pathlib import Path
-        import json
-        
-        frame = ttk.Frame(self.notebook, padding="10")
-        self.notebook.add(frame, text="Serviços de Construção")
-        
-        # Título
-        ttk.Label(frame, text="Gerenciamento de Serviços de Construção", 
-                font=('Arial', 14, 'bold')).grid(row=0, column=0, columnspan=2, pady=(0, 20))
-        
-        # Frame principal dividido em duas colunas
-        main_container = ttk.Frame(frame)
-        main_container.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S))
-        
-        # ===== COLUNA ESQUERDA: CATEGORIAS =====
-        left_frame = ttk.LabelFrame(main_container, text="Categorias", padding="10")
-        left_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(0, 5))
-        
-        # Treeview de categorias
-        cols_cat = ('ID', 'Nome', 'Qtd')
-        self.tree_servicos_cat = ttk.Treeview(left_frame, columns=cols_cat, show='headings', height=15)
-        
-        self.tree_servicos_cat.heading('ID', text='ID')
-        self.tree_servicos_cat.heading('Nome', text='Nome')
-        self.tree_servicos_cat.heading('Qtd', text='Serviços')
-        
-        self.tree_servicos_cat.column('ID', width=120)
-        self.tree_servicos_cat.column('Nome', width=180)
-        self.tree_servicos_cat.column('Qtd', width=60)
-        
-        scrollbar_cat = ttk.Scrollbar(left_frame, orient=tk.VERTICAL, command=self.tree_servicos_cat.yview)
-        self.tree_servicos_cat.configure(yscrollcommand=scrollbar_cat.set)
-        
-        self.tree_servicos_cat.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        scrollbar_cat.grid(row=0, column=1, sticky=(tk.N, tk.S))
-        
-        # Botões de categoria
-        btn_frame_cat = ttk.Frame(left_frame)
-        btn_frame_cat.grid(row=1, column=0, columnspan=2, pady=(10, 0))
-        
-        ttk.Button(btn_frame_cat, text="Nova Categoria", 
-                command=self.nova_categoria_servico).pack(side=tk.LEFT, padx=2)
-        ttk.Button(btn_frame_cat, text="Editar", 
-                command=self.editar_categoria_servico).pack(side=tk.LEFT, padx=2)
-        ttk.Button(btn_frame_cat, text="Excluir", 
-                command=self.excluir_categoria_servico).pack(side=tk.LEFT, padx=2)
-        
-        left_frame.columnconfigure(0, weight=1)
-        left_frame.rowconfigure(0, weight=1)
-        
-        # ===== COLUNA DIREITA: SERVIÇOS =====
-        right_frame = ttk.LabelFrame(main_container, text="Serviços", padding="10")
-        right_frame.grid(row=0, column=1, sticky=(tk.W, tk.E, tk.N, tk.S), padx=(5, 0))
-        
-        # Treeview de serviços
-        cols_serv = ('Nome', 'Ambientes')
-        self.tree_servicos_list = ttk.Treeview(right_frame, columns=cols_serv, show='headings', height=15)
-        
-        self.tree_servicos_list.heading('Nome', text='Nome do Serviço')
-        self.tree_servicos_list.heading('Ambientes', text='Ambientes')
-        
-        self.tree_servicos_list.column('Nome', width=250)
-        self.tree_servicos_list.column('Ambientes', width=200)
-        
-        scrollbar_serv = ttk.Scrollbar(right_frame, orient=tk.VERTICAL, command=self.tree_servicos_list.yview)
-        self.tree_servicos_list.configure(yscrollcommand=scrollbar_serv.set)
-        
-        self.tree_servicos_list.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        scrollbar_serv.grid(row=0, column=1, sticky=(tk.N, tk.S))
-        
-        # Botões de serviços
-        btn_frame_serv = ttk.Frame(right_frame)
-        btn_frame_serv.grid(row=1, column=0, columnspan=2, pady=(10, 0))
-        
-        ttk.Button(btn_frame_serv, text="Novo Serviço", 
-                command=self.novo_servico_construcao).pack(side=tk.LEFT, padx=2)
-        ttk.Button(btn_frame_serv, text="Editar", 
-                command=self.editar_servico_construcao).pack(side=tk.LEFT, padx=2)
-        ttk.Button(btn_frame_serv, text="Excluir", 
-                command=self.excluir_servico_construcao).pack(side=tk.LEFT, padx=2)
-        
-        right_frame.columnconfigure(0, weight=1)
-        right_frame.rowconfigure(0, weight=1)
-        
-        # Configurar grid do container principal
-        main_container.columnconfigure(0, weight=1)
-        main_container.columnconfigure(1, weight=2)
-        main_container.rowconfigure(0, weight=1)
-        
-        frame.columnconfigure(0, weight=1)
-        frame.rowconfigure(1, weight=1)
-        
-        # Bind para seleção de categoria
-        self.tree_servicos_cat.bind('<<TreeviewSelect>>', self.on_categoria_servico_selecionada)
-        
-        # Carregar dados iniciais
-        self.carregar_servicos_config()
-        self.atualizar_lista_categorias_servicos()
 
     # =================================
     # MÉTODOS PARA SERVIÇOS - CONTRATO

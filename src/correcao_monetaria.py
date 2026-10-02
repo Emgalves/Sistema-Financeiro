@@ -649,26 +649,26 @@ class InterfaceIndicesCorrecao:
             valor = self.entry_valor.get().strip()
             
             if not periodo or not valor:
-                messagebox.showerror("Erro", "Preencha período e valor!")
+                messagebox.showerror("Erro", "Preencha período e valor!", parent=self.root)
                 return
             
             # Validar formato do período
             try:
                 datetime.strptime(periodo, '%m/%Y')
             except ValueError:
-                messagebox.showerror("Erro", "Período deve estar no formato MM/AAAA!")
+                messagebox.showerror("Erro", "Período deve estar no formato MM/AAAA!", parent=self.root)
                 return
             
             # Validar valor
             try:
                 valor_float = float(valor.replace(',', '.'))
             except ValueError:
-                messagebox.showerror("Erro", "Valor inválido!")
+                messagebox.showerror("Erro", "Valor inválido!", parent=self.root)
                 return
             
             # Adicionar índice
             if self.gerenciador.adicionar_indice_periodo(indice, periodo, valor_float):
-                messagebox.showinfo("Sucesso", f"Índice {indice} para {periodo} adicionado/atualizado!")
+                messagebox.showinfo("Sucesso", f"Índice {indice} para {periodo} adicionado/atualizado!", parent=self.root)
                 self.carregar_historico_indice()
                 self.entry_periodo.delete(0, tk.END)
                 self.entry_valor.delete(0, tk.END)
@@ -681,22 +681,22 @@ class InterfaceIndicesCorrecao:
                 except:
                     pass
             else:
-                messagebox.showerror("Erro", "Erro ao adicionar índice!")
+                messagebox.showerror("Erro", "Erro ao adicionar índice!", parent=self.root)
                 
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro: {str(e)}")
+            messagebox.showerror("Erro", f"Erro: {str(e)}", parent=self.root)
     
     def remover_indice(self):
         """Remove o índice selecionado"""
         selecionado = self.tree_indices.selection()
         if not selecionado:
-            messagebox.showwarning("Aviso", "Selecione um registro para remover!")
+            messagebox.showwarning("Aviso", "Selecione um registro para remover!", parent=self.root)
             return
         
         valores = self.tree_indices.item(selecionado)['values']
         periodo = valores[0]
         
-        if messagebox.askyesno("Confirmar", f"Remover índice de {periodo}?"):
+        if messagebox.askyesno("Confirmar", f"Remover índice de {periodo}?", parent=self.root):
             try:
                 indice = self.combo_indice.get()
                 historico = self.gerenciador.config['indices_correcao']['indices_disponiveis'][indice]['historico']
@@ -709,10 +709,10 @@ class InterfaceIndicesCorrecao:
                 
                 self.gerenciador.salvar_configuracoes()
                 self.carregar_historico_indice()
-                messagebox.showinfo("Sucesso", "Registro removido!")
+                messagebox.showinfo("Sucesso", "Registro removido!", parent=self.root)
                 
             except Exception as e:
-                messagebox.showerror("Erro", f"Erro ao remover: {str(e)}")
+                messagebox.showerror("Erro", f"Erro ao remover: {str(e)}", parent=self.root)
     
     def simular_correcao(self):
         """Simula a aplicação da correção monetária"""
@@ -768,7 +768,7 @@ class InterfaceIndicesCorrecao:
         """Aplica efetivamente a correção monetária"""
         if not messagebox.askyesno("Confirmar", 
                                   "Deseja realmente aplicar a correção monetária?\n\n"
-                                  "Esta ação alterará os valores dos contratos e não pode ser desfeita automaticamente!"):
+                                  "Esta ação alterará os valores dos contratos e não pode ser desfeita automaticamente!", parent=self.root):
             return
         
         self.text_resultados.delete(1.0, tk.END)
@@ -797,15 +797,15 @@ class InterfaceIndicesCorrecao:
                 # Registrar histórico de correção
                 self.registrar_historico_correcao(resultado)
                 
-                messagebox.showinfo("Sucesso", "Correção monetária aplicada com sucesso!")
+                messagebox.showinfo("Sucesso", "Correção monetária aplicada com sucesso!", parent=self.root)
             else:
                 self.text_resultados.insert(tk.END, f"ERRO: {resultado['erro']}\n")
-                messagebox.showerror("Erro", f"Erro ao aplicar correção: {resultado['erro']}")
+                messagebox.showerror("Erro", f"Erro ao aplicar correção: {resultado['erro']}", parent=self.root)
                 
         except Exception as e:
             erro_msg = f"Erro ao aplicar correção: {str(e)}"
             self.text_resultados.insert(tk.END, f"ERRO: {erro_msg}\n")
-            messagebox.showerror("Erro", erro_msg)
+            messagebox.showerror("Erro", erro_msg, parent=self.root)
     
     def registrar_historico_correcao(self, resultado):
         """Registra o histórico de correções aplicadas"""
@@ -833,23 +833,9 @@ class InterfaceIndicesCorrecao:
         """Salva todas as alterações"""
         try:
             self.gerenciador.salvar_configuracoes()
-            messagebox.showinfo("Sucesso", "Configurações salvas com sucesso!")
+            messagebox.showinfo("Sucesso", "Configurações salvas com sucesso!", parent=self.root)
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao salvar: {str(e)}")
+            messagebox.showerror("Erro", f"Erro ao salvar: {str(e)}", parent=self.root)
 
 # ===== FUNÇÕES DE INTEGRAÇÃO =====
 
-def adicionar_correcao_monetaria_ao_menu():
-    """
-    Função para adicionar a opção de correção monetária ao menu principal
-    """
-    def abrir_indices_correcao():
-        try:
-            app = InterfaceIndicesCorrecao()
-            app.root.mainloop()
-        except Exception as e:
-            print(f"Erro ao abrir interface de índices: {str(e)}")
-            import tkinter.messagebox as msgbox
-            msgbox.showerror("Erro", f"Erro ao abrir correção monetária: {str(e)}")
-    
-    return abrir_indices_correcao

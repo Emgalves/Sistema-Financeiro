@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from datetime import datetime, timedelta
 import pandas as pd
+from src.config.utils import CONVERSORES_DADOS  # NF lida como texto (ver normalizar_nf)
 from pathlib import Path
 from openpyxl import load_workbook, Workbook
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
@@ -606,7 +607,7 @@ class RelatorioFornecedores:
                         self.root.update()
                         
                         # Carregar dados do Excel
-                        df = pd.read_excel(caminho_arquivo, sheet_name='Dados')
+                        df = pd.read_excel(caminho_arquivo, sheet_name='Dados', converters=CONVERSORES_DADOS)
                         
                         # Verificar se existe coluna NOME
                         if 'NOME' not in df.columns:
@@ -766,10 +767,6 @@ class RelatorioFornecedores:
             )
                
     # NOVO: Método para selecionar fornecedor específico
-    def selecionar_fornecedor_especifico(self, event=None):
-        """Seleciona o fornecedor para análise"""
-        self.fornecedor_especifico = self.fornecedor_especifico_combobox.get()
-
     def setup_aba_resumo(self):
         """Configura a aba de resumo do relatório"""
         # Frame para informações do cliente/período
@@ -1248,27 +1245,6 @@ class RelatorioFornecedores:
         except Exception as e:
             print(f"Erro ao limpar dados do relatório anterior: {str(e)}")
 
-    def atualizar_labels_modo(self):
-        """Atualiza todos os labels conforme o modo atual"""
-        try:
-            if self.modo_relatorio == "fornecedores":
-                # Labels para modo fornecedores
-                if self.todos_clientes:
-                    self.lbl_cliente_resumo.config(text="Cliente: Todos os Clientes")
-                elif self.cliente_atual:
-                    self.lbl_cliente_resumo.config(text=f"Cliente: {self.cliente_atual}")
-                else:
-                    self.lbl_cliente_resumo.config(text="Cliente: Nenhum selecionado")
-            else:
-                # Labels para modo por fornecedor
-                if self.fornecedor_especifico:
-                    self.lbl_cliente_resumo.config(text=f"Fornecedor: {self.fornecedor_especifico}")
-                else:
-                    self.lbl_cliente_resumo.config(text="Fornecedor: Nenhum selecionado")
-                    
-        except Exception as e:
-            print(f"Erro ao atualizar labels: {str(e)}")
-            
     # NOVOS MÉTODOS: Controle de progresso
     def mostrar_progresso_geracao(self):
         """Mostra indicador de progresso durante a geração"""
@@ -1401,7 +1377,7 @@ class RelatorioFornecedores:
         """Processa um arquivo de cliente buscando lançamentos de um fornecedor específico"""
         try:
             # Carregar dados do Excel
-            df = pd.read_excel(caminho_arquivo, sheet_name='Dados')
+            df = pd.read_excel(caminho_arquivo, sheet_name='Dados', converters=CONVERSORES_DADOS)
             
             # Verificar colunas necessárias
             colunas_necessarias = ['DATA_REL', 'TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR']
@@ -1622,7 +1598,7 @@ class RelatorioFornecedores:
         """Processa um arquivo de cliente (método original)"""
         try:
             # Carregar dados do Excel
-            df = pd.read_excel(caminho_arquivo, sheet_name='Dados')
+            df = pd.read_excel(caminho_arquivo, sheet_name='Dados', converters=CONVERSORES_DADOS)
             
             # Verificar colunas necessárias
             colunas_necessarias = ['DATA_REL', 'TP_DESP', 'NOME', 'REFERÊNCIA', 'VALOR']
@@ -2249,7 +2225,7 @@ class RelatorioFornecedores:
         
         try:
             from reportlab.lib import colors
-            from reportlab.lib.pagesizes import letter, A4
+            from reportlab.lib.pagesizes import A4
             from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
             from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
             from reportlab.lib.units import inch

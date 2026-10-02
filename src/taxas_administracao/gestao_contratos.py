@@ -2346,14 +2346,6 @@ class GestaoContratos:
             lbl_total_percentual = ttk.Label(frame_botoes_evento, textvariable=total_percentual_var)
             lbl_total_percentual.pack(side='left', padx=5)
 
-            def calcular_valor_evento(percentual, valor_total_str):
-                try:
-                    percentual_float = float(percentual.replace(',', '.'))
-                    valor_float = float(valor_total_str.replace(',', '.'))
-                    return (percentual_float / 100) * valor_float
-                except (ValueError, AttributeError):
-                    return 0
-
             def adicionar_evento():
                 if not valor_global_entry.get():
                     custom_messagebox("error", "Erro", "Informe o valor global do contrato primeiro")

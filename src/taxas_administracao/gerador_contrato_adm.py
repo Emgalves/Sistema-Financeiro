@@ -29,6 +29,8 @@ from pathlib import Path
 
 from openpyxl import load_workbook
 
+from src.modules.contratante_pj import eh_pj, buscar_sede_pj
+
 
 class GeradorContratoADM:
     """
@@ -233,7 +235,7 @@ class GeradorContratoADM:
         if row.empty:
             return {'nome': nome_cliente, 'cpf': '', 'cno': '',
                     'estado_civil': '', 'endereco': '', 'cidade': 'Belo Horizonte',
-                    'estado': 'MG'}
+                    'estado': 'MG', 'tipo_pessoa': 'PF', 'domicilio': '', 'sede': ''}
         r = row.iloc[0]
 
         def _safe(col, default=''):
@@ -255,6 +257,10 @@ class GeradorContratoADM:
             'endereco':     _safe('Endereço', 'não informado'),
             'cidade':       _safe('Cidade', 'Belo Horizonte'),
             'estado':       _safe('Estado', 'MG'),
+            # Qualificação do contratante (ver src/modules/contratante_pj.py)
+            'tipo_pessoa':  'PJ' if eh_pj(cpf_raw) else 'PF',
+            'domicilio':    _safe('DOMICILIO', ''),
+            'sede':         '',   # preenchida em gerar_contratos_do_contrato (PJ)
         }
 
     def _ler_dados_fornecedor(self, arquivo_fornecedores: Path, cnpj_cpf: str) -> dict:
@@ -427,11 +433,11 @@ class GeradorContratoADM:
         if tipo_pessoa_adm == 'PJ':
             qualif_adm     = (f"pessoa jurídica inscrita no CNPJ sob o n.º {doc_adm}, "
                               f"com sede na {end_adm}")
-            denominacao_adm = "CONTRATADA"
+            denominacao_adm = "denominada CONTRATADA"
         else:
             qualif_adm     = (f"pessoa física inscrita no CPF sob o n.º {doc_adm}, "
                               f"residente na {end_adm}")
-            denominacao_adm = "CONTRATADO"
+            denominacao_adm = "denominado CONTRATADO"
 
         # ── TÍTULO ───────────────────────────────────────────────
         titulo = doc.add_paragraph()
@@ -451,22 +457,35 @@ class GeradorContratoADM:
         # ── PREÂMBULO ────────────────────────────────────────────
         p_intro = doc.add_paragraph()
         p_intro.add_run(
-            f"Aos {data_extenso}, nesta cidade de {cidade}, "
+            f"Aos {data_extenso}, nesta cidade de Belo Horizonte — MG, "
             f"entre as partes abaixo identificadas:")
 
         p_cliente = doc.add_paragraph()
         p_cliente.add_run(nome_cliente).bold = True
-        p_cliente.add_run(
-            f", pessoa física inscrita no CNO n.º {cno_cliente} "
-            f"e CPF n.º {cpf_cliente}, {ec_cliente}, "
-            f"residente e domiciliado na {end_cliente}, "
-            f"doravante denominado(a) simplesmente CONTRATANTE; e")
+        # Qualificação do CONTRATANTE: PJ (sede da base de fornecedores) ou PF
+        if dados_cliente.get('tipo_pessoa') == 'PJ':
+            qualif_cliente = (f", pessoa jurídica de direito privado inscrita no CNPJ "
+                              f"sob o n.º {cpf_cliente}")
+            if cno_cliente:
+                qualif_cliente += f" e no CNO sob o n.º {cno_cliente}"
+            qualif_cliente += (f", com sede na {dados_cliente['sede']}, "
+                               f"doravante denominada simplesmente CONTRATANTE; e")
+        else:
+            residencia = dados_cliente.get('domicilio') or end_cliente
+            qualif_cliente = ", pessoa física inscrita no "
+            qualif_cliente += (f"CNO n.º {cno_cliente} e CPF n.º {cpf_cliente}"
+                               if cno_cliente else f"CPF n.º {cpf_cliente}")
+            if ec_cliente:
+                qualif_cliente += f", {ec_cliente}"
+            qualif_cliente += (f", residente e domiciliado na {residencia}, "
+                               f"doravante denominado(a) simplesmente CONTRATANTE; e")
+        p_cliente.add_run(qualif_cliente)
 
         p_adm = doc.add_paragraph()
         p_adm.add_run(nome_adm).bold = True
         p_adm.add_run(
             f", {qualif_adm}, "
-            f"doravante denominado(a) {denominacao_adm}; "
+            f"doravante {denominacao_adm}; "
             f"têm entre si, justo e contratado o seguinte:")
 
         # ── CLÁUSULA PRIMEIRA — OBJETO ───────────────────────────
@@ -1030,6 +1049,14 @@ class GeradorContratoADM:
                 contratos_carregados[num_contrato] = dados
 
         dados_cliente = self._ler_dados_cliente(arquivo_clientes_geral, nome_cliente)
+
+        # Cliente PJ: a sede vem da base de fornecedores. Se não estiver lá
+        # (ou estiver sem endereço), levanta ContratantePJSemCadastro com a
+        # mensagem para o usuário, ANTES de gerar qualquer arquivo.
+        if dados_cliente.get('tipo_pessoa') == 'PJ':
+            dados_cliente['sede'] = buscar_sede_pj(
+                dados_cliente['nome'], dados_cliente['cpf'], arquivo_fornecedores)
+
         arquivos_gerados = []
 
         for num_c, contrato in contratos_carregados.items():

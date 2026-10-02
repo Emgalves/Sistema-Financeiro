@@ -63,25 +63,6 @@ def _similaridade(nome_a, nome_b):
     return SequenceMatcher(None, _normalizar(nome_a), _normalizar(nome_b)).ratio()
 
 
-def extrair_chave_pix(dados_bancarios_texto):
-    """
-    Extrai a chave PIX de um texto livre vindo de planilha de RH.
-    Ex.: 'PIX: CELULAR (31)9.7511-1509' -> '(31)9.7511-1509'
-         'PIX: 31987228285'             -> '31987228285'
-    Não inventa dado: se não achar o padrão 'PIX', devolve string vazia.
-    """
-    if not dados_bancarios_texto:
-        return ''
-    texto = str(dados_bancarios_texto).strip()
-    if not texto.upper().startswith('PIX'):
-        return ''
-    resto = texto.split(':', 1)[1].strip() if ':' in texto else ''
-    for rotulo in ('CELULAR', 'TELEFONE', 'EMAIL', 'CPF', 'CNPJ'):
-        if resto.upper().startswith(rotulo):
-            resto = resto[len(rotulo):].strip()
-    return resto
-
-
 # ---------------------------------------------------------------------------
 # Classificação
 # ---------------------------------------------------------------------------

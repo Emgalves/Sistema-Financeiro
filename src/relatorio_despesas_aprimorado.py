@@ -1,7 +1,7 @@
 import sys
 import os
 import pandas as pd
-import xlwings as xw
+from src.config.utils import CONVERSORES_DADOS  # NF lida como texto (ver normalizar_nf)
 import openpyxl
 import warnings
 import platform
@@ -54,12 +54,6 @@ warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
 # VARIÁVEL GLOBAL PARA MENU PRINCIPAL
 _MENU_PRINCIPAL_GLOBAL = None
-
-def definir_menu_principal(menu):
-    """Define o menu principal globalmente"""
-    global _MENU_PRINCIPAL_GLOBAL
-    _MENU_PRINCIPAL_GLOBAL = menu
-    print(f"✅ Menu principal definido: {menu}")
 
 def obter_menu_principal():
     """Obtém o menu principal global"""
@@ -237,19 +231,6 @@ class RelatorioUI:
         if files:
             self.arquivos_lote = files
             self.processar_lote(files)
-
-    def adicionar_filtro_status_relatorio(self):
-        """Adiciona filtro para incluir/excluir lançamentos excluídos no relatório"""
-        # Adicionar ao frame de filtros existente
-        frame_status = ttk.Frame(self.root)
-        frame_status.pack(pady=5, padx=20, fill='x')
-        
-        self.incluir_excluidos = BooleanVar(value=False)
-        ttk.Checkbutton(
-            frame_status, 
-            text="Incluir lançamentos excluídos no relatório",
-            variable=self.incluir_excluidos
-        ).pack(anchor='w')
 
     def gerar_relatorio(self):
         """Versão corrigida do método gerar_relatorio com preview"""
@@ -900,65 +881,6 @@ class RelatorioHandler:
         canvas.drawRightString(x, y, texto)
         canvas.restoreState()
 
-    def gerar_relatorio_direto(self, arquivo_path, data_relatorio, incluir_futuros=True, output_callback=None):
-        """
-        Novo método para geração direta do relatório sem interface própria
-        
-        Args:
-            arquivo_path: Caminho do arquivo Excel
-            data_relatorio: Data do relatório (datetime)
-            incluir_futuros: Se deve incluir lançamentos futuros
-            output_callback: Função para retornar mensagens de status
-        """
-        try:
-            # Carregar e processar dados
-            df = self.carregar_dados_excel(arquivo_path)
-            df_filtrado, df_diaria, df_tp_desp_1, df_tp_desp_2 = self.processar_dados(df, data_relatorio)
-            
-            # Processar lançamentos futuros
-            df_futuro = None
-            if incluir_futuros:
-                df_futuro = self.processar_lancamentos_futuros(df, data_relatorio)
-            
-            # Obter dados do cliente e número do relatório
-            nome_cliente, endereco_cliente = self.obter_dados_cliente(arquivo_path)
-            numero_relatorio = self.obter_numero_relatorio(df, data_relatorio)
-            valor_acumulado = self.calcular_acumulado_dados(df, data_relatorio)
-
-            dados_completos = {
-                'df_filtrado': df_filtrado,
-                'df_diaria': df_diaria,
-                'df_tp_desp_1': df_tp_desp_1,
-                'df_tp_desp_2': df_tp_desp_2,
-                'df_futuro': df_futuro,
-                'df_original': df,
-                'incluir_futuros': incluir_futuros,
-                'data_relatorio': data_relatorio,
-                'nome_cliente': nome_cliente,
-                'endereco_cliente': endereco_cliente,
-                'numero_relatorio': numero_relatorio,
-                'acumulado': valor_acumulado
-            }
-            
-            # Gerar nome do arquivo
-            data_formatada = data_relatorio.strftime('%d-%m-%Y')
-            nome_arquivo = f"REL - {nome_cliente} - {data_formatada}.pdf"
-            caminho_output = os.path.join(os.path.dirname(arquivo_path), nome_arquivo)
-            
-            # Gerar o PDF
-            self.gerar_relatorio_pdf(dados_completos, caminho_output, arquivo_path)
-            
-            if output_callback:
-                output_callback(f"Relatório gerado com sucesso: {nome_arquivo}")
-            
-            return caminho_output
-            
-        except Exception as e:
-            erro_msg = f"Erro ao gerar relatório: {str(e)}"
-            if output_callback:
-                output_callback(erro_msg)
-            raise Exception(erro_msg)       
-        
     def selecionar_arquivo(self):
         """Interface para seleção do arquivo Excel"""
         root = Tk()
@@ -1594,7 +1516,7 @@ class RelatorioHandler:
     def carregar_dados_excel(self, arquivo_excel, incluir_excluidos=False):
         """Versão modificada que considera status de exclusão"""
         try:
-            df = pd.read_excel(arquivo_excel, sheet_name='Dados')
+            df = pd.read_excel(arquivo_excel, sheet_name='Dados', converters=CONVERSORES_DADOS)
             df = df.fillna("")
             
             # Verificar colunas necessárias
@@ -1928,138 +1850,6 @@ class RelatorioHandler:
         except Exception as e:
             logger.error(f"Erro ao processar lançamentos futuros: {str(e)}", exc_info=True)
             return pd.DataFrame()
-    
-    def salvar_notas_no_excel(self, arquivo_excel, numero_relatorio, data_relatorio, texto_notas):
-        """Salva as notas do relatório no arquivo Excel do cliente
-        
-        Args:
-            arquivo_excel: Caminho do arquivo Excel
-            numero_relatorio: Número do relatório
-            data_relatorio: Data do relatório
-            texto_notas: Texto das notas a serem salvas
-        """
-        try:
-            from openpyxl import load_workbook
-            from openpyxl.styles import Font, Alignment
-            from datetime import datetime
-            
-            logger.info(f"Salvando notas no Excel: {arquivo_excel}")
-            
-            # Carregar workbook
-            wb = load_workbook(arquivo_excel)
-            
-            # Verificar se a aba "Notas" existe, se não, criar
-            if 'Notas' not in wb.sheetnames:
-                wb.create_sheet('Notas')
-                logger.info("Aba 'Notas' criada")
-            
-            ws = wb['Notas']
-            
-            # Se a planilha estiver vazia, adicionar cabeçalhos
-            if ws.max_row == 1 and ws.cell(1, 1).value is None:
-                headers = ['Data do Relatório', 'Nº Relatório', 'Data de Registro', 'Notas']
-                for col, header in enumerate(headers, 1):
-                    cell = ws.cell(1, col)
-                    cell.value = header
-                    cell.font = Font(bold=True)
-                    cell.alignment = Alignment(horizontal='center')
-                
-                # Ajustar largura das colunas
-                ws.column_dimensions['A'].width = 18
-                ws.column_dimensions['B'].width = 15
-                ws.column_dimensions['C'].width = 20
-                ws.column_dimensions['D'].width = 80
-            
-            # Formatar data do relatório
-            if isinstance(data_relatorio, str):
-                data_formatada = data_relatorio
-            else:
-                data_formatada = data_relatorio.strftime('%d/%m/%Y')
-            
-            # Adicionar nova linha com as notas
-            nova_linha = ws.max_row + 1
-            ws.cell(nova_linha, 1).value = data_formatada
-            ws.cell(nova_linha, 2).value = numero_relatorio
-            ws.cell(nova_linha, 3).value = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-            ws.cell(nova_linha, 4).value = texto_notas
-            
-            # Aplicar wrap text na célula de notas
-            ws.cell(nova_linha, 4).alignment = Alignment(wrap_text=True, vertical='top')
-            
-            # Salvar workbook
-            wb.save(arquivo_excel)
-            logger.info(f"Notas salvas com sucesso na linha {nova_linha}")
-            
-            return True
-            
-        except Exception as e:
-            logger.error(f"Erro ao salvar notas no Excel: {str(e)}", exc_info=True)
-            return False
-    
-    def carregar_notas_do_excel(self, arquivo_excel, numero_relatorio=None):
-        """Carrega notas do arquivo Excel do cliente
-        
-        Args:
-            arquivo_excel: Caminho do arquivo Excel
-            numero_relatorio: Número do relatório (opcional). Se fornecido, retorna apenas as notas deste relatório
-        
-        Returns:
-            Se numero_relatorio fornecido: string com as notas ou None
-            Se numero_relatorio não fornecido: lista de dicionários com todas as notas
-        """
-        try:
-            from openpyxl import load_workbook
-            
-            logger.info(f"Carregando notas do Excel: {arquivo_excel}")
-            
-            # Carregar workbook
-            wb = load_workbook(arquivo_excel, data_only=True)
-            
-            # Verificar se a aba "Notas" existe
-            if 'Notas' not in wb.sheetnames:
-                logger.info("Aba 'Notas' não existe no arquivo")
-                return None if numero_relatorio else []
-            
-            ws = wb['Notas']
-            
-            # Se a planilha estiver vazia
-            if ws.max_row <= 1:
-                logger.info("Aba 'Notas' está vazia")
-                return None if numero_relatorio else []
-            
-            # Ler todas as notas
-            notas = []
-            for row in range(2, ws.max_row + 1):
-                data_rel = ws.cell(row, 1).value
-                num_rel = ws.cell(row, 2).value
-                data_reg = ws.cell(row, 3).value
-                texto = ws.cell(row, 4).value
-                
-                nota = {
-                    'data_relatorio': data_rel,
-                    'numero_relatorio': num_rel,
-                    'data_registro': data_reg,
-                    'texto': texto
-                }
-                notas.append(nota)
-            
-            logger.info(f"Carregadas {len(notas)} notas do Excel")
-            
-            # Se foi especificado um número de relatório, retornar apenas essa nota
-            if numero_relatorio is not None:
-                for nota in notas:
-                    if nota['numero_relatorio'] == numero_relatorio:
-                        logger.info(f"Nota encontrada para relatório nº {numero_relatorio}")
-                        return nota['texto']
-                logger.info(f"Nenhuma nota encontrada para relatório nº {numero_relatorio}")
-                return None
-            
-            # Caso contrário, retornar todas as notas
-            return notas
-            
-        except Exception as e:
-            logger.error(f"Erro ao carregar notas do Excel: {str(e)}", exc_info=True)
-            return None if numero_relatorio else []
     
     def adicionar_notas(self, elementos, dados, incluir_quebra_pagina=True):
         """Adiciona a seção de notas ao relatório"""
@@ -3651,112 +3441,6 @@ class RelatorioHandler:
             logger.error(f"Erro ao validar integridade de dados em {local}: {str(e)}")
             return False
 
-    def carregar_dados_excel_com_validacao(self, arquivo_excel, incluir_excluidos=False):
-        """Versão do carregar_dados_excel com validação robusta"""
-        try:
-            logger.info(f"Carregando dados de: {arquivo_excel}")
-            
-            # Carregar dados
-            df = pd.read_excel(arquivo_excel, sheet_name='Dados')
-            df = df.fillna("")
-            
-            logger.info(f"Dados carregados: {len(df)} registros, {len(df.columns)} colunas")
-            logger.debug(f"Colunas carregadas: {df.columns.tolist()}")
-            
-            # Verificar colunas necessárias
-            colunas_necessarias = {'DATA_REL', 'TP_DESP', 'REFERÊNCIA', 'DT_VENCTO', 'VALOR', 'NF'}
-            colunas_faltantes = colunas_necessarias - set(df.columns)
-            
-            if colunas_faltantes:
-                raise ValueError(f"Colunas necessárias ausentes: {colunas_faltantes}")
-            
-            # Adicionar coluna STATUS se não existir
-            if 'STATUS' not in df.columns:
-                df['STATUS'] = 'ATIVO'
-                logger.info("Coluna STATUS adicionada com valor padrão 'ATIVO'")
-            
-            # Validar integridade inicial
-            if not self.validar_integridade_dados(df, "Dados carregados"):
-                raise ValueError("Falha na validação de integridade dos dados carregados")
-            
-            # Filtrar excluídos se necessário
-            if not incluir_excluidos:
-                df_original_size = len(df)
-                df = df[df['STATUS'] != 'EXCLUIDO'].copy()
-                registros_excluidos = df_original_size - len(df)
-                if registros_excluidos > 0:
-                    logger.info(f"Filtrados {registros_excluidos} registros excluídos")
-                print(f"Registros após filtrar excluídos: {len(df)}")
-            else:
-                print(f"Incluindo todos os registros (incluindo excluídos): {len(df)}")
-            
-            # Validar após filtragem
-            if not self.validar_integridade_dados(df, "Dados após filtragem"):
-                raise ValueError("Falha na validação após filtragem de excluídos")
-            
-            # Converter NF para string antes de processar
-            df['NF'] = df['NF'].astype(str)
-            
-            # Concatenar NF com REFERÊNCIA apenas para TP_DESP != 1
-            mascara = (df['TP_DESP'] != 1) & (df['NF'].notna()) & (df['NF'].str.strip() != '') & (df['NF'] != 'nan')
-            df.loc[mascara, 'REFERÊNCIA'] = df[mascara].apply(
-                lambda row: f"{row['REFERÊNCIA']} (NF: {row['NF'].strip()})", 
-                axis=1
-            )
-            
-            # Validação final
-            if not self.validar_integridade_dados(df, "Dados finais"):
-                raise ValueError("Falha na validação final dos dados")
-            
-            logger.info(f"Dados carregados e validados com sucesso: {len(df)} registros")
-            return df
-            
-        except Exception as e:
-            logger.error(f"Erro ao carregar arquivo Excel: {str(e)}", exc_info=True)
-            raise Exception(f"Erro ao carregar arquivo Excel: {str(e)}")
-
-    def gerar_relatorio_pdf_com_validacao(self, dados, caminho_output, arquivo_excel):
-        """Versão do gerar_relatorio_pdf com validação de dados"""
-        try:
-            logger.info("=== INICIANDO GERAÇÃO DE PDF COM VALIDAÇÃO ===")
-            
-            # Validar dados de entrada
-            df_filtrado = dados.get('df_filtrado', pd.DataFrame())
-            df_tp_desp_1 = dados.get('df_tp_desp_1', pd.DataFrame())
-            df_tp_desp_2 = dados.get('df_tp_desp_2', pd.DataFrame())
-            df_diaria = dados.get('df_diaria', pd.DataFrame())
-            
-            # Validar cada DataFrame
-            dataframes_para_validar = [
-                (df_filtrado, "df_filtrado"),
-                (df_tp_desp_1, "df_tp_desp_1"),
-                (df_tp_desp_2, "df_tp_desp_2"),
-                (df_diaria, "df_diaria")
-            ]
-            
-            for df, nome in dataframes_para_validar:
-                if not df.empty:
-                    if not self.validar_integridade_dados(df, nome):
-                        logger.error(f"Falha na validação de {nome}")
-                        raise ValueError(f"Dados inválidos em {nome}")
-            
-            # Verificar dados obrigatórios
-            campos_obrigatorios = ['nome_cliente', 'data_relatorio', 'numero_relatorio', 'acumulado']
-            campos_faltantes = [campo for campo in campos_obrigatorios if campo not in dados]
-            
-            if campos_faltantes:
-                logger.error(f"Campos obrigatórios ausentes: {campos_faltantes}")
-                raise ValueError(f"Campos obrigatórios ausentes: {campos_faltantes}")
-            
-            # Chamar o método original de geração de PDF
-            self.gerar_relatorio_pdf_original(dados, caminho_output, arquivo_excel)
-            
-            logger.info("=== PDF GERADO COM SUCESSO ===")
-            
-        except Exception as e:
-            logger.error(f"Erro na geração de PDF com validação: {str(e)}", exc_info=True)
-            raise
-
     # Método para aplicar as correções na classe RelatorioHandler
     # def aplicar_correcoes_relatorio_handler(handler_instance):
     #     """
@@ -3781,14 +3465,6 @@ class RelatorioLancamentosPendentes:
     def __init__(self):
         self.config = RelatorioConfig()
 
-    def obter_ultima_data_fechamento(self, df):
-        """
-        Obtém a última data de fechamento (última DATA_REL usada)
-        """
-        if 'DATA_REL' not in df.columns or df.empty:
-            return None
-        return pd.to_datetime(df['DATA_REL']).max()
-
     def processar_arquivo_cliente(self, caminho_arquivo, data_referencia):
         """
         Processa um arquivo de cliente individual
@@ -3810,7 +3486,7 @@ class RelatorioLancamentosPendentes:
             print(f"Data de referência: {data_referencia}")
             
             # Carregar dados do arquivo
-            df = pd.read_excel(caminho_arquivo, sheet_name='Dados')
+            df = pd.read_excel(caminho_arquivo, sheet_name='Dados', converters=CONVERSORES_DADOS)
             df = df.fillna("")
             
             # Obter informações do cliente

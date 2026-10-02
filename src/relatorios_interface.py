@@ -5,8 +5,6 @@ import sys
 import importlib
 import logging
 import pandas as pd
-import psutil  # Para verificação de memória
-import gc
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
@@ -859,42 +857,6 @@ class SistemaRelatorios:
         # Bind para seleção
         self.tree_relatorios.bind('<<TreeviewSelect>>', self.mostrar_opcoes_relatorio)
     
-    def mostrar_configuracoes_quinzenal(self):
-        """Mostra configurações do relatório quinzenal no painel direito"""
-        try:
-            logger.info("📄 Carregando configurações do Relatório Quinzenal")
-            
-            # Limpar painel direito
-            for widget in self.right_frame.winfo_children():
-                widget.destroy()
-            
-            # Criar frame de conteúdo com scroll
-            canvas = tk.Canvas(self.right_frame)
-            scrollbar = ttk.Scrollbar(self.right_frame, orient="vertical", command=canvas.yview)
-            scrollable_frame = ttk.Frame(canvas)
-            
-            scrollable_frame.bind(
-                "<Configure>",
-                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-            )
-            
-            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-            canvas.configure(yscrollcommand=scrollbar.set)
-            
-            # Pack canvas e scrollbar
-            canvas.pack(side="left", fill="both", expand=True)
-            scrollbar.pack(side="right", fill="y")
-            
-            # Carregar configurações do relatório quinzenal
-            from config_relatorio_quinzenal import configurar_relatorio_quinzenal
-            configurar_relatorio_quinzenal(scrollable_frame, self)
-            
-            logger.info("✅ Configurações do Relatório Quinzenal carregadas")
-            
-        except Exception as e:
-            logger.error(f"Erro ao carregar configurações quinzenal: {str(e)}", exc_info=True)
-            messagebox.showerror("Erro", f"Erro ao carregar configurações: {str(e)}")
-
     def mostrar_opcoes_relatorio(self, event=None):
         """Versão com scroll: usa Canvas + Scrollbar no painel direito
         para que conteúdo extra (como o Controle de Repasse - Mão de
@@ -1046,48 +1008,6 @@ class SistemaRelatorios:
                 command=lambda: self.gerar_relatorio(relatorio),
                 style='Accentuated.TButton'
             ).pack(side='right', padx=5)
-
-    def criar_botao_despesas_otimizado(self, btn_frame, relatorio):
-        """Cria botão otimizado específico para relatório de despesas"""
-        
-        # Label explicativo
-        info_label = ttk.Label(
-            btn_frame,
-            text="💡 O sistema processará os dados e abrirá diretamente o preview ou gerará o PDF conforme configurado.",
-            font=('Arial', 9),
-            foreground='blue',
-            wraplength=400
-        )
-        info_label.pack(pady=(0, 10))
-        
-        # Botão principal otimizado
-        botao_principal = ttk.Button(
-            btn_frame,
-            text="🚀 Processar e Gerar Relatório",
-            command=lambda: self.gerar_relatorio(relatorio),
-            style='Accentuated.TButton'
-        )
-        botao_principal.pack(side='right', padx=5)
-        
-        # OPCIONAL: Botão de validação prévia
-        botao_validar = ttk.Button(
-            btn_frame,
-            text="✅ Validar Configurações",
-            command=lambda: self.validar_e_mostrar_resumo(),
-            style='TButton'
-        )
-        botao_validar.pack(side='left', padx=5)
-
-    def criar_botao_padrao(self, btn_frame, relatorio):
-        """Cria botão padrão para outros tipos de relatório"""
-        
-        # Botão padrão (comportamento original)
-        ttk.Button(
-            btn_frame,
-            text="Gerar Relatório",
-            command=lambda: self.gerar_relatorio(relatorio),
-            style='Accentuated.TButton'
-        ).pack(side='right', padx=5)
 
     def validar_e_mostrar_resumo(self):
         """Valida configurações e mostra resumo antes da geração"""
@@ -1477,6 +1397,8 @@ class SistemaRelatorios:
         
         # Bind para evento de seleção
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.on_cliente_selecionado)
+        # Já vem com o último cliente usado em outro módulo (estado_compartilhado)
+        self._preselecionar_ultimo_cliente(self.cliente_combobox, self.on_cliente_selecionado)
         
         # Label para mostrar status da seleção
         self.status_cliente_label = ttk.Label(
@@ -1822,6 +1744,8 @@ class SistemaRelatorios:
         self.preencher_combobox_clientes(self.cliente_combobox)
 
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.on_cliente_selecionado_futuros)
+        # Já vem com o último cliente usado em outro módulo (estado_compartilhado)
+        self._preselecionar_ultimo_cliente(self.cliente_combobox, self.on_cliente_selecionado_futuros)
 
         self.status_cliente_label = ttk.Label(
             cliente_inner_frame,
@@ -1881,6 +1805,7 @@ class SistemaRelatorios:
             if caminho_arquivo and os.path.exists(caminho_arquivo):
                 self.arquivo_cliente_selecionado = caminho_arquivo
                 self.cliente_atual = cliente_selecionado
+                self._lembrar_cliente(cliente_selecionado)
 
                 self.status_cliente_label.config(
                     text=f"✅ Arquivo: {os.path.basename(caminho_arquivo)}",
@@ -2062,6 +1987,8 @@ class SistemaRelatorios:
         self.preencher_combobox_clientes(self.cliente_combobox)
 
         self.cliente_combobox.bind('<<ComboboxSelected>>', self.on_cliente_selecionado_reemissao)
+        # Já vem com o último cliente usado em outro módulo (estado_compartilhado)
+        self._preselecionar_ultimo_cliente(self.cliente_combobox, self.on_cliente_selecionado_reemissao)
 
         self.status_cliente_label = ttk.Label(
             cliente_inner_frame,
@@ -2215,6 +2142,7 @@ class SistemaRelatorios:
             if caminho_arquivo and os.path.exists(caminho_arquivo):
                 self.arquivo_cliente_selecionado = caminho_arquivo
                 self.cliente_atual = cliente_selecionado
+                self._lembrar_cliente(cliente_selecionado)
 
                 self.status_cliente_label.config(
                     text=f"✅ Arquivo: {os.path.basename(caminho_arquivo)}",
@@ -2464,6 +2392,39 @@ class SistemaRelatorios:
             logger.error(f"💥 ERRO na reemissão de relatórios: {str(e)}", exc_info=True)
             messagebox.showerror("Erro", f"Erro na reemissão de relatórios: {str(e)}")
 
+    # ------------------------------------------------------------------
+    # Último cliente da sessão (estado_compartilhado): mesmo mecanismo de
+    # Entrada de Dados e Gestão de Empreiteiros. O import tenta primeiro
+    # "src.estado_compartilhado", COMO OS OUTROS MÓDULOS: se cada um usasse
+    # um nome diferente, o Python criaria dois estados separados e o
+    # cliente lembrado não chegaria de uma tela à outra.
+    # ------------------------------------------------------------------
+    def _estado_sessao(self):
+        try:
+            from src.estado_compartilhado import estado_sessao
+        except ImportError:
+            from estado_compartilhado import estado_sessao
+        return estado_sessao
+
+    def _preselecionar_ultimo_cliente(self, combobox, ao_selecionar):
+        """Se o último cliente usado em outro módulo estiver na lista, já o
+        seleciona. Adiado com after() porque os rótulos de status são
+        criados depois da combobox."""
+        try:
+            ultimo = self._estado_sessao().ultimo_cliente
+            if ultimo and ultimo in combobox['values']:
+                combobox.set(ultimo)
+                self.root.after(100, ao_selecionar)
+        except Exception as e:
+            logger.warning(f"Não foi possível pré-selecionar último cliente: {e}")
+
+    def _lembrar_cliente(self, nome_cliente):
+        """Guarda o cliente escolhido aqui para os outros módulos."""
+        try:
+            self._estado_sessao().ultimo_cliente = nome_cliente
+        except Exception as e:
+            logger.warning(f"Não foi possível lembrar o cliente: {e}")
+
     def on_cliente_selecionado(self, event=None):
         """Trata a seleção de um cliente na combobox"""
         try:
@@ -2480,6 +2441,7 @@ class SistemaRelatorios:
             if caminho_arquivo and os.path.exists(caminho_arquivo):
                 self.arquivo_cliente_selecionado = caminho_arquivo
                 self.cliente_atual = cliente_selecionado
+                self._lembrar_cliente(cliente_selecionado)
                 
                 # Atualizar status
                 self.status_cliente_label.config(
@@ -4013,79 +3975,6 @@ class SistemaRelatorios:
         except Exception as e:
             logger.warning(f"Aviso: Não foi possível remover arquivo temporário: {str(e)}")
 
-    def executar_relatorio_direto(self, configuracoes):
-        """Executa relatório direto sem preview"""
-        try:
-            logger.info("🎯 EXECUTANDO RELATÓRIO DIRETO")
-            
-            # Processar dados
-            handler = self.obter_handler_despesas_limpo()
-            dados_processados = self.processar_dados_completo(handler, configuracoes)
-            
-            # Gerar nome do arquivo
-            data_formatada = configuracoes['data'].strftime('%d-%m-%Y')
-            nome_arquivo = f"REL - {dados_processados['nome_cliente']} - {data_formatada}.pdf"
-            
-            if configuracoes['incluir_excluidos']:
-                nome_arquivo = nome_arquivo.replace('.pdf', ' (com excluídos).pdf')
-            
-            caminho_output = os.path.join(os.path.dirname(configuracoes['arquivo']), nome_arquivo)
-            
-            # Gerar PDF
-            handler.gerar_relatorio_pdf(dados_processados, caminho_output, configuracoes['arquivo'])
-            
-            # Mostrar resultado
-            resposta = messagebox.askyesno(
-                "Relatório Gerado!",
-                f"Relatório gerado com sucesso!\n\n"
-                f"Cliente: {dados_processados['nome_cliente']}\n"
-                f"Arquivo: {nome_arquivo}\n\n"
-                f"Deseja abrir o PDF?"
-            )
-            
-            if resposta:
-                self.abrir_arquivo(caminho_output)
-            
-            logger.info("✅ Relatório direto concluído")
-            
-        except Exception as e:
-            logger.error(f"💥 ERRO no relatório direto: {str(e)}")
-            messagebox.showerror("Erro", f"Erro: {str(e)}")
-
-    def criar_janela_progresso_simples(self):
-        """Cria janela de progresso simples"""
-        try:
-            window = tk.Toplevel(self.root)
-            window.title("Processando...")
-            window.geometry("400x120")
-            window.transient(self.root)
-            window.grab_set()
-            window.resizable(False, False)
-            
-            # Centralizar
-            window.update_idletasks()
-            x = (window.winfo_screenwidth() // 2) - 200
-            y = (window.winfo_screenheight() // 2) - 60
-            window.geometry(f"400x120+{x}+{y}")
-            
-            # Widgets
-            frame = ttk.Frame(window, padding=20)
-            frame.pack(fill='both', expand=True)
-            
-            ttk.Label(frame, text="Processando Relatório...", font=('Arial', 12)).pack(pady=10)
-            
-            window.status_label = ttk.Label(frame, text="Iniciando...")
-            window.status_label.pack(pady=5)
-            
-            window.progress_bar = ttk.Progressbar(frame, length=300, mode='determinate')
-            window.progress_bar.pack(pady=10)
-            
-            return window
-            
-        except Exception as e:
-            logger.error(f"💥 ERRO ao criar progresso: {str(e)}")
-            return None
-
     def formatar_numero(self, valor):
         """Formata número de forma segura"""
         try:
@@ -4103,34 +3992,6 @@ class SistemaRelatorios:
             return f"{float(valor):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
         except:
             return "0,00"            
-
-    def limpar_data(self, data_input):
-        """Limpa e normaliza data de forma definitiva"""
-        try:
-            from datetime import datetime, date
-            
-            logger.info(f"🔧 Limpando data: {data_input} (tipo: {type(data_input)})")
-            
-            # Converter conforme tipo
-            if isinstance(data_input, str):
-                data_limpa = datetime.strptime(data_input, '%d/%m/%Y')
-            elif isinstance(data_input, datetime):
-                data_limpa = data_input
-            elif isinstance(data_input, date):
-                data_limpa = datetime.combine(data_input, datetime.min.time())
-            else:
-                logger.warning(f"⚠️ Tipo de data não reconhecido: {type(data_input)}")
-                data_limpa = datetime.now()
-            
-            # Normalizar para início do dia
-            data_final = data_limpa.replace(hour=0, minute=0, second=0, microsecond=0)
-            
-            logger.info(f"✅ Data limpa: {data_final}")
-            return data_final
-            
-        except Exception as e:
-            logger.error(f"💥 ERRO ao limpar data: {str(e)}")
-            return datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
     def criar_progress_window(self):
         """Cria janela de progresso simples"""
@@ -5162,99 +5023,6 @@ class SistemaRelatorios:
         app_relatorio.root.focus_force()
         app_relatorio.root.mainloop()
 
-    def iniciar_relatorio_fornecedores(self, classe_relatorio):
-        """Inicia a geração do relatório de fornecedores"""
-        try:
-            print("Iniciando método iniciar_relatorio_fornecedores")
-            # Esconder a janela atual
-            self.root.withdraw()
-            
-            # Criar uma nova janela para o relatório
-            print("Criando instância do relatório de fornecedores")
-            app_relatorio = classe_relatorio(self.root)
-            
-            # Configurar menu principal para retornar
-            app_relatorio.menu_principal = self.root
-            
-            # IMPORTANTE: Verificar se há um cliente selecionado e configurá-lo
-            if hasattr(self, 'cliente_contratos') and self.cliente_contratos:
-                cliente_selecionado = self.cliente_contratos.get()
-                if cliente_selecionado and cliente_selecionado != 'Todos os Clientes':
-                    try:
-                        # Configurar o cliente no relatório de fornecedores
-                        print(f"Configurando cliente: {cliente_selecionado}")
-                        app_relatorio.cliente_combobox.set(cliente_selecionado)
-                        
-                        # Chamar o método selecionar_cliente diretamente
-                        app_relatorio.cliente_atual = cliente_selecionado
-                        app_relatorio.arquivo_cliente = PASTA_CLIENTES / f"{cliente_selecionado}.xlsx"
-                        app_relatorio.lbl_cliente_resumo.config(text=f"Cliente: {cliente_selecionado}")
-                        
-                        # Desmarcar checkbox de todos os clientes
-                        app_relatorio.var_todos_clientes.set(False)
-                        app_relatorio.todos_clientes = False
-                        
-                    except Exception as e:
-                        print(f"Erro ao configurar cliente: {str(e)}")
-            
-            # Configurar comportamento ao fechar
-            app_relatorio.root.protocol("WM_DELETE_WINDOW", lambda: self.finalizar_sistema(app_relatorio.root))
-            
-            # Exibir janela
-            app_relatorio.root.lift()
-            app_relatorio.root.focus_force()
-            print("Iniciando mainloop do relatório de fornecedores")
-            app_relatorio.root.mainloop()
-        except Exception as e:
-            import traceback
-            print(f"Erro em iniciar_relatorio_fornecedores: {str(e)}")
-            traceback.print_exc()
-            messagebox.showerror(
-                "Erro", 
-                f"Ocorreu um erro ao iniciar o relatório de fornecedores.\nErro: {str(e)}"
-            )
-            self.root.deiconify()
-
-    def iniciar_relatorio_lancamentos_pendentes(self, classe_relatorio):
-        """
-        Inicia a geração do relatório de lançamentos pendentes
-        """
-        try:
-            # Verificar se pasta foi selecionada
-            if not hasattr(self, 'pasta_lancamentos'):
-                messagebox.showerror("Erro", "Por favor, selecione uma pasta primeiro.")
-                return
-            
-            # Data de referência
-            data_ref = self.data_referencia_pendentes.get_date() if hasattr(self, 'data_referencia_pendentes') else datetime.now()
-        
-            # Garantir que data_ref é datetime e não apenas date
-            if isinstance(data_ref, date) and not isinstance(data_ref, datetime):
-                data_ref = datetime.combine(data_ref, datetime.min.time())
-            
-            # Instanciar relatório
-            relatorio = classe_relatorio()
-            
-            # Gerar relatório
-            arquivo_saida = os.path.join(self.pasta_lancamentos, "relatorio_lancamentos_pendentes.html")
-            
-            # Usar o método gerar_relatorio_pendentes que já existe na classe
-            if relatorio.gerar_relatorio_pendentes(self.pasta_lancamentos, arquivo_saida, data_ref):
-                messagebox.showinfo(
-                    "Sucesso",
-                    f"Relatório gerado com sucesso!\nSalvo em: {arquivo_saida}"
-                )
-            else:
-                messagebox.showwarning(
-                    "Aviso",
-                    "Nenhum lançamento pendente encontrado."
-                )
-                
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            messagebox.showerror("Erro", f"Erro ao gerar relatório: {str(e)}")
-        
     def finalizar_sistema(self, janela):
         """Fecha a janela do sistema e mostra a janela principal"""
         janela.destroy()
@@ -5312,200 +5080,6 @@ class SistemaRelatorios:
             except:
                 pass
     
-    def _criar_preview_alternativo(self, dados_processados, configuracoes):
-        """Preview com PDF temporário real para análise detalhada"""
-        try:
-            logger.info("🔧 CRIANDO PREVIEW COM PDF TEMPORÁRIO")
-            
-            # Criar janela de preview
-            preview_window = tk.Toplevel(self.root)
-            preview_window.title("Preview do Relatório - PDF Temporário")
-            preview_window.geometry("800x600")
-            preview_window.transient(self.root)
-            
-            # Centralizar
-            preview_window.update_idletasks()
-            x = (preview_window.winfo_screenwidth() // 2) - 400
-            y = (preview_window.winfo_screenheight() // 2) - 300
-            preview_window.geometry(f"800x600+{x}+{y}")
-            
-            # Frame principal
-            main_frame = ttk.Frame(preview_window, padding=15)
-            main_frame.pack(fill='both', expand=True)
-            
-            # Título
-            title_label = ttk.Label(
-                main_frame, 
-                text="📄 PREVIEW - PDF TEMPORÁRIO DO RELATÓRIO", 
-                font=('Arial', 16, 'bold'),
-                foreground='darkgreen'
-            )
-            title_label.pack(pady=(0, 15))
-            
-            # Informações
-            info_frame = ttk.LabelFrame(main_frame, text="Informações do Relatório", padding=10)
-            info_frame.pack(fill='x', pady=(0, 15))
-            
-            info_text = f"""
-    Cliente: {dados_processados.get('nome_cliente', 'N/A')}
-    Data: {dados_processados.get('data_relatorio', 'N/A')}
-    Relatório nº: {dados_processados.get('numero_relatorio', 'N/A')}
-    Total Acumulado: R$ {self._formatar_numero_preview(dados_processados.get('acumulado', 0))}
-
-    📊 Registros processados:
-    • Despesas principais: {len(dados_processados.get('df_filtrado', []))} registros
-    • Colaboradores (sal/transp): {len(dados_processados.get('df_tp_desp_1', []))} registros  
-    • Colaboradores (13º/fér): {len(dados_processados.get('df_tp_desp_2', []))} registros
-    • Diárias: {len(dados_processados.get('df_diaria', []))} registros
-            """
-            
-            ttk.Label(info_frame, text=info_text, font=('Arial', 10)).pack(anchor='w')
-            
-            # Status do PDF temporário
-            status_frame = ttk.LabelFrame(main_frame, text="Status do PDF Temporário", padding=10)
-            status_frame.pack(fill='x', pady=(0, 15))
-            
-            status_label = ttk.Label(status_frame, text="⏳ Gerando PDF temporário...", 
-                                font=('Arial', 11, 'bold'), foreground='orange')
-            status_label.pack()
-            
-            # Frame de ações
-            action_frame = ttk.LabelFrame(main_frame, text="Ações Disponíveis", padding=10)
-            action_frame.pack(fill='both', expand=True)
-            
-            # Variável para armazenar caminho do PDF temporário
-            self.pdf_temporario_path = None
-            
-            # Função para gerar PDF temporário
-            def gerar_pdf_temp():
-                try:
-                    status_label.config(text="⏳ Gerando PDF temporário...", foreground='orange')
-                    preview_window.update()
-                    
-                    # USAR O SERVIÇO para gerar PDF temporário
-                    self.pdf_temporario_path = self.despesas_service.gerar_pdf_temporario(
-                        dados_processados, 
-                        configuracoes['arquivo']
-                    )
-                    
-                    status_label.config(text="✅ PDF temporário gerado!", foreground='green')
-                    btn_abrir_temp.config(state='normal')
-                    
-                    logger.info(f"✅ PDF temporário: {self.pdf_temporario_path}")
-                    
-                except Exception as e:
-                    logger.error(f"Erro ao gerar PDF temporário: {str(e)}")
-                    status_label.config(text="❌ Erro ao gerar PDF temporário", foreground='red')
-                    messagebox.showerror("Erro", f"Erro ao gerar PDF temporário: {str(e)}")
-            
-            # Função para abrir PDF temporário
-            def abrir_pdf_temporario():
-                try:
-                    if self.pdf_temporario_path and os.path.exists(self.pdf_temporario_path):
-                        self.abrir_arquivo(self.pdf_temporario_path)
-                        logger.info(f"📖 Abrindo PDF temporário: {self.pdf_temporario_path}")
-                    else:
-                        messagebox.showerror("Erro", "PDF temporário não encontrado!")
-                except Exception as e:
-                    logger.error(f"Erro ao abrir PDF temporário: {str(e)}")
-                    messagebox.showerror("Erro", f"Erro ao abrir PDF: {str(e)}")
-            
-            # Função para gerar PDF definitivo
-            def gerar_pdf_definitivo():
-                try:
-                    logger.info("🚀 Gerando PDF definitivo...")
-                    
-                    caminho_final, nome_arquivo = self.despesas_service.gerar_pdf_definitivo(
-                        dados_processados, 
-                        configuracoes['arquivo']
-                    )
-                    
-                    resposta = messagebox.askyesno(
-                        "PDF Definitivo Gerado!",
-                        f"✅ PDF definitivo gerado!\n\n"
-                        f"Arquivo: {nome_arquivo}\n\n"
-                        f"Deseja abrir o arquivo definitivo?"
-                    )
-                    
-                    if resposta:
-                        self.abrir_arquivo(caminho_final)
-                    
-                except Exception as e:
-                    logger.error(f"Erro ao gerar PDF definitivo: {str(e)}")
-                    messagebox.showerror("Erro", f"Erro ao gerar PDF definitivo: {str(e)}")
-            
-            # Função para voltar
-            def voltar():
-                try:
-                    # Limpar PDF temporário
-                    if self.pdf_temporario_path and os.path.exists(self.pdf_temporario_path):
-                        try:
-                            os.remove(self.pdf_temporario_path)
-                            logger.info(f"🗑️ PDF temporário removido: {self.pdf_temporario_path}")
-                        except:
-                            pass
-                    
-                    preview_window.destroy()
-                    self.root.deiconify()
-                    self.root.lift()
-                    self.root.focus_force()
-                    
-                except Exception as e:
-                    logger.error(f"Erro ao voltar: {str(e)}")
-            
-            # Botões organizados
-            btn_frame = ttk.Frame(action_frame)
-            btn_frame.pack(fill='x', pady=10)
-            
-            # Primeira linha de botões
-            btn_frame1 = ttk.Frame(btn_frame)
-            btn_frame1.pack(fill='x', pady=(0, 5))
-            
-            ttk.Button(btn_frame1, text="🔧 Gerar PDF Temporário", 
-                    command=gerar_pdf_temp).pack(side='left', padx=(0, 10))
-            
-            btn_abrir_temp = ttk.Button(btn_frame1, text="📖 Abrir PDF Temporário", 
-                                    command=abrir_pdf_temporario, state='disabled')
-            btn_abrir_temp.pack(side='left', padx=(0, 10))
-            
-            # Segunda linha de botões
-            btn_frame2 = ttk.Frame(btn_frame)
-            btn_frame2.pack(fill='x')
-            
-            ttk.Button(btn_frame2, text="🚀 Gerar PDF Definitivo", 
-                    command=gerar_pdf_definitivo).pack(side='left', padx=(0, 10))
-            
-            ttk.Button(btn_frame2, text="⬅️ Voltar", 
-                    command=voltar).pack(side='right')
-            
-            # Configurar fechamento
-            preview_window.protocol("WM_DELETE_WINDOW", voltar)
-            
-            # Ocultar interface principal e focar preview
-            self.root.withdraw()
-            preview_window.deiconify()
-            preview_window.lift()
-            preview_window.focus_force()
-            
-            # Gerar PDF temporário automaticamente
-            preview_window.after(500, gerar_pdf_temp)
-            
-            logger.info("✅ Preview com PDF temporário criado")
-            
-        except Exception as e:
-            logger.error(f"💥 ERRO no preview com PDF temporário: {str(e)}")
-            messagebox.showerror("Erro", f"Erro no preview: {str(e)}")
-            self.root.deiconify()
-
-    def _formatar_numero_preview(self, valor):
-        """Formata número para preview"""
-        try:
-            if valor is None or pd.isna(valor):
-                return "0,00"
-            return f"{float(valor):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-        except:
-            return "0,00"
-
     def run(self):
         """Inicia a execução do sistema"""
         try:

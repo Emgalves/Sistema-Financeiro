@@ -15,6 +15,7 @@ from openpyxl import load_workbook, Workbook
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pandas as pd
+from src.config.utils import CONVERSORES_DADOS  # NF lida como texto (ver normalizar_nf)
 import os
 
 from src.config.utils import (
@@ -371,7 +372,7 @@ class FinalizacaoQuinzena:
         """
         try:
             arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            df = pd.read_excel(arquivo_cliente, sheet_name='Dados')
+            df = pd.read_excel(arquivo_cliente, sheet_name='Dados', converters=CONVERSORES_DADOS)
             
             if 'DATA_REL' not in df.columns:
                 df.columns.values[0] = 'DATA_REL'

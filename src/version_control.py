@@ -9,15 +9,19 @@ from pathlib import Path
 # Informações da versão atual
 VERSION_INFO = {
     "major": 1,
-    "minor": 8,
-    "patch": 5,
-    "release_date": "25/09/2026",
+    "minor": 9,
+    "patch": 0,
+    "release_date": "02/10/2026",
     "changes": [
-        "Melhoria nos critérios de duplicidade",
-        "Inclusão de checkbox para desmarcar agrupamento de medição na Agenda",
-        "Relatório por Etapa da Obra com possibilidade de inclusão da mesma no próprio relatório",
-        "Melhoria no comportamento de janelas de mensagens",
-        "Seleção de lançamentos aptos para vincular medições mais assertiva"
+        "Cadastro de clientes pessoa jurídica: campo CPF/CNPJ com validação e máscara automática (inclusive CNPJ alfanumérico) e novo campo Domicílio (residência PF / sede PJ)",
+        "Ao incluir o CPF/CNPJ de um cliente em Editar Cliente, o sistema oferece o cadastro do cliente como fornecedor",
+        "Contratos de empreitada e de administração: qualificação do contratante pessoa jurídica com o endereço da sede (obtido da base de fornecedores) e correções de texto (máscara no CPF/CNPJ da contratada, concordância, menção a representantes legais apenas para pessoa jurídica e omissão do CNO quando não informado)",
+        "Relatório de Despesas, Lançamentos Futuros e Reemissão já abrem com o último cliente selecionado na Entrada de Dados ou na Gestão de Empreiteiros",
+        "Correção da NF exibida e regravada com .0 no gerenciador de lançamentos e nos relatórios",
+        "Correção do botão Novo Lançamento da Agenda, que não gravava o lançamento",
+        "Correção da janela de índices da Correção Monetária, que ficava oculta após cada inclusão",
+        "Editar Fornecedor: o Tipo de Chave PIX passa a corresponder à chave cadastrada",
+        "Limpeza geral do código: remoção de cerca de 41 mil linhas sem uso, incluindo os módulos descontinuados de despesas rateadas e de lançamento automático de taxas fixas"
     ]
 }
 
