@@ -5044,6 +5044,8 @@ class SistemaEntradaDados:
         e adicionar o widget no setup_formulario_fornecedor
         """
 
+        self.modo_edicao_fornecedor = modo_edicao
+        
         formulario = ttk.Frame(self.janela_fornecedor)
         formulario.pack(padx=10, pady=5, fill='both', expand=True)
 
@@ -6936,8 +6938,13 @@ class SistemaEntradaDados:
         return False
 
     def salvar_fornecedor(self):
-        """Salva ou atualiza fornecedor — lê o formulário, valida e grava na planilha"""
-        
+        """Salva ou atualiza fornecedor — lê o formulário, valida e grava na planilha.
+
+        Novo cadastro (janela "Novo Fornecedor") NUNCA sobrescreve linha
+        existente, ativa ou inativa, com o mesmo documento: recusa e explica.
+        Só a janela "Editar Fornecedor" atualiza uma linha existente.
+        """
+
         # ── 1. VALIDAÇÃO ──────────────────────────────────────────────
         campos_obrigatorios = ['tipo_pessoa', 'cnpj_cpf', 'razao_social', 'nome', 'categoria']
         for campo in campos_obrigatorios:
@@ -6945,10 +6952,27 @@ class SistemaEntradaDados:
                 custom_messagebox("error", "Erro", f"❌ O campo {campo} é obrigatório!")
                 return
 
-        tipo_pessoa = self.campos_form['tipo_pessoa'].get()
-        cnpj_cpf_numeros = ''.join(filter(str.isdigit, self.campos_form['cnpj_cpf'].get()))
+        modo_edicao = getattr(self, 'modo_edicao_fornecedor', False)
+        tipo_pessoa = self.campos_form['tipo_pessoa'].get().strip().upper()
+        if tipo_pessoa not in ('PF', 'PJ'):
+            custom_messagebox("error", "Erro", "❌ Selecione o tipo de pessoa (PF ou PJ).")
+            return
 
-        if not self.validar_cnpj_cpf_numeros(cnpj_cpf_numeros):
+        # O tipo DECLARADO manda: completa zeros à esquerda conforme PF (11)
+        # ou PJ (14). Um CNPJ como 00.065.389/0001-53 digitado sem os zeros
+        # vira 00065389000153, em vez de ser lido como CPF de 11 dígitos.
+        cnpj_cpf_digitado = ''.join(filter(str.isdigit, self.campos_form['cnpj_cpf'].get()))
+        tamanho = 11 if tipo_pessoa == 'PF' else 14
+        if len(cnpj_cpf_digitado) > tamanho:
+            custom_messagebox("error", "Erro",
+                            f"❌ O documento tem {len(cnpj_cpf_digitado)} dígitos, mas o tipo é "
+                            f"{tipo_pessoa} ({'CPF' if tipo_pessoa == 'PF' else 'CNPJ'}, até "
+                            f"{tamanho}). Se é um {'CNPJ' if tipo_pessoa == 'PF' else 'CPF'}, "
+                            f"mude o tipo para {'PJ' if tipo_pessoa == 'PF' else 'PF'}.")
+            return
+        cnpj_cpf_numeros = cnpj_cpf_digitado.zfill(tamanho)
+
+        if not validar_documento(cnpj_cpf_numeros, tipo_pessoa):
             custom_messagebox("error", "Erro",
                             f"❌ {'CPF' if tipo_pessoa == 'PF' else 'CNPJ'} inválido!")
             return
@@ -6959,7 +6983,7 @@ class SistemaEntradaDados:
             dados_bancarios = f"PIX: {chave_pix}"
         else:
             partes = [self.campos_form[c].get().strip()
-                    for c in ('banco', 'op', 'agencia', 'conta') 
+                    for c in ('banco', 'op', 'agencia', 'conta')
                     if self.campos_form[c].get().strip()]
             dados_bancarios = ' - '.join(partes)
 
@@ -7013,6 +7037,10 @@ class SistemaEntradaDados:
                 'dados_bancarios', 'endereco', 'status', 'responsavel',
             ]
 
+            def _doc_normalizado(doc, tipo):
+                digitos = ''.join(filter(str.isdigit, str(doc or '')))
+                return digitos.zfill(11 if str(tipo).strip().upper() == 'PF' else 14)
+
             wb = load_workbook(ARQUIVO_FORNECEDORES)
             ws = wb['Fornecedores']
 
@@ -7032,16 +7060,37 @@ class SistemaEntradaDados:
                 if reg['cnpj_cpf'] and reg['nome']:
                     fornecedores.append(reg)
 
-            # Inserir ou atualizar
-            busca = ''.join(filter(str.isdigit, dados['cnpj_cpf']))
-            encontrado = False
+            # Localizar linha com o mesmo documento (comparação normalizada
+            # pelo tipo de cada lado, para zeros à esquerda não atrapalharem)
+            indice_existente = None
             for i, reg in enumerate(fornecedores):
-                if ''.join(filter(str.isdigit, reg['cnpj_cpf'])) == busca:
-                    dados['status'] = reg.get('status', 'ATIVO')  # preserva status
-                    fornecedores[i] = dados.copy()
-                    encontrado = True
+                if _doc_normalizado(reg['cnpj_cpf'], reg['tipo_pessoa']) == cnpj_cpf_numeros:
+                    indice_existente = i
                     break
-            if not encontrado:
+
+            if indice_existente is not None and not modo_edicao:
+                # NOVO cadastro com documento que já existe: recusar.
+                wb.close()
+                existente = fornecedores[indice_existente]
+                if existente['status'] == 'INATIVO':
+                    dica = ("Ele está INATIVO. Para voltar a usá-lo, reative-o em "
+                            "'📋 Ver Inativos'.")
+                else:
+                    dica = "Para alterar os dados dele, use 'Editar Fornecedor'."
+                if eh_cpf_criado:
+                    dica += ("\n\nEste CPF criado está marcado como DISPONÍVEL, mas já está em "
+                             "uso. Escolha outro em '📋 Escolher da Lista' e, na aba CPF do "
+                             "Base_Fornecedores.xlsx, mude o status deste CPF para USADO.")
+                custom_messagebox("error", "Documento já cadastrado",
+                                f"❌ Já existe um fornecedor com este documento:\n\n"
+                                f"{existente['nome']} ({existente['status']})\n\n"
+                                f"Nada foi gravado. {dica}")
+                return
+
+            if indice_existente is not None:
+                dados['status'] = fornecedores[indice_existente].get('status', 'ATIVO')  # preserva status
+                fornecedores[indice_existente] = dados.copy()
+            else:
                 dados['status'] = 'ATIVO'
                 fornecedores.append(dados.copy())
 
@@ -7532,19 +7581,29 @@ class SistemaEntradaDados:
             custom_messagebox("warning", "Aviso", "Selecione um fornecedor primeiro!")
             return
 
-        doc_antigo = self.tree_fornecedores.item(selecionado[0])['tags'][0].replace('ID:', '')
+        tags = self.tree_fornecedores.item(selecionado[0])['tags']
+        doc_antigo = tags[0].replace('ID:', '')
         fornecedor = self.buscar_fornecedor_completo(doc_antigo)
         if not fornecedor:
             custom_messagebox("error", "Erro", "Não foi possível carregar os dados atuais do fornecedor.")
             return
 
+        # Tipo de pessoa atual: coluna B da base (fonte da verdade). Se o
+        # cache não trouxer, usa a tag gravada por buscar_fornecedor(), que
+        # também vem da coluna B. Nunca pela contagem de dígitos.
+        tipo_atual = str(fornecedor.get('tipo_pessoa') or '').strip().upper()
+        if tipo_atual not in ('PF', 'PJ'):
+            tipo_atual = str(tags[1]).strip().upper() if len(tags) > 1 else ''
+        if tipo_atual not in ('PF', 'PJ'):
+            tipo_atual = ''
+
         janela = tk.Toplevel(self.root)
         janela.title("🔧 Regularizar Cadastro de Fornecedor")
-        janela.geometry("650x460")
+        largura, altura = 650, 540
+        janela.geometry(f"{largura}x{altura}")
         janela.transient(self.root)
         janela.grab_set()
         janela.update_idletasks()
-        largura, altura = 650, 460
         pos_x = (janela.winfo_screenwidth() // 2) - (largura // 2)
         pos_y = (janela.winfo_screenheight() // 2) - (altura // 2)
         janela.geometry(f"{largura}x{altura}+{pos_x}+{pos_y}")
@@ -7558,9 +7617,9 @@ class SistemaEntradaDados:
 
         ttk.Label(main, text="🔧 Regularizar Cadastro", font=('Arial', 16, 'bold')).pack(pady=(0, 5))
         ttk.Label(main,
-                text="Use apenas para corrigir dado ERRADO (digitação, nome incompleto).\n"
-                    "Para unir dois cadastros de fornecedores diferentes que são a mesma "
-                    "pessoa/empresa, use 'Mesclar Fornecedores Duplicados'.",
+                text="Use para corrigir dado ERRADO (digitação, nome incompleto) ou para trocar\n"
+                    "um CPF criado pelo documento real (CPF ou CNPJ).\n"
+                    "Para unir dois cadastros que são a mesma pessoa/empresa, use 'Mesclar Duplicados'.",
                 font=('Arial', 9), foreground='gray', justify='left').pack(pady=(0, 15))
 
         campos_frame = ttk.LabelFrame(main, text="Dados atuais → corrigidos")
@@ -7575,22 +7634,34 @@ class SistemaEntradaDados:
         entry_doc.insert(0, fornecedor['cnpj_cpf'])
         entry_doc.grid(row=1, column=1, sticky='w', padx=5)
 
-        ttk.Label(campos, text="Nome atual:").grid(row=2, column=0, sticky='w', pady=4)
-        ttk.Label(campos, text=fornecedor['nome'], font=('Arial', 9, 'bold')).grid(row=2, column=1, sticky='w', padx=5)
-        ttk.Label(campos, text="Nome correto:").grid(row=3, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text="Tipo de pessoa atual:").grid(row=2, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text=tipo_atual or '(não preenchido na base)',
+                  font=('Arial', 9, 'bold')).grid(row=2, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="Tipo de pessoa correto:").grid(row=3, column=0, sticky='w', pady=4)
+        combo_tipo = ttk.Combobox(campos, values=['PF', 'PJ'], state='readonly', width=5)
+        if tipo_atual:
+            combo_tipo.set(tipo_atual)
+        combo_tipo.grid(row=3, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="PF = CPF  |  PJ = CNPJ", font=('Arial', 8),
+                  foreground='gray').grid(row=3, column=1, sticky='w', padx=(60, 0))
+
+        ttk.Label(campos, text="Nome atual:").grid(row=4, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text=fornecedor['nome'], font=('Arial', 9, 'bold')).grid(row=4, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="Nome correto:").grid(row=5, column=0, sticky='w', pady=4)
         entry_nome = ttk.Entry(campos, width=50)
         entry_nome.insert(0, fornecedor['nome'])
-        entry_nome.grid(row=3, column=1, sticky='w', padx=5)
+        entry_nome.grid(row=5, column=1, sticky='w', padx=5)
 
-        ttk.Label(campos, text="Razão social atual:").grid(row=4, column=0, sticky='w', pady=4)
-        ttk.Label(campos, text=fornecedor['razao_social'], font=('Arial', 9, 'bold')).grid(row=4, column=1, sticky='w', padx=5)
-        ttk.Label(campos, text="Razão social correta:").grid(row=5, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text="Razão social atual:").grid(row=6, column=0, sticky='w', pady=4)
+        ttk.Label(campos, text=fornecedor['razao_social'], font=('Arial', 9, 'bold')).grid(row=6, column=1, sticky='w', padx=5)
+        ttk.Label(campos, text="Razão social correta:").grid(row=7, column=0, sticky='w', pady=4)
         entry_razao = ttk.Entry(campos, width=50)
         entry_razao.insert(0, fornecedor['razao_social'])
-        entry_razao.grid(row=5, column=1, sticky='w', padx=5)
+        entry_razao.grid(row=7, column=1, sticky='w', padx=5)
 
-        ttk.Label(main, text="💡 Deixe igual ao que já está se não precisar corrigir aquele campo.",
-                font=('Arial', 8), foreground='gray').pack(anchor='w')
+        ttk.Label(main, text="💡 Deixe igual ao que já está se não precisar corrigir aquele campo.\n"
+                             "💡 Trocou CPF por CNPJ (ou o contrário)? Mude também o Tipo de pessoa.",
+                font=('Arial', 8), foreground='gray', justify='left').pack(anchor='w')
 
         label_progresso = ttk.Label(main, text="", font=('Arial', 8), foreground='#0056b3')
         label_progresso.pack(anchor='w', pady=(5, 0))
@@ -7599,29 +7670,52 @@ class SistemaEntradaDados:
             label_progresso.config(text=f"Verificando {i}/{total}: {nome_arquivo}...")
             janela.update_idletasks()
 
+        NADA = (None, None, None, None)
+
         def _ler_campos():
-            doc_novo = entry_doc.get().strip()
+            """Retorna (doc_novo, nome_novo, razao_novo, tipo_novo); cada um é
+            None quando não mudou. NADA quando nada mudou ou há erro."""
+            doc_digitado = entry_doc.get().strip()
             nome_novo = entry_nome.get().strip()
             razao_novo = entry_razao.get().strip()
-            doc_novo = doc_novo if doc_novo.replace('.', '').replace('-', '').replace('/', '') != doc_antigo else None
-            nome_novo = nome_novo if nome_novo.upper() != fornecedor['nome'].upper() else None
-            razao_novo = razao_novo if razao_novo.upper() != fornecedor['razao_social'].upper() else None
-            if not (doc_novo or nome_novo or razao_novo):
+            tipo_escolhido = combo_tipo.get().strip().upper()
+
+            if tipo_escolhido not in ('PF', 'PJ'):
+                custom_messagebox("warning", "Aviso", "Selecione o tipo de pessoa correto (PF ou PJ).")
+                return NADA
+
+            # Compara só os dígitos, sem zeros à esquerda, para que digitar o
+            # mesmo documento com ou sem máscara/zeros não conte como mudança.
+            dig_novo = ''.join(filter(str.isdigit, doc_digitado))
+            dig_antigo = ''.join(filter(str.isdigit, doc_antigo))
+            doc_novo = doc_digitado if dig_novo.lstrip('0') != dig_antigo.lstrip('0') else None
+            nome_novo = nome_novo if nome_novo.upper() != str(fornecedor['nome'] or '').upper() else None
+            razao_novo = razao_novo if razao_novo.upper() != str(fornecedor['razao_social'] or '').upper() else None
+            tipo_novo = tipo_escolhido if tipo_escolhido != tipo_atual else None
+
+            if not (doc_novo or nome_novo or razao_novo or tipo_novo):
                 custom_messagebox("warning", "Aviso", "Nenhum campo foi alterado.")
-                return None, None, None
-            return doc_novo, nome_novo, razao_novo
+                return NADA
+            return doc_novo, nome_novo, razao_novo, tipo_novo
+
+        def _chamar(dry_run, **extra):
+            return regularizar_fornecedor(
+                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                doc_antigo=doc_antigo, doc_novo=doc_novo_g[0], nome_novo=doc_novo_g[1],
+                razao_novo=doc_novo_g[2], tipo_pessoa_novo=doc_novo_g[3],
+                dry_run=dry_run, callback_progresso=progresso, **extra,
+            )
+
+        doc_novo_g = list(NADA)  # valores lidos na última ação (usado por _chamar)
 
         def pre_visualizar():
-            doc_novo, nome_novo, razao_novo = _ler_campos()
-            if doc_novo is None and nome_novo is None and razao_novo is None:
+            valores = _ler_campos()
+            if valores == NADA:
                 return
+            doc_novo_g[:] = valores
             label_progresso.config(text="Iniciando pré-visualização...")
             janela.update_idletasks()
-            preview = regularizar_fornecedor(
-                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
-                doc_antigo=doc_antigo, doc_novo=doc_novo, nome_novo=nome_novo,
-                razao_novo=razao_novo, dry_run=True, callback_progresso=progresso,
-            )
+            preview = _chamar(dry_run=True)
             label_progresso.config(text="")
             custom_messagebox(
                 "error" if preview.erro else "info",
@@ -7630,17 +7724,14 @@ class SistemaEntradaDados:
             )
 
         def confirmar_e_aplicar():
-            doc_novo, nome_novo, razao_novo = _ler_campos()
-            if doc_novo is None and nome_novo is None and razao_novo is None:
+            valores = _ler_campos()
+            if valores == NADA:
                 return
+            doc_novo_g[:] = valores
 
             label_progresso.config(text="Verificando o que seria alterado...")
             janela.update_idletasks()
-            preview = regularizar_fornecedor(
-                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
-                doc_antigo=doc_antigo, doc_novo=doc_novo, nome_novo=nome_novo,
-                razao_novo=razao_novo, dry_run=True, callback_progresso=progresso,
-            )
+            preview = _chamar(dry_run=True)
             label_progresso.config(text="")
             if preview.erro:
                 custom_messagebox("error", "Erro", preview.erro)
@@ -7656,6 +7747,8 @@ class SistemaEntradaDados:
                 f"{len(arquivos_afetados)} arquivo(s):\n\n"
                 + "\n".join(f"  • {a}" for a in arquivos_afetados[:8])
                 + (f"\n  ... e mais {len(arquivos_afetados) - 8}" if len(arquivos_afetados) > 8 else "")
+                + (("\n\nATENÇÃO:\n" + "\n".join(f"  ⚠ {av}" for av in preview.avisos))
+                   if preview.avisos else "")
                 + "\n\nConfirma?"
             )
             if not resposta:
@@ -7668,25 +7761,20 @@ class SistemaEntradaDados:
 
             pasta_logs = os.path.join(os.path.dirname(ARQUIVO_FORNECEDORES), 'logs_regularizacao')
             os.makedirs(pasta_logs, exist_ok=True)
-            log_debug = os.path.join(pasta_logs, f"debug_{doc_antigo}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+            carimbo = datetime.now().strftime('%Y%m%d_%H%M%S')
+            log_debug = os.path.join(pasta_logs, f"debug_{doc_antigo}_{carimbo}.log")
 
             label_progresso.config(text="Aplicando alterações...")
             janela.update_idletasks()
-            resultado = regularizar_fornecedor(
-                base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
-                doc_antigo=doc_antigo, doc_novo=doc_novo, nome_novo=nome_novo,
-                razao_novo=razao_novo, dry_run=False, callback_progresso=progresso,
-                arquivo_log_debug=log_debug,
-                arquivos_cliente=arquivos_cliente_afetados,
-            )
+            resultado = _chamar(dry_run=False, arquivo_log_debug=log_debug,
+                                arquivos_cliente=arquivos_cliente_afetados)
 
-            resultado.salvar_log(os.path.join(
-                pasta_logs, f"regularizacao_{doc_antigo}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-            ))
+            resultado.salvar_log(os.path.join(pasta_logs, f"regularizacao_{doc_antigo}_{carimbo}.json"))
 
+            pendente = bool(resultado.arquivos_com_falha or resultado.erro)
             custom_messagebox(
-                "warning" if resultado.arquivos_com_falha else "info",
-                "Concluído com pendências" if resultado.arquivos_com_falha else "Regularização concluída",
+                "warning" if pendente else "info",
+                "Concluído com pendências" if pendente else "Regularização concluída",
                 resultado.resumo()
             )
             janela.destroy()

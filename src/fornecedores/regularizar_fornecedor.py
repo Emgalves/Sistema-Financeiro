@@ -70,6 +70,20 @@ Changelog
   mais inferido por contagem de dígitos); + propagação de RAZÃO SOCIAL para
   a aba 'Contratos_ADM' (campo "Nome/Razão Social", usado no contrato em si
   — distinto do "nome fantasia" usado em 'Dados'/'Contratos_Medicao').
+- v4: regularizar_fornecedor() aceita `tipo_pessoa_novo` ('PF'/'PJ'),
+  informado EXPLICITAMENTE pelo usuário, para o caso legítimo de trocar um
+  CPF (criado ou não) pelo CNPJ real (ou o inverso). Antes, o tipo era
+  sempre o do cadastro antigo, então um CNPJ válido era validado como CPF e
+  recusado. Continua sem inferir PF/PJ por contagem de dígitos. Também
+  passa a: gravar a coluna tipo_pessoa; atualizar Chave_PIX/DADOS BANCÁRIOS
+  quando apontavam para o documento antigo; liberar o CPF criado antigo na
+  aba 'CPF' (mesma regra de fundir_fornecedores()).
+- v5: invariante "CPF criado só fica DISPONIVEL se NENHUMA linha da aba
+  Fornecedores (ativa ou inativa) usa esse documento", garantido dentro de
+  _liberar_cpf_criado(). Consequência: fundir_fornecedores() não libera mais
+  o CPF do perdedor (a linha INATIVA dele continua existindo e usando o
+  documento); antes, o CPF voltava a DISPONIVEL, podia ser entregue a outro
+  prestador e salvar_fornecedor() sobrescrevia a linha inativa.
 """
 
 import os
@@ -110,6 +124,8 @@ BASE_COL_TIPO_PESSOA = 2  # coluna B: 'PF' ou 'PJ' — DEFINIDO NO CADASTRO,
                            # quando zeros à esquerda se perdem).
 BASE_COL_RAZAO = 3        # coluna C
 BASE_COL_NOME = 4         # coluna D
+BASE_COL_CHAVE_PIX = 11   # coluna K: Chave_PIX
+BASE_COL_DADOS_BANC = 15  # coluna O: DADOS BANCÁRIOS
 
 # Arquivos de cliente — cada aba onde o documento pode aparecer, em que
 # formato ('raw' = só dígitos, 'formatado' = com pontuação) e a que campo do
@@ -205,9 +221,11 @@ class ResultadoRegularizacao:
     razao_novo: str | None
     dry_run: bool
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat(timespec="seconds"))
+    tipo_pessoa_novo: str | None = None                     # só preenchido se PF/PJ mudou
     alteracoes: list = field(default_factory=list)
     divergencias_nome: list = field(default_factory=list)   # nome não bate, não alterado
     arquivos_com_falha: list = field(default_factory=list)  # PermissionError etc.
+    avisos: list = field(default_factory=list)              # exigem atenção humana
     erro: str | None = None
 
     def salvar_log(self, caminho):
@@ -222,6 +240,8 @@ class ResultadoRegularizacao:
                 "alteracoes": [a.__dict__ for a in self.alteracoes],
                 "divergencias_nome": self.divergencias_nome,
                 "arquivos_com_falha": self.arquivos_com_falha,
+                "tipo_pessoa_novo": self.tipo_pessoa_novo,
+                "avisos": self.avisos,
                 "erro": self.erro,
             }, f, ensure_ascii=False, indent=2)
 
@@ -230,6 +250,7 @@ class ResultadoRegularizacao:
             f"Documento antigo : {self.doc_antigo}",
             f"Documento novo   : {self.doc_novo or '(inalterado)'}",
             f"Nome novo        : {self.nome_novo or '(inalterado)'}",
+            f"Tipo de pessoa   : {self.tipo_pessoa_novo or '(inalterado)'}",
             f"Modo             : {'DRY-RUN (nada foi gravado)' if self.dry_run else 'APLICADO'}",
             f"Total de células alteradas: {len(self.alteracoes)}",
         ]
@@ -245,6 +266,10 @@ class ResultadoRegularizacao:
             linhas.append("Arquivos que NÃO puderam ser abertos/salvos (feche-os e rode de novo):")
             for f_ in self.arquivos_com_falha:
                 linhas.append(f"  - {f_}")
+        if self.avisos:
+            linhas.append("ATENÇÃO:")
+            for av in self.avisos:
+                linhas.append(f"  ⚠ {av}")
         return "\n".join(linhas)
 
 
@@ -268,7 +293,8 @@ def _doc_ja_pertence_a_outro_fornecedor(base_path, doc_novo_digitos, doc_antigo_
 def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
                             doc_novo=None, nome_novo=None, razao_novo=None,
                             dry_run=True, arquivos_cliente=None,
-                            callback_progresso=None, arquivo_log_debug=None):
+                            callback_progresso=None, arquivo_log_debug=None,
+                            tipo_pessoa_novo=None):
     """
     Corrige o documento/nome/razão social de um fornecedor na base mestre e
     em todos os arquivos de cliente encontrados em `pasta_clientes` (ou na
@@ -294,6 +320,13 @@ def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
     linha encontrada, a função recusa alterar o documento (para não gravar
     um zero-padding errado) e pede para preencher tipo_pessoa antes.
 
+    `tipo_pessoa_novo` ('PF'/'PJ'), se informado, é o tipo DECLARADO pelo
+    usuário para o documento novo — necessário quando a correção troca CPF
+    por CNPJ ou vice-versa (ex.: CPF criado -> CNPJ real da empresa). Nesse
+    caso ele substitui o tipo da base para zero-padding, validação,
+    formatação e propagação, e a coluna tipo_pessoa da base é atualizada.
+    Se omitido, vale o tipo atual da base (comportamento anterior).
+
     Retorna um ResultadoRegularizacao.
     """
     log = _DebugLogger(arquivo_log_debug)
@@ -307,7 +340,12 @@ def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
         nome_novo=nome_novo, razao_novo=razao_novo, dry_run=dry_run,
     )
 
-    if not (doc_novo or nome_novo or razao_novo):
+    tipo_pessoa_novo = str(tipo_pessoa_novo).strip().upper() if tipo_pessoa_novo else None
+    if tipo_pessoa_novo not in (None, "PF", "PJ"):
+        resultado.erro = f"tipo_pessoa_novo inválido: '{tipo_pessoa_novo}'. Use 'PF' ou 'PJ'."
+        return resultado
+
+    if not (doc_novo or nome_novo or razao_novo or tipo_pessoa_novo):
         resultado.erro = "Nada para alterar: informe doc_novo e/ou nome_novo/razao_novo."
         return resultado
 
@@ -327,18 +365,49 @@ def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
         wb.close()
         return resultado
 
-    tipo_pessoa = _tipo_pessoa_da_linha([c.value for c in linha_encontrada])
+    tipo_pessoa_atual = _tipo_pessoa_da_linha([c.value for c in linha_encontrada])
+
+    # Tipo de destino: o declarado pelo usuário, se houver; senão o da base.
+    # NUNCA inferido pela contagem de dígitos.
+    tipo_pessoa = tipo_pessoa_novo or tipo_pessoa_atual
+    tipo_mudou = tipo_pessoa_novo is not None and tipo_pessoa_novo != tipo_pessoa_atual
+
+    if tipo_mudou and tipo_pessoa_atual is not None and not doc_novo_d:
+        resultado.erro = (
+            f"O tipo de pessoa foi alterado de {tipo_pessoa_atual} para {tipo_pessoa_novo}, "
+            f"mas o documento não. CPF (PF) e CNPJ (PJ) são documentos diferentes: "
+            f"informe também o documento correto."
+        )
+        wb.close()
+        return resultado
+
     if doc_novo_d and tipo_pessoa is None:
         resultado.erro = (
             f"A linha de {_formatar_doc(doc_antigo_d)} não tem tipo_pessoa (PF/PJ) "
-            f"preenchido na base. Preencha essa coluna antes de corrigir o documento "
-            f"— sem ela não é seguro decidir se são 11 ou 14 dígitos."
+            f"preenchido na base, e nenhum tipo foi informado para o documento novo. "
+            f"Informe o tipo de pessoa correto — sem ele não é seguro decidir se são "
+            f"11 ou 14 dígitos."
         )
         wb.close()
         return resultado
 
     if doc_novo_d:
-        doc_novo_d = doc_novo_d.zfill(11 if tipo_pessoa == "PF" else 14)
+        tamanho = 11 if tipo_pessoa == "PF" else 14
+        if len(doc_novo_d) > tamanho:
+            # Checagem de coerência entre o tipo DECLARADO e o que foi
+            # digitado — não é inferência: um CPF não pode ter mais de 11
+            # dígitos nem um CNPJ mais de 14. Mensagem explícita, para não
+            # cair no genérico "dígito verificador não confere".
+            resultado.erro = (
+                f"O documento novo tem {len(doc_novo_d)} dígitos, mas o tipo de pessoa "
+                f"é {tipo_pessoa} ({'CPF' if tipo_pessoa == 'PF' else 'CNPJ'}, até "
+                f"{tamanho} dígitos). Se o documento correto é um "
+                f"{'CNPJ' if tipo_pessoa == 'PF' else 'CPF'}, altere também o tipo de "
+                f"pessoa para {'PJ' if tipo_pessoa == 'PF' else 'PF'}."
+            )
+            wb.close()
+            return resultado
+        doc_novo_d = doc_novo_d.zfill(tamanho)
 
     # --- Guarda contra documento estruturalmente inválido ------------------
     # Roda ANTES da checagem de fusão (mais barata: falha sem precisar
@@ -368,6 +437,8 @@ def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
         wb.close()
         return resultado
     resultado.doc_novo = doc_novo_d
+    if tipo_mudou:
+        resultado.tipo_pessoa_novo = f"{tipo_pessoa_atual or '(vazio)'} -> {tipo_pessoa_novo}"
 
     row = linha_encontrada
     cel_doc = row[BASE_COL_DOC - 1]
@@ -391,6 +462,49 @@ def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
             "RAZAO_SOCIAL", str(cel_razao.value), razao_novo.upper()))
         if not dry_run:
             cel_razao.value = razao_novo.upper()
+
+    if tipo_mudou:
+        cel_tipo = row[BASE_COL_TIPO_PESSOA - 1]
+        resultado.alteracoes.append(Alteracao(
+            os.path.basename(base_path), BASE_SHEET, cel_tipo.coordinate,
+            "TIPO_PESSOA", str(cel_tipo.value), tipo_pessoa_novo))
+        if not dry_run:
+            cel_tipo.value = tipo_pessoa_novo
+
+    # Chave PIX / DADOS BANCÁRIOS que apontavam para o documento antigo
+    # (usar_cpf_criado_auto() grava o CPF criado como chave PIX). Deixá-los
+    # como estão manteria uma chave PIX inexistente no cadastro.
+    if doc_novo_d:
+        doc_novo_fmt = _formatar_doc(doc_novo_d, tipo_pessoa)
+        cel_pix = row[BASE_COL_CHAVE_PIX - 1]
+        if cel_pix.value and _digitos(cel_pix.value) == doc_antigo_d:
+            resultado.alteracoes.append(Alteracao(
+                os.path.basename(base_path), BASE_SHEET, cel_pix.coordinate,
+                "CHAVE_PIX", str(cel_pix.value), doc_novo_fmt))
+            if not dry_run:
+                cel_pix.value = doc_novo_fmt
+            resultado.avisos.append(
+                f"A chave PIX passou a ser {doc_novo_fmt}. Confirme com o fornecedor que "
+                f"esse documento está de fato cadastrado como chave PIX antes do próximo "
+                f"pagamento.")
+        cel_db = row[BASE_COL_DADOS_BANC - 1]
+        if (cel_db.value and str(cel_db.value).strip().upper().startswith("PIX")
+                and _digitos(cel_db.value) == doc_antigo_d):
+            novo_db = f"PIX: {doc_novo_fmt}"
+            resultado.alteracoes.append(Alteracao(
+                os.path.basename(base_path), BASE_SHEET, cel_db.coordinate,
+                "DADOS_BANCARIOS", str(cel_db.value), novo_db))
+            if not dry_run:
+                cel_db.value = novo_db
+
+    # O documento antigo é um CPF criado (aba 'CPF')? Só verifica aqui; a
+    # liberação acontece no fim, depois da propagação nos clientes.
+    cpf_criado_antigo = bool(
+        doc_novo_d and CPF_CRIADO_SHEET in wb.sheetnames and any(
+            _digitos(r[CPF_CRIADO_COL_DOC - 1].value) == doc_antigo_d
+            for r in wb[CPF_CRIADO_SHEET].iter_rows(min_row=3)
+        )
+    )
 
     if not dry_run:
         log.log(f"Salvando base mestre: {base_path}")
@@ -417,6 +531,38 @@ def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
     _propagar_documento_em_clientes(
         arquivos_cliente, doc_antigo_d, doc_novo_d, nome_novo, razao_novo,
         tipo_pessoa, dry_run, resultado, callback_progresso, log)
+
+    # --- 3) Liberar o CPF criado antigo (mesma regra de fundir_fornecedores) ---
+    # Só libera se TODOS os arquivos foram atualizados: se algum falhou, ele
+    # ainda contém o CPF antigo, e liberar permitiria reutilizá-lo para outra
+    # pessoa, misturando históricos.
+    if cpf_criado_antigo:
+        rotulo = f"DISPONIVEL (liberado, regularizado -> {_formatar_doc(doc_novo_d, tipo_pessoa)})"
+        if dry_run:
+            resultado.alteracoes.append(Alteracao(
+                os.path.basename(base_path), CPF_CRIADO_SHEET, "-", "STATUS", "USADO", rotulo))
+        elif resultado.arquivos_com_falha:
+            resultado.avisos.append(
+                f"O CPF criado {_formatar_doc(doc_antigo_d, 'PF')} NÃO foi liberado na aba "
+                f"'CPF', porque há arquivos que não puderam ser atualizados e ainda o "
+                f"contêm. Corrija esses arquivos e libere-o manualmente.")
+        else:
+            try:
+                wb2 = load_workbook(base_path, data_only=False)
+                if _liberar_cpf_criado(wb2, doc_antigo_d):
+                    wb2.save(base_path)
+                    resultado.alteracoes.append(Alteracao(
+                        os.path.basename(base_path), CPF_CRIADO_SHEET, "-", "STATUS",
+                        "USADO", rotulo))
+                else:
+                    resultado.avisos.append(
+                        f"O CPF criado {_formatar_doc(doc_antigo_d, 'PF')} NÃO foi liberado: "
+                        f"ainda existe outra linha na aba Fornecedores com esse documento.")
+                wb2.close()
+            except PermissionError:
+                resultado.avisos.append(
+                    "Não foi possível liberar o CPF criado antigo na aba 'CPF' (base "
+                    "aberta em outro programa). Libere-o manualmente.")
 
     log.log("regularizar_fornecedor: concluído.")
     return resultado
@@ -737,12 +883,37 @@ def detectar_possiveis_duplicatas(base_path, limiar=0.6, incluir_todos_fornecedo
     return candidatos, orfaos_no_registro_cpf
 
 
+def _documento_em_uso_na_base(wb_base, doc_digitos):
+    """True se alguma linha da aba Fornecedores — ATIVA OU INATIVA — usa
+    esse documento. Linha inativa conta: ela continua sendo encontrada por
+    documento (salvar_fornecedor, reativar_fornecedor, buscas por CNPJ/CPF)."""
+    for row in wb_base[BASE_SHEET].iter_rows(min_row=2, values_only=True):
+        if row and _digitos(row[BASE_COL_DOC - 1]) == doc_digitos:
+            return True
+    return False
+
+
+def _cpf_criado_cadastrado(wb_base, doc_digitos):
+    """True se o documento está registrado na aba 'CPF' (é um CPF criado)."""
+    if CPF_CRIADO_SHEET not in wb_base.sheetnames:
+        return False
+    return any(_digitos(r[CPF_CRIADO_COL_DOC - 1].value) == doc_digitos
+               for r in wb_base[CPF_CRIADO_SHEET].iter_rows(min_row=3))
+
+
 def _liberar_cpf_criado(wb_base, doc_digitos):
     """Marca um CPF criado como DISPONIVEL novamente (libera para reuso),
     dentro de um workbook Base_Fornecedores já aberto. Não faz nada se o
     documento informado não estiver cadastrado na aba CPF (ou seja, é seguro
-    chamar mesmo quando o documento perdedor era um CPF real, não gerado)."""
+    chamar mesmo quando o documento perdedor era um CPF real, não gerado).
+
+    INVARIANTE (v5): recusa (retorna False) se alguma linha da aba
+    Fornecedores, ativa ou inativa, ainda usar o documento. Um CPF
+    DISPONIVEL pode ser entregue a outro prestador; se ainda houver linha com
+    ele, o cadastro novo sobrescreveria essa linha."""
     if CPF_CRIADO_SHEET not in wb_base.sheetnames:
+        return False
+    if _documento_em_uso_na_base(wb_base, doc_digitos):
         return False
     ws = wb_base[CPF_CRIADO_SHEET]
     for row in ws.iter_rows(min_row=3):
@@ -772,10 +943,10 @@ def fundir_fornecedores(base_path, pasta_clientes, doc_vencedor, docs_perdedores
         valor do vencedor se não for vazio; senão, primeiro valor não-vazio
         encontrado entre os perdedores (na ordem informada).
 
-    liberar_cpfs_criados: se True (padrão), qualquer doc perdedor que esteja
-        cadastrado como CPF criado (aba 'CPF', status USADO) volta a ficar
-        DISPONIVEL para reuso depois da fusão. Não afeta documentos que não
-        estejam nessa aba.
+    liberar_cpfs_criados: mantido só por compatibilidade (v5). O CPF criado
+        de um perdedor NUNCA é liberado aqui, porque a linha INATIVA do
+        perdedor continua usando o documento (ver _liberar_cpf_criado). O
+        motivo aparece em resultado.avisos.
 
     arquivo_log_debug: mesmo mecanismo de regularizar_fornecedor() — grava
         timestamp de cada etapa demorada, sobrevive a travamento/kill.
@@ -893,19 +1064,19 @@ def fundir_fornecedores(base_path, pasta_clientes, doc_vencedor, docs_perdedores
         if not dry_run:
             cel_status.value = "INATIVO"
 
-    # --- Liberar CPFs criados ---------------------------------------------
-    if liberar_cpfs_criados:
-        for d, _ in linhas_perdedoras:
-            liberado = _liberar_cpf_criado(wb, d) if not dry_run else (
-                CPF_CRIADO_SHEET in wb.sheetnames and any(
-                    _digitos(r[CPF_CRIADO_COL_DOC - 1].value) == d
-                    for r in wb[CPF_CRIADO_SHEET].iter_rows(min_row=3)
-                )
-            )
-            if liberado:
-                resultado.alteracoes.append(Alteracao(
-                    os.path.basename(base_path), CPF_CRIADO_SHEET, "-", "STATUS",
-                    "USADO", f"DISPONIVEL (liberado, mesclado -> {_formatar_doc(doc_vencedor_d, tipo_pessoa_vencedor)})"))
+    # --- CPFs criados dos perdedores (v5) ---------------------------------
+    # A linha do perdedor continua na base (INATIVA, para auditoria) usando
+    # o mesmo documento, então o CPF criado NÃO pode voltar a DISPONIVEL —
+    # _liberar_cpf_criado() recusaria de qualquer forma. Fica USADO, e o
+    # motivo é registrado como aviso. `liberar_cpfs_criados` é mantido na
+    # assinatura só por compatibilidade.
+    for d, _ in linhas_perdedoras:
+        if _cpf_criado_cadastrado(wb, d):
+            resultado.avisos.append(
+                f"O CPF criado {_formatar_doc(d, 'PF')} continua USADO na aba 'CPF': "
+                f"o cadastro dele fica INATIVO na base e ainda usa esse documento. "
+                f"Isso é intencional — liberá-lo permitiria entregá-lo a outro "
+                f"prestador, e o cadastro novo sobrescreveria o inativo.")
 
     if not dry_run:
         log.log(f"Salvando base mestre: {base_path}")
