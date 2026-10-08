@@ -1071,7 +1071,7 @@ class GestaoMedicoes:
 
         ttk.Label(frame_pdf,
             text="Gera o relatório quinzenal de medições em PDF para o cliente selecionado.\n"
-                 "Se um fornecedor estiver selecionado, o relatório será filtrado por ele.",
+                 "Se um fornecedor estiver selecionado, você poderá filtrar o relatório por ele.",
             foreground='#444444', font=('Arial', 9)).pack(anchor='w', pady=(0, 8))
 
         frame_data_pdf = ttk.Frame(frame_pdf)
@@ -1094,6 +1094,12 @@ class GestaoMedicoes:
         self.lbl_filtro_pdf = ttk.Label(frame_data_pdf,
             text="", foreground='#0056b3', font=('Arial', 9, 'italic'))
         self.lbl_filtro_pdf.pack(side='left', padx=12)
+
+        # Padrão desmarcado = relatório completo (comportamento original)
+        self.var_pdf_escolher_contratos = tk.BooleanVar(value=False)
+        ttk.Checkbutton(frame_pdf,
+            text="Escolher contratos antes de gerar",
+            variable=self.var_pdf_escolher_contratos).pack(anchor='w', pady=(0, 8))
 
         ttk.Button(frame_pdf,
             text="📄 Gerar PDF Quinzenal",
@@ -1244,11 +1250,51 @@ class GestaoMedicoes:
             if not isinstance(data_ref, datetime):
                 data_ref = datetime(data_ref.year, data_ref.month, data_ref.day)
 
+            # Filtro por fornecedor: antes o CNPJ não era repassado ao gerador,
+            # embora a tela anunciasse o filtro. Como o fornecedor selecionado
+            # pode vir de várias telas, a escolha é confirmada aqui.
+            cnpj_filtro = None
+            cnpj_sel = getattr(self, 'cnpj_fornecedor_selecionado', None)
+            if cnpj_sel:
+                nome_sel = getattr(self, 'nome_fornecedor_selecionado', None) or cnpj_sel
+                resposta = messagebox.askyesnocancel(
+                    "Filtro de fornecedor",
+                    f"Fornecedor selecionado:\n{nome_sel}\n\n"
+                    "Sim: gerar apenas para este fornecedor\n"
+                    "Não: gerar para todos os fornecedores\n"
+                    "Cancelar: não gerar",
+                    parent=self.root
+                )
+                if resposta is None:
+                    return
+                if resposta:
+                    cnpj_filtro = cnpj_sel
+
             gerador = RelatorioQuinzenalPDF(
                 arquivo_cliente=str(self.arquivo_cliente),
                 arquivo_clientes=str(ARQUIVO_CLIENTES)
             )
-            arquivo_pdf = gerador.gerar_pdf(data_referencia=data_ref)
+
+            # Seleção manual de contratos (opcional)
+            contratos_excluidos = None
+            if self.var_pdf_escolher_contratos.get():
+                from src.config_relatorio_quinzenal import escolher_contratos_dialog
+                contratos = gerador.listar_contratos(data_ref, cnpj_filtro)
+                if not contratos:
+                    messagebox.showwarning(
+                        "Aviso",
+                        "O relatório não foi gerado. Não existem medições no período"
+                        + (" para o fornecedor selecionado." if cnpj_filtro else "."),
+                        parent=self.root)
+                    return
+                contratos_excluidos = escolher_contratos_dialog(
+                    self.root, contratos, self.cliente_atual)
+                if contratos_excluidos is None:
+                    return  # usuário cancelou
+
+            arquivo_pdf = gerador.gerar_pdf(data_referencia=data_ref,
+                                            cnpj_fornecedor=cnpj_filtro,
+                                            contratos_excluidos=contratos_excluidos)
 
             if arquivo_pdf:
                 messagebox.showinfo(
@@ -1268,7 +1314,11 @@ class GestaoMedicoes:
                 except Exception:
                     pass  # Abertura automática é opcional
             else:
-                messagebox.showwarning("Aviso", "O relatório não foi gerado. Não existem medições no período.", parent=self.root)
+                messagebox.showwarning(
+                    "Aviso",
+                    "O relatório não foi gerado. Não existem medições no período"
+                    + (" para o fornecedor selecionado." if cnpj_filtro else "."),
+                    parent=self.root)
 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao gerar PDF:\n{str(e)}", parent=self.root)

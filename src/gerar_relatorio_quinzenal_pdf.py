@@ -315,7 +315,15 @@ class RelatorioQuinzenalPDF:
 
         return data_ini, data_fim
 
-    def _carregar_dados_planilha(self, data_ref, cnpj_filtro=None):
+    def _carregar_dados_planilha(self, data_ref, cnpj_filtro=None, contratos_excluidos=None):
+        """
+        contratos_excluidos: conjunto de ID_Contrato a omitir do relatório
+            (seleção manual do usuário). A escolha dos empreiteiros segue a
+            regra normal da quinzena; depois os contratos excluídos são
+            retirados. O empreiteiro que ficar sem nenhum contrato sai do
+            relatório. None/vazio = relatório completo (comportamento original).
+        """
+        excluidos = {int(x) for x in (contratos_excluidos or [])}
         data_ini, data_fim = self._identificar_quinzena(data_ref)
         cnpj_filtro_num = _normalizar_doc(cnpj_filtro) if cnpj_filtro else None
 
@@ -370,6 +378,16 @@ class RelatorioQuinzenalPDF:
             # Só incluir se houver medição na quinzena para algum contrato deste fornecedor
             if not ids_forn.intersection(contratos_com_medicao_q):
                 continue
+
+            # Seleção manual: retirar contratos desmarcados pelo usuário.
+            # Feito DEPOIS da regra da quinzena e da numeração Nº/Emp, para
+            # que a coluna Ref. seja a mesma do relatório completo.
+            if excluidos:
+                contratos_forn = contratos_forn[
+                    ~contratos_forn['ID_Contrato'].astype(int).isin(excluidos)
+                ]
+                if contratos_forn.empty:
+                    continue
 
             dados_base = self._carregar_fornecedor_base(cnpj_raw)
 
@@ -446,6 +464,30 @@ class RelatorioQuinzenalPDF:
             })
 
         return resultado
+
+    def listar_contratos(self, data_referencia, cnpj_fornecedor=None):
+        """
+        Lista os contratos que sairiam no relatório COMPLETO desta data
+        (e deste fornecedor, se informado). Usada pela janela de seleção
+        manual de contratos, para que a lista mostrada seja exatamente o
+        conteúdo do relatório.
+        """
+        lista = []
+        for forn in self._carregar_dados_planilha(data_referencia, cnpj_fornecedor):
+            nome = forn['dados_base'].get('nome') or forn['nome']
+            for c in forn['contratos']:
+                lista.append({
+                    'id':            c['id'],
+                    'num_emp':       c['num_emp'],
+                    'fornecedor':    nome,
+                    'descricao':     c['descricao'],
+                    'status':        c['status'] or 'ATIVO',
+                    'valor_global':  c['valor_global'],
+                    'saldo':         c['saldo'],
+                    'med_quinzena':  sum(float(m['Valor'] or 0)
+                                         for m in c['medicoes'] if m['_quinzena']),
+                })
+        return lista
 
     # ------------------------------------------------------------------
     # Elementos de conteúdo
@@ -581,6 +623,12 @@ class RelatorioQuinzenalPDF:
                 Paragraph(m['referencia'], st_d),
             ])
 
+        sem_medicoes = not forn['extrato']
+        if sem_medicoes:
+            # Texto na 1ª célula: com SPAN, o ReportLab exibe a célula inicial
+            data.append([Paragraph('Nenhuma medi\u00e7\u00e3o lan\u00e7ada para os contratos listados.', st_d),
+                         '', '', '', ''])
+
         tbl = Table(data, colWidths=cw, repeatRows=1)
         style = [
             ('BACKGROUND',    (0, 0), (-1, 0), AZUL),
@@ -591,6 +639,8 @@ class RelatorioQuinzenalPDF:
             ('GRID',          (0, 0), (-1, -1), 0.4, CINZA_BORDA),
             ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
         ]
+        if sem_medicoes:
+            style.append(('SPAN', (0, 1), (-1, 1)))
         for i, m in enumerate(forn['extrato'], start=1):
             if m['_quinzena']:
                 style += [
@@ -732,7 +782,8 @@ class RelatorioQuinzenalPDF:
     # Geração
     # ------------------------------------------------------------------
 
-    def gerar_pdf(self, data_referencia, arquivo_saida=None, cnpj_fornecedor=None):
+    def gerar_pdf(self, data_referencia, arquivo_saida=None, cnpj_fornecedor=None,
+                  contratos_excluidos=None):
         """
         Gera o relatório quinzenal em um único PDF sem dependências externas de merge.
 
@@ -746,18 +797,26 @@ class RelatorioQuinzenalPDF:
             data_referencia:  datetime
             arquivo_saida:    Path/str opcional
             cnpj_fornecedor:  CNPJ para filtrar (None = todos com medições na quinzena)
+            contratos_excluidos: IDs de contrato desmarcados na seleção manual
+                              (None = relatório completo)
         """
         self._carregar_cliente()
-        fornecedores = self._carregar_dados_planilha(data_referencia, cnpj_fornecedor)
+        fornecedores = self._carregar_dados_planilha(
+            data_referencia, cnpj_fornecedor, contratos_excluidos=contratos_excluidos
+        )
 
         if not fornecedores:
-            print('Nenhuma medi\u00e7\u00e3o encontrada na quinzena especificada.')
+            if contratos_excluidos:
+                print('Nenhum contrato restou ap\u00f3s a sele\u00e7\u00e3o.')
+            else:
+                print('Nenhuma medi\u00e7\u00e3o encontrada na quinzena especificada.')
             return None
 
         if not arquivo_saida:
             data_str      = data_referencia.strftime('%d-%m-%Y')
             nome_cli      = self.cliente_info['nome'].replace(' ', '_').upper()
-            arquivo_saida = self.arquivo_cliente.parent / f'REL_MED_{nome_cli}_{data_str}.pdf'
+            sufixo        = '_PARCIAL' if contratos_excluidos else ''
+            arquivo_saida = self.arquivo_cliente.parent / f'REL_MED_{nome_cli}_{data_str}{sufixo}.pdf'
         arquivo_saida = Path(arquivo_saida)
 
         cliente_nome = self.cliente_info.get('nome', 'CLIENTE')
@@ -880,12 +939,15 @@ def main():
     parser.add_argument('--data',         default=None)
     parser.add_argument('--cnpj',         default=None)
     parser.add_argument('--output',       default=None)
+    parser.add_argument('--excluir',      default=None,
+                        help='IDs de contrato a omitir, separados por v\u00edrgula (ex.: 1,2)')
     args = parser.parse_args()
 
     data_ref = datetime.strptime(args.data, '%d/%m/%Y') if args.data else datetime.now()
     gerador  = RelatorioQuinzenalPDF(args.arquivo_cliente, args.arquivo_clientes,
                                      args.fornecedores)
-    gerador.gerar_pdf(data_ref, args.output, args.cnpj)
+    excluir  = {int(x) for x in args.excluir.split(',') if x.strip()} if args.excluir else None
+    gerador.gerar_pdf(data_ref, args.output, args.cnpj, contratos_excluidos=excluir)
 
 
 if __name__ == '__main__':

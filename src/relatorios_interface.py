@@ -1001,6 +1001,12 @@ class SistemaRelatorios:
                 style='Accentuated.TButton'
             ).pack(side='right', padx=5)
 
+        elif relatorio["id"] == "medicoes_quinzenal":
+            # O Quinzenal tem o próprio botão "Gerar Relatório PDF"
+            # (config_relatorio_quinzenal). O botão genérico levava a
+            # processar_outros_relatorios com "modulo": None e dava erro.
+            pass
+
         else:
             ttk.Button(
                 btn_frame,

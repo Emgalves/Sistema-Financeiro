@@ -43,6 +43,166 @@ except ImportError:
         RelatorioQuinzenalPDF = None
 
 
+def _estado_sessao():
+    """Estado compartilhado entre módulos (último cliente usado).
+    Retorna None se o módulo não estiver disponível."""
+    try:
+        from src.estado_compartilhado import estado_sessao
+        return estado_sessao
+    except ImportError:
+        try:
+            from estado_compartilhado import estado_sessao
+            return estado_sessao
+        except ImportError:
+            return None
+
+
+def _lembrar_cliente(nome_cliente):
+    """Guarda o cliente escolhido aqui para as outras telas."""
+    try:
+        estado = _estado_sessao()
+        if estado is not None and nome_cliente and nome_cliente != 'Todos os Clientes':
+            estado.ultimo_cliente = nome_cliente
+    except Exception as e:
+        logger.warning(f"Não foi possível lembrar o cliente: {e}")
+
+
+def _selecionar_cliente_preferido(combobox, nome_preferido=None):
+    """Seleciona, nesta ordem: nome_preferido (se estiver na lista), o último
+    cliente usado em outra tela (estado_sessao) e, por fim, o 1º item."""
+    valores = list(combobox['values'])
+    if not valores:
+        return
+    candidatos = [nome_preferido]
+    try:
+        estado = _estado_sessao()
+        if estado is not None:
+            candidatos.append(estado.ultimo_cliente)
+    except Exception:
+        pass
+    for nome in candidatos:
+        if nome and nome in valores:
+            combobox.set(nome)
+            return
+    combobox.current(0)
+
+
+def escolher_contratos_dialog(parent, contratos, titulo_cliente=''):
+    """
+    Janela modal para escolher quais contratos entram no relatório quinzenal.
+
+    Args:
+        parent:    janela pai
+        contratos: lista de RelatorioQuinzenalPDF.listar_contratos()
+                   (= conteúdo do relatório completo)
+        titulo_cliente: nome do cliente, só para exibição
+
+    Returns:
+        set com os ID_Contrato DESMARCADOS (vazio = todos marcados),
+        ou None se o usuário cancelar.
+    """
+    def _moeda(v):
+        return "{:,.2f}".format(float(v or 0)).replace(',', 'X').replace('.', ',').replace('X', '.')
+
+    marcados = {c['id']: True for c in contratos}
+    resultado = {'valor': None}
+
+    win = tk.Toplevel(parent)
+    win.title("Escolher contratos do relatório")
+    win.transient(parent)
+    win.geometry("980x420")
+
+    frame = ttk.Frame(win, padding=10)
+    frame.pack(fill='both', expand=True)
+
+    ttk.Label(
+        frame,
+        text=(f"Cliente: {titulo_cliente}\n" if titulo_cliente else "") +
+             "Desmarque os contratos que NÃO devem sair no PDF (clique na linha ou tecle Espaço).\n"
+             "Totais e % Executado do PDF consideram apenas os contratos marcados.",
+        justify='left'
+    ).pack(anchor='w', pady=(0, 8))
+
+    colunas = ('sel', 'fornecedor', 'num', 'descricao', 'status', 'global', 'saldo', 'medq')
+    tree_frame = ttk.Frame(frame)
+    tree_frame.pack(fill='both', expand=True)
+    tree = ttk.Treeview(tree_frame, columns=colunas, show='headings', selectmode='browse')
+    cab = {'sel': ('Incluir', 60, 'center'), 'fornecedor': ('Empreiteiro', 200, 'w'),
+           'num': ('Nº/Emp', 55, 'center'), 'descricao': ('Descrição', 300, 'w'),
+           'status': ('Status', 85, 'center'), 'global': ('Valor Global', 90, 'e'),
+           'saldo': ('Saldo', 80, 'e'), 'medq': ('Medição na quinzena', 120, 'e')}
+    for col in colunas:
+        txt, larg, anc = cab[col]
+        tree.heading(col, text=txt)
+        tree.column(col, width=larg, anchor=anc, stretch=(col == 'descricao'))
+    sb = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
+    tree.configure(yscrollcommand=sb.set)
+    tree.pack(side='left', fill='both', expand=True)
+    sb.pack(side='right', fill='y')
+    tree.tag_configure('desmarcado', foreground='#999999')
+
+    lbl_resumo = ttk.Label(frame, text='')
+    lbl_resumo.pack(anchor='w', pady=(6, 0))
+
+    def _atualizar_linha(id_c):
+        iid = str(id_c)
+        vals = list(tree.item(iid, 'values'))
+        vals[0] = '☑' if marcados[id_c] else '☐'
+        tree.item(iid, values=vals, tags=() if marcados[id_c] else ('desmarcado',))
+
+    def _atualizar_resumo():
+        n = sum(marcados.values())
+        lbl_resumo.config(text=f"{n} de {len(marcados)} contrato(s) marcado(s)")
+
+    for c in contratos:
+        tree.insert('', 'end', iid=str(c['id']), values=(
+            '☑', c['fornecedor'], c['num_emp'], c['descricao'][:120], c['status'],
+            _moeda(c['valor_global']), _moeda(c['saldo']),
+            _moeda(c['med_quinzena']) if c['med_quinzena'] else '—'))
+    _atualizar_resumo()
+
+    def _alternar(iid):
+        if not iid:
+            return
+        id_c = int(iid)
+        marcados[id_c] = not marcados[id_c]
+        _atualizar_linha(id_c)
+        _atualizar_resumo()
+
+    tree.bind('<ButtonRelease-1>', lambda e: _alternar(tree.identify_row(e.y)))
+    tree.bind('<space>', lambda e: _alternar(tree.focus()))
+
+    def _todos(valor):
+        for id_c in marcados:
+            marcados[id_c] = valor
+            _atualizar_linha(id_c)
+        _atualizar_resumo()
+
+    def _ok():
+        if not any(marcados.values()):
+            messagebox.showwarning("Aviso", "Marque ao menos um contrato.", parent=win)
+            return
+        resultado['valor'] = {id_c for id_c, m in marcados.items() if not m}
+        win.destroy()
+
+    def _cancelar():
+        resultado['valor'] = None
+        win.destroy()
+
+    botoes = ttk.Frame(frame)
+    botoes.pack(fill='x', pady=(8, 0))
+    ttk.Button(botoes, text="Marcar todos", command=lambda: _todos(True)).pack(side='left')
+    ttk.Button(botoes, text="Desmarcar todos", command=lambda: _todos(False)).pack(side='left', padx=6)
+    ttk.Button(botoes, text="Cancelar", command=_cancelar).pack(side='right')
+    ttk.Button(botoes, text="OK — Gerar com os marcados", command=_ok).pack(side='right', padx=6)
+    win.protocol("WM_DELETE_WINDOW", _cancelar)
+
+    win.grab_set()
+    tree.focus_set()
+    parent.wait_window(win)
+    return resultado['valor']
+
+
 def carregar_clientes():
     """Carrega a lista de clientes ativos do arquivo de clientes"""
     try:
@@ -240,7 +400,8 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
     desc_text = """✓ Contratos com medições na quinzena (dias 5 e 20)
 ✓ Histórico completo de medições por contrato
 ✓ Medições da quinzena destacadas em amarelo
-✓ Resumo financeiro completo"""
+✓ Resumo financeiro completo
+✓ Opcional: escolher quais contratos entram no PDF"""
     
     ttk.Label(desc_frame, text=desc_text, justify='left', font=('Arial', 9)).pack(anchor='w')
     
@@ -268,9 +429,15 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
     )
     cliente_combobox.pack(anchor='w', pady=(0, 5))
     
-    # Selecionar "Todos os Clientes" por padrão
-    if lista_clientes:
-        cliente_combobox.current(0)
+    # Pré-selecionar o último cliente usado em outra tela; se não houver,
+    # fica o 1º item ("Todos os Clientes"), como antes.
+    _selecionar_cliente_preferido(cliente_combobox)
+
+    # Cliente escolhido aqui passa a valer para as outras telas
+    cliente_combobox.bind(
+        '<<ComboboxSelected>>',
+        lambda e: _lembrar_cliente(cliente_selecionado_var.get())
+    )
     
     # Informação sobre a pasta
     if usa_config_sistema and PASTA_CLIENTES:
@@ -283,10 +450,11 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
     
     # Botão para atualizar lista de clientes
     def atualizar_clientes():
+        selecionado_antes = cliente_selecionado_var.get()
         nova_lista = carregar_clientes()
         cliente_combobox['values'] = nova_lista
-        if nova_lista:
-            cliente_combobox.current(0)
+        # Mantém o cliente que estava selecionado, se continuar na lista
+        _selecionar_cliente_preferido(cliente_combobox, selecionado_antes)
         messagebox.showinfo("Info", f"Lista atualizada com {len(nova_lista)} clientes", parent=parent_frame.winfo_toplevel())
     
     ttk.Button(
@@ -437,6 +605,26 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
         foreground='#666666'
     ).pack(anchor='w', pady=(2, 0))
     
+    # ========== CONTRATOS INCLUÍDOS ==========
+    contratos_frame = ttk.LabelFrame(parent_frame, text="📑 Contratos", padding=10)
+    contratos_frame.pack(fill='x', pady=(0, 15))
+
+    # Padrão desmarcado = relatório completo (comportamento original)
+    var_escolher_contratos = tk.BooleanVar(value=False)
+    ttk.Checkbutton(
+        contratos_frame,
+        text="Escolher contratos antes de gerar",
+        variable=var_escolher_contratos
+    ).pack(anchor='w')
+    ttk.Label(
+        contratos_frame,
+        text="Ao gerar, abre a lista dos contratos do relatório (todos marcados)\n"
+             "para desmarcar os que não devem sair no PDF.",
+        font=('Arial', 8),
+        foreground='#666666',
+        justify='left'
+    ).pack(anchor='w', pady=(3, 0))
+
     # ========== SEPARADOR ==========
     ttk.Separator(parent_frame, orient='horizontal').pack(fill='x', pady=15)
     
@@ -522,9 +710,30 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
             if RelatorioQuinzenalPDF is None:
                 raise ImportError("Módulo gerar_relatorio_quinzenal_pdf não encontrado")
 
+            _lembrar_cliente(cliente)
+
+            # === SELEÇÃO MANUAL DE CONTRATOS (opcional) ===
+            contratos_excluidos = None
+            if var_escolher_contratos.get():
+                gerador_lista = RelatorioQuinzenalPDF(arquivo_cliente, arquivo_clientes_var.get())
+                contratos = gerador_lista.listar_contratos(data_ref)
+                if not contratos:
+                    messagebox.showinfo(
+                        "Aviso",
+                        f"Nenhuma medição foi encontrada na quinzena especificada.\n\n"
+                        f"Cliente: {cliente}\n"
+                        f"Data de referência: {data_ref.strftime('%d/%m/%Y')}"
+                    , parent=parent_frame.winfo_toplevel())
+                    return
+                contratos_excluidos = escolher_contratos_dialog(
+                    parent_frame.winfo_toplevel(), contratos, cliente)
+                if contratos_excluidos is None:
+                    return  # usuário cancelou
+
             # Sugerir nome do arquivo e pedir local de salvamento
             nome_cliente_arquivo = cliente.replace(' ', '_').upper()
-            nome_sugerido = f"REL_MEDICOES_{nome_cliente_arquivo}_{data_ref.strftime('%d-%m-%Y')}.pdf"
+            sufixo = '_PARCIAL' if contratos_excluidos else ''
+            nome_sugerido = f"REL_MEDICOES_{nome_cliente_arquivo}_{data_ref.strftime('%d-%m-%Y')}{sufixo}.pdf"
 
             arquivo_saida = filedialog.asksaveasfilename(
                 title="Salvar Relatório PDF",
@@ -570,7 +779,8 @@ def configurar_relatorio_quinzenal(parent_frame, sistema_relatorios):
             progress.update()
 
             try:
-                resultado = gerador.gerar_pdf(data_ref, arquivo_saida)
+                resultado = gerador.gerar_pdf(data_ref, arquivo_saida,
+                                              contratos_excluidos=contratos_excluidos)
             finally:
                 # Garante que a janela de progresso feche mesmo se gerar_pdf
                 # levantar uma exceção — antes, um erro aqui deixava a janela
