@@ -181,7 +181,7 @@ def show_version_dialog(parent):
     # Copyright
     ttk.Label(
         main_frame, 
-        text="© 2025 Todos os direitos reservados.", 
+        text="© 2026 Todos os direitos reservados.", 
         font=('Helvetica', 8)
     ).pack(pady=(10, 0))
     
