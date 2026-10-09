@@ -12,7 +12,9 @@ Fluxo:
 """
 
 VERSAO = "2026-09-26.4"   # igual em todos os arquivos do módulo
+import html
 import os
+import re
 import threading
 import webbrowser
 import tkinter as tk
@@ -164,6 +166,75 @@ def dados_para_cadastro(l, base):
     }
 
 
+# ---------------------------------------------------------------- motivo da diferença
+# Palavras que, nas informações complementares da nota, costumam explicar por que o
+# valor lançado (boleto) é diferente do total da NF: crédito abatido, desconto etc.
+PALAVRAS_DIFERENCA = re.compile(r"CR[EÉ]DITO|ABAT|DESCONTO|DEVOLU|BONIFICA|ADIANTAMENTO|\bSINAL\b",
+                                re.IGNORECASE)
+# Textos legais que contêm essas palavras mas não explicam diferença de valor
+# (ex.: "permite o aproveitamento do crédito de ICMS" do Simples Nacional).
+TEXTO_FISCAL = re.compile(r"ICMS|SIMPLES NACIONAL|LC\s*123|\bPIS\b|COFINS|\bIPI\b", re.IGNORECASE)
+TAGS_INFO_ADICIONAL = re.compile(
+    r"<(?:\w+:)?(infCpl|xInfComp|OutrasInformacoes)>(.*?)</(?:\w+:)?\1>", re.DOTALL)
+
+
+def textos_adicionais_xml(arquivos):
+    """Informações complementares dos XML salvos do item (NF-e: infCpl;
+    NFS-e: xInfComp / OutrasInformacoes). Lista vazia se não houver XML."""
+    textos = []
+    for caminho in str(arquivos or "").split(" ; "):
+        caminho = caminho.strip()
+        if not caminho.lower().endswith(".xml") or not os.path.exists(caminho):
+            continue
+        try:
+            with open(caminho, "rb") as f:
+                bruto = f.read()
+        except OSError:
+            continue
+        try:
+            conteudo = bruto.decode("utf-8")
+        except UnicodeDecodeError:
+            conteudo = bruto.decode("latin-1")
+        textos += [html.unescape(m.group(2)) for m in TAGS_INFO_ADICIONAL.finditer(conteudo)]
+    return textos
+
+
+def motivo_diferenca(textos, limite=220):
+    """Trechos das informações complementares que falam de crédito, abatimento,
+    desconto etc. Devolve "" se nada for encontrado."""
+    trechos = []
+    for texto in textos:
+        for parte in re.split(r"//|;|\||\n", texto):
+            parte = " ".join(parte.split())
+            for m in PALAVRAS_DIFERENCA.finditer(parte):
+                if len(parte) <= 160:
+                    trecho = parte
+                else:   # texto corrido: pega só a vizinhança da palavra
+                    ini = max(0, m.start() - 50)
+                    trecho = ("..." if ini else "") + parte[ini:ini + 160].strip() + "..."
+                if not TEXTO_FISCAL.search(trecho) and trecho not in trechos:
+                    trechos.append(trecho)
+                if len(parte) <= 160:
+                    break
+    texto = " / ".join(trechos)
+    return texto if len(texto) <= limite else texto[:limite].rstrip() + "..."
+
+
+def acrescentar_motivo_diferenca(l):
+    """No alerta "NF ... já lançada com outro valor", acrescenta o que a nota diz
+    sobre crédito/desconto. Devolve True se alterou o item."""
+    alertas = str(l.get("ALERTAS") or "")
+    if "já lançada com outro valor" not in alertas or "Nota informa:" in alertas:
+        return False
+    motivo = motivo_diferenca(textos_adicionais_xml(l.get("ARQUIVOS")))
+    if not motivo:
+        return False
+    partes = [p.strip() for p in alertas.split(" | ")]
+    partes = [f"{p}. Nota informa: {motivo}" if "já lançada com outro valor" in p else p for p in partes]
+    l["ALERTAS"] = " | ".join(partes)
+    return True
+
+
 def sincronizar_status(caixa, base):
     """Marca IMPORTADO (marcador encontrado) ou JA_LANCADO (lançamento igual feito à mão)."""
     alterou = 0
@@ -188,6 +259,8 @@ def sincronizar_status(caixa, base):
         alertas = str(l.get("ALERTAS") or "")
         if dup and "POSSÍVEL DUPLICIDADE" not in alertas:
             l["ALERTAS"] = f"{dup} | {alertas}".strip(" |")
+            alterou += 1
+        if acrescentar_motivo_diferenca(l):
             alterou += 1
     return alterou
 
@@ -256,6 +329,7 @@ class JanelaImportacaoEmail:
         self.tree.configure(yscrollcommand=sb.set)
         self.tree.pack(side="left", fill="both", expand=True)
         self.tree.bind("<Double-1>", lambda e: self.abrir_documento())
+        self.tree.bind("<<TreeviewSelect>>", self._mostrar_alertas)
         sb.pack(side="right", fill="y")
 
         self.log = tk.Text(self.jan, height=6, font=("Consolas", 9))
@@ -295,6 +369,16 @@ class JanelaImportacaoEmail:
             self.escrever(f"Módulo email_fiscal versão {VERSAO} (todos os arquivos conferidos).")
 
     # ---------------------------------------------------------------------
+    def _mostrar_alertas(self, _evento=None):
+        """Com UM item selecionado, mostra os alertas completos no quadro de mensagens
+        (a coluna ALERTAS da lista corta textos longos)."""
+        sel = self.tree.selection()
+        if len(sel) != 1:
+            return
+        l = self.itens.get(sel[0])
+        if l and l.get("ALERTAS"):
+            self.escrever(f"Item {l['ID_SUGESTAO']}: {l['ALERTAS']}")
+
     def escrever(self, texto):
         self.log.insert("end", texto + "\n")
         self.log.see("end")
@@ -383,8 +467,8 @@ class JanelaImportacaoEmail:
             lista = "\n".join(f"• Item {l['ID_SUGESTAO']}: {str(l.get('ALERTAS')).split(' | ')[0]}"
                               for l in suspeitos[:8])
             if not _msg("yesno", "Possível duplicidade",
-                        f"Estes itens têm a mesma NF, valor e vencimento de um lançamento já "
-                        f"existente, com CNPJ de outra empresa:\n\n{lista}\n\n"
+                        f"Estes itens têm alerta de possível duplicidade com um lançamento "
+                        f"já existente:\n\n{lista}\n\n"
                         f"Importar mesmo assim?\n(Não = desmarque-os e marque IGNORADO na triagem)"):
                 return
 

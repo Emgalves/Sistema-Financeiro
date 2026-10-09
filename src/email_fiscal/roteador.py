@@ -177,13 +177,14 @@ class BaseDados:
            + mesmo valor + mesma NF (se houver) + mesmo vencimento (se houver)."""
         if not cliente:
             return False, ""
-        marcador = f"{cfg.PREFIXO_OBSERVACAO} #{id_sugestao}" if id_sugestao else None
+        marcador = f"{cfg.PREFIXO_OBSERVACAO} #{int(float(id_sugestao))}" if id_sugestao else None
+        padrao_marcador = re.compile(re.escape(marcador) + r"(?!\d)") if marcador else None
         k_doc = _chave_doc(doc)
-        nf_txt = str(nf or "").strip().lstrip("0")
+        nf_txt = _nf_texto(nf)
 
         for lin in self._lancamentos_cliente(cliente):
             obs = str(lin.get("OBSERVACAO") or "")
-            if marcador and marcador in obs:
+            if padrao_marcador and padrao_marcador.search(obs):
                 return True, f"marcador '{marcador}' encontrado (ID_LANCAMENTO {lin.get('ID_LANCAMENTO')})"
             if not k_doc or str(lin.get("STATUS") or "ATIVO").upper() != "ATIVO":
                 continue
@@ -207,7 +208,7 @@ class BaseDados:
     def possivel_duplicidade(self, cliente, doc=None, nf=None, valor=None, vencimento=None):
         """Mesma NF, mesmo valor e mesmo vencimento, mas lançada com o CNPJ de
         OUTRA empresa. Não descarta nada: só devolve o texto do alerta ("" se não houver)."""
-        nf_txt = str(nf or "").strip().lstrip("0")
+        nf_txt = _nf_texto(nf)
         k_doc = _chave_doc(doc)
         if not cliente or not nf_txt:
             return ""
@@ -263,7 +264,10 @@ def _nf_texto(v):
         return ""
     if isinstance(v, float) and v.is_integer():
         v = int(v)
-    return str(v).strip().lstrip("0")
+    s = str(v).strip()
+    if re.fullmatch(r"\d+\.0", s):   # resíduo do pandas gravado como texto
+        s = s[:-2]
+    return s.lstrip("0")
 
 
 def _para_float(v):
