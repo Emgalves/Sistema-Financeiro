@@ -312,11 +312,11 @@ class SistemaGestaoFinanceira:
 
         # Cards do sistema
         self.create_card(grid, "Entrada de Dados", 
-                        "Cadastro e gestão de dados", 
+                        "Cadastros e gestão de dados", 
                         self.abrir_entrada_dados, 0, 0)
         
         self.create_card(grid, "Taxas de Administração",
-                        "Gestão completa de taxas administrativas",
+                        "Gestão de taxas administrativas",
                         self.abrir_gestao_taxas, 0, 1)
         
         self.create_card(grid, "Comprovantes de Benefícios", 
@@ -328,7 +328,7 @@ class SistemaGestaoFinanceira:
                         self.abrir_relatorios, 1, 1)
                         
         self.create_card(grid, "Gestão de Empreiteiros",
-                        "Gerenciar contratos com empreiteros e por entregas",
+                        "Gerenciar contratos e medições com empreiteros e por entregas",
                         self.abrir_gestao_medicoes, 2, 0)
                         
         self.create_card(grid, "Configurações do Sistema",

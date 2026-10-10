@@ -11,7 +11,7 @@ VERSION_INFO = {
     "major": 1,
     "minor": 9,
     "patch": 0,
-    "release_date": "02/10/2026",
+    "release_date": "13/10/2026",
     "changes": [
         "Cadastro de clientes pessoa jurídica: campo CPF/CNPJ com validação e máscara automática (inclusive CNPJ alfanumérico) e novo campo Domicílio (residência PF / sede PJ)",
         "Ao incluir o CPF/CNPJ de um cliente em Editar Cliente, o sistema oferece o cadastro do cliente como fornecedor",
@@ -21,7 +21,8 @@ VERSION_INFO = {
         "Correção do botão Novo Lançamento da Agenda, que não gravava o lançamento",
         "Correção da janela de índices da Correção Monetária, que ficava oculta após cada inclusão",
         "Editar Fornecedor: o Tipo de Chave PIX passa a corresponder à chave cadastrada",
-        "Limpeza geral do código: remoção de cerca de 41 mil linhas sem uso, incluindo os módulos descontinuados de despesas rateadas e de lançamento automático de taxas fixas"
+        "Limpeza geral do código: remoção de cerca de 41 mil linhas sem uso, incluindo os módulos descontinuados de despesas rateadas e de lançamento automático de taxas fixas",
+        "Módulo email_fiscal — importação de NF-e, NFS-e e boletos do Gmail para o sistema"
     ]
 }
 
