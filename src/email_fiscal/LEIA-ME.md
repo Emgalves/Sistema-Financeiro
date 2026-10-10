@@ -117,7 +117,9 @@ Criar Tarefa Básica → Diariamente → Ação: Iniciar programa → selecione 
 2. A janela lista as sugestões **PENDENTES do cliente selecionado**. Linhas amarelas têm alerta: leia a coluna ALERTAS.
 3. Itens sem cliente definido: abra a planilha de triagem, escolha o CLIENTE na lista suspensa, salve, feche e clique **🔄 Recarregar** (ou marque "Mostrar também itens SEM cliente definido" com o cliente certo selecionado).
 4. Selecione os itens → **✅ Importar selecionados** → escolha a Etapa da Obra → confira no visualizador → **Enviar**.
-5. Na próxima abertura, os itens salvos viram **IMPORTADO** sozinhos (o sistema encontra `IMPORTADO EMAIL #<id>` na OBSERVAÇÃO).
+5. Na próxima abertura, os itens salvos viram **IMPORTADO** sozinhos (o sistema encontra `IMPORTADO EMAIL #<id>` na OBSERVAÇÃO). A busca é pelo número exato: `#5` não é confundido com `#50` ou `#512`.
+
+> **Feche a planilha de triagem antes de abrir a janela.** Ao abrir ou recarregar, a janela grava na `Documentos_Recebidos.xlsx` as correções automáticas descritas abaixo. Se a planilha estiver aberta no Excel, a gravação falha, as correções valem só para aquela sessão e o aviso "Não foi possível salvar..." aparece nas primeiras linhas do quadro de mensagens (role para cima para vê-lo). Para consultar a planilha, use **📊 Abrir planilha**, feche o Excel e clique **🔄 Recarregar**.
 
 ### Botões da janela "📧 E-mail"
 
@@ -130,6 +132,8 @@ Criar Tarefa Básica → Diariamente → Ação: Iniciar programa → selecione 
 | 🏢 Cadastrar fornecedor | Abre a tela "Novo Fornecedor" do sistema já preenchida (XML + filial já cadastrada); você completa e salva |
 | 📥 Buscar e-mails agora / 📊 Abrir planilha / 🔄 Recarregar | Como antes |
 
+A coluna ALERTAS da lista corta textos longos. Clicando em **um único item**, os alertas completos dele aparecem no quadro de mensagens, abaixo da lista. Com vários itens selecionados (como ao abrir a janela, que seleciona todos), nada é escrito.
+
 Ao abrir/recarregar a janela, boleto e nota do mesmo fornecedor recebidos em e-mails diferentes (mesmo CNPJ, valor, vencimento e cliente) são **unidos** numa só sugestão; a do boleto fica IGNORADO com "UNIDO ao ID n". Também as sugestões repetidas (mesmo boleto, mesma parcela da mesma nota ou mesmo arquivo) viram **IGNORADO** com o alerta "REPETIDO do ID n".
 
 ### Correções automáticas ao abrir a janela
@@ -137,10 +141,13 @@ Ao abrir/recarregar a janela, boleto e nota do mesmo fornecedor recebidos em e-m
 - **Releitura:** sugestões PENDENTES de boleto sem CNPJ, ou com vencimento divergente, são relidas do PDF salvo com as regras atuais (uma vez; o alerta passa a mostrar "Relido: ..."). Não é preciso coletar de novo depois de atualizar o módulo.
 - **Vencimento do emissor errado:** se o vencimento do código de barras não está impresso no boleto e há uma data impressa que difere dele em múltiplo exato de 1000 dias (erro conhecido de fator de vencimento), vale a data impressa, com alerta.
 - **Mesma NF do mesmo emitente:** nota sem vencimento (NF só em PDF, NFS-e, XML sem duplicatas) com NF e CNPJ iguais a um lançamento existente vira JA_LANCADO se o valor for igual ou desconhecido; com valor diferente, fica PENDENTE com "POSSÍVEL DUPLICIDADE: NF ... já lançada com outro valor".
+- **Motivo da diferença de valor:** quando o alerta é "já lançada com outro valor", a janela lê as informações complementares do XML salvo da nota (NF-e: `infCpl`; NFS-e: `xInfComp` ou `OutrasInformacoes`). Se houver trechos com as palavras crédito, abater/abatimento, desconto, devolução, bonificação, adiantamento ou sinal, eles são acrescentados ao alerta depois de "Nota informa:". Exemplo real: "Nota informa: ABATER CREDITO DE R$231,63/ DIFERENCA DE R$1.630,12 BRWW BOLETO". Textos fiscais padrão (crédito de ICMS, Simples Nacional, PIS, COFINS, IPI) são descartados. Cada item é complementado uma única vez. Não funciona para nota recebida só em PDF. Se um fornecedor explicar a diferença com outras palavras, inclua-as na lista `PALAVRAS_DIFERENCA`, no `importar_para_sistema.py`.
 
 ### Versão
 
-Todos os arquivos têm a mesma `VERSAO`. Ao abrir a janela, a primeira mensagem mostra a versão ou avisa quais arquivos estão desatualizados.
+Todos os arquivos têm a mesma `VERSAO`. Ao abrir a janela, a primeira mensagem mostra a versão ou avisa quais arquivos estão desatualizados. A conferência compara só a linha `VERSAO`: edições que mantêm o número (como as de 09/10/2026, no histórico ao final) não são detectadas por ela.
+
+**Depois de substituir ou editar qualquer arquivo do módulo, feche o sistema inteiro e abra de novo antes de testar.** O Python carrega cada arquivo uma única vez por execução; fechar e reabrir só a janela "📧 E-mail" continua usando a versão antiga que está na memória.
 
 ### E-mails encaminhados
 
@@ -160,7 +167,24 @@ Se o CNPJ não está na base mas outra filial da mesma empresa está (mesmos 8 p
 | IGNORADO | Você decidiu não importar (defina manualmente) |
 | CANCELADA | Chegou por e-mail o evento de cancelamento da NF-e |
 
-Alerta **POSSÍVEL DUPLICIDADE com ID_LANCAMENTO n**: já existe lançamento com a mesma NF, valor e vencimento, mas no CNPJ de OUTRA empresa. O item continua PENDENTE; ao importar, o sistema pede confirmação. Se for mesmo duplicado, marque IGNORADO na triagem (e, se for o caso, corrija o CNPJ do lançamento antigo).
+Para STATUS, IGNORADO e JA_LANCADO podem ser escolhidos à mão na lista suspensa. Quando a conta já existe com os mesmos dados, prefira JA_LANCADO; use IGNORADO quando você decidiu não importar por outro motivo (por exemplo, o lançamento existente já cobre a nota com outro valor).
+
+Como a comparação com as planilhas dos clientes trata os campos:
+
+- **CNPJ/CPF:** só os dígitos, com zeros à esquerda recompostos. Filiais da mesma empresa são reconhecidas pelos 8 primeiros dígitos.
+- **NF:** zeros à esquerda e o resíduo `.0` são ignorados (`000041957`, `41957` e `41957.0` são a mesma NF). A NF escrita na REFERÊNCIA (`NF 41957`) também é reconhecida.
+- **Valor:** arredondado a 2 casas, com tolerância de R$ 0,01.
+- **Vencimento:** data do Excel, número serial ou texto `dd/mm/aaaa`.
+- Lançamentos com STATUS diferente de ATIVO não entram na comparação.
+
+### Alertas de POSSÍVEL DUPLICIDADE
+
+Nos dois tipos, o item continua PENDENTE e, ao importar, o sistema pede confirmação.
+
+| Alerta | Situação | O que fazer |
+|---|---|---|
+| **POSSÍVEL DUPLICIDADE com ID_LANCAMENTO n** (... confira o CNPJ) | Já existe lançamento com a mesma NF, valor e vencimento, mas no CNPJ de OUTRA empresa (8 primeiros dígitos diferentes) | Confira o CNPJ do emitente na nota. Se for a mesma conta, corrija o CNPJ do lançamento antigo, na planilha do cliente, para o CNPJ da nota: na próxima abertura da janela o item vira JA_LANCADO sozinho. Só cadastrar a filial **não** resolve, porque o lançamento antigo continua com o CNPJ errado. Se preferir não corrigir, marque IGNORADO. |
+| **POSSÍVEL DUPLICIDADE: NF ... já lançada com outro valor** | Nota sem vencimento cuja NF já foi lançada pela mesma empresa com valor diferente | Leia o "Nota informa:" (se houver) e confira a nota. Se o lançamento existente já cobre a nota (crédito abatido, desconto), marque IGNORADO. Se falta uma parcela, preencha VALOR e DT_VENCTO da parcela restante e importe. |
 
 ### Significado de IDENTIFICACAO
 
@@ -191,7 +215,7 @@ Mesmo processamento, mesma triagem, mesma proteção contra duplicidade.
 
 ## Limitações conhecidas
 
-- PDF escaneado (imagem) não tem texto → entra como `MANUAL` para você preencher.
+- PDF escaneado (imagem) não tem texto → entra como `MANUAL` para você preencher. Abra o documento (📄), preencha na triagem `CNPJ_CPF`, `NF`, `VALOR` e `DT_VENCTO`, salve, feche o Excel e clique **🔄 Recarregar**. Se a conta já estiver lançada, o item vira JA_LANCADO sozinho; se não, preencha também `NOME` (e `TP_DESP`, se a regra de datas não se aplicar) e importe.
 - NFS-e só em PDF (DANFSe do padrão nacional): CNPJ do prestador e número saem da chave de acesso de 50 dígitos; valor e vencimento, só se houver boleto junto.
 - Boleto sem CNPJ impresso: o fornecedor é deduzido pela razão social cadastrada; se a empresa tiver mais de um CNPJ na base, você escolhe com "Informar CNPJ".
 - Valor e vencimento vêm do código de barras. Se o valor do código não estiver impresso no boleto, aparece o alerta "ATENÇÃO: o código de barras vale R$ ..." — confirme com o fornecedor antes de pagar.
@@ -199,3 +223,16 @@ Mesmo processamento, mesma triagem, mesma proteção contra duplicidade.
 - DANFE só em PDF: número da NF e CNPJ do emitente saem da chave de acesso; valor/vencimento, só se houver boleto junto. Peça o XML ao fornecedor.
 - Guia de arrecadação/concessionária (linha começando com 8): o código não contém vencimento.
 - Mantenha `Documentos_Recebidos.xlsx` **fechada** enquanto o coletor roda. Se estiver aberta, nada é gravado e os e-mails são lidos de novo na próxima execução (não há perda nem duplicidade).
+
+---
+
+## Histórico de correções
+
+### 09/10/2026 (VERSAO mantida em `2026-09-26.4`)
+
+- `roteador.py` — **marcador de importação exato.** Antes, a procura por `IMPORTADO EMAIL #5` também encontrava `#50`, `#51`, `#512`: um item pendente podia ser marcado IMPORTADO sem ter sido gravado na planilha do cliente. Corrigido antes da entrada em produção (nenhum item chegou a ser afetado).
+- `roteador.py` — **NF com `.0` em texto.** A NF do e-mail e a da planilha passam pela mesma função (`_nf_texto`), que também desconsidera o resíduo `.0` gravado como texto.
+- `importar_para_sistema.py` — **motivo da diferença de valor** lido do XML e acrescentado ao alerta "já lançada com outro valor" ("Nota informa: ...").
+- `importar_para_sistema.py` — **alerta completo no quadro de mensagens** ao clicar em um único item.
+- `importar_para_sistema.py` — **texto da confirmação de importação** corrigido: dizia sempre "mesma NF, valor e vencimento ... com CNPJ de outra empresa", o que não valia para o alerta de "outro valor".
+- Fora do módulo — `limpar_nf_planilhas.py` (limpeza única, com backup em `BackUp\nf_limpeza_<data_hora>`) removeu o `.0` de 5 NFs gravadas como texto pela tela "Editar" do gerenciador de lançamentos, em 3 planilhas de clientes.
