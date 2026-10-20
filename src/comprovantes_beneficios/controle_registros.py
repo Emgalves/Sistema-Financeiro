@@ -29,6 +29,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 import openpyxl
+from src.salvamento_seguro import salvar_planilha_segura
 
 NOME_ABA = 'Controle_Comprovantes'
 
@@ -204,7 +205,7 @@ def registrar_lote(
         gravados.append(novo)
 
     if gravados:
-        wb.save(caminho_planilha_cliente)
+        salvar_planilha_segura(wb, caminho_planilha_cliente)
     wb.close()
 
     return gravados, pulados

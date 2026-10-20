@@ -63,6 +63,7 @@ from src.config.utils import (
     aplicar_formatacao_celula,
     formatar_moeda_br
 )
+from src.salvamento_seguro import salvar_planilha_segura
 
 class GestaoMedicoes:
     """Classe principal para gestão de medições"""
@@ -2218,7 +2219,7 @@ class GestaoMedicoes:
                 for col in range(1, len(headers) + 1):
                     ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 15
 
-                wb.save(self.arquivo_cliente)
+                salvar_planilha_segura(wb, self.arquivo_cliente)
                 wb.close()
                 return True
 
@@ -2234,7 +2235,7 @@ class GestaoMedicoes:
                 cell.font = openpyxl.styles.Font(bold=True)
                 cell.alignment = openpyxl.styles.Alignment(horizontal='center')
                 ws.column_dimensions['L'].width = 15
-                wb.save(self.arquivo_cliente)
+                salvar_planilha_segura(wb, self.arquivo_cliente)
                 logger.info(f"✅ Coluna Data_Rel adicionada à aba Medicoes de '{self.cliente_atual}'")
 
             # ✅ MIGRAÇÃO: mesma lógica para a coluna 13 (Agrupar_Agenda). Linhas
@@ -2248,7 +2249,7 @@ class GestaoMedicoes:
                 cell.font = openpyxl.styles.Font(bold=True)
                 cell.alignment = openpyxl.styles.Alignment(horizontal='center')
                 ws.column_dimensions['M'].width = 15
-                wb.save(self.arquivo_cliente)
+                salvar_planilha_segura(wb, self.arquivo_cliente)
                 logger.info(f"✅ Coluna Agrupar_Agenda adicionada à aba Medicoes de '{self.cliente_atual}'")
 
             wb.close()
@@ -2337,7 +2338,7 @@ class GestaoMedicoes:
                     cell.alignment = openpyxl.styles.Alignment(horizontal='center')
                 for col in range(1, len(headers) + 1):
                     ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 15
-                wb.save(self.arquivo_cliente)
+                salvar_planilha_segura(wb, self.arquivo_cliente)
                 return
     
             ws = wb["Contratos_Medicao"]
@@ -2391,7 +2392,7 @@ class GestaoMedicoes:
                         houve_correcao = True
     
                 if houve_correcao:
-                    wb.save(self.arquivo_cliente)
+                    salvar_planilha_segura(wb, self.arquivo_cliente)
                     ws = wb['Contratos_Medicao']
             # ── FIM DO RECÁLCULO SILENCIOSO ───────────────────────────────────────
     
@@ -2896,7 +2897,7 @@ class GestaoMedicoes:
             ws.cell(row=proxima_linha, column=11, value=observacoes.upper())   # Observacao
             
             # Salvar arquivo
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
             
             messagebox.showinfo("Sucesso", "Contrato cadastrado com sucesso!",
@@ -3170,7 +3171,7 @@ class GestaoMedicoes:
             ws.delete_rows(linha_excluir, 1)
             
             # Salvar arquivo
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
             
             messagebox.showinfo(
@@ -3296,7 +3297,7 @@ class GestaoMedicoes:
             ws.cell(row=row_index, column=11, value=observacoes.upper())
             
             # Salvar arquivo
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
             
             messagebox.showinfo("Sucesso", "Contrato atualizado com sucesso!", parent=self.root)
@@ -4266,7 +4267,7 @@ class GestaoMedicoes:
             novo_valor = "NAO" if agrupar_atual else "SIM"
 
             ws.cell(row=linha_planilha, column=13, value=novo_valor)
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
 
             logger.info(
@@ -4600,7 +4601,7 @@ class GestaoMedicoes:
                     break
 
             # Salvar arquivo
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
 
             messagebox.showinfo("Sucesso", "Medição cadastrada com sucesso!", parent=self.root)
@@ -4938,7 +4939,7 @@ class GestaoMedicoes:
             ws_medicoes.cell(row=medicao_row, column=13, value="SIM" if agrupar_agenda else "NAO")
             
             # Salvar arquivo
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
             
             messagebox.showinfo("Sucesso", "Medição atualizada com sucesso!", parent=self.root)
@@ -5199,7 +5200,7 @@ class GestaoMedicoes:
                 ws_audit.cell(row=proxima_linha, column=7, value=detalhes)
                 
                 # Salvar tudo
-                wb.save(self.arquivo_cliente)
+                salvar_planilha_segura(wb, self.arquivo_cliente)
                 wb.close()
                 
                 # Mensagem de sucesso
@@ -5364,7 +5365,7 @@ class GestaoMedicoes:
             ws.cell(row=linha_medicao, column=10, value=hoje)      # Data_Lancamento
                     
             # Salvar alterações
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
             
             # Confirmar ao usuário
@@ -5509,7 +5510,7 @@ class GestaoMedicoes:
             
             ws.cell(row=proxima_linha, column=6, value=observacao)
             
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
             
             logger.info(f"Rastreamento adicionado: Contrato {id_contrato}, Medição {id_medicao}, Linha {linha_lancamento}")
@@ -6386,7 +6387,7 @@ class GestaoMedicoes:
                     break
             
             # Salvar alterações
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
             
             # Adicionar rastreamento da vinculação
@@ -6658,7 +6659,7 @@ class GestaoMedicoes:
 
             try:
                 # Tentar salvar o arquivo
-                workbook.save(arquivo_cliente)
+                salvar_planilha_segura(workbook, arquivo_cliente)
                 messagebox.showinfo("Sucesso", "Dados salvos com sucesso na planilha do cliente!", parent=self.root)
                     
                 # Limpar após salvar

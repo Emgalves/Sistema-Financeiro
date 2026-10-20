@@ -67,6 +67,7 @@ except ImportError as e:
         root.destroy()
         return result
 
+from src.salvamento_seguro import salvar_planilha_segura
 
 class ImportadorMedicoes:
     """
@@ -622,7 +623,7 @@ class ImportadorMedicoes:
                     f"{fornecedor} | R$ {valor_float:.2f}"
                 )
 
-            wb_cliente.save(arquivo_cliente)
+            salvar_planilha_segura(wb_cliente, arquivo_cliente)
             wb_cliente.close()
 
         except Exception as e:
@@ -1030,7 +1031,7 @@ class ImportadorMedicoes:
                 proxima_linha += 1
             
             # Salvar arquivo
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
             
             logger.info(f"{len(medicoes_preparadas)} medições salvas no arquivo {arquivo_cliente}")
@@ -1170,7 +1171,7 @@ class ImportadorMedicoes:
                     logger.info(log_msg)
             
             # Salvar arquivo
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
             
             logger.info("=" * 60)
@@ -1511,7 +1512,7 @@ class ImportadorMedicoes:
                     row[6].value = aditivos[id_cont]  # coluna G = Valor_Global
                     row[6].number_format = '#,##0.00'
                     logger.info(f"Aditivo aplicado: Contrato {id_cont} → Valor Global R$ {aditivos[id_cont]:,.2f}")
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
         except Exception as e:
             logger.error(f"Erro ao aplicar aditivos: {e}")

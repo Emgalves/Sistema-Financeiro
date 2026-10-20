@@ -10,6 +10,7 @@ from pathlib import Path
 
 # No início de controle_pagamentos.py
 from src.correcao_monetaria import GerenciadorCorrecaoMonetaria
+from src.salvamento_seguro import salvar_planilha_segura
 from src.config.utils import (
     PASTA_CLIENTES,
     validar_data,
@@ -442,7 +443,7 @@ class ControlePagamentos:
                 lancamentos_criados += 1
             
             # Salvar arquivo
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
             
             # Mensagem de sucesso detalhada
@@ -643,7 +644,7 @@ class ControlePagamentos:
                         break
             
             # Salvar
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
             
             # Sucesso

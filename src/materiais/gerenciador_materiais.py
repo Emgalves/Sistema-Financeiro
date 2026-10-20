@@ -16,6 +16,7 @@ import openpyxl
 
 from src.config.config import BASE_PATH, PASTA_CLIENTES
 from configuracoes_sistema import GerenciadorConfiguracoes
+from src.salvamento_seguro import salvar_planilha_segura
 
 class GerenciadorMateriais:
     """Classe para gerenciar materiais por cliente usando abas nas planilhas individuais"""
@@ -118,7 +119,7 @@ class GerenciadorMateriais:
                 ws.column_dimensions['J'].width = 30  # Especificações
                 ws.column_dimensions['O'].width = 25  # Nome Fornecedor
                 
-                wb.save(arquivo_cliente)
+                salvar_planilha_segura(wb, arquivo_cliente)
                 print(f"✅ Aba Materiais criada para {cliente}")
             
             wb.close()
@@ -221,7 +222,7 @@ class GerenciadorMateriais:
                         except:
                             pass
             
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
             
             print(f"✅ Material {novo_id} salvo para cliente {cliente}: {dados_material.get('Descricao_Completa', '')[:50]}")
@@ -285,7 +286,7 @@ class GerenciadorMateriais:
                 col_idx = headers.index('Data_Ultima_Atualizacao') + 1
                 ws.cell(row=material_row, column=col_idx, value=datetime.now().strftime('%d/%m/%Y'))
             
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
             
             print(f"✅ Material {material_id} atualizado para cliente {cliente}")

@@ -21,6 +21,7 @@ except ImportError:
     import logging
     logger = logging.getLogger("correcao_monetaria")
 
+from src.salvamento_seguro import salvar_planilha_segura
 class GerenciadorCorrecaoMonetaria:
     def __init__(self, sistema_principal=None):
         self.sistema = sistema_principal
@@ -335,7 +336,7 @@ class GerenciadorCorrecaoMonetaria:
         
         # Salvar alterações se houve processamento
         if contratos_processados > 0:
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
         
         wb.close()
         

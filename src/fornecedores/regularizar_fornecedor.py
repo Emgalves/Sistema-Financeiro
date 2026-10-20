@@ -100,6 +100,7 @@ from openpyxl import load_workbook
 # Receita Federal saberia); só garante que os dígitos são matematicamente
 # possíveis, pegando erros de digitação como "trocar só o último dígito".
 from src.config.utils import validar_documento
+from src.salvamento_seguro import salvar_planilha_segura
 
 # Aba de controle de CPFs criados (GerenciadorCPFsCriados) dentro do próprio
 # Base_Fornecedores.xlsx
@@ -509,7 +510,7 @@ def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
     if not dry_run:
         log.log(f"Salvando base mestre: {base_path}")
         try:
-            wb.save(base_path)
+            salvar_planilha_segura(wb, base_path)
             log.log("Base mestre salva com sucesso.")
         except PermissionError:
             log.log("PermissionError ao salvar base mestre.")
@@ -550,7 +551,7 @@ def regularizar_fornecedor(base_path, pasta_clientes, doc_antigo,
             try:
                 wb2 = load_workbook(base_path, data_only=False)
                 if _liberar_cpf_criado(wb2, doc_antigo_d):
-                    wb2.save(base_path)
+                    salvar_planilha_segura(wb2, base_path)
                     resultado.alteracoes.append(Alteracao(
                         os.path.basename(base_path), CPF_CRIADO_SHEET, "-", "STATUS",
                         "USADO", rotulo))
@@ -695,7 +696,7 @@ def _propagar_documento_em_clientes(arquivos_cliente, doc_antigo_d, doc_novo_d,
         if alterou_algo and not dry_run:
             log.log(f"[{indice}/{total}] Salvando: {nome_arquivo}")
             try:
-                wbc.save(caminho)
+                salvar_planilha_segura(wbc, caminho)
                 log.log(f"[{indice}/{total}] Salvo com sucesso: {nome_arquivo}")
             except PermissionError:
                 log.log(f"[{indice}/{total}] PermissionError ao salvar: {nome_arquivo}")
@@ -1081,7 +1082,7 @@ def fundir_fornecedores(base_path, pasta_clientes, doc_vencedor, docs_perdedores
     if not dry_run:
         log.log(f"Salvando base mestre: {base_path}")
         try:
-            wb.save(base_path)
+            salvar_planilha_segura(wb, base_path)
             log.log("Base mestre salva com sucesso.")
         except PermissionError:
             log.log("PermissionError ao salvar base mestre.")

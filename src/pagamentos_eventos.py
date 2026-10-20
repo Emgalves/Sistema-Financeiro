@@ -53,6 +53,7 @@ except ImportError as e:
         print(f"Erro ao importar configurações (caminho alternativo): {str(e2)}")
         raise
 
+from src.salvamento_seguro import salvar_planilha_segura
 class GestaoEventos:
     def __init__(self, parent=None):
         self.parent = parent
@@ -1301,7 +1302,7 @@ class GestaoEventos:
                 ws.cell(row=proxima_linha, column=35, value="pendente")    # Status
             
             print("Salvando planilha...")
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             print("Planilha salva com sucesso!")
             
             # Atualizar lista interna de eventos
@@ -1885,7 +1886,7 @@ class GestaoEventos:
             if not evento_encontrado:
                 raise Exception(f"Evento {evento_id} não encontrado para o contrato {num_contrato}")
                 
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             
             # Se o evento foi concluído, gerar pagamento
             if status == 'concluido':
@@ -2011,7 +2012,7 @@ class GestaoEventos:
                 ws.cell(row=proxima_linha, column=44, value='pendente')            # Status
                 ws.cell(row=proxima_linha, column=45, value=f"Pagamento referente ao evento: {descricao}")  # Observação
             
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             
         except Exception as e:
             raise Exception(f"Erro ao gerar pagamentos: {str(e)}")
@@ -2054,7 +2055,7 @@ class GestaoEventos:
             # Remover linha
             ws.delete_rows(linha_evento)
             
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             
             messagebox.showinfo("Sucesso", "Evento removido com sucesso!")
             
@@ -2251,7 +2252,7 @@ class GestaoEventos:
             
             # Salvar alterações
             print("Salvando alterações na planilha")
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             
             mensagem = "Pagamento registrado com sucesso!"
             if atualizar_dados:

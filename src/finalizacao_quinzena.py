@@ -24,6 +24,7 @@ from src.config.utils import (
     PASTA_CLIENTES,
     buscar_dados_bancarios_fornecedor
 )
+from src.salvamento_seguro import salvar_planilha_segura
 
 
 class FinalizacaoQuinzena:
@@ -554,15 +555,25 @@ class FinalizacaoQuinzena:
 
                 # Confirmar com usuário
                 if messagebox.askyesno("Confirmar Lançamento", mensagem):
-                    # EXCLUIR taxa existente se houver
-                    if resultado['taxa_existente']:
-                        self._excluir_taxa_existente(cliente, data_ref)
-                        print(f"  🗑️  Taxa anterior excluída")
-                    
-                    # CRIAR nova taxa
-                    self._criar_lancamento_taxa(
-                        cliente, data_ref, resultado['valor_final'], resultado['compensacao']
-                    )
+                    # Exclusão da taxa antiga e criação da nova numa ÚNICA gravação:
+                    # ou as duas alterações vão para o arquivo, ou nenhuma vai.
+                    arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
+                    wb = load_workbook(arquivo_cliente)
+                    try:
+                        # EXCLUIR taxa existente se houver
+                        if resultado['taxa_existente']:
+                            self._excluir_taxa_existente(cliente, data_ref, wb=wb)
+                            print(f"  🗑️  Taxa anterior marcada para exclusão")
+                        
+                        # CRIAR nova taxa
+                        self._criar_lancamento_taxa(
+                            cliente, data_ref, resultado['valor_final'], resultado['compensacao'],
+                            wb=wb
+                        )
+                        
+                        salvar_planilha_segura(wb, arquivo_cliente)
+                    finally:
+                        wb.close()
                     
                     processados.append(f"✅ {cliente} - R$ {resultado['valor_final']:.2f}")
                     print(f"✅ {cliente} processado com sucesso!")
@@ -594,11 +605,17 @@ class FinalizacaoQuinzena:
         # Mostrar resultado
         self._mostrar_resultado_processamento(processados, erros)
 
-    def _excluir_taxa_existente(self, cliente, data_ref):
-        """Exclui taxa existente marcando como EXCLUIDO"""
+    def _excluir_taxa_existente(self, cliente, data_ref, wb=None):
+        """Exclui taxa existente marcando como EXCLUIDO.
+
+        wb informado: altera esse workbook e NÃO salva (quem chamou salva).
+        wb ausente: abre, altera e salva o arquivo do cliente sozinho.
+        """
+        wb_externo = wb is not None
         try:
             arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            wb = load_workbook(arquivo_cliente)
+            if not wb_externo:
+                wb = load_workbook(arquivo_cliente)
             ws = wb["Dados"]
             
             print(f"\n  🔍 DEBUG EXCLUSÃO:")
@@ -642,11 +659,12 @@ class FinalizacaoQuinzena:
             print(f"     Total taxas encontradas: {taxas_encontradas}")
             print(f"     Total taxas excluídas: {taxas_excluidas}\n")
             
-            wb.save(arquivo_cliente)
-            wb.close()
+            if not wb_externo:
+                salvar_planilha_segura(wb, arquivo_cliente)
+                wb.close()
             
         except Exception as e:
-            if 'wb' in locals():
+            if not wb_externo and wb is not None:
                 wb.close()
             raise Exception(f"Erro ao excluir taxa: {str(e)}")
 
@@ -719,11 +737,20 @@ class FinalizacaoQuinzena:
                 wb.close()
             return 0
 
-    def _criar_lancamento_taxa(self, cliente, data_quinzena, valor_taxa, compensacao):
-        """Cria lançamento da taxa na planilha do cliente"""
+    def _criar_lancamento_taxa(self, cliente, data_quinzena, valor_taxa, compensacao, wb=None):
+        """Cria lançamento da taxa na planilha do cliente.
+
+        wb informado: altera esse workbook e NÃO salva (quem chamou salva).
+        wb ausente: abre, altera e salva o arquivo do cliente sozinho.
+        """
+        wb_externo = wb is not None
         try:
+            # Evita resíduos de ponto flutuante (ex.: 8351.460000000014)
+            valor_taxa = round(float(valor_taxa), 2)
+            
             arquivo_cliente = PASTA_CLIENTES / f"{cliente}.xlsx"
-            wb = load_workbook(arquivo_cliente)
+            if not wb_externo:
+                wb = load_workbook(arquivo_cliente)
             ws = wb["Dados"]
             
             # Obter próximo ID
@@ -778,11 +805,12 @@ class FinalizacaoQuinzena:
             ws.cell(row=proxima_linha, column=9).number_format = '#,##0.00'
             ws.cell(row=proxima_linha, column=10).number_format = 'DD/MM/YYYY'
             
-            wb.save(arquivo_cliente)
-            wb.close()
+            if not wb_externo:
+                salvar_planilha_segura(wb, arquivo_cliente)
+                wb.close()
             
         except Exception as e:
-            if 'wb' in locals():
+            if not wb_externo and wb is not None:
                 wb.close()
             raise Exception(f"Erro ao criar lançamento: {str(e)}")
 

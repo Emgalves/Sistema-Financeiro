@@ -174,6 +174,7 @@ from src.importador_medicoes import ImportadorMedicoes
 
 # from src.nfe.sistema_nfe_unificado import substituir_sistemas_nfe_por_unificado
 from src.materiais.gerenciador_materiais import inicializar_sistema_materiais_completo
+from src.salvamento_seguro import salvar_planilha_segura
 
 # Definir funções de compatibilidade, caso a importação das configurações falhe
 def get_categorias_fornecedor():
@@ -3306,7 +3307,7 @@ class SistemaEntradaDados:
                     ws.cell(row=1, column=27, value='DOMICILIO')
                 ws.cell(row=proxima_linha, column=27, value=domicilio)
  
-                wb.save(ARQUIVO_CLIENTES)
+                salvar_planilha_segura(wb, ARQUIVO_CLIENTES)
  
                 if self.criar_arquivo_cliente(nome, endereco, eh_ficticio=eh_ficticio, tem_caixa=tem_caixa):
                     # Captura os valores ANTES de destruir a janela —
@@ -4095,7 +4096,7 @@ class SistemaEntradaDados:
                         ws.cell(row=1, column=27, value='DOMICILIO')
                     ws.cell(row=proxima_linha, column=27, value=domicilio)
  
-                    wb.save(ARQUIVO_CLIENTES)
+                    salvar_planilha_segura(wb, ARQUIVO_CLIENTES)
  
                     # Renomear arquivo se mudou o nome
                     caminho_antigo = PASTA_CLIENTES / f"{cliente_selecionado}.xlsx"
@@ -4125,7 +4126,7 @@ class SistemaEntradaDados:
                                     logger.info(f"Aba REPASSES_CAIXA criada ao editar cliente: {nome}")
  
                                 if alterado:
-                                    wb_cliente.save(caminho_novo)
+                                    salvar_planilha_segura(wb_cliente, caminho_novo)
                                 wb_cliente.close()
                             else:
                                 logger.warning(
@@ -4267,7 +4268,7 @@ class SistemaEntradaDados:
                 sheet.cell(row=1, column=col, value=header)
             
             logger.debug(f"Tentando salvar arquivo em: {ARQUIVO_CLIENTES}")
-            workbook.save(ARQUIVO_CLIENTES)
+            salvar_planilha_segura(workbook, ARQUIVO_CLIENTES)
             custom_messagebox("info", "Informação", "Arquivo de clientes criado com sucesso!")
             
         except Exception as e:
@@ -4657,7 +4658,7 @@ class SistemaEntradaDados:
                     cell.font = openpyxl.styles.Font(bold=True)
                 logger.debug(f"Aba REPASSES_CAIXA incluida para cliente com caixa controlado: {nome_cliente}")
 
-            workbook.save(novo_arquivo)
+            salvar_planilha_segura(workbook, novo_arquivo)
             logger.info(f"Arquivo do cliente criado: {novo_arquivo}")
             return True
 
@@ -4979,7 +4980,8 @@ class SistemaEntradaDados:
             frame_botoes_import, 
             text="🔧 Gestão de Locações", 
             command=self.abrir_gestao_locacoes,
-            style='Medium.TButton'
+            style='Medium.TButton',
+            state='disabled'  # módulo aguardando definição de escopo
         ).pack(side='left', padx=5)
        
         # Separador antes dos botões gerais
@@ -5619,7 +5621,7 @@ class SistemaEntradaDados:
             
             # Salvar planilha
             try:
-                wb.save(ARQUIVO_FORNECEDORES)
+                salvar_planilha_segura(wb, ARQUIVO_FORNECEDORES)
                 wb.close()
                 return True
             except PermissionError:
@@ -5689,7 +5691,7 @@ class SistemaEntradaDados:
             
             # Salvar planilha
             try:
-                wb.save(ARQUIVO_FORNECEDORES)
+                salvar_planilha_segura(wb, ARQUIVO_FORNECEDORES)
                 wb.close()
                 return True
             except PermissionError:
@@ -6273,7 +6275,7 @@ class SistemaEntradaDados:
             logger.info("Salvando planilha...")
             
             try:
-                wb.save(ARQUIVO_FORNECEDORES)
+                salvar_planilha_segura(wb, ARQUIVO_FORNECEDORES)
                 logger.info("✅ Planilha salva com sucesso!")
                 
             except PermissionError:
@@ -7104,7 +7106,7 @@ class SistemaEntradaDados:
                 for j, col in enumerate(COLUNAS, start=1):
                     ws.cell(row=i, column=j, value=reg.get(col, ''))
 
-            wb.save(ARQUIVO_FORNECEDORES)
+            salvar_planilha_segura(wb, ARQUIVO_FORNECEDORES)
             wb.close()
 
         except PermissionError:
@@ -7472,7 +7474,7 @@ class SistemaEntradaDados:
                         ws.cell(row=i, column=j, value=value)
             
             # Salvar alterações na base de fornecedores
-            wb.save(ARQUIVO_FORNECEDORES)
+            salvar_planilha_segura(wb, ARQUIVO_FORNECEDORES)
             
             # Marcar CPFs como disponíveis novamente
             if not hasattr(self, 'gerenciador_cpfs'):
@@ -8821,7 +8823,7 @@ class SistemaEntradaDados:
             
             # ✅ Salvar e fechar (1x apenas)
             try:
-                wb.save(arquivo_cliente)
+                salvar_planilha_segura(wb, arquivo_cliente)
                 logger.info("✅ Arquivo salvo")
             except PermissionError:
                 wb.close()
@@ -9731,7 +9733,7 @@ class SistemaEntradaDados:
                 # SALVAR ARQUIVO E RECALCULAR
                 # ==========================================
                 try:
-                    workbook.save(arquivo_cliente)
+                    salvar_planilha_segura(workbook, arquivo_cliente)
                     
                     if registros_salvos > 0:
                         logger.info(f"Iniciando verificação de recálculo para {len(datas_afetadas)} datas")
@@ -10024,7 +10026,7 @@ class SistemaEntradaDados:
                     proximo_id += 1
                 
                 # Salvar correções
-                wb.save(arquivo_cliente)
+                salvar_planilha_segura(wb, arquivo_cliente)
                 logger.info("Correções de ID salvas com sucesso")
             
             wb.close()
@@ -13770,7 +13772,7 @@ class GerenciadorLancamentos:
                 ws.cell(row=excel_row, column=id_col).value = id_value
             
             # Salvar workbook
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             logger.debug("DEBUG: IDs corrigidos salvos na planilha")
             
         except Exception as e:
@@ -13778,38 +13780,46 @@ class GerenciadorLancamentos:
 
 
     def corrigir_planilha_status(self, arquivo_cliente, df):
-        """Corrige o status na planilha para dados antigos"""
+        """Corrige STATUS/ID de dados antigos. Só grava se algo realmente mudou."""
+        wb = None
         try:
             wb = load_workbook(arquivo_cliente)
             ws = wb['Dados']
-            
-            # Adicionar cabeçalho STATUS se não existir
-            if ws.cell(row=1, column=14).value != 'STATUS':
-                ws.cell(row=1, column=14, value='STATUS')
-            
-            # Adicionar cabeçalho ID_LANCAMENTO se não existir
-            if ws.cell(row=1, column=15).value != 'ID_LANCAMENTO':
-                ws.cell(row=1, column=15, value='ID_LANCAMENTO')
-            
-            # Adicionar cabeçalho HISTORICO_ALTERACAO se não existir
-            if ws.cell(row=1, column=16).value != 'HISTORICO_ALTERACAO':
-                ws.cell(row=1, column=16, value='HISTORICO_ALTERACAO')
-            
-            # Preencher STATUS e ID para todas as linhas
+            alterado = False
+
+            # Cabeçalhos obrigatórios
+            for col, titulo in ((14, 'STATUS'), (15, 'ID_LANCAMENTO'), (16, 'HISTORICO_ALTERACAO')):
+                if ws.cell(row=1, column=col).value != titulo:
+                    ws.cell(row=1, column=col, value=titulo)
+                    alterado = True
+
+            # STATUS vazio vira ATIVO; ID só é reescrito se for diferente
             for idx, (df_idx, row) in enumerate(df.iterrows(), start=2):
-                # STATUS
                 status_atual = ws.cell(row=idx, column=14).value
                 if not status_atual or status_atual == '':
                     ws.cell(row=idx, column=14, value='ATIVO')
-                
-                # ID_LANCAMENTO - CORREÇÃO: usar o ID do DataFrame
-                ws.cell(row=idx, column=15, value=int(row['ID_LANCAMENTO']))
-            
-            wb.save(arquivo_cliente)
-                        
+                    alterado = True
+
+                novo_id = int(row['ID_LANCAMENTO'])
+                id_atual = ws.cell(row=idx, column=15).value
+                try:
+                    id_igual = id_atual is not None and int(float(id_atual)) == novo_id
+                except (ValueError, TypeError):
+                    id_igual = False
+                if not id_igual:
+                    ws.cell(row=idx, column=15, value=novo_id)
+                    alterado = True
+
+            if alterado:
+                salvar_planilha_segura(wb, arquivo_cliente)
+                logger.debug("Status/IDs corrigidos e planilha salva")
+
         except Exception as e:
             logger.debug(f"DEBUG: Erro ao corrigir status na planilha: {str(e)}")
             # Não levantar exceção aqui para não interromper o carregamento
+        finally:
+            if wb is not None:
+                wb.close()
     
     def normalizar_texto(self, texto):
         """
@@ -15201,7 +15211,7 @@ class GerenciadorLancamentos:
             ws.cell(row=linha_encontrada, column=16, value=novo_historico)
             
             # Salvar arquivo
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
             
             logger.debug(f"✅ Edição salva com sucesso na linha {linha_encontrada}")
@@ -15261,7 +15271,7 @@ class GerenciadorLancamentos:
                     ws.cell(row=row, column=16, value=novo_historico)
                     break
             
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             
         except Exception as e:
             raise Exception(f"Erro ao atualizar status: {str(e)}")
@@ -16764,7 +16774,7 @@ class VisualizadorLancamentosFornecedor:
                 ws.cell(row=linha_encontrada, column=18, value=dados_editados['insumo'])
             
             # Salvar arquivo
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
             
             logger.debug(f"✅ Edição salva com sucesso")
@@ -16989,7 +16999,7 @@ class VisualizadorLancamentosFornecedor:
                     ws.cell(row=row, column=16, value=novo_historico)
                     break
             
-            wb.save(arquivo_cliente)
+            salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
             
         except Exception as e:
@@ -19994,7 +20004,7 @@ class GerenciadorAgenda:
             
             # Salvar o arquivo
             logger.debug("DEBUG: Salvando workbook...")
-            wb.save(caminho_planilha)
+            salvar_planilha_segura(wb, caminho_planilha)
             wb.close()
             
             logger.debug("DEBUG: *** SUCESSO - Data de vencimento alterada com sucesso ***")
@@ -21257,7 +21267,7 @@ class GerenciadorAgenda:
                             f"recarregar a Agenda antes de confirmar")
     
             try:
-                wb.save(arquivo_cliente)
+                salvar_planilha_segura(wb, arquivo_cliente)
                 logger.info("✅ Arquivo salvo com sucesso")
             except Exception as e:
                 logger.error(f"❌ Erro ao salvar arquivo: {e}")

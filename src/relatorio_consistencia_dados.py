@@ -41,6 +41,7 @@ except ImportError:
 # Funções auxiliares
 # ---------------------------------------------------------------------------
 
+from src.salvamento_seguro import salvar_planilha_segura
 def _fmt_moeda(valor):
     try:
         return f"R$ {float(valor):,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
@@ -959,7 +960,7 @@ class RelatorioConsistenciaDados:
                 if not encontrou:
                     nao_encontradas.append(parc['num_parcela'])
 
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
 
         except Exception as e:
@@ -1043,7 +1044,7 @@ class RelatorioConsistenciaDados:
             ws = wb['Dados']
             for linha in linhas:
                 ws.cell(row=linha, column=11, value=nova_cat)  # coluna CATEGORIA
-            wb.save(self.arquivo_cliente)
+            salvar_planilha_segura(wb, self.arquivo_cliente)
             wb.close()
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao salvar:\n{e}", parent=self.root)

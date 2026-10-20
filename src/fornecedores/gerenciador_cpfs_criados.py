@@ -13,6 +13,7 @@ import logging
 from openpyxl import load_workbook
 
 from src.config.config import ARQUIVO_FORNECEDORES
+from src.salvamento_seguro import salvar_planilha_segura
 
 # Mesmo logger usado no restante do sistema (Sistema_Entrada_Dados.py).
 # Não definimos nível aqui: ele herda o nível efetivo do logger raiz,
@@ -104,7 +105,7 @@ class GerenciadorCPFsCriados:
                 ws_cpf.cell(row=1, column=2, value='STATUS')
                 ws_cpf.cell(row=1, column=3, value='USADO_POR')
                 ws_cpf.cell(row=1, column=4, value='DATA_USO')
-                wb.save(self.arquivo_fornecedores)
+                salvar_planilha_segura(wb, self.arquivo_fornecedores)
             else:
                 ws_cpf = wb['CPF']
 
@@ -158,7 +159,7 @@ class GerenciadorCPFsCriados:
                         logger.debug(f"CPF inválido gerado (descartado): {novo_cpf}")
 
                 if cpfs_gerados > 0:
-                    wb.save(self.arquivo_fornecedores)
+                    salvar_planilha_segura(wb, self.arquivo_fornecedores)
                     logger.debug(f"Total de CPFs válidos gerados: {cpfs_gerados}")
                 else:
                     logger.debug("ERRO: Não foi possível gerar CPFs válidos")
@@ -202,7 +203,7 @@ class GerenciadorCPFsCriados:
                     ws_cpf.cell(row=row, column=4, value=datetime.now().strftime('%d/%m/%Y %H:%M'))
                     break
 
-            wb.save(self.arquivo_fornecedores)
+            salvar_planilha_segura(wb, self.arquivo_fornecedores)
             wb.close()
             return True
 
@@ -257,7 +258,7 @@ class GerenciadorCPFsCriados:
                     ws_cpf.cell(row=row, column=4, value='')  # Limpar data de uso
                     break
 
-            wb.save(self.arquivo_fornecedores)
+            salvar_planilha_segura(wb, self.arquivo_fornecedores)
             wb.close()
             return True
 

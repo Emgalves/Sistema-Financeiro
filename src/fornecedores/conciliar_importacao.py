@@ -47,6 +47,7 @@ Uso típico (a partir de ImportadorRH, ANTES de finalizar os lançamentos):
 
 from dataclasses import dataclass
 from difflib import SequenceMatcher
+from src.salvamento_seguro import salvar_planilha_segura
 
 
 # ---------------------------------------------------------------------------
@@ -226,6 +227,6 @@ def upsert_fornecedores_lote(lista_dados, arquivo_fornecedores):
         for j, col in enumerate(COLUNAS_FORNECEDOR, start=1):
             ws.cell(row=i, column=j, value=reg.get(col, ''))
 
-    wb.save(arquivo_fornecedores)
+    salvar_planilha_segura(wb, arquivo_fornecedores)
     wb.close()
     return gravados

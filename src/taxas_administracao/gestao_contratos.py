@@ -46,6 +46,7 @@ from src.config.utils import (
 
 # Mesmo logger usado no restante do sistema (Sistema_Entrada_Dados.py).
 logger = logging.getLogger("sistema")
+from src.salvamento_seguro import salvar_planilha_segura
 
 
 class GestaoContratos:
@@ -212,7 +213,7 @@ class GestaoContratos:
                     ws.column_dimensions[openpyxl.utils.get_column_letter(col)].width = 15
 
                 # Salvar as alterações
-                wb.save(self.arquivo_cliente)
+                salvar_planilha_segura(wb, self.arquivo_cliente)
 
             # Frame principal
             frame_principal = ttk.Frame(janela, padding="10")
@@ -1247,7 +1248,7 @@ class GestaoContratos:
                     for linha in reversed(linhas_deletar):
                         ws.delete_rows(linha)
 
-                    wb.save(self.arquivo_cliente)
+                    salvar_planilha_segura(wb, self.arquivo_cliente)
                     wb.close()
                     carregar_gestores()
                     carregar_eventos()  # Recarregar eventos também
@@ -1541,7 +1542,7 @@ class GestaoContratos:
 
                                 eventos_copiados += 1
 
-                        wb.save(self.arquivo_cliente)
+                        salvar_planilha_segura(wb, self.arquivo_cliente)
                         wb.close()
 
                         custom_messagebox("info", "Sucesso",
@@ -1641,7 +1642,7 @@ class GestaoContratos:
                             nova_desc_upper = nova_desc.upper()
                             ws.cell(linha_evento, 33, value=nova_desc_upper)
 
-                            wb.save(self.arquivo_cliente)
+                            salvar_planilha_segura(wb, self.arquivo_cliente)
                             wb.close()
                             janela_editar.destroy()
                             carregar_eventos()
@@ -1689,7 +1690,7 @@ class GestaoContratos:
                         for linha in reversed(linhas_deletar):
                             ws.delete_rows(linha)
 
-                        wb.save(self.arquivo_cliente)
+                        salvar_planilha_segura(wb, self.arquivo_cliente)
                         wb.close()
                         carregar_eventos()
                         custom_messagebox("info", "Sucesso", f"Evento {num_evento} do gestor {nome_gestor} excluído!")
@@ -1847,7 +1848,7 @@ class GestaoContratos:
                         ws.cell(proxima_linha, 32, value=None)          # Coluna AF - Data Pagamento
                         ws.cell(proxima_linha, 33, value=descricao_upper) # Coluna AG - Eventos/Fases
 
-                        wb.save(self.arquivo_cliente)
+                        salvar_planilha_segura(wb, self.arquivo_cliente)
                         wb.close()
 
                         janela_novo.destroy()
@@ -1910,7 +1911,7 @@ class GestaoContratos:
                             row[3].value = status_combo.get()
                             break
 
-                    wb.save(self.arquivo_cliente)
+                    salvar_planilha_segura(wb, self.arquivo_cliente)
                     wb.close()
                     custom_messagebox("info", "Sucesso", "Contrato atualizado com sucesso!")
                     janela.destroy()
@@ -3127,7 +3128,7 @@ class GestaoContratos:
             # Salvar e fechar o arquivo explicitamente
             try:
                 logger.debug(f"Salvando o arquivo {self.arquivo_cliente}")
-                wb.save(self.arquivo_cliente)
+                salvar_planilha_segura(wb, self.arquivo_cliente)
                 wb.close()  # Importante fechar o arquivo
             except PermissionError:
                 custom_messagebox("error", "Erro", f"Não foi possível salvar a planilha. Ela pode estar aberta em outro programa.")
@@ -3185,7 +3186,7 @@ class GestaoContratos:
                     if row[0].value == num_contrato:
                         row[3].value = 'INATIVO'  # Coluna D - Status
 
-                wb.save(self.arquivo_cliente)
+                salvar_planilha_segura(wb, self.arquivo_cliente)
                 self.carregar_contratos()
                 custom_messagebox("info", "Sucesso", "Contrato marcado como inativo")
 

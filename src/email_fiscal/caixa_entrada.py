@@ -25,6 +25,7 @@ from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import get_column_letter
 
 from . import config_email as cfg
+from src.salvamento_seguro import salvar_planilha_segura
 
 COLUNAS_LANC = [
     "ID_SUGESTAO", "STATUS", "CLIENTE", "IDENTIFICACAO", "MOTIVO_IDENTIFICACAO",
@@ -220,7 +221,7 @@ class CaixaEntrada:
         self.arquivo.parent.mkdir(parents=True, exist_ok=True)
         for i in range(tentativas):
             try:
-                wb.save(self.arquivo)
+                salvar_planilha_segura(wb, self.arquivo)
                 return
             except PermissionError:
                 if i == tentativas - 1:
