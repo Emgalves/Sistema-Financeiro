@@ -409,5 +409,13 @@
             "Limpeza geral do código: remoção de cerca de 41 mil linhas sem uso, incluindo os módulos descontinuados de despesas rateadas e de lançamento automático de taxas fixas"
         ],
         "timestamp": "2026-10-02T13:00:40.488840"
+    },
+    {
+        "version": "1.9.1",
+        "release_date": "20/10/2026",
+        "changes": [
+            "Inclusão de backup de planilhas para eventual perda de dados."
+        ],
+        "timestamp": "2026-10-20T15:15:53.421115"
     }
 ]
