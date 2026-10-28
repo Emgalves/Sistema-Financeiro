@@ -548,6 +548,12 @@ class VisualizadorLancamentos:
         try:
             if (self.janela and self.janela.winfo_exists() and 
                 not self._dialogo_aberto and not self._fechando):
+                # Se o foco saiu para OUTRO PROGRAMA (WhatsApp, e-mail, navegador),
+                # focus_get() devolve None: não puxar a janela de volta. Antes, ela
+                # voltava para a frente e passava a receber o que era digitado lá
+                # (a barra de espaço aciona o botão que estiver com o foco).
+                if self.janela.focus_get() is None:
+                    return
                 if not self._tem_dialogo_filho():
                     self.janela.lift()
                     self.janela.focus_force()
@@ -1198,7 +1204,18 @@ class VisualizadorLancamentos:
             self._fechando = True
             
             if self.sistema:
-                self.sistema.enviar_dados()
+                self._dialogo_aberto = True
+                try:
+                    self.sistema.enviar_dados(origem="Visualizador: botão Salvar na Planilha")
+                finally:
+                    self._dialogo_aberto = False
+                
+                if not getattr(self.sistema, '_ultimo_envio_ok', False):
+                    # Usuário cancelou ou houve erro: mantém a janela e o rascunho
+                    self._fechando = False
+                    if self.janela and self.janela.winfo_exists():
+                        self.janela.lift()
+                    return
                 
                 try:
                     temp_file = os.path.join(os.path.expanduser("~"), "Desktop", 
@@ -2430,7 +2447,7 @@ class SistemaEntradaDados:
             if self.dados_para_incluir and custom_messagebox("yesno", 
                 "Confirmação", 
                 "Existem dados não salvos. Deseja salvá-los antes de sair?"):
-                self.enviar_dados()
+                self.enviar_dados(origem="Voltar ao menu: resposta Sim a 'dados não salvos'", confirmar=False)
             
             logger.info("Voltando ao menu principal")
             
@@ -9026,7 +9043,7 @@ class SistemaEntradaDados:
 
                 self.root.update_idletasks()
                 
-                custom_messagebox("info", "Sucesso", "Dados adicionados com sucesso!")
+                custom_messagebox("info", "Sucesso", "Dados adicionados com sucesso!", sempre_visivel=True)
                 
                 # Voltar para a aba fornecedor
                 self.notebook.select(1)
@@ -9439,15 +9456,27 @@ class SistemaEntradaDados:
 
     # Correção para o método enviar_dados() - SistemaEntradaDados.py
 
-    def enviar_dados(self):
+    def enviar_dados(self, origem="Aba Entrada de Dados: botão Enviar", confirmar=True):
         """
         Versão OTIMIZADA com gestão inteligente de duplicatas
         - Remove automaticamente duplicatas da visualização
         - Mantém apenas registros únicos pendentes
         - Protege contra envios para cliente errado
+
+        origem: qual botão/fluxo chamou a gravação (vai para o log)
+        confirmar: pede confirmação antes de gravar (False só quando o usuário
+                   já respondeu "Sim" a outra pergunta de salvamento)
+        Ao final, self._ultimo_envio_ok indica se a planilha foi gravada.
         """
+        self._ultimo_envio_ok = False
+
+        def _msg(*args, **kwargs):
+            # Diálogos desta gravação ficam por cima de todas as janelas:
+            # não podem se esconder atrás da janela de entrada de dados.
+            kwargs.setdefault('sempre_visivel', True)
+            return custom_messagebox(*args, **kwargs)
        
-        logger.info(f"Iniciando envio de dados - Cliente: {self.cliente_atual}, Registros: {len(self.dados_para_incluir) if self.dados_para_incluir else 0}")
+        logger.info(f"Iniciando envio de dados - Cliente: {self.cliente_atual}, Registros: {len(self.dados_para_incluir) if self.dados_para_incluir else 0}, Origem: {origem}, Usuário: {os.environ.get('USERNAME', 'Desconhecido')}")
         
         # Desabilitar botão para evitar múltiplos cliques
         btn_enviar = None
@@ -9469,7 +9498,7 @@ class SistemaEntradaDados:
             # VALIDAÇÃO 1: Cliente selecionado
             # ==========================================
             if not self.cliente_atual:
-                custom_messagebox("error", "Erro", "Selecione um cliente!")
+                _msg("error", "Erro", "Selecione um cliente!")
                 return
             
             # ==========================================
@@ -9480,7 +9509,7 @@ class SistemaEntradaDados:
             
             if nf_numero and tem_materiais_marcado:
                 if not self.verificar_nf_ja_processada(nf_numero):
-                    resposta = custom_messagebox(
+                    resposta = _msg(
                         "yesno",
                         "NFe Detectada",
                         f"NOTA FISCAL DETECTADA!\n\n"
@@ -9513,7 +9542,7 @@ class SistemaEntradaDados:
                 dados_para_processar = self.dados_para_incluir.copy()
                     
             if not dados_para_processar:
-                custom_messagebox("warning", "Aviso", "Não há dados para enviar!")
+                _msg("warning", "Aviso", "Não há dados para enviar!")
                 return
 
             logger.info(f"Total de registros a processar: {len(dados_para_processar)}")
@@ -9561,6 +9590,7 @@ class SistemaEntradaDados:
 
                 self.verificar_e_adicionar_cabecalho_etapa_obra(sheet)
                 self.verificar_e_adicionar_cabecalho_insumo(sheet)
+                self.verificar_e_adicionar_cabecalhos_inclusao(sheet)
                 
                 # Separar lançamentos válidos e duplicados
                 lancamentos_duplicados = []
@@ -9613,19 +9643,19 @@ class SistemaEntradaDados:
                         msg_duplicados += "• SIM = Cancelar operação e limpar visualização\n"
                         msg_duplicados += "• NÃO = Manter na visualização para revisar"
                         
-                        resposta = custom_messagebox("yesno", "Todas Duplicatas", msg_duplicados)
+                        resposta = _msg("yesno", "Todas Duplicatas", msg_duplicados)
                         
                         workbook.close()
                         
                         if resposta:  # SIM = Limpar tudo
                             logger.info("Usuário optou por limpar todos os lançamentos duplicados")
                             self.limpar_visualizacao_completa()
-                            custom_messagebox("info", "Limpeza Concluída", 
+                            _msg("info", "Limpeza Concluída", 
                                             "Todos os lançamentos duplicados foram removidos da visualização.\n\n"
                                             "Nenhum dado foi salvo na planilha.")
                         else:  # NÃO = Manter para revisão
                             logger.info("Usuário optou por manter lançamentos para revisão")
-                            custom_messagebox("info", "Mantido para Revisão", 
+                            _msg("info", "Mantido para Revisão", 
                                             "Os lançamentos foram mantidos na visualização para que você possa:\n\n"
                                             "• Revisar individualmente cada um\n"
                                             "• Remover duplicatas manualmente\n"
@@ -9638,12 +9668,12 @@ class SistemaEntradaDados:
                     msg_duplicados += "• SIM = Salvar únicos e remover duplicatas da visualização\n"
                     msg_duplicados += "• NÃO = Cancelar e manter todos para revisar"
                     
-                    resposta = custom_messagebox("yesno", "Duplicatas Detectadas", msg_duplicados)
+                    resposta = _msg("yesno", "Duplicatas Detectadas", msg_duplicados)
                     
                     if not resposta:  # Usuário cancelou
                         logger.info("Operação cancelada pelo usuário devido a duplicatas")
                         workbook.close()
-                        custom_messagebox("info", "Operação Cancelada", 
+                        _msg("info", "Operação Cancelada", 
                                         "Operação cancelada. Os lançamentos permanecem na visualização para revisão.\n\n"
                                         "Você pode:\n"
                                         "• Remover as duplicatas manualmente\n"
@@ -9659,6 +9689,24 @@ class SistemaEntradaDados:
                     self._duplicatas_para_remover = lancamentos_duplicados
 
                 # ==========================================
+                # CONFIRMAÇÃO ANTES DE GRAVAR
+                # Botão padrão = "Não": um Enter ou Espaço acidental não grava.
+                # ==========================================
+                if confirmar:
+                    total = len(dados_para_processar)
+                    msg_conf = (f"Gravar {total} lançamento(s) na planilha de "
+                                f"{self.cliente_atual}?\n\n")
+                    for i, d in enumerate(dados_para_processar[:5], 1):
+                        msg_conf += f"{i}. {d.get('nome', '')} - R$ {d.get('valor', '')}\n"
+                    if total > 5:
+                        msg_conf += f"... e mais {total - 5}.\n"
+                    if not _msg("yesno", "Confirmar gravação", msg_conf, padrao='no'):
+                        logger.info(f"Gravação cancelada na confirmação (origem: {origem})")
+                        workbook.close()
+                        return
+                    logger.info(f"Gravação confirmada pelo usuário (origem: {origem})")
+
+                # ==========================================
                 # REMOVER TABELAS EXISTENTES
                 # ==========================================
                 if sheet.tables:
@@ -9669,6 +9717,8 @@ class SistemaEntradaDados:
                 # PROCESSAR REGISTROS VÁLIDOS
                 # ==========================================
                 registros_salvos = 0
+                usuario_inclusao = os.environ.get('USERNAME', 'Desconhecido')
+                data_hora_inclusao = datetime.now().replace(microsecond=0)
                 for dados in dados_para_processar:
                     try:
                         proxima_linha = sheet.max_row + 1
@@ -9721,6 +9771,11 @@ class SistemaEntradaDados:
                         sheet.cell(row=proxima_linha, column=17, value=dados.get('etapa_obra', ''))
                         sheet.cell(row=proxima_linha, column=18, value=dados.get('insumo', ''))
 
+                        # Quem gravou e quando (colunas S e T)
+                        sheet.cell(row=proxima_linha, column=19, value=usuario_inclusao)
+                        dh_cell = sheet.cell(row=proxima_linha, column=20, value=data_hora_inclusao)
+                        dh_cell.number_format = 'DD/MM/YYYY HH:MM:SS'
+
                         logger.info(f"Lançamento inserido com ID {novo_id} na linha {proxima_linha}")
                         
                         registros_salvos += 1
@@ -9734,6 +9789,8 @@ class SistemaEntradaDados:
                 # ==========================================
                 try:
                     salvar_planilha_segura(workbook, arquivo_cliente)
+                    self._ultimo_envio_ok = True
+                    logger.info(f"Gravação concluída: {registros_salvos} lançamento(s), origem: {origem}, usuário: {usuario_inclusao}")
                     
                     if registros_salvos > 0:
                         logger.info(f"Iniciando verificação de recálculo para {len(datas_afetadas)} datas")
@@ -9742,9 +9799,26 @@ class SistemaEntradaDados:
                         time.sleep(0.5)
                         
                     # ==========================================
-                    # MENSAGEM DE SUCESSO E LIMPEZA
+                    # LIMPEZA PRIMEIRO, MENSAGEM DEPOIS
+                    # Antes, a limpeza só acontecia quando o usuário fechava a
+                    # mensagem de sucesso. Se a mensagem ficasse escondida atrás
+                    # de outra janela, o Visualizador continuava mostrando como
+                    # "pendentes" lançamentos que JÁ estavam gravados (caso real:
+                    # 28/10, 11:07 a 11:24, levando a relançar SMART MADEIRAS).
                     # ==========================================
                     if lancamentos_duplicados:
+                        self.remover_duplicatas_da_visualizacao(lancamentos_duplicados)
+
+                    self.limpar_backup()
+
+                    if registros_salvos > 0:
+                        self.limpar_dados_salvos(dados_para_processar)
+
+                    # ==========================================
+                    # MENSAGEM DE SUCESSO (sempre por cima das outras janelas)
+                    # ==========================================
+                    if lancamentos_duplicados:
+                        titulo_sucesso = "Sucesso com Filtro"
                         mensagem_sucesso = f"Dados salvos com sucesso!\n\n"
                         mensagem_sucesso += f"Resumo da operação:\n"
                         mensagem_sucesso += f"• Lançamentos salvos: {registros_salvos}\n"
@@ -9752,27 +9826,20 @@ class SistemaEntradaDados:
                         if datas_recalculadas:
                             mensagem_sucesso += f"Taxas recalculadas para: {', '.join(datas_recalculadas)}\n\n"
                         mensagem_sucesso += f"As duplicatas foram automaticamente removidas da visualização."
-                        custom_messagebox("info", "Sucesso com Filtro", mensagem_sucesso)
-                        
-                        # LIMPAR DUPLICATAS DA VISUALIZAÇÃO
-                        self.remover_duplicatas_da_visualizacao(lancamentos_duplicados)
                     else:
+                        titulo_sucesso = "Sucesso"
                         mensagem_sucesso = f"Dados salvos com sucesso! {registros_salvos} lançamentos processados."
                         if datas_recalculadas:
                             mensagem_sucesso += f"\n\nTaxas recalculadas para: {', '.join(datas_recalculadas)}"
-                        custom_messagebox("info", "Sucesso", mensagem_sucesso)
-                    
-                    self.limpar_backup()
 
-                    # ==========================================
-                    # LIMPAR APENAS OS DADOS SALVOS
-                    # ==========================================
-                    if registros_salvos > 0:
-                        self.limpar_dados_salvos(dados_para_processar)
+                    momento_msg = datetime.now()
+                    _msg("info", titulo_sucesso, mensagem_sucesso)
+                    segundos = int((datetime.now() - momento_msg).total_seconds())
+                    logger.info(f"Mensagem de sucesso fechada pelo usuário após {segundos} s")
                     
                 except PermissionError:
                     logger.error("Permissão negada ao salvar arquivo - provável arquivo aberto")
-                    custom_messagebox("error", 
+                    _msg("error", 
                         "Erro", 
                         f"Não foi possível salvar! A planilha '{self.cliente_atual}.xlsx' está aberta.\n\n"
                         "Por favor:\n"
@@ -9782,15 +9849,15 @@ class SistemaEntradaDados:
                     )
                 except Exception as e:
                     logger.error(f"Erro ao salvar arquivo: {str(e)}")
-                    custom_messagebox("error", "Erro", f"Erro ao salvar arquivo: {str(e)}")
+                    _msg("error", "Erro", f"Erro ao salvar arquivo: {str(e)}")
                             
             except Exception as e:
                 logger.error(f"Erro ao processar dados: {str(e)}", exc_info=True)
-                custom_messagebox("error", "Erro", f"Erro ao processar dados: {str(e)}")
+                _msg("error", "Erro", f"Erro ao processar dados: {str(e)}")
                 
         except Exception as e:
             logger.error(f"Erro geral no método enviar_dados: {str(e)}", exc_info=True)
-            custom_messagebox("error", "Erro", f"Erro ao enviar dados: {str(e)}")
+            _msg("error", "Erro", f"Erro ao enviar dados: {str(e)}")
             
         finally:
             # Reabilitar botão
@@ -9954,6 +10021,18 @@ class SistemaEntradaDados:
             
         except Exception as e:
             logger.error(f"Erro ao verificar/adicionar cabeçalho de etapa da obra: {str(e)}")
+            return False
+
+    def verificar_e_adicionar_cabecalhos_inclusao(self, sheet):
+        """Garante os cabeçalhos USUARIO_INCLUSAO (S/19) e DATA_HORA_INCLUSAO (T/20)."""
+        try:
+            for col, titulo in ((19, 'USUARIO_INCLUSAO'), (20, 'DATA_HORA_INCLUSAO')):
+                if sheet.cell(row=1, column=col).value in (None, ''):
+                    sheet.cell(row=1, column=col, value=titulo)
+                    logger.info(f"Cabeçalho '{titulo}' adicionado na coluna {col}")
+            return True
+        except Exception as e:
+            logger.error(f"Erro ao verificar/adicionar cabeçalhos de inclusão: {str(e)}")
             return False
 
     def verificar_e_adicionar_cabecalho_insumo(self, sheet):
@@ -10783,7 +10862,7 @@ class SistemaEntradaDados:
                 if hasattr(self, 'custom_messagebox'):
                     if self.custom_messagebox("yesno", "Confirmação", 
                         "Existem dados não salvos. Deseja salvá-los antes de sair?"):
-                        self.enviar_dados()
+                        self.enviar_dados(origem="Fechar sistema: resposta Sim a 'dados não salvos'", confirmar=False)
             
             # Limpar backup temporário
             if hasattr(self, 'limpar_backup'):

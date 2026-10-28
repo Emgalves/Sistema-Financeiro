@@ -784,7 +784,7 @@ def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_f
             wb.close()
         return 'ERRO AO BUSCAR DADOS BANCÁRIOS'
 
-def custom_messagebox(tipo, titulo, mensagem, parent=None):
+def custom_messagebox(tipo, titulo, mensagem, parent=None, padrao=None, sempre_visivel=False):
     """
     Função de messagebox personalizada que padroniza as caixas de diálogo do sistema
     
@@ -803,6 +803,22 @@ def custom_messagebox(tipo, titulo, mensagem, parent=None):
         None: Para outros tipos
     """
     import tkinter.messagebox as msg
+
+    # Diálogo "sempre visível" (por cima de todas as janelas e modal).
+    # ATENÇÃO: é ESTA função que o Sistema_Entrada_Dados.py usa de fato, porque
+    # a linha "from src.config.utils import (..., custom_messagebox, ...)" vem
+    # depois da importação de src.config.dialogs e a substitui.
+    if sempre_visivel:
+        try:
+            try:
+                from src.config.dialogs import _dialogo_sempre_visivel
+            except ImportError:
+                from config.dialogs import _dialogo_sempre_visivel
+            return _dialogo_sempre_visivel(tipo, titulo, mensagem, padrao)
+        except Exception:
+            import logging
+            logging.getLogger(__name__).exception(
+                f"Falha no diálogo sempre visível '{titulo}'; usando o diálogo padrão do Windows")
     
     try:
         if tipo.lower() == "info":
@@ -818,6 +834,8 @@ def custom_messagebox(tipo, titulo, mensagem, parent=None):
             return None
             
         elif tipo.lower() == "yesno":
+            if padrao in ('yes', 'no'):
+                return msg.askyesno(titulo, mensagem, parent=parent, default=padrao)
             return msg.askyesno(titulo, mensagem, parent=parent)
             
         elif tipo.lower() == "question":

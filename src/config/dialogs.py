@@ -2,8 +2,14 @@
 Módulo para funções de diálogo personalizadas que funcionam em qualquer contexto.
 """
 import sys
+import logging
 import tkinter as tk
 from tkinter import messagebox
+
+logger = logging.getLogger(__name__)
+
+# Versão deste arquivo: aparece no log do sistema, para confirmar qual está em uso
+VERSAO_DIALOGS = "2026-10-28 dialogo proprio v2"
 
 # Armazenar uma referência global para a janela principal atual
 _main_window = None
@@ -80,7 +86,104 @@ def _center_on_parent(dialog, parent=None):
     
     dialog.geometry(f"+{x}+{y}")
 
-def custom_messagebox(tipo="info", titulo="Mensagem", mensagem="", opcoes=None):
+def _dialogo_sempre_visivel(tipo, titulo, mensagem, padrao=None):
+    """Diálogo próprio (janela Tk) que fica SEMPRE por cima de todas as janelas
+    e bloqueia o restante do sistema até ser respondido.
+
+    Por que não usar o diálogo nativo do Windows: nos testes de 28/10 (15:14 e
+    15:30), mesmo com um "dono" marcado como sempre-no-topo, o diálogo nativo
+    ficou atrás da janela "Sistema de Entrada de Dados". Aqui a marcação
+    "sempre no topo" é aplicada no PRÓPRIO diálogo, e grab_set() impede que o
+    usuário continue usando o sistema com a pergunta/aviso em aberto.
+
+    Retorna True/False para 'yesno' e None para os demais tipos."""
+    from tkinter import ttk
+
+    logger.info(f"[dialogs {VERSAO_DIALOGS}] Abrindo diálogo sempre visível: '{titulo}'")
+    mestre = tk._default_root if getattr(tk, '_default_root', None) else get_main_window()
+    dlg = tk.Toplevel(mestre)
+    dlg.withdraw()
+    dlg.title(titulo)
+    dlg.resizable(False, False)
+    try:
+        icone = mestre.iconbitmap()        # reaproveita o ícone do sistema, se houver
+        if icone:
+            dlg.iconbitmap(icone)
+    except Exception:
+        pass
+
+    resultado = {'valor': None if tipo != 'yesno' else False}
+
+    corpo = ttk.Frame(dlg, padding=(18, 16, 18, 10))
+    corpo.pack(fill='both', expand=True)
+
+    simbolos = {'info': ('i', '#0b62c4'), 'yesno': ('?', '#0b62c4'),
+                'warning': ('!', '#c98a00'), 'error': ('×', '#c42b1c')}
+    letra, cor = simbolos.get(tipo, simbolos['info'])
+    tk.Label(corpo, text=letra, fg='white', bg=cor, width=2,
+             font=('Segoe UI', 14, 'bold')).grid(row=0, column=0, sticky='n', padx=(0, 14))
+    ttk.Label(corpo, text=mensagem, wraplength=440, justify='left').grid(row=0, column=1, sticky='w')
+
+    rodape = ttk.Frame(dlg, padding=(18, 4, 18, 14))
+    rodape.pack(fill='x')
+
+    def responder(valor):
+        resultado['valor'] = valor
+        try:
+            dlg.grab_release()
+        except Exception:
+            pass
+        dlg.destroy()
+
+    if tipo == 'yesno':
+        btn_nao = ttk.Button(rodape, text='Não', width=10, command=lambda: responder(False))
+        btn_sim = ttk.Button(rodape, text='Sim', width=10, command=lambda: responder(True))
+        btn_nao.pack(side='right')
+        btn_sim.pack(side='right', padx=(0, 8))
+        botao_padrao = btn_sim if padrao == 'yes' else btn_nao   # padrão seguro: Não
+        ao_fechar = lambda: responder(False)
+    else:
+        btn_ok = ttk.Button(rodape, text='OK', width=10, command=lambda: responder(None))
+        btn_ok.pack(side='right')
+        botao_padrao = btn_ok
+        ao_fechar = lambda: responder(None)
+
+    # Enter aciona o botão que está com o foco (como no Windows); Esc = fechar
+    def tecla_enter(event):
+        alvo = dlg.focus_get()
+        if isinstance(alvo, ttk.Button):
+            alvo.invoke()
+        else:
+            botao_padrao.invoke()
+        return 'break'
+    dlg.bind('<Return>', tecla_enter)
+    dlg.bind('<KP_Enter>', tecla_enter)
+    dlg.bind('<Escape>', lambda e: ao_fechar())
+    dlg.protocol('WM_DELETE_WINDOW', ao_fechar)
+
+    # Centraliza na tela, mostra e marca como sempre no topo
+    dlg.update_idletasks()
+    w, h = dlg.winfo_reqwidth(), dlg.winfo_reqheight()
+    x = (dlg.winfo_screenwidth() - w) // 2
+    y = (dlg.winfo_screenheight() - h) // 2
+    dlg.geometry(f"+{x}+{y}")
+    dlg.deiconify()
+    dlg.attributes('-topmost', True)
+    dlg.lift()
+    dlg.focus_force()
+    botao_padrao.focus_set()
+    try:
+        dlg.grab_set()
+    except Exception:
+        pass
+
+    dlg.wait_window()
+    logger.info(f"[dialogs] Diálogo '{titulo}' respondido: {resultado['valor']}")
+    return resultado['valor']
+
+
+def custom_messagebox(tipo="info", titulo="Mensagem", mensagem="", opcoes=None, padrao=None,
+                      sempre_visivel=False):
     """
     Função unificada de diálogo que funciona em qualquer contexto.
     
@@ -89,6 +192,10 @@ def custom_messagebox(tipo="info", titulo="Mensagem", mensagem="", opcoes=None):
         titulo: string - título da janela
         mensagem: string - mensagem a ser exibida
         opcoes: lista de strings - opções de botões (apenas para tipo 'yesno')
+        padrao: 'yes' ou 'no' - botão pré-selecionado no tipo 'yesno'
+                (com 'no', um Enter ou Espaço acidental NÃO confirma)
+        sempre_visivel: True = o diálogo fica por cima de todas as janelas
+                (não pode ficar escondido atrás de outra janela do sistema)
         
     Returns:
         Para 'yesno': boolean - True se "Sim", False se "Não"
@@ -96,6 +203,16 @@ def custom_messagebox(tipo="info", titulo="Mensagem", mensagem="", opcoes=None):
     """
     # Obter a janela principal atual para centralização
     parent = get_main_window()
+
+    # Diálogo "sempre visível": janela própria, sempre no topo e modal.
+    # Se der qualquer erro, cai no diálogo nativo abaixo.
+    if sempre_visivel:
+        try:
+            return _dialogo_sempre_visivel(tipo, titulo, mensagem, padrao)
+        except Exception:
+            # Registra o erro COMPLETO no log do sistema (antes ia só para o console)
+            logger.exception(f"[dialogs {VERSAO_DIALOGS}] Falha no diálogo sempre visível "
+                             f"'{titulo}'; usando o diálogo padrão do Windows")
     
     # Tente usar os diálogos padrão do Tkinter primeiro
     try:
@@ -122,7 +239,10 @@ def custom_messagebox(tipo="info", titulo="Mensagem", mensagem="", opcoes=None):
         elif tipo == "error":
             result = tkMessageBox.showerror(titulo, mensagem, parent=parent)
         elif tipo == "yesno":
-            result = tkMessageBox.askyesno(titulo, mensagem, parent=parent)
+            if padrao in ('yes', 'no'):
+                result = tkMessageBox.askyesno(titulo, mensagem, parent=parent, default=padrao)
+            else:
+                result = tkMessageBox.askyesno(titulo, mensagem, parent=parent)
         else:
             result = None
         
@@ -131,7 +251,8 @@ def custom_messagebox(tipo="info", titulo="Mensagem", mensagem="", opcoes=None):
     except Exception as e:
         print(f"Erro ao mostrar diálogo padrão: {e}")
         # Se falhar, tente um diálogo personalizado como fallback
-        return _custom_dialog_fallback(tipo, titulo, mensagem, parent)
+        return _custom_dialog_fallback(tipo, titulo, mensagem, get_main_window())
+
 
 def _custom_dialog_fallback(tipo, titulo, mensagem, parent=None):
     """Versão de fallback usando um diálogo personalizado."""
