@@ -11,9 +11,11 @@ VERSION_INFO = {
     "major": 1,
     "minor": 9,
     "patch": 1,
-    "release_date": "20/10/2026",
+    "release_date": "30/10/2026",
     "changes": [
-        "Inclusão de backup de planilhas para eventual perda de dados."
+        "Inclusão de backup de planilhas para eventual perda de dados.",
+        "Inclusão de dados do usuário que gravou na planilha do cliente, aba Dados",
+        "Melhoria nas janelas de diálogos, mantendo-as sempre à frente"
     ]
 }
 
