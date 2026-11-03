@@ -436,7 +436,7 @@ from src.fornecedores.triagem_importacao_rh import TriagemImportacaoRH
 # )
 
 # Modificação para usar o método de utils.py
-from src.config.utils import buscar_dados_bancarios_fornecedor
+from src.config.utils import buscar_dados_bancarios_fornecedor, compor_dados_bancarios
 
 
 class VisualizadorLancamentos:
@@ -1803,15 +1803,11 @@ class EditorLancamento:
                 dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
             else:
                 # Estrutura para TED
-                dados_ted = []
-                if fornecedor_completo['banco']: dados_ted.append(str(fornecedor_completo['banco']))
-                if fornecedor_completo['op']: dados_ted.append(str(fornecedor_completo['op']))
-                if fornecedor_completo['agencia']: dados_ted.append(str(fornecedor_completo['agencia']))
-                if fornecedor_completo['conta']: dados_ted.append(str(fornecedor_completo['conta']))
-                # SEMPRE adicionar o CNPJ/CPF para TED
-                dados_ted.append(str(fornecedor_completo['cnpj_cpf']))
-                
-                dados_bancarios = ' - '.join(filter(None, dados_ted))
+                dados_bancarios = compor_dados_bancarios(
+                    banco=fornecedor_completo.get('banco'), op=fornecedor_completo.get('op'),
+                    agencia=fornecedor_completo.get('agencia'), conta=fornecedor_completo.get('conta'),
+                    cnpj_cpf=fornecedor_completo.get('cnpj_cpf'),
+                    tipo_pessoa=fornecedor_completo.get('tipo_pessoa'))
 
             if dados_bancarios.strip() in ['', ' - ']:
                 dados_bancarios = ''
@@ -6419,17 +6415,12 @@ class SistemaEntradaDados:
                     self.campos_fornecedor['categoria'].insert(0, fornecedor['categoria'])
                 
                 # Preencher dados bancários baseado na forma de pagamento padrão
-                if fornecedor.get('chave_pix'):
-                    dados_bancarios = f"PIX: {fornecedor['chave_pix']}"
-                else:
-                    # Construir dados para TED
-                    partes_dados = []
-                    if fornecedor.get('banco'): partes_dados.append(fornecedor['banco'])
-                    if fornecedor.get('op'): partes_dados.append(fornecedor['op'])
-                    if fornecedor.get('agencia'): partes_dados.append(fornecedor['agencia'])
-                    if fornecedor.get('conta'): partes_dados.append(fornecedor['conta'])
-                    partes_dados.append(fornecedor['cnpj_cpf'])
-                    dados_bancarios = ' - '.join(partes_dados)
+                dados_bancarios = compor_dados_bancarios(
+                    chave_pix=fornecedor.get('chave_pix'),
+                    banco=fornecedor.get('banco'), op=fornecedor.get('op'),
+                    agencia=fornecedor.get('agencia'), conta=fornecedor.get('conta'),
+                    cnpj_cpf=fornecedor.get('cnpj_cpf'),
+                    tipo_pessoa=fornecedor.get('tipo_pessoa'))
                 
                 self.campos_despesa['dados_bancarios'].delete(0, tk.END)
                 self.campos_despesa['dados_bancarios'].insert(0, dados_bancarios)
@@ -6581,21 +6572,12 @@ class SistemaEntradaDados:
                     return ""
             
             # PRIORIDADE 3: Construir dados para TED (apenas se houver dados completos)
-            partes_dados = []
-            
-            if fornecedor.get('banco'): 
-                partes_dados.append(fornecedor['banco'])
-            if fornecedor.get('op'): 
-                partes_dados.append(fornecedor['op'])
-            if fornecedor.get('agencia'): 
-                partes_dados.append(fornecedor['agencia'])
-            if fornecedor.get('conta'): 
-                partes_dados.append(fornecedor['conta'])
-            
-            # Só adicionar CNPJ/CPF se houver pelo menos um dado bancário
-            if partes_dados:
-                partes_dados.append(fornecedor['cnpj_cpf'])
-                resultado = ' - '.join(partes_dados)
+            resultado = compor_dados_bancarios(
+                banco=fornecedor.get('banco'), op=fornecedor.get('op'),
+                agencia=fornecedor.get('agencia'), conta=fornecedor.get('conta'),
+                cnpj_cpf=fornecedor.get('cnpj_cpf'),
+                tipo_pessoa=fornecedor.get('tipo_pessoa'))
+            if resultado:
                 logger.debug(f"DEBUG: Construindo dados TED: '{resultado}'")
                 return resultado
             else:
@@ -6613,32 +6595,16 @@ class SistemaEntradaDados:
         """Atualiza o campo de resumo dos dados bancários em tempo real"""
         try:
             # Obter chave PIX
-            chave_pix = self.campos_form['chave_pix'].get().strip()
-            
-            if chave_pix:
-                # FORMA 1: Pagamento via PIX
-                dados_consolidados = f"PIX: {chave_pix}"
-            else:
-                # Verificar se tem dados bancários para TED
-                banco = self.campos_form['banco'].get().strip()
-                op = self.campos_form['op'].get().strip()
-                agencia = self.campos_form['agencia'].get().strip()
-                conta = self.campos_form['conta'].get().strip()
-                cnpj_cpf = self.campos_form['cnpj_cpf'].get().strip()
-                
-                # FORMA 2: Pagamento via TED (precisa de todos os dados)
-                if banco and agencia and conta and cnpj_cpf:
-                    partes = [banco]
-                    if op:
-                        partes.append(f"Op: {op}")
-                    partes.append(f"Ag: {agencia}")
-                    partes.append(f"Conta: {conta}")
-                    partes.append(f"CNPJ/CPF: {cnpj_cpf}")
-                    
-                    dados_consolidados = " | ".join(partes)
-                # FORMA 3: Pagamento em DINHEIRO (não precisa de dados bancários)
-                else:
-                    dados_consolidados = "NENHUM DADO BANCÁRIO CADASTRADO"
+            # Mesmo formato que o Salvar grava na coluna O da base
+            dados_consolidados = compor_dados_bancarios(
+                chave_pix=self.campos_form['chave_pix'].get(),
+                banco=self.campos_form['banco'].get(),
+                op=self.campos_form['op'].get(),
+                agencia=self.campos_form['agencia'].get(),
+                conta=self.campos_form['conta'].get(),
+                cnpj_cpf=self.campos_form['cnpj_cpf'].get(),
+                tipo_pessoa=self.campos_form['tipo_pessoa'].get(),
+            ) or "NENHUM DADO BANCÁRIO CADASTRADO"
             
             # Atualizar campo display
             self.campos_form['dados_bancarios_display'].config(state='normal')
@@ -6998,13 +6964,16 @@ class SistemaEntradaDados:
 
         # ── 2. MONTAR DADOS BANCÁRIOS ──────────────────────────────────
         chave_pix = self.campos_form['chave_pix'].get().strip()
-        if chave_pix:
-            dados_bancarios = f"PIX: {chave_pix}"
-        else:
-            partes = [self.campos_form[c].get().strip()
-                    for c in ('banco', 'op', 'agencia', 'conta')
-                    if self.campos_form[c].get().strip()]
-            dados_bancarios = ' - '.join(partes)
+        # Grava exatamente o que aparece em "Dados Consolidados"
+        dados_bancarios = compor_dados_bancarios(
+            chave_pix=chave_pix,
+            banco=self.campos_form['banco'].get(),
+            op=self.campos_form['op'].get(),
+            agencia=self.campos_form['agencia'].get(),
+            conta=self.campos_form['conta'].get(),
+            cnpj_cpf=cnpj_cpf_numeros,
+            tipo_pessoa=tipo_pessoa,
+        )
 
         # ── 3. DICIONÁRIO ÚNICO DE CAMPOS ─────────────────────────────
         #   Para adicionar um novo campo no futuro:
@@ -8678,15 +8647,11 @@ class SistemaEntradaDados:
                     dados_bancarios = f"PIX: {fornecedor_completo['chave_pix']}"
                 else:
                     # Estrutura para TED
-                    dados_ted = []
-                    if fornecedor_completo.get('banco'): dados_ted.append(str(fornecedor_completo['banco']))
-                    if fornecedor_completo.get('op'): dados_ted.append(str(fornecedor_completo['op']))
-                    if fornecedor_completo.get('agencia'): dados_ted.append(str(fornecedor_completo['agencia']))
-                    if fornecedor_completo.get('conta'): dados_ted.append(str(fornecedor_completo['conta']))
-                    # SEMPRE adicionar o CNPJ/CPF para TED
-                    dados_ted.append(str(fornecedor_completo['cnpj_cpf']))
-                    
-                    dados_bancarios = ' - '.join(filter(None, dados_ted))
+                    dados_bancarios = compor_dados_bancarios(
+                        banco=fornecedor_completo.get('banco'), op=fornecedor_completo.get('op'),
+                        agencia=fornecedor_completo.get('agencia'), conta=fornecedor_completo.get('conta'),
+                        cnpj_cpf=fornecedor_completo.get('cnpj_cpf'),
+                        tipo_pessoa=fornecedor_completo.get('tipo_pessoa'))
 
                 if dados_bancarios.strip() in ['', ' - ']:
                     dados_bancarios = ''
@@ -12192,18 +12157,12 @@ class ImportadorRH:
                 fornecedor = self.sistema.buscar_fornecedor_completo(cpf)
                 if fornecedor:
                     # Preferir PIX se disponível
-                    if fornecedor.get('chave_pix'):
-                        return f"PIX: {fornecedor['chave_pix']}"
-                    else:
-                        # Montar dados bancários para TED
-                        partes = []
-                        if fornecedor.get('banco'): partes.append(str(fornecedor['banco']))
-                        if fornecedor.get('op'): partes.append(str(fornecedor['op']))
-                        if fornecedor.get('agencia'): partes.append(str(fornecedor['agencia']))
-                        if fornecedor.get('conta'): partes.append(str(fornecedor['conta']))
-                        partes.append(cpf)  # Sempre adicionar CPF
-
-                        return ' - '.join(partes) if partes else 'DADOS BANCÁRIOS NÃO CADASTRADOS'
+                    return compor_dados_bancarios(
+                        chave_pix=fornecedor.get('chave_pix'),
+                        banco=fornecedor.get('banco'), op=fornecedor.get('op'),
+                        agencia=fornecedor.get('agencia'), conta=fornecedor.get('conta'),
+                        cnpj_cpf=cpf, tipo_pessoa='PF',
+                    ) or 'DADOS BANCÁRIOS NÃO CADASTRADOS'
 
             return 'DADOS BANCÁRIOS NÃO CADASTRADOS'
 

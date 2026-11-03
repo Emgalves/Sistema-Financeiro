@@ -707,6 +707,74 @@ def formatar_moeda_br(valor):
 
 # === DADOS BANCARIOS ===
 
+def compor_dados_bancarios(chave_pix='', banco='', op='', agencia='', conta='',
+                           cnpj_cpf='', tipo_pessoa=None):
+    """
+    Monta o texto de DADOS BANCÁRIOS num formato ÚNICO para todo o sistema.
+
+    É usada pelo "Dados Consolidados" do Editar Fornecedor, pelo Salvar
+    (coluna O da base_fornecedores.xlsx) e pela tela Entrada de Dados,
+    para que os três mostrem exatamente o mesmo texto.
+
+    Regras:
+      - Com chave PIX:  "PIX: <chave>"
+      - Sem PIX, com banco/agência/conta (TED):
+            "BANCO | Op: 013 | Ag: 0001 | Conta: 12345-6 | CNPJ/CPF: 00.000.000/0000-00"
+        (Op só aparece se preenchida; o CNPJ/CPF sai sempre com máscara;
+         zeros à esquerda perdidos pelo Excel são repostos na agência e na Op.)
+      - Sem nenhum dado bancário: "" (string vazia)
+
+    O separador " | " é o que o relatório quinzenal usa para quebrar linha.
+    """
+    def _txt(valor):
+        if valor is None:
+            return ''
+        texto = str(valor).strip()
+        return '' if texto.lower() in ('nan', 'none') else texto
+
+    pix = _txt(chave_pix)
+    if pix:
+        return f"PIX: {pix}"
+
+    banco, op, agencia, conta = _txt(banco), _txt(op), _txt(agencia), _txt(conta)
+    if not (banco or op or agencia or conta):
+        return ''
+
+    # O Excel guarda agência/operação como número e perde os zeros à esquerda
+    # (0001 vira 1; 013 vira 13). Recompõe: agência com 4 dígitos, Op com 3.
+    def _zeros(valor, tamanho):
+        if valor.endswith('.0') and valor[:-2].isdigit():
+            valor = valor[:-2]
+        return valor.zfill(tamanho) if valor.isdigit() and len(valor) < tamanho else valor
+    agencia = _zeros(agencia, 4)
+    op = _zeros(op, 3)
+
+    partes = []
+    if banco:
+        partes.append(banco)
+    if op:
+        partes.append(f"Op: {op}")
+    if agencia:
+        partes.append(f"Ag: {agencia}")
+    if conta:
+        partes.append(f"Conta: {conta}")
+
+    documento = _txt(cnpj_cpf)
+    if documento:
+        tipo = _txt(tipo_pessoa).upper()
+        if tipo not in ('PF', 'PJ'):
+            # Sem tipo informado: até 11 caracteres = CPF, acima = CNPJ
+            alfanum = ''.join(c for c in documento if c.isalnum())
+            tipo = 'PF' if len(alfanum) <= 11 else 'PJ'
+        try:
+            documento = formatar_documento(documento, tipo) or documento
+        except Exception:
+            pass
+        partes.append(f"CNPJ/CPF: {documento}")
+
+    return " | ".join(partes)
+
+
 def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_fornecedores=None):
     """
     Busca os dados bancários do fornecedor conforme a forma de pagamento
@@ -754,19 +822,12 @@ def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_f
                 
                 # SEGUNDO: Se coluna O estiver em branco, continuar com o processo existente
                 if forma_pagamento == "PIX" and row[10]:  # Chave PIX está na coluna K
-                    dados_bancarios = f"PIX: {row[10]}"
+                    dados_bancarios = compor_dados_bancarios(chave_pix=row[10])
                 else:
-                    # Construir dados para TED, SEMPRE incluindo CNPJ/CPF
-                    partes_dados = []
-                    if row[6]: partes_dados.append(str(row[6]))  # Banco
-                    if row[7]: partes_dados.append(str(row[7]))  # OP
-                    if row[8]: partes_dados.append(str(row[8]))  # Agência
-                    if row[9]: partes_dados.append(str(row[9]))  # Conta
-                    
-                    # SEMPRE incluir CNPJ/CPF para TED, independente da forma de pagamento selecionada
-                    if row[0]: partes_dados.append(str(row[0]))
-                    
-                    dados_bancarios = ' - '.join(filter(None, partes_dados))
+                    # TED: formato único (inclui CNPJ/CPF com máscara)
+                    dados_bancarios = compor_dados_bancarios(
+                        banco=row[6], op=row[7], agencia=row[8], conta=row[9],
+                        cnpj_cpf=row[0], tipo_pessoa=row[1])
                     
                 # Se não encontrou dados bancários
                 if not dados_bancarios or dados_bancarios.strip() == '-':

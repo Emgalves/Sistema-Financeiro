@@ -2172,6 +2172,22 @@ class RelatorioHandler:
             print(f"Erro ao consolidar despesas: {str(e)}")
             raise
 
+    def _formatar_dados_bancarios(self, valor, estilo_celula):
+        """Formata o campo DADOS BANCÁRIOS para caber na coluna do PDF.
+
+        - Escapa &, < e > (caracteres especiais para o Paragraph do ReportLab).
+        - Cada trecho separado por "|" vai para uma linha própria
+          (ex.: "INTER | Ag: 0001 | Conta: ... | CNPJ/CPF: ..." vira 4 linhas).
+        - Textos sem "|" (ex.: chave PIX) quebram automaticamente se forem longos.
+        """
+        from xml.sax.saxutils import escape
+
+        texto = '' if valor is None else str(valor).strip()
+        if texto.lower() == 'nan':
+            texto = ''
+        partes = [escape(p.strip()) for p in texto.split('|') if p.strip()]
+        return Paragraph('<br/>'.join(partes), estilo_celula)
+
     def criar_tabela_despesas_com_cabecalho_customizado(self, dados, colunas_dados, colunas_exibicao, larguras, incluir_total=True):
         """Cria tabela com cabeçalhos customizados (diferentes dos nomes das colunas internas)
         
@@ -2255,6 +2271,10 @@ class RelatorioHandler:
                 elif coluna == 'REFERÊNCIA':
                     valor = str(valor)
                     linha_formatada.append(Paragraph(valor, estilo_celula))
+
+                # Quebra de linha para Dados Bancários (PIX curto ou TED longa)
+                elif coluna in ('DADOS BANCÁRIOS', 'DADOS_BANCARIOS'):
+                    linha_formatada.append(self._formatar_dados_bancarios(valor, estilo_celula))
                 
                 # Tratar coluna STATUS
                 elif coluna == 'STATUS':
@@ -2412,6 +2432,10 @@ class RelatorioHandler:
                 elif coluna == 'REFERÊNCIA':
                     valor = str(valor)
                     linha_formatada.append(Paragraph(valor, estilo_celula))
+
+                # Quebra de linha para Dados Bancários (PIX curto ou TED longa)
+                elif coluna in ('DADOS BANCÁRIOS', 'DADOS_BANCARIOS'):
+                    linha_formatada.append(self._formatar_dados_bancarios(valor, estilo_celula))
                 
                 # Tratar coluna STATUS
                 elif coluna == 'STATUS':
