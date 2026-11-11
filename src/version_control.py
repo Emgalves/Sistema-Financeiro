@@ -10,12 +10,11 @@ from pathlib import Path
 VERSION_INFO = {
     "major": 1,
     "minor": 9,
-    "patch": 1,
-    "release_date": "30/10/2026",
+    "patch": 3,
+    "release_date": "11/11/2026",
     "changes": [
-        "Inclusão de backup de planilhas para eventual perda de dados.",
-        "Inclusão de dados do usuário que gravou na planilha do cliente, aba Dados",
-        "Melhoria nas janelas de diálogos, mantendo-as sempre à frente"
+        "Correção da ferramenta para mesclar fornecedores.",
+        "Disponibilizada a possibilidade de selecionar mais de um fornecedor para ser visualizados em Lançamentos."
     ]
 }
 
