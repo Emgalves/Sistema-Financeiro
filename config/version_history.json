@@ -417,5 +417,23 @@
             "Inclusão de backup de planilhas para eventual perda de dados."
         ],
         "timestamp": "2026-10-20T15:15:53.421115"
+    },
+    {
+        "version": "1.9.2",
+        "release_date": "05/11/2026",
+        "changes": [
+            "Correção dos dados bancários de fornecedor.",
+            "Reorganização dos dados bancários, quando TED, no relatório quinzenal."
+        ],
+        "timestamp": "2026-11-05T14:39:59.507826"
+    },
+    {
+        "version": "1.9.3",
+        "release_date": "11/11/2026",
+        "changes": [
+            "Correção da ferramenta para mesclar fornecedores.",
+            "Disponibilizada a possibilidade de selecionar mais de um fornecedor para ser visualizados em Lançamentos."
+        ],
+        "timestamp": "2026-11-11T19:14:22.352749"
     }
 ]
