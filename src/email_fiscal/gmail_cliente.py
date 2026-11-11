@@ -10,7 +10,7 @@ Dependências:
     pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 """
 
-VERSAO = "2026-09-26.4"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
 import base64
 import io
 import re
@@ -52,7 +52,10 @@ def obter_servico():
         cfg.PASTA_CREDENCIAIS.mkdir(parents=True, exist_ok=True)
         cfg.ARQUIVO_TOKEN.write_text(cred.to_json(), encoding="utf-8")
 
-    return build("gmail", "v1", credentials=cred, cache_discovery=False)
+    import httplib2
+    import google_auth_httplib2
+    http = google_auth_httplib2.AuthorizedHttp(cred, http=httplib2.Http(timeout=cfg.TIMEOUT_GMAIL))
+    return build("gmail", "v1", http=http, cache_discovery=False)
 
 
 def listar_ids(servico, consulta=None, dias=None, limite=None):
@@ -67,7 +70,7 @@ def listar_ids(servico, consulta=None, dias=None, limite=None):
     while len(ids) < limite:
         resp = servico.users().messages().list(
             userId="me", q=q, pageToken=token, maxResults=min(100, limite - len(ids))
-        ).execute()
+        ).execute(num_retries=2)
         ids += [m["id"] for m in resp.get("messages", [])]
         token = resp.get("nextPageToken")
         if not token:
@@ -91,7 +94,7 @@ def obter_mensagens(servico, msg_id):
 
     Retorna uma lista de dicts: [{id, data, remetente, assunto, corpo, anexos, origem}]
     (o primeiro item é a própria mensagem recebida)."""
-    bruto = servico.users().messages().get(userId="me", id=msg_id, format="raw").execute()
+    bruto = servico.users().messages().get(userId="me", id=msg_id, format="raw").execute(num_retries=2)
     raiz = message_from_bytes(_b64(bruto["raw"]), policy=policy.default)
     saida = []
     _desmontar(raiz, saida, msg_id)

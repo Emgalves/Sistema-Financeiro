@@ -17,7 +17,7 @@ Regras de identificação do cliente (em ordem):
   4. Nada disso                                             -> NAO_IDENTIFICADO
 """
 
-VERSAO = "2026-09-26.4"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
 import re
 import unicodedata
 from datetime import datetime, date
@@ -81,6 +81,16 @@ class BaseDados:
                 "encerrado": lin.get("DATA FINAL") not in (None, "", " "),
             })
         return clientes
+
+    def senhas_pdf(self):
+        """Senhas a tentar em PDFs protegidos (SENHAS_PDF + derivadas dos CPFs dos clientes)."""
+        senhas = list(cfg.SENHAS_PDF)
+        if getattr(cfg, "SENHAS_PELO_CPF_DOS_CLIENTES", False):
+            for c in self.clientes:
+                d = c["doc"]
+                if d:
+                    senhas += [d[:3], d[:4], d[:5], d[:6], d]
+        return list(dict.fromkeys(s for s in senhas if s))
 
     def nomes_clientes(self):
         return sorted(c["nome"] for c in self.clientes)
@@ -169,7 +179,14 @@ class BaseDados:
         self._cache_lancados[cliente] = linhas
         return linhas
 
-    def ja_lancado(self, cliente, id_sugestao=None, doc=None, nf=None, valor=None, vencimento=None):
+    def limpar_cache_cliente(self, cliente=None):
+        if cliente:
+            self._cache_lancados.pop(cliente, None)
+        else:
+            self._cache_lancados.clear()
+
+    def ja_lancado(self, cliente, id_sugestao=None, doc=None, nf=None, valor=None, vencimento=None,
+                   nfs_provaveis=None, parcelado=False):
         """Verifica na planilha do cliente. Retorna (True/False, motivo).
 
         1. Marcador "IMPORTADO EMAIL #id" na OBSERVAÇÃO -> já importado por esta rotina.
@@ -177,15 +194,24 @@ class BaseDados:
            + mesmo valor + mesma NF (se houver) + mesmo vencimento (se houver)."""
         if not cliente:
             return False, ""
-        marcador = f"{cfg.PREFIXO_OBSERVACAO} #{int(float(id_sugestao))}" if id_sugestao else None
-        padrao_marcador = re.compile(re.escape(marcador) + r"(?!\d)") if marcador else None
+        id_txt = str(id_sugestao).split(".")[0] if id_sugestao not in (None, "") else ""
+        marcador = f"{cfg.PREFIXO_OBSERVACAO} #{id_txt}" if id_txt else None
+        # "#12" não pode casar com "#123": o número tem de terminar ali
+        rx_marcador = re.compile(re.escape(marcador) + r"(?!\d)") if marcador else None
         k_doc = _chave_doc(doc)
-        nf_txt = _nf_texto(nf)
+        nf_txt = str(nf or "").strip().lstrip("0")
 
         for lin in self._lancamentos_cliente(cliente):
             obs = str(lin.get("OBSERVACAO") or "")
-            if padrao_marcador and padrao_marcador.search(obs):
-                return True, f"marcador '{marcador}' encontrado (ID_LANCAMENTO {lin.get('ID_LANCAMENTO')})"
+            if rx_marcador and rx_marcador.search(obs):
+                # confirma que é a mesma conta (protege contra marcador de outra triagem,
+                # ex.: planilhas copiadas da produção para o teste)
+                k_lin = _chave_doc(lin.get("CNPJ_CPF"))
+                v_lin = _para_float(lin.get("VALOR"))
+                mesma = ((not k_doc or _raiz(k_lin) == _raiz(k_doc)) and
+                         (valor is None or v_lin is None or abs(v_lin - valor) <= 0.01))
+                if mesma:
+                    return True, f"marcador '{marcador}' encontrado (ID_LANCAMENTO {lin.get('ID_LANCAMENTO')})"
             if not k_doc or str(lin.get("STATUS") or "ATIVO").upper() != "ATIVO":
                 continue
             k_lin = _chave_doc(lin.get("CNPJ_CPF"))
@@ -198,9 +224,43 @@ class BaseDados:
                     and (valor is None or abs((_para_float(lin.get("VALOR")) or 0) - valor) <= 0.01)):
                 return True, (f"mesma NF {nf_txt} do mesmo emitente já lançada "
                               f"(ID_LANCAMENTO {lin.get('ID_LANCAMENTO')}, R$ {lin.get('VALOR')})")
+            # 4. Boleto sem NF cujo "Nº do documento" é a NF de um lançamento da mesma
+            #    empresa, com o mesmo valor: é a mesma conta, mesmo com vencimento diferente
+            #    (boleto reemitido, ou lançamento registrado com a data do pagamento).
+            provaveis = {str(x).strip().lstrip("0") for x in (nfs_provaveis or []) if str(x).strip() not in ("", "-")}
+            nf_lin = _nf_texto(lin.get("NF"))
+            if not nf_txt and provaveis and nf_lin in provaveis and valor is None:
+                return True, (f"documento complementar da NF {nf_lin} já lançada pela mesma empresa "
+                              f"(ID_LANCAMENTO {lin.get('ID_LANCAMENTO')})")
+            if (not nf_txt and provaveis and nf_lin in provaveis and valor is not None
+                    and abs((_para_float(lin.get("VALOR")) or 0) - valor) <= 0.01):
+                d_lin = _para_data(lin.get("DT_VENCTO"))
+                obs = (f"; vencimento do boleto {vencimento:%d/%m/%Y} x lançado {d_lin:%d/%m/%Y}"
+                       if vencimento and d_lin and d_lin != vencimento else "")
+                return True, (f"NF {nf_lin} indicada no boleto já lançada, mesma empresa e valor "
+                              f"(ID_LANCAMENTO {lin.get('ID_LANCAMENTO')}){obs}")
+            # 5. Nota de parcela ÚNICA com mesma NF e valor de um lançamento da mesma empresa,
+            #    mas vencimento diferente (o lançamento costuma ter a data do pagamento):
+            #    é a mesma conta, desde que só exista um lançamento dessa NF.
+            if (nf_txt and not parcelado and nf_lin == nf_txt and valor is not None
+                    and abs((_para_float(lin.get("VALOR")) or 0) - valor) <= 0.01):
+                mesmas = [x for x in self._lancamentos_cliente(cliente)
+                          if _raiz(_chave_doc(x.get("CNPJ_CPF"))) == _raiz(k_doc)
+                          and _nf_texto(x.get("NF")) == nf_txt
+                          and str(x.get("STATUS") or "ATIVO").upper() == "ATIVO"]
+                if len(mesmas) == 1:
+                    d_lin = _para_data(lin.get("DT_VENCTO"))
+                    obs = (f"; vencimento da nota {vencimento:%d/%m/%Y} x lançado {d_lin:%d/%m/%Y}"
+                           if vencimento and d_lin and d_lin != vencimento else "")
+                    return True, (f"mesma NF {nf_txt} e valor, mesma empresa "
+                                  f"(ID_LANCAMENTO {lin.get('ID_LANCAMENTO')}){obs}")
             if not _mesma_conta(lin, nf_txt, valor, vencimento):
                 continue
             quem = "mesmo fornecedor" if k_lin == k_doc else f"outra filial da mesma empresa (CNPJ {k_lin})"
+            if nf_txt and not _nf_texto(lin.get("NF")) and not re.search(
+                    rf"\bNF\s*{re.escape(nf_txt)}\b", normalizar_texto(lin.get("REFERENCIA"))):
+                return True, (f"{quem}: lançado SEM NF (\"{lin.get('REFERENCIA')}\"), mesmo valor e vencimento "
+                              f"(ID_LANCAMENTO {lin.get('ID_LANCAMENTO')}) - atualize NF {nf_txt} e referência nesse lançamento")
             return True, (f"{quem}, valor{', NF' if nf_txt else ''}"
                           f"{' e vencimento' if vencimento else ''} iguais (ID_LANCAMENTO {lin.get('ID_LANCAMENTO')})")
         return False, ""
@@ -208,7 +268,7 @@ class BaseDados:
     def possivel_duplicidade(self, cliente, doc=None, nf=None, valor=None, vencimento=None):
         """Mesma NF, mesmo valor e mesmo vencimento, mas lançada com o CNPJ de
         OUTRA empresa. Não descarta nada: só devolve o texto do alerta ("" se não houver)."""
-        nf_txt = _nf_texto(nf)
+        nf_txt = str(nf or "").strip().lstrip("0")
         k_doc = _chave_doc(doc)
         if not cliente or not nf_txt:
             return ""
@@ -249,7 +309,11 @@ def _mesma_conta(lin, nf_txt, valor, vencimento, exigir_vencimento=False):
         nf_lin = _nf_texto(lin.get("NF"))
         ref = normalizar_texto(lin.get("REFERENCIA"))
         if nf_lin != nf_txt and not re.search(rf"\bNF\s*{re.escape(nf_txt)}\b", ref):
-            return False
+            # lançamento SEM número de NF (ex.: "BOLETO - AGUARDANDO NF") com o mesmo
+            # vencimento é a mesma conta: a nota chegou depois do boleto já lançado
+            d_lin = _para_data(lin.get("DT_VENCTO"))
+            if nf_lin or not vencimento or d_lin != vencimento:
+                return False
     if vencimento:  # parcelas da mesma NF têm o mesmo número: o vencimento diferencia
         d_lin = _para_data(lin.get("DT_VENCTO"))
         if d_lin and d_lin != vencimento:
@@ -264,10 +328,7 @@ def _nf_texto(v):
         return ""
     if isinstance(v, float) and v.is_integer():
         v = int(v)
-    s = str(v).strip()
-    if re.fullmatch(r"\d+\.0", s):   # resíduo do pandas gravado como texto
-        s = s[:-2]
-    return s.lstrip("0")
+    return str(v).strip().lstrip("0")
 
 
 def _para_float(v):

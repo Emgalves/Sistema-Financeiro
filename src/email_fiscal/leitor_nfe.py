@@ -7,7 +7,7 @@ A leitura ignora namespaces (procura pelo "nome local" das tags), porque cada
 emissor/prefeitura grava o XML de um jeito ligeiramente diferente.
 """
 
-VERSAO = "2026-09-26.4"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
 import re
 import xml.etree.ElementTree as ET
 from datetime import datetime, date
@@ -207,6 +207,7 @@ def ler_nfe(raiz):
         "emissao": _data(_txt(raiz, "ide", "dhEmi") or _txt(raiz, "ide", "dEmi")),
         "tipo_operacao": _txt(raiz, "ide", "tpNF"),       # 1 = saída do emitente
         "natureza": _txt(raiz, "ide", "natOp"),
+        "formas_pagamento": [_txt(p, "tPag") for p in _achar_todos(raiz, "detPag") if _txt(p, "tPag")],
         "emit_doc": _doc(raiz, "emit"),
         "emit_nome": _txt(raiz, "emit", "xNome"),
         "dest_doc": _doc(raiz, "dest"),

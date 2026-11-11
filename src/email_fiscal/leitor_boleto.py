@@ -11,10 +11,17 @@ leitor_boleto.py - Extrai de PDFs (e de textos de e-mail):
 Limitação: PDF que é só imagem (escaneado) não tem texto -> vai para triagem manual.
 """
 
-VERSAO = "2026-09-26.4"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
 import io
+import logging
 import re
 from datetime import date, timedelta
+
+# O pdfminer (usado pelo pdfplumber) registra CADA comando interno do PDF em nível
+# DEBUG. Se o sistema estiver com log em DEBUG, isso gera megabytes por arquivo e
+# deixa a leitura dezenas de vezes mais lenta. Só avisos e erros dele interessam.
+for _nome in ("pdfminer", "pdfplumber", "PIL"):
+    logging.getLogger(_nome).setLevel(logging.WARNING)
 
 try:
     import pdfplumber
@@ -29,15 +36,24 @@ def extrair_texto_pdf(conteudo: bytes, senhas=()):
     """Retorna (texto, status). status: 'OK', 'SEM_TEXTO', 'PROTEGIDO', 'ERRO', 'SEM_BIBLIOTECA'."""
     if pdfplumber is None:
         return "", "SEM_BIBLIOTECA"
+    try:
+        from . import config_email as _cfg
+        limite_mb, limite_pag = _cfg.MAX_TAMANHO_PDF_MB, _cfg.MAX_PAGINAS_PDF
+    except Exception:
+        limite_mb, limite_pag = 15, 8
+    if len(conteudo or b"") > limite_mb * 1024 * 1024:
+        return "", "GRANDE"
     for senha in [None, *senhas]:
         try:
             with pdfplumber.open(io.BytesIO(conteudo), password=senha) as pdf:
-                partes = [(p.extract_text() or "") for p in pdf.pages]
+                partes = [(p.extract_text() or "") for p in pdf.pages[:limite_pag]]
             texto = "\n".join(partes)
             return (texto, "OK") if texto.strip() else ("", "SEM_TEXTO")
         except Exception as e:
-            nome = type(e).__name__.lower()
-            if "password" in nome or "encrypt" in str(e).lower() or "password" in str(e).lower():
+            # o pdfplumber embrulha o erro do pdfminer: o texto da exceção vem vazio e
+            # o motivo real (PDFPasswordIncorrect) só aparece no repr/args
+            descricao = (type(e).__name__ + " " + repr(e) + " " + repr(getattr(e, "args", ""))).lower()
+            if "password" in descricao or "encrypt" in descricao:
                 continue
             return "", "ERRO"
     return "", "PROTEGIDO"
@@ -392,3 +408,170 @@ def conferir_boleto_com_texto(boleto, texto):
     if boleto.get("vencimento") and boleto["vencimento"].strftime("%d/%m/%Y") not in texto:
         alertas.append(f"Vencimento do código ({boleto['vencimento']:%d/%m/%Y}) não aparece impresso no boleto - confira")
     return alertas
+
+
+# ---------------------------------------------------------------------------
+# Número do documento / NF impresso no boleto
+# ---------------------------------------------------------------------------
+_RE_ROTULO_DOC = re.compile(
+    r"(n[uú]m(?:ero)?\.?\s*(?:do\s+)?documento|nr\.?\s*(?:do\s+)?documento|n[º°o]\.?\s*(?:do\s+)?documento|nota\s+fiscal|"
+    r"num\.?\s*n\.?\s*fiscal|n[º°o]\.?\s*nf\b|\bnf[\s:]+)", re.IGNORECASE)
+_RE_NUM_DOC = re.compile(r"(?<![\d.,/])0*(\d{2,9})(?:[A-Za-z]|-\d{1,3}(?:/\d{1,3})?)?(?![\d.,]|/\d)")
+
+
+def numeros_documento(texto: str):
+    """Números que aparecem logo depois de "Nº do documento", "Número do documento",
+    "Nota Fiscal" etc. No boleto, esse número costuma ser o da NF (às vezes com
+    sufixo de parcela: 18337A, 566417-3, 34824-1/1). Devolve os números sem zeros
+    à esquerda e sem sufixo, na ordem em que aparecem."""
+    achados = []
+    for m in _RE_ROTULO_DOC.finditer(texto or ""):
+        trecho = texto[m.end():m.end() + 120]
+        for n in _RE_NUM_DOC.finditer(trecho):
+            num = n.group(1)
+            # descarta datas (dd/mm/aaaa já excluídas pelo padrão) e CEP/agência curtos demais
+            if len(num) >= 3 and num not in achados:
+                achados.append(num)
+            break  # só o primeiro número depois de cada rótulo
+    return achados
+
+
+def chaves_da_danfe(texto: str):
+    """Chave(s) da PRÓPRIA nota: a primeira chave válida logo depois de cada rótulo
+    "CHAVE DE ACESSO" (um PDF pode ter várias DANFEs). Chaves citadas em
+    "Informações complementares" (ex.: "NFCe Ref.: 3126...") NÃO são notas novas."""
+    texto = texto or ""
+    rotulos = [m.end() for m in re.finditer(r"chave\s+de\s+acesso", texto, re.IGNORECASE)]
+    chaves = []
+    for pos in rotulos:
+        achadas = encontrar_chaves_nfe(texto[pos:pos + 400])
+        if achadas and achadas[0] not in chaves:
+            chaves.append(achadas[0])
+    if chaves:
+        return chaves
+    # sem rótulo: todas, menos as precedidas de "Ref"
+    saida = []
+    for c in encontrar_chaves_nfe(texto):
+        primeiro = re.sub(r"(\d{4})", r"\1\\s*", c[:8])
+        m = re.search(primeiro, texto)
+        antes = texto[max(0, m.start() - 40):m.start()].lower() if m else ""
+        if "ref" not in antes:
+            saida.append(c)
+    return saida
+
+
+def numero_ao_lado(conteudo: bytes, senhas=(), rotulos=("NFS-e", "NFSe", "NFS-E", "Nota Fiscal", "NF", "Nº NF")):
+    """Usa a POSIÇÃO das palavras no PDF (não a ordem do texto extraído, que pode vir
+    embaralhada): para cada rótulo encontrado, devolve o primeiro número à direita
+    na mesma linha. Ex.: relatório de medição com "NFS-e: 1562"."""
+    if pdfplumber is None:
+        return []
+    alvos = {r.upper().rstrip(":") for r in rotulos}
+    achados = []
+    for senha in [None, *senhas]:
+        try:
+            with pdfplumber.open(io.BytesIO(conteudo), password=senha) as pdf:
+                for pagina in pdf.pages[:2]:
+                    palavras = pagina.extract_words()
+                    for i, w in enumerate(palavras):
+                        if w["text"].upper().rstrip(":") not in alvos:
+                            continue
+                        mesma_linha = sorted((x for x in palavras if abs(x["top"] - w["top"]) < 3
+                                              and x["x0"] > w["x1"] and x["x0"] - w["x1"] < 120),
+                                             key=lambda x: x["x0"])
+                        for x in mesma_linha[:2]:
+                            m = re.fullmatch(r"[Nº°o.]*0*(\d{2,9})(?:[-/]\d{1,3})?", x["text"])
+                            if m:
+                                if m.group(1) not in achados:
+                                    achados.append(m.group(1))
+                                break
+            return achados
+        except Exception as e:
+            if "password" in (repr(e) + repr(getattr(e, "args", ""))).lower():
+                continue
+            return achados
+    return achados
+
+
+def _sem_acento(t):
+    import unicodedata
+    return unicodedata.normalize("NFKD", t).encode("ascii", "ignore").decode().upper()
+
+
+def valor_liquido_danfse(conteudo: bytes, senhas=()):
+    """DANFSe (padrão nacional): valor logo ABAIXO do rótulo "VALOR LÍQUIDO DA NFS-e",
+    localizado pela posição na página (a ordem do texto extraído varia). Aceita o
+    rótulo em palavras separadas ("VALOR LÍQUIDO DA NFS-e") ou grudadas
+    ("VALORLÍQUIDODANFS-e"), conforme o gerador do PDF, e ignora a versão "+ IBS/CBS"."""
+    if pdfplumber is None:
+        return None
+    for senha in [None, *senhas]:
+        try:
+            with pdfplumber.open(io.BytesIO(conteudo), password=senha) as pdf:
+                for pagina in pdf.pages[:2]:
+                    w = pagina.extract_words()
+                    for i in range(len(w)):
+                        # junta até 4 palavras da mesma linha, sem espaços
+                        junto, fim = "", i
+                        for j in range(i, min(i + 4, len(w))):
+                            if abs(w[j]["top"] - w[i]["top"]) > 2:
+                                break
+                            junto += _sem_acento(w[j]["text"]).replace(" ", "")
+                            fim = j
+                            if junto.startswith("VALORLIQUIDODANFS"):
+                                break
+                        if not junto.startswith("VALORLIQUIDODANFS") or "IBS" in junto:
+                            continue
+                        prox = w[fim + 1]["text"] if fim + 1 < len(w) and abs(w[fim + 1]["top"] - w[i]["top"]) <= 2 else ""
+                        if prox.startswith("+"):
+                            continue
+                        x0, topo = w[i]["x0"], w[i]["top"]
+                        abaixo = sorted((y for y in w if 0 < y["top"] - topo < 18 and x0 - 40 < y["x0"] < x0 + 120),
+                                        key=lambda y: (y["top"], y["x0"]))
+                        for y in abaixo:
+                            m = re.search(r"(\d{1,3}(?:\.\d{3})*,\d{2})", y["text"])
+                            if m:
+                                return round(float(m.group(1).replace(".", "").replace(",", ".")), 2)
+            return None
+        except Exception as e:
+            if "password" in (repr(e) + repr(getattr(e, "args", ""))).lower():
+                continue
+            return None
+    return None
+
+
+def vencimento_no_texto(texto: str):
+    """'VENCIMENTO: 23/10/2026' ou 'Venc.: 02/09/2026' (informações complementares)."""
+    m = re.search(r"\bvenc(?:imento)?\.?\s*:?\s*(\d{2})/(\d{2})/(\d{4})", texto or "", re.IGNORECASE)
+    if not m:
+        return None
+    try:
+        return date(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+    except ValueError:
+        return None
+
+
+# ---------------------------------------------------------------------------
+# Nota de débito (ex.: locação de bens móveis, que dispensa NFS-e)
+# ---------------------------------------------------------------------------
+# Em formulários como o da TUPI, os rótulos ("NOTA DE DÉBITO Nº", "VALOR R$",
+# "VENCIMENTO") e o CNPJ do fornecedor estão na IMAGEM de fundo; só os valores
+# preenchidos são texto. A linha "071845 503,29 071845 07/09/2026" (número, valor,
+# o mesmo número de novo, vencimento) é a assinatura do quadro de cobrança.
+_RE_ND = re.compile(r"(?<![\d.,/])(\d{4,9})\s+(\d{1,3}(?:\.\d{3})*,\d{2})\s+\1\s+(\d{2})/(\d{2})/(\d{4})")
+
+
+def ler_nota_debito(texto: str):
+    m = _RE_ND.search(texto or "")
+    if not m:
+        return None
+    try:
+        venc = date(int(m.group(5)), int(m.group(4)), int(m.group(3)))
+    except ValueError:
+        return None
+    ref = "LOCAÇÃO" if re.search(r"loca[çc][ãa]o", texto, re.IGNORECASE) else "NOTA DE DÉBITO"
+    c = re.search(r"contrato\s+([A-Z0-9][A-Z0-9.\-]*/\d{2,4})", texto, re.IGNORECASE)
+    if c:
+        ref += f" - CONTRATO {c.group(1).upper().rstrip('.')}"
+    return {"numero": m.group(1), "valor": round(float(m.group(2).replace(".", "").replace(",", ".")), 2),
+            "vencimento": venc, "referencia": ref}
