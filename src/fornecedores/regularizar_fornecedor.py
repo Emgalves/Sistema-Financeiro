@@ -228,6 +228,7 @@ class ResultadoRegularizacao:
     arquivos_com_falha: list = field(default_factory=list)  # PermissionError etc.
     avisos: list = field(default_factory=list)              # exigem atenção humana
     erro: str | None = None
+    codigo_erro: str | None = None                          # ex.: 'DIVERGENCIA_TIPO_PESSOA'
 
     def salvar_log(self, caminho):
         with open(caminho, "w", encoding="utf-8") as f:
@@ -1017,7 +1018,18 @@ def fundir_fornecedores(base_path, pasta_clientes, doc_vencedor, docs_perdedores
             wb.close()
             return resultado
         tipo_p = _tipo_pessoa_da_linha([c.value for c in linha])
-        if tipo_p and tipo_p != tipo_pessoa_vencedor and not ignorar_divergencia_tipo_pessoa:
+        # Exceção segura: perdedor PF cujo documento é um CPF CRIADO pelo sistema
+        # (aba 'CPF'). Esse CPF é só um provisório gerado porque o documento real
+        # não foi informado no cadastro - o caso típico de PJ cadastrada sem CNPJ.
+        cpf_provisorio = (tipo_p == "PF" and tipo_pessoa_vencedor == "PJ"
+                          and _cpf_criado_cadastrado(wb, d))
+        if tipo_p and tipo_p != tipo_pessoa_vencedor and cpf_provisorio:
+            resultado.avisos.append(
+                f"{_formatar_doc(d, 'PF')} é um CPF criado pelo sistema (provisório); "
+                f"mesclado no {tipo_pessoa_vencedor} {_formatar_doc(doc_vencedor_d, tipo_pessoa_vencedor)} "
+                f"apesar da diferença PF/PJ.")
+        elif tipo_p and tipo_p != tipo_pessoa_vencedor and not ignorar_divergencia_tipo_pessoa:
+            resultado.codigo_erro = "DIVERGENCIA_TIPO_PESSOA"
             resultado.erro = (
                 f"doc_perdedor {_formatar_doc(d, tipo_p)} é {tipo_p}, mas o vencedor "
                 f"{_formatar_doc(doc_vencedor_d, tipo_pessoa_vencedor)} é {tipo_pessoa_vencedor}. "

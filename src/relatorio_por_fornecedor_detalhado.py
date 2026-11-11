@@ -51,6 +51,41 @@ CATEGORIAS = {
 }
 
 
+def _so_digitos(valor):
+    """Só os dígitos; trata números que o Excel leu como float (ex.: 4.1518575000188e13)"""
+    if valor is None:
+        return ''
+    if isinstance(valor, float):
+        if pd.isna(valor):
+            return ''
+        valor = int(valor)
+    return ''.join(ch for ch in str(valor) if ch.isdigit())
+
+
+def _normalizar_doc(valor, lookup_tipo=None):
+    """
+    CNPJ com 14 dígitos / CPF com 11 dígitos, recompondo zeros à esquerda.
+    lookup_tipo: dict {digitos_sem_zeros_a_esquerda: 'PF'|'PJ'} vindo da base de fornecedores.
+    """
+    d = _so_digitos(valor)
+    if not d:
+        return ''
+    tipo = (lookup_tipo or {}).get(d.lstrip('0') or '0')
+    if tipo == 'PF':
+        return d.zfill(11)
+    if tipo == 'PJ' or len(d) > 11:
+        return d.zfill(14)
+    return d.zfill(11)
+
+
+def _formatar_doc(d):
+    if len(d) == 14:
+        return f"{d[:2]}.{d[2:5]}.{d[5:8]}/{d[8:12]}-{d[12:]}"
+    if len(d) == 11:
+        return f"{d[:3]}.{d[3:6]}.{d[6:9]}-{d[9:]}"
+    return d
+
+
 def formatar_moeda_br(valor):
     try:
         return f"R$ {float(valor):,.2f}".replace(',', '_').replace('.', ',').replace('_', '.')
@@ -72,8 +107,10 @@ class RelatorioPorFornecedorDetalhado:
 
         configurar_janela(self.root, "Relatório Detalhado por Fornecedor", 1150, 920)
 
-        self.fornecedor_selecionado = None
-        self.fornecedores_disponiveis = []   # list of dicts {nome, vinculo, cnpj}
+        self.fornecedor_selecionado = None   # primeiro da seleção (compatibilidade)
+        self.fornecedores_selecionados = []  # todos os selecionados (Ctrl/Shift+clique)
+        self.fornecedores_disponiveis = []   # list of dicts {nome, vinculo, cnpjs}
+        self._lookup_tipo = None             # {digitos_sem_zeros: 'PF'|'PJ'} da base
         self._df_master = None               # cache do arquivo de fornecedores
         self.dados_carregados = False
         self._registros = []                 # registros brutos após carregar
@@ -137,17 +174,32 @@ class RelatorioPorFornecedorDetalhado:
         row1b = ttk.Frame(p)
         row1b.pack(fill='x', padx=10, pady=2)
 
-        self._tree_forn = ttk.Treeview(row1b, columns=('nome', 'vinculo'), show='headings', height=5)
+        self._tree_forn = ttk.Treeview(row1b, columns=('nome', 'cnpj', 'vinculo'), show='headings',
+                                       height=5, selectmode='extended')
         self._tree_forn.heading('nome', text='Nome do Fornecedor')
+        self._tree_forn.heading('cnpj', text='CNPJ/CPF')
         self._tree_forn.heading('vinculo', text='Vínculo')
-        self._tree_forn.column('nome', width=520)
-        self._tree_forn.column('vinculo', width=180)
+        self._tree_forn.column('nome', width=420)
+        self._tree_forn.column('cnpj', width=200)
+        self._tree_forn.column('vinculo', width=160)
         self._scroll_forn = ttk.Scrollbar(row1b, orient='vertical', command=self._tree_forn.yview)
         self._tree_forn.configure(yscrollcommand=self._scroll_forn.set)
         self._tree_forn.bind('<Double-1>', self._selecionar_da_lista)
         self._tree_forn.bind('<Return>', self._selecionar_da_lista)
         # inicialmente ocultos
         self._tree_forn_visible = False
+
+        # --- linha 1c: seleção múltipla e filiais ---
+        row1c = ttk.Frame(p)
+        row1c.pack(fill='x', padx=10, pady=2)
+        ttk.Label(row1c, text="", width=12).pack(side='left')
+        ttk.Button(row1c, text="Usar selecionados",
+                   command=self._selecionar_da_lista).pack(side='left', padx=5)
+        ttk.Label(row1c, text="(Ctrl+clique / Shift+clique para vários; digite números para buscar por CNPJ)",
+                  foreground='gray', font=('Arial', 9)).pack(side='left', padx=5)
+        self.var_incluir_filiais = tk.BooleanVar(value=False)
+        ttk.Checkbutton(row1c, text="Incluir matriz e filiais (mesmo radical do CNPJ)",
+                        variable=self.var_incluir_filiais).pack(side='left', padx=15)
 
         # --- linha 2: período ---
         row2 = ttk.Frame(p)
@@ -292,12 +344,13 @@ class RelatorioPorFornecedorDetalhado:
         ft = ttk.Frame(self._aba_registros)
         ft.pack(fill='both', expand=True, padx=5, pady=5)
 
-        cols = ('data', 'cliente', 'fornecedor', 'tp_desp', 'categoria', 'referencia',
+        cols = ('data', 'cliente', 'fornecedor', 'cnpj', 'tp_desp', 'categoria', 'referencia',
                 'dt_vencto', 'valor', 'observacao')
         self._tree_regs = ttk.Treeview(ft, columns=cols, show='headings', height=20)
         self._tree_regs.heading('data', text='Data')
         self._tree_regs.heading('cliente', text='Cliente')
         self._tree_regs.heading('fornecedor', text='Fornecedor')
+        self._tree_regs.heading('cnpj', text='CNPJ/CPF')
         self._tree_regs.heading('tp_desp', text='Tp.Desp')
         self._tree_regs.heading('categoria', text='Categoria')
         self._tree_regs.heading('referencia', text='Referência')
@@ -308,6 +361,7 @@ class RelatorioPorFornecedorDetalhado:
         self._tree_regs.column('data', width=90, anchor='center')
         self._tree_regs.column('cliente', width=180)
         self._tree_regs.column('fornecedor', width=180)
+        self._tree_regs.column('cnpj', width=140, anchor='center')
         self._tree_regs.column('tp_desp', width=60, anchor='center')
         self._tree_regs.column('categoria', width=70, anchor='center')
         self._tree_regs.column('referencia', width=230)
@@ -435,10 +489,43 @@ class RelatorioPorFornecedorDetalhado:
             print(f"Aviso: não foi possível carregar base de fornecedores: {e}")
             return {}
 
+    def _carregar_base_documentos(self):
+        """
+        Lê a base de fornecedores e devolve:
+          lookup_tipo  {digitos_sem_zeros: 'PF'|'PJ'}  (para recompor zeros à esquerda)
+          docs_por_nome {NOME_UPPER: set(documentos normalizados)}
+        """
+        lookup_tipo, docs_por_nome = {}, defaultdict(set)
+        try:
+            df = pd.read_excel(str(ARQUIVO_FORNECEDORES), dtype=str)
+            doc_col = next((c for c in df.columns if str(c).upper() in ('CNPJ/CPF', 'CNPJ_CPF')),
+                           df.columns[0] if len(df.columns) > 0 else None)
+            tipo_col = next((c for c in df.columns if str(c).upper() == 'TIPO_PESSOA'),
+                            df.columns[1] if len(df.columns) > 1 else None)
+            nome_col = next((c for c in df.columns if str(c).upper() in ('NOME', 'RAZAO_SOCIAL', 'RAZÃO SOCIAL')),
+                            df.columns[3] if len(df.columns) > 3 else None)
+            if doc_col is None:
+                return lookup_tipo, docs_por_nome
+            for _, row in df.iterrows():
+                d = _so_digitos(row[doc_col]) if pd.notna(row[doc_col]) else ''
+                if not d:
+                    continue
+                tipo = str(row[tipo_col]).strip().upper() if tipo_col is not None and pd.notna(row[tipo_col]) else ''
+                tipo = 'PF' if tipo == 'PF' else 'PJ'
+                lookup_tipo[d.lstrip('0') or '0'] = tipo
+                if nome_col is not None and pd.notna(row[nome_col]):
+                    norm = d.zfill(11) if tipo == 'PF' else d.zfill(14)
+                    docs_por_nome[str(row[nome_col]).strip().upper()].add(norm)
+        except Exception as e:
+            print(f"Aviso: não foi possível ler CNPJs da base de fornecedores: {e}")
+        return lookup_tipo, docs_por_nome
+
     def carregar_fornecedores(self):
         """Escaneia todos os arquivos de clientes e monta lista de fornecedores."""
         try:
             master = self._carregar_master()
+            self._lookup_tipo, docs_base = self._carregar_base_documentos()
+            docs_por_nome = defaultdict(set)   # NOME_UPPER -> CNPJs usados nos lançamentos
 
             prog = tk.Toplevel(self.root)
             prog.title("Aguarde...")
@@ -475,12 +562,20 @@ class RelatorioPorFornecedorDetalhado:
                         continue
                     if 'STATUS' in df.columns:
                         df = df[df['STATUS'].astype(str).str.upper().str.strip() == 'ATIVO']
-                    for nome in df['NOME'].dropna().str.strip().unique():
+                    for nome in df['NOME'].dropna().astype(str).str.strip().unique():
                         if nome:
                             nu = nome.upper()
                             if nu not in nomes_encontrados:
                                 vinculo = master.get(nu, '')
                                 nomes_encontrados[nu] = (nome, vinculo)
+                    # CNPJs efetivamente usados com cada nome
+                    cnpj_col = next((c for c in ['CNPJ_CPF', 'CNPJ/CPF'] if c in df.columns), None)
+                    if cnpj_col:
+                        pares = df[['NOME', cnpj_col]].dropna().drop_duplicates()
+                        for nome, doc in pares.itertuples(index=False):
+                            d = _normalizar_doc(doc, self._lookup_tipo)
+                            if d and str(nome).strip():
+                                docs_por_nome[str(nome).strip().upper()].add(d)
                 except Exception as e:
                     print(f"Erro ao ler {arq}: {e}")
 
@@ -491,7 +586,9 @@ class RelatorioPorFornecedorDetalhado:
                 return
 
             self.fornecedores_disponiveis = sorted(
-                [{'nome': v[0], 'vinculo': v[1]} for v in nomes_encontrados.values()],
+                [{'nome': v[0], 'vinculo': v[1],
+                  'cnpjs': sorted(docs_por_nome.get(nu, set()) | docs_base.get(nu, set()))}
+                 for nu, v in nomes_encontrados.items()],
                 key=lambda x: x['nome'].upper()
             )
 
@@ -514,8 +611,17 @@ class RelatorioPorFornecedorDetalhado:
     def _preencher_tree_forn(self, lista):
         for item in self._tree_forn.get_children():
             self._tree_forn.delete(item)
+        self._itens_tree_forn = {}
         for f in lista[:200]:
-            self._tree_forn.insert('', 'end', values=(f['nome'], f['vinculo'] or '–'))
+            cnpjs = f.get('cnpjs', [])
+            if not cnpjs:
+                txt_doc = '–'
+            elif len(cnpjs) == 1:
+                txt_doc = _formatar_doc(cnpjs[0])
+            else:
+                txt_doc = f"{_formatar_doc(cnpjs[0])} (+{len(cnpjs) - 1})"
+            iid = self._tree_forn.insert('', 'end', values=(f['nome'], txt_doc, f['vinculo'] or '–'))
+            self._itens_tree_forn[iid] = f
         if not self._tree_forn_visible:
             self._tree_forn.pack(side='left', fill='both', expand=True)
             self._scroll_forn.pack(side='right', fill='y')
@@ -527,9 +633,20 @@ class RelatorioPorFornecedorDetalhado:
         termo = self.var_busca.get().upper().strip()
         vinculo_sel = self.var_vinculo.get()
 
+        # Termo só com dígitos e pontuação -> busca pelo início do CNPJ/CPF (radical)
+        digitos = ''.join(ch for ch in termo if ch.isdigit())
+        por_documento = len(digitos) >= 3 and all(ch.isdigit() or ch in './- ' for ch in termo)
+
+        def corresponde(f):
+            if not termo:
+                return True
+            if por_documento:
+                return any(d.startswith(digitos) for d in f.get('cnpjs', []))
+            return termo in f['nome'].upper()
+
         filtrados = [
             f for f in self.fornecedores_disponiveis
-            if (not termo or termo in f['nome'].upper()) and
+            if corresponde(f) and
                (vinculo_sel == 'Todos' or f['vinculo'] == vinculo_sel)
         ]
         self._preencher_tree_forn(filtrados)
@@ -544,15 +661,31 @@ class RelatorioPorFornecedorDetalhado:
     def _selecionar_da_lista(self, event=None):
         sel = self._tree_forn.selection()
         if sel:
-            valores = self._tree_forn.item(sel[0], 'values')
-            nome = valores[0]
-            vinculo = valores[1] if valores[1] != '–' else ''
-            self.fornecedor_selecionado = {'nome': nome, 'vinculo': vinculo}
-            self.var_busca.set(nome)
-            self.lbl_sel.config(
-                text=f"Selecionado: {nome}" + (f"  |  Vínculo: {vinculo}" if vinculo else ""),
-                foreground='green'
-            )
+            selecionados = []
+            for iid in sel:
+                f = getattr(self, '_itens_tree_forn', {}).get(iid)
+                if f is None:  # segurança: reconstrói a partir da linha
+                    valores = self._tree_forn.item(iid, 'values')
+                    f = {'nome': valores[0], 'vinculo': valores[2] if valores[2] != '–' else '', 'cnpjs': []}
+                selecionados.append({'nome': f['nome'], 'vinculo': f['vinculo'] or '',
+                                     'cnpjs': list(f.get('cnpjs', []))})
+            self.fornecedores_selecionados = selecionados
+            self.fornecedor_selecionado = selecionados[0]
+            if len(selecionados) == 1:
+                nome = selecionados[0]['nome']
+                vinculo = selecionados[0]['vinculo']
+                self.var_busca.set(nome)
+                self.lbl_sel.config(
+                    text=f"Selecionado: {nome}" + (f"  |  Vínculo: {vinculo}" if vinculo else ""),
+                    foreground='green'
+                )
+            else:
+                nomes = '; '.join(f['nome'] for f in selecionados)
+                if len(nomes) > 90:
+                    nomes = nomes[:87] + '...'
+                self.var_busca.set(f"{len(selecionados)} fornecedores selecionados")
+                self.lbl_sel.config(text=f"Selecionados ({len(selecionados)}): {nomes}",
+                                    foreground='green')
             # ocultar lista após seleção
             self._tree_forn.pack_forget()
             self._scroll_forn.pack_forget()
@@ -560,6 +693,7 @@ class RelatorioPorFornecedorDetalhado:
 
     def _limpar_selecao(self):
         self.fornecedor_selecionado = None
+        self.fornecedores_selecionados = []
         self.var_busca.set('')
         self.lbl_sel.config(
             text="(nenhum selecionado – deixe em branco para todos)",
@@ -582,7 +716,8 @@ class RelatorioPorFornecedorDetalhado:
 
         cats = self._categorias_selecionadas()
         vinculo_filtro = self.var_vinculo.get()
-        nome_filtro = self.fornecedor_selecionado['nome'] if self.fornecedor_selecionado else None
+        filtro_forn = self._montar_filtro_fornecedores()
+        nome_filtro = filtro_forn  # None = todos os fornecedores
 
         # Validação mínima
         if nome_filtro is None and vinculo_filtro == 'Todos' and not self.fornecedores_disponiveis:
@@ -632,7 +767,7 @@ class RelatorioPorFornecedorDetalhado:
         self._registros = registros
         self.dados_carregados = True
 
-        desc_forn = f"Fornecedor: {nome_filtro}" if nome_filtro else "Todos os fornecedores"
+        desc_forn = self._descricao_fornecedores()
         desc_periodo = f"{ini.strftime('%d/%m/%Y')} a {fim.strftime('%d/%m/%Y')}"
         desc_vinculo = f"  |  Vínculo: {vinculo_filtro}" if vinculo_filtro != 'Todos' else ""
         descricao = f"{desc_forn}  |  Período: {desc_periodo}{desc_vinculo}"
@@ -642,9 +777,50 @@ class RelatorioPorFornecedorDetalhado:
         self._preencher_aba_categoria(registros, descricao)
         self._notebook.select(0)
 
+    def _montar_filtro_fornecedores(self):
+        """
+        None -> todos os fornecedores.
+        dict -> {'nomes': set(NOME_UPPER), 'radicais': set(8 dígitos), 'parcial': bool}
+        'parcial' mantém a busca por nome parcial original (só p/ 1 fornecedor sem filiais).
+        """
+        sel = self.fornecedores_selecionados or (
+            [self.fornecedor_selecionado] if self.fornecedor_selecionado else [])
+        if not sel:
+            return None
+        incluir_filiais = self.var_incluir_filiais.get()
+        radicais = set()
+        if incluir_filiais:
+            radicais = {d[:8] for f in sel for d in f.get('cnpjs', []) if len(d) == 14}
+        return {
+            'nomes': {f['nome'].upper().strip() for f in sel},
+            'radicais': radicais,
+            'parcial': len(sel) == 1 and not incluir_filiais,
+        }
+
+    def _descricao_fornecedores(self):
+        sel = self.fornecedores_selecionados or (
+            [self.fornecedor_selecionado] if self.fornecedor_selecionado else [])
+        if not sel:
+            return "Todos os fornecedores"
+        if len(sel) == 1:
+            desc = f"Fornecedor: {sel[0]['nome']}"
+        else:
+            desc = f"Fornecedores ({len(sel)}): " + '; '.join(f['nome'] for f in sel)
+        if self.var_incluir_filiais.get():
+            radicais = sorted({d[:8] for f in sel for d in f.get('cnpjs', []) if len(d) == 14})
+            if radicais:
+                desc += "  + filiais (radical " + ', '.join(
+                    f"{r[:2]}.{r[2:5]}.{r[5:8]}" for r in radicais) + ")"
+        return desc
+
     def _carregar_registros(self, ini, fim, nome_filtro, cats, vinculo_filtro, lbl_prog=None):
-        """Lê todos os arquivos de clientes e retorna lista de dicts com os registros."""
+        """
+        Lê todos os arquivos de clientes e retorna lista de dicts com os registros.
+        nome_filtro: None (todos) ou dict de _montar_filtro_fornecedores().
+        """
         master = self._carregar_master()
+        if self._lookup_tipo is None:
+            self._lookup_tipo, _ = self._carregar_base_documentos()
         registros = []
         pasta = str(PASTA_CLIENTES)
 
@@ -700,14 +876,25 @@ class RelatorioPorFornecedorDetalhado:
             if df.empty:
                 continue
 
-            # Filtrar por fornecedor (nome)
+            # Documento normalizado (zeros à esquerda recompostos)
+            cnpj_col_df = next((c for c in ['CNPJ_CPF', 'CNPJ/CPF'] if c in df.columns), None)
+            if cnpj_col_df:
+                df['_DOC'] = df[cnpj_col_df].map(lambda v: _normalizar_doc(v, self._lookup_tipo))
+            else:
+                df['_DOC'] = ''
+
+            # Filtrar por fornecedor (nome(s) e, opcionalmente, radical do CNPJ)
             if nome_filtro:
-                mask_exato = df['NOME'].astype(str).str.upper().str.strip() == nome_filtro.upper().strip()
-                df_filt = df[mask_exato]
-                if df_filt.empty:
-                    mask_parcial = df['NOME'].astype(str).str.upper().str.contains(
-                        nome_filtro.upper().strip(), na=False, regex=False
-                    )
+                nomes_df = df['NOME'].astype(str).str.upper().str.strip()
+                mask = nomes_df.isin(nome_filtro['nomes'])
+                if nome_filtro['radicais']:
+                    docs = df['_DOC'].astype(str)
+                    mask = mask | ((docs.str.len() == 14) & docs.str[:8].isin(nome_filtro['radicais']))
+                df_filt = df[mask]
+                if df_filt.empty and nome_filtro['parcial']:
+                    # comportamento original: nome parcial quando não há nome exato neste cliente
+                    unico = next(iter(nome_filtro['nomes']))
+                    mask_parcial = nomes_df.str.contains(unico, na=False, regex=False)
                     df_filt = df[mask_parcial]
                 df = df_filt
 
@@ -743,7 +930,8 @@ class RelatorioPorFornecedorDetalhado:
                         continue
 
                     nome_forn = str(row['NOME']).strip()
-                    cnpj = str(row[cnpj_col]).strip() if cnpj_col and pd.notna(row[cnpj_col]) else ''
+                    cnpj = _formatar_doc(row['_DOC']) if row['_DOC'] else (
+                        str(row[cnpj_col]).strip() if cnpj_col and pd.notna(row[cnpj_col]) else '')
                     vinculo_forn = master.get(nome_forn.upper(), '')
                     tp = int(row[tp_desp_col]) if tp_desp_col and pd.notna(row[tp_desp_col]) else 0
                     ref = str(row[ref_col]).strip() if ref_col and pd.notna(row[ref_col]) else ''
@@ -837,6 +1025,7 @@ class RelatorioPorFornecedorDetalhado:
                 reg['data'].strftime('%d/%m/%Y'),
                 reg['cliente'],
                 reg['fornecedor'],
+                reg['cnpj'],
                 reg['tp_desp'],
                 reg['categoria'],
                 reg['referencia'],
@@ -932,7 +1121,7 @@ class RelatorioPorFornecedorDetalhado:
 
         try:
             ini, fim = self._obter_periodo()
-            forn = self.fornecedor_selecionado['nome'] if self.fornecedor_selecionado else 'Todos'
+            forn = self._descricao_fornecedores().replace('Fornecedor: ', '', 1)
             vinculo = self.var_vinculo.get()
 
             wb = Workbook()

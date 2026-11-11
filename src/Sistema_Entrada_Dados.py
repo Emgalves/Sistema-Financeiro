@@ -4799,7 +4799,7 @@ class SistemaEntradaDados:
         busca_interno.pack(fill='x', padx=5, pady=5)
 
         # Campo de busca
-        ttk.Label(busca_interno, text="Nome:", font=('Arial', 10)).pack(side='left', padx=5)
+        ttk.Label(busca_interno, text="Nome ou CNPJ:", font=('Arial', 10)).pack(side='left', padx=5)
         self.busca_entry = ttk.Entry(busca_interno, font=('Arial', 10), width=40)
         self.busca_entry.pack(side='left', padx=5)
         self.busca_entry.bind('<Return>', lambda e: self.buscar_fornecedor())
@@ -4814,6 +4814,9 @@ class SistemaEntradaDados:
                 text="📋 Lançamentos", 
                 command=self.abrir_visualizador_fornecedor,
                 style='Medium.TButton').pack(side='left', padx=5)
+        ttk.Label(busca_interno,
+                text="(Ctrl+clique: vários fornecedores)",
+                font=('Arial', 8), foreground='gray').pack(side='left', padx=2)
 
         # Frame principal para resultados
         frame_resultados = ttk.Frame(self.aba_fornecedor)
@@ -5894,6 +5897,14 @@ class SistemaEntradaDados:
             resultados_encontrados = 0
             termo_upper = termo.upper()
             resultados = []
+
+            # Busca por CNPJ/CPF: termo só com dígitos e pontuação (. / -)
+            # Ex.: "16584625" ou "16.584.625" = radical -> traz matriz e todas as filiais
+            termo_digitos = ''.join(filter(str.isdigit, termo))
+            busca_por_documento = (
+                len(termo_digitos) >= 3 and
+                all(c.isdigit() or c in './- ' for c in termo)
+            )
             
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not row or not row[0]:
@@ -5930,7 +5941,12 @@ class SistemaEntradaDados:
                 else:  # PJ
                     cnpj_cpf_formatado = f"{cnpj_cpf_normalizado[:2]}.{cnpj_cpf_normalizado[2:5]}.{cnpj_cpf_normalizado[5:8]}/{cnpj_cpf_normalizado[8:12]}-{cnpj_cpf_normalizado[12:14]}"
                 
-                if termo_upper in nome:
+                if busca_por_documento:
+                    corresponde = cnpj_cpf_normalizado.startswith(termo_digitos)
+                else:
+                    corresponde = termo_upper in nome
+                
+                if corresponde:
                     resultados.append({
                         'values': (cnpj_cpf_formatado, nome, categoria),
                         'tags': (cnpj_cpf_normalizado, tipo_pessoa)
@@ -7880,6 +7896,22 @@ class SistemaEntradaDados:
                 return None, None
             return doc_vencedor, docs_perdedores
 
+        def _confirmar_divergencia_pf_pj(resultado):
+            """
+            Quando a única recusa é PF x PJ com CPF real (não criado pelo sistema),
+            pergunta ao usuário se quer forçar. Retorna True se ele confirmar.
+            """
+            if getattr(resultado, 'codigo_erro', None) != 'DIVERGENCIA_TIPO_PESSOA':
+                return False
+            return bool(custom_messagebox(
+                "question", "⚠️ PF x PJ",
+                resultado.erro.split(' Isso não parece')[0] + "\n\n"
+                "Mesclar PF com PJ só é correto quando o documento PF foi informado "
+                "por engano (o fornecedor é, de fato, a empresa do vencedor).\n\n"
+                "Confirme nos documentos (NF, boleto, proposta) antes de continuar.\n\n"
+                "Deseja FORÇAR a mesclagem mesmo assim?"
+            ))
+
         def pre_visualizar():
             doc_vencedor, docs_perdedores = _ler_docs()
             if not doc_vencedor:
@@ -7889,6 +7921,12 @@ class SistemaEntradaDados:
                 doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
                 dry_run=True,
             )
+            if _confirmar_divergencia_pf_pj(resultado):
+                resultado = fundir_fornecedores(
+                    base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                    doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
+                    ignorar_divergencia_tipo_pessoa=True, dry_run=True,
+                )
             custom_messagebox(
                 "error" if resultado.erro else "info",
                 "Erro" if resultado.erro else "Pré-visualização (nada foi gravado)",
@@ -7900,11 +7938,19 @@ class SistemaEntradaDados:
             if not doc_vencedor:
                 return
     
+            forcar_pf_pj = False
             preview = fundir_fornecedores(
                 base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
                 doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
                 dry_run=True,
             )
+            if _confirmar_divergencia_pf_pj(preview):
+                forcar_pf_pj = True
+                preview = fundir_fornecedores(
+                    base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
+                    doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
+                    ignorar_divergencia_tipo_pessoa=True, dry_run=True,
+                )
             if preview.erro:
                 custom_messagebox("error", "Erro", preview.erro)
                 return
@@ -7929,6 +7975,7 @@ class SistemaEntradaDados:
             resultado = fundir_fornecedores(
                 base_path=ARQUIVO_FORNECEDORES, pasta_clientes=PASTA_CLIENTES,
                 doc_vencedor=doc_vencedor, docs_perdedores=docs_perdedores,
+                ignorar_divergencia_tipo_pessoa=forcar_pf_pj,
                 dry_run=False,
             )
     
@@ -7954,32 +8001,50 @@ class SistemaEntradaDados:
                 command=janela.destroy).pack(side='right', padx=5)
 
     def abrir_visualizador_fornecedor(self):
-        """Abre o visualizador de lançamentos para o fornecedor selecionado"""
-        selecionado = self.tree_fornecedores.selection()
-        if not selecionado:
+        """
+        Abre o visualizador de lançamentos para o(s) fornecedor(es) selecionado(s).
+        Com Ctrl+clique / Shift+clique na lista é possível selecionar vários
+        fornecedores (ex.: empresa incorporada + incorporadora) - SOMENTE para
+        visualização; as demais funções da aba continuam usando apenas o primeiro.
+        """
+        selecionados = self.tree_fornecedores.selection()
+        if not selecionados:
             custom_messagebox("warning", "Aviso", "Selecione um fornecedor primeiro!")
             return
-        
-        valores = self.tree_fornecedores.item(selecionado[0])['values']
-        tags = self.tree_fornecedores.item(selecionado[0])['tags']
-        
-        cnpj_cpf = valores[0]
-        nome = valores[1]
-        
-        # Tentar pegar das tags
-        tipo_pessoa = tags[1] if tags and len(tags) > 1 else None
-        
-        # Se não encontrou, buscar da planilha
-        if not tipo_pessoa or tipo_pessoa not in ['PF', 'PJ']:
-            fornecedor = self.buscar_fornecedor_completo(cnpj_cpf)
-            tipo_pessoa = fornecedor.get('tipo_pessoa', 'PJ') if fornecedor else 'PJ'
         
         if not self.cliente_atual:
             custom_messagebox("error", "Erro", "Selecione um cliente primeiro!")
             return
         
+        fornecedores = []
+        for item_id in selecionados:
+            valores = self.tree_fornecedores.item(item_id)['values']
+            tags = self.tree_fornecedores.item(item_id)['tags']
+            
+            if not valores or not str(valores[0]).strip():
+                continue  # linha "Nenhum fornecedor encontrado"
+            
+            cnpj_cpf = valores[0]
+            nome = valores[1]
+            
+            # Tentar pegar das tags
+            tipo_pessoa = tags[1] if tags and len(tags) > 1 else None
+            
+            # Se não encontrou, buscar da planilha
+            if not tipo_pessoa or tipo_pessoa not in ['PF', 'PJ']:
+                fornecedor = self.buscar_fornecedor_completo(cnpj_cpf)
+                tipo_pessoa = fornecedor.get('tipo_pessoa', 'PJ') if fornecedor else 'PJ'
+            
+            fornecedores.append((cnpj_cpf, nome, tipo_pessoa))
+        
+        if not fornecedores:
+            custom_messagebox("warning", "Aviso", "Selecione um fornecedor primeiro!")
+            return
+        
+        cnpj_cpf, nome, tipo_pessoa = fornecedores[0]
         visualizador = VisualizadorLancamentosFornecedor(self.root, self)
-        visualizador.abrir_visualizador(cnpj_cpf, nome, tipo_pessoa)
+        visualizador.abrir_visualizador(cnpj_cpf, nome, tipo_pessoa,
+                                        fornecedores_adicionais=fornecedores[1:])
 
     def validar_tipo_despesa(self, P):
         """
@@ -16180,32 +16245,97 @@ class VisualizadorLancamentosFornecedor:
         except:
             return str(cnpj_cpf)
         
-    def abrir_visualizador(self, cnpj_cpf_fornecedor, nome_fornecedor, tipo_pessoa):
-        """Abre o visualizador para um fornecedor específico"""
+    @staticmethod
+    def _normalizar_documento(cnpj_cpf, tipo_pessoa):
+        """Só dígitos, com zeros à esquerda (11 p/ PF, 14 p/ PJ)"""
+        numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))
+        return numeros.zfill(11) if tipo_pessoa == 'PF' else numeros.zfill(14)
+
+    def abrir_visualizador(self, cnpj_cpf_fornecedor, nome_fornecedor, tipo_pessoa,
+                           fornecedores_adicionais=None):
+        """
+        Abre o visualizador para um fornecedor específico.
+        fornecedores_adicionais: lista opcional de (cnpj_cpf, nome, tipo_pessoa)
+        para visualizar lançamentos de vários fornecedores juntos.
+        """
         if not self.sistema.cliente_atual:
             custom_messagebox("error", "Erro", "Nenhum cliente selecionado!")
             return
-            
-        # Normalizar CNPJ/CPF com zeros à esquerda ANTES de formatar
-        cnpj_cpf_str = str(cnpj_cpf_fornecedor)
-        cnpj_cpf_numeros = ''.join(filter(str.isdigit, cnpj_cpf_str))
         
-        if tipo_pessoa == 'PF':
-            cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(11)
-        else:  # PJ
-            cnpj_cpf_normalizado = cnpj_cpf_numeros.zfill(14)
-            
-        cnpj_cpf_formatado = self.formatar_cnpj_cpf(cnpj_cpf_normalizado)
+        lista = [(cnpj_cpf_fornecedor, nome_fornecedor, tipo_pessoa)]
+        lista += list(fornecedores_adicionais or [])
         
-        self.dados_fornecedor = {
-            'cnpj_cpf': cnpj_cpf_normalizado,
-            'cnpj_cpf_formatado': cnpj_cpf_formatado,
-            'nome': nome_fornecedor,
-            'tipo_pessoa': tipo_pessoa
-        }
+        self.fornecedores = []
+        vistos = set()
+        for doc, nome, tipo in lista:
+            tipo = tipo if tipo in ('PF', 'PJ') else 'PJ'
+            normalizado = self._normalizar_documento(doc, tipo)
+            if normalizado in vistos:
+                continue
+            vistos.add(normalizado)
+            self.fornecedores.append({
+                'cnpj_cpf': normalizado,
+                'cnpj_cpf_formatado': self.formatar_cnpj_cpf(normalizado),
+                'nome': nome,
+                'tipo_pessoa': tipo
+            })
+        
+        principal = self.fornecedores[0]
+        if len(self.fornecedores) == 1:
+            self.dados_fornecedor = dict(principal)
+        else:
+            # Mantém as chaves usadas em títulos, mensagens e exportação
+            self.dados_fornecedor = {
+                'cnpj_cpf': principal['cnpj_cpf'],
+                'cnpj_cpf_formatado': ' | '.join(f['cnpj_cpf_formatado'] for f in self.fornecedores),
+                'nome': f"{principal['nome']} + {len(self.fornecedores) - 1} fornecedor(es)",
+                'tipo_pessoa': principal['tipo_pessoa']
+            }
         
         self.criar_janela()
         self.carregar_lancamentos()
+
+    def modo_ampliado(self):
+        """True quando a janela mostra mais de um CNPJ (vários fornecedores ou filiais)"""
+        incluir_filiais = (hasattr(self, 'incluir_filiais_var') and
+                           self.incluir_filiais_var.get())
+        return len(getattr(self, 'fornecedores', [])) > 1 or incluir_filiais
+
+    def _ajustar_colunas_visiveis(self):
+        """Mostra as colunas CNPJ/CPF e Fornecedor apenas no modo ampliado"""
+        base = ['Data Rel.', 'Nº Rel.', 'Tipo', 'Referência', 'NF', 'Valor',
+                'Vencimento', 'Status', 'Observação']
+        if self.modo_ampliado():
+            base = base[:3] + ['CNPJ/CPF', 'Fornecedor'] + base[3:]
+        self.tree_lancamentos['displaycolumns'] = base
+
+    def _valores_linha(self, row):
+        """
+        Monta a tupla de valores da linha do Treeview.
+        ORDEM FIXA: índices 0..9 são os originais (vários métodos usam valores[9] = ID);
+        as colunas novas ficam DEPOIS do ID (10 = CNPJ/CPF, 11 = Fornecedor).
+        """
+        status = row.get('STATUS', 'ATIVO')
+        return (
+            self.formatar_data(row['DATA_REL']),
+            self.calcular_numero_relatorio(row['DATA_REL']) if pd.notna(row['DATA_REL']) else "",
+            self.formatar_tipo_despesa(row['TP_DESP']),
+            row.get('REFERÊNCIA', ''),
+            row.get('NF', ''),
+            self.formatar_valor(row['VALOR']),
+            self.formatar_data(row['DT_VENCTO']),
+            status,
+            row.get('OBSERVAÇÃO', ''),
+            row.get('ID_LANCAMENTO', 0),  # ID oculto
+            self.formatar_cnpj_cpf(row.get('CNPJ_CPF_NORMALIZADO', '')),
+            row.get('NOME', '')
+        )
+
+    def _valores_por_coluna(self, item):
+        """Valores de uma linha do Treeview como dicionário {nome_da_coluna: valor}"""
+        colunas = self.tree_lancamentos['columns']
+        valores = self.tree_lancamentos.item(item)['values']
+        return dict(zip(colunas, valores))
         
     def criar_janela(self):
         """Cria a janela do visualizador com funcionalidades estendidas"""
@@ -16233,20 +16363,40 @@ class VisualizadorLancamentosFornecedor:
         info_frame.pack(fill='x', padx=10, pady=8)
         
         # Informações em duas colunas
-        ttk.Label(info_frame, text="Nome:", font=('Arial', 10, 'bold')).grid(
-            row=0, column=0, padx=5, pady=2, sticky='w')
-        ttk.Label(info_frame, text=self.dados_fornecedor['nome'], 
-                 font=('Arial', 10)).grid(row=0, column=1, padx=5, pady=2, sticky='w')
-        
-        ttk.Label(info_frame, text="CNPJ/CPF:", font=('Arial', 10, 'bold')).grid(
-            row=0, column=2, padx=20, pady=2, sticky='w')
-        ttk.Label(info_frame, text=self.dados_fornecedor['cnpj_cpf_formatado'], 
-                 font=('Arial', 10)).grid(row=0, column=3, padx=5, pady=2, sticky='w')
+        if len(self.fornecedores) == 1:
+            ttk.Label(info_frame, text="Nome:", font=('Arial', 10, 'bold')).grid(
+                row=0, column=0, padx=5, pady=2, sticky='w')
+            ttk.Label(info_frame, text=self.dados_fornecedor['nome'], 
+                     font=('Arial', 10)).grid(row=0, column=1, padx=5, pady=2, sticky='w')
+            
+            ttk.Label(info_frame, text="CNPJ/CPF:", font=('Arial', 10, 'bold')).grid(
+                row=0, column=2, padx=20, pady=2, sticky='w')
+            ttk.Label(info_frame, text=self.dados_fornecedor['cnpj_cpf_formatado'], 
+                     font=('Arial', 10)).grid(row=0, column=3, padx=5, pady=2, sticky='w')
+        else:
+            ttk.Label(info_frame, text="Fornecedores:", font=('Arial', 10, 'bold')).grid(
+                row=0, column=0, padx=5, pady=2, sticky='nw')
+            texto_lista = "\n".join(f"{f['cnpj_cpf_formatado']}  -  {f['nome']}"
+                                     for f in self.fornecedores)
+            ttk.Label(info_frame, text=texto_lista, font=('Arial', 10),
+                     justify='left').grid(row=0, column=1, columnspan=3, padx=5, pady=2, sticky='w')
         
         ttk.Label(info_frame, text="Cliente:", font=('Arial', 10, 'bold')).grid(
             row=1, column=0, padx=5, pady=2, sticky='w')
         ttk.Label(info_frame, text=self.sistema.cliente_atual, 
                  font=('Arial', 10)).grid(row=1, column=1, padx=5, pady=2, sticky='w')
+        
+        # Incluir matriz/filiais pelo radical (8 primeiros dígitos do CNPJ)
+        self.incluir_filiais_var = tk.BooleanVar(value=False)
+        tem_pj = any(f['tipo_pessoa'] == 'PJ' for f in self.fornecedores)
+        chk_filiais = ttk.Checkbutton(
+            info_frame,
+            text="Incluir matriz e filiais (mesmo radical do CNPJ)",
+            variable=self.incluir_filiais_var,
+            command=self.carregar_lancamentos,
+            state='normal' if tem_pj else 'disabled'
+        )
+        chk_filiais.grid(row=1, column=2, columnspan=2, padx=20, pady=2, sticky='w')
         
         # Frame de filtros
         frame_filtros = ttk.LabelFrame(main_frame, text="Filtros")
@@ -16307,13 +16457,16 @@ class VisualizadorLancamentosFornecedor:
         frame_lista.pack(fill='both', expand=True)
         
         # Treeview para lançamentos - ADICIONADA SELEÇÃO MÚLTIPLA
-        colunas = ('Data Rel.', 'Nº Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação', 'ID')
+        # ATENÇÃO: novas colunas sempre DEPOIS de 'ID' (valores[9] é usado em vários métodos)
+        colunas = ('Data Rel.', 'Nº Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento',
+                   'Status', 'Observação', 'ID', 'CNPJ/CPF', 'Fornecedor')
         self.tree_lancamentos = ttk.Treeview(frame_lista, columns=colunas, show='headings', 
                                            height=18, selectmode='extended')  # Seleção múltipla
         
         # Configurar cabeçalhos e larguras
         larguras = {'Data Rel.': 90, 'Nº Rel.': 30, 'Tipo': 30, 'Referência': 200, 'NF': 100, 
-                   'Valor': 100, 'Vencimento': 90, 'Status': 80, 'Observação': 220, 'ID': 0}
+                   'Valor': 100, 'Vencimento': 90, 'Status': 80, 'Observação': 220, 'ID': 0,
+                   'CNPJ/CPF': 140, 'Fornecedor': 200}
         
         for col in colunas:
             self.tree_lancamentos.heading(col, text=col)
@@ -16424,6 +16577,7 @@ class VisualizadorLancamentosFornecedor:
         # Inicializar estado dos botões
         self.atualizar_interface_selecao()
         self.inicializar_datas_padrao()
+        self._ajustar_colunas_visiveis()
 
     def configurar_eventos_selecao(self):
         """Configura eventos para controle de seleção múltipla"""
@@ -16560,19 +16714,21 @@ class VisualizadorLancamentosFornecedor:
             dados_selecionados = []
             
             for item in items_selecionados:
-                valores = self.tree_lancamentos.item(item)['values']
+                # Por NOME de coluna (antes eram índices fixos desatualizados:
+                # 'id_lancamento' pegava a Observação e 'status' pegava o Vencimento)
+                v = self._valores_por_coluna(item)
                 
                 dados_item = {
                     'item_id': item,
-                    'data': valores[0],
-                    'tp_desp': valores[1],
-                    'referencia': valores[2],
-                    'nf': valores[3],
-                    'valor': valores[4],
-                    'vencimento': valores[5],
-                    'status': valores[6],
-                    'observacao': valores[7],
-                    'id_lancamento': valores[8]
+                    'data': v.get('Data Rel.', ''),
+                    'tp_desp': v.get('Tipo', ''),
+                    'referencia': v.get('Referência', ''),
+                    'nf': v.get('NF', ''),
+                    'valor': v.get('Valor', ''),
+                    'vencimento': v.get('Vencimento', ''),
+                    'status': v.get('Status', ''),
+                    'observacao': v.get('Observação', ''),
+                    'id_lancamento': v.get('ID', '')
                 }
                 
                 dados_selecionados.append(dados_item)
@@ -17205,14 +17361,27 @@ class VisualizadorLancamentosFornecedor:
 
             df['CNPJ_CPF_NORMALIZADO'] = df['CNPJ_CPF'].apply(normalizar_cnpj_cpf_planilha)
             
-            # === BUSCA PRINCIPAL: Por CNPJ/CPF exato ===
-            mask_cnpj = df['CNPJ_CPF_NORMALIZADO'] == cnpj_cpf_normalizado
+            # === BUSCA PRINCIPAL: Por CNPJ/CPF exato (um ou vários fornecedores) ===
+            documentos_alvo = {f['cnpj_cpf'] for f in self.fornecedores}
+            mask_cnpj = df['CNPJ_CPF_NORMALIZADO'].isin(documentos_alvo)
+            
+            # === OPCIONAL: matriz e filiais pelo radical (8 primeiros dígitos) ===
+            if self.incluir_filiais_var.get():
+                radicais = {f['cnpj_cpf'][:8] for f in self.fornecedores
+                            if f['tipo_pessoa'] == 'PJ' and len(f['cnpj_cpf']) == 14}
+                if radicais:
+                    docs = df['CNPJ_CPF_NORMALIZADO'].astype(str)
+                    mask_cnpj = mask_cnpj | ((docs.str.len() == 14) & docs.str[:8].isin(radicais))
+                logger.debug(f"DEBUG: Incluindo filiais dos radicais: {radicais}")
+            
             lancamentos_por_cnpj = df[mask_cnpj]
+            self._ajustar_colunas_visiveis()
             
             logger.debug(f"DEBUG: Encontrados {len(lancamentos_por_cnpj)} lançamentos por CNPJ/CPF")
             
             # === BUSCA SECUNDÁRIA: Por nome EXATO (apenas se não encontrou por CNPJ) ===
-            if lancamentos_por_cnpj.empty:
+            # Só no modo de um fornecedor sem filiais (comportamento original)
+            if lancamentos_por_cnpj.empty and not self.modo_ampliado():
                 nome_fornecedor_normalizado = str(self.dados_fornecedor['nome']).upper().strip()
                 
                 mask_nome_exato = (
@@ -17273,15 +17442,25 @@ class VisualizadorLancamentosFornecedor:
             if self.df_fornecedor.empty:
                 logger.debug(f"DEBUG: Nenhum lançamento encontrado para o fornecedor")
                 
-                custom_messagebox("info", "Nenhum Lançamento Encontrado", 
-                                f"Não foram encontrados lançamentos para:\n\n"
-                                f"Fornecedor: {self.dados_fornecedor['nome']}\n"
-                                f"CNPJ/CPF: {self.dados_fornecedor['cnpj_cpf_formatado']}\n"
-                                f"Cliente: {self.sistema.cliente_atual}\n\n"
-                                f"Verifique se:\n"
-                                f"• O fornecedor possui lançamentos neste cliente\n"
-                                f"• Os dados do fornecedor estão corretos\n"
-                                f"• O período de busca está adequado")
+                if self.modo_ampliado():
+                    descricao = "\n".join(f"• {f['cnpj_cpf_formatado']} - {f['nome']}"
+                                           for f in self.fornecedores)
+                    if self.incluir_filiais_var.get():
+                        descricao += "\n(incluindo matriz e filiais do mesmo radical)"
+                    custom_messagebox("info", "Nenhum Lançamento Encontrado",
+                                    f"Não foram encontrados lançamentos para:\n\n"
+                                    f"{descricao}\n\n"
+                                    f"Cliente: {self.sistema.cliente_atual}")
+                else:
+                    custom_messagebox("info", "Nenhum Lançamento Encontrado", 
+                                  f"Não foram encontrados lançamentos para:\n\n"
+                                  f"Fornecedor: {self.dados_fornecedor['nome']}\n"
+                                  f"CNPJ/CPF: {self.dados_fornecedor['cnpj_cpf_formatado']}\n"
+                                  f"Cliente: {self.sistema.cliente_atual}\n\n"
+                                  f"Verifique se:\n"
+                                  f"• O fornecedor possui lançamentos neste cliente\n"
+                                  f"• Os dados do fornecedor estão corretos\n"
+                                  f"• O período de busca está adequado")
             else:
                 # Verificar se encontrou o fornecedor correto
                 primeiro_lancamento = self.df_fornecedor.iloc[0]
@@ -17506,18 +17685,7 @@ class VisualizadorLancamentosFornecedor:
                 if pd.notna(row['DATA_REL']) and row['DATA_REL'].date() >= limite_recente:
                     tag = 'recente'
                 
-                valores = (
-                    self.formatar_data(row['DATA_REL']),
-                    self.calcular_numero_relatorio(row['DATA_REL']) if pd.notna(row['DATA_REL']) else "",
-                    self.formatar_tipo_despesa(row['TP_DESP']),
-                    row.get('REFERÊNCIA', ''),
-                    row.get('NF', ''),
-                    self.formatar_valor(row['VALOR']),
-                    self.formatar_data(row['DT_VENCTO']),
-                    status,
-                    row.get('OBSERVAÇÃO', ''),
-                    row.get('ID_LANCAMENTO', 0)  # ID oculto
-                )
+                valores = self._valores_linha(row)
                 
                 self.tree_lancamentos.insert('', 'end', values=valores, tags=(tag,))
             
@@ -17553,6 +17721,11 @@ class VisualizadorLancamentosFornecedor:
             df_busca['OBSERVAÇÃO'].astype(str).str.upper().str.contains(termo, na=False) |
             df_busca['REFERÊNCIA'].astype(str).str.upper().str.contains(termo, na=False)
         )
+        if self.modo_ampliado():
+            termo_digitos = ''.join(filter(str.isdigit, termo))
+            if termo_digitos:
+                mask_busca = mask_busca | df_busca['CNPJ_CPF_NORMALIZADO'].astype(str).str.contains(
+                    termo_digitos, na=False, regex=False)
         
         df_resultado = df_busca[mask_busca]
         
@@ -17564,18 +17737,7 @@ class VisualizadorLancamentosFornecedor:
             status = row.get('STATUS', 'ATIVO')
             tag = 'excluido' if status == 'EXCLUIDO' else 'normal'
             
-            valores = (
-                self.formatar_data(row['DATA_REL']),
-                self.calcular_numero_relatorio(row['DATA_REL']) if pd.notna(row['DATA_REL']) else "",
-                self.formatar_tipo_despesa(row['TP_DESP']),
-                row.get('REFERÊNCIA', ''),
-                row.get('NF', ''),
-                self.formatar_valor(row['VALOR']),
-                self.formatar_data(row['DT_VENCTO']),
-                status,
-                row.get('OBSERVAÇÃO', ''),
-                row.get('ID_LANCAMENTO', 0)
-            )
+            valores = self._valores_linha(row)
             
             self.tree_lancamentos.insert('', 'end', values=valores, tags=(tag,))
         
@@ -17640,7 +17802,7 @@ class VisualizadorLancamentosFornecedor:
         if not item_selecionado:
             return
             
-        valores = self.tree_lancamentos.item(item_selecionado[0])['values']
+        v = self._valores_por_coluna(item_selecionado[0])
         
         janela_detalhes = tk.Toplevel(self.janela)
         janela_detalhes.title("Detalhes do Lançamento")
@@ -17657,16 +17819,16 @@ class VisualizadorLancamentosFornecedor:
         info_frame.pack(fill='both', expand=True)
         
         detalhes = [
-            ("Fornecedor:", self.dados_fornecedor['nome']),
-            ("CNPJ/CPF:", self.dados_fornecedor['cnpj_cpf_formatado']),
-            ("Data do Relatório:", valores[0]),
-            ("Tipo de Despesa:", valores[1]),
-            ("Referência:", valores[2]),
-            ("Número da NF:", valores[3]),
-            ("Valor:", valores[4]),
-            ("Data de Vencimento:", valores[5]),
-            ("Status:", valores[6]),
-            ("Observação:", valores[7])
+            ("Fornecedor:", v.get('Fornecedor') or self.dados_fornecedor['nome']),
+            ("CNPJ/CPF:", v.get('CNPJ/CPF') or self.dados_fornecedor['cnpj_cpf_formatado']),
+            ("Data do Relatório:", v.get('Data Rel.', '')),
+            ("Tipo de Despesa:", v.get('Tipo', '')),
+            ("Referência:", v.get('Referência', '')),
+            ("Número da NF:", v.get('NF', '')),
+            ("Valor:", v.get('Valor', '')),
+            ("Data de Vencimento:", v.get('Vencimento', '')),
+            ("Status:", v.get('Status', '')),
+            ("Observação:", v.get('Observação', ''))
         ]
         
         for i, (label, valor) in enumerate(detalhes):
@@ -17764,11 +17926,14 @@ class VisualizadorLancamentosFornecedor:
             from tkinter import filedialog
             
             # Obter dados visíveis
+            ampliado = self.modo_ampliado()
             dados_exportar = []
             for item in self.tree_lancamentos.get_children():
-                valores = self.tree_lancamentos.item(item)['values']
-                # Remover ID (último elemento) da exportação
-                dados_exportar.append(valores[:-1])
+                valores = list(self.tree_lancamentos.item(item)['values'])
+                linha = valores[:9]  # sem o ID (índice 9)
+                if ampliado:
+                    linha += valores[10:12]  # CNPJ/CPF e Fornecedor
+                dados_exportar.append(linha)
             
             if not dados_exportar:
                 custom_messagebox("warning", "Aviso", "Nenhum dado para exportar!")
@@ -17785,6 +17950,8 @@ class VisualizadorLancamentosFornecedor:
             if arquivo:
                 # Criar DataFrame — ordem igual à do Treeview, sem o ID
                 colunas = ['Data Rel.', 'Nº Rel.', 'Tipo', 'Referência', 'NF', 'Valor', 'Vencimento', 'Status', 'Observação']
+                if ampliado:
+                    colunas += ['CNPJ/CPF', 'Fornecedor']
                 df_export = pd.DataFrame(dados_exportar, columns=colunas)
                 
                 # Criar workbook com informações detalhadas
@@ -17819,6 +17986,8 @@ class VisualizadorLancamentosFornecedor:
                         'A': 12, 'B': 8, 'C': 8, 'D': 25,
                         'E': 15, 'F': 12, 'G': 12, 'H': 10, 'I': 30
                     }
+                    if ampliado:
+                        column_widths.update({'J': 20, 'K': 40})
                     for col, width in column_widths.items():
                         worksheet.column_dimensions[col].width = width
                     
