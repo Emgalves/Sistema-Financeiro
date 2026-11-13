@@ -9,7 +9,7 @@ Uso pela linha de comando (a partir da pasta raiz do projeto, a que contém 'src
     python -m src.email_fiscal.coletor --pasta "C:\\caminho\\com\\xmls_e_pdfs"
 """
 
-VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.9"   # igual em todos os arquivos do módulo
 import argparse
 import threading
 import hashlib

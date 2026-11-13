@@ -9506,7 +9506,7 @@ class SistemaEntradaDados:
             kwargs.setdefault('sempre_visivel', True)
             return custom_messagebox(*args, **kwargs)
        
-        logger.info(f"Iniciando envio de dados - Cliente: {self.cliente_atual}, Registros: {len(self.dados_para_incluir) if self.dados_para_incluir else 0}, Origem: {origem}, Usuário: {os.environ.get('USERNAME', 'Desconhecido')}")
+        logger.info(f"Iniciando envio de dados - Cliente: {self.cliente_atual}, Registros: {len(self.dados_para_incluir) if self.dados_para_incluir else 0}, Origem: {origem}, Computador: {os.environ.get('COMPUTERNAME', 'Desconhecido')}, Usuário: {os.environ.get('USERNAME', 'Desconhecido')}")
         
         # Desabilitar botão para evitar múltiplos cliques
         btn_enviar = None
@@ -9747,7 +9747,10 @@ class SistemaEntradaDados:
                 # PROCESSAR REGISTROS VÁLIDOS
                 # ==========================================
                 registros_salvos = 0
-                usuario_inclusao = os.environ.get('USERNAME', 'Desconhecido')
+                # A conta do Windows ("Obra") é compartilhada pela equipe; o que
+                # identifica quem lançou é o nome do computador (THALES, PLANEJAMENTO-04...)
+                computador_inclusao = (os.environ.get('COMPUTERNAME')
+                                       or os.environ.get('USERNAME') or 'Desconhecido')
                 data_hora_inclusao = datetime.now().replace(microsecond=0)
                 for dados in dados_para_processar:
                     try:
@@ -9801,8 +9804,8 @@ class SistemaEntradaDados:
                         sheet.cell(row=proxima_linha, column=17, value=dados.get('etapa_obra', ''))
                         sheet.cell(row=proxima_linha, column=18, value=dados.get('insumo', ''))
 
-                        # Quem gravou e quando (colunas S e T)
-                        sheet.cell(row=proxima_linha, column=19, value=usuario_inclusao)
+                        # De qual computador e quando (colunas S e T)
+                        sheet.cell(row=proxima_linha, column=19, value=computador_inclusao)
                         dh_cell = sheet.cell(row=proxima_linha, column=20, value=data_hora_inclusao)
                         dh_cell.number_format = 'DD/MM/YYYY HH:MM:SS'
 
@@ -9820,7 +9823,7 @@ class SistemaEntradaDados:
                 try:
                     salvar_planilha_segura(workbook, arquivo_cliente)
                     self._ultimo_envio_ok = True
-                    logger.info(f"Gravação concluída: {registros_salvos} lançamento(s), origem: {origem}, usuário: {usuario_inclusao}")
+                    logger.info(f"Gravação concluída: {registros_salvos} lançamento(s), origem: {origem}, computador: {computador_inclusao}")
                     
                     if registros_salvos > 0:
                         logger.info(f"Iniciando verificação de recálculo para {len(datas_afetadas)} datas")
@@ -10054,9 +10057,13 @@ class SistemaEntradaDados:
             return False
 
     def verificar_e_adicionar_cabecalhos_inclusao(self, sheet):
-        """Garante os cabeçalhos USUARIO_INCLUSAO (S/19) e DATA_HORA_INCLUSAO (T/20)."""
+        """Garante os cabeçalhos COMPUTADOR_INCLUSAO (S/19) e DATA_HORA_INCLUSAO (T/20).
+        Planilhas que já tinham o cabeçalho antigo USUARIO_INCLUSAO são renomeadas."""
         try:
-            for col, titulo in ((19, 'USUARIO_INCLUSAO'), (20, 'DATA_HORA_INCLUSAO')):
+            if sheet.cell(row=1, column=19).value == 'USUARIO_INCLUSAO':
+                sheet.cell(row=1, column=19, value='COMPUTADOR_INCLUSAO')
+                logger.info("Cabeçalho da coluna 19 renomeado: USUARIO_INCLUSAO → COMPUTADOR_INCLUSAO")
+            for col, titulo in ((19, 'COMPUTADOR_INCLUSAO'), (20, 'DATA_HORA_INCLUSAO')):
                 if sheet.cell(row=1, column=col).value in (None, ''):
                     sheet.cell(row=1, column=col, value=titulo)
                     logger.info(f"Cabeçalho '{titulo}' adicionado na coluna {col}")

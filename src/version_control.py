@@ -14,7 +14,8 @@ VERSION_INFO = {
     "release_date": "11/11/2026",
     "changes": [
         "Correção da ferramenta para mesclar fornecedores.",
-        "Disponibilizada a possibilidade de selecionar mais de um fornecedor para ser visualizados em Lançamentos."
+        "Disponibilizada a possibilidade de selecionar mais de um fornecedor para ser visualizados em Lançamentos.",
+        "E-mails relacionados por data do relatório da quinzena"
     ]
 }
 

@@ -5,7 +5,7 @@ config_email.py - Configurações do módulo de leitura de documentos fiscais do
 Este é o ÚNICO arquivo que você precisa ajustar. Tudo o mais lê daqui.
 """
 
-VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.9"   # igual em todos os arquivos do módulo
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -143,6 +143,11 @@ FECHAR_JANELA_QUANDO_VAZIA = True
 # Se a nota tiver duplicatas, ela NÃO é ignorada (recebe só um alerta).
 NATUREZAS_SEM_COBRANCA = ("REMESSA", "RETORNO")
 PAGAMENTOS_SEM_COBRANCA = ("90",)
+
+# A janela "📧 E-mail" abre mostrando só o que pertence à QUINZENA EM TRABALHO
+# (DATA_REL calculada pelo vencimento = DATA_REL da tela de Entrada de Dados).
+# O que vence em quinzenas seguintes fica em espera, fora da lista e da seleção.
+QUINZENA_ATUAL_POR_PADRAO = True
 
 # Tolerância em reais para casar boleto com parcela da NF (arredondamentos).
 TOLERANCIA_VALOR = 0.05

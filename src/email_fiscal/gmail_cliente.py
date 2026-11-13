@@ -10,7 +10,7 @@ Dependências:
     pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 """
 
-VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.9"   # igual em todos os arquivos do módulo
 import base64
 import io
 import re

@@ -13,7 +13,7 @@ boleto, a NF-e/NFS-e e o e-mail de origem, em três níveis:
   GMAIL     - nada no arquivo local: abre a pesquisa do Gmail no navegador
               com o número da NF e o valor do lançamento.
 """
-VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.9"   # igual em todos os arquivos do módulo
 
 import os
 import re

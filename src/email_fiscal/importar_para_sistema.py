@@ -11,7 +11,7 @@ Fluxo:
      Todas as validações que o sistema já faz continuam valendo.
 """
 
-VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.9"   # igual em todos os arquivos do módulo
 import os
 from pathlib import Path
 import threading
@@ -294,8 +294,9 @@ def _para_registro(l, data_rel):
 
 
 class JanelaImportacaoEmail:
-    COLS = ("ID", "IDENT.", "FORNECEDOR", "REFERÊNCIA", "NF", "VALOR", "VENCTO", "ALERTAS")
-    FILTROS = ("Todos os pendentes", "Só possíveis duplicidades", "Só com alertas",
+    COLS = ("ID", "IDENT.", "FORNECEDOR", "REFERÊNCIA", "NF", "VALOR", "VENCTO", "DATA REL", "ALERTAS")
+    FILTROS = ("Só da quinzena em trabalho", "Quinzenas seguintes (em espera)",
+               "Todos os pendentes", "Só possíveis duplicidades", "Só com alertas",
                "Só sem alertas (prontos)", "Ignorados (para restaurar)")
 
     def __init__(self, sistema):
@@ -314,7 +315,8 @@ class JanelaImportacaoEmail:
         ttk.Checkbutton(topo, text="Mostrar também itens SEM cliente definido",
                         variable=self.var_sem_cliente, command=self.recarregar).pack(side="left", padx=20)
         ttk.Label(topo, text="Mostrar:").pack(side="left", padx=(10, 4))
-        self.var_filtro = tk.StringVar(value=self.FILTROS[0])
+        self.var_filtro = tk.StringVar(value=self.FILTROS[0] if cfg.QUINZENA_ATUAL_POR_PADRAO
+                                       else self.FILTROS[2])
         cb = ttk.Combobox(topo, textvariable=self.var_filtro, values=self.FILTROS, state="readonly", width=30)
         cb.pack(side="left")
         cb.bind("<<ComboboxSelected>>", lambda e: self._preencher_lista())
@@ -322,7 +324,7 @@ class JanelaImportacaoEmail:
         meio = ttk.Frame(self.jan)
         meio.pack(fill="both", expand=True, padx=10)
         self.tree = ttk.Treeview(meio, columns=self.COLS, show="headings", selectmode="extended")
-        larg = (50, 110, 230, 250, 70, 90, 85, 340)
+        larg = (50, 105, 220, 240, 70, 90, 85, 85, 300)
         for c, w in zip(self.COLS, larg):
             self.tree.heading(c, text=c)
             self.tree.column(c, width=w, anchor="e" if c == "VALOR" else "w")
@@ -458,11 +460,23 @@ class JanelaImportacaoEmail:
         self.itens = {}
         self.tree.delete(*self.tree.get_children())
         pre_selecionar = []
+        dr_atual_txt = _data_relatorio(self.sistema)
+        dr_atual = _data(dr_atual_txt)
+        em_espera = 0
         for l in self.caixa.pendentes(self.cliente, self.var_sem_cliente.get(), status=status):
             if f"{cfg.PREFIXO_OBSERVACAO} #{l['ID_SUGESTAO']}" in em_andamento:
                 continue  # já está na lista de envio desta sessão
             alertas = str(l.get("ALERTAS") or "")
             duplicidade = "POSSÍVEL DUPLICIDADE" in alertas
+            # quinzena: DATA_REL que o item terá ao ser importado
+            dr_item = _data(data_rel_do_item(l.get("DT_VENCTO"), dr_atual_txt))
+            da_quinzena = (dr_item is None or dr_atual is None or dr_item <= dr_atual)
+            if not da_quinzena:
+                em_espera += 1
+            if filtro.startswith("Só da quinzena") and not da_quinzena:
+                continue
+            if filtro.startswith("Quinzenas seguintes") and da_quinzena:
+                continue
             if filtro.startswith("Só possíveis") and not duplicidade:
                 continue
             if filtro.startswith("Só com alertas") and not alertas:
@@ -476,18 +490,23 @@ class JanelaImportacaoEmail:
                 l.get("NF") or (str(l.get("NF_PROVAVEL")).split(";")[0] + "?"
                                 if str(l.get("NF_PROVAVEL") or "-") != "-" else ""),
                 f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") if v is not None else "",
-                d.strftime("%d/%m/%Y") if d else "", alertas),
+                d.strftime("%d/%m/%Y") if d else "",
+                dr_item.strftime("%d/%m/%Y") if dr_item else "", alertas),
                 tags=(("ignorado",) if status == ("IGNORADO",) else
                       ("duplicidade",) if duplicidade else ("alerta",) if alertas else ()))
             self.itens[iid] = l
-            if status == ("PENDENTE",) and not duplicidade:
+            # só vem marcado o que é da quinzena em trabalho e não é possível duplicidade
+            if status == ("PENDENTE",) and not duplicidade and da_quinzena:
                 pre_selecionar.append(iid)
         # possíveis duplicidades NÃO vêm marcadas: só entram se você selecionar
         self.tree.selection_set(pre_selecionar)
         dups = 0 if status != ("PENDENTE",) else \
             sum(1 for l in self.itens.values() if "POSSÍVEL DUPLICIDADE" in str(l.get("ALERTAS") or ""))
         self.escrever(f"{len(self.itens)} sugestão(ões) listada(s) para {self.cliente} ({filtro.lower()})"
-                      + (f"; {dups} possível(is) duplicidade(s) em vermelho, fora da seleção." if dups else "."))
+                      + (f"; {dups} possível(is) duplicidade(s) em vermelho, fora da seleção" if dups else "")
+                      + (f"; {em_espera} de quinzenas seguintes em espera (DATA_REL após {dr_atual_txt})"
+                         if em_espera and status == ("PENDENTE",) and not filtro.startswith("Quinzenas") else "")
+                      + ".")
 
     # ---------------------------------------------------------------------
     def _conferir_gravados(self):

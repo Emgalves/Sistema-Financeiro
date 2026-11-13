@@ -15,7 +15,7 @@ Abas:
   LEIA-ME      -> legenda
 """
 
-VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.9"   # igual em todos os arquivos do módulo
 import time
 from datetime import datetime, date
 

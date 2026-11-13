@@ -8,7 +8,7 @@ do Windows e aberta no navegador padrão. O XML original não é alterado; a
 página tem um link para ele. Qualquer outro arquivo (PDF etc.) abre no
 programa padrão do Windows, como antes.
 """
-VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.9"   # igual em todos os arquivos do módulo
 
 import html
 import os

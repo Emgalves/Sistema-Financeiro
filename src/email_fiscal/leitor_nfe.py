@@ -7,7 +7,7 @@ A leitura ignora namespaces (procura pelo "nome local" das tags), porque cada
 emissor/prefeitura grava o XML de um jeito ligeiramente diferente.
 """
 
-VERSAO = "2026-11-12.8"   # igual em todos os arquivos do módulo
+VERSAO = "2026-11-12.9"   # igual em todos os arquivos do módulo
 import re
 import xml.etree.ElementTree as ET
 from datetime import datetime, date

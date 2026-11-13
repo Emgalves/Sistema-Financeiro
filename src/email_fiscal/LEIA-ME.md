@@ -173,6 +173,7 @@ Botões: **📄 Abrir documento** (ou duplo clique), **✉️ Abrir e-mail**, **
 
 ### Triagem dentro da janela (sem abrir o Excel)
 
+- **Quinzena em trabalho (padrão):** a janela abre em "Só da quinzena em trabalho": só aparecem as sugestões cuja DATA_REL (calculada pelo vencimento) é a DATA_REL da tela de Entrada de Dados. As de quinzenas seguintes ficam **em espera** (pendentes, fora da lista e da seleção) e podem ser vistas no filtro "Quinzenas seguintes (em espera)". A coluna DATA REL mostra a quinzena de cada item. Ao mudar a DATA_REL na Entrada de Dados, clique em Recarregar. (`QUINZENA_ATUAL_POR_PADRAO`)
 - **Mostrar:** filtra a lista — todos os pendentes, só possíveis duplicidades, só com alertas, só sem alertas (prontos) ou ignorados.
 - **Possíveis duplicidades** aparecem em **vermelho** e **não vêm selecionadas**: só são importadas se você as selecionar.
 - **⚖️ Comparar com o lançamento existente:** mostra lado a lado a sugestão e o lançamento da planilha apontado no alerta (diferenças em amarelo), com os botões "É duplicado: ignorar" e "Não é duplicado: manter pendente" (o alerta não volta).
