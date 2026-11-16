@@ -14,11 +14,35 @@ from src.salvamento_seguro import salvar_planilha_segura
 from src.config.utils import (
     PASTA_CLIENTES,
     validar_data,
-    buscar_dados_bancarios_fornecedor
+    validar_data_quinzena,
+    buscar_dados_bancarios_fornecedor,
+    normalizar_documento,
+    formatar_documento,
+    identificar_documento_fornecedor,
+    carregar_indice_documentos_fornecedores
 )
+from src.config.config import ARQUIVO_FORNECEDORES
+
+# Identificação visual do ambiente (TESTE/PRODUÇÃO) - mesma fonte usada por config.py
+try:
+    from src.ambiente_config import config_ambiente, criar_banner_ambiente
+except ImportError:
+    try:
+        from ambiente_config import config_ambiente, criar_banner_ambiente
+    except ImportError:
+        config_ambiente = None
+        criar_banner_ambiente = None
 
 class ControlePagamentos:
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, cliente_inicial=None):
+        """
+        Args:
+            parent: janela-mãe (None = janela independente)
+            cliente_inicial: nome do cliente já selecionado em outra tela
+                (ex.: aba Fornecedor do Sistema de Entrada de Dados).
+                Se informado, a janela abre com o cliente selecionado e as
+                parcelas pendentes já carregadas.
+        """
         self.parent = parent
         # Se parent não for especificado, criar uma janela Tk, caso contrário criar uma Toplevel
         if parent is None:
@@ -28,7 +52,10 @@ class ControlePagamentos:
             self.root = tk.Toplevel(parent)
             self.is_independent = False  # Marcar como janela secundária
         
-        self.root.title("Controle de Pagamentos de Taxas")
+        titulo = "Controle de Pagamentos de Taxas"
+        if config_ambiente:
+            titulo = config_ambiente.get_titulo_janela(titulo)
+        self.root.title(titulo)
         self.root.geometry("1400x900+50+50")  # Aumentado e reposicionado
         
         # Forçar a janela para frente
@@ -42,9 +69,130 @@ class ControlePagamentos:
         self.scrollbar_y = None
         self.scrollbar_x = None
         self.valor_editado = {}  # Dicionário para armazenar valores editados
-        
+
+        # Dados de cada linha da lista, guardados FORA do Treeview.
+        # O Treeview converte textos que parecem número em int e perde os
+        # zeros à esquerda (CNPJ "0200..." vira 200...; contrato "001" vira 1).
+        # Chave: id do item no Treeview -> {'num_contrato', 'cnpj', 'tipo_pessoa', ...}
+        self.info_parcelas = {}
+
         self.setup_gui()
+
+        # Pré-selecionar o cliente vindo da tela de origem
+        if cliente_inicial:
+            self.selecionar_cliente_inicial(cliente_inicial)
+
+    def selecionar_cliente_inicial(self, cliente):
+        """Seleciona o cliente no combo e carrega as parcelas pendentes"""
+        try:
+            cliente = str(cliente).strip()
+            clientes_disponiveis = list(self.cliente_combo['values'])
+
+            if cliente in clientes_disponiveis:
+                self.cliente_combo.set(cliente)
+                self.carregar_parcelas()
+            else:
+                messagebox.showwarning(
+                    "Aviso",
+                    f"O cliente '{cliente}' não está na lista de clientes ativos.\n\n"
+                    f"Selecione o cliente manualmente.",
+                    parent=self.root
+                )
+        except Exception as e:
+            print(f"Erro ao pré-selecionar cliente: {str(e)}")
+
+    # ============== CNPJ/CPF: SEMPRE PELO tipo_pessoa DA BASE DE FORNECEDORES ==============
+
+    @staticmethod
+    def _chave_sem_zeros(valor):
+        """Documento só com letras/números, sem zeros à esquerda (para localizar na base)"""
+        if valor is None:
+            return ""
+        if isinstance(valor, float) and valor.is_integer():
+            valor = int(valor)
+        texto = ''.join(c for c in str(valor).strip().upper() if c.isalnum())
+        return texto.lstrip('0')
+
+    def carregar_indice_fornecedores(self):
+        """
+        Índice da base_fornecedores.xlsx (documento -> tipo_pessoa), via src.config.utils.
+
+        O tipo (PF/PJ) vem SEMPRE da coluna B (tipo_pessoa), nunca da contagem de
+        dígitos: há CNPJs que começam com 00.0NN... e, sem os zeros, parecem CPF.
+        A chave do índice é o documento sem zeros à esquerda, para achar o
+        fornecedor mesmo quando o valor veio de um campo que perdeu os zeros.
+        """
+        # Regra única do sistema: src.config.utils (mesma usada pelo
+        # Sistema de Entrada de Dados). Relê o arquivo só se ele mudou.
+        return carregar_indice_documentos_fornecedores(ARQUIVO_FORNECEDORES)
     
+    def identificar_documento(self, valor):
+        """
+        Identifica um CNPJ/CPF pela base de fornecedores
+        (src.config.utils.identificar_documento_fornecedor).
+
+        Returns:
+            (documento_normalizado, tipo_pessoa). tipo_pessoa é None quando o
+            documento não está na base (ou aparece com tipos diferentes).
+        """
+        documento, tipo = identificar_documento_fornecedor(valor, arquivo_fornecedores=ARQUIVO_FORNECEDORES)
+        if tipo:
+            return documento, tipo
+        # Não cadastrado (ou ambíguo): devolve o valor original, sem adivinhar o tipo
+        if valor is None:
+            return "", None
+        if isinstance(valor, float) and valor.is_integer():
+            valor = int(valor)
+        return str(valor).strip(), None
+
+    def mesmo_documento(self, valor_celula, info):
+        """Compara um CNPJ/CPF lido de uma célula com o da parcela, usando o tipo_pessoa da base"""
+        if info.get('tipo_pessoa'):
+            return normalizar_documento(valor_celula, info['tipo_pessoa']) == info['cnpj']
+        # Fornecedor fora da base: compara sem zeros à esquerda e sem máscara
+        return self._chave_sem_zeros(valor_celula) == self._chave_sem_zeros(info['cnpj'])
+
+    @staticmethod
+    def mesmo_contrato(valor_celula, num_contrato):
+        """Compara número de contrato sem diferença de espaços/maiúsculas"""
+        return str(valor_celula).strip().upper() == str(num_contrato).strip().upper()
+
+    def obter_info_item(self, item_id):
+        """Dados originais de uma linha da lista (contrato e CNPJ sem conversão do Treeview)"""
+        valores = self.tree_parcelas.item(item_id)['values']
+        info = self.info_parcelas.get(item_id)
+        if info is None:
+            # Segurança: linha sem dados guardados -> usa o que o Treeview mostra
+            documento, tipo = self.identificar_documento(valores[2])
+            info = {'num_contrato': str(valores[0]), 'cnpj': documento, 'tipo_pessoa': tipo}
+        valor_str = str(valores[6]).replace('R$', '').replace('.', '').replace(',', '.').strip()
+        return {
+            'num_contrato': info['num_contrato'],
+            'num_parcela': int(valores[1]),
+            'cnpj': info['cnpj'],
+            'tipo_pessoa': info['tipo_pessoa'],
+            'nome': str(valores[3]),
+            'valor': float(valor_str),
+        }
+
+    def localizar_linha_parcela(self, ws_contratos, parcela):
+        """
+        Encontra a linha da parcela na aba Contratos_ADM (área Y-AH).
+        Compara contrato, número da parcela e CNPJ/CPF (pelo tipo_pessoa da base).
+        Returns: número da linha ou None se não encontrar.
+        """
+        for row_idx, row in enumerate(ws_contratos.iter_rows(min_row=3), start=3):
+            if not self.mesmo_contrato(row[24].value, parcela['num_contrato']):
+                continue
+            try:
+                if int(row[25].value) != parcela['num_parcela']:
+                    continue
+            except (TypeError, ValueError):
+                continue
+            if self.mesmo_documento(row[26].value, parcela):
+                return row_idx
+        return None
+
     @staticmethod
     def converter_valor_seguro(valor_celula):
         """
@@ -80,6 +228,13 @@ class ControlePagamentos:
             return 0.0
     
     def setup_gui(self):
+        # Faixa "AMBIENTE DE TESTE" no topo (só aparece em TESTE)
+        if criar_banner_ambiente:
+            try:
+                criar_banner_ambiente(self.root)
+            except Exception as e:
+                print(f"Erro ao criar banner de ambiente: {str(e)}")
+
         # Frame principal SEM scroll para melhor controle do layout
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.pack(fill='both', expand=True)
@@ -283,50 +438,55 @@ class ControlePagamentos:
             
             # Obter data do pagamento
             data_pag = self.data_pagamento.get_date()
-            
+
+            # Data do RELATÓRIO (DATA_REL): regra da quinzena (dia 5 ou 20),
+            # a mesma de src.config.utils.validar_data_quinzena().
+            # A data do pagamento continua sendo gravada em DT_VENCTO e em Contratos_ADM.
+            data_rel, msg_ajuste_rel = validar_data_quinzena(data_pag)
+
             # Coletar informações de todas as parcelas selecionadas
             parcelas_info = []
             valor_total = 0
             
             for item_id in selecionados:
-                valores = self.tree_parcelas.item(item_id)['values']
-                
-                num_contrato = str(valores[0])
-                num_parcela = int(valores[1])
-                cnpj = str(valores[2])
-                nome_adm = str(valores[3])
-                
-                # Valor a pagar
-                valor_str = str(valores[6]).replace('R$', '').replace('.', '').replace(',', '.').strip()
-                valor_pagar = float(valor_str)
-                valor_total += valor_pagar
-                
-                parcelas_info.append({
-                    'num_contrato': num_contrato,
-                    'num_parcela': num_parcela,
-                    'cnpj': cnpj,
-                    'nome': nome_adm,
-                    'valor': valor_pagar
-                })
-            
+                # Contrato e CNPJ/CPF originais (não os convertidos pelo Treeview)
+                info = self.obter_info_item(item_id)
+                valor_total += info['valor']
+                parcelas_info.append(info)
+
             # Confirmar com o usuário
             lista_parcelas = "\n".join([
                 f"• Contrato {p['num_contrato']} - Parcela {p['num_parcela']}: R$ {p['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
                 for p in parcelas_info
             ])
-            
+
+            # Administradores que não estão na base de fornecedores
+            nao_cadastrados = sorted({f"{p['nome']} ({p['cnpj']})" for p in parcelas_info if not p['tipo_pessoa']})
+            aviso_cadastro = ""
+            if nao_cadastrados:
+                aviso_cadastro = (
+                    "⚠️ NÃO CADASTRADO(S) NA BASE DE FORNECEDORES:\n"
+                    + "\n".join(f"   {n}" for n in nao_cadastrados)
+                    + "\n   (CNPJ/CPF sem máscara e dados bancários não encontrados)\n\n"
+                )
+
             resposta = messagebox.askyesno(
                 "Confirmar Pagamento Múltiplo",
                 f"Confirma o registro de pagamento para {len(parcelas_info)} parcela(s)?\n\n"
-                f"Data do Pagamento: {data_pag.strftime('%d/%m/%Y')}\n\n"
+                f"Cliente: {self.cliente_selecionado}\n"
+                f"{'Ambiente: ' + config_ambiente.get_nome_ambiente() + chr(10) if config_ambiente else ''}"
+                f"Data do Pagamento: {data_pag.strftime('%d/%m/%Y')}\n"
+                f"Data do Relatório: {data_rel.strftime('%d/%m/%Y')}"
+                f"{' (ajustada pela regra da quinzena: dia 5 ou 20)' if msg_ajuste_rel else ''}\n\n"
+                f"{aviso_cadastro}"
                 f"Parcelas:\n{lista_parcelas}\n\n"
                 f"VALOR TOTAL: R$ {valor_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
                 parent=self.root
             )
-            
+
             if not resposta:
                 return
-            
+
             # Abrir arquivo do cliente
             arquivo_cliente = Path(PASTA_CLIENTES) / f"{self.cliente_selecionado}.xlsx"
             wb = load_workbook(arquivo_cliente)
@@ -336,22 +496,41 @@ class ControlePagamentos:
             # Processar cada parcela
             parcelas_processadas = 0
             
+            parcelas_nao_localizadas = []
+
             for parcela_info in parcelas_info:
                 # Atualizar status na aba Contratos_ADM
-                for row_idx, row in enumerate(ws_contratos.iter_rows(min_row=3), start=3):
-                    if (str(row[24].value) == parcela_info['num_contrato'] and
-                        int(row[25].value) == parcela_info['num_parcela'] and
-                        str(row[26].value) == parcela_info['cnpj']):
-                        
-                        # Atualizar status e data
-                        ws_contratos.cell(row=row_idx, column=31, value="PAGO")
-                        ws_contratos.cell(row=row_idx, column=32, value=data_pag)
-                        # Aplicar formato de data
-                        ws_contratos.cell(row=row_idx, column=32).number_format = 'DD/MM/YYYY'
-                        
-                        parcelas_processadas += 1
-                        break
-            
+                linha = self.localizar_linha_parcela(ws_contratos, parcela_info)
+                if linha is None:
+                    parcelas_nao_localizadas.append(parcela_info)
+                    continue
+
+                # Atualizar status e data
+                ws_contratos.cell(row=linha, column=31, value="PAGO")
+                ws_contratos.cell(row=linha, column=32, value=data_pag)
+                # Aplicar formato de data
+                ws_contratos.cell(row=linha, column=32).number_format = 'DD/MM/YYYY'
+
+                parcelas_processadas += 1
+
+            # PROTEÇÃO CONTRA PAGAMENTO EM DOBRO: se alguma parcela não foi
+            # encontrada em Contratos_ADM, ela continuaria PENDENTE mas ganharia
+            # lançamento em Dados. Nesse caso nada é gravado.
+            if parcelas_nao_localizadas:
+                wb.close()
+                lista = "\n".join(
+                    f"• Contrato {p['num_contrato']} - Parcela {p['num_parcela']} - {p['nome']} ({p['cnpj']})"
+                    for p in parcelas_nao_localizadas
+                )
+                messagebox.showerror(
+                    "Pagamento NÃO registrado",
+                    f"As parcelas abaixo não foram localizadas na aba Contratos_ADM:\n\n{lista}\n\n"
+                    f"Nada foi gravado (nem status, nem lançamento em Dados).\n"
+                    f"Recarregue a lista e tente novamente.",
+                    parent=self.root
+                )
+                return
+
             # ✅ CORREÇÃO: Criar UM lançamento POR ADMINISTRADOR (agrupar por CNPJ)
             # Agrupar parcelas por administrador
             parcelas_por_admin = {}
@@ -375,12 +554,15 @@ class ControlePagamentos:
                 nova_linha = ws_dados.max_row + 1
                 
                 # Preencher dados do lançamento
-                ws_dados.cell(row=nova_linha, column=1, value=data_pag)  # DATA_REL
+                ws_dados.cell(row=nova_linha, column=1, value=data_rel)  # DATA_REL (quinzena: dia 5 ou 20)
                 ws_dados.cell(row=nova_linha, column=1).number_format = 'DD/MM/YYYY'
                 
                 ws_dados.cell(row=nova_linha, column=2, value=2)  # TP_DESP (2 = Transferências e boletos)
                 
-                ws_dados.cell(row=nova_linha, column=3, value=cnpj)  # CNPJ_CPF
+                # CNPJ_CPF com máscara pelo tipo_pessoa da base (mesmo padrão do Sistema de Entrada de Dados)
+                tipo_admin = dados_admin['parcelas'][0]['tipo_pessoa']
+                cnpj_gravar = formatar_documento(cnpj, tipo_admin) if tipo_admin else cnpj
+                ws_dados.cell(row=nova_linha, column=3, value=cnpj_gravar)  # CNPJ_CPF
                 
                 # Nome SEM número de parcela
                 ws_dados.cell(row=nova_linha, column=4, value=dados_admin['nome'])  # NOME
@@ -395,7 +577,7 @@ class ControlePagamentos:
                 parcelas_unicas = set()
                 
                 for row in ws_contratos.iter_rows(min_row=3):
-                    if str(row[24].value) == num_contrato_ref:  # Coluna Y - Referência
+                    if self.mesmo_contrato(row[24].value, num_contrato_ref):  # Coluna Y - Referência
                         num_parcela = row[25].value  # Coluna Z - Número
                         if num_parcela:
                             parcelas_unicas.add(num_parcela)
@@ -430,7 +612,14 @@ class ControlePagamentos:
                 ws_dados.cell(row=nova_linha, column=11, value="TAX")  # CATEGORIA
                 
                 # Buscar dados bancários deste administrador específico
-                dados_bancarios = buscar_dados_bancarios_fornecedor(cnpj, self.cliente_selecionado)
+                # Ordem de busca (utils.buscar_dados_bancarios_fornecedor):
+                #   1º coluna O (DADOS BANCÁRIOS) da base_fornecedores, se preenchida
+                #   2º chave PIX (coluna K), se existir
+                #   3º dados de TED (banco/op/agência/conta + CNPJ/CPF)
+                # Antes, o nome do cliente era passado no lugar da forma de
+                # pagamento, o que fazia o PIX ser sempre ignorado.
+                dados_bancarios = buscar_dados_bancarios_fornecedor(
+                    cnpj, forma_pagamento="PIX", tipo_pessoa=tipo_admin)
                 if dados_bancarios:
                     ws_dados.cell(row=nova_linha, column=12, value=dados_bancarios)  # DADOS_BANCARIOS
                 
@@ -484,24 +673,11 @@ class ControlePagamentos:
             valor_total = 0
             
             for item_id in selecionados:
-                valores = self.tree_parcelas.item(item_id)['values']
-                
-                num_contrato = str(valores[0])
-                num_parcela = int(valores[1])
-                cnpj = str(valores[2])
-                nome_adm = str(valores[3])
-                
-                valor_str = str(valores[6]).replace('R$', '').replace('.', '').replace(',', '.').strip()
-                valor_pagar = float(valor_str)
-                valor_total += valor_pagar
-                
-                parcelas_dados.append({
-                    'num_contrato': num_contrato,
-                    'num_parcela': num_parcela,
-                    'cnpj': cnpj,
-                    'nome': nome_adm,
-                    'valor_pagar': f"R$ {valor_pagar:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
-                })
+                # Contrato e CNPJ/CPF originais (não os convertidos pelo Treeview)
+                info = self.obter_info_item(item_id)
+                valor_total += info['valor']
+                info['valor_pagar'] = f"R$ {info['valor']:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+                parcelas_dados.append(info)
             
             # Criar janela de busca
             janela_busca = tk.Toplevel(self.root)
@@ -625,35 +801,53 @@ class ControlePagamentos:
             parcelas_vinculadas = 0
             
             # Atualizar cada parcela
+            parcelas_nao_localizadas = []
             for parcela in parcelas_dados:
-                for row_idx, row in enumerate(ws_contratos.iter_rows(min_row=3), start=3):
-                    if (str(row[24].value) == parcela['num_contrato'] and
-                        int(row[25].value) == parcela['num_parcela'] and
-                        str(row[26].value) == parcela['cnpj']):
-                        
-                        # Atualizar status
-                        ws_contratos.cell(row=row_idx, column=31, value="VINCULADO")
-                        ws_contratos.cell(row=row_idx, column=32, value=hoje)
-                        
-                        # Adicionar observação
-                        obs_atual = ws_contratos.cell(row=row_idx, column=36).value or ""
-                        nova_obs = f"{obs_atual} [VINCULADO À DESPESA DA LINHA {linha_lancamento} DE DADOS]".strip()
-                        ws_contratos.cell(row=row_idx, column=36, value=nova_obs)
-                        
-                        parcelas_vinculadas += 1
-                        break
-            
+                row_idx = self.localizar_linha_parcela(ws_contratos, parcela)
+                if row_idx is None:
+                    parcelas_nao_localizadas.append(parcela)
+                    continue
+
+                # Atualizar status
+                ws_contratos.cell(row=row_idx, column=31, value="VINCULADO")
+                ws_contratos.cell(row=row_idx, column=32, value=hoje)
+
+                # Adicionar observação
+                obs_atual = ws_contratos.cell(row=row_idx, column=36).value or ""
+                nova_obs = f"{obs_atual} [VINCULADO À DESPESA DA LINHA {linha_lancamento} DE DADOS]".strip()
+                ws_contratos.cell(row=row_idx, column=36, value=nova_obs)
+
+                parcelas_vinculadas += 1
+
+            if parcelas_vinculadas == 0:
+                wb.close()
+                messagebox.showerror(
+                    "Vinculação NÃO realizada",
+                    "Nenhuma das parcelas foi localizada na aba Contratos_ADM.\n"
+                    "Nada foi gravado. Recarregue a lista e tente novamente.",
+                    parent=janela
+                )
+                return
+
             # Salvar
             salvar_planilha_segura(wb, arquivo_cliente)
             wb.close()
-            
+
+            aviso_nao_localizadas = ""
+            if parcelas_nao_localizadas:
+                aviso_nao_localizadas = "\n\n⚠️ NÃO localizadas (continuam pendentes):\n" + "\n".join(
+                    f"• Contrato {p['num_contrato']} - Parcela {p['num_parcela']} ({p['cnpj']})"
+                    for p in parcelas_nao_localizadas
+                )
+
             # Sucesso
             messagebox.showinfo(
-                "Sucesso",
+                "Sucesso" if not parcelas_nao_localizadas else "Vinculação parcial",
                 f"Vinculação concluída!\n\n"
                 f"✓ {parcelas_vinculadas} parcela(s) vinculada(s)\n"
                 f"✓ Status: VINCULADO\n"
-                f"✓ Linha do lançamento: {linha_lancamento}",
+                f"✓ Linha do lançamento: {linha_lancamento}"
+                f"{aviso_nao_localizadas}",
                 parent=janela
             )
             
@@ -729,12 +923,16 @@ class ControlePagamentos:
                 return
             
             self.cliente_selecionado = cliente
-            
+            self.info_parcelas.clear()
+
             arquivo_cliente = Path(PASTA_CLIENTES) / f"{cliente}.xlsx"
             if not arquivo_cliente.exists():
                 messagebox.showerror("Erro", f"Arquivo do cliente não encontrado: {arquivo_cliente}")
                 return
-            
+
+            # Tipo de pessoa (PF/PJ) de cada administrador vem da base de fornecedores
+            self.carregar_indice_fornecedores()
+
             wb = load_workbook(arquivo_cliente, data_only=True)
             ws = wb['Contratos_ADM']
             
@@ -778,10 +976,13 @@ class ControlePagamentos:
                 if status not in ["PENDENTE", None, ""]:
                     continue
                 
+                # CNPJ/CPF identificado pela base de fornecedores (tipo_pessoa da coluna B)
+                cnpj_normalizado, tipo_pessoa = self.identificar_documento(cnpj)
+
                 # ✅ FILTRO 3: Evitar duplicação
                 # Cada parcela deve aparecer UMA VEZ, mesmo que tenha múltiplos administradores
                 # Chave única: contrato + número da parcela + cnpj do administrador
-                chave_parcela = (contrato_key, num_parcela, str(cnpj).strip() if cnpj else "")
+                chave_parcela = (contrato_key, num_parcela, cnpj_normalizado)
                 
                 if chave_parcela in parcelas_processadas:
                     continue  # Já foi processada
@@ -804,11 +1005,18 @@ class ControlePagamentos:
                         except:
                             data_pag_fmt = str(data_pagamento)
                 
+                # CNPJ/CPF exibido COM MÁSCARA conforme o tipo_pessoa da base.
+                # Fornecedor fora da base: exibe como está na planilha + aviso.
+                if tipo_pessoa:
+                    cnpj_exibir = formatar_documento(cnpj_normalizado, tipo_pessoa)
+                else:
+                    cnpj_exibir = f"⚠️ {cnpj_normalizado} (não cadastrado)"
+
                 # Inserir no treeview
-                self.tree_parcelas.insert('', 'end', values=(
+                item_id = self.tree_parcelas.insert('', 'end', values=(
                     num_contrato,
                     num_parcela,
-                    cnpj,
+                    cnpj_exibir,
                     nome_adm,
                     eventos,
                     valor_original_fmt,
@@ -816,6 +1024,13 @@ class ControlePagamentos:
                     status,
                     data_pag_fmt
                 ))
+
+                # Guardar os valores originais (sem a conversão do Treeview)
+                self.info_parcelas[item_id] = {
+                    'num_contrato': str(num_contrato).strip(),
+                    'cnpj': cnpj_normalizado,
+                    'tipo_pessoa': tipo_pessoa,
+                }
             
             wb.close()
             

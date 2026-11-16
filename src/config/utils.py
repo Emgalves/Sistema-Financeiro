@@ -331,6 +331,154 @@ def normalizar_documento(valor_excel, tipo_pessoa):
     return alfanumerico.zfill(14) if alfanumerico else ""
 
 
+# =====================================================================
+# IDENTIFICAÇÃO DE CNPJ/CPF PELA BASE DE FORNECEDORES (FONTE ÚNICA)
+#
+# REGRA: o tipo de pessoa (PF/PJ) vem SEMPRE da coluna B (tipo_pessoa)
+# da base_fornecedores.xlsx, nunca da contagem de dígitos.
+#
+# Por quê: quando um número perde os zeros à esquerda (célula numérica do
+# Excel, lista Treeview do Tkinter), um CNPJ como 00.065.389/0001-53
+# vira 65389000153 -- 11 dígitos, que "parecem" CPF.
+#
+# A contagem de dígitos só é confiável no MOMENTO DO CADASTRO, quando o
+# usuário digita o número completo (14 posições = PJ, 11 = PF).
+# =====================================================================
+
+_CACHE_INDICE_DOCUMENTOS = {'chave': None, 'indice': {}}
+
+
+def _doc_alnum(valor):
+    """Documento só com letras/dígitos, em maiúsculas. Números do Excel
+    (int/float) são convertidos sem o '.0'. None/NaN viram ''."""
+    if valor is None:
+        return ''
+    if isinstance(valor, float):
+        if valor != valor:          # NaN
+            return ''
+        if valor.is_integer():
+            valor = int(valor)
+    return ''.join(c for c in str(valor).strip().upper() if c.isalnum())
+
+
+def carregar_indice_documentos_fornecedores(arquivo_fornecedores=None, forcar=False):
+    """
+    Índice da base de fornecedores para identificar CNPJ/CPF.
+
+    Formato: {documento_sem_zeros_a_esquerda: {documento_normalizado: 'PF'/'PJ'}}
+
+    Fica em memória e só é relido quando o arquivo muda (data de modificação).
+    """
+    arquivo = Path(arquivo_fornecedores or ARQUIVO_FORNECEDORES)
+    try:
+        chave = (str(arquivo), arquivo.stat().st_mtime)
+    except OSError:
+        return {}
+    if not forcar and _CACHE_INDICE_DOCUMENTOS['chave'] == chave:
+        return _CACHE_INDICE_DOCUMENTOS['indice']
+
+    indice = {}
+    try:
+        wb = load_workbook(arquivo, read_only=True, data_only=True)
+        ws = wb['Fornecedores']
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            if not row or not row[0]:
+                continue
+            tipo = str(row[1]).strip().upper() if len(row) > 1 and row[1] else ''
+            if tipo not in ('PF', 'PJ'):
+                continue
+            documento = normalizar_documento(row[0], tipo)
+            if documento:
+                indice.setdefault(documento.lstrip('0'), {})[documento] = tipo
+        wb.close()
+    except Exception as e:
+        print(f"Erro ao carregar índice de documentos de fornecedores: {str(e)}")
+        return {}
+
+    _CACHE_INDICE_DOCUMENTOS['chave'] = chave
+    _CACHE_INDICE_DOCUMENTOS['indice'] = indice
+    return indice
+
+
+def identificar_documento_fornecedor(valor, tipo_pessoa=None, arquivo_fornecedores=None):
+    """
+    Identifica um CNPJ/CPF e devolve (documento_normalizado, tipo_pessoa).
+
+    - Se tipo_pessoa ('PF'/'PJ') for informado, ele manda: completa os zeros
+      conforme o tipo (11 ou 14) sem consultar a base.
+    - Senão, procura na base de fornecedores, aceitando o valor com ou sem
+      máscara e com ou sem os zeros à esquerda.
+      Com 12 ou mais caracteres (ou com letra) só pode ser CNPJ.
+    - Não encontrado, ou encontrado com tipos diferentes (ambíguo):
+      devolve (documento_sem_máscara, None) -- NÃO adivinha o tipo.
+
+    Exemplos (base com "Agua e Luz LTDA" = 00065389000153, PJ):
+        identificar_documento_fornecedor(65389000153)          -> ('00065389000153', 'PJ')
+        identificar_documento_fornecedor('00.065.389/0001-53') -> ('00065389000153', 'PJ')
+        identificar_documento_fornecedor('65389000153', 'PF')  -> ('65389000153', 'PF')
+    """
+    alnum = _doc_alnum(valor)
+    if not alnum:
+        return '', None
+
+    tipo_informado = str(tipo_pessoa or '').strip().upper()
+    if tipo_informado in ('PF', 'PJ'):
+        return normalizar_documento(valor, tipo_informado), tipo_informado
+
+    candidatos = carregar_indice_documentos_fornecedores(arquivo_fornecedores).get(alnum.lstrip('0'), {})
+
+    # O que o próprio valor já diz sobre o tipo:
+    #  - máscara de CPF (000.000.000-00) -> PF; máscara de CNPJ (00.000.000/0000-00) -> PJ
+    #  - 12 ou mais caracteres, ou letra -> só pode ser CNPJ
+    #  - 11 dígitos SEM máscara -> pode ser CPF ou CNPJ que perdeu zeros: decide a base
+    texto = str(valor).strip().upper()
+    if re.fullmatch(r'\d{3}\.\d{3}\.\d{3}-\d{2}', texto):
+        candidatos = {doc: tp for doc, tp in candidatos.items() if tp == 'PF'}
+    elif (re.fullmatch(r'[0-9A-Z]{2}\.[0-9A-Z]{3}\.[0-9A-Z]{3}/[0-9A-Z]{4}-\d{2}', texto)
+          or len(alnum) > 11 or any(c.isalpha() for c in alnum)):
+        candidatos = {doc: tp for doc, tp in candidatos.items() if tp == 'PJ'}
+
+    if len(candidatos) == 1:
+        return next(iter(candidatos.items()))
+    return alnum, None
+
+
+def comparador_documento(valor_busca, tipo_pessoa=None, arquivo_fornecedores=None):
+    """
+    Prepara a comparação de UM documento procurado contra vários registros.
+
+    Uso:
+        corresponde = comparador_documento(cnpj_procurado)
+        for row in linhas:
+            if corresponde(row[0], row[1]):      # (documento, tipo_pessoa da linha)
+                ...
+
+    Regra:
+      - Documento identificado (tipo informado ou achado na base): o registro
+        precisa ter o MESMO tipo e o mesmo número com os zeros completados.
+        Registro sem tipo: compara sem zeros à esquerda.
+      - Documento NÃO identificado: comparação exata (sem máscara),
+        como era feito antes.
+
+    O documento identificado fica em corresponde.documento e o tipo em
+    corresponde.tipo_pessoa.
+    """
+    alvo_doc, alvo_tipo = identificar_documento_fornecedor(valor_busca, tipo_pessoa, arquivo_fornecedores)
+    alvo_alnum = _doc_alnum(valor_busca)
+
+    def corresponde(valor_registro, tipo_registro=None):
+        tipo_reg = str(tipo_registro or '').strip().upper()
+        if alvo_tipo and tipo_reg in ('PF', 'PJ'):
+            return tipo_reg == alvo_tipo and normalizar_documento(valor_registro, tipo_reg) == alvo_doc
+        if alvo_tipo:
+            return _doc_alnum(valor_registro).lstrip('0') == alvo_doc.lstrip('0')
+        return bool(alvo_alnum) and _doc_alnum(valor_registro) == alvo_alnum
+
+    corresponde.documento = alvo_doc
+    corresponde.tipo_pessoa = alvo_tipo
+    return corresponde
+
+
 def formatar_documento(documento, tipo_pessoa):
     """
     Formata documento COM MÁSCARA para exibição visual.
@@ -618,6 +766,16 @@ def selecionar_fornecedor(tree_fornecedores, campos_fornecedor, campos_despesa=N
 
     fornecedor = tree_fornecedores.item(selecionado)['values']
 
+    # O Treeview converte "00065389000153" em 65389000153 (perde os zeros).
+    # O tipo_pessoa (PF/PJ) vem na tag gravada por buscar_fornecedor() e é ele
+    # que define quantos zeros repor (11 p/ PF, 14 p/ PJ) -- nunca zfill(14) fixo,
+    # que transformava qualquer CPF em "CNPJ".
+    tags = tree_fornecedores.item(selecionado, 'tags') or ()
+    tipo_tag = next((str(t).strip().upper() for t in tags if str(t).strip().upper() in ('PF', 'PJ')), None)
+    documento, _tipo = identificar_documento_fornecedor(fornecedor[0], tipo_tag)
+    fornecedor = list(fornecedor)
+    fornecedor[0] = documento or str(fornecedor[0])
+
     # Para o caso de campos simplificados (apenas cnpj_cpf e nome)
     if 'cnpj_cpf' in campos_fornecedor and 'nome' in campos_fornecedor:
         for campo in ['cnpj_cpf', 'nome']:
@@ -627,13 +785,13 @@ def selecionar_fornecedor(tree_fornecedores, campos_fornecedor, campos_despesa=N
             campos_fornecedor[campo].insert(0, str(fornecedor[idx]))
             campos_fornecedor[campo].config(state='readonly')
         return fornecedor
-    
+
     # Limpar e preencher campos básicos
     for entry in campos_fornecedor.values():
         entry.config(state='normal')
         entry.delete(0, tk.END)
 
-    campos_fornecedor['cnpj_cpf'].insert(0, str(fornecedor[0]).zfill(14))
+    campos_fornecedor['cnpj_cpf'].insert(0, str(fornecedor[0]))
     campos_fornecedor['nome'].insert(0, fornecedor[1])
     campos_fornecedor['categoria'].insert(0, fornecedor[2])
 
@@ -763,28 +921,40 @@ def compor_dados_bancarios(chave_pix='', banco='', op='', agencia='', conta='',
     if documento:
         tipo = _txt(tipo_pessoa).upper()
         if tipo not in ('PF', 'PJ'):
-            # Sem tipo informado: até 11 caracteres = CPF, acima = CNPJ
-            alfanum = ''.join(c for c in documento if c.isalnum())
-            tipo = 'PF' if len(alfanum) <= 11 else 'PJ'
-        try:
-            documento = formatar_documento(documento, tipo) or documento
-        except Exception:
-            pass
+            # Sem tipo informado: o tipo vem da BASE DE FORNECEDORES (coluna B),
+            # não da contagem de dígitos -- um CNPJ 00.065.389/0001-53 sem os
+            # zeros tem 11 dígitos e seria mascarado como CPF.
+            documento_base, tipo = identificar_documento_fornecedor(documento)
+            if tipo:
+                documento = documento_base
+            else:
+                # Fora da base: só aplica máscara se o tamanho não deixar dúvida
+                alfanum = _doc_alnum(documento)
+                tipo = 'PJ' if len(alfanum) == 14 else ('PF' if len(alfanum) == 11 else None)
+        if tipo:
+            try:
+                documento = formatar_documento(documento, tipo) or documento
+            except Exception:
+                pass
         partes.append(f"CNPJ/CPF: {documento}")
 
     return " | ".join(partes)
 
 
-def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_fornecedores=None):
+def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_fornecedores=None,
+                                      tipo_pessoa=None):
     """
     Busca os dados bancários do fornecedor conforme a forma de pagamento
-    
+
     Args:
-        cnpj_cpf (str): CNPJ ou CPF do fornecedor (com ou sem máscara)
+        cnpj_cpf (str): CNPJ ou CPF do fornecedor (com ou sem máscara, com ou
+            sem os zeros à esquerda)
         forma_pagamento (str): Forma de pagamento (PIX ou TED)
         arquivo_fornecedores (str, optional): Caminho para o arquivo de fornecedores
             Se não informado, usa o ARQUIVO_FORNECEDORES da configuração
-            
+        tipo_pessoa (str, optional): 'PF' ou 'PJ', se já conhecido. Se não
+            informado, o tipo vem da base (coluna B), nunca da contagem de dígitos.
+
     Returns:
         str: Dados bancários formatados para o fornecedor
     """
@@ -793,24 +963,21 @@ def buscar_dados_bancarios_fornecedor(cnpj_cpf, forma_pagamento="PIX", arquivo_f
         if not arquivo_fornecedores:
             from src.config.config import ARQUIVO_FORNECEDORES
             arquivo_fornecedores = ARQUIVO_FORNECEDORES
-            
+
         from openpyxl import load_workbook
-        
-        # Limpar CNPJ/CPF (remover máscara: pontos, traços, barras)
-        cnpj_cpf_limpo = ''.join(filter(str.isdigit, str(cnpj_cpf).strip()))
-        
+
+        # Comparação pelo tipo_pessoa (ver identificar_documento_fornecedor)
+        corresponde = comparador_documento(cnpj_cpf, tipo_pessoa, arquivo_fornecedores)
+
         # Abrir arquivo de fornecedores
         wb = load_workbook(arquivo_fornecedores, data_only=True)
         ws = wb['Fornecedores']
-    
+
         for row in ws.iter_rows(min_row=2, values_only=True):
             if not row[0]:  # Pular se não tem CNPJ/CPF
                 continue
-                
-            # Limpar CNPJ/CPF da planilha também para comparação
-            cnpj_cpf_planilha = ''.join(filter(str.isdigit, str(row[0]).strip()))
-            
-            if cnpj_cpf_planilha == cnpj_cpf_limpo:
+
+            if corresponde(row[0], row[1] if len(row) > 1 else None):
                 # Encontrou o fornecedor
                 dados_bancarios = None
                 

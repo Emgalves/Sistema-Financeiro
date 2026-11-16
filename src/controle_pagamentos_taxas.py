@@ -47,6 +47,16 @@ except ImportError as e:
         print(f"Erro ao importar módulos (caminho alternativo): {str(e2)}")
         raise
 
+# Identificação visual do ambiente (TESTE/PRODUÇÃO) - mesma fonte usada por config.py
+try:
+    from src.ambiente_config import config_ambiente, criar_banner_ambiente
+except ImportError:
+    try:
+        from ambiente_config import config_ambiente, criar_banner_ambiente
+    except ImportError:
+        config_ambiente = None
+        criar_banner_ambiente = None
+
 class ControlePagamentos:
     def __init__(self, parent=None):
         self.parent = parent
@@ -71,6 +81,15 @@ class ControlePagamentos:
         configurar_janela(self.janela, "Controle de Pagamentos", 900, 1000)
         # Posicionar a janela no canto superior esquerdo
         self.janela.geometry("+0+0")
+
+        # Identificação do ambiente: prefixo no título e faixa de TESTE no topo
+        if config_ambiente:
+            self.janela.title(config_ambiente.get_titulo_janela("Controle de Pagamentos"))
+        if criar_banner_ambiente:
+            try:
+                criar_banner_ambiente(self.janela)
+            except Exception as e:
+                print(f"Erro ao criar banner de ambiente: {str(e)}")
 
         # Permitir que esta função detecte quando a aplicação é executada diretamente
         is_main_window = self.parent and self.parent.winfo_toplevel() == self.parent
@@ -287,36 +306,103 @@ class ControlePagamentos:
                 self.janela.deiconify()
 
         
-    def abrir_gestao_contratos(self):
-        """Abre o módulo de gestão de contratos"""
+    def selecionar_cliente(self):
+        """
+        Pede o cliente (lista de clientes ativos) e guarda em self.cliente_atual.
+        Returns: True se um cliente foi escolhido, False se cancelou.
+        """
         try:
-            # Primeiro, selecionar um cliente
-            if self.selecionar_cliente():
-                # Importar e instanciar o módulo
-                try:
-                    from sistema_entrada_dados import GestaoContratos
-                    gestao_contratos = GestaoContratos(self.parent)
-                    
-                    # Criar uma nova janela explícita para a gestão
-                    janela_gestao = tk.Toplevel(self.parent)
-                    janela_gestao.title(f"Gestão de Contratos - {self.cliente_atual}")
-                    
-                    def on_close():
-                        janela_gestao.destroy()
-                        self.parent.lift()
-                        self.parent.focus_force()
-                    
-                    gestao_contratos.cliente_atual = self.cliente_atual
-                    gestao_contratos.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
-                    gestao_contratos.criar_interface_contratos(janela_gestao, on_close)
-                    
-                except ImportError as ie:
-                    messagebox.showerror("Erro", f"Módulo de Gestão de Contratos não encontrado: {str(ie)}", parent=janela_gestao)
-                except Exception as e:
-                    messagebox.showerror("Erro", f"Erro ao abrir gestão de contratos: {str(e)}", parent=janela_gestao)
+            from src.config.utils import obter_clientes_ativos
+        except ImportError:
+            from config.utils import obter_clientes_ativos
+
+        clientes, _info = obter_clientes_ativos()
+        if not clientes:
+            messagebox.showwarning("Aviso", "Nenhum cliente ativo encontrado.", parent=self.janela)
+            return False
+
+        dialogo = tk.Toplevel(self.janela or self.parent)
+        dialogo.title("Selecionar Cliente")
+        dialogo.resizable(False, False)
+        dialogo.transient(self.janela or self.parent)
+
+        ttk.Label(dialogo, text="Cliente:", font=('Arial', 11)).pack(padx=20, pady=(20, 5), anchor='w')
+        combo = ttk.Combobox(dialogo, values=clientes, state='readonly', width=50)
+        combo.pack(padx=20, pady=5)
+        if self.cliente_atual in clientes:
+            combo.set(self.cliente_atual)
+
+        escolha = {'cliente': None}
+
+        def confirmar(event=None):
+            if not combo.get():
+                messagebox.showwarning("Aviso", "Selecione um cliente.", parent=dialogo)
+                return
+            escolha['cliente'] = combo.get()
+            dialogo.destroy()
+
+        frame_botoes = ttk.Frame(dialogo)
+        frame_botoes.pack(pady=15)
+        ttk.Button(frame_botoes, text="OK", command=confirmar, width=12).pack(side='left', padx=5)
+        ttk.Button(frame_botoes, text="Cancelar", command=dialogo.destroy, width=12).pack(side='left', padx=5)
+        dialogo.bind('<Return>', confirmar)
+        dialogo.bind('<Escape>', lambda e: dialogo.destroy())
+
+        dialogo.grab_set()
+        combo.focus_set()
+        dialogo.wait_window()
+
+        if escolha['cliente']:
+            self.cliente_atual = escolha['cliente']
+            return True
+        return False
+
+    def abrir_gestao_contratos(self):
+        """
+        Abre o módulo de gestão de contratos.
+
+        Mesmo procedimento de Sistema_Entrada_Dados.abrir_gestao_contratos.
+        A classe GestaoContratos fica em src/taxas_administracao/gestao_contratos.py
+        (antes estava dentro do Sistema de Entrada de Dados; o import antigo
+        "from sistema_entrada_dados import GestaoContratos" deixou de funcionar).
+        """
+        janela_gestao = None
+        try:
+            if not self.selecionar_cliente():
+                return
+
+            from src.taxas_administracao.gestao_contratos import GestaoContratos
+
+            # Esconder o menu enquanto a gestão está aberta
+            if self.janela:
+                self.janela.withdraw()
+
+            janela_gestao = tk.Toplevel(self.parent)
+            janela_gestao.title(f"Gestão de Contratos - {self.cliente_atual}")
+            janela_gestao.geometry("800x750")
+
+            def on_close():
+                janela_gestao.destroy()
+                if self.janela and self.janela.winfo_exists():
+                    self.janela.deiconify()
+                    self.janela.lift()
+                    self.janela.focus_force()
+
+            janela_gestao.protocol("WM_DELETE_WINDOW", on_close)
+
+            gestao_contratos = GestaoContratos(janela_gestao)
+            gestao_contratos.cliente_atual = self.cliente_atual
+            gestao_contratos.arquivo_cliente = PASTA_CLIENTES / f"{self.cliente_atual}.xlsx"
+            gestao_contratos.criar_interface_contratos(janela_gestao, on_close)
+
         except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao abrir gestão de contratos: {str(e)}", parent=janela_gestao)
-        
+            print(f"Erro ao abrir gestão de contratos: {str(e)}")
+            if janela_gestao is not None and janela_gestao.winfo_exists():
+                janela_gestao.destroy()
+            if self.janela and self.janela.winfo_exists():
+                self.janela.deiconify()
+            messagebox.showerror("Erro", f"Erro ao abrir gestão de contratos: {str(e)}", parent=self.janela)
+
     def abrir_relatorios(self):
         """Abre o módulo de relatórios"""
         messagebox.showinfo("Informação", "Módulo de Relatórios em desenvolvimento", parent=self.janela)

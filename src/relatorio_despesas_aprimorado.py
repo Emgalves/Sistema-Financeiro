@@ -2188,6 +2188,23 @@ class RelatorioHandler:
         partes = [escape(p.strip()) for p in texto.split('|') if p.strip()]
         return Paragraph('<br/>'.join(partes), estilo_celula)
 
+    def _formatar_nome(self, valor, estilo_celula):
+        """Formata o campo NOME para quebrar linha dentro da coluna do PDF.
+
+        Texto puro (str) numa célula de Table do ReportLab NÃO quebra linha
+        e invade a coluna vizinha (VENCIMENTO). Como Paragraph, o nome
+        quebra automaticamente na largura da coluna e a linha da tabela
+        cresce em altura.
+        - Escapa &, < e > (ex.: "M&M LTDA" quebraria o Paragraph).
+        - 'nan'/None viram célula vazia.
+        """
+        from xml.sax.saxutils import escape
+
+        texto = '' if valor is None else str(valor).strip()
+        if texto.lower() == 'nan':
+            texto = ''
+        return Paragraph(escape(texto), estilo_celula)
+
     def criar_tabela_despesas_com_cabecalho_customizado(self, dados, colunas_dados, colunas_exibicao, larguras, incluir_total=True):
         """Cria tabela com cabeçalhos customizados (diferentes dos nomes das colunas internas)
         
@@ -2266,7 +2283,11 @@ class RelatorioHandler:
                     except:
                         valor = str(valor) if valor else ''
                     linha_formatada.append(valor)
-                
+
+                # Quebra de linha para a coluna NOME (evita invadir VENCIMENTO)
+                elif coluna == 'NOME':
+                    linha_formatada.append(self._formatar_nome(valor, estilo_celula))
+
                 # Adicionar quebra de texto para a coluna Referência
                 elif coluna == 'REFERÊNCIA':
                     valor = str(valor)
@@ -2275,21 +2296,21 @@ class RelatorioHandler:
                 # Quebra de linha para Dados Bancários (PIX curto ou TED longa)
                 elif coluna in ('DADOS BANCÁRIOS', 'DADOS_BANCARIOS'):
                     linha_formatada.append(self._formatar_dados_bancarios(valor, estilo_celula))
-                
+
                 # Tratar coluna STATUS
                 elif coluna == 'STATUS':
                     valor = str(valor) if valor else "ATIVO"
                     linha_formatada.append(valor)
-                
+
                 # Outras colunas
                 else:
                     linha_formatada.append(str(valor))
-                    
+
             dados_tabela.append(linha_formatada)
 
         # Adicionar linha de total se necessário
         if incluir_total:
-            coluna_valor = next((i for i, col in enumerate(colunas_dados) 
+            coluna_valor = next((i for i, col in enumerate(colunas_dados)
                             if col in ['VALOR', 'TOTAL']), -1)
             if coluna_valor >= 0:
                 if '13º SALÁRIO' in colunas_dados and 'FÉRIAS' in colunas_dados:
@@ -2398,10 +2419,20 @@ class RelatorioHandler:
         # Colunas para centralizar
         colunas_centralizadas = ['DT_VENCTO', 'VENCIMENTO', 'STATUS']
 
+        # Estilo vermelho para o NOME de lançamentos EXCLUIDO: a regra
+        # TEXTCOLOR da tabela (mais abaixo) não afeta Paragraphs, então a
+        # cor precisa vir do próprio estilo do parágrafo.
+        estilo_celula_excluido = ParagraphStyle(
+            'CelulaTabelaExcluido',
+            parent=estilo_celula,
+            textColor=colors.red
+        )
+
         # Processar dados linha por linha
         dados_tabela = [cabecalhos_formatados]
         for _, linha in dados_formatados.iterrows():
             linha_formatada = []
+            linha_excluida = mostrar_status and str(linha.get('STATUS', '')) == 'EXCLUIDO'
             for i, coluna in enumerate(colunas):
                 valor = linha[coluna] if coluna in linha.index else ""
                 
@@ -2427,7 +2458,12 @@ class RelatorioHandler:
                     except:
                         valor = str(valor)
                     linha_formatada.append(valor)
-                
+
+                # Quebra de linha para a coluna NOME (evita invadir VENCIMENTO)
+                elif coluna == 'NOME':
+                    estilo_nome = estilo_celula_excluido if linha_excluida else estilo_celula
+                    linha_formatada.append(self._formatar_nome(valor, estilo_nome))
+
                 # Adicionar quebra de texto para a coluna Referência
                 elif coluna == 'REFERÊNCIA':
                     valor = str(valor)
@@ -2436,16 +2472,16 @@ class RelatorioHandler:
                 # Quebra de linha para Dados Bancários (PIX curto ou TED longa)
                 elif coluna in ('DADOS BANCÁRIOS', 'DADOS_BANCARIOS'):
                     linha_formatada.append(self._formatar_dados_bancarios(valor, estilo_celula))
-                
+
                 # Tratar coluna STATUS
                 elif coluna == 'STATUS':
                     valor = str(valor) if valor else "ATIVO"
                     linha_formatada.append(valor)
-                
+
                 # Outras colunas
                 else:
                     linha_formatada.append(str(valor))
-                    
+
             dados_tabela.append(linha_formatada)
 
         # Adicionar linha de total se necessário (mesmo código anterior)

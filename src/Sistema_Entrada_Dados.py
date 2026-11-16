@@ -965,33 +965,19 @@ class VisualizadorLancamentos:
                 logger.error("❌ Arquivo de fornecedores não encontrado!")
                 return None
             
-            # Remover formatação do CNPJ/CPF
-            cnpj_cpf_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf_formatado)))
-            
             logger.debug(f"Buscando tipo_pessoa para: {cnpj_cpf_formatado}")
-            logger.debug(f"Números: {cnpj_cpf_numeros}")
-            
-            wb = load_workbook(ARQUIVO_FORNECEDORES, data_only=True)
-            ws = wb['Fornecedores']
-            
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if not row or not row[0]:
-                    continue
-                
-                # Coluna A: CNPJ/CPF
-                # Coluna B: tipo_pessoa
-                row_cnpj_cpf = row[0]
-                row_tipo_pessoa = str(row[1]).strip().upper() if row[1] else None
-                
-                # Comparar apenas números
-                row_cnpj_cpf_numeros = ''.join(filter(str.isdigit, str(row_cnpj_cpf)))
-                
-                if row_cnpj_cpf_numeros == cnpj_cpf_numeros:
-                    logger.debug(f"✓ Fornecedor encontrado! Tipo: {row_tipo_pessoa}")
-                    wb.close()
-                    return row_tipo_pessoa
-            
-            wb.close()
+
+            # Tipo vem da coluna B da base (src.config.utils.identificar_documento_fornecedor).
+            # Aceita o documento com ou sem máscara e com ou sem zeros à esquerda:
+            # 65389000153 (CNPJ 00.065.389/0001-53 que perdeu os zeros) -> PJ.
+            from src.config.utils import identificar_documento_fornecedor
+            _documento, row_tipo_pessoa = identificar_documento_fornecedor(
+                cnpj_cpf_formatado, arquivo_fornecedores=ARQUIVO_FORNECEDORES)
+
+            if row_tipo_pessoa:
+                logger.debug(f"✓ Fornecedor encontrado! Tipo: {row_tipo_pessoa}")
+                return row_tipo_pessoa
+
             logger.error(f"❌ FORNECEDOR NÃO CADASTRADO: {cnpj_cpf_formatado}")
             return None  # Fornecedor não existe!
             
@@ -4299,22 +4285,26 @@ class SistemaEntradaDados:
             from src.config.config import ARQUIVO_FORNECEDORES
             from openpyxl import load_workbook
 
+            from src.config.utils import comparador_documento
+
+            # O documento vem do cadastro de CLIENTE, sempre completo (com
+            # máscara), então o tamanho define o tipo: 14 posições = PJ, 11 = PF.
+            # Do lado da base, o tipo vem da coluna B. Completar os dois lados
+            # com zeros até 14 (como antes) fazia o CPF 653.890.001-53 "bater"
+            # com o CNPJ 00.065.389/0001-53.
+            limpo = _doc_limpo(cpf_numeros)
+            tipo_cliente = 'PJ' if _eh_cnpj(limpo) else 'PF'
+            corresponde = comparador_documento(limpo, tipo_cliente, ARQUIVO_FORNECEDORES)
+
             wb = load_workbook(ARQUIVO_FORNECEDORES, read_only=True, data_only=True)
             ws = wb['Fornecedores']
             for row in ws.iter_rows(min_row=2, values_only=True):
                 if not row or not row[0]:
                     continue
-                # Célula numérica no Excel perde zeros à esquerda (ex.: CNPJ
-                # 00.065.389/0001-53 vira 65389000153); por isso converte
-                # int/float sem ".0" e compara as duas partes completadas a 14.
-                valor_celula = row[0]
-                if isinstance(valor_celula, float):
-                    valor_celula = int(valor_celula)
-                cpf_linha = _doc_limpo(valor_celula)
-                if cpf_linha.zfill(14) == _doc_limpo(cpf_numeros).zfill(14):
+                if corresponde(row[0], row[1] if len(row) > 1 else None):
                     wb.close()
                     return {
-                        'cnpj_cpf': cpf_linha,
+                        'cnpj_cpf': corresponde.documento,
                         'nome': str(row[3]).strip() if len(row) > 3 and row[3] else ''
                     }
             wb.close()
@@ -4731,8 +4721,9 @@ class SistemaEntradaDados:
             # Importar módulo
             from controle_pagamentos import ControlePagamentos
             
-            # Instanciar e abrir janela de controle
-            controle = ControlePagamentos(self.root)
+            # Instanciar e abrir janela de controle já com o cliente
+            # selecionado na aba "Seleção de Cliente" (evita escolher de novo)
+            controle = ControlePagamentos(self.root, cliente_inicial=self.cliente_atual)
         except ImportError as e:
             custom_messagebox("error", "Erro", f"Não foi possível importar o módulo de Controle de Pagamentos: {str(e)}")
         except Exception as e:
@@ -6395,11 +6386,16 @@ class SistemaEntradaDados:
         """
         try:
             cnpj_cpf_busca_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf).strip()))
-    
+            # Comparação pelo tipo_pessoa da base (aceita documento sem os zeros à esquerda).
+            # Compara com f['cnpj_cpf'] (documento completo, com letras se for CNPJ
+            # alfanumérico), e não com 'cnpj_cpf_numeros', que guarda só os dígitos.
+            from src.config.utils import comparador_documento
+            corresponde = comparador_documento(cnpj_cpf, arquivo_fornecedores=ARQUIVO_FORNECEDORES)
+
             fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
-    
+
             for fornecedor in fornecedores:
-                if fornecedor['cnpj_cpf_numeros'] == cnpj_cpf_busca_numeros:
+                if corresponde(fornecedor['cnpj_cpf'], fornecedor.get('tipo_pessoa')):
                     # Devolve uma cópia sem o campo auxiliar interno do cache,
                     # mantendo exatamente o mesmo formato que o código antigo
                     # devolvia (mesmas chaves, para não quebrar quem já consome
@@ -6508,12 +6504,16 @@ class SistemaEntradaDados:
             if not cnpj_cpf or not cnpj_cpf.strip():
                 return None
     
-            cnpj_limpo = ''.join(filter(str.isdigit, cnpj_cpf))
-    
+            # Comparação pelo tipo_pessoa da base (aceita documento sem os zeros à esquerda).
+            # Compara com f['cnpj_cpf'] (documento completo, com letras se for CNPJ
+            # alfanumérico), e não com 'cnpj_cpf_numeros', que guarda só os dígitos.
+            from src.config.utils import comparador_documento
+            corresponde = comparador_documento(cnpj_cpf, arquivo_fornecedores=ARQUIVO_FORNECEDORES)
+
             fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
-    
+
             for f in fornecedores:
-                if f['cnpj_cpf_numeros'] == cnpj_limpo:
+                if corresponde(f['cnpj_cpf'], f.get('tipo_pessoa')):
                     fornecedor = {
                         'cnpj_cpf': f['cnpj_cpf'],
                         'nome': f['nome'],
@@ -6541,12 +6541,16 @@ class SistemaEntradaDados:
 
     def buscar_dados_bancarios(self, cnpj_cpf):
         try:
-            cnpj_busca_numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))  # ALTERADO: normaliza antes de comparar
-    
+            # Comparação pelo tipo_pessoa da base (aceita documento sem os zeros à esquerda).
+            # Compara com f['cnpj_cpf'] (documento completo, com letras se for CNPJ
+            # alfanumérico), e não com 'cnpj_cpf_numeros', que guarda só os dígitos.
+            from src.config.utils import comparador_documento
+            corresponde = comparador_documento(cnpj_cpf, arquivo_fornecedores=ARQUIVO_FORNECEDORES)
+
             fornecedores = self.cache_fornecedores.carregar_cache_se_necessario(ARQUIVO_FORNECEDORES)
-    
+
             for f in fornecedores:
-                if f['cnpj_cpf_numeros'] == cnpj_busca_numeros:
+                if corresponde(f['cnpj_cpf'], f.get('tipo_pessoa')):
                     logger.debug(f"CNPJ/CPF encontrado: {cnpj_cpf}")
                     return f['dados_bancarios'] or ""
     
@@ -16239,8 +16243,15 @@ class VisualizadorLancamentosFornecedor:
     def formatar_cnpj_cpf(self, cnpj_cpf):
         """Formata CNPJ/CPF mantendo zeros à esquerda"""
         try:
+            # 1º: tipo pela base de fornecedores (resolve CNPJ que perdeu os zeros)
+            from src.config.utils import identificar_documento_fornecedor, formatar_documento
+            documento, tipo = identificar_documento_fornecedor(cnpj_cpf)
+            if tipo:
+                return formatar_documento(documento, tipo)
+
+            # Fora da base: só formata se o tamanho não deixar dúvida
             numeros = ''.join(filter(str.isdigit, str(cnpj_cpf)))
-            
+
             if len(numeros) == 11:  # CPF
                 cpf = numeros.zfill(11)
                 return f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
@@ -17337,34 +17348,22 @@ class VisualizadorLancamentosFornecedor:
             logger.debug(f"       CNPJ/CPF normalizado: {cnpj_cpf_normalizado}")
             logger.debug(f"       Tipo: {tipo_pessoa}")
             
-            # Função para normalizar CNPJ/CPF da planilha usando tipo_pessoa
-            df_fornecedores = pd.read_excel(ARQUIVO_FORNECEDORES, dtype={'CNPJ/CPF': str})
-
-            lookup_tipo = {}
-            for _, row in df_fornecedores.iterrows():
-                cnpj_raw = str(row['CNPJ/CPF']).strip()
-                numeros_raw = ''.join(filter(str.isdigit, cnpj_raw))
-                tipo = str(row.get('tipo_pessoa', 'PJ')).strip().upper()
-                if not numeros_raw:
-                    continue
-                tipo_final = 'PF' if tipo == 'PF' else 'PJ'
-                chave_completa = numeros_raw.zfill(11) if tipo_final == 'PF' else numeros_raw.zfill(14)
-                lookup_tipo[chave_completa] = tipo_final
-                lookup_tipo[str(int(numeros_raw))] = tipo_final
+            # Normalizar CNPJ/CPF da aba Dados pelo tipo_pessoa da base de fornecedores.
+            # (Antes, um dicionário guardava também a versão SEM ZEROS de cada
+            # documento; um CNPJ 00.065.389/0001-53 gerava a chave "65389000153",
+            # que podia sobrescrever a de um CPF com os mesmos números.)
+            from src.config.utils import identificar_documento_fornecedor
 
             def normalizar_cnpj_cpf_planilha(valor):
                 if pd.isna(valor) or valor == '':
                     return ''
+                documento, tipo = identificar_documento_fornecedor(
+                    valor, arquivo_fornecedores=ARQUIVO_FORNECEDORES)
+                if tipo:
+                    return documento
+                # Fora da base: mesmo comportamento anterior (só dígitos, 14 posições)
                 numeros = ''.join(filter(str.isdigit, str(valor)))
-                if not numeros:
-                    return ''
-                tipo = (lookup_tipo.get(numeros) or
-                        lookup_tipo.get(str(int(numeros))) or
-                        'PJ')
-                if tipo == 'PF':
-                    return numeros.zfill(11)
-                else:
-                    return numeros.zfill(14)
+                return numeros.zfill(14) if numeros else ''
 
             df['CNPJ_CPF_NORMALIZADO'] = df['CNPJ_CPF'].apply(normalizar_cnpj_cpf_planilha)
             
@@ -18719,9 +18718,17 @@ class GerenciadorAgenda:
                 return
             
             import pandas as pd
-            
-            # Ler planilha
-            df_medicoes = pd.read_excel(arquivo_cliente, sheet_name="Medicoes")
+
+            # Ler planilha -- só se a aba existir. Cliente sem empreiteiros não
+            # tem a aba "Medicoes"; antes o pandas lançava
+            # "ValueError: Worksheet named 'Medicoes' not found" (capturado no
+            # except abaixo, mas registrado como erro e visto pelo depurador).
+            # Mesma verificação usada em atualizar_status_medicoes_lancadas.
+            with pd.ExcelFile(arquivo_cliente) as planilha_cliente:
+                if "Medicoes" not in planilha_cliente.sheet_names:
+                    logger.debug(f"DEBUG: Cliente {self.sistema.cliente_atual} não tem aba 'Medicoes' — nenhuma medição a carregar")
+                    return
+                df_medicoes = pd.read_excel(planilha_cliente, sheet_name="Medicoes")
             
             # Normalizar colunas
             df_medicoes.columns = df_medicoes.columns.str.strip().str.upper()
